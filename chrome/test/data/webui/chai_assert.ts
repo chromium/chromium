@@ -140,6 +140,10 @@ export function assertStringContains(expected: string, contains: string) {
   chai.expect(expected).to.have.string(contains);
 }
 
+export function assertStringExcludes(expected: string, excludes: string): void {
+  chai.expect(expected).not.to.have.string(excludes);
+}
+
 /**
  * @param value The value to check if strictly equals null (value === null).
  * @param message Optional error message.

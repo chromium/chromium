@@ -898,6 +898,27 @@
   <message name="IDS_SETTINGS_DEVICE_TITLE" desc="Name of the settings page which displays device and peripheral settings.">
     Device
   </message>
+  <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_2_WORDS" desc="Description for the Device menu item in the left menu which lists relevant settings in this page. This includes 2 words from a predefined set of words.">
+    <ph name="DESCRIPTION_ITEM_1">$1<ex>Keyboard</ex></ph>, <ph name="DESCRIPTION_ITEM_2">$2<ex>mouse</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_3_WORDS" desc="Description for the Device menu item in the left menu which lists relevant settings in this page. This includes 3 words from a predefined set of words.">
+    <ph name="DESCRIPTION_ITEM_1">$1<ex>Keyboard</ex></ph>, <ph name="DESCRIPTION_ITEM_2">$2<ex>mouse</ex></ph>, <ph name="DESCRIPTION_ITEM_3">$3<ex>print</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_KEYBOARD" desc="Label for keyboard settings in the Device menu item description in the left menu.">
+    keyboard
+  </message>
+  <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_MOUSE" desc="Label for mouse settings in the Device menu item description in the left menu.">
+    mouse
+  </message>
+  <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_TOUCHPAD" desc="Label for touchpad settings in the Device menu item description in the left menu.">
+    touchpad
+  </message>
+  <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_PRINT" desc="Label for print settings in the Device menu item description in the left menu.">
+    print
+  </message>
+  <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_DISPLAY" desc="Label for display settings in the Device menu item description in the left menu.">
+    display
+  </message>
 
   <!-- Personalization Page (OS settings) -->
   <message name="IDS_OS_SETTINGS_PERSONALIZATION" desc="Name of the OS settings page which displays personalization preferences.">

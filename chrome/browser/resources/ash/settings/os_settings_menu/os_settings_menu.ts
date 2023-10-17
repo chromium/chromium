@@ -17,11 +17,16 @@ import './menu_item.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../assert_extras.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {FakeInputDeviceSettingsProvider} from '../device_page/fake_input_device_settings_provider.js';
+import {getInputDeviceSettingsProvider} from '../device_page/input_device_mojo_interface_provider.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from '../device_page/input_device_settings_types.js';
+import {KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import * as routesMojom from '../mojom-webui/routes.mojom-webui.js';
 import {OsPageAvailability} from '../os_page_availability.js';
 import {AccountManagerBrowserProxyImpl} from '../os_people_page/account_manager_browser_proxy.js';
@@ -47,6 +52,16 @@ export interface OsSettingsMenuElement {
     topMenu: IronSelectorElement,
     topMenuRepeat: DomRepeat,
   };
+}
+
+/**
+ * Returns a copy of the given `str` with the first letter capitalized according
+ * to the locale.
+ */
+function capitalize(str: string): string {
+  const firstChar = str.charAt(0).toLocaleUpperCase();
+  const remainingStr = str.slice(1);
+  return `${firstChar}${remainingStr}`;
 }
 
 const OsSettingsMenuElementBase =
@@ -79,7 +94,8 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       basicMenuItems_: {
         type: Array,
         computed: 'computeBasicMenuItems_(pageAvailability.*,' +
-            'accountsMenuItemDescription_)',
+            'accountsMenuItemDescription_,' +
+            'deviceMenuItemDescription_)',
         readOnly: true,
       },
 
@@ -116,6 +132,24 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           return this.i18n('primaryUserEmail');
         },
       },
+
+      hasKeyboard_: Boolean,
+
+      hasMouse_: Boolean,
+
+      /**
+       * Whether a pointing stick (such as a TrackPoint) is connected.
+       */
+      hasPointingStick_: Boolean,
+
+      hasTouchpad_: Boolean,
+
+      deviceMenuItemDescription_: {
+        type: String,
+        value: '',
+        computed: 'computeDeviceMenuItemDescription_(hasKeyboard_,' +
+            'hasMouse_, hasPointingStick_, hasTouchpad_, hasHapticTouchpad_)',
+      },
     };
   }
 
@@ -128,22 +162,61 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   private aboutMenuItemPath_: string;
   private accountsMenuItemDescription_: string;
 
+  // Device section members
+  private deviceMenuItemDescription_: string;
+  private hasKeyboard_: boolean|undefined;
+  private hasMouse_: boolean|undefined;
+  private hasPointingStick_: boolean|undefined;
+  private hasTouchpad_: boolean|undefined;
+  private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface;
+  private keyboardSettingsObserverReceiver_: KeyboardSettingsObserverReceiver|
+      undefined;
+  private mouseSettingsObserverReceiver_: MouseSettingsObserverReceiver|
+      undefined;
+  private pointingStickSettingsObserverReceiver_:
+      PointingStickSettingsObserverReceiver|undefined;
+  private touchpadSettingsObserverReceiver_: TouchpadSettingsObserverReceiver|
+      undefined;
+
+  constructor() {
+    super();
+
+    this.inputDeviceSettingsProvider_ = getInputDeviceSettingsProvider();
+  }
+
   override connectedCallback(): void {
     super.connectedCallback();
 
     if (this.isRevampWayfindingEnabled_) {
+      // Accounts menu item.
       this.updateAccountsMenuItemDescription_();
       this.addWebUiListener(
           'accounts-changed',
           this.updateAccountsMenuItemDescription_.bind(this));
+
+      // Device menu item.
+      this.observeKeyboardSettings_();
+      this.observeMouseSettings_();
+      this.observePointingStickSettings_();
+      this.observeTouchpadSettings_();
     }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    // The following receivers are undefined in tests.
+    this.keyboardSettingsObserverReceiver_?.$.close();
+    this.mouseSettingsObserverReceiver_?.$.close();
+    this.pointingStickSettingsObserverReceiver_?.$.close();
+    this.touchpadSettingsObserverReceiver_?.$.close();
   }
 
   override ready(): void {
     super.ready();
 
     // Force render menu items so the matching item can be selected when the
-    // page initially loads
+    // page initially loads.
     this.$.topMenuRepeat.render();
   }
 
@@ -218,6 +291,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.DEVICE_SECTION_PATH}`,
           icon: 'os-settings:laptop-chromebook',
           label: this.i18n('devicePageTitle'),
+          sublabel: this.deviceMenuItemDescription_,
         },
         {
           section: Section.kPersonalization,
@@ -438,6 +512,125 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     const deviceAccount = accounts.find(account => account.isDeviceAccount);
     assertExists(deviceAccount, 'No device account found.');
     this.accountsMenuItemDescription_ = deviceAccount.email;
+  }
+
+  private observeKeyboardSettings_(): void {
+    if (this.inputDeviceSettingsProvider_ instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider_.observeKeyboardSettings(this);
+      return;
+    }
+
+    this.keyboardSettingsObserverReceiver_ =
+        new KeyboardSettingsObserverReceiver(this);
+    this.inputDeviceSettingsProvider_.observeKeyboardSettings(
+        this.keyboardSettingsObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** Implements KeyboardSettingsObserverInterface */
+  onKeyboardListUpdated(keyboards: Keyboard[]): void {
+    this.hasKeyboard_ = keyboards.length > 0;
+  }
+
+  /** Implements KeyboardSettingsObserverInterface */
+  onKeyboardPoliciesUpdated(): void {
+    // Not handled.
+  }
+
+  private observeMouseSettings_(): void {
+    if (this.inputDeviceSettingsProvider_ instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider_.observeMouseSettings(this);
+      return;
+    }
+
+    this.mouseSettingsObserverReceiver_ =
+        new MouseSettingsObserverReceiver(this);
+    this.inputDeviceSettingsProvider_.observeMouseSettings(
+        this.mouseSettingsObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** Implements MouseSettingsObserverInterface */
+  onMouseListUpdated(mice: Mouse[]): void {
+    this.hasMouse_ = mice.length > 0;
+  }
+
+  /** Implements MouseSettingsObserverInterface */
+  onMousePoliciesUpdated(): void {
+    // Not handled.
+  }
+
+  private observePointingStickSettings_(): void {
+    if (this.inputDeviceSettingsProvider_ instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider_.observePointingStickSettings(this);
+      return;
+    }
+
+    this.pointingStickSettingsObserverReceiver_ =
+        new PointingStickSettingsObserverReceiver(this);
+    this.inputDeviceSettingsProvider_.observePointingStickSettings(
+        this.pointingStickSettingsObserverReceiver_.$
+            .bindNewPipeAndPassRemote());
+  }
+
+  /** Implements PointingStickSettingsObserverInterface */
+  onPointingStickListUpdated(pointingSticks: PointingStick[]): void {
+    this.hasPointingStick_ = pointingSticks.length > 0;
+  }
+
+  private observeTouchpadSettings_(): void {
+    if (this.inputDeviceSettingsProvider_ instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider_.observeTouchpadSettings(this);
+      return;
+    }
+
+    this.touchpadSettingsObserverReceiver_ =
+        new TouchpadSettingsObserverReceiver(this);
+    this.inputDeviceSettingsProvider_.observeTouchpadSettings(
+        this.touchpadSettingsObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** Implements TouchpadSettingsObserverInterface */
+  onTouchpadListUpdated(touchpads: Touchpad[]): void {
+    this.hasTouchpad_ = touchpads.length > 0;
+  }
+
+  /**
+   * Only show at most 3 strings in order of priority:
+   * - "keyboard" (if available)
+   * - "mouse" OR "touchpad" (if available, prioritize mouse)
+   * - "print"
+   * - "display"
+   */
+  private computeDeviceMenuItemDescription_(): string {
+    if (!this.isRevampWayfindingEnabled_) {
+      return '';
+    }
+
+    const wordOptions: string[] = [];
+
+    if (this.hasKeyboard_) {
+      wordOptions.push(this.i18n('deviceMenuItemDescriptionKeyboard'));
+    }
+
+    if (this.hasMouse_ || this.hasPointingStick_) {
+      wordOptions.push(this.i18n('deviceMenuItemDescriptionMouse'));
+    } else if (this.hasTouchpad_) {
+      wordOptions.push(this.i18n('deviceMenuItemDescriptionTouchpad'));
+    }
+
+    wordOptions.push(
+        this.i18n('deviceMenuItemDescriptionPrint'),
+        this.i18n('deviceMenuItemDescriptionDisplay'));
+
+    const words = wordOptions.slice(0, 3);
+    assert(words.length === 2 || words.length === 3);
+    return capitalize(this.i18n(
+        words.length === 2 ? 'deviceMenuItemDescription2Words' :
+                             'deviceMenuItemDescription3Words',
+        ...words));
   }
 }
 

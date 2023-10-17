@@ -1069,6 +1069,20 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                         : IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL},
       {"touchpadScrollDescription",
        IDS_OS_SETTINGS_REVAMP_TOUCHPAD_REVERSE_SCROLL_DESCRIPTION},
+      {"deviceMenuItemDescription2Words",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_2_WORDS},
+      {"deviceMenuItemDescription3Words",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_3_WORDS},
+      {"deviceMenuItemDescriptionKeyboard",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_KEYBOARD},
+      {"deviceMenuItemDescriptionMouse",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_MOUSE},
+      {"deviceMenuItemDescriptionTouchpad",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_TOUCHPAD},
+      {"deviceMenuItemDescriptionPrint",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_PRINT},
+      {"deviceMenuItemDescriptionDisplay",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_DISPLAY},
   };
   html_source->AddLocalizedStrings(kDeviceStrings);
 

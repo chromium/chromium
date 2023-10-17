@@ -10,10 +10,10 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {Account, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createPageAvailabilityForTesting, OsSettingsMenuElement, OsSettingsMenuItemElement, routesMojom} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, OsSettingsMenuElement, OsSettingsMenuItemElement, routesMojom, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -247,6 +247,183 @@ suite('<os-settings-menu>', () => {
 
         assertEquals(fakeAccounts[0]!.email, accountsMenuItem.sublabel);
       });
+    });
+  });
+
+  suite('Device menu item', () => {
+    let provider: FakeInputDeviceSettingsProvider;
+
+    function getDeviceMenuItem(): OsSettingsMenuItemElement {
+      const deviceMenuItem =
+          queryMenuItemByPath(`/${routesMojom.DEVICE_SECTION_PATH}`);
+      assertTrue(!!deviceMenuItem);
+      return deviceMenuItem;
+    }
+
+    setup(() => {
+      provider = new FakeInputDeviceSettingsProvider();
+      provider.setFakeKeyboards([]);
+      provider.setFakeMice([]);
+      provider.setFakePointingSticks([]);
+      provider.setFakeTouchpads([]);
+      setInputDeviceSettingsProviderForTesting(provider);
+    });
+
+    test('Description includes "keyboard" when connected', async () => {
+      await createMenu();
+
+      // No keyboard connected.
+      const deviceMenuItem = getDeviceMenuItem();
+      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'keyboard');
+
+      // Connect a keyboard.
+      provider.setFakeKeyboards(fakeKeyboards);
+      flush();
+      assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'keyboard');
+
+      // Disconnect the keyboard.
+      provider.setFakeKeyboards([]);
+      flush();
+      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'keyboard');
+    });
+
+    test('Description includes "mouse" when connected', async () => {
+      await createMenu();
+
+      // No mouse connected.
+      const deviceMenuItem = getDeviceMenuItem();
+      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
+
+      // Connect a mouse.
+      provider.setFakeMice(fakeMice);
+      flush();
+      assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
+
+      // Disconnect the mouse.
+      provider.setFakeMice([]);
+      flush();
+      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
+    });
+
+    test(
+        'Description includes "mouse" when pointing stick is connected',
+        async () => {
+          await createMenu();
+
+          // No pointing stick connected.
+          const deviceMenuItem = getDeviceMenuItem();
+          assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
+
+          // Connect a pointing stick.
+          provider.setFakePointingSticks(fakePointingSticks);
+          flush();
+          assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
+
+          // Disconnect the pointing stick.
+          provider.setFakePointingSticks([]);
+          flush();
+          assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
+        });
+
+    test('Description includes "touchpad" when connected', async () => {
+      await createMenu();
+
+      // No touchpad connected.
+      const deviceMenuItem = getDeviceMenuItem();
+      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
+
+      // Connect a touchpad.
+      provider.setFakeTouchpads(fakeTouchpads);
+      flush();
+      assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
+
+      // Disconnect the touchpad.
+      provider.setFakeTouchpads([]);
+      flush();
+      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
+    });
+
+    test('Description prioritizes "mouse" over "touchpad"', async () => {
+      await createMenu();
+
+      // No mouse or touchpad connected.
+      const deviceMenuItem = getDeviceMenuItem();
+      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
+      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
+
+      // Connect a touchpad.
+      provider.setFakeTouchpads(fakeTouchpads);
+      flush();
+      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
+      assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
+
+      // Connect a mouse.
+      provider.setFakeMice(fakeMice);
+      flush();
+      assertStringContains(deviceMenuItem.sublabel.toLowerCase(), 'mouse');
+      assertStringExcludes(deviceMenuItem.sublabel.toLowerCase(), 'touchpad');
+    });
+
+    test('Description includes print and display by default', async () => {
+      await createMenu();
+      const deviceMenuItem = getDeviceMenuItem();
+      assertEquals('Print, display', deviceMenuItem.sublabel);
+    });
+
+    test(
+        'Description shows at most 3 words when devices are connected',
+        async () => {
+          // 4 devices connected.
+          provider.setFakeKeyboards(fakeKeyboards);
+          provider.setFakeMice(fakeMice);
+          provider.setFakePointingSticks(fakePointingSticks);
+          provider.setFakeTouchpads(fakeTouchpads);
+
+          await createMenu();
+          const deviceMenuItem = getDeviceMenuItem();
+          assertEquals('Keyboard, mouse, print', deviceMenuItem.sublabel);
+        });
+
+    test('Description shows "Keyboard, print, display', async () => {
+      provider.setFakeKeyboards(fakeKeyboards);
+      provider.setFakeMice([]);
+      provider.setFakePointingSticks([]);
+      provider.setFakeTouchpads([]);
+
+      await createMenu();
+      const deviceMenuItem = getDeviceMenuItem();
+      assertEquals('Keyboard, print, display', deviceMenuItem.sublabel);
+    });
+
+    test('Description shows "Mouse, print, display"', async () => {
+      provider.setFakeKeyboards([]);
+      provider.setFakeMice(fakeMice);
+      provider.setFakePointingSticks([]);
+      provider.setFakeTouchpads(fakeTouchpads);
+
+      await createMenu();
+      const deviceMenuItem = getDeviceMenuItem();
+      assertEquals('Mouse, print, display', deviceMenuItem.sublabel);
+
+      // Still show "mouse" if pointing stick is connected.
+      provider.setFakeKeyboards([]);
+      provider.setFakeMice([]);
+      provider.setFakePointingSticks(fakePointingSticks);
+      provider.setFakeTouchpads(fakeTouchpads);
+      flush();
+
+      assertEquals('Mouse, print, display', deviceMenuItem.sublabel);
+    });
+
+    test('Description shows "Touchpad, print, display', async () => {
+      provider.setFakeKeyboards([]);
+      provider.setFakeMice([]);
+      provider.setFakePointingSticks([]);
+      provider.setFakeTouchpads(fakeTouchpads);
+
+      await createMenu();
+      const deviceMenuItem = getDeviceMenuItem();
+      assertEquals('Touchpad, print, display', deviceMenuItem.sublabel);
     });
   });
 });
