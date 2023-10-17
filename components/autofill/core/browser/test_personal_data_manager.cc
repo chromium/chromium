@@ -372,6 +372,11 @@ void TestPersonalDataManager::AddAutofillOfferData(
   NotifyPersonalDataObserver();
 }
 
+void TestPersonalDataManager::AddServerIban(const Iban& iban) {
+  server_ibans_.push_back(std::make_unique<Iban>(iban));
+  NotifyPersonalDataObserver();
+}
+
 void TestPersonalDataManager::AddCardArtImage(const GURL& url,
                                               const gfx::Image& image) {
   credit_card_art_images_[url] = std::make_unique<gfx::Image>(image);

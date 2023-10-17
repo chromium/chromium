@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
@@ -38,6 +39,10 @@ class IbanSaveManager {
   // Return the first half of hashed IBAN value.
   static std::string GetPartialIbanHashString(const std::string& value);
 
+  // Returns true if uploading IBANs to Payments servers is enabled. This
+  // requires the appropriate flags and user settings to be set.
+  static bool IsIbanUploadEnabled(const syncer::SyncService* sync_service);
+
   // Checks that all requirements for offering local IBAN save are fulfilled.
   // Returns true if the save prompt was shown, and false otherwise.
   // Note that on desktop if this returns false, the show save prompt will not
@@ -61,10 +66,19 @@ class IbanSaveManager {
     observer_for_testing_ = observer;
   }
 
+  bool ShouldOfferUploadSaveForTesting(
+      const Iban& iban_import_candidate) const {
+    return ShouldOfferUploadSave(iban_import_candidate);
+  }
+
  private:
   // Returns true if local save should be offered for the
   // `iban_import_candidate`.
-  bool ShouldOfferLocalSave(const Iban& iban_import_candidate);
+  bool ShouldOfferLocalSave(const Iban& iban_import_candidate) const;
+
+  // Returns true if upload save should be offered for the
+  // `iban_import_candidate`.
+  bool ShouldOfferUploadSave(const Iban& iban_import_candidate) const;
 
   // Returns the IbanSaveStrikeDatabase for `client_`;
   IbanSaveStrikeDatabase* GetIbanSaveStrikeDatabase();
