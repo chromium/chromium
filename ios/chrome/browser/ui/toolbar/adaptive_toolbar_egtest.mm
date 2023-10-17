@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_app_interface.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -321,8 +322,12 @@ void FocusOmnibox() {
     [[EarlGrey
         selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
         performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:firstResponder()];
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:grey_allOf(
+                                                chrome_test_util::Omnibox(),
+                                                grey_interactable(), nil)];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        assertWithMatcher:firstResponder()];
 }
 
 UIViewController* TopPresentedViewControllerFrom(
@@ -357,6 +362,15 @@ id<GREYMatcher> MoveAddressBarToBottomContextMenuButton() {
                         IDS_IOS_TOOLBAR_MENU_BOTTOM_OMNIBOX),
                     grey_accessibilityTrait(UIAccessibilityTraitButton),
                     grey_hidden(NO), nil);
+}
+
+// Returns the matcher for the omnibox typing shield in the form input accessory
+// view.
+id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
+  return grey_allOf(
+      grey_accessibilityID(
+          kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID),
+      grey_interactable(), nil);
 }
 
 }  // namespace
@@ -735,8 +749,12 @@ id<GREYMatcher> MoveAddressBarToBottomContextMenuButton() {
 }
 
 // Verifies that the location bar is above the keyboard when tapping a text
-// field on web. Tapping it should dismiss the keyboard.
-- (void)testTapLocationBarAboveTheKeyboard {
+// field on web. Use the `matcherForOmniboxAboveKeyboard` to dismiss the
+// keyboard. When voice over is off, tapping the collapsed bottom omnibox
+// interacts with the `omniboxTypingShield` of `formInputAccessoryView`. When
+// voice over is on, `DefocusedLocationView` is focused instead.
+- (void)verifyTapLocationBarAboveTheKeyboardWithMatcher:
+    (id<GREYMatcher>)matcherForOmniboxAboveKeyboard {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Bottom address bar is only available on iPhone.");
   }
@@ -753,18 +771,31 @@ id<GREYMatcher> MoveAddressBarToBottomContextMenuButton() {
     // Brings up the keyboard by tapping on one of the form's field.
     [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
         performAction:TapWebElementWithId("username")];
-    [ChromeEarlGrey
-        waitForNotSufficientlyVisibleElementWithMatcher:NewTabButton()];
+    GREYWaitForAppToIdleWithTimeout(5.0, @"App failed to idle");
 
     // Taping the location bar above the keyboard should dismiss the keyboard.
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+    [[EarlGrey selectElementWithMatcher:matcherForOmniboxAboveKeyboard]
         performAction:grey_tap()];
-    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:NewTabButton()];
+    GREYWaitForAppToIdleWithTimeout(5.0, @"App failed to idle");
 
     // Taping the location bar again should focus the omnibox.
     FocusOmnibox();
   }
+}
+
+// Verifies that the location bar is above the keyboard when tapping a text
+// field on web. Tapping it should dismiss the keyboard.
+- (void)testTapLocationBarAboveTheKeyboard {
+  [self verifyTapLocationBarAboveTheKeyboardWithMatcher:
+            FormInputAccessoryOmniboxTypingShield()];
+}
+
+// Verifies that the location bar is above the keyboard when tapping a text
+// field on web. Simulate a tap with voice over and verify that it dismisses the
+// keyboard.
+- (void)testTapLocationBarAboveTheKeyboardForVoiceOver {
+  [self verifyTapLocationBarAboveTheKeyboardWithMatcher:
+            chrome_test_util::DefocusedLocationView()];
 }
 
 @end

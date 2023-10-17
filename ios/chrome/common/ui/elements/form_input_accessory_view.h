@@ -23,6 +23,8 @@
 @end
 
 extern NSString* const kFormInputAccessoryViewAccessibilityID;
+extern NSString* const
+    kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID;
 
 // Subview of the accessory view for web forms. Shows a custom view with form
 // navigation controls above the keyboard. Enables input clicks by way of the
