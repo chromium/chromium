@@ -56,25 +56,15 @@ namespace ash {
 
 namespace {
 
+using aura::test::TestWindowDelegate;
 using ::chromeos::WindowStateType;
 
-// A simple window delegate that returns the specified hit-test code when
-// requested and applies a minimum size constraint if there is one.
-class TestWindowDelegate : public aura::test::TestWindowDelegate {
- public:
-  explicit TestWindowDelegate(int hittest_code) {
-    set_window_component(hittest_code);
-  }
-
-  TestWindowDelegate(const TestWindowDelegate&) = delete;
-  TestWindowDelegate& operator=(const TestWindowDelegate&) = delete;
-
-  ~TestWindowDelegate() override = default;
-
- private:
-  // Overridden from aura::Test::TestWindowDelegate:
-  void OnWindowDestroyed(aura::Window* window) override { delete this; }
-};
+aura::test::TestWindowDelegate* CreateTestWindowDelegate(int hittest_code) {
+  auto* delegate =
+      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
+  delegate->set_window_component(hittest_code);
+  return delegate;
+}
 
 class ResizeLoopWindowObserver : public aura::WindowObserver {
  public:
@@ -138,8 +128,8 @@ class ToplevelWindowEventHandlerTest : public AshTestBase {
 };
 
 aura::Window* CreateWindow(int hittest_code) {
-  TestWindowDelegate* d1 = new TestWindowDelegate(hittest_code);
-  aura::Window* w1 = new aura::Window(d1, aura::client::WINDOW_TYPE_NORMAL);
+  aura::Window* w1 = new aura::Window(CreateTestWindowDelegate(hittest_code),
+                                      aura::client::WINDOW_TYPE_NORMAL);
   w1->SetId(1);
   w1->Init(ui::LAYER_TEXTURED);
   aura::Window* parent = Shell::GetContainer(
@@ -518,7 +508,7 @@ TEST_F(ToplevelWindowEventHandlerTest, DontGotWiderThanScreen) {
 TEST_F(ToplevelWindowEventHandlerTest, GestureDrag) {
   UpdateDisplay("800x600");
   std::unique_ptr<aura::Window> target(CreateTestWindowInShellWithDelegate(
-      new TestWindowDelegate(HTCAPTION), 0, gfx::Rect(0, 0, 100, 100)));
+      CreateTestWindowDelegate(HTCAPTION), 0, gfx::Rect(0, 0, 100, 100)));
   WindowState* window_state = WindowState::Get(target.get());
   EXPECT_EQ(WindowStateType::kDefault, window_state->GetStateType());
   EXPECT_EQ(gfx::Rect(), window_state->GetRestoreBoundsInScreen());
@@ -594,7 +584,7 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDrag) {
 TEST_F(ToplevelWindowEventHandlerTest, GestureDragMultiDisplays) {
   UpdateDisplay("800x600, 800x600");
   std::unique_ptr<aura::Window> target(CreateTestWindowInShellWithDelegate(
-      new TestWindowDelegate(HTCAPTION), 0, gfx::Rect(0, 0, 100, 100)));
+      CreateTestWindowDelegate(HTCAPTION), 0, gfx::Rect(0, 0, 100, 100)));
   WindowState* window_state = WindowState::Get(target.get());
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      target.get());
@@ -778,7 +768,7 @@ TEST_F(ToplevelWindowEventHandlerTest,
 
 TEST_F(ToplevelWindowEventHandlerTest, GestureDragToRestore) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      new TestWindowDelegate(HTCAPTION), 0, gfx::Rect(10, 20, 30, 40)));
+      CreateTestWindowDelegate(HTCAPTION), 0, gfx::Rect(10, 20, 30, 40)));
   window->Show();
   WindowState* window_state = WindowState::Get(window.get());
   window_state->Activate();
@@ -802,9 +792,9 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDragToRestore) {
 // top-level window can be resized but not when the window is not resizable.
 TEST_F(ToplevelWindowEventHandlerTest, EasyResizerUsedForTopLevel) {
   std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegate(
-      new TestWindowDelegate(HTCAPTION), -1, gfx::Rect(0, 0, 100, 100)));
+      CreateTestWindowDelegate(HTCAPTION), -1, gfx::Rect(0, 0, 100, 100)));
   std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
-      new TestWindowDelegate(HTCAPTION), -2, gfx::Rect(40, 40, 100, 100)));
+      CreateTestWindowDelegate(HTCAPTION), -2, gfx::Rect(40, 40, 100, 100)));
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      gfx::Point(5, 5));
 
@@ -837,9 +827,9 @@ TEST_F(ToplevelWindowEventHandlerTest, EasyResizerUsedForTopLevel) {
 // window is a transient child of a top-level window and is resizable.
 TEST_F(ToplevelWindowEventHandlerTest, EasyResizerUsedForTransient) {
   std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegate(
-      new TestWindowDelegate(HTCAPTION), -1, gfx::Rect(0, 0, 100, 100)));
+      CreateTestWindowDelegate(HTCAPTION), -1, gfx::Rect(0, 0, 100, 100)));
   std::unique_ptr<aura::Window> w11(CreateTestWindowInShellWithDelegate(
-      new TestWindowDelegate(HTCAPTION), -11, gfx::Rect(20, 20, 50, 50)));
+      CreateTestWindowDelegate(HTCAPTION), -11, gfx::Rect(20, 20, 50, 50)));
   ::wm::AddTransientChild(w1.get(), w11.get());
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      gfx::Point(10, 10));
@@ -913,9 +903,9 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDragForUnresizableWindow) {
 // Tests that dragging multiple windows at the same time is not allowed.
 TEST_F(ToplevelWindowEventHandlerTest, GestureDragMultipleWindows) {
   std::unique_ptr<aura::Window> target(CreateTestWindowInShellWithDelegate(
-      new TestWindowDelegate(HTCAPTION), 0, gfx::Rect(0, 0, 100, 100)));
+      CreateTestWindowDelegate(HTCAPTION), 0, gfx::Rect(0, 0, 100, 100)));
   std::unique_ptr<aura::Window> notmoved(CreateTestWindowInShellWithDelegate(
-      new TestWindowDelegate(HTCAPTION), 1, gfx::Rect(100, 0, 100, 100)));
+      CreateTestWindowDelegate(HTCAPTION), 1, gfx::Rect(100, 0, 100, 100)));
 
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      target.get());
@@ -1094,7 +1084,7 @@ TEST_F(ToplevelWindowEventHandlerTest, DragSnappedWindowToExternalDisplay) {
 
   const gfx::Size initial_window_size(330, 230);
   std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegateAndType(
-      new TestWindowDelegate(HTCAPTION), aura::client::WINDOW_TYPE_NORMAL, 0,
+      CreateTestWindowDelegate(HTCAPTION), aura::client::WINDOW_TYPE_NORMAL, 0,
       gfx::Rect(initial_window_size)));
 
   // Snap the window to the right.
