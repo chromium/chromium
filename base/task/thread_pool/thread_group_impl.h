@@ -155,9 +155,6 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   void MaintainAtLeastOneIdleWorkerLockRequired(
       ScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Returns true if worker cleanup is permitted.
-  bool CanWorkerCleanupForTestingLockRequired() EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
   // Creates a worker, adds it to the thread group, schedules its start and
   // returns it. Cannot be called before Start().
   scoped_refptr<WorkerThread> CreateAndRegisterWorkerLockRequired(
