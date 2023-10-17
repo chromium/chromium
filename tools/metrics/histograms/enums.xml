@@ -27203,6 +27203,12 @@ Called by update_debug_scenarios.py.-->
   <int value="44" label="Unknown owner no key, no policy"/>
 </enum>
 
+<enum name="DeviceReauth.ReauthResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+  <int value="2" label="Skipped"/>
+</enum>
+
 <enum name="DeviceSettingsStaticShortcutAction">
   <int value="0" label="Copy"/>
   <int value="1" label="Paste"/>
@@ -83794,12 +83800,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="7"
       label="Credentials exist shared from different sender with different
              password"/>
-</enum>
-
-<enum name="PasswordManager.ReauthResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failure"/>
-  <int value="2" label="Skipped"/>
 </enum>
 
 <enum name="PasswordManager.SharedPasswordsNotificationInteractions">

@@ -9,21 +9,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "components/device_reauth/device_reauth_metrics_util.h"
 
 namespace device_reauth {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-
-// The place where the device reauthentication flow is requested from.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.device_reauth
-enum class DeviceAuthSource {
-  kPasswordManager = 0,
-  kAutofill = 1,
-  kIncognito = 2,
-  kDeviceLockPage = 3,
-  kMaxValue = kDeviceLockPage,
-};
 
 // When creating a device authenticator, one should create a |DeviceAuthParam|
 // object, set its values and pass it as a parameter to
@@ -50,7 +38,7 @@ class DeviceAuthParams {
  private:
   base::TimeDelta auth_validity_period_;
   device_reauth::DeviceAuthSource source_;
-  // This histogram should be compatible with the metrics_util::ReauthResult
+  // This histogram should be compatible with the device_reauth::ReauthResult
   // enum.
   std::string auth_result_histogram_;
 };

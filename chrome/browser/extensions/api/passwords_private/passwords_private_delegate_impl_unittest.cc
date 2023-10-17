@@ -49,6 +49,7 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/device_reauth/device_reauth_metrics_util.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
@@ -59,7 +60,6 @@
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/password_manager/core/browser/sharing/mock_password_sender_service.h"
@@ -90,11 +90,11 @@
 #include "components/prefs/pref_service.h"
 #endif
 
+using device_reauth::ReauthResult;
 using password_manager::PasswordForm;
 using password_manager::PasswordRecipient;
 using password_manager::ReauthPurpose;
 using password_manager::TestPasswordStore;
-using password_manager::metrics_util::ReauthResult;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;

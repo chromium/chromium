@@ -261,7 +261,7 @@ void LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
       blocklist_entries_count);
 }
 
-void LogPasswordSettingsReauthResult(ReauthResult result) {
+void LogPasswordSettingsReauthResult(device_reauth::ReauthResult result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.ReauthToAccessPasswordInSettings", result);
 }

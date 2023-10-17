@@ -89,6 +89,7 @@ source_set("password_ui") {
     ":password_constants",
     ":title_view",
     "//base",
+    "//components/device_reauth",
     "//components/feature_engagement/public",
     "//components/google/core/common",
     "//components/keyed_service/core",

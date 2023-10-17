@@ -38,7 +38,7 @@ class ChromeDeviceAuthenticatorCommon
   // authenticate again.
   base::TimeDelta auth_validity_period_;
 
-  // Used to record histograms compatible with the metrics_util::ReauthResult
+  // Used to record histograms compatible with the device_reauth::ReauthResult
   // enum.
   std::string auth_result_histogram_;
 };

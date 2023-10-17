@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "components/device_reauth/device_reauth_metrics_util.h"
 #import "components/password_manager/core/browser/export/password_csv_writer.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -21,8 +22,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using device_reauth::ReauthResult;
 using password_manager::metrics_util::LogPasswordSettingsReauthResult;
-using password_manager::metrics_util::ReauthResult;
 
 namespace {
 
