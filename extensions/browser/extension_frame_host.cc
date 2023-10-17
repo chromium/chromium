@@ -138,4 +138,17 @@ void ExtensionFrameHost::UpdateDraggableRegions(
   app_window->UpdateDraggableRegions(std::move(regions));
 }
 
+void ExtensionFrameHost::AppWindowReady() {
+  AppWindowRegistry* registry =
+      AppWindowRegistry::Get(web_contents_->GetBrowserContext());
+  if (!registry) {
+    return;
+  }
+  AppWindow* app_window = registry->GetAppWindowForWebContents(web_contents_);
+  if (!app_window) {
+    return;
+  }
+  app_window->AppWindowReady();
+}
+
 }  // namespace extensions

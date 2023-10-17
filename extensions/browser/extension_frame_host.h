@@ -65,6 +65,7 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
   void DecrementLazyKeepaliveCount() override;
   void UpdateDraggableRegions(
       std::vector<mojom::DraggableRegionPtr> regions) override;
+  void AppWindowReady() override;
 
  protected:
   const Extension* GetExtension(ProcessManager* process_manager,

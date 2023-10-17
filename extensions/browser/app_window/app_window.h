@@ -292,6 +292,9 @@ class AppWindow : public content::WebContentsDelegate,
   void UpdateDraggableRegions(
       const std::vector<mojom::DraggableRegionPtr>& regions);
 
+  // Notify hat an app window is ready and can resume resource requests.
+  void AppWindowReady();
+
   // Updates the app image to |image|. Called internally from the image loader
   // callback.
   void UpdateAppIcon(const gfx::Image& image);
@@ -453,8 +456,6 @@ class AppWindow : public content::WebContentsDelegate,
   bool ShouldShowStaleContentOnEviction(content::WebContents* source) override;
 
   // content::WebContentsObserver implementation.
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
 
   // ExtensionFunctionDispatcher::Delegate implementation.
@@ -470,9 +471,6 @@ class AppWindow : public content::WebContentsDelegate,
   void SetWebContentsBlocked(content::WebContents* web_contents,
                              bool blocked) override;
   bool IsWebContentsVisible(content::WebContents* web_contents) override;
-
-  // IPC handler for ExtensionHostMsg_AppWindowReady.
-  void OnAppWindowReady();
 
   void ToggleFullscreenModeForTab(content::WebContents* source,
                                   bool enter_fullscreen);

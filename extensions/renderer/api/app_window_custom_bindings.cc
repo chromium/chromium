@@ -9,9 +9,9 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/switches.h"
 #include "extensions/grit/extensions_renderer_resources.h"
+#include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -59,8 +59,7 @@ void AppWindowCustomBindings::GetFrame(
     return;
 
   if (notify_browser) {
-    app_frame->Send(
-        new ExtensionHostMsg_AppWindowReady(app_frame->GetRoutingID()));
+    ExtensionFrameHelper::Get(app_frame)->GetLocalFrameHost()->AppWindowReady();
   }
 
   v8::Local<v8::Value> window =

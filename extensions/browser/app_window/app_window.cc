@@ -446,16 +446,6 @@ bool AppWindow::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-bool AppWindow::OnMessageReceived(const IPC::Message& message,
-                                  content::RenderFrameHost* render_frame_host) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(AppWindow, message)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_AppWindowReady, OnAppWindowReady)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
 void AppWindow::RenderFrameCreated(content::RenderFrameHost* frame_host) {
   app_delegate_->RenderFrameCreated(frame_host);
 }
@@ -911,7 +901,7 @@ void AppWindow::ExitFullscreenModeForTab(content::WebContents* source) {
   ToggleFullscreenModeForTab(source, false);
 }
 
-void AppWindow::OnAppWindowReady() {
+void AppWindow::AppWindowReady() {
   window_ready_ = true;
 
   if (app_icon_url_.is_valid())

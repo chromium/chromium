@@ -291,10 +291,6 @@ IPC_SYNC_MESSAGE_CONTROL1_1(
     std::string /* extension id */,
     extensions::MessageBundle::SubstitutionMap /* message bundle */)
 
-// Notify the browser that an app window is ready and can resume resource
-// requests.
-IPC_MESSAGE_ROUTED0(ExtensionHostMsg_AppWindowReady)
-
 // Asks the browser to wake the event page of an extension.
 // The browser will reply with ExtensionHostMsg_WakeEventPageResponse.
 IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WakeEventPage,
