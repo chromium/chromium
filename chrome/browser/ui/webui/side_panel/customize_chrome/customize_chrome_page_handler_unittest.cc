@@ -1034,7 +1034,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
   // Create test bitmap 1 and add it to response.
   SkBitmap bitmap1;
-  bitmap1.allocN32Pixels(32, 32);
+  bitmap1.allocN32Pixels(64, 32);
   bitmap1.eraseColor(SK_ColorRED);
   std::vector<unsigned char> encoded1;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap1, /*discard_transparency=*/false,
@@ -1069,15 +1069,17 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
   // Check that resized encoded versions of the original bitmaps is what we
   // get back.
+  // The first bitmap's width should be twice the height to be the same aspect
+  // ratio as the original image.
   auto resized_bitmap1 = skia::ImageOperations::Resize(
-      bitmap1, skia::ImageOperations::RESIZE_GOOD, 200, 200);
+      bitmap1, skia::ImageOperations::RESIZE_GOOD, 200, 100);
   std::vector<unsigned char> resized_encoded1;
   gfx::PNGCodec::EncodeBGRASkBitmap(
       resized_bitmap1, /*discard_transparency=*/false, &resized_encoded1);
   EXPECT_EQ(images[0]->image, base::Base64Encode(resized_encoded1));
 
   auto resized_bitmap2 = skia::ImageOperations::Resize(
-      bitmap2, skia::ImageOperations::RESIZE_GOOD, 200, 200);
+      bitmap2, skia::ImageOperations::RESIZE_GOOD, 100, 100);
   std::vector<unsigned char> resized_encoded2;
   gfx::PNGCodec::EncodeBGRASkBitmap(
       resized_bitmap2, /*discard_transparency=*/false, &resized_encoded2);

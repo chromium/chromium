@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/barrier_callback.h"
@@ -56,6 +57,30 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/native_theme/native_theme.h"
+
+namespace {
+// Calculate new dimensions given the width and height that will make the
+// smaller dimension equal to goal_size but keep the current aspect ratio.
+// The first value in the pair is the width and the second is the height.
+std::pair<int, int> CalculateResizeDimensions(int width,
+                                              int height,
+                                              int goal_size) {
+  // Set both dimensions to the goal_size since at least one of them will be
+  // that size.
+  std::pair<int, int> dimensions(goal_size, goal_size);
+
+  // Find the ratio of the width to the height and do some basic proportion
+  // math to create the same ratio with the goal_size.
+  // If the ratio is 1, we don't do anything.
+  auto aspect_ratio = static_cast<float>(width) / height;
+  if (aspect_ratio > 1) {
+    dimensions.first = static_cast<int>(goal_size * aspect_ratio);
+  } else if (aspect_ratio < 1) {
+    dimensions.second = static_cast<int>(goal_size / aspect_ratio);
+  }
+  return dimensions;
+}
+}  // namespace
 
 CustomizeChromePageHandler::CustomizeChromePageHandler(
     mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
@@ -618,8 +643,12 @@ void CustomizeChromePageHandler::OnWallpaperSearchResultsDecoded(
   std::vector<side_panel::mojom::WallpaperSearchResultPtr> thumbnails;
 
   for (auto& bitmap : bitmaps) {
+    auto dimensions =
+        CalculateResizeDimensions(bitmap.width(), bitmap.height(), 100);
     SkBitmap small_bitmap = skia::ImageOperations::Resize(
-        bitmap, skia::ImageOperations::RESIZE_GOOD, 200, 200);
+        bitmap, skia::ImageOperations::RESIZE_GOOD,
+        /* width */ dimensions.first,
+        /* height */ dimensions.second);
     std::vector<unsigned char> encoded;
     const bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
         small_bitmap, /*discard_transparency=*/false, &encoded);
