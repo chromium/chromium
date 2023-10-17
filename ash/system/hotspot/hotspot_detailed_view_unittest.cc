@@ -191,7 +191,7 @@ TEST_F(HotspotDetailedViewTest, HotspotEnabledUI) {
 
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
-  AssertSubtextLabel(u"On, no devices connected");
+  AssertSubtextLabel(u"No devices connected");
   AssertEntryRowEnabled();
   AssertToggleOn(/*expected_toggle_on=*/true,
                  /**expected_toggle_enabled=*/true);

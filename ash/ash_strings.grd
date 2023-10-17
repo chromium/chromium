@@ -3000,7 +3000,7 @@ Some features are limited to increase battery life.
         This setting is managed by your administrator
       </message>
       <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_ON_NO_CONNECTED_DEVICES" desc="The subtext in the hotspot detailed view when hotspot is on and no devices connected to it.">
-        On, no devices connected
+        No devices connected
       </message>
       <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_TITLE" desc="The label in the hotspot detailed view for the Chromebook Hotspot.">
         <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot
@@ -3024,7 +3024,7 @@ Some features are limited to increase battery life.
         <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot is on, no devices connected
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_TITLE" desc="Title used for the system notification shown when the hotspot is turned on.">
-        Hotspot is on
+        With hotspot on, Wi-Fi is off
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_MULTIPLE_CONNECTED_DEVICES" desc="Message displayed in the notification when hotspot is turned on and multiple devices are connected.">
         <ph name="DEVICECOUNT">$1</ph> devices connected
@@ -3033,16 +3033,16 @@ Some features are limited to increase battery life.
         1 device connected
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_NO_CONNECTED_DEVICES_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and no devices are connected.">
-        No devices connected. WiFi will be turned off to start using Hotspot.
+        No devices connected. While using hotspot, Wi-Fi will stay off.
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_MULTIPLE_CONNECTED_DEVICES_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and multiple devices are connected.">
-        <ph name="DEVICECOUNT">$1</ph> devices connected. WiFi will be turned off to start using Hotspot.
+        <ph name="DEVICECOUNT">$1</ph> devices connected. While using hotspot, Wi-Fi will stay off.
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_ONE_CONNECTED_DEVICE_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and one device is connected.">
-        1 device connected. WiFi will be turned off to start using Hotspot.
+        1 device connected. While using hotspot, Wi-Fi will stay off.
       </message>
       <message name="IDS_ASH_TURN_OFF_HOTSPOT_LABEL" desc="The label for button used to turn off hotspot.">
-        Turn off
+        Turn off hotspot
       </message>
       <message name="IDS_ASH_HOTSPOT_OFF_TITLE" desc="Title used for the system notification shown when the hotspot is turned off.">
         Hotspot is off
