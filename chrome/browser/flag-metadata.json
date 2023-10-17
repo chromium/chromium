@@ -6861,7 +6861,7 @@
   {
     "name": "private-network-access-preflight-short-timeout",
     "owners": [ "lyf", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "private-network-access-respect-preflight-results",
