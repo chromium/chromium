@@ -10,13 +10,13 @@
 
 namespace blink {
 
-LayoutNGCustom::LayoutNGCustom(Element* element)
+LayoutCustom::LayoutCustom(Element* element)
     : LayoutNGBlockFlow(element), state_(kUnloaded) {
   DCHECK(element);
 }
 
-void LayoutNGCustom::AddChild(LayoutObject* new_child,
-                              LayoutObject* before_child) {
+void LayoutCustom::AddChild(LayoutObject* new_child,
+                            LayoutObject* before_child) {
   // Only use the block-flow AddChild logic when we are unloaded, i.e. we
   // should behave exactly like a block-flow.
   if (state_ == kUnloaded) {
@@ -26,7 +26,7 @@ void LayoutNGCustom::AddChild(LayoutObject* new_child,
   LayoutBlock::AddChild(new_child, before_child);
 }
 
-void LayoutNGCustom::RemoveChild(LayoutObject* child) {
+void LayoutCustom::RemoveChild(LayoutObject* child) {
   // Only use the block-flow RemoveChild logic when we are unloaded, i.e. we
   // should behave exactly like a block-flow.
   if (state_ == kUnloaded) {
@@ -36,8 +36,8 @@ void LayoutNGCustom::RemoveChild(LayoutObject* child) {
   LayoutBlock::RemoveChild(child);
 }
 
-void LayoutNGCustom::StyleDidChange(StyleDifference diff,
-                                    const ComputedStyle* old_style) {
+void LayoutCustom::StyleDidChange(StyleDifference diff,
+                                  const ComputedStyle* old_style) {
   if (state_ == kUnloaded) {
     const AtomicString& name = StyleRef().DisplayLayoutCustomName();
     LayoutWorklet* worklet = LayoutWorklet::From(*GetDocument().domWindow());

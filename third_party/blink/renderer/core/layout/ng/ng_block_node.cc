@@ -172,8 +172,8 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
     CreateAlgorithmAndRun<NGTableRowLayoutAlgorithm>(params, callback);
   } else if (box.IsTableSection()) {
     CreateAlgorithmAndRun<NGTableSectionLayoutAlgorithm>(params, callback);
-  } else if (box.IsLayoutNGCustom()) {
-    CreateAlgorithmAndRun<NGCustomLayoutAlgorithm>(params, callback);
+  } else if (box.IsLayoutCustom()) {
+    CreateAlgorithmAndRun<CustomLayoutAlgorithm>(params, callback);
   } else if (box.IsMathML()) {
     DetermineMathMLAlgorithmAndRun(box, params, callback);
   } else if (box.IsLayoutNGGrid()) {
@@ -1705,8 +1705,7 @@ bool NGBlockNode::HasNonVisibleBlockOverflow() const {
 }
 
 bool NGBlockNode::IsCustomLayoutLoaded() const {
-  DCHECK(box_->IsLayoutNGCustom());
-  return To<LayoutNGCustom>(box_.Get())->IsLoaded();
+  return To<LayoutCustom>(box_.Get())->IsLoaded();
 }
 
 MathScriptType NGBlockNode::ScriptType() const {

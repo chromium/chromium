@@ -16,18 +16,18 @@ namespace blink {
 // This class inherits from LayoutNGBlockFlow so that when a web developer's
 // intrinsicSizes/layout callback fails, it can fallback onto the "default"
 // block-flow layout algorithm.
-class LayoutNGCustom final : public LayoutNGBlockFlow {
+class LayoutCustom final : public LayoutNGBlockFlow {
  public:
   // NOTE: In the future there may be a third state "normal", this will mean
   // that not everything is blockified, (e.g. root inline boxes, so that
   // line-by-line layout can be performed).
   enum State { kUnloaded, kBlock };
 
-  explicit LayoutNGCustom(Element*);
+  explicit LayoutCustom(Element*);
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGCustom";
+    return "LayoutCustom";
   }
   bool CreatesNewFormattingContext() const override {
     NOT_DESTROYED();
@@ -52,16 +52,16 @@ class LayoutNGCustom final : public LayoutNGBlockFlow {
  private:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectNGCustom || LayoutNGBlockFlow::IsOfType(type);
+    return type == kLayoutObjectCustom || LayoutNGBlockFlow::IsOfType(type);
   }
 
   State state_;
 };
 
 template <>
-struct DowncastTraits<LayoutNGCustom> {
+struct DowncastTraits<LayoutCustom> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutNGCustom();
+    return object.IsLayoutCustom();
   }
 };
 

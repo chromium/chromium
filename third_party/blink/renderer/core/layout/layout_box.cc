@@ -3106,7 +3106,7 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
          !containing_block->IsOutOfFlowPositioned() &&
          !containing_block->IsLayoutNGGrid() &&
          !containing_block->IsFlexibleBoxIncludingNG() &&
-         !containing_block->IsLayoutNGCustom();
+         !containing_block->IsLayoutCustom();
 }
 
 LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
@@ -3286,7 +3286,7 @@ bool LayoutBox::ShouldBeConsideredAsReplaced() const {
 // loaded algorithm.
 bool LayoutBox::IsCustomItem() const {
   NOT_DESTROYED();
-  auto* parent_layout_box = DynamicTo<LayoutNGCustom>(Parent());
+  auto* parent_layout_box = DynamicTo<LayoutCustom>(Parent());
   return parent_layout_box && parent_layout_box->IsLoaded();
 }
 

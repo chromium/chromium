@@ -279,8 +279,9 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
 
   if (!is_block_size_equal) {
     // Only block-flow supports changing the block-size for simplified layout.
-    if (!node.IsBlockFlow() || node.IsLayoutNGCustom())
+    if (!node.IsBlockFlow() || node.IsCustom()) {
       return NGLayoutCacheStatus::kNeedsLayout;
+    }
 
     // Fieldsets stretch their content to the final block-size, which might
     // affect scrollbars.

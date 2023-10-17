@@ -133,8 +133,9 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
   builder.SetReplacedPercentageResolutionSize(percentage_size);
   builder.SetIsFixedInlineSize(is_fixed_inline_size);
   builder.SetIsFixedBlockSize(is_fixed_block_size);
-  if (child.IsLayoutNGCustom())
+  if (child.IsCustom()) {
     builder.SetCustomLayoutData(std::move(constraint_data_));
+  }
   auto space = builder.ToConstraintSpace();
   auto* result =
       To<NGBlockNode>(child).Layout(space, nullptr /* break_token */);

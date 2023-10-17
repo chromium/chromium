@@ -21,13 +21,13 @@
 
 namespace blink {
 
-NGCustomLayoutAlgorithm::NGCustomLayoutAlgorithm(
+CustomLayoutAlgorithm::CustomLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params), params_(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 
-MinMaxSizesResult NGCustomLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult CustomLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput& input) {
   if (!Node().IsCustomLayoutLoaded())
     return FallbackMinMaxSizes(input);
@@ -78,7 +78,7 @@ MinMaxSizesResult NGCustomLayoutAlgorithm::ComputeMinMaxSizes(
   return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
-const NGLayoutResult* NGCustomLayoutAlgorithm::Layout() {
+const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
   DCHECK(!IsBreakInside(BreakToken()));
 
   if (!Node().IsCustomLayoutLoaded())
@@ -191,7 +191,7 @@ const NGLayoutResult* NGCustomLayoutAlgorithm::Layout() {
 // OOF-positioned, adds them as a candidate, then proceeds to the next child.
 //
 // |child| will end up being the next inflow child, or empty.
-void NGCustomLayoutAlgorithm::AddAnyOutOfFlowPositionedChildren(
+void CustomLayoutAlgorithm::AddAnyOutOfFlowPositionedChildren(
     NGLayoutInputNode* child) {
   DCHECK(child);
   while (*child && child->IsOutOfFlowPositioned()) {
@@ -201,12 +201,12 @@ void NGCustomLayoutAlgorithm::AddAnyOutOfFlowPositionedChildren(
   }
 }
 
-MinMaxSizesResult NGCustomLayoutAlgorithm::FallbackMinMaxSizes(
+MinMaxSizesResult CustomLayoutAlgorithm::FallbackMinMaxSizes(
     const MinMaxSizesFloatInput& input) const {
   return NGBlockLayoutAlgorithm(params_).ComputeMinMaxSizes(input);
 }
 
-const NGLayoutResult* NGCustomLayoutAlgorithm::FallbackLayout() {
+const NGLayoutResult* CustomLayoutAlgorithm::FallbackLayout() {
   return NGBlockLayoutAlgorithm(params_).Layout();
 }
 

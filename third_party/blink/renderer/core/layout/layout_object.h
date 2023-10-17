@@ -956,9 +956,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectButton);
   }
-  bool IsLayoutNGCustom() const {
+  bool IsLayoutCustom() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGCustom);
+    return IsOfType(kLayoutObjectCustom);
   }
   bool IsLayoutNGGrid() const {
     NOT_DESTROYED();
@@ -3468,6 +3468,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectButton,
     kLayoutObjectCanvas,
     kLayoutObjectCounter,
+    kLayoutObjectCustom,
     kLayoutObjectCustomScrollbarPart,
     kLayoutObjectEmbeddedObject,
     kLayoutObjectFieldset,
@@ -3485,7 +3486,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectMultiColumnSet,
     kLayoutObjectMultiColumnSpannerPlaceholder,
     kLayoutObjectNGBlockFlow,
-    kLayoutObjectNGCustom,
     kLayoutObjectNGFlexibleBox,
     kLayoutObjectNGGrid,
     kLayoutObjectOutsideListMarker,

@@ -499,7 +499,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return MakeGarbageCollected<LayoutNGMathMLBlock>(element);
     case EDisplay::kLayoutCustom:
     case EDisplay::kInlineLayoutCustom:
-      return MakeGarbageCollected<LayoutNGCustom>(element);
+      return MakeGarbageCollected<LayoutCustom>(element);
   }
 
   NOTREACHED();

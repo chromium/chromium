@@ -881,7 +881,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustStyleForDisplay(builder, layout_parent_style, element,
                           element ? &element->GetDocument() : nullptr);
 
-    // If this is a child of a LayoutNGCustom, we need the name of the parent
+    // If this is a child of a LayoutCustom, we need the name of the parent
     // layout function for invalidation purposes.
     if (layout_parent_style.IsDisplayLayoutCustomBox()) {
       builder.SetDisplayLayoutCustomParentName(
