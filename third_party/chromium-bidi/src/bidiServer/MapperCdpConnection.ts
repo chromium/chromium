@@ -146,7 +146,7 @@ export class MapperCdpConnection extends EventEmitter<
   ): Promise<CdpClient> {
     debugInternal('Connection opened.');
 
-    const browserClient = cdpConnection.browserClient();
+    const browserClient = await cdpConnection.createBrowserSession();
 
     const {targetId: mapperTabTargetId} = await browserClient.sendCommand(
       'Target.createTarget',

@@ -20,10 +20,10 @@ import type {ICdpClient} from '../../../cdp/CdpClient.js';
 import type {ICdpConnection} from '../../../cdp/CdpConnection.js';
 import {
   BrowsingContext,
-  InvalidArgumentException,
   type EmptyResult,
+  InvalidArgumentException,
 } from '../../../protocol/protocol.js';
-import {LogType, type LoggerFn} from '../../../utils/log.js';
+import {type LoggerFn, LogType} from '../../../utils/log.js';
 import type {EventManager} from '../events/EventManager.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
@@ -35,6 +35,7 @@ import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 import {CdpTarget} from './CdpTarget.js';
 
 export class BrowsingContextProcessor {
+  readonly #browserCdpClient: ICdpClient;
   readonly #cdpConnection: ICdpConnection;
   readonly #selfTargetId: string;
   readonly #eventManager: EventManager;
@@ -48,6 +49,7 @@ export class BrowsingContextProcessor {
 
   constructor(
     cdpConnection: ICdpConnection,
+    browserCdpClient: ICdpClient,
     selfTargetId: string,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
@@ -57,6 +59,7 @@ export class BrowsingContextProcessor {
     logger?: LoggerFn
   ) {
     this.#cdpConnection = cdpConnection;
+    this.#browserCdpClient = browserCdpClient;
     this.#selfTargetId = selfTargetId;
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
@@ -65,7 +68,7 @@ export class BrowsingContextProcessor {
     this.#realmStorage = realmStorage;
     this.#logger = logger;
 
-    this.#setEventListeners(this.#cdpConnection.browserClient());
+    this.#setEventListeners(browserCdpClient);
   }
 
   getTree(
@@ -86,8 +89,6 @@ export class BrowsingContextProcessor {
   async create(
     params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
-    const browserCdpClient = this.#cdpConnection.browserClient();
-
     let referenceContext: BrowsingContextImpl | undefined;
     if (params.referenceContext !== undefined) {
       referenceContext = this.#browsingContextStorage.getContext(
@@ -104,16 +105,22 @@ export class BrowsingContextProcessor {
 
     switch (params.type) {
       case BrowsingContext.CreateType.Tab:
-        result = await browserCdpClient.sendCommand('Target.createTarget', {
-          url: 'about:blank',
-          newWindow: false,
-        });
+        result = await this.#browserCdpClient.sendCommand(
+          'Target.createTarget',
+          {
+            url: 'about:blank',
+            newWindow: false,
+          }
+        );
         break;
       case BrowsingContext.CreateType.Window:
-        result = await browserCdpClient.sendCommand('Target.createTarget', {
-          url: 'about:blank',
-          newWindow: true,
-        });
+        result = await this.#browserCdpClient.sendCommand(
+          'Target.createTarget',
+          {
+            url: 'about:blank',
+            newWindow: true,
+          }
+        );
         break;
     }
 
@@ -211,20 +218,22 @@ export class BrowsingContextProcessor {
     }
 
     try {
-      const browserCdpClient = this.#cdpConnection.browserClient();
       const detachedFromTargetPromise = new Promise<void>((resolve) => {
         const onContextDestroyed = (
           event: Protocol.Target.DetachedFromTargetEvent
         ) => {
           if (event.targetId === commandParams.context) {
-            browserCdpClient.off(
+            this.#browserCdpClient.off(
               'Target.detachedFromTarget',
               onContextDestroyed
             );
             resolve();
           }
         };
-        browserCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
+        this.#browserCdpClient.on(
+          'Target.detachedFromTarget',
+          onContextDestroyed
+        );
       });
 
       await context.close();
@@ -338,6 +347,7 @@ export class BrowsingContextProcessor {
     const cdpTarget = CdpTarget.create(
       targetInfo.targetId,
       targetCdpClient,
+      this.#browserCdpClient,
       sessionId,
       this.#realmStorage,
       this.#eventManager,

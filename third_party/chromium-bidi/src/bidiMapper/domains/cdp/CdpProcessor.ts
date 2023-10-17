@@ -16,19 +16,22 @@
  */
 
 import type {Cdp} from '../../../protocol/protocol.js';
-import type {ICdpConnection} from '../../BidiMapper.js';
+import type {ICdpClient, ICdpConnection} from '../../BidiMapper.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 export class CdpProcessor {
-  #browsingContextStorage: BrowsingContextStorage;
-  #cdpConnection: ICdpConnection;
+  readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #cdpConnection: ICdpConnection;
+  readonly #browserCdpClient: ICdpClient;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
-    cdpConnection: ICdpConnection
+    cdpConnection: ICdpConnection,
+    browserCdpClient: ICdpClient
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#cdpConnection = cdpConnection;
+    this.#browserCdpClient = browserCdpClient;
   }
 
   getSession(params: Cdp.GetSessionParameters): Cdp.GetSessionResult {
@@ -46,7 +49,7 @@ export class CdpProcessor {
   ): Promise<Cdp.SendCommandResult> {
     const client = params.session
       ? this.#cdpConnection.getCdpClient(params.session)
-      : this.#cdpConnection.browserClient();
+      : this.#browserCdpClient;
     const result = await client.sendCommand(params.method, params.params);
     return {
       result,

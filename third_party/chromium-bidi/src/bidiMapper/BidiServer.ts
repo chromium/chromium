@@ -18,9 +18,10 @@
 import type {ICdpConnection} from '../cdp/CdpConnection.js';
 import type {ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
-import {LogType, type LoggerFn} from '../utils/log.js';
+import {type LoggerFn, LogType} from '../utils/log.js';
 import {ProcessingQueue} from '../utils/ProcessingQueue.js';
 import type {Result} from '../utils/result.js';
+import type {ICdpClient} from '../cdp/CdpClient';
 
 import type {IBidiParser} from './BidiParser.js';
 import type {IBidiTransport} from './BidiTransport.js';
@@ -60,6 +61,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   private constructor(
     bidiTransport: IBidiTransport,
     cdpConnection: ICdpConnection,
+    browserCdpClient: ICdpClient,
     selfTargetId: string,
     parser?: IBidiParser,
     logger?: LoggerFn
@@ -74,6 +76,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     this.#transport.setOnMessage(this.#handleIncomingMessage);
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
+      browserCdpClient,
       new EventManager(this),
       selfTargetId,
       this.#browsingContextStorage,
@@ -92,6 +95,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   static async createAndStart(
     bidiTransport: IBidiTransport,
     cdpConnection: ICdpConnection,
+    browserCdpClient: ICdpClient,
     selfTargetId: string,
     parser?: IBidiParser,
     logger?: LoggerFn
@@ -99,17 +103,18 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     const server = new BidiServer(
       bidiTransport,
       cdpConnection,
+      browserCdpClient,
       selfTargetId,
       parser,
       logger
     );
-    const cdpClient = cdpConnection.browserClient();
-
     // Needed to get events about new targets.
-    await cdpClient.sendCommand('Target.setDiscoverTargets', {discover: true});
+    await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
+      discover: true,
+    });
 
     // Needed to automatically attach to new targets.
-    await cdpClient.sendCommand('Target.setAutoAttach', {
+    await browserCdpClient.sendCommand('Target.setAutoAttach', {
       autoAttach: true,
       waitForDebuggerOnStart: true,
       flatten: true,

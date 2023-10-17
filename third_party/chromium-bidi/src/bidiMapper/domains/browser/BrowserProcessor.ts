@@ -16,21 +16,19 @@
  */
 
 import type {EmptyResult} from '../../../protocol/protocol.js';
-import type {ICdpConnection} from '../../BidiMapper.js';
+import type {ICdpClient} from '../../BidiMapper.js';
 
 export class BrowserProcessor {
-  #cdpConnection: ICdpConnection;
+  readonly #browserCdpClient: ICdpClient;
 
-  constructor(cdpConnection: ICdpConnection) {
-    this.#cdpConnection = cdpConnection;
+  constructor(browserCdpClient: ICdpClient) {
+    this.#browserCdpClient = browserCdpClient;
   }
 
   close(): EmptyResult {
-    const client = this.#cdpConnection.browserClient();
-
     // Ensure that it is put at the end of the event loop.
     // This way we send back the response before closing the tab.
-    setTimeout(() => client.sendCommand('Browser.close'), 0);
+    setTimeout(() => this.#browserCdpClient.sendCommand('Browser.close'), 0);
 
     return {};
   }

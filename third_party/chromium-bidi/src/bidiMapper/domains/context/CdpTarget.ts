@@ -31,6 +31,7 @@ import type {RealmStorage} from '../script/RealmStorage.js';
 export class CdpTarget {
   readonly #targetId: Protocol.Target.TargetID;
   readonly #cdpClient: ICdpClient;
+  readonly #browserCdpClient: ICdpClient;
   readonly #cdpSessionId: Protocol.Target.SessionID;
   readonly #eventManager: EventManager;
 
@@ -42,6 +43,7 @@ export class CdpTarget {
   static create(
     targetId: Protocol.Target.TargetID,
     cdpClient: ICdpClient,
+    browserCdpClient: ICdpClient,
     cdpSessionId: Protocol.Target.SessionID,
     realmStorage: RealmStorage,
     eventManager: EventManager,
@@ -51,6 +53,7 @@ export class CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
       cdpClient,
+      browserCdpClient,
       cdpSessionId,
       eventManager,
       preloadScriptStorage,
@@ -69,9 +72,10 @@ export class CdpTarget {
     return cdpTarget;
   }
 
-  private constructor(
+  constructor(
     targetId: Protocol.Target.TargetID,
     cdpClient: ICdpClient,
+    browserCdpClient: ICdpClient,
     cdpSessionId: Protocol.Target.SessionID,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
@@ -83,6 +87,7 @@ export class CdpTarget {
     this.#eventManager = eventManager;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
+    this.#browserCdpClient = browserCdpClient;
   }
 
   /** Returns a promise that resolves when the target is unblocked. */
@@ -96,6 +101,10 @@ export class CdpTarget {
 
   get cdpClient(): ICdpClient {
     return this.#cdpClient;
+  }
+
+  get browserCdpClient(): ICdpClient {
+    return this.#browserCdpClient;
   }
 
   /** Needed for CDP escape path. */

@@ -25,6 +25,7 @@ import {
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
 import type {Result} from '../utils/result.js';
+import type {ICdpClient} from '../cdp/CdpClient';
 
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {IBidiParser} from './BidiParser.js';
@@ -69,6 +70,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
 
   constructor(
     cdpConnection: ICdpConnection,
+    browserCdpClient: ICdpClient,
     eventManager: EventManager,
     selfTargetId: string,
     browsingContextStorage: BrowsingContextStorage,
@@ -84,9 +86,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     const preloadScriptStorage = new PreloadScriptStorage();
 
     // keep-sorted start block=yes
-    this.#browserProcessor = new BrowserProcessor(cdpConnection);
+    this.#browserProcessor = new BrowserProcessor(browserCdpClient);
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       cdpConnection,
+      browserCdpClient,
       selfTargetId,
       eventManager,
       browsingContextStorage,
@@ -97,7 +100,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     );
     this.#cdpProcessor = new CdpProcessor(
       browsingContextStorage,
-      cdpConnection
+      cdpConnection,
+      browserCdpClient
     );
     this.#inputProcessor = new InputProcessor(browsingContextStorage);
     this.#networkProcessor = new NetworkProcessor(

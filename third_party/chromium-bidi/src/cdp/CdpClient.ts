@@ -34,11 +34,6 @@ export interface ICdpClient extends EventEmitter<CdpEvents> {
   sessionId: Protocol.Target.SessionID | undefined;
 
   /**
-   * Get the default browser client (no sessionId)
-   */
-  browserClient(): ICdpClient;
-
-  /**
    * Provides an unique way to detect if an error was caused by the closure of a
    * Target or Session.
    *
@@ -76,10 +71,6 @@ export class CdpClient extends EventEmitter<CdpEvents> implements ICdpClient {
 
   get sessionId(): Protocol.Target.SessionID | undefined {
     return this.#sessionId;
-  }
-
-  browserClient(): ICdpClient {
-    return this.#cdpConnection.browserClient();
   }
 
   sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(

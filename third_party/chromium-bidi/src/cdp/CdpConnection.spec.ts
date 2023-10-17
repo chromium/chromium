@@ -30,15 +30,25 @@ const SOME_SESSION_ID = 'ABCD';
 const ANOTHER_SESSION_ID = 'EFGH';
 
 describe('CdpConnection', () => {
-  it('can send a command message for a CdpClient', () => {
+  it('can send a command message for a CdpClient', async () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
     const browserMessage = JSON.stringify({
       id: 0,
       method: 'Browser.getVersion',
+      sessionId: SOME_SESSION_ID,
     });
-    void cdpConnection.browserClient().sendCommand('Browser.getVersion');
+
+    // Create a client for the session.
+    await mockCdpServer.emulateIncomingMessage({
+      method: 'Target.attachedToTarget',
+      params: {sessionId: SOME_SESSION_ID},
+    });
+
+    void cdpConnection
+      .getCdpClient(SOME_SESSION_ID)
+      .sendCommand('Browser.getVersion');
 
     sinon.assert.calledOnceWithExactly(
       mockCdpServer.sendMessage,
@@ -89,28 +99,17 @@ describe('CdpConnection', () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
-    const browserMessage = {method: 'Browser.downloadWillBegin'};
     const sessionMessage = {
       sessionId: SOME_SESSION_ID,
       method: 'Page.frameNavigated',
     };
-    const othersessionMessage = {
+    const otherSessionMessage = {
       sessionId: ANOTHER_SESSION_ID,
       method: 'Page.loadEventFired',
     };
 
-    const browserCallback = sinon.fake();
     const sessionCallback = sinon.fake();
     const otherSessionCallback = sinon.fake();
-
-    // Register for browser message callbacks.
-    const browserClient = cdpConnection.browserClient();
-    browserClient.on('Browser.downloadWillBegin', browserCallback);
-
-    // Verify that the browser callback receives the message.
-    await mockCdpServer.emulateIncomingMessage(browserMessage);
-    sinon.assert.calledOnceWithExactly(browserCallback, {});
-    browserCallback.resetHistory();
 
     // Attach session A.
     await mockCdpServer.emulateIncomingMessage({
@@ -122,16 +121,8 @@ describe('CdpConnection', () => {
     expect(sessionClient).to.not.be.null;
     sessionClient.on('Page.frameNavigated', sessionCallback);
 
-    // Send another message for the browser and verify that only the browser callback receives it.
-    // Verifies that adding another client doesn't affect routing for existing clients.
-    await mockCdpServer.emulateIncomingMessage(browserMessage);
-    sinon.assert.notCalled(sessionCallback);
-    sinon.assert.calledOnceWithExactly(browserCallback, {});
-    browserCallback.resetHistory();
-
     // Send a message for session A and verify that it is received.
     await mockCdpServer.emulateIncomingMessage(sessionMessage);
-    sinon.assert.notCalled(browserCallback);
     sinon.assert.calledOnceWithExactly(sessionCallback, {});
     sessionCallback.resetHistory();
 
@@ -147,8 +138,7 @@ describe('CdpConnection', () => {
 
     // Send a message for session B and verify that only the session B callback receives it.
     // Verifies that a message is sent only to the session client it is intended for.
-    await mockCdpServer.emulateIncomingMessage(othersessionMessage);
-    sinon.assert.notCalled(browserCallback);
+    await mockCdpServer.emulateIncomingMessage(otherSessionMessage);
     sinon.assert.notCalled(sessionCallback);
     sinon.assert.calledOnceWithExactly(otherSessionCallback, {});
     otherSessionCallback.resetHistory();

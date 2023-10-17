@@ -23,26 +23,42 @@ import chaiAsPromised from 'chai-as-promised';
 import {StubTransport} from '../utils/transportStub.spec.js';
 
 import {CdpConnection} from './CdpConnection.js';
+import type {CdpClient} from './CdpClient';
 
 chai.use(chaiAsPromised);
 
 const TEST_TARGET_ID = 'TargetA';
 const ANOTHER_TARGET_ID = 'TargetB';
+const CDP_SESSION_ID = 'SessionA';
+
+async function createCdpClient(
+  stubTransport: StubTransport,
+  sessionId: string
+): Promise<CdpClient> {
+  const cdpConnection = new CdpConnection(stubTransport);
+
+  await stubTransport.emulateIncomingMessage({
+    method: 'Target.attachedToTarget',
+    params: {sessionId},
+  });
+
+  return cdpConnection.getCdpClient(CDP_SESSION_ID);
+}
 
 describe('CdpClient', () => {
-  it(`when command is called cdpBindings should have proper values`, () => {
+  it(`when command is called cdpBindings should have proper values`, async () => {
     const expectedMessageStr = JSON.stringify({
       id: 0,
       method: 'Target.activateTarget',
       params: {
         targetId: TEST_TARGET_ID,
       },
+      sessionId: CDP_SESSION_ID,
     });
 
     const mockCdpServer = new StubTransport();
-    const cdpConnection = new CdpConnection(mockCdpServer);
+    const cdpClient = await createCdpClient(mockCdpServer, CDP_SESSION_ID);
 
-    const cdpClient = cdpConnection.browserClient();
     void cdpClient.sendCommand('Target.activateTarget', {
       targetId: TEST_TARGET_ID,
     });
@@ -55,9 +71,7 @@ describe('CdpClient', () => {
 
   it(`when command is called and it's done, sendMessage promise is resolved`, async () => {
     const mockCdpServer = new StubTransport();
-    const cdpConnection = new CdpConnection(mockCdpServer);
-
-    const cdpClient = cdpConnection.browserClient();
+    const cdpClient = await createCdpClient(mockCdpServer, CDP_SESSION_ID);
 
     // Send CDP command and store returned promise.
     const commandPromise = cdpClient.sendCommand('Target.activateTarget', {
@@ -76,8 +90,7 @@ describe('CdpClient', () => {
 
   it(`when some command is called 2 times and it's done each command promise is resolved with proper results`, async () => {
     const mockCdpServer = new StubTransport();
-    const cdpConnection = new CdpConnection(mockCdpServer);
-    const cdpClient = cdpConnection.browserClient();
+    const cdpClient = await createCdpClient(mockCdpServer, CDP_SESSION_ID);
 
     const expectedResult1 = {
       someResult: 1,
@@ -115,8 +128,7 @@ describe('CdpClient', () => {
 
   it('gets event callbacks when events are received from CDP', async () => {
     const mockCdpServer = new StubTransport();
-    const cdpConnection = new CdpConnection(mockCdpServer);
-    const cdpClient = cdpConnection.browserClient();
+    const cdpClient = await createCdpClient(mockCdpServer, CDP_SESSION_ID);
 
     // Register event callbacks.
     const genericCallback = sinon.fake();
@@ -129,6 +141,7 @@ describe('CdpClient', () => {
     await mockCdpServer.emulateIncomingMessage({
       method: 'Target.attachedToTarget',
       params: {targetId: TEST_TARGET_ID},
+      sessionId: CDP_SESSION_ID,
     });
 
     // Verify that callbacks are called.
@@ -160,8 +173,7 @@ describe('CdpClient', () => {
   describe('sendCommand()', () => {
     it('sends raw CDP messages and returns a promise that will be resolved with the result', async () => {
       const mockCdpServer = new StubTransport();
-      const cdpConnection = new CdpConnection(mockCdpServer);
-      const cdpClient = cdpConnection.browserClient();
+      const cdpClient = await createCdpClient(mockCdpServer, CDP_SESSION_ID);
 
       // Send CDP command and store returned promise.
       const commandPromise = cdpClient.sendCommand('Target.attachToTarget', {
@@ -185,8 +197,7 @@ describe('CdpClient', () => {
 
     it('sends raw CDP messages and returns a promise that will reject on error', async () => {
       const mockCdpServer = new StubTransport();
-      const cdpConnection = new CdpConnection(mockCdpServer);
-      const cdpClient = cdpConnection.browserClient();
+      const cdpClient = await createCdpClient(mockCdpServer, CDP_SESSION_ID);
 
       const expectedError = {
         name: 'Error',

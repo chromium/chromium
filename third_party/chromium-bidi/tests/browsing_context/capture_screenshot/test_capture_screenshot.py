@@ -17,8 +17,8 @@ from pathlib import Path
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (assert_images_similar, get_tree,
-                          goto_url, read_JSON_message, send_JSON_command)
+from test_helpers import (assert_images_similar, get_tree, goto_url,
+                          read_JSON_message, send_JSON_command)
 
 
 @pytest.mark.asyncio

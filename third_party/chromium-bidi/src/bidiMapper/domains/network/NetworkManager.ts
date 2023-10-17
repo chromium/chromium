@@ -74,16 +74,14 @@ export class NetworkManager {
   ): NetworkManager {
     const networkManager = new NetworkManager(cdpTarget, networkStorage);
 
-    cdpTarget.cdpClient
-      .browserClient()
-      .on(
-        'Target.detachedFromTarget',
-        (params: Protocol.Target.DetachedFromTargetEvent) => {
-          if (cdpTarget.cdpClient.sessionId === params.sessionId) {
-            networkManager.#networkStorage.disposeRequestMap();
-          }
+    cdpTarget.browserCdpClient.on(
+      'Target.detachedFromTarget',
+      (params: Protocol.Target.DetachedFromTargetEvent) => {
+        if (cdpTarget.cdpClient.sessionId === params.sessionId) {
+          networkManager.#networkStorage.disposeRequestMap();
         }
-      );
+      }
+    );
 
     cdpTarget.cdpClient.on(
       'Network.requestWillBeSent',

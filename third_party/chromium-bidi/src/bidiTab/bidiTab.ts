@@ -53,6 +53,11 @@ declare global {
 generatePage();
 const mapperTabToServerTransport = new WindowBidiTransport();
 const cdpTransport = new WindowCdpTransport();
+/**
+ * A CdpTransport implementation that uses the window.cdp bindings
+ * injected by Target.exposeDevToolsProtocol.
+ */
+const cdpConnection = new CdpConnection(cdpTransport, log);
 
 /**
  * Set `window.runMapper` to a function which launches the BiDi mapper instance.
@@ -63,11 +68,11 @@ window.runMapperInstance = async (selfTargetId) => {
 
   await BidiServer.createAndStart(
     mapperTabToServerTransport,
+    cdpConnection,
     /**
-     * A CdpTransport implementation that uses the window.cdp bindings
-     * injected by Target.exposeDevToolsProtocol.
+     * Create a Browser CDP Session per Mapper instance.
      */
-    new CdpConnection(cdpTransport, log),
+    await cdpConnection.createBrowserSession(),
     selfTargetId,
     new BidiParser(),
     log
