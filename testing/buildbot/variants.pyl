@@ -432,7 +432,7 @@
     'identifier': 'BRYA_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'brya',
-      'cros_img': 'brya-release/R120-15642.0.0',
+      'use_lkgm': True,
       'autotest_name': 'tast.chrome-from-gcs',
       'dut_pool': 'chrome',
     },
@@ -663,7 +663,7 @@
     'identifier': 'JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM',
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-release/R120-15642.0.0',
+      'use_lkgm': True,
       'autotest_name': 'tast.chrome-from-gcs',
     },
   },
@@ -777,7 +777,7 @@
     'identifier': 'TROGDOR_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'trogdor',
-      'cros_img': 'trogdor-release/R120-15642.0.0',
+      'use_lkgm': True,
       'autotest_name': 'tast.chrome-from-gcs',
     },
   },
@@ -797,7 +797,7 @@
     'identifier': 'VOLTEER_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'volteer',
-      'cros_img': 'volteer-release/R120-15642.0.0',
+      'use_lkgm': True,
       'autotest_name': 'tast.chrome-from-gcs',
     },
   },

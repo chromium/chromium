@@ -1118,7 +1118,6 @@
       {
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "brya",
-        "cros_img": "brya-release/R120-15642.0.0",
         "dut_pool": "chrome",
         "name": "chrome_all_tast_tests BRYA_RELEASE_LKGM",
         "shards": 10,
@@ -1127,13 +1126,13 @@
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 21600,
+        "use_lkgm": true,
         "variant_id": "BRYA_RELEASE_LKGM"
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
         "cros_board": "brya",
-        "cros_img": "brya-release/R120-15642.0.0",
         "dut_pool": "chrome",
         "experiment_percentage": 100,
         "name": "chrome_criticalstaging_tast_tests BRYA_RELEASE_LKGM",
@@ -1143,13 +1142,13 @@
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 7200,
+        "use_lkgm": true,
         "variant_id": "BRYA_RELEASE_LKGM"
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
         "cros_board": "brya",
-        "cros_img": "brya-release/R120-15642.0.0",
         "dut_pool": "chrome",
         "experiment_percentage": 100,
         "name": "chrome_disabled_tast_tests BRYA_RELEASE_LKGM",
@@ -1159,6 +1158,7 @@
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "test_level_retries": 1,
         "timeout_sec": 7200,
+        "use_lkgm": true,
         "variant_id": "BRYA_RELEASE_LKGM"
       }
     ]
@@ -1173,7 +1173,6 @@
       {
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "name": "chrome_all_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 10,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
@@ -1181,13 +1180,13 @@
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 21600,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "experiment_percentage": 100,
         "name": "chrome_criticalstaging_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 3,
@@ -1196,13 +1195,13 @@
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 7200,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "experiment_percentage": 100,
         "name": "chrome_disabled_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 2,
@@ -1211,6 +1210,7 @@
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "test_level_retries": 1,
         "timeout_sec": 7200,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
       }
     ]
@@ -1249,7 +1249,6 @@
       {
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-release/R120-15642.0.0",
         "name": "chrome_all_tast_tests TROGDOR_RELEASE_LKGM",
         "shards": 10,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
@@ -1257,6 +1256,7 @@
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 21600,
+        "use_lkgm": true,
         "variant_id": "TROGDOR_RELEASE_LKGM"
       }
     ]

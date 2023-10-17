@@ -2,10 +2,9 @@
   "CROS_BRYA_RELEASE_ASH_LKGM": {
     "skylab": {
       "cros_board": "brya",
-      "cros_chrome_version": "120.0.6057.0",
-      "cros_img": "brya-release/R120-15642.0.0",
       "autotest_name": "tast.chrome-from-gcs",
-      "dut_pool": "chrome"
+      "dut_pool": "chrome",
+      "use_lkgm": true
     },
     "identifier": "BRYA_RELEASE_LKGM"
   },
@@ -290,9 +289,8 @@
   "CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM": {
     "skylab": {
       "cros_board": "jacuzzi",
-      "cros_chrome_version": "120.0.6057.0",
-      "cros_img": "jacuzzi-release/R120-15642.0.0",
-      "autotest_name": "tast.chrome-from-gcs"
+      "autotest_name": "tast.chrome-from-gcs",
+      "use_lkgm": true
     },
     "identifier": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
   },
@@ -431,9 +429,8 @@
   "CROS_TROGDOR_RELEASE_ASH_LKGM": {
     "skylab": {
       "cros_board": "trogdor",
-      "cros_chrome_version": "120.0.6057.0",
-      "cros_img": "trogdor-release/R120-15642.0.0",
-      "autotest_name": "tast.chrome-from-gcs"
+      "autotest_name": "tast.chrome-from-gcs",
+      "use_lkgm": true
     },
     "identifier": "TROGDOR_RELEASE_LKGM"
   },
@@ -454,9 +451,8 @@
   "CROS_VOLTEER_RELEASE_ASH_LKGM": {
     "skylab": {
       "cros_board": "volteer",
-      "cros_chrome_version": "120.0.6057.0",
-      "cros_img": "volteer-release/R120-15642.0.0",
-      "autotest_name": "tast.chrome-from-gcs"
+      "autotest_name": "tast.chrome-from-gcs",
+      "use_lkgm": true
     },
     "identifier": "VOLTEER_RELEASE_LKGM"
   }
