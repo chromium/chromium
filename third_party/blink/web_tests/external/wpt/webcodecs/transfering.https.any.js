@@ -215,3 +215,22 @@ promise_test(async t => {
     assert_equals(expected_data[i], readback_data[i], `expected_data[${i}]`);
   }
 }, 'Test transfering ArrayBuffer to AudioData');
+
+promise_test(async t => {
+  let unused_buffer = new ArrayBuffer(123);
+  let support = await ImageDecoder.isTypeSupported('image/png');
+  assert_implements_optional(
+      support, 'Optional codec image/png not supported.');
+  let buffer = await fetch('four-colors.png').then(response => {
+    return response.arrayBuffer();
+  });
+
+  let decoder = new ImageDecoder(
+      {data: buffer, type: 'image/png', transfer: [buffer, unused_buffer]});
+  assert_equals(buffer.byteLength, 0, 'buffer.byteLength after detach');
+  assert_equals(unused_buffer.byteLength, 0, 'unused_buffer after detach');
+
+  let result = await decoder.decode();
+  assert_equals(result.image.displayWidth, 320);
+  assert_equals(result.image.displayHeight, 240);
+}, 'Test transfering ArrayBuffer to ImageDecoder.');

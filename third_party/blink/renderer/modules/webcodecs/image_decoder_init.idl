@@ -24,4 +24,7 @@ dictionary ImageDecoderInit {
   // still images that are present. When unspecified the decoder will use hints
   // from the data stream to make a decision.
   boolean preferAnimation;
+
+  // Allows transferring ArrayBuffer based `data` to ImageDecoder w/o a copy.
+  sequence<ArrayBuffer> transfer = [];
 };
