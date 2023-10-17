@@ -44208,6 +44208,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4684" label="ChromeCSIPageT"/>
   <int value="4685" label="ChromeCSIStartE"/>
   <int value="4686" label="ChromeCSITran"/>
+  <int value="4687" label="ParseHTMLUnsafe"/>
+  <int value="4688" label="SetHTMLUnsafe"/>
+  <int value="4689" label="WebAssemblyModuleCompilation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

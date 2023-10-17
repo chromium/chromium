@@ -4026,6 +4026,8 @@ enum WebFeature {
   kChromeCSITran = 4686,
   kParseHTMLUnsafe = 4687,
   kSetHTMLUnsafe = 4688,
+  kWebAssemblyModuleCompilation = 4689,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in
