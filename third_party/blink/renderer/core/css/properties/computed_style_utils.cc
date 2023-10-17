@@ -1008,24 +1008,16 @@ CSSValue* ComputedStyleUtils::ValueForFontSizeAdjust(
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
 
+  // A resolved value is to be returned. Compare CSS WG discussion.
+  // https://github.com/w3c/csswg-drafts/issues/9050
   FontSizeAdjust font_size_adjust = style.FontSizeAdjust();
   if (font_size_adjust.GetMetric() == FontSizeAdjust::Metric::kExHeight) {
-    if (font_size_adjust.IsFromFont()) {
-      return CSSIdentifierValue::Create(CSSValueID::kFromFont);
-    }
     return CSSNumericLiteralValue::Create(style.FontSizeAdjust().Value(),
                                           CSSPrimitiveValue::UnitType::kNumber);
   }
 
-  CSSIdentifierValue* metric =
-      CSSIdentifierValue::Create(font_size_adjust.GetMetric());
-  if (font_size_adjust.IsFromFont()) {
-    return MakeGarbageCollected<CSSValuePair>(
-        metric, CSSIdentifierValue::Create(CSSValueID::kFromFont),
-        CSSValuePair::kKeepIdenticalValues);
-  }
   return MakeGarbageCollected<CSSValuePair>(
-      metric,
+      CSSIdentifierValue::Create(font_size_adjust.GetMetric()),
       CSSNumericLiteralValue::Create(style.FontSizeAdjust().Value(),
                                      CSSPrimitiveValue::UnitType::kNumber),
       CSSValuePair::kKeepIdenticalValues);
