@@ -76,6 +76,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
+#include "printing/backend/test_print_backend.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -2073,8 +2074,10 @@ TEST_PPAPI_NACL(MAYBE_VideoEncoder)
 IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, Printing) {
 #if BUILDFLAG(IS_CHROMEOS)
   printing::BrowserPrintingContextFactoryForTest test_printing_context_factory;
+  auto test_backend = base::MakeRefCounted<printing::TestPrintBackend>();
   printing::PrintingContext::SetPrintingContextFactoryForTest(
       &test_printing_context_factory);
+  printing::PrintBackend::SetPrintBackendForTesting(test_backend.get());
 #endif
 
   RunTest("Printing");
