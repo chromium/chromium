@@ -98,6 +98,13 @@ void DefaultFrameHeader::SetWidthInPixels(int width_in_pixels) {
 
 void DefaultFrameHeader::UpdateFrameColors() {
   aura::Window* target_window = GetTargetWindow();
+  if (!target_window) {
+    // b/302708285: This codepath is run during Widget teardown. In that
+    // situation, `target_window` might be null and we won't display the
+    // updated colors anyway.
+    return;
+  }
+
   const SkColor active_frame_color =
       target_window->GetProperty(kFrameActiveColorKey);
   const SkColor inactive_frame_color =
