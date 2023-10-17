@@ -484,6 +484,8 @@ tflite_static_library("tflite_kernels") {
     "src/tensorflow/lite/kernels/strided_slice.cc",
     "src/tensorflow/lite/kernels/sub.cc",
     "src/tensorflow/lite/kernels/svdf.cc",
+    "src/tensorflow/lite/kernels/tensor_slice_util.cc",
+    "src/tensorflow/lite/kernels/tensor_slice_util.h",
     "src/tensorflow/lite/kernels/tile.cc",
     "src/tensorflow/lite/kernels/topk_v2.cc",
     "src/tensorflow/lite/kernels/transpose.cc",
