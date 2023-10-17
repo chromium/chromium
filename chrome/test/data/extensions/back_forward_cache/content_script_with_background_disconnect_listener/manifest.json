@@ -1,0 +1,33 @@
+{
+  "name": "no caching",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Same back/forward cache test extension, but with onDisconnect listener added from background.",
+  "permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "externally_connectable": {
+    "matches": [
+      "*://a.com/*"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content_script.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  }
+}

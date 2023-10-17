@@ -947,6 +947,57 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
+// Test that the extension background does not receives `disconnect` event
+// after the page enters BFCache.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       ExtensionBackgroundOnDisconnectEvent) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("back_forward_cache")
+          .AppendASCII("content_script_with_background_disconnect_listener"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHostWrapper rfh(
+      ui_test_utils::NavigateToURL(browser(), url_a));
+  std::u16string expected_title = u"connected";
+  content::TitleWatcher title_watcher(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+  std::string connectScript = base::StringPrintf(
+      R"JS(
+        var p = chrome.runtime.connect('%s');
+        p.onMessage.addListener((m) => {document.title = m; });
+      )JS",
+      extension->id().c_str());
+  ASSERT_TRUE(ExecJs(rfh.get(), connectScript));
+
+  // 2) Wait for the message port to be connected.
+  ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  // Expect that a channel is open.
+  EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
+
+  // 3) Navigate to B, and the channel is still open.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
+
+  // 4) Expect that A is in the back forward cache.
+  ASSERT_FALSE(rfh.IsDestroyed());
+  EXPECT_EQ(rfh->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 5) Expect that the `disconnect` event is not dispatched to the
+  // background.
+  constexpr char kCheckDisconnectCountScript[] =
+      R"JS(chrome.test.sendScriptResult(disconnectCount))JS";
+  EXPECT_EQ(0, ExecuteScriptInBackgroundPage(extension->id(),
+                                             kCheckDisconnectCountScript));
+}
+
 // Test if the chrome.runtime.connect API is called, the page is prevented from
 // entering bfcache.
 IN_PROC_BROWSER_TEST_F(
