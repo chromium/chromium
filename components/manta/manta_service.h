@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MANTA_MANTA_SERVICE_H_
-#define CHROME_BROWSER_MANTA_MANTA_SERVICE_H_
+#ifndef COMPONENTS_MANTA_MANTA_SERVICE_H_
+#define COMPONENTS_MANTA_MANTA_SERVICE_H_
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -30,7 +31,7 @@ class SnapperProvider;
 // interacting with google services relevant to the Manta project.
 // 2. It provides utility methods for clients to query specific information
 // relevant to the Manta project.
-class MantaService : public KeyedService {
+class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
  public:
   MantaService(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
@@ -57,4 +58,4 @@ class MantaService : public KeyedService {
 
 }  // namespace manta
 
-#endif  // CHROME_BROWSER_MANTA_MANTA_SERVICE_H_
+#endif  // COMPONENTS_MANTA_MANTA_SERVICE_H_

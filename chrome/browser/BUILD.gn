@@ -3950,8 +3950,6 @@ static_library("browser") {
       "lifetime/application_lifetime_desktop.h",
       "lifetime/browser_close_manager.cc",
       "lifetime/browser_close_manager.h",
-      "manta/manta_service.cc",
-      "manta/manta_service.h",
       "manta/manta_service_factory.cc",
       "manta/manta_service_factory.h",
       "media/capture_access_handler_base.cc",
