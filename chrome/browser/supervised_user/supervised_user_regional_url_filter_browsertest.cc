@@ -175,9 +175,11 @@ class SupervisedUserRegionalURLFilterTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, kRegionCode);
-    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+    // TODO(crbug.com/1491942): This fails with the field trial testing config.
+    command_line->AppendSwitch("disable-field-trial-config");
   }
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {

@@ -290,6 +290,12 @@ class SupervisedUserNavigationThrottleTest
       : SupervisedUserNavigationThrottleTestBase(
             supervised_user::SupervisionMixin::SignInMode::kSupervised) {}
   ~SupervisedUserNavigationThrottleTest() override = default;
+
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
 };
 
 // Tests that prerendering fails in supervised user mode.

@@ -79,6 +79,12 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
   }
   ~SupervisedUserURLFilterTest() override { feature_list_.Reset(); }
 
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
   bool ShownPageIsInterstitial(Browser* browser) {
     WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
     EXPECT_FALSE(tab->IsCrashed());
