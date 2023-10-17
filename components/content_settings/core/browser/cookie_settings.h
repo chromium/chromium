@@ -102,12 +102,12 @@ class CookieSettings
   // This should only be called on the UI thread.
   void SetCookieSetting(const GURL& primary_url, ContentSetting setting);
 
-  // Sets the `TPCD_HEURISTICS_GRANTS` setting for the given (`first_party_url`,
-  // `third_party_url`) pair, for the provided `ttl`.
+  // Sets the `TPCD_HEURISTICS_GRANTS` setting for the given (`url`and
+  // `first_party_url`) pair, for the provided `ttl`.
   //
   // This should only be called on the UI thread.
-  void SetTemporaryCookieGrantForHeuristic(const GURL& first_party_url,
-                                           const GURL& third_party_url,
+  void SetTemporaryCookieGrantForHeuristic(const GURL& url,
+                                           const GURL& first_party_url,
                                            const base::TimeDelta& ttl);
 
   // Represents the TTL of each User Bypass entries.

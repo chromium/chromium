@@ -96,16 +96,15 @@ void CookieSettings::SetCookieSetting(const GURL& primary_url,
 }
 
 void CookieSettings::SetTemporaryCookieGrantForHeuristic(
+    const GURL& url,
     const GURL& first_party_url,
-    const GURL& third_party_url,
     const base::TimeDelta& ttl) {
   ContentSettingConstraints constraints;
   constraints.set_lifetime(ttl);
 
   host_content_settings_map_->SetContentSettingDefaultScope(
-      first_party_url, third_party_url,
-      ContentSettingsType::TPCD_HEURISTICS_GRANTS, CONTENT_SETTING_ALLOW,
-      constraints);
+      url, first_party_url, ContentSettingsType::TPCD_HEURISTICS_GRANTS,
+      CONTENT_SETTING_ALLOW, constraints);
 }
 
 void CookieSettings::SetCookieSettingForUserBypass(

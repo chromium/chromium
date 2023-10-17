@@ -1559,16 +1559,16 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdHeuristicsGrants) {
 
   // Expect that cookies are blocked before setting the temporary grant.
   EXPECT_EQ(
-      cookie_settings_->GetCookieSetting(first_party_url, third_party_url,
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
                                          GetCookieSettingOverrides(), nullptr),
       CONTENT_SETTING_BLOCK);
 
   cookie_settings_->SetTemporaryCookieGrantForHeuristic(
-      first_party_url, third_party_url, expiration);
+      third_party_url, first_party_url, expiration);
 
   // Expect that cookies are now allowed, and the histogram has been updated.
   EXPECT_EQ(
-      cookie_settings_->GetCookieSetting(first_party_url, third_party_url,
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
                                          GetCookieSettingOverrides(), nullptr),
       CONTENT_SETTING_ALLOW);
   // Expect 2 total requests for the two calls to GetCookieSetting.
@@ -1583,7 +1583,7 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdHeuristicsGrants) {
 
   // Expect that cookies are blocked again after the grant expires.
   EXPECT_EQ(
-      cookie_settings_->GetCookieSetting(first_party_url, third_party_url,
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
                                          GetCookieSettingOverrides(), nullptr),
       CONTENT_SETTING_BLOCK);
 }
