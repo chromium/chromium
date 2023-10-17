@@ -275,11 +275,13 @@ class AppUsageTelemetrySamplerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
                        PRE_ReportUsageData) {
-  // Dummy case that sets up the affiliated user through SetUpOnMainThread
+  // Simple case that sets up the affiliated user through SetUpOnMainThread
   // PRE-condition.
 }
 
-IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest, ReportUsageData) {
+// TODO(crbug.com/1492076): Flaky on Chrome OS.
+IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
+                       DISABLED_ReportUsageData) {
   // Install webapp and simulate its usage.
   const auto& app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
@@ -322,12 +324,13 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest, ReportUsageData) {
 
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
                        PRE_ReportUsageDataWhenSyncDisabled) {
-  // Dummy case that sets up the affiliated user through SetUpOnMainThread
+  // Simple case that sets up the affiliated user through SetUpOnMainThread
   // PRE-condition.
 }
 
+// TODO(crbug.com/1492076): Flaky on Chrome OS.
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
-                       ReportUsageDataWhenSyncDisabled) {
+                       DISABLED_ReportUsageDataWhenSyncDisabled) {
   sync_service()->SetDisableReasons(
       {::syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
@@ -366,12 +369,13 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
                        PRE_ReportUsageDataWhenPolicyDisabled) {
-  // Dummy case that sets up the affiliated user through SetUpOnMainThread
+  // Simple case that sets up the affiliated user through SetUpOnMainThread
   // PRE-condition.
 }
 
+// TODO(crbug.com/1492076): Flaky on Chrome OS.
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
-                       ReportUsageDataWhenPolicyDisabled) {
+                       DISABLED_ReportUsageDataWhenPolicyDisabled) {
   // Disable policy.
   SetAllowedAppReportingTypes({});
 
@@ -392,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
                        PRE_ReportUsageDataOnSessionTermination) {
-  // Dummy case that sets up the affiliated user through SetUpOnMainThread
+  // Simple case that sets up the affiliated user through SetUpOnMainThread
   // PRE-condition.
 }
 

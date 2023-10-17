@@ -261,11 +261,12 @@ class NetworkTelemetrySamplerBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, PRE_Default) {
-  // Dummy case that sets up the affiliated user through SetUpOnMainThread
+  // Simple case that sets up the affiliated user through SetUpOnMainThread
   // PRE-condition.
 }
 
-IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
+// TODO(crbug.com/1492076): Flaky on Chrome OS.
+IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, DISABLED_Default) {
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsNetworkTelemetry));
 
