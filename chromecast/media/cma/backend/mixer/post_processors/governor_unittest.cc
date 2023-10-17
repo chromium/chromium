@@ -22,7 +22,7 @@ namespace post_processor_test {
 
 namespace {
 
-const char* kConfigTemplate =
+constexpr char kConfigTemplate[] =
     R"config({"onset_volume": %f, "clamp_multiplier": %f})config";
 
 const float kDefaultClamp = 0.6f;
