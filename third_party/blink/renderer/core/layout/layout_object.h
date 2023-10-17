@@ -729,7 +729,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     if (RuntimeEnabledFeatures::ElementCaptureEnabled()) {
       if (Element* element = DynamicTo<Element>(GetNode())) {
-        return element->GetRegionCaptureCropId();
+        return element->GetRestrictionTargetId();
       }
     }
     return false;

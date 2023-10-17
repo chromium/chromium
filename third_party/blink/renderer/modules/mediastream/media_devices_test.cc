@@ -892,4 +892,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
 }
 #endif
 
+// TODO(crbug.com/1418194): Add tests after MediaDevicesDispatcherHost
+// has been updated.
+
 }  // namespace blink

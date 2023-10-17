@@ -2347,6 +2347,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.ElementCapture.ProduceTarget.Function.Result"
+    enum="ProduceTargetFunctionResult" expires_after="2024-08-29">
+  <owner>eladalon@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    Tracks the result of calls to RestrictionTarget.fromElement(). Specifically,
+    this histogram tracks whether a new Promise was produced, and if not, why
+    not. Another histogram tracks the result of new Promises, i.e. whether they
+    were resolved or rejected.
+  </summary>
+</histogram>
+
+<histogram name="Media.ElementCapture.ProduceTarget.Promise.Result"
+    enum="ProduceTargetPromiseResult" expires_after="2024-08-29">
+  <owner>eladalon@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    When RestrictionTarget.fromElement() is called for the first time on a given
+    Element, a new Promise is produced. This histogram tracks the result of this
+    Promise - whether it was resolved or rejected.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmFileIO.FileSizeKBOnError" units="KB"
     expires_after="2024-04-11">
   <owner>xhwang@chromium.org</owner>
@@ -4704,27 +4729,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RegionCapture.ProduceCropTarget.Function.Result"
-    enum="ProduceCropTargetFunctionResult" expires_after="2024-01-15">
+    enum="ProduceTargetFunctionResult" expires_after="2024-08-29">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
-    Tracks the result of calls to MediaDevices.produceCropTarget().
-    Specifically, this histogram tracks whether a new Promise was produced, and
-    if not, why not. Another histogram tracks the result of new Promises, i.e.
-    whether they were resolved or rejected.
+    Tracks the result of calls to CropTarget.fromElement(). Specifically, this
+    histogram tracks whether a new Promise was produced, and if not, why not.
+    Another histogram tracks the result of new Promises, i.e. whether they were
+    resolved or rejected.
   </summary>
 </histogram>
 
 <histogram name="Media.RegionCapture.ProduceCropTarget.Promise.Result"
-    enum="ProduceCropTargetPromiseResult" expires_after="2024-01-15">
+    enum="ProduceTargetPromiseResult" expires_after="2024-08-29">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
-    When ProduceCropTarget() is called for the first time on a given
-    HTMLElement, a new Promise is produced. This histogram tracks the result of
-    this Promise - whether it was resolved or rejected.
+    When CropTarget.fromElement() is called for the first time on a given
+    Element, a new Promise is produced. This histogram tracks the result of this
+    Promise - whether it was resolved or rejected.
   </summary>
 </histogram>
 

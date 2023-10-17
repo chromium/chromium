@@ -1,0 +1,17 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://screen-share.github.io/element-capture/#dom-restrictiontarget
+
+// TODO(1418194): Make RestrictionTarget tokens Serializable.
+[Exposed=(Window,Worker), RuntimeEnabled = ElementCapture]
+interface RestrictionTarget {
+  [
+    Exposed=Window,
+    CallWith = ScriptState,
+    RaisesException,
+    MeasureAs = ElementCapture,
+    RuntimeEnabled = ElementCapture
+  ] static Promise<RestrictionTarget> fromElement(Element element);
+};

@@ -2442,6 +2442,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_relative_orientation_sensor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_remote_playback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_remote_playback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel.cc",
