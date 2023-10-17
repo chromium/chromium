@@ -113,15 +113,12 @@ void HotspotCapabilitiesProvider::NetworkConnectionStateChanged(
     return;
   }
 
-  if (!network->IsConnectingOrConnected()) {
-    // The cellular network got disconnected.
-    SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedNoMobileData);
+  if (network->IsOnline()) {
+    CheckTetheringReadiness(base::DoNothing());
     return;
   }
 
-  if (network->IsConnectedState()) {
-    CheckTetheringReadiness(base::DoNothing());
-  }
+  SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedNoMobileData);
 }
 
 void HotspotCapabilitiesProvider::OnShuttingDown() {

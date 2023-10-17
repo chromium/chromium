@@ -148,17 +148,21 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
                     .allowed_security_modes.size());
   EXPECT_EQ(2u, observer_.hotspot_capabilities_changed_count());
 
-  // Add an active cellular network and simulate check tethering readiness
-  // operation fail.
-  network_state_test_helper_.manager_test()
-      ->SetSimulateCheckTetheringReadinessResult(
-          FakeShillSimulatedResult::kFailure,
-          /*readiness_status=*/std::string());
+  // Simulate mobile network has no internet connectivity.
   ShillServiceClient::TestInterface* service_test =
       network_state_test_helper_.service_test();
   service_test->AddService(kCellularServicePath, kCellularServiceGuid,
                            kCellularServiceName, shill::kTypeCellular,
-                           shill::kStateOnline, /*visible=*/true);
+                           shill::kStateNoConnectivity, /*visible=*/true);
+
+  // Add the cellular network is connected and online and simulate check
+  // tethering readiness operation fail.
+  network_state_test_helper_.manager_test()
+      ->SetSimulateCheckTetheringReadinessResult(
+          FakeShillSimulatedResult::kFailure,
+          /*readiness_status=*/std::string());
+  service_test->SetServiceProperty(kCellularServicePath, shill::kStateProperty,
+                                   base::Value(shill::kStateOnline));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(
