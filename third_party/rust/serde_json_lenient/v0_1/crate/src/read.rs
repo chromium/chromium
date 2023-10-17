@@ -601,8 +601,11 @@ impl<'a> SliceRead<'a> {
         }
     }
 
-    fn escapes(&self) -> [bool; 256] {
-        get_escapes(self.allow_control_characters_in_string)
+    fn escapes(&self) -> &[bool; 256] {
+        if self.allow_control_characters_in_string {
+            return &NO_ESCAPE;
+        }
+        &ESCAPE
     }
 
     fn position_of_index(&self, i: usize) -> Position {
@@ -1016,8 +1019,8 @@ pub trait Fused: private::Sealed {}
 impl<'a> Fused for SliceRead<'a> {}
 impl<'a> Fused for StrRead<'a> {}
 
-#[cfg(feature = "std")]
 const ESCAPE: [bool; 256] = get_escapes(false);
+const NO_ESCAPE: [bool; 256] = get_escapes(true);
 
 // Lookup table of bytes that must be escaped. A value of true at index i means
 // that byte i requires an escape sequence in the input.
