@@ -1496,7 +1496,7 @@
         "variant_id": "STRONGBAD_RELEASE_BETA"
       },
       {
-        "autotest_name": "tast.lacros-from-gcs",
+        "autotest_name": "chromium",
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R120-15642.0.0",
         "name": "ozone_unittests STRONGBAD_RELEASE_LKGM",
@@ -1576,7 +1576,7 @@
         "variant_id": "STRONGBAD_RELEASE_BETA"
       },
       {
-        "autotest_name": "tast.lacros-from-gcs",
+        "autotest_name": "chromium",
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R120-15642.0.0",
         "name": "viz_unittests STRONGBAD_RELEASE_LKGM",

@@ -433,7 +433,6 @@
     'skylab': {
       'cros_board': 'brya',
       'use_lkgm': True,
-      'autotest_name': 'tast.chrome-from-gcs',
       'dut_pool': 'chrome',
     },
   },
@@ -442,7 +441,6 @@
     'skylab': {
       'cros_board': 'brya',
       'cros_img': 'brya-release/R120-15642.0.0',
-      'autotest_name': 'tast.lacros-from-gcs',
       'dut_pool': 'chrome',
     },
   },
@@ -475,7 +473,6 @@
     'skylab': {
       'cros_board': 'dedede',
       'cros_img': 'dedede-release/R120-15642.0.0',
-      'autotest_name': 'tast.lacros-from-gcs',
     },
   },
   'CROS_DEDEDE_RELEASE_DEV': {
@@ -504,7 +501,6 @@
     'skylab': {
       'cros_board': 'fizz',
       'cros_img': 'fizz-release/R120-15642.0.0',
-      'autotest_name': 'tast.lacros-from-gcs',
       'dut_pool': 'chrome',
     },
   },
@@ -537,7 +533,6 @@
     'skylab': {
       'cros_board': 'guybrush',
       'cros_img': 'guybrush-release/R120-15642.0.0',
-      'autotest_name': 'tast.lacros-from-gcs',
       'dut_pool': 'chrome',
     },
   },
@@ -570,7 +565,6 @@
     'skylab': {
       'cros_board': 'puff',
       'cros_img': 'puff-release/R120-15642.0.0',
-      'autotest_name': 'tast.lacros-from-gcs',
       'dut_pool': 'chrome',
     },
   },
@@ -642,7 +636,6 @@
     'skylab': {
       'cros_board': 'jacuzzi',
       'cros_img': 'jacuzzi-release/R120-15642.0.0',
-      'autotest_name': 'tast.lacros-from-gcs',
     },
   },
   'CROS_JACUZZI_RELEASE_DEV': {
@@ -664,7 +657,6 @@
     'skylab': {
       'cros_board': 'jacuzzi',
       'use_lkgm': True,
-      'autotest_name': 'tast.chrome-from-gcs',
     },
   },
   'CROS_JACUZZI_RELEASE_STABLE': {
@@ -713,7 +705,6 @@
     'skylab': {
       'cros_board': 'octopus',
       'use_lkgm': True,
-      'autotest_name': 'tast.chrome-from-gcs',
     },
   },
   'CROS_OCTOPUS_RELEASE_LKGM': {
@@ -749,7 +740,6 @@
     'skylab': {
       'cros_board': 'strongbad',
       'cros_img': 'strongbad-release/R120-15642.0.0',
-      'autotest_name': 'tast.lacros-from-gcs',
     },
   },
   'CROS_STRONGBAD_RELEASE_DEV': {
@@ -778,7 +768,6 @@
     'skylab': {
       'cros_board': 'trogdor',
       'use_lkgm': True,
-      'autotest_name': 'tast.chrome-from-gcs',
     },
   },
   'CROS_VOLTEER_PUBLIC_LKGM': {
@@ -798,7 +787,6 @@
     'skylab': {
       'cros_board': 'volteer',
       'use_lkgm': True,
-      'autotest_name': 'tast.chrome-from-gcs',
     },
   },
   'LACROS_AMD64_GENERIC': {
