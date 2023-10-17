@@ -414,7 +414,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     std::string createIframeScript =
         "const frame = document.createElement('iframe');"
         "document.body.appendChild(frame);";
-    // TODO: handle return value
+    // The return value is not required for this portion.
     std::ignore = content::ExecJs(iframe, createIframeScript);
     content::RenderFrameHost* nested_iframe = content::ChildFrameAt(iframe, 0);
 
