@@ -500,9 +500,9 @@ void ProfileMenuView::BuildIdentity() {
         account.IsEmpty()) {
       account_info = signin_ui_util::GetSingleAccountForPromos(profile);
     }
-    menu_title_ = std::u16string();
-    menu_subtitle_ =
-        l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
+    menu_title_ = l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
+    // The email may be empty.
+    menu_subtitle_ = base::UTF8ToUTF16(account_info.email);
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
         ui::ImageModel::FromImage(
