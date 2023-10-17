@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_CVC_SAVE_MESSAGE_DELEGATE_H_
 
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "components/messages/android/message_wrapper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -26,7 +27,8 @@ class AutofillCvcSaveMessageDelegate {
   virtual ~AutofillCvcSaveMessageDelegate();
 
   // Shows the message.
-  void ShowMessage(std::unique_ptr<AutofillSaveCardDelegateAndroid> delegate);
+  void ShowMessage(const AutofillSaveCardUiInfo& ui_info,
+                   std::unique_ptr<AutofillSaveCardDelegateAndroid> delegate);
   // Callbacks for user decision.
   void OnMessageAccepted();
   void OnMessageDismissed(messages::DismissReason dismiss_reason);

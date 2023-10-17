@@ -819,6 +819,12 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(options.show_prompt);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
+      options, card, legal_message_lines, account_info);
   auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
       std::move(callback), options, web_contents());
 
@@ -828,18 +834,12 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
       autofill_cvc_save_message_delegate_ =
           std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
       autofill_cvc_save_message_delegate_->ShowMessage(
-          std::move(save_card_delegate));
+          ui_info, std::move(save_card_delegate));
       return;
   }
 
   // For new cards, the save card prompt is shown either in a bottom sheet or in
   // an infobar.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
-      options, card, legal_message_lines, account_info);
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePaymentsAndroidBottomSheet)) {
     if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {

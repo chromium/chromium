@@ -6,7 +6,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 
 namespace autofill {
@@ -50,13 +52,18 @@ class AutofillCvcSaveMessageDelegateTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  MockAutofillSaveCardDelegateAndroid* ShowMessage() {
+  MockAutofillSaveCardDelegateAndroid* ShowMessage(
+      const AutofillSaveCardUiInfo& ui_info =
+          AutofillSaveCardUiInfo::CreateForLocalSave(
+              AutofillClient::SaveCreditCardOptions().with_card_save_type(
+                  AutofillClient::CardSaveType::kCvcSaveOnly),
+              CreditCard())) {
     autofill_cvc_save_message_delegate_ =
         std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
     auto mock =
         std::make_unique<MockAutofillSaveCardDelegateAndroid>(web_contents());
     auto* pointer = mock.get();
-    autofill_cvc_save_message_delegate_->ShowMessage(std::move(mock));
+    autofill_cvc_save_message_delegate_->ShowMessage(ui_info, std::move(mock));
     return pointer;
   }
 
@@ -121,6 +128,26 @@ TEST_F(AutofillCvcSaveMessageDelegateTest, MessageIgnored) {
   message_wrapper->HandleDismissCallback(
       base::android::AttachCurrentThread(),
       static_cast<int>(messages::DismissReason::TIMER));
+}
+
+TEST_F(AutofillCvcSaveMessageDelegateTest, MessagePropertiesAreSet) {
+  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      AutofillClient::SaveCreditCardOptions().with_card_save_type(
+          AutofillClient::CardSaveType::kCvcSaveOnly),
+      CreditCard());
+
+  // Show the message, and save the created `MessageWrapper`.
+  messages::MessageWrapper* message_wrapper;
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage)
+      .WillOnce(DoAll(SaveArg<0>(&message_wrapper), Return(true)));
+  ShowMessage(ui_info);
+
+  // Verify the message properties are correctly set.
+  EXPECT_EQ(message_wrapper->GetTitle(), ui_info.title_text);
+  EXPECT_EQ(message_wrapper->GetDescription(), ui_info.description_text);
+  EXPECT_EQ(message_wrapper->GetPrimaryButtonText(), ui_info.confirm_text);
+  EXPECT_EQ(message_wrapper->GetIconResourceId(),
+            ResourceMapper::MapToJavaDrawableId(ui_info.logo_icon_id));
 }
 
 }  // namespace autofill
