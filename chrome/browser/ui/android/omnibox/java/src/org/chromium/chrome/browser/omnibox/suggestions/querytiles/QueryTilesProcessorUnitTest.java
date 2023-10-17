@@ -184,4 +184,55 @@ public class QueryTilesProcessorUnitTest {
         assertEquals(1, mTiles.size());
         verifyNoMoreInteractions(mImageSupplier, mSuggestionHost);
     }
+
+    @Test
+    public void populateModel_fillIntoEditUsedOnFocus() {
+        var matchTmpl =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.TILE_SUGGESTION);
+        var match1 = matchTmpl.setFillIntoEdit("Fill News").build();
+        var match2 = matchTmpl.setFillIntoEdit("Fill Movies").build();
+        var match3 = matchTmpl.setFillIntoEdit("Fill Games").build();
+
+        mProcessor.populateModel(match1, mModel, 0);
+        mProcessor.populateModel(match2, mModel, 0);
+        mProcessor.populateModel(match3, mModel, 0);
+
+        assertEquals(3, mTiles.size());
+
+        mTiles.get(0).model.get(QueryTileViewProperties.ON_FOCUS_VIA_SELECTION).run();
+        verify(mSuggestionHost).setOmniboxEditingText("Fill News");
+        mTiles.get(1).model.get(QueryTileViewProperties.ON_FOCUS_VIA_SELECTION).run();
+        verify(mSuggestionHost).setOmniboxEditingText("Fill Movies");
+        mTiles.get(2).model.get(QueryTileViewProperties.ON_FOCUS_VIA_SELECTION).run();
+        verify(mSuggestionHost).setOmniboxEditingText("Fill Games");
+
+        verifyNoMoreInteractions(mImageSupplier, mSuggestionHost);
+    }
+
+    @Test
+    public void populateModel_clickEventInitiatesNavigation() {
+        var matchTmpl =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.TILE_SUGGESTION);
+        var url1 = new GURL("http:/one");
+        var url2 = new GURL("http:/two");
+        var url3 = new GURL("http:/ate");
+        var match1 = matchTmpl.setUrl(url1).build();
+        var match2 = matchTmpl.setUrl(url2).build();
+        var match3 = matchTmpl.setUrl(url3).build();
+
+        mProcessor.populateModel(match1, mModel, 7);
+        mProcessor.populateModel(match2, mModel, 7);
+        mProcessor.populateModel(match3, mModel, 7);
+
+        assertEquals(3, mTiles.size());
+
+        mTiles.get(0).model.get(QueryTileViewProperties.ON_CLICK).onClick(null);
+        verify(mSuggestionHost).onSuggestionClicked(match1, 7, url1);
+        mTiles.get(1).model.get(QueryTileViewProperties.ON_CLICK).onClick(null);
+        verify(mSuggestionHost).onSuggestionClicked(match2, 7, url2);
+        mTiles.get(2).model.get(QueryTileViewProperties.ON_CLICK).onClick(null);
+        verify(mSuggestionHost).onSuggestionClicked(match3, 7, url3);
+
+        verifyNoMoreInteractions(mImageSupplier, mSuggestionHost);
+    }
 }

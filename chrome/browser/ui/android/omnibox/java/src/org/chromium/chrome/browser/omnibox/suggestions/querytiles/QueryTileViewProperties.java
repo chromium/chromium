@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.omnibox.suggestions.querytiles;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties associated with the QueryTileView. */
@@ -15,7 +17,16 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     static final WritableObjectPropertyKey<Drawable> IMAGE = new WritableObjectPropertyKey<>();
 
     /** The title of the QueryTile. */
-    static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    static final ReadableObjectPropertyKey<String> TITLE = new ReadableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {IMAGE, TITLE};
+    /** Handler receiving focus events. */
+    public static final ReadableObjectPropertyKey<Runnable> ON_FOCUS_VIA_SELECTION =
+            new ReadableObjectPropertyKey<>();
+
+    /** Handler receiving click events. */
+    public static final ReadableObjectPropertyKey<View.OnClickListener> ON_CLICK =
+            new ReadableObjectPropertyKey<>();
+
+    static final PropertyKey[] ALL_UNIQUE_KEYS =
+            new PropertyKey[] {IMAGE, TITLE, ON_FOCUS_VIA_SELECTION, ON_CLICK};
 }

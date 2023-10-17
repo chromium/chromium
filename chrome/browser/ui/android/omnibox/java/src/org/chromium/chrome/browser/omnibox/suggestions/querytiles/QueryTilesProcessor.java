@@ -76,6 +76,16 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
         var tileModel =
                 new PropertyModel.Builder(QueryTileViewProperties.ALL_UNIQUE_KEYS)
                         .with(QueryTileViewProperties.TITLE, match.getDisplayText())
+                        .with(
+                                QueryTileViewProperties.ON_FOCUS_VIA_SELECTION,
+                                () ->
+                                        mSuggestionHost.setOmniboxEditingText(
+                                                match.getFillIntoEdit()))
+                        .with(
+                                QueryTileViewProperties.ON_CLICK,
+                                v ->
+                                        mSuggestionHost.onSuggestionClicked(
+                                                match, matchIndex, match.getUrl()))
                         .build();
         tileList.add(
                 new ListItem(BaseCarouselSuggestionItemViewBuilder.ViewType.QUERY_TILE, tileModel));

@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.querytiles;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,6 +22,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Tests for {@link QueryTileViewBinder}. */
@@ -57,16 +60,50 @@ public class QueryTileViewBinderUnitTest {
 
     @Test
     public void setTitle() {
-        mModel.set(QueryTileViewProperties.TITLE, "Title");
+        // Note: if the assertion below fails, this test requires additional cases to be covered:
+        // - changing to same value,
+        // - changing to a different value.
+        assertFalse(QueryTileViewProperties.TITLE instanceof WritableObjectPropertyKey);
+
+        mModel =
+                new PropertyModel.Builder(QueryTileViewProperties.ALL_UNIQUE_KEYS)
+                        .with(QueryTileViewProperties.TITLE, "Title")
+                        .build();
+        PropertyModelChangeProcessor.create(mModel, mView, QueryTileViewBinder::bind);
         verify(mView).setTitle("Title");
+    }
 
-        mModel.set(QueryTileViewProperties.TITLE, "Title");
-        verifyNoMoreInteractions(mView);
+    @Test
+    public void setOnFocusViaSelectionListener() {
+        // Note: if the assertion below fails, this test requires additional cases to be covered:
+        // - changing to same value,
+        // - changing to a different value.
+        assertFalse(
+                QueryTileViewProperties.ON_FOCUS_VIA_SELECTION
+                        instanceof WritableObjectPropertyKey);
 
-        mModel.set(QueryTileViewProperties.TITLE, "Title2");
-        verify(mView).setTitle("Title2");
+        Runnable listener = () -> {};
+        mModel =
+                new PropertyModel.Builder(QueryTileViewProperties.ALL_UNIQUE_KEYS)
+                        .with(QueryTileViewProperties.ON_FOCUS_VIA_SELECTION, listener)
+                        .build();
+        PropertyModelChangeProcessor.create(mModel, mView, QueryTileViewBinder::bind);
+        verify(mView).setOnFocusViaSelectionListener(listener);
+    }
 
-        mModel.set(QueryTileViewProperties.TITLE, null);
-        verify(mView).setTitle(null);
+    @Test
+    public void setOnClickListener() {
+        // Note: if the assertion below fails, this test requires additional cases to be covered:
+        // - changing to same value,
+        // - changing to a different value.
+        assertFalse(QueryTileViewProperties.ON_CLICK instanceof WritableObjectPropertyKey);
+
+        View.OnClickListener listener = v -> {};
+        mModel =
+                new PropertyModel.Builder(QueryTileViewProperties.ALL_UNIQUE_KEYS)
+                        .with(QueryTileViewProperties.ON_CLICK, listener)
+                        .build();
+        PropertyModelChangeProcessor.create(mModel, mView, QueryTileViewBinder::bind);
+        verify(mView).setOnClickListener(listener);
     }
 }
