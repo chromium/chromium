@@ -362,8 +362,6 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLPa
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_WebGLDisplayP3 [ Failure ]
 crbug.com/1478354 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker [ RetryOnFailure ]
 
-# Flaky fails with the entire window being black
-crbug.com/1490570 [ linux amd-0x7340 angle-vulkan ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
 
 # Lacros consistent failures on CrOS devices, skip to save some time
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
@@ -396,8 +394,8 @@ crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreen
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
 # GL Crash on Nexus 5X causing flakes
-crbug.com/1489248 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
-crbug.com/1489248 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
+crbug.com/1489248 [ android android-chromium android-nexus-5x no-clang-coverage ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
+crbug.com/1489248 [ android android-chromium android-nexus-5x no-clang-coverage ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
 crbug.com/1489248 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 
 #######################################################################
