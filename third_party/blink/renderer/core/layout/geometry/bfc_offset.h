@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GEOMETRY_NG_BFC_OFFSET_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GEOMETRY_NG_BFC_OFFSET_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_BFC_OFFSET_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_BFC_OFFSET_H_
 
 #include <tuple>
 
@@ -60,4 +60,4 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const BfcOffset&);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GEOMETRY_NG_BFC_OFFSET_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_BFC_OFFSET_H_
