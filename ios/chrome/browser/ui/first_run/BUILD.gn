@@ -58,7 +58,7 @@ source_set("first_run") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/first_run",
-    "//ios/chrome/browser/geolocation",
+    "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/model/application_context",

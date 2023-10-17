@@ -79,7 +79,7 @@ source_set("browser_prefs") {
     "//components/web_resource",
     "//ios/chrome/app:variations_app_state_agent",
     "//ios/chrome/browser/first_run",
-    "//ios/chrome/browser/geolocation",
+    "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/memory/model",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:constants",
