@@ -260,7 +260,7 @@ int StartHostMain(int argc, char** argv) {
   }
 
   HostStarter::Params params;
-  bool useCorpMachineFlow = false;
+  bool use_corp_machine_flow = false;
   if (command_line->HasSwitch("corp-user")) {
     if (command_line->GetSwitches().size() > 1) {
       fprintf(
@@ -270,7 +270,7 @@ int StartHostMain(int argc, char** argv) {
       return 1;
     }
 
-    useCorpMachineFlow = true;
+    use_corp_machine_flow = true;
     params.owner_email =
         base::ToLowerASCII(command_line->GetSwitchValueASCII("corp-user"));
     // Crash reporting is always enabled for this flow.
@@ -291,17 +291,11 @@ int StartHostMain(int argc, char** argv) {
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter(
       new remoting::URLRequestContextGetter(io_thread.task_runner()));
   network::TransitionalURLLoaderFactoryOwner url_loader_factory_owner(
-      url_request_context_getter);
-
-  // TODO(joedow): Modify TransitionalURLLoaderFactoryOwner to allow us to
-  // set `is_trusted` in the URLLoaderFactoryParams blob generated when
-  // GetURLLoaderFactory() is called, otherwise CorsURLLoaderFactory will block
-  // the service call since we pass in trusted_params (for handling certificate
-  // requests) but the UrlLoader isn't 'trusted'.
+      url_request_context_getter, /*is_trusted=*/use_corp_machine_flow);
 
   // Start the host.
   std::unique_ptr<HostStarter> host_starter;
-  if (useCorpMachineFlow) {
+  if (use_corp_machine_flow) {
     host_starter =
         ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory());
   } else {
