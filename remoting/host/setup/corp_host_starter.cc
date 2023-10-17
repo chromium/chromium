@@ -21,6 +21,7 @@
 #include "google_apis/google_api_keys.h"
 #include "net/base/network_interfaces.h"
 #include "remoting/base/corp_service_client.h"
+#include "remoting/base/hostname.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/host_config.h"
@@ -112,9 +113,7 @@ void CorpHostStarter::StartHost(Params params, CompletionCallback on_done) {
   DCHECK(!on_done_);
 
   start_host_params_ = std::move(params);
-  // TODO(joedow): Extract the GetHostName() function out of HeartbeatSender,
-  // move it to //remoting/base, and use it here as it works better on Windows.
-  start_host_params_.name = net::GetHostName();
+  start_host_params_.name = GetHostname();
   on_done_ = std::move(on_done);
   key_pair_ = RsaKeyPair::Generate();
 
