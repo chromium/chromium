@@ -4462,6 +4462,17 @@ const char kTranslateMessageUIDescription[] =
     "Controls whether the Translate Message UI will be shown instead of the "
     "Translate InfoBar.";
 
+const char kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationName[] =
+    "Google Mobile Services for passwords for users with empty local password "
+    "storage";
+const char
+    kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationDescription[] =
+        "Uses Google Mobile Services to store and retrieve passwords."
+        "This only applies for users with no passwords saved locally and "
+        "default password settings."
+        "Warning: Highly experimental. May lead to loss of passwords and "
+        "impact performance.";
+
 const char kUpdateMenuBadgeName[] = "Force show update menu badge";
 const char kUpdateMenuBadgeDescription[] =
     "When enabled, a badge will be shown on the app menu button if the update "

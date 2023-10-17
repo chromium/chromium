@@ -2612,6 +2612,10 @@ extern const char kTouchDragAndContextMenuDescription[];
 extern const char kTranslateMessageUIName[];
 extern const char kTranslateMessageUIDescription[];
 
+extern const char kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationName[];
+extern const char
+    kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationDescription[];
+
 extern const char kUpdateMenuBadgeName[];
 extern const char kUpdateMenuBadgeDescription[];
 

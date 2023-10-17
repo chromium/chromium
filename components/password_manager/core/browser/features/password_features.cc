@@ -110,6 +110,23 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
              "SkipUndecryptablePasswords",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables use of Google Mobile services for non-synced password storage that
+// contains no passwords, so no migration will be necessary.
+// UnifiedPasswordManagerLocalPasswordsAndroidWithMigration will replace this
+// feature once UPM starts to be rolled out to users who have saved local
+// passwords.
+BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+             "kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables use of Google Mobile services for non-synced password storage add for
+// users who have local passwords saved.
+BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
+             "kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Improves PSL matching capabilities by utilizing PSL-extension list from
 // affiliation service. It fixes problem with incorrect password suggestions on
 // websites like slack.com.

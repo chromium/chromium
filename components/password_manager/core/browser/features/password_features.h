@@ -41,6 +41,12 @@ BASE_DECLARE_FEATURE(kPasswordManagerEnableSenderService);
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 BASE_DECLARE_FEATURE(kSharedPasswordNotificationUI);
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 BASE_DECLARE_FEATURE(kUseServerPredictionsOnSaveParsing);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);

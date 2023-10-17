@@ -8095,6 +8095,14 @@
     "expiry_milestone": 122
   },
   {
+    "name": "upm-local-no-migration",
+    "owners": [
+      "izuzic@google.com",
+      "ioanap"
+    ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "upstream-trusted-reports-firmware",
     "owners": [ "rishabhagr" ],
     "expiry_milestone": 125

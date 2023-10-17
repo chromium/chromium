@@ -65932,6 +65932,8 @@ from previous Chrome versions.
   <int value="315602034" label="LauncherQueryHighlighting:disabled"/>
   <int value="316182183" label="MediaDocumentDownloadButton:disabled"/>
   <int value="316778089" label="OmniboxConsumesImeInsets:disabled"/>
+  <int value="317128092"
+      label="kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration:enabled"/>
   <int value="317432596" label="DisplayLocking:disabled"/>
   <int value="317889969" label="AutofillAddressProfileSavePrompt:disabled"/>
   <int value="318277328" label="WebViewAppsPackageNamesAllowlist:enabled"/>
@@ -66111,6 +66113,8 @@ from previous Chrome versions.
   <int value="393569083" label="OmniboxMatchToolbarAndStatusBarColor:enabled"/>
   <int value="393704200" label="account-consistency"/>
   <int value="393869264" label="ShimlessRMADiagnosticPage:enabled"/>
+  <int value="394034914"
+      label="kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration:disabled"/>
   <int value="394384982" label="GaiaIdCacheInAccountManagerFacade:enabled"/>
   <int value="395148768" label="AutofillFillIbanFields:disabled"/>
   <int value="397275669" label="QuickCommands:disabled"/>
