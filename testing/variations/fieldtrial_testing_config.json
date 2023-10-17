@@ -2743,6 +2743,29 @@
             ]
         }
     ],
+    "CPUInterventionEvaluationLogging": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20231016",
+                    "params": {
+                        "delay_before_logging": "60s",
+                        "threshold_chrome_cpu_percent": "25"
+                    },
+                    "enable_features": [
+                        "CPUInterventionEvaluationLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "CSSCustomPropertiesAblation": [
         {
             "platforms": [
