@@ -10,6 +10,9 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -110,6 +113,11 @@ using base::UserMetricsAction;
       feature_engagement::TrackerFactory::GetForBrowserState(browserState);
   tracker->NotifyEvent(
       feature_engagement::events::kDefaultBrowserPromoRemindMeLater);
+
+  PromosManager* promosManager =
+      PromosManagerFactory::GetForBrowserState(browserState);
+  promosManager->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::DefaultBrowserRemindMeLater);
 
   [self.handler hidePromo];
 }

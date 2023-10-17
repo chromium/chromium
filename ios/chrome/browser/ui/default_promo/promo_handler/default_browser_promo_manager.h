@@ -10,11 +10,15 @@
 
 @protocol PromosManagerUIHandler;
 
+// Coordinator to control which version of the default browser promo gets shown.
 @interface DefaultBrowserPromoManager : ChromeCoordinator
 
 // The promos manager ui handler to alert for promo UI changes. Should only be
 // set if this coordinator was a promo presented by the PromosManager.
 @property(nonatomic, weak) id<PromosManagerUIHandler> promosUIHandler;
+
+// Whether or not the current showing came from a past Remind Me Later.
+@property(nonatomic, assign) BOOL promoWasFromRemindMeLater;
 
 // Test-only method mocked in test to verify the promo that will be shown.
 + (void)showPromoForTesting:(DefaultPromoType)promoType;

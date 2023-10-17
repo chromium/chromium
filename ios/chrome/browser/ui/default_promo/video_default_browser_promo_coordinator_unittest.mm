@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_view_controller.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -61,6 +62,7 @@ class VideoDefaultBrowserPromoCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   VideoDefaultBrowserPromoCoordinator* coordinator_;

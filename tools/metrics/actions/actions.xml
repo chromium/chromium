@@ -39489,6 +39489,8 @@ should be able to be added at any place in this file.
       label="For iOSPromoCredentialProviderExtension feature"/>
   <suffix name="iOSPromoDefaultBrowser"
       label="For iOSPromoDefaultBrowser feature"/>
+  <suffix name="iOSPromoDefaultBrowserReminder"
+      label="For iOSPromoDefaultBrowserReminder feature"/>
   <suffix name="iOSPromoPasswordManagerWidget"
       label="For iOSPromoPasswordManagerWidget feature"/>
   <suffix name="iOSPromoPostRestore" label="For iOSPromoPostRestore feature"/>

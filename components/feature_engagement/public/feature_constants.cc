@@ -488,7 +488,7 @@ BASE_FEATURE(kIPHiOSPromoAppStoreFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoWhatsNewFeature,
              "IPH_iOSPromoWhatsNew",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoPostRestoreFeature,
              "IPH_iOSPromoPostRestore",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -498,6 +498,9 @@ BASE_FEATURE(kIPHiOSPromoCredentialProviderExtensionFeature,
 BASE_FEATURE(kIPHiOSPromoDefaultBrowserFeature,
              "IPH_iOSPromoDefaultBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoDefaultBrowserReminderFeature,
+             "IPH_iOSPromoDefaultBrowserReminder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSNewTabToolbarItemFeature,
              "IPH_iOSNewTabToolbarItemFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);

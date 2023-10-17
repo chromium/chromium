@@ -174,6 +174,28 @@ absl::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     return config;
   }
 
+  if (kIPHiOSPromoDefaultBrowserReminderFeature.name == feature->name) {
+    // A config for a feature to handle re-showing the default browser promo
+    // after a "Remind Me Later". Should trigger only if the reminder happened
+    // over X days ago (i.e count == 0 in the past X days and count >= 1 in
+    // general). The default configuration here allows snoozing once for 1 day,
+    // but this can be changed via Finch.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("default_browser_promo_reminder_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used = EventConfig("default_browser_promo_reminder_used",
+                               Comparator(EQUAL, 0), 360, 360);
+    config->event_configs.insert(EventConfig(
+        "default_browser_promo_remind_me_later", Comparator(EQUAL, 0), 1, 360));
+    config->event_configs.insert(
+        EventConfig("default_browser_promo_remind_me_later",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 360, 360));
+    return config;
+  }
+
   if (kIPHiOSPromoPostRestoreDefaultBrowserFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

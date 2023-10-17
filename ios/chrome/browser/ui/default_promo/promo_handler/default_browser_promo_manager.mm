@@ -21,6 +21,15 @@
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 
+namespace {
+
+enum class DisplayedVideoPromo {
+  VideoPromo,
+  VideoPromoReminder,
+};
+
+}  // namespace
+
 @interface DefaultBrowserPromoManager () <DefaultBrowserPromoCommands>
 
 // Default browser promo command handler.
@@ -38,8 +47,10 @@
 // Coordinator that manages the tailored promo modals.
 @property(nonatomic, strong) TailoredPromoCoordinator* tailoredPromoCoordinator;
 
-// Tracks whether or not the Video promo FET should be dismissed.
-@property(nonatomic, assign) BOOL shouldDismissVideoPromoFET;
+// Tracks whether or not the Video promo Feature Engagement Tracker should be
+// dismissed.
+@property(nonatomic, assign) absl::optional<DisplayedVideoPromo>
+    displayedVideoPromoForFET;
 
 // Feature engagement tracker reference.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
@@ -97,6 +108,14 @@
     return;
   }
 
+  if (self.promoWasFromRemindMeLater) {
+    // Remind Me Later only shows up on the Video Promo UI, so if this is a
+    // reminder, use the video UI again.
+    self.displayedVideoPromoForFET = DisplayedVideoPromo::VideoPromoReminder;
+    [self showPromo:DefaultPromoTypeVideo];
+    return;
+  }
+
   BOOL isSignedIn = [self isSignedIn];
 
   // Tailored promos take priority over general promo.
@@ -143,9 +162,17 @@
 
 - (void)stop {
   [self.videoDefaultPromoCoordinator stop];
-  if (self.shouldDismissVideoPromoFET && self.tracker) {
-    self.tracker->Dismissed(
-        feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature);
+  if (self.displayedVideoPromoForFET && self.tracker) {
+    switch (self.displayedVideoPromoForFET.value()) {
+      case DisplayedVideoPromo::VideoPromo:
+        self.tracker->Dismissed(
+            feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature);
+        break;
+      case DisplayedVideoPromo::VideoPromoReminder:
+        self.tracker->Dismissed(
+            feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature);
+        break;
+    }
   }
   self.videoDefaultPromoCoordinator = nil;
 
@@ -217,6 +244,11 @@
   self.videoDefaultPromoCoordinator.isHalfScreen =
       IsDBVideoPromoHalfscreenEnabled() ||
       IsDBVideoPromoWithGenericHalfscreenEnabled();
+  BOOL showRemindMeLater =
+      base::FeatureList::IsEnabled(
+          feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
+      !self.promoWasFromRemindMeLater;
+  self.videoDefaultPromoCoordinator.showRemindMeLater = showRemindMeLater;
   [self.videoDefaultPromoCoordinator start];
 }
 
@@ -243,7 +275,7 @@
     if (self.tracker->ShouldTriggerHelpUI(
             feature_engagement::
                 kIPHiOSDefaultBrowserVideoPromoTriggerFeature)) {
-      self.shouldDismissVideoPromoFET = true;
+      self.displayedVideoPromoForFET = DisplayedVideoPromo::VideoPromo;
       [self showPromo:DefaultPromoTypeVideo];
       return true;
     }

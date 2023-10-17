@@ -212,6 +212,8 @@ chromium-metrics-reviews@google.com.
       summary="showing the Credential Provider Extension Promo on iOS"/>
   <variant name="IPH_iOSPromoDefaultBrowser"
       summary="showing the Default Browser Promo on iOS"/>
+  <variant name="IPH_iOSPromoDefaultBrowserReminder"
+      summary="showing the Default Browser Promo after remind me later on iOS"/>
   <variant name="IPH_iOSPromoPasswordManagerWidget"
       summary="showing the Password Manager widget promo on iOS"/>
   <variant name="IPH_iOSPromoPostRestore"
