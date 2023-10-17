@@ -86,7 +86,7 @@ public abstract class StripStacker {
                 // This value is set to 1.f to avoid the new tab button jitter for the improved tab
                 // strip design. The tab.width and tab.drawX may not reflect the final values before
                 // the tab closing animations are completed.
-                tabWidthWeight = 1.f;
+                tabWidthWeight = tab.isDying() ? 0.f : 1.f;
                 tabWidth = cachedTabWidth;
                 tabDrawX = tab.getIdealX();
             } else {
