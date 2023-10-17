@@ -54,6 +54,7 @@ class EditorSwitch {
   std::string active_engine_id_;
   ui::TextInputType input_type_ = ui::TEXT_INPUT_TYPE_NONE;
   ash::AppType app_type_ = ash::AppType::NON_APP;
+  GURL url_;
   bool tablet_mode_enabled_ = false;
   size_t text_length_ = 0;
 };

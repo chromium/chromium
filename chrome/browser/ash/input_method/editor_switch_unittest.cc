@@ -26,10 +26,14 @@ namespace {
 constexpr std::string_view kAllowedTestCountry = "allowed_country";
 constexpr std::string_view kDeniedTestCountry = "denied_country";
 
+constexpr std::string_view kAllowedTestUrl = "https://allowed.testurl.com/allowed/path";
+
 TextFieldContextualInfo CreateFakeTextFieldContextualInfo(
-    ash::AppType app_type) {
+    ash::AppType app_type,
+    std::string_view url) {
   auto text_field_contextual_info = TextFieldContextualInfo();
   text_field_contextual_info.app_type = app_type;
+  text_field_contextual_info.tab_url = GURL(url);
   return text_field_contextual_info;
 }
 
@@ -129,7 +133,7 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredIfConsentDeclined) {
   editor_switch.OnTabletModeUpdated(false);
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
@@ -158,7 +162,35 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
   editor_switch.OnActivateIme("nacl_mozc_jp");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_PASSWORD),
-      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl));
+
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
+}
+
+TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnADeniedWebsite) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kOrca,
+                            features::kFeatureManagementOrca},
+      /*disabled_features=*/{});
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
+
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  editor_switch.OnTabletModeUpdated(false);
+  editor_switch.OnActivateIme("xkb:us::eng");
+  editor_switch.OnInputContextUpdated(
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER,
+                                        "https://mail.google.com/mail"));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
@@ -185,7 +217,7 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWithNonEnglishInputMethod) {
   editor_switch.OnActivateIme("nacl_mozc_jp");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
@@ -212,7 +244,7 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnArcApps) {
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::ARC_APP));
+      CreateFakeTextFieldContextualInfo(AppType::ARC_APP, kAllowedTestUrl));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
@@ -240,7 +272,7 @@ TEST_F(EditorSwitchTest,
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::ARC_APP));
+      CreateFakeTextFieldContextualInfo(AppType::ARC_APP, kAllowedTestUrl));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
@@ -267,7 +299,7 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnTabletMode) {
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
@@ -293,7 +325,7 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWhenOffline) {
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
@@ -320,7 +352,7 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredWithTooLongTextSelection) {
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl));
   editor_switch.OnTextSelectionLengthChanged(10000);
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
@@ -350,7 +382,7 @@ TEST_F(
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kConsentNeeded);
@@ -377,7 +409,7 @@ TEST_F(EditorSwitchTest, TriggersRewriteModeForNoTextSelection) {
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kWrite);
@@ -404,7 +436,7 @@ TEST_F(EditorSwitchTest, TriggersRewriteModeWhenSomeTextIsSelected) {
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl));
   editor_switch.OnTextSelectionLengthChanged(100);
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());

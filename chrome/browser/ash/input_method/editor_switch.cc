@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "net/base/network_change_notifier.h"
@@ -42,6 +43,18 @@ constexpr AppType kAppTypeAllowlist[] = {
     AppType::LACROS,
 };
 
+const char* kDomainsWithPathDenylist[][2] = {
+    {"calendar.google", ""},
+    {"docs.google", "/document"},
+    {"docs.google", "/presentation"},
+    {"docs.google", "/spreadsheets"},
+    {"drive.google", ""},
+    {"keep.google", ""},
+    {"mail.google", "/chat"},
+    {"mail.google", "/mail"},
+    {"meet.google", ""},
+};
+
 constexpr int kTextLengthMaxLimit = 8000;
 
 bool IsCountryAllowed(std::string_view country_code) {
@@ -64,6 +77,17 @@ bool IsTriggerableFromConsentStatus(ConsentStatus consent_status) {
   return consent_status == ConsentStatus::kApproved ||
          consent_status == ConsentStatus::kPending ||
          consent_status == ConsentStatus::kUnset;
+}
+
+template <size_t N>
+bool IsUrlAllowed(const char* (&denied_domains_with_paths)[N][2], GURL url) {
+  for (size_t i = 0; i < N; ++i) {
+    if (IsSubDomainWithPathPrefix(url, denied_domains_with_paths[i][0],
+                                  denied_domains_with_paths[i][1])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace
@@ -92,6 +116,7 @@ bool EditorSwitch::CanBeTriggered() const {
   return IsAllowedForUse() && IsInputMethodEngineAllowed(active_engine_id_) &&
          IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_) &&
          IsTriggerableFromConsentStatus(current_consent_status) &&
+         IsUrlAllowed(kDomainsWithPathDenylist, url_) &&
          !net::NetworkChangeNotifier::IsOffline() && !tablet_mode_enabled_ &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
@@ -121,6 +146,7 @@ void EditorSwitch::OnInputContextUpdated(
     const TextFieldContextualInfo& text_field_contextual_info) {
   input_type_ = input_context.type;
   app_type_ = text_field_contextual_info.app_type;
+  url_ = text_field_contextual_info.tab_url;
 }
 
 void EditorSwitch::OnActivateIme(std::string_view engine_id) {
