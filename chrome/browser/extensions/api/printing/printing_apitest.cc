@@ -36,6 +36,7 @@
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "base/feature_list.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -110,28 +111,42 @@ class PrintingApiTest : public ExtensionApiTest,
   PrintingApiTest& operator=(const PrintingApiTest&) = delete;
 
  protected:
-  void SetUpOnMainThread() override {
+  void SetUp() override {
+    ExtensionApiTest::SetUp();
+    printing::PrintBackend::SetPrintBackendForTesting(
+        test_print_backend_.get());
+  }
+
+  void TearDown() override {
+    printing::PrintBackend::SetPrintBackendForTesting(nullptr);
+    ExtensionApiTest::TearDown();
+  }
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
     if (base::FeatureList::IsEnabled(
             printing::features::kEnableOopPrintDrivers)) {
       print_backend_service_ =
           printing::PrintBackendServiceTestImpl::LaunchForTesting(
               test_remote_, test_print_backend_.get(), /*sandboxed=*/true);
     }
-#endif
-    ExtensionApiTest::SetUpOnMainThread();
   }
 
+  void TearDownOnMainThread() override {
+    print_backend_service_.reset();
+    printing::PrintBackendServiceManager::GetInstance().ResetForTesting();
+    ExtensionApiTest::TearDownOnMainThread();
+  }
+#endif
+
   void SetUpInProcessBrowserTestFixture() override {
+    ExtensionApiTest::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
                 &PrintingApiTest::OnWillCreateBrowserContextServices,
                 base::Unretained(this)));
-    test_print_backend_ = base::MakeRefCounted<printing::TestPrintBackend>();
-    printing::PrintBackend::SetPrintBackendForTesting(
-        test_print_backend_.get());
-    ExtensionApiTest::SetUpInProcessBrowserTestFixture();
   }
 
   ash::TestCupsPrintJobManager* GetPrintJobManager() {
@@ -201,7 +216,8 @@ class PrintingApiTest : public ExtensionApiTest,
 
   base::CallbackListSubscription create_services_subscription_;
 
-  scoped_refptr<printing::TestPrintBackend> test_print_backend_;
+  scoped_refptr<printing::TestPrintBackend> test_print_backend_ =
+      base::MakeRefCounted<printing::TestPrintBackend>();
 };
 
 using PrintingPromiseApiTest = PrintingApiTest;
