@@ -4,10 +4,11 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Snippets from 'devtools/panels/snippets/snippets.js';
+
 (async function() {
   TestRunner.addResult('Tests that snippet scripts are evaluated in REPL mode\n');
 
-  await TestRunner.loadLegacyModule('snippets');
   await TestRunner.showPanel('sources');
 
   TestRunner.addSniffer(TestRunner.RuntimeAgent, 'invoke_evaluate', function(args) {
@@ -19,7 +20,7 @@ import {TestRunner} from 'test_runner';
   await uiSourceCode.rename('Snippet1');
   uiSourceCode.setWorkingCopy('let a = 1; let a = 2;');
 
-  await Snippets.evaluateScriptSnippet(uiSourceCode);
+  await Snippets.ScriptSnippetFileSystem.evaluateScriptSnippet(uiSourceCode);
 
   TestRunner.completeTest();
 })();

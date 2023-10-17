@@ -6,12 +6,12 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
-import * as UIModule from 'devtools/ui/legacy/legacy.js';
 import * as Console from 'devtools/panels/console/console.js';
+import * as Snippets from 'devtools/panels/snippets/snippets.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests script snippet model.\n`);
-  await TestRunner.loadLegacyModule('snippets');
 
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML('<p></p>');
@@ -117,7 +117,7 @@ doesNothing;
       uiSourceCode3.setWorkingCopy('// This snippet uses Command Line API.\n$$("p").length');
 
       TestRunner.addResult('Run Snippet1..');
-      Snippets.evaluateScriptSnippet(uiSourceCode1);
+      Snippets.ScriptSnippetFileSystem.evaluateScriptSnippet(uiSourceCode1);
       await ConsoleTestRunner.waitUntilMessageReceivedPromise();
       await ConsoleTestRunner.dumpConsoleMessages();
 
@@ -125,18 +125,18 @@ doesNothing;
           Console.ConsoleViewMessage.ConsoleViewMessage.prototype,
           'formattedParameterAsFunctionForTest');
       TestRunner.addResult('Run Snippet2..');
-      Snippets.evaluateScriptSnippet(uiSourceCode2);
+      Snippets.ScriptSnippetFileSystem.evaluateScriptSnippet(uiSourceCode2);
       await ConsoleTestRunner.waitUntilMessageReceivedPromise();
       await functionPromise;
       await ConsoleTestRunner.dumpConsoleMessages();
 
       TestRunner.addResult('Run Snippet1..');
-      Snippets.evaluateScriptSnippet(uiSourceCode1);
+      Snippets.ScriptSnippetFileSystem.evaluateScriptSnippet(uiSourceCode1);
       await ConsoleTestRunner.waitUntilMessageReceivedPromise();
       await ConsoleTestRunner.dumpConsoleMessages();
 
       TestRunner.addResult('Run Snippet3..');
-      Snippets.evaluateScriptSnippet(uiSourceCode3);
+      Snippets.ScriptSnippetFileSystem.evaluateScriptSnippet(uiSourceCode3);
       await ConsoleTestRunner.waitUntilMessageReceivedPromise();
       await ConsoleTestRunner.dumpConsoleMessages();
 
@@ -155,7 +155,7 @@ doesNothing;
       uiSourceCode1.setWorkingCopy('// This snippet does nothing.\nvar i=2+2;\n');
 
       TestRunner.addResult('Run Snippet1..');
-      Snippets.evaluateScriptSnippet(uiSourceCode1);
+      Snippets.ScriptSnippetFileSystem.evaluateScriptSnippet(uiSourceCode1);
       await ConsoleTestRunner.waitUntilMessageReceivedPromise();
       await ConsoleTestRunner.dumpConsoleMessages();
 
@@ -184,7 +184,7 @@ doesNothing;
         uiSourceCode1.setWorkingCopy('2 + 2');
 
         TestRunner.addResult('Run Snippet1..');
-        Snippets.evaluateScriptSnippet(uiSourceCode1);
+        Snippets.ScriptSnippetFileSystem.evaluateScriptSnippet(uiSourceCode1);
         await new Promise(fulfill => {
           SDK.targetManager.addModelListener(SDK.ConsoleModel, SDK.ConsoleModel.Events.MessageAdded, fulfill);
         });
