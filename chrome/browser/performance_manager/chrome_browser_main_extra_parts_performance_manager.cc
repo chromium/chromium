@@ -68,7 +68,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
-#include "chrome/browser/performance_manager/policies/heuristic_memory_saver_policy.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/page_freezing_policy.h"
@@ -196,10 +195,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   graph->PassToGraph(
       std::make_unique<performance_manager::policies::PageFreezingPolicy>());
 
-  // Add both policies. Only one will be enabled at a time.
-  graph->PassToGraph(
-      std::make_unique<
-          performance_manager::policies::HeuristicMemorySaverPolicy>());
   graph->PassToGraph(
       std::make_unique<
           performance_manager::policies::HighEfficiencyModePolicy>());

@@ -3279,23 +3279,6 @@ const FeatureEntry::FeatureVariation
 };
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kHeuristicMemorySaverAggressive[] = {
-    {"threshold_percent", "30"},
-    {"minimum_time_in_background", "30m"}};
-const FeatureEntry::FeatureParam kHeuristicMemorySaverBalanced[] = {
-    {"threshold_percent", "15"},
-    {"minimum_time_in_background", "60m"}};
-const FeatureEntry::FeatureParam kHeuristicMemorySaverConservative[] = {
-    {"threshold_percent", "5"},
-    {"minimum_time_in_background", "120m"}};
-const FeatureEntry::FeatureVariation kHeuristicMemorySaverVariations[] = {
-    {"Aggressive", kHeuristicMemorySaverAggressive,
-     std::size(kHeuristicMemorySaverAggressive), nullptr},
-    {"Balanced", kHeuristicMemorySaverBalanced,
-     std::size(kHeuristicMemorySaverBalanced), nullptr},
-    {"Conservative", kHeuristicMemorySaverConservative,
-     std::size(kHeuristicMemorySaverConservative), nullptr},
-};
 
 const FeatureEntry::FeatureParam
     kHighEfficiencyMultistateModeShowRecommendedBadge[] = {
@@ -9944,14 +9927,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"heuristic-memory-saver-mode",
-     flag_descriptions::kHeuristicMemorySaverName,
-     flag_descriptions::kHeuristicMemorySaverDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         performance_manager::features::kHeuristicMemorySaver,
-         kHeuristicMemorySaverVariations,
-         "HeuristicMemorySaver")},
-
     {"memory-saver-multi-state-mode",
      flag_descriptions::kHighEfficiencyMultistateModeAvailableName,
      flag_descriptions::kHighEfficiencyMultistateModeAvailableDescription,

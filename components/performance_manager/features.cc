@@ -49,37 +49,6 @@ const base::FeatureParam<base::TimeDelta>
         &kPerformanceControlsBatteryPerformanceSurvey, "battery_lookback",
         base::Days(8)};
 
-BASE_FEATURE(kHeuristicMemorySaver,
-             "HeuristicMemorySaver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If 0, uses a default value from heuristic_memory_saver_policy.cc.
-const base::FeatureParam<base::TimeDelta>
-    kHeuristicMemorySaverThresholdReachedHeartbeatInterval{
-        &kHeuristicMemorySaver, "threshold_reached_heartbeat_interval",
-        base::TimeDelta()};
-const base::FeatureParam<base::TimeDelta>
-    kHeuristicMemorySaverThresholdNotReachedHeartbeatInterval{
-        &kHeuristicMemorySaver, "threshold_not_reached_heartbeat_interval",
-        base::TimeDelta()};
-const base::FeatureParam<base::TimeDelta>
-    kHeuristicMemorySaverMinimumTimeInBackground{&kHeuristicMemorySaver,
-                                                 "minimum_time_in_background",
-                                                 base::TimeDelta()};
-
-// If < 0, uses a default value from heuristic_memory_saver_policy.cc.
-const base::FeatureParam<int>
-    kHeuristicMemorySaverAvailableMemoryThresholdPercent{
-        &kHeuristicMemorySaver, "threshold_percent", -1};
-const base::FeatureParam<int> kHeuristicMemorySaverAvailableMemoryThresholdMb{
-    &kHeuristicMemorySaver, "threshold_mb", -1};
-const base::FeatureParam<int> kHeuristicMemorySaverPageCacheDiscountMac{
-    &kHeuristicMemorySaver, "mac_page_cache_available_percent", -1};
-
-BASE_FEATURE(kForceHeuristicMemorySaver,
-             "ForceHeuristicMemorySaver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHighEfficiencyMultistateMode,
              "HighEfficiencyMultistateMode",
              base::FEATURE_DISABLED_BY_DEFAULT);

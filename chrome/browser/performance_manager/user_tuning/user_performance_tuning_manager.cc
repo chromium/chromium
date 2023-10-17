@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
-#include "chrome/browser/performance_manager/policies/heuristic_memory_saver_policy.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
@@ -50,25 +49,21 @@ class HighEfficiencyModeDelegateImpl
         FROM_HERE,
         base::BindOnce(
             [](HighEfficiencyModeState state) {
-              auto* heuristic_memory_saver_policy =
-                  policies::HeuristicMemorySaverPolicy::GetInstance();
-              CHECK(heuristic_memory_saver_policy);
               auto* high_efficiency_mode_policy =
                   policies::HighEfficiencyModePolicy::GetInstance();
               CHECK(high_efficiency_mode_policy);
               switch (state) {
                 case HighEfficiencyModeState::kDisabled:
-                  heuristic_memory_saver_policy->SetActive(false);
                   high_efficiency_mode_policy->OnHighEfficiencyModeChanged(
                       false);
                   return;
                 case HighEfficiencyModeState::kEnabled:
-                  heuristic_memory_saver_policy->SetActive(true);
+                  // TODO(crbug.com/1492508): This setting should enable the
+                  // non-timer Memory Saver policy.
                   high_efficiency_mode_policy->OnHighEfficiencyModeChanged(
                       false);
                   return;
                 case HighEfficiencyModeState::kEnabledOnTimer:
-                  heuristic_memory_saver_policy->SetActive(false);
                   high_efficiency_mode_policy->OnHighEfficiencyModeChanged(
                       true);
                   return;
@@ -280,19 +275,11 @@ void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
   HighEfficiencyModeState state =
       prefs::GetCurrentHighEfficiencyModeState(pref_change_registrar_.prefs());
   if (!base::FeatureList::IsEnabled(features::kHighEfficiencyMultistateMode)) {
-    if (!IsHighEfficiencyModeManaged() &&
-        base::FeatureList::IsEnabled(features::kForceHeuristicMemorySaver)) {
-      // Set the heuristic policy for experimentation regardless of the pref.
-      state = base::FeatureList::IsEnabled(features::kHeuristicMemorySaver)
-                  ? HighEfficiencyModeState::kEnabled
-                  : HighEfficiencyModeState::kDisabled;
-    } else if (state != HighEfficiencyModeState::kDisabled) {
+    if (state != HighEfficiencyModeState::kDisabled) {
       // The user has enabled high efficiency mode, but without the multistate
       // UI they didn't choose a policy. The feature controls which policy to
       // use.
-      state = base::FeatureList::IsEnabled(features::kHeuristicMemorySaver)
-                  ? HighEfficiencyModeState::kEnabled
-                  : HighEfficiencyModeState::kEnabledOnTimer;
+      state = HighEfficiencyModeState::kEnabledOnTimer;
     }
   }
   high_efficiency_mode_delegate_->ToggleHighEfficiencyMode(state);
