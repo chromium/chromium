@@ -9,8 +9,9 @@ import android.os.Build;
 
 import androidx.core.app.NotificationManagerCompat;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.ui.base.WindowAndroid;

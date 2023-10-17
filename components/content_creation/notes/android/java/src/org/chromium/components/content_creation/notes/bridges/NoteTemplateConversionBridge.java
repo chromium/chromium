@@ -7,8 +7,9 @@ package org.chromium.components.content_creation.notes.bridges;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.components.content_creation.notes.models.Background;
 import org.chromium.components.content_creation.notes.models.FooterStyle;
 import org.chromium.components.content_creation.notes.models.HighlightStyle;

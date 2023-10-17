@@ -13,9 +13,9 @@ generate_jni("jni_headers") {
 android_library("sync_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//components/signin/public/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [
     ":java_enums",

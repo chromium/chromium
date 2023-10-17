@@ -10,9 +10,9 @@ android_library("java") {
   sources = [ "java/src/org/chromium/components/site_engagement/SiteEngagementService.java" ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//content/public/android:content_full_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 

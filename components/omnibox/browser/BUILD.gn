@@ -544,11 +544,11 @@ if (is_android) {
     ]
     deps = [
       ":java_resources",
-      "//base:jni_java",
       "//chrome/browser/flags:java",
       "//components/embedder_support/android:util_java",
       "//components/security_state/core:security_state_enums_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 
@@ -568,7 +568,6 @@ if (is_android) {
     deps = [
       ":java_resources",
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/styles/android:java_resources",
@@ -582,6 +581,7 @@ if (is_android) {
       "//third_party/androidx:androidx_collection_collection_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_interpolator_interpolator_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/metrics_proto:metrics_proto_java",
       "//ui/android:ui_full_java",
       "//url:gurl_java",

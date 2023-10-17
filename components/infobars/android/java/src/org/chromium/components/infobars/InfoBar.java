@@ -12,9 +12,10 @@ import android.widget.TextView;
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.infobar.ActionType;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.ui.modelutil.PropertyModel;

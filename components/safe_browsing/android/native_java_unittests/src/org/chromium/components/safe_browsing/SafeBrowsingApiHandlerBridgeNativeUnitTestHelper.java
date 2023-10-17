@@ -4,9 +4,9 @@
 
 package org.chromium.components.safe_browsing;
 
+import org.jni_zero.CalledByNative;
 import org.junit.Assert;
 
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge.UrlCheckTimeObserver;
 
 import java.util.Arrays;

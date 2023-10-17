@@ -9,9 +9,10 @@ import android.net.Uri;
 import android.text.Html;
 import android.text.TextUtils;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
 
 import java.io.File;
 

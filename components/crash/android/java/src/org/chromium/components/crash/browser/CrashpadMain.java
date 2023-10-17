@@ -4,8 +4,9 @@
 
 package org.chromium.components.crash.browser;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.DoNotInline;
 import org.chromium.build.annotations.UsedByReflection;

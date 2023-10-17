@@ -6,11 +6,11 @@ package org.chromium.net;
 
 import android.net.Network;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.impl.CronetEngineBuilderImpl;
 import org.chromium.net.impl.CronetUrlRequest;
 import org.chromium.net.impl.CronetUrlRequestContext;

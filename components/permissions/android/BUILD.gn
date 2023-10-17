@@ -119,7 +119,6 @@ android_library("java") {
     ":core_java",
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/util/android:java",
@@ -130,6 +129,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
 
@@ -153,11 +153,11 @@ android_library("core_java") {
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/location/android:location_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

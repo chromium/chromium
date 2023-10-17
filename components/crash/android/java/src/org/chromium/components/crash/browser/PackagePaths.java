@@ -8,8 +8,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.PackageUtils;
-import org.chromium.base.annotations.CalledByNative;
 
 import java.io.File;
 import java.util.ArrayList;

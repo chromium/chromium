@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.components.search_engines;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 import java.util.Locale;
 

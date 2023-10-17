@@ -49,13 +49,13 @@ test("minidump_uploader_test") {
 android_library("minidump_uploader_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/crash/android:anr_collector_java",
     "//content/public/android:content_main_dex_java",
     "//net/android:net_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
   srcjar_deps = [ ":minidump_uploader_jni_headers" ]

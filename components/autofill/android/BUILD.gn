@@ -163,11 +163,11 @@ android_library("main_autofill_java") {
     ":autofill_java_resources",
     ":payments_autofill_java",
     "//base:base_java",
-    "//base:jni_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
@@ -193,7 +193,7 @@ generate_jni("main_autofill_jni_headers") {
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
-  deps = [ "//base:jni_java" ]
+  deps = [ "//third_party/jni_zero:jni_zero_java" ]
 }
 
 # A minimal library used to expose autofill features to webview.
@@ -212,9 +212,9 @@ android_library("payments_autofill_java") {
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
   ]
   deps = [
-    "//base:jni_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [ ":payments_jni_headers" ]
 }
@@ -242,7 +242,7 @@ generate_jni("payments_jni_headers") {
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
   ]
-  deps = [ "//base:jni_java" ]
+  deps = [ "//third_party/jni_zero:jni_zero_java" ]
 }
 
 static_library("payments_autofill_cc") {

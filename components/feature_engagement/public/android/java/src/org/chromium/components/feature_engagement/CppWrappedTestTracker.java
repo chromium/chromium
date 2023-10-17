@@ -9,9 +9,10 @@ import android.text.TextUtils;
 import androidx.annotation.CheckResult;
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 /**
  * CppWrappedTestTracker is a Java implementation of a {@link Tracker} object that is

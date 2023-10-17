@@ -12,8 +12,8 @@ generate_jni("jni_headers") {
 android_library("java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]

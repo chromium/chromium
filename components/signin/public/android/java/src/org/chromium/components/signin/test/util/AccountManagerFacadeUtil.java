@@ -4,9 +4,9 @@
 
 package org.chromium.components.signin.test.util;
 
+import org.jni_zero.CalledByNative;
 import org.mockito.Mockito;
 
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 

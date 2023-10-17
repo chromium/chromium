@@ -36,10 +36,10 @@ android_library("module_installer_java") {
   deps = [
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
-    "//base:jni_java",
     "//components/crash/android:java",
     "//third_party/android_deps:playcore_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
   public_deps = [ "//build/android:build_java" ]

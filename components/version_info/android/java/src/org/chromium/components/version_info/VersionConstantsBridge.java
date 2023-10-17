@@ -4,7 +4,7 @@
 
 package org.chromium.components.version_info;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * Bridge between native and VersionConstants.java.

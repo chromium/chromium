@@ -8,9 +8,10 @@ import androidx.mediarouter.app.MediaRouteChooserDialogFragment;
 import androidx.mediarouter.app.MediaRouteControllerDialogFragment;
 import androidx.mediarouter.media.MediaRouteSelector;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.media_router.caf.CastMediaSource;
 import org.chromium.components.media_router.caf.remoting.RemotingMediaSource;
 import org.chromium.content_public.browser.WebContents;

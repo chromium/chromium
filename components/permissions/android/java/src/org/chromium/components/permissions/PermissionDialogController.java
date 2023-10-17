@@ -9,9 +9,10 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ObserverList;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.WindowAndroid;

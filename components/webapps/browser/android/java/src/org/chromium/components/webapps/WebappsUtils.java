@@ -17,11 +17,12 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.ui.widget.Toast;
 

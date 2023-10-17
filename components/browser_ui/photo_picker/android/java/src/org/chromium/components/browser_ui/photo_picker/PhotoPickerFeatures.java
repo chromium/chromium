@@ -6,9 +6,10 @@ package org.chromium.components.browser_ui.photo_picker;
 
 import android.os.Build;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Features;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Provides an API for querying the status of Photo Picker features.
