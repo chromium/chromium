@@ -35,6 +35,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 HTMLOutputElement::HTMLOutputElement(Document& document)
     : HTMLFormControlElement(html_names::kOutputTag, document),
       is_default_value_mode_(true),

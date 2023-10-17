@@ -405,7 +405,7 @@ class CORE_EXPORT HTMLInputElement
 
   bool CanTriggerImplicitSubmission() const final { return IsTextField(); }
 
-  enum FormControlType FormControlType() const final;
+  mojom::blink::FormControlType FormControlType() const final;
   const AtomicString& FormControlTypeAsString() const override;
 
   bool ShouldSaveAndRestoreFormControlState() const final;

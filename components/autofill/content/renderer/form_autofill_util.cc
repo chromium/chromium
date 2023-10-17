@@ -87,7 +87,6 @@ using blink::mojom::GenericIssueErrorType;
 // https://chromium-review.googlesource.com/c/chromium/src/+/4543002.
 namespace autofill::form_util {
 
-using Type = blink::FormControlType;
 using ::autofill::mojom::ButtonTitleType;
 
 struct ShadowFieldData {
@@ -960,11 +959,12 @@ ButtonTitleList InferButtonTitlesForForm(const WebFormElement& web_form) {
        item = input_elements.NextItem()) {
     DCHECK(item.IsFormControlElement());
     WebFormControlElement control_element = item.To<WebFormControlElement>();
-    Type type = control_element.FormControlTypeForAutofill();
-    bool is_submit_type =
-        type == Type::kInputSubmit || type == Type::kButtonSubmit;
-    bool is_button_type =
-        type == Type::kInputButton || type == Type::kButtonButton;
+    blink::mojom::FormControlType type =
+        control_element.FormControlTypeForAutofill();
+    bool is_submit_type = type == blink::mojom::FormControlType::kInputSubmit ||
+                          type == blink::mojom::FormControlType::kButtonSubmit;
+    bool is_button_type = type == blink::mojom::FormControlType::kInputButton ||
+                          type == blink::mojom::FormControlType::kButtonButton;
     if (!is_submit_type && !is_button_type) {
       continue;
     }
@@ -1353,7 +1353,8 @@ void MatchLabelsAndFields(
       }
     } else if (control.IsFormControlElement()) {
       WebFormControlElement form_control = control.To<WebFormControlElement>();
-      if (form_control.FormControlTypeForAutofill() == Type::kInputHidden) {
+      if (form_control.FormControlTypeForAutofill() ==
+          blink::mojom::FormControlType::kInputHidden) {
         continue;
       }
       // Typical case: look up |field_data| in |field_set|.
@@ -1923,8 +1924,8 @@ GURL GetDocumentUrlWithoutAuth(const WebDocument& document) {
 }
 
 bool IsMonthInput(const WebInputElement& element) {
-  return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == Type::kInputMonth;
+  return !element.IsNull() && element.FormControlTypeForAutofill() ==
+                                  blink::mojom::FormControlType::kInputMonth;
 }
 
 // All text fields, including password fields, should be extracted.
@@ -1937,18 +1938,18 @@ bool IsSelectOrSelectListElement(const WebFormControlElement& element) {
 }
 
 bool IsSelectElement(const WebFormControlElement& element) {
-  return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == Type::kSelectOne;
+  return !element.IsNull() && element.FormControlTypeForAutofill() ==
+                                  blink::mojom::FormControlType::kSelectOne;
 }
 
 bool IsSelectListElement(const WebFormControlElement& element) {
-  return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == Type::kSelectList;
+  return !element.IsNull() && element.FormControlTypeForAutofill() ==
+                                  blink::mojom::FormControlType::kSelectList;
 }
 
 bool IsTextAreaElement(const WebFormControlElement& element) {
-  return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == Type::kTextArea;
+  return !element.IsNull() && element.FormControlTypeForAutofill() ==
+                                  blink::mojom::FormControlType::kTextArea;
 }
 
 bool IsTextAreaElementOrTextInput(const WebFormControlElement& element) {
@@ -1979,35 +1980,35 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
           base::FeatureList::IsEnabled(features::kAutofillEnableSelectList));
 }
 
-FormControlType ToAutofillFormControlType(blink::FormControlType type) {
+FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type) {
   switch (type) {
-    case blink::FormControlType::kInputCheckbox:
+    case blink::mojom::FormControlType::kInputCheckbox:
       return FormControlType::kInputCheckbox;
-    case blink::FormControlType::kInputEmail:
+    case blink::mojom::FormControlType::kInputEmail:
       return FormControlType::kInputEmail;
-    case blink::FormControlType::kInputMonth:
+    case blink::mojom::FormControlType::kInputMonth:
       return FormControlType::kInputMonth;
-    case blink::FormControlType::kInputNumber:
+    case blink::mojom::FormControlType::kInputNumber:
       return FormControlType::kInputNumber;
-    case blink::FormControlType::kInputPassword:
+    case blink::mojom::FormControlType::kInputPassword:
       return FormControlType::kInputPassword;
-    case blink::FormControlType::kInputRadio:
+    case blink::mojom::FormControlType::kInputRadio:
       return FormControlType::kInputRadio;
-    case blink::FormControlType::kInputSearch:
+    case blink::mojom::FormControlType::kInputSearch:
       return FormControlType::kInputSearch;
-    case blink::FormControlType::kInputTelephone:
+    case blink::mojom::FormControlType::kInputTelephone:
       return FormControlType::kInputTelephone;
-    case blink::FormControlType::kInputText:
+    case blink::mojom::FormControlType::kInputText:
       return FormControlType::kInputText;
-    case blink::FormControlType::kInputUrl:
+    case blink::mojom::FormControlType::kInputUrl:
       return FormControlType::kInputUrl;
-    case blink::FormControlType::kSelectOne:
+    case blink::mojom::FormControlType::kSelectOne:
       return FormControlType::kSelectOne;
-    case blink::FormControlType::kSelectMultiple:
+    case blink::mojom::FormControlType::kSelectMultiple:
       return FormControlType::kSelectMultiple;
-    case blink::FormControlType::kSelectList:
+    case blink::mojom::FormControlType::kSelectList:
       return FormControlType::kSelectList;
-    case blink::FormControlType::kTextArea:
+    case blink::mojom::FormControlType::kTextArea:
       return FormControlType::kTextArea;
     default:
       NOTREACHED_NORETURN();
@@ -2043,7 +2044,8 @@ bool IsWebElementVisible(const blink::WebElement& element) {
 
 uint64_t GetMaxLength(const blink::WebFormControlElement& element) {
   if (IsTextInput(element.DynamicTo<WebInputElement>()) ||
-      element.FormControlTypeForAutofill() == Type::kTextArea) {
+      element.FormControlTypeForAutofill() ==
+          blink::mojom::FormControlType::kTextArea) {
     auto max_length = element.MaxLength();
     static_assert(uint64_t{std::numeric_limits<decltype(max_length)>::max()} <=
                   FormFieldData::kDefaultMaxLength);

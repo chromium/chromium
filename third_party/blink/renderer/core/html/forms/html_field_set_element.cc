@@ -39,6 +39,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 bool WillReattachChildLayoutObject(const Node& parent) {

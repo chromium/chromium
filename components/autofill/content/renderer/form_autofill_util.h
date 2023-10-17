@@ -181,7 +181,7 @@ bool IsAutofillableInputElement(const blink::WebInputElement& element);
 // {Text, Radiobutton, Checkbox, Select, TextArea}.
 bool IsAutofillableElement(const blink::WebFormControlElement& element);
 
-FormControlType ToAutofillFormControlType(blink::FormControlType type);
+FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type);
 
 // Returns true iff `element` has a "webauthn" autocomplete attribute.
 bool IsWebauthnTaggedElement(const blink::WebFormControlElement& element);

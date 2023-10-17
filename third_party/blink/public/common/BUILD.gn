@@ -143,7 +143,6 @@ source_set("headers") {
     "fetch/fetch_api_request_headers_map.h",
     "fetch/fetch_api_request_headers_mojom_traits.h",
     "forcedark/forcedark_switches.h",
-    "forms/form_control_type.h",
     "frame/delegated_capability_request_token.h",
     "frame/fenced_frame_permissions_policies.h",
     "frame/fenced_frame_sandbox_flags.h",

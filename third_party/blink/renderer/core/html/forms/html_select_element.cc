@@ -75,6 +75,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 bool CanAssignToSelectSlot(const Node& node) {

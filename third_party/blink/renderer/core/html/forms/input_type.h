@@ -34,6 +34,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INPUT_TYPE_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser_client.h"
@@ -64,8 +65,9 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual InputTypeView* CreateView() = 0;
 
   const AtomicString& FormControlTypeAsString() const;
-  enum FormControlType FormControlType() const {
-    return static_cast<enum FormControlType>(base::to_underlying(type_));
+  mojom::blink::FormControlType FormControlType() const {
+    return static_cast<mojom::blink::FormControlType>(
+        base::to_underlying(type_));
   }
 
   // Type query functions
@@ -290,35 +292,39 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   // https://html.spec.whatwg.org/multipage/input.html#attr-input-type
   // These values are a subset of the `FormControlType` enum. They have the same
   // binary representation so that FormControlType() reduces to a type cast.
-  enum class Type : std::underlying_type_t<enum FormControlType> {
-    kButton = base::to_underlying(FormControlType::kInputButton),
-    kColor = base::to_underlying(FormControlType::kInputColor),
-    kFile = base::to_underlying(FormControlType::kInputFile),
-    kHidden = base::to_underlying(FormControlType::kInputHidden),
-    kImage = base::to_underlying(FormControlType::kInputImage),
-    kNumber = base::to_underlying(FormControlType::kInputNumber),
-    kRange = base::to_underlying(FormControlType::kInputRange),
-    kReset = base::to_underlying(FormControlType::kInputReset),
-    kSubmit = base::to_underlying(FormControlType::kInputSubmit),
+  enum class Type : std::underlying_type_t<mojom::blink::FormControlType> {
+    kButton = base::to_underlying(mojom::blink::FormControlType::kInputButton),
+    kColor = base::to_underlying(mojom::blink::FormControlType::kInputColor),
+    kFile = base::to_underlying(mojom::blink::FormControlType::kInputFile),
+    kHidden = base::to_underlying(mojom::blink::FormControlType::kInputHidden),
+    kImage = base::to_underlying(mojom::blink::FormControlType::kInputImage),
+    kNumber = base::to_underlying(mojom::blink::FormControlType::kInputNumber),
+    kRange = base::to_underlying(mojom::blink::FormControlType::kInputRange),
+    kReset = base::to_underlying(mojom::blink::FormControlType::kInputReset),
+    kSubmit = base::to_underlying(mojom::blink::FormControlType::kInputSubmit),
 
     // BaseCheckable
-    kRadio = base::to_underlying(FormControlType::kInputRadio),
-    kCheckbox = base::to_underlying(FormControlType::kInputCheckbox),
+    kRadio = base::to_underlying(mojom::blink::FormControlType::kInputRadio),
+    kCheckbox =
+        base::to_underlying(mojom::blink::FormControlType::kInputCheckbox),
 
     // BaseTemporal
-    kDate = base::to_underlying(FormControlType::kInputDate),
-    kDateTimeLocal = base::to_underlying(FormControlType::kInputDatetimeLocal),
-    kMonth = base::to_underlying(FormControlType::kInputMonth),
-    kTime = base::to_underlying(FormControlType::kInputTime),
-    kWeek = base::to_underlying(FormControlType::kInputWeek),
+    kDate = base::to_underlying(mojom::blink::FormControlType::kInputDate),
+    kDateTimeLocal =
+        base::to_underlying(mojom::blink::FormControlType::kInputDatetimeLocal),
+    kMonth = base::to_underlying(mojom::blink::FormControlType::kInputMonth),
+    kTime = base::to_underlying(mojom::blink::FormControlType::kInputTime),
+    kWeek = base::to_underlying(mojom::blink::FormControlType::kInputWeek),
 
     // BaseText
-    kEmail = base::to_underlying(FormControlType::kInputEmail),
-    kPassword = base::to_underlying(FormControlType::kInputPassword),
-    kSearch = base::to_underlying(FormControlType::kInputSearch),
-    kTelephone = base::to_underlying(FormControlType::kInputTelephone),
-    kURL = base::to_underlying(FormControlType::kInputUrl),
-    kText = base::to_underlying(FormControlType::kInputText),
+    kEmail = base::to_underlying(mojom::blink::FormControlType::kInputEmail),
+    kPassword =
+        base::to_underlying(mojom::blink::FormControlType::kInputPassword),
+    kSearch = base::to_underlying(mojom::blink::FormControlType::kInputSearch),
+    kTelephone =
+        base::to_underlying(mojom::blink::FormControlType::kInputTelephone),
+    kURL = base::to_underlying(mojom::blink::FormControlType::kInputUrl),
+    kText = base::to_underlying(mojom::blink::FormControlType::kInputText),
   };
 
   InputType(Type type, HTMLInputElement& element)

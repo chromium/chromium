@@ -113,7 +113,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   bool IsInteractiveContent() const override;
   bool IsLabelable() const override { return true; }
 
-  enum FormControlType FormControlType() const override;
+  mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
 
   FormControlState SaveFormControlState() const override;

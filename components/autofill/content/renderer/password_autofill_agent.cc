@@ -329,7 +329,7 @@ void AnnotateFieldsWithSignatures(
 // fields, both of which are cached in the Document.
 bool HasPasswordField(const WebLocalFrame& frame) {
   auto ContainsPasswordField = [&](const auto& fields) {
-    return base::Contains(fields, blink::FormControlType::kInputPassword,
+    return base::Contains(fields, blink::mojom::FormControlType::kInputPassword,
                           &WebFormControlElement::FormControlTypeForAutofill);
   };
 
@@ -521,7 +521,7 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
     // block a form submission. Note: Don't use |check_status !=
     // kNotCheckable|, a radio button is considered a "checkable" element too,
     // but it should block a submission.
-    return field.form_control_type == FormControlType::kInputCheckbox;
+    return field.form_control_type == mojom::FormControlType::kInputCheckbox;
   };
 
   for (size_t i = username_index + 1; i < password_index; ++i) {
@@ -2213,7 +2213,7 @@ bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(
     const WebFormControlElement& element) const {
   FieldRendererId element_id = form_util::GetFieldRendererId(element);
   return element.FormControlTypeForAutofill() ==
-             blink::FormControlType::kInputPassword &&
+             blink::mojom::FormControlType::kInputPassword &&
          (field_data_manager_->DidUserType(element_id) ||
           field_data_manager_->WasAutofilledOnUserTrigger(element_id));
 }

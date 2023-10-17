@@ -56,14 +56,15 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   // https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type
   // These values are a subset of the `FormControlType` enum. They have the same
   // binary representation so that FormControlType() reduces to a type cast.
-  enum Type : std::underlying_type_t<enum FormControlType> {
-    kSubmit = base::to_underlying(FormControlType::kButtonSubmit),
-    kReset = base::to_underlying(FormControlType::kButtonReset),
-    kButton = base::to_underlying(FormControlType::kButtonButton),
-    kSelectlist = base::to_underlying(FormControlType::kButtonSelectList)
+  enum Type : std::underlying_type_t<mojom::blink::FormControlType> {
+    kSubmit = base::to_underlying(mojom::blink::FormControlType::kButtonSubmit),
+    kReset = base::to_underlying(mojom::blink::FormControlType::kButtonReset),
+    kButton = base::to_underlying(mojom::blink::FormControlType::kButtonButton),
+    kSelectlist =
+        base::to_underlying(mojom::blink::FormControlType::kButtonSelectList)
   };
 
-  enum FormControlType FormControlType() const override;
+  mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;

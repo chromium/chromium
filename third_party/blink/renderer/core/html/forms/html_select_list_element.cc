@@ -41,6 +41,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
+
 namespace {
 class PreviewPopoverInnerElement : public HTMLDivElement {
  public:

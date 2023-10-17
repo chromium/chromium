@@ -265,7 +265,7 @@ FocusedFieldType AutofillAgent::FocusStateNotifier::GetFieldType(
   }
 
   if (input_element.FormControlTypeForAutofill() ==
-      blink::FormControlType::kInputSearch) {
+      blink::mojom::FormControlType::kInputSearch) {
     return FocusedFieldType::kFillableSearchField;
   }
   if (input_element.IsPasswordFieldForAutofill()) {

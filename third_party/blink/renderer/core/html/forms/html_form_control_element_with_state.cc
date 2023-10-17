@@ -32,6 +32,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 enum class AutoCompleteCategory {

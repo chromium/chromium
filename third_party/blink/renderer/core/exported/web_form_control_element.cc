@@ -48,9 +48,9 @@
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
-#include "base/memory/scoped_refptr.h"
-
 namespace blink {
+
+using mojom::blink::FormControlType;
 
 bool WebFormControlElement::IsEnabled() const {
   return !ConstUnwrap<HTMLFormControlElement>()->IsDisabledFormControl();

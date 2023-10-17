@@ -99,6 +99,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 const unsigned kMaxEmailFieldLength = 254;

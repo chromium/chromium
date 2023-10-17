@@ -164,7 +164,7 @@ class CORE_EXPORT HTMLSelectListElement final
   bool IsLabelable() const override;
 
   // HTMLFormControlElementWithState overrides:
-  enum FormControlType FormControlType() const override;
+  mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
   void DefaultEventHandler(Event&) override;
   bool MayTriggerVirtualKeyboard() const override;

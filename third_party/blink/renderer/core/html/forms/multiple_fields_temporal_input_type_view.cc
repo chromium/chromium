@@ -62,6 +62,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 class DateTimeFormatValidator : public DateTimeFormat::TokenHandler {
  public:
   DateTimeFormatValidator()

@@ -65,6 +65,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 static const unsigned kDefaultRows = 2;
 static const unsigned kDefaultCols = 20;
 

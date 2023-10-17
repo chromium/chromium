@@ -490,13 +490,16 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebString value;
     WebFormControlElement element = GetFormControlElementById(
         WebString::FromASCII(field_case.id_attribute));
-    if ((element.FormControlType() == blink::FormControlType::kSelectOne) ||
-        (element.FormControlType() == blink::FormControlType::kTextArea)) {
+    if ((element.FormControlType() ==
+         blink::mojom::FormControlType::kSelectOne) ||
+        (element.FormControlType() ==
+         blink::mojom::FormControlType::kTextArea)) {
       value = get_value_function(element);
     } else {
-      ASSERT_TRUE(
-          element.FormControlType() == blink::FormControlType::kInputText ||
-          element.FormControlType() == blink::FormControlType::kInputMonth);
+      ASSERT_TRUE(element.FormControlType() ==
+                      blink::mojom::FormControlType::kInputText ||
+                  element.FormControlType() ==
+                      blink::mojom::FormControlType::kInputMonth);
       value = get_value_function(element);
     }
 
@@ -2292,11 +2295,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
   }
 
   static WebString GetValueWrapper(WebFormControlElement element) {
-    if (element.FormControlType() == blink::FormControlType::kTextArea) {
+    if (element.FormControlType() == blink::mojom::FormControlType::kTextArea) {
       return element.To<WebFormControlElement>().Value();
     }
 
-    if (element.FormControlType() == blink::FormControlType::kSelectOne) {
+    if (element.FormControlType() ==
+        blink::mojom::FormControlType::kSelectOne) {
       return element.To<WebSelectElement>().Value();
     }
 
@@ -2304,11 +2308,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
   }
 
   static WebString GetSuggestedValueWrapper(WebFormControlElement element) {
-    if (element.FormControlType() == blink::FormControlType::kTextArea) {
+    if (element.FormControlType() == blink::mojom::FormControlType::kTextArea) {
       return element.To<WebFormControlElement>().SuggestedValue();
     }
 
-    if (element.FormControlType() == blink::FormControlType::kSelectOne) {
+    if (element.FormControlType() ==
+        blink::mojom::FormControlType::kSelectOne) {
       return element.To<WebSelectElement>().SuggestedValue();
     }
 

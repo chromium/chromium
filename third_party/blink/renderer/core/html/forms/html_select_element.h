@@ -200,7 +200,7 @@ class CORE_EXPORT HTMLSelectElement final
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
  private:
-  enum FormControlType FormControlType() const override;
+  mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
 
   bool MayTriggerVirtualKeyboard() const override;

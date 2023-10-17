@@ -43,6 +43,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 HTMLButtonElement::HTMLButtonElement(Document& document)
     : HTMLFormControlElement(html_names::kButtonTag, document) {}
 
@@ -63,7 +65,7 @@ LayoutObject* HTMLButtonElement::CreateLayoutObject(
 }
 
 FormControlType HTMLButtonElement::FormControlType() const {
-  return static_cast<enum FormControlType>(base::to_underlying(type_));
+  return static_cast<mojom::blink::FormControlType>(base::to_underlying(type_));
 }
 
 const AtomicString& HTMLButtonElement::FormControlTypeAsString() const {

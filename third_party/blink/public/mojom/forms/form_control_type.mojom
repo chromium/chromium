@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FORMS_FORM_CONTROL_TYPE_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_FORMS_FORM_CONTROL_TYPE_H_
-
-#include <cstdint>
-
-namespace blink {
+module blink.mojom;
 
 // An enum representation of the values of the `type` attribute of form control
 // elements. This list is exhaustive.
-enum class FormControlType : uint8_t {
+enum FormControlType {
   // https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type
   kButtonButton,
   kButtonSubmit,
@@ -51,7 +46,3 @@ enum class FormControlType : uint8_t {
   // https://html.spec.whatwg.org/multipage/form-elements.html#dom-textarea-type
   kTextArea,
 };
-
-}  // namespace blink
-
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FORMS_FORM_CONTROL_TYPE_H_
