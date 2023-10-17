@@ -289,6 +289,10 @@ class BASE_EXPORT ProcessMetrics {
   double last_energy_impact_;
   // In mach_absolute_time units.
   uint64_t last_energy_impact_time_;
+
+  // Works around a race condition when combining two task_info() calls to
+  // measure CPU time.
+  TimeDelta last_measured_cpu_;
 #endif
 
 #if BUILDFLAG(IS_MAC)

@@ -128,7 +128,18 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   timeradd(&user_timeval, &task_timeval, &task_timeval);
   timeradd(&system_timeval, &task_timeval, &task_timeval);
 
-  return Microseconds(TimeValToMicroseconds(task_timeval));
+  const TimeDelta measured_cpu =
+      Microseconds(TimeValToMicroseconds(task_timeval));
+  if (measured_cpu < last_measured_cpu_) {
+    // When a thread terminates, its CPU time is immediately removed from the
+    // running thread times returned by TASK_THREAD_TIMES_INFO, but there can be
+    // a lag before it shows up in the terminated thread times returned by
+    // GetTaskInfo(). Make sure CPU usage doesn't appear to go backwards if
+    // GetCumulativeCPUUsage() is called in the interval.
+    return last_measured_cpu_;
+  }
+  last_measured_cpu_ = measured_cpu;
+  return measured_cpu;
 }
 
 int ProcessMetrics::GetPackageIdleWakeupsPerSecond() {
