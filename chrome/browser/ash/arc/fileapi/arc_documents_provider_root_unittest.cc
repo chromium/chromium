@@ -323,6 +323,10 @@ class ArcDocumentsProviderRootTest : public testing::Test {
 
     // Run all pending tasks before destroying testing profile.
     base::RunLoop().RunUntilIdle();
+
+    // Reset BrowserContext after all pneding tasks are completed and before
+    // destroying testing profile.
+    arc_service_manager_->set_browser_context(nullptr);
   }
 
  protected:

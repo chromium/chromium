@@ -115,6 +115,10 @@ class NearbyShareSessionImplFuseBoxTest : public NearbyShareSessionImplTest {
     fusebox_server_ = std::make_unique<fusebox::Server>(/*delegate=*/nullptr);
   }
 
+  void TearDown() override {
+    arc_service_manager_->set_browser_context(nullptr);
+  }
+
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<fusebox::Server> fusebox_server_;

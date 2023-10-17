@@ -76,8 +76,7 @@ class ArcServiceManager {
   // allowed to use ARC.
   // TODO(hidehiko): Remove this when we move IsArcAllowedForProfile() to
   // components/arc. See browser_context() for details.
-  raw_ptr<content::BrowserContext, DanglingUntriaged | ExperimentalAsh>
-      browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_ = nullptr;
 
   // This holds the AccountId corresponding to the |browser_context_|.
   // TODO(hidehiko): Remove this when we move IsArcAllowedForProfile() to

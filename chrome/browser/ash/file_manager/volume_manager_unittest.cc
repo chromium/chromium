@@ -1335,6 +1335,7 @@ class VolumeManagerArcTest : public VolumeManagerTest {
   void TearDown() override {
     arc_service_manager_->arc_bridge_service()->file_system()->CloseInstance(
         &file_system_instance_);
+    arc_service_manager_->set_browser_context(nullptr);
     VolumeManagerTest::TearDown();
   }
 

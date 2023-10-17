@@ -103,6 +103,9 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc_session_manager_->Shutdown();
     arc_session_manager_.reset();
 
+    // Must reset browser context reference before profile destruction.
+    arc_service_manager_->set_browser_context(nullptr);
+
     // Destruction order matters here.
     //
     // This line destroys profile, thus indirectly destroys
@@ -112,7 +115,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     // ArcServiceManager must still be alive at this line.
     BrowserWithTestWindowTest::TearDown();
 
-    arc_service_manager_->set_browser_context(nullptr);
     arc_service_manager_.reset();
     ash::VmPluginDispatcherClient::Shutdown();
     ash::CryptohomeMiscClient::Shutdown();

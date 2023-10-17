@@ -110,6 +110,7 @@ class ArcWallpaperServiceTest : public testing::Test {
   void TearDown() override {
     arc_service_manager_.arc_bridge_service()->wallpaper()->CloseInstance(
         wallpaper_instance_.get());
+    arc_service_manager_.set_browser_context(nullptr);
     wallpaper_instance_.reset();
 
     wallpaper_controller_client_.reset();
