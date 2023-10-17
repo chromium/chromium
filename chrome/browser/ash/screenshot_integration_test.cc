@@ -46,7 +46,8 @@ class ScreenshotIntegrationTest : public MixinBasedInProcessBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(Vulkan, ScreenshotIntegrationTest, testing::Bool());
 
-IN_PROC_BROWSER_TEST_P(ScreenshotIntegrationTest, AverageColor) {
+// Flaky on chromeos-amd64-generic-rel, https://crbug.com/1492672
+IN_PROC_BROWSER_TEST_P(ScreenshotIntegrationTest, DISABLED_AverageColor) {
   // Ensure the display is powered on, otherwise the screenshot will fail.
   base::RunLoop run_loop;
   ash::Shell::Get()->display_configurator()->SetDisplayPower(
