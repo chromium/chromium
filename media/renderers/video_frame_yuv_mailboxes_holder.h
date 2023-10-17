@@ -34,11 +34,14 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
   // creates new shared images and uploads YUV data to GPU if |video_frame| is
   // mappable. This function can be called repeatedly to re-use shared images in
   // the case of CPU backed VideoFrames. The planes are returned in |mailboxes|.
+  // `client_mailbox_usage` is an optional SharedImageUsage bitfield that will
+  // be added to the internally-needed usages of any newly-created SharedImages.
   void VideoFrameToMailboxes(
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider,
       gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes],
-      bool allow_multiplanar_for_upload);
+      bool allow_multiplanar_for_upload,
+      uint32_t client_mailbox_usage = 0);
 
   // Returns a YUV SkImage for the specified video frame. If
   // `reinterpret_color_space` is non-nullptr, then the SkImage will be
