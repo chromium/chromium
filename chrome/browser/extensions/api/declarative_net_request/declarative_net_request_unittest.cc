@@ -1899,7 +1899,7 @@ TEST_P(MultipleRulesetsTest,
     ruleset_ids.push_back(id);
     if (enabled)
       expected_enabled_ruleset_ids.push_back(id);
-    AddRuleset(CreateRuleset(id, 10, 10, enabled));
+    AddRuleset(CreateRuleset(id, 1, 1, enabled));
   }
 
   std::string first_ruleset_id = ruleset_ids[0];
