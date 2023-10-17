@@ -9,6 +9,7 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "net/base/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/gl/gl_features.h"
@@ -78,6 +79,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disable Reducing User Agent minor version on WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kReduceUserAgentMinorVersion);
+
+  // Disable skip Safe Browsing subresource checks on WebView since WebView's
+  // rollout schedule is behind Clank's schedule.
+  aw_feature_overrides.DisableFeature(
+      safe_browsing::kSafeBrowsingSkipSubresources);
 
   aw_feature_overrides.RegisterOverrides(feature_list);
 }
