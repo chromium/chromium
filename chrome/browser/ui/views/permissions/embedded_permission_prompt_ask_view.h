@@ -29,8 +29,9 @@ class EmbeddedPermissionPromptAskView
   void RunButtonCallback(int type) override;
 
  protected:
-  std::vector<RequestLineConfiguration> GetRequestLinesConfiguration() override;
-  std::vector<ButtonConfiguration> GetButtonsConfiguration() override;
+  std::vector<RequestLineConfiguration> GetRequestLinesConfiguration()
+      const override;
+  std::vector<ButtonConfiguration> GetButtonsConfiguration() const override;
 
  private:
   std::u16string GetMessageText() const;

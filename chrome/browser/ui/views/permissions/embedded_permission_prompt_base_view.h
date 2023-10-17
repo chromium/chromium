@@ -67,6 +67,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
     kStopAllowing = 3,
     kClose = 4,
     kAllowThisTime = 5,
+    kContinueNotAllowing = 6,
   };
 
   struct RequestLineConfiguration {
@@ -86,9 +87,9 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   }
 
   // Configuration that needs to be implemented by subclasses
-  virtual std::vector<RequestLineConfiguration>
-  GetRequestLinesConfiguration() = 0;
-  virtual std::vector<ButtonConfiguration> GetButtonsConfiguration() = 0;
+  virtual std::vector<RequestLineConfiguration> GetRequestLinesConfiguration()
+      const = 0;
+  virtual std::vector<ButtonConfiguration> GetButtonsConfiguration() const = 0;
 
   base::WeakPtr<permissions::PermissionPrompt::Delegate>& delegate() {
     return delegate_;

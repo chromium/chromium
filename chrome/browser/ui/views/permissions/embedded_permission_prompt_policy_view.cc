@@ -38,7 +38,7 @@ void EmbeddedPermissionPromptPolicyView::RunButtonCallback(int button_id) {
 }
 
 std::vector<EmbeddedPermissionPromptPolicyView::RequestLineConfiguration>
-EmbeddedPermissionPromptPolicyView::GetRequestLinesConfiguration() {
+EmbeddedPermissionPromptPolicyView::GetRequestLinesConfiguration() const {
   std::vector<RequestLineConfiguration> lines;
   lines.emplace_back(&vector_icons::kBusinessIcon, GetMessageText());
 
@@ -46,7 +46,7 @@ EmbeddedPermissionPromptPolicyView::GetRequestLinesConfiguration() {
 }
 
 std::vector<EmbeddedPermissionPromptPolicyView::ButtonConfiguration>
-EmbeddedPermissionPromptPolicyView::GetButtonsConfiguration() {
+EmbeddedPermissionPromptPolicyView::GetButtonsConfiguration() const {
   std::vector<ButtonConfiguration> buttons;
   buttons.emplace_back(l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL),
                        ButtonType::kPolicyOK, ui::ButtonStyle::kTonal);

@@ -5463,6 +5463,8 @@ static_library("ui") {
       "views/permissions/embedded_permission_prompt_base_view.h",
       "views/permissions/embedded_permission_prompt_policy_view.cc",
       "views/permissions/embedded_permission_prompt_policy_view.h",
+      "views/permissions/embedded_permission_prompt_previously_denied_view.cc",
+      "views/permissions/embedded_permission_prompt_previously_denied_view.h",
       "views/permissions/embedded_permission_prompt_previously_granted_view.cc",
       "views/permissions/embedded_permission_prompt_previously_granted_view.h",
       "views/permissions/permission_prompt_base_view.cc",
