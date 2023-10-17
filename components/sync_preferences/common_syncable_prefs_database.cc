@@ -48,7 +48,7 @@ enum {
   kAutofillHasSeenIban = 3,
   // kAutofillIbanEnabled = 4,  (obsolete).
   kAutofillLastVersionDeduped = 5,
-  kAutofillLastVersionDisusedAddressesDeleted = 6,
+  // kAutofillLastVersionDisusedAddressesDeleted = 6, (deprecated)
   kAutofillProfileEnabled = 7,
   kShowAppsShortcutInBookmarkBar = 8,
   kShowBookmarkBar = 9,
@@ -130,9 +130,6 @@ const auto& SyncablePreferences() {
               false, MergeBehavior::kNone}},
             {autofill::prefs::kAutofillLastVersionDeduped,
              {syncable_prefs_ids::kAutofillLastVersionDeduped,
-              syncer::PREFERENCES, false, MergeBehavior::kNone}},
-            {autofill::prefs::kAutofillLastVersionDisusedAddressesDeleted,
-             {syncable_prefs_ids::kAutofillLastVersionDisusedAddressesDeleted,
               syncer::PREFERENCES, false, MergeBehavior::kNone}},
             {autofill::prefs::kAutofillProfileEnabled,
              {syncable_prefs_ids::kAutofillProfileEnabled, syncer::PREFERENCES,

@@ -104391,7 +104391,7 @@ would be helpful to identify which type is being sent.
   <int value="3" label="AutofillHasSeenIban"/>
   <int value="4" label="AutofillIBANEnabled (obsolete)"/>
   <int value="5" label="AutofillLastVersionDeduped"/>
-  <int value="6" label="AutofillLastVersionDisusedAddressesDeleted"/>
+  <int value="6" label="AutofillLastVersionDisusedAddressesDeleted (obsolete)"/>
   <int value="7" label="AutofillProfileEnabled"/>
   <int value="8" label="ShowAppsShortcutInBookmarkBar"/>
   <int value="9" label="ShowBookmarkBar"/>
