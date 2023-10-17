@@ -169,6 +169,12 @@ class FakeNearbyPresenceCredentialStorage
     }
   }
 
+  void GetPublicCredentials(
+      ash::nearby::presence::mojom::PublicCredentialType public_credential_type,
+      GetPublicCredentialsCallback callback) override {
+    // TODO(b:295337599): Method will be implemented when CredentialStorage
+    // consumes the GetPublicCredential method.
+  }
   void SetShouldCredentialsSuccessfullySave(bool should_succeed) {
     should_credentials_successfully_save_ = should_succeed;
   }

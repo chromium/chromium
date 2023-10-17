@@ -10,6 +10,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -142,6 +143,54 @@ void NearbyPresenceCredentialStorage::SaveCredentials(
               std::move(on_credentials_fully_saved_callback)));
       break;
   }
+}
+
+void NearbyPresenceCredentialStorage::GetPublicCredentials(
+    mojom::PublicCredentialType public_credential_type,
+    GetPublicCredentialsCallback callback) {
+  CHECK(callback);
+
+  switch (public_credential_type) {
+    case (mojom::PublicCredentialType::kLocalPublicCredential):
+      local_public_db_->LoadEntries(base::BindOnce(
+          &NearbyPresenceCredentialStorage::OnPublicCredentialsRetrieved,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      break;
+    case (mojom::PublicCredentialType::kRemotePublicCredential):
+      remote_public_db_->LoadEntries(base::BindOnce(
+          &NearbyPresenceCredentialStorage::OnPublicCredentialsRetrieved,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      break;
+  }
+}
+
+void NearbyPresenceCredentialStorage::OnPublicCredentialsRetrieved(
+    GetPublicCredentialsCallback callback,
+    bool success,
+    std::unique_ptr<std::vector<::nearby::internal::SharedCredential>>
+        entries) {
+  CHECK(callback);
+
+  if (!success) {
+    // TODO(b/287334363): Emit a failure metric.
+    LOG(ERROR) << __func__ << ": failed to retrieve public credentials";
+    std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kAborted,
+                            absl::nullopt);
+    return;
+  }
+
+  CHECK(entries);
+
+  std::vector<ash::nearby::presence::mojom::SharedCredentialPtr>
+      shared_credentials_mojom;
+  for (const auto& entry : *entries) {
+    auto credential_mojo =
+        ash::nearby::presence::proto::SharedCredentialToMojom(entry);
+    shared_credentials_mojom.push_back(std::move(credential_mojo));
+  }
+
+  std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kOk,
+                          std::move(shared_credentials_mojom));
 }
 
 void NearbyPresenceCredentialStorage::OnLocalPublicCredentialsSaved(

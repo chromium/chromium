@@ -48,6 +48,8 @@ class NearbyPresenceCredentialStorage
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
       mojom::PublicCredentialType public_credential_type,
       SaveCredentialsCallback on_credentials_fully_saved_callback) override;
+  void GetPublicCredentials(mojom::PublicCredentialType public_credential_type,
+                            GetPublicCredentialsCallback callback) override;
 
  protected:
   NearbyPresenceCredentialStorage(
@@ -61,6 +63,12 @@ class NearbyPresenceCredentialStorage
           remote_public_db);
 
  private:
+  void OnPublicCredentialsRetrieved(
+      GetPublicCredentialsCallback callback,
+      bool success,
+      std::unique_ptr<std::vector<::nearby::internal::SharedCredential>>
+          entries);
+
   void OnLocalPublicCredentialsSaved(
       std::vector<mojom::LocalCredentialPtr> local_credentials,
       SaveCredentialsCallback on_credentials_fully_saved_callback,
