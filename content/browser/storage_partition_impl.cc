@@ -1032,6 +1032,9 @@ class StoragePartitionImpl::DataDeletionHelper {
       AggregationService* aggregation_service,
       PrivateAggregationManagerImpl* private_aggregation_manager,
       storage::SharedStorageManager* shared_storage_manager,
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+      CdmStorageManager* cdm_storage_manager,
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
       bool perform_storage_cleanup,
       const base::Time begin,
       const base::Time end);
@@ -1577,8 +1580,15 @@ void StoragePartitionImpl::Initialize(
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase)) {
-    cdm_storage_manager_ = std::make_unique<CdmStorageManager>(
-        partition_path_.Append(kCdmStorageDatabaseFileName));
+    if (is_in_memory()) {
+      // Pass an empty path if in_memory so that CdmStorage.db is not stored on
+      // disk.
+      cdm_storage_manager_ =
+          std::make_unique<CdmStorageManager>(base::FilePath());
+    } else {
+      cdm_storage_manager_ = std::make_unique<CdmStorageManager>(
+          partition_path_.Append(kCdmStorageDatabaseFileName));
+    }
   }
 
   media_license_manager_ = std::make_unique<MediaLicenseManager>(
@@ -2549,7 +2559,11 @@ void StoragePartitionImpl::ClearDataImpl(
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
       interest_group_manager_.get(), attribution_manager_.get(),
       aggregation_service_.get(), private_aggregation_manager_.get(),
-      shared_storage_manager_.get(), perform_storage_cleanup, begin, end);
+      shared_storage_manager_.get(),
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+      cdm_storage_manager_.get(),
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+      perform_storage_cleanup, begin, end);
 }
 
 void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
@@ -2747,6 +2761,9 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     AggregationService* aggregation_service,
     PrivateAggregationManagerImpl* private_aggregation_manager,
     storage::SharedStorageManager* shared_storage_manager,
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+    CdmStorageManager* cdm_storage_manager,
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
     bool perform_storage_cleanup,
     const base::Time begin,
     const base::Time end) {
@@ -2836,6 +2853,22 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     }
   }
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  if ((remove_mask_ & REMOVE_DATA_MASK_MEDIA_LICENSES) && cdm_storage_manager) {
+    // If no storage key specified, then delete the CdmStorage.db.
+    if (storage_key_origin_empty) {
+      cdm_storage_manager->DeleteDatabase();
+    } else {
+      // TODO(crbug.com/1454512): Investigate and add logic to handle
+      // filter_builder and storage_key_policy_matcher.
+      cdm_storage_manager->DeleteDataForStorageKey(storage_key,
+                                                   base::DoNothing());
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+  // TODO(crbug.com/1454512): Remove REMOVE_DATA_MASK_MEDIA_LICENSES from here
+  // when MediaLicense is removed from Quota types.
   if (remove_mask_ & REMOVE_DATA_MASK_INDEXEDDB ||
       remove_mask_ & REMOVE_DATA_MASK_WEBSQL ||
       remove_mask_ & REMOVE_DATA_MASK_FILE_SYSTEMS ||
