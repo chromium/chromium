@@ -280,10 +280,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   smart_reader_client_ =
       std::make_unique<smart_reader::SmartReaderClientImpl>();
 
-  if (chromeos::BrowserParamsProxy::Get()->IsWindowLayoutMenuEnabled()) {
-    multitask_menu_nudge_delegate_ =
-        std::make_unique<MultitaskMenuNudgeDelegateLacros>();
-  }
+  multitask_menu_nudge_delegate_ =
+      std::make_unique<MultitaskMenuNudgeDelegateLacros>();
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(

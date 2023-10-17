@@ -156,8 +156,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
       case views::CAPTION_BUTTON_ICON_CUSTOM:
         return true;
       case views::CAPTION_BUTTON_ICON_FLOAT: {
-        if (!chromeos::wm::features::IsWindowLayoutMenuEnabled() ||
-            !frame_->IsNativeWidgetInitialized()) {
+        if (!frame_->IsNativeWidgetInitialized()) {
           return false;
         }
         if (chromeos::TabletState::Get()->InTabletMode()) {
@@ -243,15 +242,12 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
   AddChildView(minimize_button_.get());
 
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    float_button_ = AddChildView(std::make_unique<views::FrameCaptionButton>(
-        base::BindRepeating(
-            &FrameCaptionButtonContainerView::FloatButtonPressed,
-            base::Unretained(this)),
-        views::CAPTION_BUTTON_ICON_FLOAT, HTMENU));
-    float_button_->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_MULTITASK_MENU_FLOAT_BUTTON_NAME));
-  }
+  float_button_ = AddChildView(std::make_unique<views::FrameCaptionButton>(
+      base::BindRepeating(&FrameCaptionButtonContainerView::FloatButtonPressed,
+                          base::Unretained(this)),
+      views::CAPTION_BUTTON_ICON_FLOAT, HTMENU));
+  float_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_MULTITASK_MENU_FLOAT_BUTTON_NAME));
 
   size_button_ = new FrameSizeButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::SizeButtonPressed,
@@ -710,7 +706,6 @@ void FrameCaptionButtonContainerView::MenuButtonPressed() {
 void FrameCaptionButtonContainerView::FloatButtonPressed() {
   // Abort any animations of the button icons.
   SetButtonsToNormal(Animate::kNo);
-  CHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
 
   aura::Window* window = GetWidget()->GetNativeWindow();
   if (window->GetProperty(kWindowStateTypeKey) == WindowStateType::kFloated) {

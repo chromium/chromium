@@ -183,7 +183,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -2873,7 +2872,6 @@ views::Button* BrowserView::GetSharingHubIconButton() {
 }
 
 void BrowserView::ToggleMultitaskMenu() const {
-  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   auto* frame_view =
       static_cast<BrowserNonClientFrameViewChromeOS*>(frame_->GetFrameView());
   if (!frame_view) {

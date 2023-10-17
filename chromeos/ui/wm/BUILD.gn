@@ -15,8 +15,6 @@ source_set("wm") {
     "constants.h",
     "desks/chromeos_desks_histogram_enums.h",
     "desks/desks_helper.h",
-    "features.cc",
-    "features.h",
     "fullscreen/keep_fullscreen_for_url_checker.cc",
     "fullscreen/keep_fullscreen_for_url_checker.h",
     "fullscreen/pref_names.cc",

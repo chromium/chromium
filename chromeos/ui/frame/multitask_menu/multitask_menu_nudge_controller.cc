@@ -11,7 +11,6 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/nudge_util.h"
 #include "chromeos/ui/base/tablet_state.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
@@ -169,8 +168,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
     return;
   }
 
-  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled() ||
-      g_suppress_nudge_for_testing || nudge_widget_) {
+  if (g_suppress_nudge_for_testing || nudge_widget_) {
     return;
   }
 

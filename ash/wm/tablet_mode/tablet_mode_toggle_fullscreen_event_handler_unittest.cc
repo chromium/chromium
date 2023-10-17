@@ -11,7 +11,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -58,10 +57,6 @@ class TabletModeToggleFullscreenEventHandlerTest : public AshTestBase {
     GetEventGenerator()->GestureScrollSequence(gfx::Point(100, start_y),
                                                gfx::Point(100, end_y),
                                                base::Milliseconds(100), 3);
-
-    if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-      return;
-    }
 
     // Swiping down on the center reveals the tablet mode multitask menu. Ensure
     // our swipes do not reveal it, as it may eat following gestures.

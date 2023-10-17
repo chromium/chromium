@@ -100,10 +100,6 @@
 #include "ui/accessibility/accessibility_features.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ui/wm/features.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_commands_mac.h"
 #endif
@@ -1204,9 +1200,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_.UpdateCommandEnabled(IDC_NAME_WINDOW, true);
 #if BUILDFLAG(IS_CHROMEOS)
-  command_updater_.UpdateCommandEnabled(
-      IDC_TOGGLE_MULTITASK_MENU,
-      chromeos::wm::features::IsWindowLayoutMenuEnabled());
+  command_updater_.UpdateCommandEnabled(IDC_TOGGLE_MULTITASK_MENU, true);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   command_updater_.UpdateCommandEnabled(IDC_MINIMIZE_WINDOW, true);

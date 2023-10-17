@@ -209,9 +209,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ui/wm/features.h"
-#else
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #endif
 
@@ -2107,7 +2105,6 @@ void PromptToNameWindow(Browser* browser) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void ToggleMultitaskMenu(Browser* browser) {
-  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   browser->window()->ToggleMultitaskMenu();
 }
 #endif
