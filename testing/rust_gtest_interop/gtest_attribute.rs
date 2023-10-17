@@ -1,10 +1,77 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
+use syn::parse::{Parse, ParseStream};
 use syn::spanned::Spanned;
+use syn::{parse_macro_input, Error, Ident, ItemFn, ItemImpl, LitStr, Token, Type};
 
 /// The prefix attached to a Gtest factory function by the
 /// RUST_GTEST_TEST_SUITE_FACTORY() macro.
 const RUST_GTEST_FACTORY_PREFIX: &str = "RustGtestFactory_";
+
+struct GtestArgs {
+    suite_name: String,
+    test_name: String,
+}
+
+impl Parse for GtestArgs {
+    fn parse(input: ParseStream) -> Result<Self, Error> {
+        let suite_name = input.parse::<Ident>()?.to_string();
+        input.parse::<Token![,]>()?;
+        let test_name = input.parse::<Ident>()?.to_string();
+        Ok(GtestArgs { suite_name, test_name })
+    }
+}
+
+struct GtestSuiteArgs {
+    rust_type: Type,
+}
+
+impl Parse for GtestSuiteArgs {
+    fn parse(input: ParseStream) -> Result<Self, Error> {
+        let rust_type = input.parse::<Type>()?;
+        Ok(GtestSuiteArgs { rust_type })
+    }
+}
+
+struct ExternTestSuiteArgs {
+    cpp_type: TokenStream,
+}
+
+impl Parse for ExternTestSuiteArgs {
+    fn parse(input: ParseStream) -> Result<Self, Error> {
+        // TODO(b/229791967): With CXX it is not possible to get the C++ typename and
+        // path from the Rust wrapper type, so we require specifying it by hand in
+        // the macro. It would be nice to remove this opportunity for mistakes.
+        let cpp_type_as_lit_str = input.parse::<LitStr>()?;
+
+        // TODO(danakj): This code drops the C++ namespaces, because we can't produce a
+        // mangled name and can't generate bindings involving fn pointers, so we require
+        // the C++ function to be `extern "C"` which means it has no namespace.
+        // Eventually we should drop the `extern "C"` on the C++ side and use the
+        // full path here.
+        match cpp_type_as_lit_str.value().split("::").last() {
+            Some(name) => {
+                Ok(ExternTestSuiteArgs { cpp_type: format_ident!("{}", name).into_token_stream() })
+            }
+            None => Err(Error::new(cpp_type_as_lit_str.span(), "invalid C++ class name")),
+        }
+    }
+}
+
+struct CppPrefixArgs {
+    cpp_prefix: String,
+}
+
+impl Parse for CppPrefixArgs {
+    fn parse(input: ParseStream) -> Result<Self, Error> {
+        let cpp_prefix_as_lit_str = input.parse::<LitStr>()?;
+        Ok(CppPrefixArgs { cpp_prefix: cpp_prefix_as_lit_str.value() })
+    }
+}
 
 /// The `gtest` macro can be placed on a function to make it into a Gtest unit
 /// test, when linked into a C++ binary that invokes Gtest.
@@ -44,172 +111,109 @@ const RUST_GTEST_FACTORY_PREFIX: &str = "RustGtestFactory_";
 /// ```
 #[proc_macro_attribute]
 pub fn gtest(
-    arg_stream: proc_macro::TokenStream,
+    args: proc_macro::TokenStream,
     input: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
-    enum GtestAttributeArgument {
-        TestSuite,
-        TestName,
-    }
-    // Returns a string representation of an identifier argument to the attribute.
-    // For example, for #[gtest(Foo, Bar)], this function would return "Foo" for
-    // position 0 and "Bar" for position 1. If the argument is not a Rust
-    // identifier or not present, it returns a compiler error as a TokenStream
-    // to be emitted.
-    fn get_arg_string(
-        args: &syn::AttributeArgs,
-        which: GtestAttributeArgument,
-    ) -> Result<String, TokenStream> {
-        let pos = match which {
-            GtestAttributeArgument::TestSuite => 0,
-            GtestAttributeArgument::TestName => 1,
-        };
-        match &args[pos] {
-            syn::NestedMeta::Meta(syn::Meta::Path(path)) if path.segments.len() == 1 => {
-                Ok(path.segments[0].ident.to_string())
-            }
-            _ => {
-                let error_stream = match which {
-                    GtestAttributeArgument::TestSuite => {
-                        quote_spanned! {
-                                args[pos].span() =>
-                            compile_error!(
-                                "Expected a test suite name, written as an identifier."
-                            );
-                        }
-                    }
-                    GtestAttributeArgument::TestName => {
-                        quote_spanned! {
-                                args[pos].span() =>
-                            compile_error!(
-                                "Expected a test name, written as an identifier."
-                            );
-                        }
-                    }
-                };
-                Err(error_stream)
-            }
-        }
-    }
-    /// Parses `#[gtest_suite(path::to::RustType)]` and returns
-    /// `path::to::RustType`.
-    fn parse_gtest_suite(attr: &syn::Attribute) -> Result<TokenStream, TokenStream> {
-        let parsed = match attr.parse_meta() {
-            Ok(syn::Meta::List(list)) if list.nested.len() == 1 => match &list.nested[0] {
-                syn::NestedMeta::Meta(syn::Meta::Path(fn_path)) => Ok(fn_path.into_token_stream()),
-                x => Err(x.span()),
-            },
-            Ok(x) => Err(x.span()),
-            Err(x) => Err(x.span()),
-        };
-        parsed.or_else(|span| {
-            Err(quote_spanned! { span =>
-                compile_error!(
-                    "invalid syntax for gtest_suite macro, \
-                    expected `#[gtest_suite(path::to:RustType)]`");
-            })
-        })
-    }
+    let GtestArgs { suite_name, test_name } = parse_macro_input!(args as GtestArgs);
 
-    let args = syn::parse_macro_input!(arg_stream as syn::AttributeArgs);
-    let mut input_fn = syn::parse_macro_input!(input as syn::ItemFn);
+    let (input_fn, gtest_suite_attr) = {
+        let mut input_fn = parse_macro_input!(input as ItemFn);
 
-    // Populated data from the #[gtest_suite] macro arguments.
-    //
-    // The Rust type wrapping a C++ TestSuite (subclass of `testing::Test`), which
-    // is created and returned by a C++ factory function. If no type is
-    // specified, then this is left as None, and the default C++ factory
-    // function will be used to make a `testing::Test` directly.
-    let mut gtest_test_suite_wrapper_type: Option<TokenStream> = None;
-
-    // Look through other attributes on the test function, parse the ones related to
-    // Gtests, and put the rest back into `attrs`.
-    input_fn.attrs = {
-        let mut keep = Vec::new();
-        for attr in std::mem::take(&mut input_fn.attrs) {
-            if attr.path.is_ident("gtest_suite") {
-                let rust_type_name = match parse_gtest_suite(&attr) {
-                    Ok(tokens) => tokens,
-                    Err(error_tokens) => return error_tokens.into(),
-                };
-                gtest_test_suite_wrapper_type = Some(rust_type_name);
-            } else {
-                keep.push(attr)
-            }
-        }
-        keep
-    };
-
-    // No longer mut.
-    let input_fn = input_fn;
-    let gtest_test_suite_wrapper_type = gtest_test_suite_wrapper_type;
-
-    if let Some(asyncness) = input_fn.sig.asyncness {
-        // TODO(crbug.com/1288947): We can support async functions once we have
-        // block_on() support which will run a RunLoop until the async test
-        // completes. The run_test_fn just needs to be generated to `block_on(||
-        // #test_fn)` instead of calling `#test_fn` synchronously.
-        return quote_spanned! {
-            asyncness.span =>
-            compile_error!("async functions are not supported.");
-        }
-        .into();
-    }
-
-    let (test_suite_name, test_name) = match args.len() {
-        2 => {
-            let suite = match get_arg_string(&args, GtestAttributeArgument::TestSuite) {
-                Ok(ok) => ok,
-                Err(error_stream) => return error_stream.into(),
-            };
-            let test = match get_arg_string(&args, GtestAttributeArgument::TestName) {
-                Ok(ok) => ok,
-                Err(error_stream) => return error_stream.into(),
-            };
-            (suite, test)
-        }
-        0 | 1 => {
-            return quote! {
-                compile_error!(
-                    "Expected two arguments. For example: #[gtest(TestSuite, TestName)].");
-            }
-            .into();
-        }
-        x => {
+        if let Some(asyncness) = input_fn.sig.asyncness {
+            // TODO(crbug.com/1288947): We can support async functions once we have
+            // block_on() support which will run a RunLoop until the async test
+            // completes. The run_test_fn just needs to be generated to `block_on(||
+            // #test_fn)` instead of calling `#test_fn` synchronously.
             return quote_spanned! {
-                args[x.min(2)].span() =>
-                compile_error!(
-                    "Expected two arguments. For example: #[gtest(TestSuite, TestName)].");
+                asyncness.span =>
+                    compile_error!("async functions are not supported.");
             }
             .into();
         }
+
+        // Filter out other gtest attributes on the test function and save them for
+        // later processing.
+        let mut gtest_suite_attr = None;
+        input_fn.attrs = input_fn
+            .attrs
+            .into_iter()
+            .filter_map(|attr| {
+                if attr.path().is_ident("gtest_suite") {
+                    gtest_suite_attr = Some(attr);
+                    None
+                } else {
+                    Some(attr)
+                }
+            })
+            .collect::<Vec<_>>();
+
+        (input_fn, gtest_suite_attr)
     };
 
-    // We put the test function and all the code we generate around it into a
-    // submodule which is uniquely named for the super module based on the Gtest
-    // suite and test names. A result of this is that if two tests have the same
-    // test suite + name, a compiler error would report the conflict.
-    let test_mod = format_ident!("__test_{}_{}", test_suite_name, test_name);
+    // The identifier of the function which contains the body of the test.
+    let test_fn = &input_fn.sig.ident;
 
-    // The run_test_fn identifier is marked #[no_mangle] to work around a codegen
-    // bug where the function is seen as dead and the compiler omits it from the
-    // object files. Since it's #[no_mangle], the identifier must be globally
-    // unique or we have an ODR violation. To produce a unique identifier, we
-    // roll our own name mangling by combining the file name and path from
-    // the source tree root with the Gtest suite and test names and the function
-    // itself.
+    let (gtest_factory_fn, test_fn_call) = if let Some(attr) = gtest_suite_attr {
+        // If present, the gtest_suite attribute is expected to have the form
+        // `#[gtest_suite(path::to::RustType)]`. The Rust type wraps a C++
+        // `TestSuite` (subclass of `::testing::Test`) which should be created
+        // and returned by a C++ factory function.
+        let rust_type = match attr.parse_args::<GtestSuiteArgs>() {
+            Ok(x) => x.rust_type,
+            Err(x) => return x.to_compile_error().into(),
+        };
+
+        (
+            // Get the Gtest factory function pointer from the TestSuite trait.
+            quote! { <#rust_type as ::rust_gtest_interop::TestSuite>::gtest_factory_fn_ptr() },
+            // SAFETY: Our lambda casts the `suite` reference and does not move from it, and
+            // the resulting type is not Unpin.
+            quote! {
+                let p = unsafe {
+                    suite.map_unchecked_mut(|suite: &mut ::rust_gtest_interop::OpaqueTestingTest| {
+                        suite.as_mut()
+                    })
+                };
+                #test_fn(p)
+            },
+        )
+    } else {
+        // Otherwise, use `rust_gtest_interop::rust_gtest_default_factory()`
+        // which makes a `TestSuite` with `testing::Test` directly.
+        (
+            quote! { ::rust_gtest_interop::__private::rust_gtest_default_factory },
+            quote! { #test_fn() },
+        )
+    };
+
+    // The test function and all code generate by this proc macroa go into a
+    // submodule which is uniquely named for the super module based on the Gtest
+    // suite and test names. If two tests have the same suite + test name, this
+    // will result in a compiler error—this is OK because Gtest disallows
+    // dynamically registering multiple tests with the same suite + test name.
+    let test_mod = format_ident!("__test_{}_{}", suite_name, test_name);
+
+    // In the generated code, `run_test_fn` is marked #[no_mangle] to work around a
+    // codegen bug where the function is seen as dead and the compiler omits it
+    // from the object files. Since it's #[no_mangle], the identifier must be
+    // globally unique or we have an ODR violation. To produce a unique
+    // identifier, we roll our own name mangling by combining the file name and
+    // path from the source tree root with the Gtest suite and test names and the
+    // function itself.
     //
     // Note that an adversary could still produce a bug here by placing two equal
     // Gtest suite and names in a single .rs file but in separate inline
     // submodules.
+    //
+    // TODO(dcheng): This probably can be simplified to not bother with anything
+    // other than the suite and test name, given Gtest's restrictions for a
+    // given suite + test name pair to be globally unique within a test binary.
     let mangled_function_name = |f: &syn::ItemFn| -> syn::Ident {
         let file_name = file!().replace(|c: char| !c.is_ascii_alphanumeric(), "_");
-        format_ident!("{}_{}_{}_{}", file_name, test_suite_name, test_name, f.sig.ident)
+        format_ident!("{}_{}_{}_{}", file_name, suite_name, test_name, f.sig.ident)
     };
-    let run_test_fn = format_ident!("run_test_{}", mangled_function_name(&input_fn));
 
-    // The identifier of the function which contains the body of the test.
-    let test_fn = &input_fn.sig.ident;
+    let run_test_fn = format_ident!("run_test_{}", mangled_function_name(&input_fn));
 
     // Implements ToTokens to generate a reference to a static-lifetime,
     // null-terminated, C-String literal. It is represented as an array of type
@@ -244,37 +248,9 @@ pub fn gtest(
     }
 
     // C-compatible string literals, that can be inserted into the quote! macro.
-    let test_suite_name_c_bytes = CStringLiteral(&test_suite_name);
+    let suite_name_c_bytes = CStringLiteral(&suite_name);
     let test_name_c_bytes = CStringLiteral(&test_name);
     let file_c_bytes = CStringLiteral(file!());
-
-    let gtest_factory_fn = match &gtest_test_suite_wrapper_type {
-        Some(rust_type) => {
-            // Get the Gtest factory function pointer from the the TestSuite trait.
-            quote! { <#rust_type as ::rust_gtest_interop::TestSuite>::gtest_factory_fn_ptr() }
-        }
-        None => {
-            // If the #[gtest] macros didn't specify a test suite, then we use
-            // `rust_gtest_interop::rust_gtest_default_factory() which makes a TestSuite
-            // with `testing::Test` directly.
-            quote! { ::rust_gtest_interop::__private::rust_gtest_default_factory }
-        }
-    };
-    let test_fn_call = match &gtest_test_suite_wrapper_type {
-        Some(_rust_type) => {
-            // SAFETY: Our lambda casts the `suite` reference and does not move from it, and
-            // the resulting type is not Unpin.
-            quote! {
-                let p = unsafe {
-                    suite.map_unchecked_mut(|suite: &mut ::rust_gtest_interop::OpaqueTestingTest| {
-                        suite.as_mut()
-                    })
-                };
-                #test_fn(p)
-            }
-        }
-        None => quote! { #test_fn() },
-    };
 
     let output = quote! {
         mod #test_mod {
@@ -284,7 +260,7 @@ pub fn gtest(
             unsafe fn register_test() {
                 let r = ::rust_gtest_interop::__private::TestRegistration {
                     func: #run_test_fn,
-                    test_suite_name: #test_suite_name_c_bytes,
+                    test_suite_name: #suite_name_c_bytes,
                     test_name: #test_name_c_bytes,
                     file: #file_c_bytes,
                     line: line!(),
@@ -323,6 +299,7 @@ pub fn gtest(
             #input_fn
         }
     };
+
     output.into()
 }
 
@@ -363,90 +340,53 @@ pub fn gtest(
 /// RUST_GTEST_TEST_SUITE_FACTORY().
 #[proc_macro_attribute]
 pub fn extern_test_suite(
-    arg_stream: proc_macro::TokenStream,
+    args: proc_macro::TokenStream,
     input: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
-    let args = syn::parse_macro_input!(arg_stream as syn::AttributeArgs);
-
     // TODO(b/229791967): With CXX it is not possible to get the C++ typename and
     // path from the Rust wrapper type, so we require specifying it by hand in
     // the macro. It would be nice to remove this opportunity for mistakes.
-    let cpp_type = match if args.len() == 1 { Some(&args[0]) } else { None } {
-        Some(syn::NestedMeta::Lit(syn::Lit::Str(lit_str))) => {
-            // TODO(danakj): This code drops the C++ namespaces, because we can't produce a
-            // mangled name and can't generate bindings involving fn pointers,
-            // so we require the C++ function to be `extern "C"` which means it
-            // has no namespace. Eventually we should drop the `extern "C"` on
-            // the C++ side and use the full path here.
-            let string = lit_str.value();
-            let class_name = string.split("::").last();
-            match class_name {
-                Some(name) => format_ident!("{}", name).into_token_stream(),
-                None => {
-                    return quote_spanned! {lit_str.span() => compile_error!(
-                        "invalid C++ class name"
-                    )}
-                    .into();
-                }
-            }
-        }
-        _ => {
-            return quote! {compiler_error!(
-                "expected C++ type as argument to extern_test_suite"
+    let ExternTestSuiteArgs { cpp_type } = parse_macro_input!(args as ExternTestSuiteArgs);
+
+    // Filter out other gtest attributes on the trait impl and save them for later
+    // processing.
+    let (trait_impl, cpp_prefix_attr) = {
+        let mut trait_impl = parse_macro_input!(input as ItemImpl);
+
+        if !trait_impl.items.is_empty() {
+            return quote_spanned! {trait_impl.items[0].span() => compile_error!(
+                "expected empty trait impl"
             )}
             .into();
         }
+
+        let mut cpp_prefix_attr = None;
+        trait_impl.attrs = trait_impl
+            .attrs
+            .into_iter()
+            .filter_map(|attr| {
+                if attr.path().is_ident("cpp_prefix") {
+                    cpp_prefix_attr = Some(attr);
+                    None
+                } else {
+                    Some(attr)
+                }
+            })
+            .collect::<Vec<_>>();
+
+        (trait_impl, cpp_prefix_attr)
     };
 
-    /// Parses `#[cpp_prefix("PREFIX_STRING_")]` and returns `"PREFIX_STRING_"`.
-    fn parse_cpp_prefix(attr: &syn::Attribute) -> Result<String, TokenStream> {
-        let parsed = match attr.parse_meta() {
-            Ok(syn::Meta::List(list)) if list.nested.len() == 1 => match &list.nested[0] {
-                syn::NestedMeta::Lit(syn::Lit::Str(lit_str)) => Ok(lit_str.value()),
-                x => Err(x.span()),
-            },
-            Ok(x) => Err(x.span()),
-            Err(x) => Err(x.span()),
-        };
-        parsed.map_err(|span| {
-            quote_spanned! { span =>
-                compile_error!(
-                    "invalid syntax for extern_test_suite macro, \
-                    expected `#[cpp_prefix("PREFIX_STRING_")]`");
-            }
-        })
-    }
-
-    let mut trait_impl = syn::parse_macro_input!(input as syn::ItemImpl);
-    if !trait_impl.items.is_empty() {
-        return quote_spanned! {trait_impl.items[0].span() => compile_error!(
-            "expected empty trait impl"
-        )}
-        .into();
-    }
-
-    let mut cpp_prefix = RUST_GTEST_FACTORY_PREFIX.to_owned();
-
-    // Look through other attributes on `trait_impl`, parse the ones related to
-    // Gtests, and put the rest back into `attrs`.
-    trait_impl.attrs = {
-        let mut keep = Vec::new();
-        for attr in std::mem::take(&mut trait_impl.attrs) {
-            if attr.path.is_ident("cpp_prefix") {
-                cpp_prefix = match parse_cpp_prefix(&attr) {
-                    Ok(tokens) => tokens,
-                    Err(error_tokens) => return error_tokens.into(),
-                };
-            } else {
-                keep.push(attr)
-            }
+    let cpp_prefix = if let Some(attr) = cpp_prefix_attr {
+        // If present, the cpp_prefix attribute is expected to have the form
+        // `#[cpp_prefix("PREFIX_STRING_")]`.
+        match attr.parse_args::<CppPrefixArgs>() {
+            Ok(cpp_prefix_args) => cpp_prefix_args.cpp_prefix,
+            Err(x) => return x.to_compile_error().into(),
         }
-        keep
+    } else {
+        RUST_GTEST_FACTORY_PREFIX.to_string()
     };
-
-    // No longer mut.
-    let trait_impl = trait_impl;
-    let cpp_prefix = cpp_prefix;
 
     let trait_name = match &trait_impl.trait_ {
         Some((_, path, _)) => path,
@@ -457,8 +397,9 @@ pub fn extern_test_suite(
             .into();
         }
     };
+
     let rust_type = match &*trait_impl.self_ty {
-        syn::Type::Path(type_path) => type_path,
+        Type::Path(type_path) => type_path,
         _ => {
             return quote_spanned! {trait_impl.self_ty.span() => compile_error!(
                 "expected type that wraps C++ subclass of `testing::Test`"
@@ -470,7 +411,7 @@ pub fn extern_test_suite(
     // TODO(danakj): We should generate a C++ mangled name here, then we don't
     // require the function to be `extern "C"` (or have the author write the
     // mangled name themselves).
-    let cpp_fn_name = format_ident!("{}{}", cpp_prefix, cpp_type.into_token_stream().to_string());
+    let cpp_fn_name = format_ident!("{}{}", cpp_prefix, cpp_type.to_string());
 
     let output = quote! {
         unsafe impl #trait_name for #rust_type {
@@ -486,5 +427,6 @@ pub fn extern_test_suite(
             }
         }
     };
+
     output.into()
 }

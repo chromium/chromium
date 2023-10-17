@@ -65,7 +65,7 @@ dependencies = [
  "skrifa",
  "small_ctor",
  "static_assertions",
- "syn 1.0.99",
+ "syn 2.0.29",
  "unicode-linebreak",
  "wycheproof",
 ]

@@ -56,7 +56,7 @@ if (enable_rust) {
     deps = [
       "//third_party/rust/proc_macro2/v1:lib",
       "//third_party/rust/quote/v1:lib",
-      "//third_party/rust/syn/v1:lib",
+      "//third_party/rust/syn/v2:lib",
     ]
 
     # This target's contents are exposed as part of :rust_gtest_interop.
