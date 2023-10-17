@@ -153,13 +153,13 @@ void TranslateScript::OnScriptFetchComplete(bool success,
 #endif  // BUILDFLAG(IS_IOS)
 
     // Wrap |data| in try/catch block to handle unexpected script errors.
-    const char* format =
+    static constexpr char kFormat[] =
         "try {"
         "  %s;"
         "} catch (error) {"
         "  cr.googleTranslate.onTranslateElementError(error);"
         "};";
-    base::StringAppendF(&data_, format, data.c_str());
+    base::StringAppendF(&data_, kFormat, data.c_str());
 
     // We'll expire the cached script after some time, to make sure long
     // running browsers still get fixes that might get pushed with newer

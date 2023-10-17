@@ -30,8 +30,9 @@ namespace {
 // testing? Which site is it? etc.
 // Test definitions for ProtoConvertorViewHierarchyTest.
 constexpr int kProtoConversionTestCasesCount = 5;
-const char* kProtoConversionSampleInputFileNameFormat = "sample%i_ax_tree.json";
-const char* kProtoConversionSampleExpectedFileNameFormat =
+constexpr char kProtoConversionSampleInputFileNameFormat[] =
+    "sample%i_ax_tree.json";
+constexpr char kProtoConversionSampleExpectedFileNameFormat[] =
     "sample%i_expected_proto.pbtxt";
 
 // A dummy tree node definition for PreOrderTreeGeneration.

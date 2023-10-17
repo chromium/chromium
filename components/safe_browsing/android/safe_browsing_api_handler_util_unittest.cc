@@ -118,7 +118,7 @@ TEST_F(SafeBrowsingApiHandlerUtilTest, SubresourceFilterSubTypes) {
   };
 
   for (const auto& test_case : test_cases) {
-    std::string json = R"({
+    static constexpr char kJson[] = R"({
         "matches" : [{
           "threat_type":"13"
           %s
@@ -131,9 +131,9 @@ TEST_F(SafeBrowsingApiHandlerUtilTest, SubresourceFilterSubTypes) {
       }
       return base::StringPrintf(",\"%s\":\"%s\"", k, v);
     };
-    json = base::StringPrintf(json.c_str(),
-                              put_kv("sf_absv", test_case.abusive_type).c_str(),
-                              put_kv("sf_bas", test_case.bas_type).c_str());
+    std::string json = base::StringPrintf(
+        kJson, put_kv("sf_absv", test_case.abusive_type).c_str(),
+        put_kv("sf_bas", test_case.bas_type).c_str());
     SCOPED_TRACE(testing::Message() << json);
 
     ASSERT_EQ(UmaRemoteCallResult::MATCH, ResetAndParseJson(json));
