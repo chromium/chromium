@@ -2247,6 +2247,9 @@ BASE_FEATURE(kProjectorRedirectToPwa,
              "ProjectorRedirectToPwa",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether projector V2 is enabled.
+BASE_FEATURE(kProjectorV2, "ProjectorV2", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the transcript chapter title feature is enabled.
 BASE_FEATURE(kProjectorTranscriptChapterTitle,
              "ProjectorTranscriptChapterTitle",
@@ -3997,6 +4000,10 @@ bool IsProjectorMutingEnabled() {
 
 bool IsProjectorRedirectToPwaEnabled() {
   return base::FeatureList::IsEnabled(kProjectorRedirectToPwa);
+}
+
+bool IsProjectorV2Enabled() {
+  return base::FeatureList::IsEnabled(kProjectorV2);
 }
 
 bool IsProjectorTranscriptChapterTitleEnabled() {
