@@ -125,7 +125,7 @@ TEST_F(LuciTestResultTest, Status) {
   LuciTestResult result;
   result.set_test_path("FakeTestSuite.Status");
 
-  const std::string json_template =
+  static constexpr char kJsonTemplate[] =
       R"({
            "testResult":{
              "expected":false,
@@ -149,7 +149,7 @@ TEST_F(LuciTestResultTest, Status) {
   for (const auto& test_case : kTestCases) {
     result.set_status(test_case.status);
     const std::string expected_json =
-        base::StringPrintf(json_template.c_str(), test_case.status_text);
+        base::StringPrintf(kJsonTemplate, test_case.status_text);
     ValidateResult(result, expected_json);
   }
 }
@@ -175,7 +175,7 @@ TEST_P(LuciTestResultParameterizedTest, Variant) {
 
   result.set_duration(base::Milliseconds(1500));
 
-  const std::string json_template =
+  static constexpr char kJsonTemplate[] =
       R"({
            "testResult":{
              "expected":true,
@@ -188,7 +188,7 @@ TEST_P(LuciTestResultParameterizedTest, Variant) {
            }
          })";
   const std::string expected_json =
-      base::StringPrintf(json_template.c_str(), GetParam());
+      base::StringPrintf(kJsonTemplate, GetParam());
   ValidateResult(result, expected_json);
 }
 INSTANTIATE_TEST_SUITE_P(ZeroToFiveSequence,
@@ -223,7 +223,7 @@ TYPED_TEST_P(LuciTestResultTypedTest, Variant) {
   ASSERT_NE(pos, std::string::npos);
   std::string type_param_name = test_suite_name.substr(pos + 1);
 
-  const std::string json_template =
+  static constexpr char kJsonTemplate[] =
       R"({
            "testResult":{
              "expected":true,
@@ -237,7 +237,7 @@ TYPED_TEST_P(LuciTestResultTypedTest, Variant) {
   // Note that chromium has RTTI disabled. As a result, type_param() and
   // GetTypeName<> always returns a generic "<type>".
   const std::string expected_json =
-      base::StringPrintf(json_template.c_str(), type_param_name.c_str(),
+      base::StringPrintf(kJsonTemplate, type_param_name.c_str(),
                          testing::internal::GetTypeName<TypeParam>().c_str());
   this->ValidateResult(result, expected_json);
 }
