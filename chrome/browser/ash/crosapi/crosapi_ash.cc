@@ -928,8 +928,13 @@ void CrosapiAsh::BindTrustedVaultBackend(
           trusted_vault::kChromeOSTrustedVaultClientShared)) {
     return;
   }
-  ash::TrustedVaultBackendServiceFactoryAsh::GetForProfile(GetAshProfile())
-      ->BindReceiver(std::move(receiver));
+  auto* backend_service =
+      ash::TrustedVaultBackendServiceFactoryAsh::GetForProfile(GetAshProfile());
+  if (!backend_service) {
+    // Nullable in Guest profile.
+    return;
+  }
+  backend_service->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindTts(mojo::PendingReceiver<mojom::Tts> receiver) {
