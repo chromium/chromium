@@ -41,6 +41,10 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog,
   FilesPolicyWarnDialog& operator=(FilesPolicyWarnDialog&&) = delete;
   ~FilesPolicyWarnDialog() override;
 
+  // Returns the maximum number of characters that can be inserted in the
+  // justification textarea.
+  size_t GetMaxBypassJustificationLengthForTesting() const;
+
  private:
   // PolicyDialogBase overrides:
   void MaybeAddConfidentialRows() override;

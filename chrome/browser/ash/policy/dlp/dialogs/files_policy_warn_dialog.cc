@@ -156,6 +156,11 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
 
 FilesPolicyWarnDialog::~FilesPolicyWarnDialog() = default;
 
+size_t FilesPolicyWarnDialog::GetMaxBypassJustificationLengthForTesting()
+    const {
+  return kMaxBypassJustificationLength;
+}
+
 void FilesPolicyWarnDialog::MaybeAddConfidentialRows() {
   if (action_ == dlp::FileAction::kDownload ||
       dialog_info_.GetFiles().empty()) {
