@@ -76,9 +76,7 @@ class ExtensionApiTabBackForwardCacheTest
   ExtensionApiTabBackForwardCacheTest() {
     feature_list_.InitWithFeaturesAndParameters(
         content::GetBasicBackForwardCacheFeatureForTesting(
-            {{features::kBackForwardCache,
-              {{"content_injection_supported", "true"},
-               {"all_extensions_allowed", "true"}}}}),
+            {{features::kBackForwardCache, {}}}),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
   ~ExtensionApiTabBackForwardCacheTest() override = default;

@@ -15,8 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -31,7 +29,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/extension_message_port.h"
@@ -118,21 +115,12 @@ const Extension* GetExtensionForNativeAppChannel(
       source_render_frame_host, true);
 }
 
-bool IsExtensionMessageSupportedInBackForwardCache() {
-  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
-    return false;
-  static const bool is_extension_message_supported =
-      base::FeatureParam<bool>(&features::kBackForwardCache,
-                               "extension_message_supported", true)
-          .Get();
-  return is_extension_message_supported;
-}
-
 // Disables the back forward for `host` if the current configuration does not
 // support extension messaging APIs.
 void MaybeDisableBackForwardCacheForMessaging(content::RenderFrameHost* host) {
-  if (!host || IsExtensionMessageSupportedInBackForwardCache())
+  if (!host || content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     return;
+  }
   content::BackForwardCache::DisableForRenderFrameHost(
       host, back_forward_cache::DisabledReason(
                 back_forward_cache::DisabledReasonId::kExtensionMessaging));

@@ -2102,12 +2102,9 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "all_extensions_allowed": "true",
                         "allowed_websites": "",
                         "cache_size": "6",
                         "check_eligibility_after_pagehide": "true",
-                        "content_injection_supported": "true",
-                        "extension_message_supported": "true",
                         "file_system_api_supported": "true",
                         "foreground_cache_size": "2",
                         "grace_period_to_finish_loading_in_seconds": "60",

@@ -32,32 +32,10 @@ class ExtensionBackForwardCacheBrowserTest
     : public ExtensionBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  explicit ExtensionBackForwardCacheBrowserTest(
-      bool all_extensions_allowed = true,
-      bool allow_content_scripts = true,
-      bool extension_message_support = true,
-      std::string blocked_extensions = "")
-      : allow_content_scripts_(allow_content_scripts),
-        extension_message_support_(extension_message_support) {
-    // If `allow_content_scripts` is true then `all_extensions_allowed` must
-    // also be true.
-    DCHECK(!(allow_content_scripts && !all_extensions_allowed));
-    // If `extension_message_support` is true then `allow_content_scripts` and
-    // `all_extensions_allowed` must also be true.
-    if (extension_message_support)
-      DCHECK(allow_content_scripts && all_extensions_allowed);
+  ExtensionBackForwardCacheBrowserTest() {
     auto enabled_features =
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            {{features::kBackForwardCache,
-              {
-                  {"content_injection_supported",
-                   allow_content_scripts ? "true" : "false"},
-                  {"extension_message_supported",
-                   extension_message_support ? "true" : "false"},
-                  {"all_extensions_allowed",
-                   all_extensions_allowed ? "true" : "false"},
-                  {"blocked_extensions", blocked_extensions},
-              }}});
+            {{features::kBackForwardCache, {}}});
     auto disabled_features =
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting();
     if (IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
@@ -104,11 +82,8 @@ class ExtensionBackForwardCacheBrowserTest
     const int kMessagingBucket =
         (static_cast<int>(content::BackForwardCache::DisabledSource::kEmbedder)
          << 16) +
-        static_cast<int>(
-            extension_message_support_
-                ? back_forward_cache::DisabledReasonId::
-                      kExtensionSentMessageToCachedFrame
-                : back_forward_cache::DisabledReasonId::kExtensionMessaging);
+        static_cast<int>(back_forward_cache::DisabledReasonId::
+                             kExtensionSentMessageToCachedFrame);
 
     std::string action = base::StringPrintf(
         R"HTML(
@@ -131,35 +106,24 @@ class ExtensionBackForwardCacheBrowserTest
     // 3) Navigate to B.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
-    // What happens next depends on whether or not content script is allowed. If
-    // it is, then the `render_frame_host_a` should be cached and the channel
-    // should still be open. If it isn't, then `render_frame_host_a` and the
-    // channel should be deleted.
-    if (!allow_content_scripts_) {
-      // `render_frame_host_a` should be destroyed, and the channel should be
-      // closed.
-      ASSERT_TRUE(render_frame_host_a.WaitUntilRenderFrameDeleted());
+    // Expect that `render_frame_host_a` is cached.
+    EXPECT_EQ(render_frame_host_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+    // The channel should remain open if
+    // DisconnectExtensionMessagePortWhenPageEntersBFCache is disabled.
+    if (IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
       EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
     } else {
-      // Expect that `render_frame_host_a` is cached.
-      EXPECT_EQ(render_frame_host_a->GetLifecycleState(),
-                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+      EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
+      // Send a message to the port.
+      ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(
+          extension->id(), "port.postMessage('bye');"));
 
-      // The channel should remain open if
-      // DisconnectExtensionMessagePortWhenPageEntersBFCache is disabled.
-      if (IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-        EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-      } else {
-        EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
-        // Send a message to the port.
-        ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(
-            extension->id(), "port.postMessage('bye');"));
-
-        // `render_frame_host_a` should be destroyed now, and the channel should
-        // be closed.
-        ASSERT_TRUE(render_frame_host_a.WaitUntilRenderFrameDeleted());
-        EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-      }
+      // `render_frame_host_a` should be destroyed now, and the channel should
+      // be closed.
+      ASSERT_TRUE(render_frame_host_a.WaitUntilRenderFrameDeleted());
+      EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
     }
 
     // 4) Go back to A.
@@ -169,12 +133,8 @@ class ExtensionBackForwardCacheBrowserTest
     EXPECT_TRUE(WaitForLoadStop(web_contents));
 
     int expected_count = 0;
-    if (!extension_message_support_ ||
-        !IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-      // When extension_message_support_ = false, validate that the
-      // not restored reason is `ExtensionMessaging` due to extension
-      // messages.
-      // Otherwise, if `DisconnectExtensionMessagePortWhenPageEntersBFCache` is
+    if (!IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
+      // If `DisconnectExtensionMessagePortWhenPageEntersBFCache` is
       // disabled, validate that the not restored reason is
       // `kExtensionSentMessageToCachedFrame` due to a message being sent to an
       // inactive frame.
@@ -232,112 +192,11 @@ class ExtensionBackForwardCacheBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  bool allow_content_scripts_;
-  bool extension_message_support_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExtensionBackForwardCacheBrowserTest,
                          ::testing::Bool());
-
-// Test that does not allow content scripts to be injected.
-class ExtensionBackForwardCacheContentScriptDisabledBrowserTest
-    : public ExtensionBackForwardCacheBrowserTest {
- public:
-  ExtensionBackForwardCacheContentScriptDisabledBrowserTest()
-      : ExtensionBackForwardCacheBrowserTest(
-            /*all_extensions_allowed=*/true,
-            /*allow_content_scripts=*/false,
-            /*extension_message_support=*/false) {}
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExtensionBackForwardCacheContentScriptDisabledBrowserTest,
-    ::testing::Bool());
-
-// Test that does not support extension message.
-class ExtensionBackForwardCacheExtensionMessageDisabledBrowserTest
-    : public ExtensionBackForwardCacheBrowserTest {
- public:
-  ExtensionBackForwardCacheExtensionMessageDisabledBrowserTest()
-      : ExtensionBackForwardCacheBrowserTest(
-            /*all_extensions_allowed=*/true,
-            /*allow_content_scripts=*/true,
-            /*extension_message_support=*/false) {}
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExtensionBackForwardCacheExtensionMessageDisabledBrowserTest,
-    ::testing::Bool());
-
-// Test that causes non-component extensions to disable back forward cache.
-class ExtensionBackForwardCacheExtensionsDisabledBrowserTest
-    : public ExtensionBackForwardCacheBrowserTest {
- public:
-  ExtensionBackForwardCacheExtensionsDisabledBrowserTest()
-      : ExtensionBackForwardCacheBrowserTest(
-            /*all_extensions_allowed=*/false,
-            /*allow_content_scripts=*/false,
-            /*extension_message_support=*/false) {}
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExtensionBackForwardCacheExtensionsDisabledBrowserTest,
-                         ::testing::Bool());
-
-// Tests that a non-component extension that is installed prevents back forward
-// cache.
-IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheExtensionsDisabledBrowserTest,
-                       ScriptDisallowed) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHostWrapper render_frame_host_a(
-      current_main_frame_host());
-
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("trivial_extension")
-                                .AppendASCII("extension")));
-
-  // 2) Navigate to B.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-
-  // Expect that `render_frame_host_a` is destroyed as it wouldn't be placed in
-  // the cache since there is an active non-component loaded extension.
-  ASSERT_TRUE(render_frame_host_a.WaitUntilRenderFrameDeleted());
-}
-
-// Test content script injection disallow the back forward cache.
-IN_PROC_BROWSER_TEST_P(
-    ExtensionBackForwardCacheContentScriptDisabledBrowserTest,
-    ScriptDisallowed) {
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
-                                .AppendASCII("content_script")));
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  std::u16string expected_title = u"modified";
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-
-  // 1) Navigate to A.
-  content::RenderFrameHostWrapper render_frame_host_a(
-      ui_test_utils::NavigateToURL(browser(), url_a));
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  // 2) Navigate to B.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-
-  // Expect that `render_frame_host_a` is destroyed as it wouldn't be placed in
-  // the cache since the active extension injected content_scripts.
-  EXPECT_TRUE(render_frame_host_a.WaitUntilRenderFrameDeleted());
-}
 
 IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest, ScriptAllowed) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
@@ -360,28 +219,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest, ScriptAllowed) {
   EXPECT_NE(render_frame_host_a.get(), render_frame_host_b.get());
   EXPECT_EQ(render_frame_host_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-}
-
-IN_PROC_BROWSER_TEST_P(
-    ExtensionBackForwardCacheContentScriptDisabledBrowserTest,
-    CSSDisallowed) {
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
-                                .AppendASCII("content_css")));
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  content::RenderFrameHostWrapper render_frame_host_a(
-      ui_test_utils::NavigateToURL(browser(), url_a));
-
-  // 2) Navigate to B.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-
-  // Expect that `render_frame_host_a` is destroyed as it wouldn't be placed in
-  // the cache.
-  EXPECT_TRUE(render_frame_host_a.WaitUntilRenderFrameDeleted());
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest, CSSAllowed) {
@@ -756,84 +593,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
-// Test if the chrome.runtime.connect is called then disconnected, the page is
-// not allowed to enter the bfcache if extension_message_supported = false.
-IN_PROC_BROWSER_TEST_P(
-    ExtensionBackForwardCacheExtensionMessageDisabledBrowserTest,
-    ChromeRuntimeConnectDisconnect) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
-                        .AppendASCII("content_script"));
-  ASSERT_TRUE(extension);
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  constexpr int kMessagingBucket =
-      (static_cast<int>(content::BackForwardCache::DisabledSource::kEmbedder)
-       << 16) +
-      static_cast<int>(
-          back_forward_cache::DisabledReasonId::kExtensionMessaging);
-
-  // 1) Navigate to A.
-  content::RenderFrameHostWrapper render_frame_host_a(
-      ui_test_utils::NavigateToURL(browser(), url_a));
-  std::u16string expected_title = u"connected";
-  auto title_watcher = std::make_unique<content::TitleWatcher>(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-
-  std::string action = base::StringPrintf(
-      R"HTML(
-        var p = chrome.runtime.connect('%s');
-        p.onMessage.addListener((m) => {document.title = m;});
-      )HTML",
-      extension->id().c_str());
-  EXPECT_TRUE(ExecJs(render_frame_host_a.get(), action));
-
-  // 2) Wait for the message port to be connected.
-  EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
-  expected_title = u"disconnect";
-  title_watcher = std::make_unique<content::TitleWatcher>(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  EXPECT_TRUE(ExecJs(render_frame_host_a.get(),
-                     R"HTML(
-        p.onDisconnect.addListener((m) => {document.title = 'disconnect';});
-        p.postMessage('disconnect');
-      )HTML"));
-
-  EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
-
-  // Expect that the channel is closed.
-  EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-
-  EXPECT_EQ(0, histogram_tester_.GetBucketCount(
-                   "BackForwardCache.HistoryNavigationOutcome."
-                   "DisabledForRenderFrameHostReason2",
-                   kMessagingBucket));
-
-  // 3) Navigate to B.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(
-      WaitForLoadStop(browser()->tab_strip_model()->GetActiveWebContents()));
-
-  // 4) Expect that `render_frame_host_a` is deleted.
-  ASSERT_TRUE(render_frame_host_a.WaitUntilRenderFrameDeleted());
-
-  // 5) Go back to A.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  web_contents->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(web_contents));
-
-  // Validate that the not restored reason is `ExtensionMessaging`
-  // due to extension_message_supported = false.
-  EXPECT_EQ(1, histogram_tester_.GetBucketCount(
-                   "BackForwardCache.HistoryNavigationOutcome."
-                   "DisabledForRenderFrameHostReason2",
-                   kMessagingBucket));
-}
-
 // Test if the chrome.tabs.connect is called and then the page is navigated,
 // the page is allowed to enter the bfcache, but if the extension tries to send
 // it a message the page will be evicted.
@@ -1074,21 +833,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
                                     kCheckDisconnectCountScript));
 }
 
-// Test if the chrome.runtime.connect API is called, the page is prevented from
-// entering bfcache.
-IN_PROC_BROWSER_TEST_P(
-    ExtensionBackForwardCacheContentScriptDisabledBrowserTest,
-    ChromeRuntimeConnectUsage) {
-  RunChromeRuntimeConnectTest();
-
-  // Validate also that the not restored reason is `IsolatedWorldScript` due to
-  // the extension injecting a content script.
-  EXPECT_EQ(
-      1,
-      histogram_tester_.GetBucketCount(
-          "BackForwardCache.HistoryNavigationOutcome.BlocklistedFeature",
-          blink::scheduler::WebSchedulerTrackedFeature::kInjectedJavascript));
-}
 // Tests sending a message to all frames does not send it to back-forward
 // cached frames.
 IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
@@ -1273,52 +1017,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   // Verify that the callback was called.
   EXPECT_EQ("called", EvalJs(render_frame_host_a.get(),
                              "document.getElementById('callback').value;"));
-}
-
-// Test that allows all extensions but disables bfcache in the presence of a few
-// blocked ones.
-class ExtensionBackForwardCacheBlockedExtensionBrowserTest
-    : public ExtensionBackForwardCacheBrowserTest {
- public:
-  ExtensionBackForwardCacheBlockedExtensionBrowserTest()
-      : ExtensionBackForwardCacheBrowserTest(
-            /*all_extensions_allowed=*/true,
-            /*allow_content_scripts=*/true,
-            /*extension_message_support=*/true,
-            /*blocked_extensions=*/
-            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,mockepjebcnmhmhcahfddgfcdgkdifnc,"
-            "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") {}
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExtensionBackForwardCacheBlockedExtensionBrowserTest,
-                         ::testing::Bool());
-
-// Tests that a blocked extension that is installed prevents back forward
-// cache.
-IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBlockedExtensionBrowserTest,
-                       ScriptDisallowed) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  content::RenderFrameHostWrapper render_frame_host_a(
-      ui_test_utils::NavigateToURL(browser(), url_a));
-
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("trivial_extension")
-                        .AppendASCII("extension.crx"));
-  ASSERT_TRUE(extension);
-  ASSERT_EQ(extension->id(), "mockepjebcnmhmhcahfddgfcdgkdifnc");
-
-  // 2) Navigate to B.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-
-  // Expect that `render_frame_host_a` is destroyed as it wouldn't be placed in
-  // the cache since there is a blocked feature flag with id
-  // 'mockepjebcnmhmhcahfddgfcdgkdifnc'.
-  EXPECT_TRUE(render_frame_host_a.WaitUntilRenderFrameDeleted());
 }
 
 // Test that ensures the origin restriction declared on the extension

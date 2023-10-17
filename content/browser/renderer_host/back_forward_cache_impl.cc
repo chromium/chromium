@@ -128,14 +128,6 @@ const base::FeatureParam<ChildProcessImportance> kChildProcessImportanceParam{
     ChildProcessImportance::MODERATE, &child_process_importance_options};
 #endif
 
-bool IsContentInjectionSupported() {
-  if (!IsBackForwardCacheEnabled())
-    return false;
-  static constexpr base::FeatureParam<bool> content_injection_supported(
-      &features::kBackForwardCache, "content_injection_supported", true);
-  return content_injection_supported.Get();
-}
-
 WebSchedulerTrackedFeatures SupportedFeaturesImpl() {
   WebSchedulerTrackedFeatures features;
   if (!IsBackForwardCacheEnabled())
@@ -471,9 +463,7 @@ BlockListedFeatures BackForwardCacheImpl::GetAllowedFeatures(
   WebSchedulerTrackedFeatures result =
       Union(GetAllowedWebSchedulerTrackedFeatures(),
             GetNonBackForwardCacheAffectingWebSchedulerTrackedFeatures());
-  if (IsContentInjectionSupported()) {
-    result.PutAll(GetInjectionWebSchedulerTrackedFeatures());
-  }
+  result.PutAll(GetInjectionWebSchedulerTrackedFeatures());
   if (IgnoresOutstandingNetworkRequestForTesting()) {
     result.PutAll(GetNetworkWebSchedulerTrackedFeatures());
   }
@@ -483,10 +473,6 @@ BlockListedFeatures BackForwardCacheImpl::GetAllowedFeatures(
     WebSchedulerTrackedFeatures non_sticky =
         Difference(GetDisallowedWebSchedulerTrackedFeatures(),
                    blink::scheduler::StickyFeatures());
-    if (!IsContentInjectionSupported()) {
-      non_sticky.PutAll(Difference(GetInjectionWebSchedulerTrackedFeatures(),
-                                   blink::scheduler::StickyFeatures()));
-    }
     if (!IgnoresOutstandingNetworkRequestForTesting()) {
       non_sticky.PutAll(Difference(GetNetworkWebSchedulerTrackedFeatures(),
                                    blink::scheduler::StickyFeatures()));
@@ -508,10 +494,6 @@ BlockListedFeatures BackForwardCacheImpl::GetDisallowedFeatures(
     CacheControlNoStoreContext ccns_context) {
   WebSchedulerTrackedFeatures result =
       GetDisallowedWebSchedulerTrackedFeatures();
-  ;
-  if (!IsContentInjectionSupported()) {
-    result.PutAll(GetInjectionWebSchedulerTrackedFeatures());
-  }
   if (!IgnoresOutstandingNetworkRequestForTesting()) {
     result.PutAll(GetNetworkWebSchedulerTrackedFeatures());
   }
