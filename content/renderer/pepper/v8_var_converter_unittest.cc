@@ -205,6 +205,7 @@ class V8VarConverterTest : public testing::Test {
     context_.Reset(isolate_, v8::Context::New(isolate_, nullptr, global));
   }
   void TearDown() override {
+    isolate_ = nullptr;
     context_.Reset();
     ASSERT_TRUE(PpapiGlobals::Get()->GetVarTracker()->GetLiveVars().empty());
     ProxyLock::Release();
@@ -251,7 +252,7 @@ class V8VarConverterTest : public testing::Test {
     return TestEqual(expected.get(), actual.get(), false);
   }
 
-  raw_ptr<v8::Isolate, DanglingUntriaged> isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   // Context for the JavaScript in the test.
   v8::Persistent<v8::Context> context_;
