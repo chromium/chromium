@@ -48,70 +48,70 @@ TEST_F(MetricTest, Log) {
   histogram_.ExpectBucketCount("metric_name", TestEnum::kZero, 1);
 }
 
-// Tests that Metric::ExpectNotLogged() updates the `state` correctly when the
-// metric was never logged.
-TEST_F(MetricTest, ExpectNotLoggedWhenNotLogged) {
+// Tests that Metric::MakeInconsistentIfLogged() doesn't update the `state` when
+// the metric was not logged.
+TEST_F(MetricTest, MakeInconsistentIfLoggedWhenNotLogged) {
   ASSERT_EQ(metric_.state, MetricState::kCorrectlyNotLogged);
 
-  metric_.ExpectNotLogged();
+  metric_.MakeInconsistentIfLogged();
   ASSERT_EQ(metric_.state, MetricState::kCorrectlyNotLogged);
 }
 
-// Tests that Metric::ExpectNotLogged() updates the `state` correctly when the
-// metric was logged.
-TEST_F(MetricTest, ExpectNotLoggedWhenLogged) {
+// Tests that Metric::MakeInconsistentIfLogged() updates the `state` correctly
+// when the metric was logged.
+TEST_F(MetricTest, MakeInconsistentIfLoggedWhenLogged) {
   metric_.Log(TestEnum::kOne);
   ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
 
-  metric_.ExpectNotLogged();
+  metric_.MakeInconsistentIfLogged();
   ASSERT_EQ(metric_.state, MetricState::kIncorrectlyLogged);
 }
 
-// Tests that Metric::ExpectLogged() updates the `state` correctly when the
-// metric was logged.
-TEST_F(MetricTest, ExpectLoggedWhenLogged) {
+// Tests that Metric::MakeInconsistentIfNotLogged() doesn't update the `state`
+// when the metric was logged.
+TEST_F(MetricTest, MakeInconsistentIfNotLoggedWhenLogged) {
   metric_.Log(TestEnum::kOne);
   ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
 
-  metric_.ExpectLogged();
+  metric_.MakeInconsistentIfNotLogged();
   ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
 }
 
-// Tests that Metric::ExpectLogged() updates the `state` correctly when the
-// metric was never logged.
-TEST_F(MetricTest, ExpectLoggedWhenNotLogged) {
+// Tests that Metric::MakeInconsistentIfNotLogged() updates the `state`
+// correctly when the metric was not logged.
+TEST_F(MetricTest, MakeInconsistentIfNotLoggedWhenNotLogged) {
   ASSERT_EQ(metric_.state, MetricState::kCorrectlyNotLogged);
 
-  metric_.ExpectLogged();
+  metric_.MakeInconsistentIfNotLogged();
   ASSERT_EQ(metric_.state, MetricState::kIncorrectlyNotLogged);
 }
 
-// Tests that Metric::ExpectLoggedWith() updates the `state` correctly when
-// logged with the correct value.
-TEST_F(MetricTest, ExpectLoggedWithWhenLoggedWithCorrectValue) {
+// Tests that Metric::MakeInconsistentIfNotLoggedWith() doesn't update the
+// `state` when logged with the correct value.
+TEST_F(MetricTest, MakeInconsistentIfNotLoggedWithWhenLoggedWithCorrectValue) {
   metric_.Log(TestEnum::kOne);
   ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
 
-  metric_.ExpectLoggedWith({TestEnum::kZero, TestEnum::kOne});
+  metric_.MakeInconsistentIfNotLoggedWith({TestEnum::kZero, TestEnum::kOne});
   ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
 }
 
-// Tests Metric::ExpectLoggedWith()  updates the `state` correctly when not
-// logged.
-TEST_F(MetricTest, ExpectLoggedWithWhenNotLogged) {
+// Tests Metric::MakeInconsistentIfNotLoggedWith() updates the `state` correctly
+// when not logged.
+TEST_F(MetricTest, MakeInconsistentIfNotLoggedWithWhenNotLogged) {
   ASSERT_EQ(metric_.state, MetricState::kCorrectlyNotLogged);
 
-  metric_.ExpectLoggedWith({TestEnum::kZero, TestEnum::kOne});
+  metric_.MakeInconsistentIfNotLoggedWith({TestEnum::kZero, TestEnum::kOne});
   ASSERT_EQ(metric_.state, MetricState::kIncorrectlyNotLogged);
 }
 
-// Tests that Metric::ExpectLoggedWith() updates the `state` correctly when
-// logged with the wrong value.
-TEST_F(MetricTest, ExpectLoggedWithWhenLoggedWithWrongValue) {
+// Tests that Metric::MakeInconsistentIfNotLoggedWith() updates the `state`
+// correctly when logged with the wrong value.
+TEST_F(MetricTest, MakeInconsistentIfNotLoggedWithWhenLoggedWithWrongValue) {
   metric_.Log(TestEnum::kTwo);
   ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
 
-  metric_.ExpectLoggedWith({TestEnum::kZero, TestEnum::kOne});
+  metric_.MakeInconsistentIfNotLoggedWith({TestEnum::kZero, TestEnum::kOne});
   ASSERT_EQ(metric_.state, MetricState::kWrongValueLogged);
 }
 

@@ -43,19 +43,14 @@ class Metric {
   // `value`. Update the state:
   //   kCorrectlyNotLogged  -> kCorrectlyLogged
   //   !kCorrectlyNotLogged -> kIncorrectlyLoggedMultipleTimes
-  // Return false if there was a metric inconsistency. That is, if the latter
-  // state change occurred.
-  bool Log(MetricType new_value) {
+  void Log(MetricType new_value) {
     LogMetric(new_value);
     if (state == MetricState::kCorrectlyNotLogged) {
       state = MetricState::kCorrectlyLogged;
     } else {
       state = MetricState::kIncorrectlyLoggedMultipleTimes;
-      // TODO(cassycc): Log old vs new value.
-      LOG(ERROR) << metric_name << " was logged multiple times";
     }
     value = new_value;
-    return state == MetricState::kCorrectlyLogged;
   }
 
   // Return true if the `state` is a logged state.
@@ -72,19 +67,19 @@ class Metric {
     }
   }
 
-  void ExpectNotLogged() {
+  void MakeInconsistentIfLogged() {
     if (logged()) {
       state = MetricState::kIncorrectlyLogged;
     }
   }
 
-  void ExpectLogged() {
+  void MakeInconsistentIfNotLogged() {
     if (!logged()) {
       state = MetricState::kIncorrectlyNotLogged;
     }
   }
 
-  void ExpectLoggedWith(const std::vector<MetricType>& values) {
+  void MakeInconsistentIfNotLoggedWith(const std::vector<MetricType>& values) {
     if (!logged()) {
       state = MetricState::kIncorrectlyNotLogged;
     } else if (!base::Contains(values, value)) {
@@ -163,22 +158,29 @@ class CloudOpenMetrics {
   // Print the debug information for each metric.
   void PrintMetrics();
 
-  // Handle when the child metric has an inconsistency with the parent metric.
-  // Print information about the inconsistency and call PrintMetrics().
-  template <typename MetricType1, typename MetricType2>
-  void HandlePossibleInconsistency(Metric<MetricType1>& child,
-                                   Metric<MetricType2>& parent);
+  // If the metric has moved to an inconsistent state print debug information
+  // about the inconsistency. Only handle the kIncorrectlyLoggedMultipleTimes
+  // state during the cloud upload flow and not when the `destructor` is
+  // running.
+  template <typename MetricType>
+  void PrintDebugInformationIfInconsistent(Metric<MetricType>& metric,
+                                           bool destructor = true);
 
-  // Expect that the `child` metric is not logged.
-  template <typename MetricType1, typename MetricType2>
-  void ExpectNotLoggedRelativeToParent(Metric<MetricType1>& child,
-                                       Metric<MetricType2>& parent);
+  // Expect that the `metric` is not logged. Otherwise update the state and
+  // print debug information.
+  template <typename MetricType>
+  void ExpectNotLogged(Metric<MetricType>& metric);
 
-  // Expect that the `child` metric is logged with a value from `values`.
-  template <typename MetricType1, typename MetricType2>
-  void ExpectLoggedRelativeToParent(const std::vector<MetricType1>& values,
-                                    Metric<MetricType1>& child,
-                                    Metric<MetricType2>& parent);
+  // Expect that the `metric` metric is logged with a value. Otherwise update
+  // the state and print debug information.
+  template <typename MetricType>
+  void ExpectLogged(Metric<MetricType>& metric);
+
+  // Expect that the `metric` metric is logged with a value from `values`.
+  // Otherwise update the state and print debug information.
+  template <typename MetricType>
+  void ExpectLoggedWith(Metric<MetricType>& metric,
+                        const std::vector<MetricType>& values);
 
   CloudProvider cloud_provider_;
   Metric<base::File::Error> copy_error_;
