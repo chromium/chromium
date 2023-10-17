@@ -152,9 +152,9 @@ void FatalCrashEventsObserver::OnEvent(
     // not.
     if (auto capture_timestamp_us =
             ConvertTimeToMicroseconds(crash_event_info->capture_time);
-        !reported_local_id_manager_->ShouldReport(crash_event_info->local_id,
-                                                  capture_timestamp_us)) {
-      // Crash is already reported. Skip.
+        reported_local_id_manager_->ShouldReport(crash_event_info->local_id,
+                                                 capture_timestamp_us) !=
+        ReportedLocalIdManager::ShouldReportResult::kYes) {
       skipped_unuploaded_callback_.Run(
           {.local_id = std::move(crash_event_info->local_id),
            .capture_timestamp_us = capture_timestamp_us});
@@ -285,7 +285,8 @@ bool FatalCrashEventsObserver::ReportedLocalIdManager::HasBeenReported(
   return base::Contains(local_ids_, local_id);
 }
 
-bool FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReport(
+FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReportResult
+FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReport(
     const std::string& local_id,
     int64_t capture_timestamp_us) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -294,21 +295,21 @@ bool FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReport(
     // Only possible when loading a corrupt save file.
     LOG(ERROR) << "Negative timestamp found: " << local_id << ','
                << capture_timestamp_us;
-    return false;
+    return ShouldReportResult::kNegativeTimestamp;
   }
 
   // Local ID already reported.
   if (HasBeenReported(local_id)) {
-    return false;
+    return ShouldReportResult::kHasBeenReported;
   }
 
   // Max number of crash events reached and the current crash event is too old.
   if (local_ids_.size() >= kMaxNumOfLocalIds &&
       capture_timestamp_us <= GetEarliestLocalIdEntry().capture_timestamp_us) {
-    return false;
+    return ShouldReportResult::kCrashTooOldAndMaxNumOfSavedLocalIdsReached;
   }
 
-  return true;
+  return ShouldReportResult::kYes;
 }
 
 bool FatalCrashEventsObserver::ReportedLocalIdManager::UpdateLocalId(
@@ -316,7 +317,8 @@ bool FatalCrashEventsObserver::ReportedLocalIdManager::UpdateLocalId(
     int64_t capture_timestamp_us) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ShouldReport(local_id, capture_timestamp_us)) {
+  if (ShouldReport(local_id, capture_timestamp_us) !=
+      ReportedLocalIdManager::ShouldReportResult::kYes) {
     return false;
   }
 
