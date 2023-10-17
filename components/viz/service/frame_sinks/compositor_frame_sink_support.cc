@@ -559,9 +559,22 @@ void CompositorFrameSinkSupport::BindLayerContext(
 void CompositorFrameSinkSupport::SetThreadIds(
     bool from_untrusted_client,
     base::flat_set<base::PlatformThreadId> unverified_thread_ids) {
-  if (!from_untrusted_client ||
-      frame_sink_manager_->VerifySandboxedThreadIds(unverified_thread_ids)) {
+  if (!from_untrusted_client) {
     thread_ids_ = unverified_thread_ids;
+    return;
+  }
+  frame_sink_manager_->VerifySandboxedThreadIds(
+      unverified_thread_ids,
+      base::BindOnce(
+          &CompositorFrameSinkSupport::UpdateThreadIdsPostVerification,
+          weak_factory_.GetWeakPtr(), unverified_thread_ids));
+}
+
+void CompositorFrameSinkSupport::UpdateThreadIdsPostVerification(
+    base::flat_set<base::PlatformThreadId> thread_ids,
+    bool passed_verification) {
+  if (passed_verification) {
+    thread_ids_ = std::move(thread_ids);
   }
 }
 

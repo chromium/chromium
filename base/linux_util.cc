@@ -88,6 +88,24 @@ class DistroNameGetter {
 };
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+bool GetThreadsFromProcessDir(const char* dir_path, std::vector<pid_t>* tids) {
+  DirReaderPosix dir_reader(dir_path);
+
+  if (!dir_reader.IsValid()) {
+    DLOG(WARNING) << "Cannot open " << dir_path;
+    return false;
+  }
+
+  while (dir_reader.Next()) {
+    pid_t tid;
+    if (StringToInt(dir_reader.name(), &tid)) {
+      tids->push_back(tid);
+    }
+  }
+
+  return true;
+}
+
 // Account for the terminating null character.
 constexpr int kDistroSize = 128 + 1;
 
@@ -138,20 +156,11 @@ bool GetThreadsForProcess(pid_t pid, std::vector<pid_t>* tids) {
   // 25 > strlen("/proc//task") + strlen(std::to_string(INT_MAX)) + 1 = 22
   char buf[25];
   strings::SafeSPrintf(buf, "/proc/%d/task", pid);
-  DirReaderPosix dir_reader(buf);
+  return GetThreadsFromProcessDir(buf, tids);
+}
 
-  if (!dir_reader.IsValid()) {
-    DLOG(WARNING) << "Cannot open " << buf;
-    return false;
-  }
-
-  while (dir_reader.Next()) {
-    pid_t tid;
-    if (StringToInt(dir_reader.name(), &tid))
-      tids->push_back(tid);
-  }
-
-  return true;
+bool GetThreadsForCurrentProcess(std::vector<pid_t>* tids) {
+  return GetThreadsFromProcessDir("/proc/self/task", tids);
 }
 
 pid_t FindThreadIDWithSyscall(pid_t pid, const std::string& expected_data,

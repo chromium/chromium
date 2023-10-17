@@ -301,6 +301,14 @@ BASE_FEATURE(kEnableADPFRendererMain,
              "EnableADPFRendererMain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Chrome verifies that Renderer threads do not belong to the
+// Browser process asynchronously via a mojo call to the Browser before
+// including them into the ADPF(Android Dynamic Performance Framework) hint
+// session.
+BASE_FEATURE(kEnableADPFAsyncThreadsVerification,
+             "EnableADPFAsyncThreadsVerification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, surface activation and draw do not block on dependencies.
 BASE_FEATURE(kDrawImmediatelyWhenInteractive,
              "DrawImmediatelyWhenInteractive",

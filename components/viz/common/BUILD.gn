@@ -163,6 +163,8 @@ viz_component("common") {
     "hit_test/aggregated_hit_test_region.h",
     "hit_test/hit_test_region_list.cc",
     "hit_test/hit_test_region_list.h",
+    "performance_hint_utils.cc",
+    "performance_hint_utils.h",
     "quads/aggregated_render_pass.cc",
     "quads/aggregated_render_pass.h",
     "quads/aggregated_render_pass_draw_quad.cc",

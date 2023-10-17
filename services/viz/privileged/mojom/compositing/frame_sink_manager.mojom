@@ -225,4 +225,13 @@ interface FrameSinkManagerClient {
   // when a surface of the provided |frame_sink_id| activates.
   OnFrameTokenChanged(FrameSinkId frame_sink_id, uint32 frame_token,
                       mojo_base.mojom.TimeTicks activation_time);
+
+  // Verifies that |thread_ids| do not belong to the host process. Renderer
+  // processes send their thread ids to the GPU process to be added to the ADPF
+  // session. GPU needs to make sure that they do not belong to the host
+  // process or the GPU process (i.e. itself) before adding the threads to the
+  // ADPF hint session.
+  [EnableIf=is_android]
+  VerifyThreadIdsDoNotBelongToHost(array<int32> thread_ids)
+      => (bool passed_verification);
 };
