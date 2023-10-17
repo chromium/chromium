@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Animation from 'devtools/panels/animation/animation.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests the matching performed in AnimationModel of groups composed of transitions, which are applied through a variety of selectors.\n`);
@@ -65,7 +67,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   var groupIds = [];
   var i = 0;
   var stepNumber = 0;
-  var model = TestRunner.mainTarget.model(Animation.AnimationModel);
+  var model = TestRunner.mainTarget.model(Animation.AnimationModel.AnimationModel);
   model.ensureEnabled();
   model.addEventListener(Animation.AnimationModel.Events.AnimationGroupStarted, groupStarted);
   // Each step triggers a new transition group.

@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Animation from 'devtools/panels/animation/animation.js';
 
 (async function() {
   TestRunner.addResult(`This test passes if it does not crash.\n`);
@@ -28,7 +29,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   `);
 
   await UI.ViewManager.ViewManager.instance().showView('animations');
-  var timeline = Animation.AnimationTimeline.instance();
+  var timeline = Animation.AnimationTimeline.AnimationTimeline.instance();
   TestRunner.evaluateInPage('startCSSTransition()');
   ElementsTestRunner.waitForAnimationAdded(animationAdded);
   function animationAdded(group) {
