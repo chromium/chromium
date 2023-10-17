@@ -56,6 +56,26 @@ void BusyWork(std::vector<std::string>* vec) {
   }
 }
 
+TimeDelta TestCumulativeCPU(ProcessMetrics* metrics, TimeDelta prev_cpu_usage) {
+  const TimeDelta current_cpu_usage = metrics->GetCumulativeCPUUsage();
+  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
+  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  return current_cpu_usage;
+}
+
+TimeDelta TestPreciseCumulativeCPU(ProcessMetrics* metrics,
+                                   TimeDelta prev_cpu_usage) {
+#if BUILDFLAG(IS_WIN)
+  const TimeDelta current_cpu_usage = metrics->GetPreciseCumulativeCPUUsage();
+  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
+  EXPECT_GE(metrics->GetPreciseCPUUsage(), 0.0);
+  return current_cpu_usage;
+#else
+  // Do nothing. Not supported on this platform.
+  return base::TimeDelta();
+#endif
+}
+
 }  // namespace
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
@@ -358,6 +378,10 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
       ProcessMetrics::CreateProcessMetrics(handle));
 
   EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_GE(metrics->GetPreciseCPUUsage(), 0.0);
+#endif
+
   Thread thread1("thread1");
   Thread thread2("thread2");
   Thread thread3("thread3");
@@ -378,26 +402,24 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
   thread2.task_runner()->PostTask(FROM_HERE, BindOnce(&BusyWork, &vec2));
   thread3.task_runner()->PostTask(FROM_HERE, BindOnce(&BusyWork, &vec3));
 
-  TimeDelta prev_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(prev_cpu_usage, TimeDelta());
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  TimeDelta prev_cpu_usage = TestCumulativeCPU(metrics.get(), TimeDelta());
+  TimeDelta prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), TimeDelta());
 
   thread1.Stop();
-  TimeDelta current_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
-  prev_cpu_usage = current_cpu_usage;
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 
   thread2.Stop();
-  current_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
-  prev_cpu_usage = current_cpu_usage;
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 
   thread3.Stop();
-  current_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
@@ -669,7 +691,6 @@ TEST(ProcessMetricsTest, GetOpenFdCount) {
   EXPECT_GT(new_fd_count, 0);
   EXPECT_EQ(new_fd_count, fd_count + 1);
 }
-
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
