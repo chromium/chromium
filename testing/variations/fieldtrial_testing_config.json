@@ -4334,6 +4334,21 @@
             ]
         }
     ],
+    "CrOSBluetoothHfpSuperWideband": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootAudioHFPSwb"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSBluetoothMicophoneSuperResolution": [
         {
             "platforms": [
