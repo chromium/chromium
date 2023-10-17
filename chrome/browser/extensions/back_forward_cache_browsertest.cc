@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   auto title_watcher = std::make_unique<content::TitleWatcher>(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
 
-  constexpr char kScript[] =
+  static constexpr char kScript[] =
       R"HTML(
       chrome.tabs.executeScript({allFrames: true, code: "document.title='foo'"})
     )HTML";

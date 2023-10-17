@@ -569,8 +569,9 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
                                    const std::string& manifest_format,
                                    int string_resource_id_to_find,
                                    bool expect_success) {
-  constexpr wchar_t kTestAppID[] = L"{CDABE316-39CD-43BA-8440-6D1E0547AEE6}";
-  constexpr char kAppInstallerName[] = "TestAppSetup.exe";
+  static constexpr wchar_t kTestAppID[] =
+      L"{CDABE316-39CD-43BA-8440-6D1E0547AEE6}";
+  static constexpr char kAppInstallerName[] = "TestAppSetup.exe";
   const base::Version kTestPV("1.2.3.4");
   const std::wstring manifest_filename(L"OfflineManifest.gup");
   const std::wstring offline_dir_guid(
@@ -1350,8 +1351,9 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
   ASSERT_HRESULT_SUCCEEDED(
       CreateLocalServer(__uuidof(ProcessLauncherClass), process_launcher));
 
-  constexpr wchar_t kAppId1[] = L"{831EF4D0-B729-4F61-AA34-91526481799D}";
-  constexpr wchar_t kCommandId[] = L"cmd";
+  static constexpr wchar_t kAppId1[] =
+      L"{831EF4D0-B729-4F61-AA34-91526481799D}";
+  static constexpr wchar_t kCommandId[] = L"cmd";
 
   // Succeeds when the command is present in the registry.
   base::ScopedTempDir temp_dir;
@@ -1897,7 +1899,7 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
 void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install) {
-  constexpr char kManifestFormat[] =
+  static constexpr char kManifestFormat[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
       "<response protocol=\"3.0\">\n"
       "  <systemrequirements platform=\"win\"/>\n"
@@ -1927,7 +1929,7 @@ void RunOfflineInstall(UpdaterScope scope,
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,
                                      bool is_silent_install) {
-  constexpr char kManifestFormat[] =
+  static constexpr char kManifestFormat[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
       "<response protocol=\"3.0\">\n"
       "  <systemrequirements platform=\"minix\"/>\n"
