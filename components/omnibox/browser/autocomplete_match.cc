@@ -1528,6 +1528,18 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
 }
 
 void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
+  // Keep consistent:
+  // - omnibox_event.proto `ScoringSignals`
+  // - autocomplete_scoring_model_handler.cc
+  //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
+  // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+  // - omnibox.mojom `struct Signals`
+  // - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
+  //   mojom::SignalsPtr>`
+  // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
+  //   AutocompleteMatch::ScoringSignals>`
+  // - omnibox_util.ts `signalNames`
+
   if (!other.scoring_signals.has_value()) {
     return;
   }

@@ -112,6 +112,18 @@ std::vector<float>
 AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
     const ScoringSignals& scoring_signals,
     const AutocompleteScoringModelMetadata& metadata) {
+  // Keep consistent:
+  // - omnibox_event.proto `ScoringSignals`
+  // - autocomplete_scoring_model_handler.cc
+  //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
+  // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+  // - omnibox.mojom `struct Signals`
+  // - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
+  //   mojom::SignalsPtr>`
+  // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
+  //   AutocompleteMatch::ScoringSignals>`
+  // - omnibox_util.ts `signalNames`
+
   std::vector<float> model_input;
   for (const auto& scoring_signal_spec : metadata.scoring_signal_specs()) {
     absl::optional<float> val;

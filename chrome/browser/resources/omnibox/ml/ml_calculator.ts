@@ -1,0 +1,137 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {assert} from 'chrome://resources/js/assert.js';
+import {CustomElement} from 'chrome://resources/js/custom_element.js';
+
+import {Signals} from '../omnibox.mojom-webui.js';
+import {clamp, createEl, signalNames} from '../omnibox_util.js';
+
+import {MlBrowserProxy} from './ml_browser_proxy';
+// @ts-ignore:next-line
+import sheet from './ml_calculator.css' assert {type : 'css'};
+import {getTemplate} from './ml_calculator.html.js';
+
+export class MlCalculatorElement extends CustomElement {
+  private mlBrowserProxy_: MlBrowserProxy;
+  private signalInputs: HTMLInputElement[];
+
+  static override get template() {
+    return getTemplate();
+  }
+
+  constructor() {
+    super();
+    this.shadowRoot!.adoptedStyleSheets = [sheet];
+  }
+
+  connectedCallback() {
+    this.signalInputs = signalNames.map(signalName => {
+      const label = createEl(
+          'label', this.getRequiredElement('#signals'), ['input-row'],
+          signalName + ': ');
+      const input = createEl('input', label);
+      input.type = 'number';
+      input.placeholder = 'null';
+      input.addEventListener('input', () => this.update());
+      return input;
+    });
+
+    this.getRequiredElement('#copy').addEventListener('click', () => {
+      const copyObj = {
+        url: window.location.href,
+        version: this.versionString,
+        signals: this.signals,
+        score: this.score,
+      };
+      navigator.clipboard.writeText(JSON.stringify(copyObj, null, 2))
+          .catch(
+              error => console.error('unable to export to clipboard:', error));
+    });
+
+    this.getRequiredElement('#clear').addEventListener('click', () => {
+      this.signalInputs.forEach(el => el.value = el.placeholder);
+      this.update();
+    });
+
+    try {
+      const urlSignals =
+          new URLSearchParams(window.location.search).get('signals');
+      if (urlSignals) {
+        this.signals =
+            MlCalculatorElement.parseSignalStrings(urlSignals.split(','));
+      }
+    } catch (e) {
+    }
+  }
+
+  set mlBrowserProxy(mlBrowserProxy: MlBrowserProxy) {
+    this.mlBrowserProxy_ = mlBrowserProxy;
+    this.update();
+  }
+
+  private get versionString(): string {
+    return this.getRequiredElement('#version a').textContent || '';
+  }
+
+  set version(version: number) {
+    const versionString = version === -1 ?
+        String(version) :
+        `${version} (${new Date(version * 1000).toLocaleDateString()})`;
+    const codeSearchPrefix =
+        'https://source.corp.google.com/search?q=file:google3/googledata/chrome/breve/cacao/models/data/omnibox/url_scoring/';
+    createEl('a', this.getRequiredElement('#version'), [], versionString).href =
+        `${codeSearchPrefix} ${version}`;
+  }
+
+  private static parseSignalStrings(signalStrings: string[]): Signals {
+    assert(signalStrings.length === signalNames.length);
+    return Object.fromEntries(
+        signalStrings
+            .map(str => {
+              // Handle `''` and `null`; otherwise `Number()` would convert them
+              // to `0`.
+              if (!str) {
+                return null;
+              }
+              const num = Number(str);
+              return Number.isNaN(num) ?
+                  null :
+                  clamp(Math.floor(num), -(2 ** 31), 2 ** 31 - 1);
+            })
+            .map((signal, i) => [signalNames[i], signal]));
+  }
+
+  get signals(): Signals {
+    return MlCalculatorElement.parseSignalStrings(
+        this.signalInputs.map(input => input.value));
+  }
+
+  set signals(signals: Signals) {
+    Object.values(signals).forEach(
+        (signal, i) => this.signalInputs[i]!.value = signal);
+    this.update();
+  }
+
+  private get score(): number {
+    return Number(this.getRequiredElement('#score').textContent);
+  }
+
+  private set score(score: number) {
+    this.getRequiredElement('#score').textContent = String(score);
+  }
+
+  private async update() {
+    if (!this.mlBrowserProxy_) {
+      return;
+    }
+    this.signalInputs.forEach(
+        input => input.classList.toggle('empty', !!input.textContent));
+    this.score = await this.mlBrowserProxy_.makeMlRequest(this.signals);
+    window.history.replaceState(
+        null, '', `?signals=${Object.values(this.signals)}`);
+  }
+}
+
+customElements.define('ml-calculator', MlCalculatorElement);

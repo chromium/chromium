@@ -1,0 +1,32 @@
+<div class="table">
+  <div class="thead">
+    <div class="tr">
+      <!-- Keep consistent with MlTableElement.setTable(). -->
+      <div class="th input-header">Input</div>
+      <div class="th provider-header">Provider</div>
+      <div class="th contents-header">Contents</div>
+      <div class="th description-header">Description</div>
+      <div class="th relevance-header">Relevance</div>
+      <div class="th ml-model-output-header">Ml model output</div>
+      <div class="th ml-legacy-relevance-header">Ml legacy relevance</div>
+    </div>
+  </div>
+
+  <div class="thead">
+    <div class="tr">
+      <div class="th">ML scoring<select id="table-filter"></select></div>
+    </div>
+  </div>
+  <div id="ml-response" class="tbody"></div>
+
+  <div class="thead">
+    <div class="tr">
+      <div class="th">Traditional scoring</div>
+    </div>
+  </div>
+  <div id="traditional-response" class="tbody">
+    <div class="tr">
+      <div class="td">Type into the omnibox to see results.</div>
+    </div>
+  </div>
+</div>

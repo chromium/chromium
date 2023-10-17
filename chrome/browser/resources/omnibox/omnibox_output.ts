@@ -4,11 +4,12 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {ACMatchClassification, AutocompleteMatch, DictionaryEntry, OmniboxResponse, Signals} from './omnibox.mojom-webui.js';
+import {ACMatchClassification, AutocompleteControllerType, AutocompleteMatch, DictionaryEntry, OmniboxResponse, Signals} from './omnibox.mojom-webui.js';
 import {OmniboxElement} from './omnibox_element.js';
 import {DisplayInputs, OmniboxInput} from './omnibox_input.js';
 // @ts-ignore:next-line
 import outputColumnWidthSheet from './omnibox_output_column_widths.css' assert {type : 'css'};
+import {clearChildren, createEl} from './omnibox_util.js';
 // @ts-ignore:next-line
 import outputResultsGroupSheet from './output_results_group.css' assert {type : 'css'};
 
@@ -19,24 +20,6 @@ interface ResultsDetails {
   type: string;
   host: string;
   isTypedHost: boolean;
-}
-
-function clearChildren(element: Element) {
-  while (element.firstChild) {
-    element.firstChild.remove();
-  }
-}
-
-function createEl<K extends keyof HTMLElementTagNameMap>(
-    tagName: K, parentEl: Element|null = null, classes: string[] = [],
-    text: string = ''): HTMLElementTagNameMap[K] {
-  const el = document.createElement(tagName);
-  el.classList.add(...classes);
-  el.textContent = text;
-  if (parentEl) {
-    parentEl.appendChild(el);
-  }
-  return el;
 }
 
 export class OmniboxOutput extends OmniboxElement {
@@ -117,7 +100,8 @@ export class OmniboxOutput extends OmniboxElement {
     this.updateFilterHighlights();
   }
 
-  updateAnswerImage(url: string, data: string) {
+  updateAnswerImage(
+      _controllerType: AutocompleteControllerType, url: string, data: string) {
     this.outputMatches.forEach(match => match.updateAnswerImage(url, data));
   }
 
@@ -555,6 +539,9 @@ class OutputScoringSignalsProperty extends OutputDictionaryProperty {
                      key,
                      value,
                    } as DictionaryEntry)));
+    const link = createEl('a', null, ['icon', 'edit-icon']);
+    link.href = `chrome://omnibox/ml?signals=${Object.values(value).join()}`;
+    this.container.insertBefore(link, this.container.firstChild);
   }
 }
 
@@ -583,9 +570,7 @@ class OutputUrlProperty extends FlexWrappingOutputProperty {
       destinationUrl: string, isSearchType: boolean,
       strippedDestinationUrl: string) {
     super(destinationUrl);
-
     const iconAndUrlContainer = createEl('div', this.container, ['pair-item']);
-
     if (!isSearchType) {
       createEl('img', iconAndUrlContainer).src =
           `chrome://favicon/${destinationUrl}`;

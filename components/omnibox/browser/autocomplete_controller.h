@@ -93,6 +93,11 @@ class AutocompleteController : public AutocompleteProviderListener,
     // are observing multiple AutocompleteController instances.
     virtual void OnResultChanged(AutocompleteController* controller,
                                  bool default_match_changed) {}
+
+    // Invoked when a ML scoring batch completes, i.e. `OnUrlScoringModelDone()`
+    // completes.
+    virtual void OnMlScored(AutocompleteController* controller,
+                            const AutocompleteResult& result) {}
   };
 
   // Given a match, returns zero or more subtypes corresponding to SuggestType
@@ -104,16 +109,17 @@ class AutocompleteController : public AutocompleteProviderListener,
       const AutocompleteMatch& match,
       base::flat_set<omnibox::SuggestSubtype>* subtypes);
 
-  // |provider_types| is a bitmap containing AutocompleteProvider::Type values
+  // `provider_types` is a bitmap containing AutocompleteProvider::Type values
   // that will (potentially, depending on platform, flags, etc.) be
-  // instantiated. |provider_client| is passed to all those providers, and
-  // is used to get access to the template URL service. |observer| is a
-  // proxy for UI elements which need to be notified when the results get
-  // updated.
+  // instantiated. `provider_client` is passed to all those providers, and
+  // is used to get access to the template URL service. `disable_ml` forces ML
+  // scoring off regardless of its feature state; this is useful for
+  // chrome://omnibox/ml.
   AutocompleteController(
       std::unique_ptr<AutocompleteProviderClient> provider_client,
       int provider_types,
-      bool is_cros_launcher = false);
+      bool is_cros_launcher = false,
+      bool disable_ml = false);
   ~AutocompleteController() override;
   AutocompleteController(const AutocompleteController&) = delete;
   AutocompleteController& operator=(const AutocompleteController&) = delete;
@@ -536,6 +542,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   // service worker context during the current input session. False on
   // controller creation and after |ResetSession| is called.
   bool search_service_worker_signal_sent_;
+
+  // Used for chrome://omnibox/ml to force disable the ML feature state.
+  bool disable_ml_ = true;
 
   raw_ptr<TemplateURLService> template_url_service_;
 
