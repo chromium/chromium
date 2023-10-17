@@ -18,11 +18,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Process;
 import android.text.TextUtils;
 
-import androidx.annotation.OptIn;
-import androidx.core.os.BuildCompat;
-
-import org.jni_zero.CalledByNative;
-
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.build.BuildConfig;
 
@@ -97,42 +93,41 @@ public class BuildInfo {
     }
 
     /** Returns a serialized string array of all properties of this class. */
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private String[] getAllProperties() {
         // This implementation needs to be kept in sync with the native BuildInfo constructor.
         return new String[] {
-                Build.BRAND,
-                Build.DEVICE,
-                Build.ID,
-                Build.MANUFACTURER,
-                Build.MODEL,
-                String.valueOf(Build.VERSION.SDK_INT),
-                Build.TYPE,
-                Build.BOARD,
-                hostPackageName,
-                String.valueOf(hostVersionCode),
-                hostPackageLabel,
-                packageName,
-                String.valueOf(versionCode),
-                versionName,
-                androidBuildFingerprint,
-                gmsVersionCode,
-                installerPackageName,
-                abiString,
-                customThemes,
-                resourcesVersion,
-                String.valueOf(
-                        ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion),
-                isDebugAndroid() ? "1" : "0",
-                isTV ? "1" : "0",
-                Build.VERSION.INCREMENTAL,
-                Build.HARDWARE,
-                isAtLeastT() ? "1" : "0",
-                isAutomotive ? "1" : "0",
-                BuildCompat.isAtLeastU() ? "1" : "0",
-                targetsAtLeastU() ? "1" : "0",
-                Build.VERSION.CODENAME,
-                String.valueOf(vulkanDeqpLevel),
+            Build.BRAND,
+            Build.DEVICE,
+            Build.ID,
+            Build.MANUFACTURER,
+            Build.MODEL,
+            String.valueOf(Build.VERSION.SDK_INT),
+            Build.TYPE,
+            Build.BOARD,
+            hostPackageName,
+            String.valueOf(hostVersionCode),
+            hostPackageLabel,
+            packageName,
+            String.valueOf(versionCode),
+            versionName,
+            androidBuildFingerprint,
+            gmsVersionCode,
+            installerPackageName,
+            abiString,
+            customThemes,
+            resourcesVersion,
+            String.valueOf(
+                    ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion),
+            isDebugAndroid() ? "1" : "0",
+            isTV ? "1" : "0",
+            Build.VERSION.INCREMENTAL,
+            Build.HARDWARE,
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? "1" : "0",
+            isAutomotive ? "1" : "0",
+            Build.VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE ? "1" : "0",
+            targetsAtLeastU() ? "1" : "0",
+            Build.VERSION.CODENAME,
+            String.valueOf(vulkanDeqpLevel),
         };
     }
 
@@ -364,17 +359,6 @@ public class BuildInfo {
      */
     public static boolean isDebugAndroidOrApp() {
         return isDebugAndroid() || isDebugApp();
-    }
-
-    /**
-     * @deprecated For most callers, just replace with an inline check:
-     * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-     * For Robolectric just set the SDK level to VERSION_CODES.TIRAMISU
-     */
-    @Deprecated
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
-    public static boolean isAtLeastT() {
-        return BuildCompat.isAtLeastT();
     }
 
     /**

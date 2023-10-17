@@ -4,6 +4,7 @@
 package org.chromium.ui.base;
 
 import android.Manifest;
+import android.os.Build;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.IntDef;
@@ -112,6 +113,6 @@ public class MimeTypeUtils {
     static boolean useExternalStoragePermission() {
         // Extracted into a helper method for easy testing. Can be replaced with test annotations
         // once Robolectric recognizes SDK = T.
-        return !BuildInfo.isAtLeastT() || !BuildInfo.targetsAtLeastT();
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || !BuildInfo.targetsAtLeastT();
     }
 }

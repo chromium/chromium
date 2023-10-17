@@ -4337,8 +4337,6 @@ if (is_android) {
       "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/androidx:androidx_collection_collection_java",
-      "//third_party/androidx:androidx_core_core_java",
     ]
 
     sources = [
@@ -4368,6 +4366,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/Flag.java",
       "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
       "android/java/src/org/chromium/base/IntStringCallback.java",
+      "android/java/src/org/chromium/base/IntentUtils.java",
       "android/java/src/org/chromium/base/JNIUtils.java",
       "android/java/src/org/chromium/base/JavaExceptionReporter.java",
       "android/java/src/org/chromium/base/JavaHandlerThread.java",
@@ -4483,10 +4482,6 @@ if (is_android) {
       ]
     } else {
       sources += [ "test/android/javatests/src/stub/org/chromium/base/test/ClangProfiler.java" ]
-    }
-
-    if (!is_cronet_build) {
-      sources += [ "android/java/src/org/chromium/base/IntentUtils.java" ]
     }
 
     resources_package = "org.chromium.base"
