@@ -148,9 +148,15 @@ bool IsCreditCardUploadEnabled(
     return false;
   }
 
+  // With `AutofillDecoupleAddressPaymentSyncSettings`, the address and payment
+  // sync settings become independent. However, since address information is
+  // uploaded during the server card saving flow, credit card upload is not
+  // available when address sync is disabled.
   // TODO(crbug.com/1462552): Simplify once IsSyncFeatureActive() is deleted
   // from the codebase.
-  if (sync_service->IsSyncFeatureActive()) {
+  if (sync_service->IsSyncFeatureActive() ||
+      base::FeatureList::IsEnabled(
+          features::kAutofillDecoupleAddressPaymentSyncSettings)) {
     if (!sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL_PROFILE)) {
       // In full sync mode, we only allow card upload when addresses are also
       // active, because we upload potential billing addresses with the card.
