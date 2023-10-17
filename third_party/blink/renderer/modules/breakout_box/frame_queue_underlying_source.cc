@@ -47,7 +47,6 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
     std::string device_id,
     wtf_size_t frame_pool_size)
     : UnderlyingSourceBase(script_state),
-      ActiveScriptWrappable<FrameQueueUnderlyingSource<NativeFrameType>>({}),
       realm_task_runner_(ExecutionContext::From(script_state)
                              ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
       frame_queue_handle_(
@@ -71,7 +70,6 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
     ScriptState* script_state,
     FrameQueueUnderlyingSource<NativeFrameType>* other_source)
     : UnderlyingSourceBase(script_state),
-      ActiveScriptWrappable<FrameQueueUnderlyingSource<NativeFrameType>>({}),
       realm_task_runner_(ExecutionContext::From(script_state)
                              ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
       frame_queue_handle_(other_source->frame_queue_handle_.Queue()),
@@ -136,12 +134,6 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Cancel(
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   Close();
   return ScriptPromise::CastUndefined(script_state);
-}
-
-template <typename NativeFrameType>
-bool FrameQueueUnderlyingSource<NativeFrameType>::HasPendingActivity() const {
-  base::AutoLock locker(lock_);
-  return (num_pending_pulls_ > 0) && GetExecutionContext();
 }
 
 template <typename NativeFrameType>

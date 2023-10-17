@@ -6,7 +6,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "v8/include/v8.h"
 
@@ -76,8 +78,52 @@ void UnderlyingSourceBase::ContextDestroyed() {
 
 void UnderlyingSourceBase::Trace(Visitor* visitor) const {
   visitor->Trace(controller_);
-  ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
+}
+
+v8::MaybeLocal<v8::Promise> UnderlyingStartAlgorithm::Run(
+    ScriptState* script_state,
+    ExceptionState&) {
+  return source_->startWrapper(script_state, controller_).V8Promise();
+}
+
+void UnderlyingStartAlgorithm::Trace(Visitor* visitor) const {
+  StreamStartAlgorithm::Trace(visitor);
+  visitor->Trace(source_);
+  visitor->Trace(controller_);
+}
+
+v8::Local<v8::Promise> UnderlyingPullAlgorithm::Run(
+    ScriptState* script_state,
+    int argc,
+    v8::Local<v8::Value> argv[]) {
+  DCHECK_EQ(argc, 0);
+  return source_->pull(script_state).V8Promise();
+}
+
+void UnderlyingPullAlgorithm::Trace(Visitor* visitor) const {
+  StreamAlgorithm::Trace(visitor);
+  visitor->Trace(source_);
+}
+
+v8::Local<v8::Promise> UnderlyingCancelAlgorithm::Run(
+    ScriptState* script_state,
+    int argc,
+    v8::Local<v8::Value> argv[]) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Value> reason =
+      argc > 0 ? argv[0] : v8::Undefined(isolate).As<v8::Value>();
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionContextType::kUnknown, "", "");
+  return source_
+      ->cancelWrapper(script_state, ScriptValue(isolate, reason),
+                      exception_state)
+      .V8Promise();
+}
+
+void UnderlyingCancelAlgorithm::Trace(Visitor* visitor) const {
+  StreamAlgorithm::Trace(visitor);
+  visitor->Trace(source_);
 }
 
 }  // namespace blink

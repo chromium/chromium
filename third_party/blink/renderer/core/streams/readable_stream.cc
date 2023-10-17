@@ -221,16 +221,17 @@ void ReadableStream::InitWithCountQueueingStrategy(
     AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer,
     ExceptionState& exception_state) {
-  auto* isolate = script_state->GetIsolate();
+  Initialize(this);
+  auto* controller =
+      MakeGarbageCollected<ReadableStreamDefaultController>(script_state);
 
-  auto strategy = CreateTrivialQueuingStrategy(isolate, high_water_mark);
-
-  v8::Local<v8::Value> underlying_source_v8 =
-      ToV8Traits<UnderlyingSourceBase>::ToV8(script_state, underlying_source)
-          .ToLocalChecked();
-
-  InitInternal(script_state, ScriptValue(isolate, underlying_source_v8),
-               strategy, true, exception_state);
+  ReadableStreamDefaultController::SetUp(
+      script_state, this, controller,
+      MakeGarbageCollected<UnderlyingStartAlgorithm>(underlying_source,
+                                                     controller),
+      MakeGarbageCollected<UnderlyingPullAlgorithm>(underlying_source),
+      MakeGarbageCollected<UnderlyingCancelAlgorithm>(underlying_source),
+      high_water_mark, CreateDefaultSizeAlgorithm(), exception_state);
 
   allow_per_chunk_transferring_ = allow_per_chunk_transferring;
   transferring_optimizer_ = std::move(optimizer);
