@@ -44,6 +44,12 @@ class PromiseAppUpdate {
 
   bool StatusChanged() const;
 
+  // The ID of the app installed from the package.
+  // Empty unless promise app installed successfully.
+  std::string InstalledAppId() const;
+
+  bool InstalledAppIdChanged() const;
+
   // Indicates whether the promise app should show in the Launcher/ Shelf.
   bool ShouldShow() const;
 

@@ -27,6 +27,7 @@ class ShelfPromiseAppUpdater : public ShelfAppUpdater,
 
   // PromiseAppRegistryCache::Observer overrides:
   void OnPromiseAppUpdate(const apps::PromiseAppUpdate& promise_app) override;
+  void OnPromiseAppRemoved(const apps::PackageId& package_id) override;
   void OnPromiseAppRegistryCacheWillBeDestroyed(
       apps::PromiseAppRegistryCache* cache) override;
 

@@ -33,6 +33,7 @@ class AppServicePromiseAppModelBuilder
 
   // apps::PromiseAppRegistryCache::Observer overrides:
   void OnPromiseAppUpdate(const apps::PromiseAppUpdate& update) override;
+  void OnPromiseAppRemoved(const apps::PackageId& package_id) override;
   void OnPromiseAppRegistryCacheWillBeDestroyed(
       apps::PromiseAppRegistryCache* cache) override;
 

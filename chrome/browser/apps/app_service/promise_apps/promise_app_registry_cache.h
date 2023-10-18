@@ -31,6 +31,11 @@ class PromiseAppRegistryCache {
     // been made.
     virtual void OnPromiseAppUpdate(const PromiseAppUpdate& update) {}
 
+    // Called after a promise app gets removed from the cache. It's generally
+    // preceded by an app update with a "completed" promise app status.
+    // `id` - the promise app ID.
+    virtual void OnPromiseAppRemoved(const PackageId& id) {}
+
     // Called when the PromiseAppRegistryCache object (the thing that this
     // observer observes) will be destroyed. In response, the observer, |this|,
     // should call "cache->RemoveObserver(this)", whether directly or indirectly

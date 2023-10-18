@@ -55,6 +55,7 @@ void PromiseAppUpdate::Merge(PromiseApp* state, const PromiseApp* delta) {
   SET_OPTIONAL_VALUE(progress);
   SET_ENUM_VALUE(status, PromiseStatus::kUnknown);
   SET_OPTIONAL_VALUE(should_show);
+  SET_OPTIONAL_VALUE(installed_app_id);
 
   // When adding new fields to the PromiseApp struct, this function should also
   // be updated.
@@ -91,6 +92,20 @@ bool PromiseAppUpdate::StatusChanged() const {
   IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(status, PromiseStatus::kUnknown);
 }
 
+std::string PromiseAppUpdate::InstalledAppId() const {
+  if (delta_ && delta_->installed_app_id.has_value()) {
+    return *delta_->installed_app_id;
+  }
+  if (state_ && state_->installed_app_id.has_value()) {
+    return *state_->installed_app_id;
+  }
+  return "";
+}
+
+bool PromiseAppUpdate::InstalledAppIdChanged() const {
+  RETURN_OPTIONAL_VALUE_CHANGED(installed_app_id);
+}
+
 bool PromiseAppUpdate::ShouldShow() const {
   GET_VALUE_WITH_FALLBACK(should_show, false);
 }
@@ -111,6 +126,7 @@ std::ostream& operator<<(std::ostream& out, const PromiseAppUpdate& update) {
   out << "- Status: " << EnumToString(update.Status()) << std::endl;
   out << "- Should Show Changed: " << update.ShouldShowChanged() << std::endl;
   out << "- Should Show: " << update.ShouldShow() << std::endl;
+  out << "- Installed App ID " << update.InstalledAppId() << std::endl;
   return out;
 }
 }  // namespace apps

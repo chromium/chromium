@@ -426,21 +426,21 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     }
 
     std::string app_id = GetShelfId(item_id);
-    std::string promise_package_id = sync_item->promise_package_id;
 
     // All sync items must be valid app service apps to be added to the shelf
     // with the exception of ash-chrome, which for legacy reasons does not use
     // the app service.
     bool is_ash_chrome = app_id == app_constants::kChromeAppId;
     if (!is_ash_chrome && !helper->IsValidIDForCurrentUser(app_id) &&
-        !ShelfControllerHelper::IsPromiseApp(profile_, promise_package_id)) {
+        !ShelfControllerHelper::IsPromiseApp(profile_, app_id)) {
       continue;
     }
 
     // Prune apps that used to be policy-pinned (`is_user_pinned = false`), but
     // are not a part of the policy anymore.
     if (!is_ash_chrome && IsOnlyPolicyPinned(sync_item.get()) &&
-        !base::Contains(policy_pinned_apps, item_id)) {
+        !base::Contains(policy_pinned_apps, item_id) &&
+        !ShelfControllerHelper::IsPromiseApp(profile_, app_id)) {
       policy_delta_remove_from_shelf.push_back(item_id);
       continue;
     }

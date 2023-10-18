@@ -40,6 +40,11 @@ struct PromiseApp {
   absl::optional<float> progress;
   PromiseStatus status = PromiseStatus::kUnknown;
 
+  // Set when an app from the package associated with the promise app gets
+  // installed, and the promise app status changes to `kSuccess`. The ID of the
+  // app that was installed.
+  absl::optional<std::string> installed_app_id;
+
   // Hide the promise app from the Launcher/ Shelf by default. Only show
   // it when we have enough information about the installing package (e.g. name,
   // icon).

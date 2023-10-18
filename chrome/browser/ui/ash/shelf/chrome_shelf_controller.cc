@@ -81,7 +81,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
-#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -1079,9 +1078,27 @@ void ChromeShelfController::OnPromiseAppUpdate(
   // through sync and check if the item should be pinned. If it should be
   // pinned, the UpdatePinnedAppsFromSync() call will create an item for it.
   if (index == kInvalidIndex) {
-    UpdatePinnedAppsFromSync();
+    if (update.StatusChanged() || update.ShouldShowChanged()) {
+      auto* app_list_syncable_service =
+          app_list::AppListSyncableServiceFactory::GetForProfile(profile());
+
+      // Try linking the promise app to an existing sync item. On success, this
+      // will set the promise app's sync item pin ordinal to reflect the
+      // existing app item.
+      if (app_list_syncable_service) {
+        app_list_syncable_service->CreateLinkedPromiseSyncItemIfAvailable(
+            update.PackageId().ToString());
+      }
+
+      UpdatePinnedAppsFromSync();
+    }
     return;
   }
+
+  // NOTE: When the promise app installation completes, if the app is not linked
+  // to an existing sync item, the app's pin state should be copied to the
+  // existing app. This is accomplished by copying promise app sync item
+  // attributes, which is done by `AppServicePromiseAppModelBuilder`.
 
   ash::ShelfItem item = model_->items()[index];
   if (update.Progress().has_value()) {
@@ -1102,10 +1119,8 @@ void ChromeShelfController::OnPromiseAppRemoved(
   if (index == kInvalidIndex) {
     return;
   }
-  const ash::ShelfItem& item = model_->items()[index];
 
-  // TODO(b/288832707): Instead of just unpinning the shelf item, replace it
-  // with the installed app item after the animation completes.
+  const ash::ShelfItem& item = model_->items()[index];
   UnpinShelfItemInternal(item.id);
 }
 
@@ -1353,13 +1368,11 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
   // the new pin at that position.
   for (const auto& pref_shelf_id : pinned_apps) {
     const std::string& app_id = pref_shelf_id.app_id;
-    std::string promise_package_id =
-        shelf_prefs_->GetPromisePackageIdForSyncItem(app_id);
 
     // Checks whether the sync item matches with a current promise app that can
     // be shown in the shelf.
     bool is_valid_promise_app =
-        IsPromiseAppReadyToShowInShelf(profile(), promise_package_id);
+        IsPromiseAppReadyToShowInShelf(profile(), app_id);
 
     // Checks whether the sync item matches an installed app that can be shown
     // in the shelf.
@@ -1378,18 +1391,13 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
     int app_index = index;
     for (; app_index < model_->item_count(); ++app_index) {
       const ash::ShelfItem& item = model_->items()[app_index];
-      if (is_valid_app && item.id == pref_shelf_id) {
-        break;
-      }
-      if (is_valid_promise_app && item.id.app_id == promise_package_id) {
+      if (item.id == pref_shelf_id) {
         break;
       }
     }
 
-    std::string item_id = is_valid_promise_app ? promise_package_id : app_id;
-
     const bool item_pinned = EnsureAppPinnedInModelAtIndex(
-        item_id,
+        app_id,
         /*current_index=*/app_index < model_->item_count() ? app_index : -1,
         /*target_index=*/index);
 

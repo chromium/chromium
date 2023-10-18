@@ -33,6 +33,9 @@ TEST_F(PromiseAppUpdateTest, StateIsNonNull) {
 
   EXPECT_EQ(u.ShouldShow(), true);
   EXPECT_EQ(u.ShouldShowChanged(), false);
+
+  EXPECT_EQ(u.InstalledAppId(), "");
+  EXPECT_FALSE(u.InstalledAppIdChanged());
 }
 
 TEST_F(PromiseAppUpdateTest, DeltaIsNonNull) {
@@ -40,6 +43,7 @@ TEST_F(PromiseAppUpdateTest, DeltaIsNonNull) {
   promise_app.progress = 0.1;
   promise_app.status = PromiseStatus::kPending;
   promise_app.should_show = true;
+  promise_app.installed_app_id = "app1";
   PromiseAppUpdate u(nullptr, &promise_app);
 
   EXPECT_EQ(package_id, u.PackageId());
@@ -53,6 +57,9 @@ TEST_F(PromiseAppUpdateTest, DeltaIsNonNull) {
 
   EXPECT_EQ(u.ShouldShow(), true);
   EXPECT_EQ(u.ShouldShowChanged(), true);
+
+  EXPECT_EQ(u.InstalledAppId(), "app1");
+  EXPECT_TRUE(u.InstalledAppIdChanged());
 }
 
 TEST_F(PromiseAppUpdateTest, StateAndDeltaAreNonNull) {
@@ -65,6 +72,7 @@ TEST_F(PromiseAppUpdateTest, StateAndDeltaAreNonNull) {
   promise_app_new.progress = 0.9;
   promise_app_new.status = PromiseStatus::kInstalling;
   promise_app_new.should_show = true;
+  promise_app_new.installed_app_id = "app1";
 
   PromiseAppUpdate u(&promise_app_old, &promise_app_new);
 
@@ -79,6 +87,9 @@ TEST_F(PromiseAppUpdateTest, StateAndDeltaAreNonNull) {
 
   EXPECT_EQ(u.ShouldShow(), true);
   EXPECT_EQ(u.ShouldShowChanged(), true);
+
+  EXPECT_EQ(u.InstalledAppId(), "app1");
+  EXPECT_TRUE(u.InstalledAppIdChanged());
 }
 
 TEST_F(PromiseAppUpdateTest, Equal) {
@@ -92,12 +103,13 @@ TEST_F(PromiseAppUpdateTest, Equal) {
   state_2->should_show = true;
 
   auto delta_1 = std::make_unique<PromiseApp>(package_id);
-  state_1->status = PromiseStatus::kInstalling;
-  state_1->should_show = true;
+  delta_1->status = PromiseStatus::kInstalling;
+  delta_1->should_show = true;
+  delta_1->installed_app_id = "app1";
 
   auto delta_2 = std::make_unique<PromiseApp>(package_id);
   delta_2->progress = 0.9;
-  state_2->status = PromiseStatus::kInstalling;
+  delta_2->status = PromiseStatus::kInstalling;
 
   // Test nullptr handling.
   EXPECT_EQ(PromiseAppUpdate(nullptr, delta_1.get()),

@@ -43,18 +43,39 @@ void AppServicePromiseAppModelBuilder::OnPromiseAppUpdate(
   if (item) {
     CHECK(item->GetItemType() == AppServicePromiseAppItem::kItemType);
     static_cast<AppServicePromiseAppItem*>(item)->OnPromiseAppUpdate(update);
+
+    if (update.StatusChanged() &&
+        update.Status() == apps::PromiseStatus::kSuccess &&
+        item->GetPromisedItemId().empty()) {
+      if (service()) {
+        service()->CopyPromiseItemAttributesToItem(
+            update.PackageId().ToString(), update.InstalledAppId());
+      }
+    }
+
     if (!show) {
       RemoveApp(update.PackageId().ToString(), false);
     }
   } else if (show) {
-    syncer::StringOrdinal position =
-        service() ? service()->GetSyncPositionForPromiseAppItem(
-                        update.PackageId().ToString())
-                  : syncer::StringOrdinal();
-    auto promise_app_item = std::make_unique<AppServicePromiseAppItem>(
-        profile(), model_updater(), update, position);
-    InsertApp(std::move(promise_app_item));
+    absl::optional<app_list::AppListSyncableService::LinkedPromiseAppSyncItem>
+        linked_sync_item =
+            service() ? service()->CreateLinkedPromiseSyncItemIfAvailable(
+                            update.PackageId().ToString())
+                      : absl::nullopt;
+    if (linked_sync_item) {
+      InsertApp(std::make_unique<AppServicePromiseAppItem>(
+          profile(), model_updater(), update, linked_sync_item->linked_item_id,
+          linked_sync_item->promise_item));
+    } else {
+      InsertApp(std::make_unique<AppServicePromiseAppItem>(
+          profile(), model_updater(), update, "", nullptr));
+    }
   }
+}
+
+void AppServicePromiseAppModelBuilder::OnPromiseAppRemoved(
+    const apps::PackageId& package_id) {
+  RemoveApp(package_id.ToString(), false);
 }
 
 void AppServicePromiseAppModelBuilder::OnPromiseAppRegistryCacheWillBeDestroyed(

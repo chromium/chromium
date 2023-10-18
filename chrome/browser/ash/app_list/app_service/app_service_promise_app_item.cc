@@ -24,17 +24,24 @@ AppServicePromiseAppItem::AppServicePromiseAppItem(
     Profile* profile,
     AppListModelUpdater* model_updater,
     const apps::PromiseAppUpdate& update,
-    const syncer::StringOrdinal position)
+    const std::string& promised_app_id,
+    const app_list::AppListSyncableService::SyncItem* sync_item)
     : ChromeAppListItem(profile, update.PackageId().ToString()),
-      package_id_(update.PackageId()) {
+      package_id_(update.PackageId()),
+      promised_app_id_(promised_app_id) {
   InitializeItem(update);
 
   // Promise icons should not be synced as they are transient and only present
   // during app installations.
   SetIsEphemeral(true);
 
+  const syncer::StringOrdinal position =
+      sync_item ? sync_item->item_ordinal : syncer::StringOrdinal();
   SetPosition(position.IsValid() ? position
                                  : CalculateDefaultPositionIfApplicable());
+  if (sync_item) {
+    SetChromeFolderId(sync_item->parent_id);
+  }
 
   // Set model updater last to avoid being called during construction.
   set_model_updater(model_updater);
@@ -108,4 +115,8 @@ void AppServicePromiseAppItem::GetContextMenuModel(
 
 app_list::AppContextMenu* AppServicePromiseAppItem::GetAppContextMenu() {
   return context_menu_.get();
+}
+
+std::string AppServicePromiseAppItem::GetPromisedItemId() const {
+  return promised_app_id_;
 }

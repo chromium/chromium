@@ -128,6 +128,8 @@ class ChromeAppListItem {
   // has its Android analog installed.
   virtual bool IsBadged() const;
 
+  virtual std::string GetPromisedItemId() const;
+
   bool CompareForTest(const ChromeAppListItem* other) const;
 
   std::string ToDebugString() const;

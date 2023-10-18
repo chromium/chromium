@@ -180,6 +180,7 @@ void PromiseAppService::OnAppUpdate(const apps::AppUpdate& update) {
   // Delete the promise app.
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id.value());
   promise_app->status = PromiseStatus::kSuccess;
+  promise_app->installed_app_id = update.AppId();
   OnPromiseApp(std::move(promise_app));
 }
 

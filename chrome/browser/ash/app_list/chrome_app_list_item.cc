@@ -122,6 +122,10 @@ bool ChromeAppListItem::IsBadged() const {
   return false;
 }
 
+std::string ChromeAppListItem::GetPromisedItemId() const {
+  return std::string();
+}
+
 app_list::AppContextMenu* ChromeAppListItem::GetAppContextMenu() {
   return nullptr;
 }
