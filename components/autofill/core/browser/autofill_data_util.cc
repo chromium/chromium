@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/i18n/char_iterator.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -546,7 +547,8 @@ bool IsValidCountryCode(const std::string& country_code) {
   if (country_code.size() != 2)
     return false;
 
-  return re2::RE2::FullMatch(country_code, "^[A-Z]{2}$");
+  static const base::NoDestructor<re2::RE2> country_code_regex("^[A-Z]{2}$");
+  return re2::RE2::FullMatch(country_code, *country_code_regex.get());
 }
 
 bool IsValidCountryCode(const std::u16string& country_code) {
