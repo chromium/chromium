@@ -2368,8 +2368,9 @@ class DevToolsReattachAfterCrashTest : public DevToolsTest {
   }
 };
 
+// TODO(crbug.com/1493771): Reenable after fixing consistent Windows failure.
 IN_PROC_BROWSER_TEST_F(DevToolsReattachAfterCrashTest,
-                       TestReattachAfterCrashOnTimeline) {
+                       DISABLED_TestReattachAfterCrashOnTimeline) {
   RunTestWithPanel("timeline");
 }
 
