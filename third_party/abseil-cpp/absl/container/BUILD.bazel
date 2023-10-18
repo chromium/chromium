@@ -24,6 +24,7 @@ load(
 package(
     default_visibility = ["//visibility:public"],
     features = [
+        "header_modules",
         "layering_check",
         "parse_headers",
     ],
@@ -618,6 +619,8 @@ cc_library(
     deps = [
         ":container_memory",
         ":raw_hash_set",
+        "//absl/base:config",
+        "//absl/base:core_headers",
         "//absl/base:throw_delegate",
     ],
 )

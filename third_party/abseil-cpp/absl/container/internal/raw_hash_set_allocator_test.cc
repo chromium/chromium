@@ -284,32 +284,36 @@ TEST_F(NoPropagateOnCopy, CopyConstructorWithDifferentAlloc) {
 }
 
 TEST_F(PropagateOnAll, MoveConstructor) {
-  auto it = t1.insert(0).first;
+  t1.insert(0);
   Table u(std::move(t1));
+  auto it = u.begin();
   EXPECT_EQ(1, a1.num_allocs());
   EXPECT_EQ(0, it->num_moves());
   EXPECT_EQ(0, it->num_copies());
 }
 
 TEST_F(NoPropagateOnMove, MoveConstructor) {
-  auto it = t1.insert(0).first;
+  t1.insert(0);
   Table u(std::move(t1));
+  auto it = u.begin();
   EXPECT_EQ(1, a1.num_allocs());
   EXPECT_EQ(0, it->num_moves());
   EXPECT_EQ(0, it->num_copies());
 }
 
 TEST_F(PropagateOnAll, MoveConstructorWithSameAlloc) {
-  auto it = t1.insert(0).first;
+  t1.insert(0);
   Table u(std::move(t1), a1);
+  auto it = u.begin();
   EXPECT_EQ(1, a1.num_allocs());
   EXPECT_EQ(0, it->num_moves());
   EXPECT_EQ(0, it->num_copies());
 }
 
 TEST_F(NoPropagateOnMove, MoveConstructorWithSameAlloc) {
-  auto it = t1.insert(0).first;
+  t1.insert(0);
   Table u(std::move(t1), a1);
+  auto it = u.begin();
   EXPECT_EQ(1, a1.num_allocs());
   EXPECT_EQ(0, it->num_moves());
   EXPECT_EQ(0, it->num_copies());
@@ -378,9 +382,10 @@ TEST_F(NoPropagateOnCopy, CopyAssignmentWithDifferentAlloc) {
 }
 
 TEST_F(PropagateOnAll, MoveAssignmentWithSameAlloc) {
-  auto it = t1.insert(0).first;
+  t1.insert(0);
   Table u(0, a1);
   u = std::move(t1);
+  auto it = u.begin();
   EXPECT_EQ(a1, u.get_allocator());
   EXPECT_EQ(1, a1.num_allocs());
   EXPECT_EQ(0, it->num_moves());
@@ -388,9 +393,10 @@ TEST_F(PropagateOnAll, MoveAssignmentWithSameAlloc) {
 }
 
 TEST_F(NoPropagateOnMove, MoveAssignmentWithSameAlloc) {
-  auto it = t1.insert(0).first;
+  t1.insert(0);
   Table u(0, a1);
   u = std::move(t1);
+  auto it = u.begin();
   EXPECT_EQ(a1, u.get_allocator());
   EXPECT_EQ(1, a1.num_allocs());
   EXPECT_EQ(0, it->num_moves());
@@ -398,9 +404,10 @@ TEST_F(NoPropagateOnMove, MoveAssignmentWithSameAlloc) {
 }
 
 TEST_F(PropagateOnAll, MoveAssignmentWithDifferentAlloc) {
-  auto it = t1.insert(0).first;
+  t1.insert(0);
   Table u(0, a2);
   u = std::move(t1);
+  auto it = u.begin();
   EXPECT_EQ(a1, u.get_allocator());
   EXPECT_EQ(1, a1.num_allocs());
   EXPECT_EQ(0, a2.num_allocs());
@@ -409,10 +416,10 @@ TEST_F(PropagateOnAll, MoveAssignmentWithDifferentAlloc) {
 }
 
 TEST_F(NoPropagateOnMove, MoveAssignmentWithDifferentAlloc) {
-  auto it = t1.insert(0).first;
+  t1.insert(0);
   Table u(0, a2);
   u = std::move(t1);
-  it = u.find(0);
+  auto it = u.find(0);
   EXPECT_EQ(a2, u.get_allocator());
   EXPECT_EQ(1, a1.num_allocs());
   EXPECT_EQ(1, a2.num_allocs());
