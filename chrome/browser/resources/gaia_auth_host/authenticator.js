@@ -107,7 +107,8 @@ export let AuthCompletedCredentials;
  *   isSupervisedUser: boolean,
  *   isDeviceOwner: boolean,
  *   ssoProfile: string,
- *   urlParameterToAutofillSAMLUsername: string
+ *   urlParameterToAutofillSAMLUsername: string,
+ *   frameUrl: URL,
  * }}
  */
 export let AuthParams;

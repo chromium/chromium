@@ -67,6 +67,7 @@ export interface AuthParams {
   showTos: string;
   ssoProfile: string;
   urlParameterToAutofillSAMLUsername: string;
+  frameUrl: URL;
 }
 
 export enum AuthMode {

@@ -151,6 +151,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2480],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/edu_coexistence/resources.grd": {
+    "META": {"sizes": {"includes": [20],}},
+    "includes": [2490],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/gaia_action_buttons/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2500],

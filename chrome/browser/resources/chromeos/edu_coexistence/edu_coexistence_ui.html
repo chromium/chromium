@@ -1,4 +1,4 @@
-<style include="edu-coexistence-css">
+<style include="common">
   paper-spinner-lite {
     --spinner-size: 38px;
     display: none;
@@ -23,17 +23,17 @@
 
 <edu-coexistence-template>
   <span slot="main">
-    <div class="back-button" hidden$="[[!showGaiaButtons_]]">
+    <div class="back-button" hidden$="[[!showGaiaButtons]]">
       <edu-coexistence-button button-type="back"
          id="gaia-back-button"
-         on-go-back="handleGaiaLoginGoBack_">
+         on-go-back="handleGaiaLoginGoBack">
       </edu-coexistence-button>
     </div>
 
-    <webview id="signinFrame" hidden$="[[loading_]]" class="signin-frame"
+    <webview id="signinFrame" hidden$="[[loading]]" class="signin-frame"
              allowscaling></webview>
-    <div class ="spinner-container" hidden$="[[!loading_]]">
-      <paper-spinner-lite class="spinner" active="[[loading_]]">
+    <div class ="spinner-container" hidden$="[[!loading]]">
+      <paper-spinner-lite class="spinner" active="[[loading]]">
       </paper-spinner-lite>
       <div id="comment" aria-live="polite"
            aria-label$="$i18n{loadingMessage}">
@@ -41,11 +41,11 @@
       </div>
     </div>
   </span>
-  <span slot="buttons" hidden$="[[!showGaiaButtons_]]" class="buttons-layout">
+  <span slot="buttons" hidden$="[[!showGaiaButtons]]" class="buttons-layout">
     <gaia-action-buttons id="gaiaNextButton"
-      authenticator="[[controller_.authExtHost_]]"
+      authenticator="[[controller.authExtHost]]"
       rounded-button="true"
-      hidden$="[[!showGaiaNextButton_]]">
+      hidden$="[[!showGaiaNextButton]]">
     </gaia-action-buttons>
   </span>
 </edu-coexistence-template>

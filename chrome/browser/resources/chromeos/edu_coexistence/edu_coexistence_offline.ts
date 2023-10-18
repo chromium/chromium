@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './edu_coexistence_css.js';
 import './edu_coexistence_template.js';
 import './edu_coexistence_button.js';
-import './supervision/supervised_user_offline.js';
+import './common.css.js';
+import '../supervision/supervised_user_offline.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
+import {getTemplate} from './edu_coexistence_offline.html.js';
+import {EduCoexistenceTemplate} from './edu_coexistence_template.js';
 
 class EduCoexistenceOffline extends PolymerElement {
   static get is() {
@@ -17,26 +19,25 @@ class EduCoexistenceOffline extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
-    this.shadowRoot.querySelector('edu-coexistence-template')
-        .showButtonFooter(true);
+    const template = this.shadowRoot!.querySelector(
+                         'edu-coexistence-template') as EduCoexistenceTemplate;
+    template.updateButtonFooterVisibility(true);
 
     this.addEventListener('go-action', () => {
-      this.closeDialog_();
+      this.closeDialog();
     });
   }
 
   /**
    * Attempts to close the dialog. In OOBE, this will move on
    * to the next screen of OOBE (not the next screen of this flow).
-   * @private
    */
-  closeDialog_() {
+  private closeDialog() {
     EduCoexistenceBrowserProxyImpl.getInstance().dialogClose();
   }
 }

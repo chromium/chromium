@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://chrome-signin/edu_coexistence_ui.js';
+import 'chrome://chrome-signin/edu_coexistence/edu_coexistence_ui.js';
 
-import {EduCoexistenceBrowserProxyImpl} from 'chrome://chrome-signin/edu_coexistence_browser_proxy.js';
+import {EduCoexistenceBrowserProxyImpl} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_browser_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

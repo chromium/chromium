@@ -38,18 +38,6 @@
         <include name="IDR_CHROME_APP_MANIFEST" file="resources\chrome_app\manifest.json" type="BINDATA" />
         <include name="IDR_URL_MOJOM_LITE_JS" file="${root_gen_dir}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
 
-        <!-- Edu Coexistence account login resources -->
-        <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_HTML" file="resources\chromeos\edu_coexistence\edu_coexistence.html" type="BINDATA" />
-        <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_app.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_UI_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_ui.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CONTROLLER_JS" file="resources\chromeos\edu_coexistence\edu_coexistence_controller.js" type="BINDATA" />
-        <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_BROWSER_PROXY_JS" file="resources\chromeos\edu_coexistence\edu_coexistence_browser_proxy.js" type="BINDATA" />
-        <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_BUTTON_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_button.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_OFFLINE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_offline.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_ERROR_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_error.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_TEMPLATE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_template.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CSS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\edu_coexistence\edu_coexistence_css.js" use_base_dir="false" type="BINDATA" />
-
         <!-- ChromeOS Account Manager resources -->
         <include name="IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS" file="resources\chromeos\account_manager\components\error_screen.js" type ="BINDATA"/>
         <include name="IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_HTML_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\components\error_screen.html.js" use_base_dir="false" type ="BINDATA"/>

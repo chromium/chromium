@@ -2,142 +2,116 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AuthCompletedCredentials} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-
-import {AuthCompletedCredentials} from '../../gaia_auth_host/authenticator.js';
 
 import {EduCoexistenceParams} from './edu_coexistence_controller.js';
 
-/** TODO(yilkal): Improve the naming of methods in the proxy. */
-
-/** @interface */
-export class EduCoexistenceBrowserProxy {
+export interface EduCoexistenceBrowserProxy {
   /** Sends 'initialize' message to prepare for starting auth. */
-  initializeLogin() {}
+  initializeLogin(): void;
 
   /**
    * Sends 'initializeEduArgs' message to provide the parameters.
-   * @return {!Promise<!EduCoexistenceParams>}
    */
-  initializeEduArgs() {}
+  initializeEduArgs(): Promise<EduCoexistenceParams>;
 
   /**
    * Sends 'authExtensionReady' message to handle tasks after auth extension
    * loads.
    */
-  authExtensionReady() {}
+  authExtensionReady(): void;
 
   /**
    * Sends 'completeLogin' message to complete login.
-   * @param {!AuthCompletedCredentials} credentials
    */
-  completeLogin(credentials) {}
+  completeLogin(credentials: AuthCompletedCredentials): void;
 
   /**
    * Sends 'getAccounts' message to the handler. The promise will be resolved
    * with the list of emails of accounts in session.
-   * @return {!Promise<Array<string>>}
    */
-  getAccounts() {}
+  getAccounts(): Promise<string[]>;
 
   /**
    * Sends 'consentValid' message to the handler to notify the handler that
    * the parental consent is valid.
    */
-  consentValid() {}
+  consentValid(): void;
 
   /**
    * Sends 'consentLogged' message to the handler to notify the handler that
-   * the parental consent is valid.
-   * @param {string} account Added account email.
-   * @param {string} eduCoexistenceToSVersion The terms of service version.
-   * @return {!Promise<boolean>} Returns a promise which will resolve to true
-   *     when the account has successfully been added. The promise will be used
-   *     by the server flow to show "Account added" page.
+   * the parental consent is valid. Returns a promise which will resolve to true
+   * when the account has successfully been added. The promise will be used
+   * by the server flow to show "Account added" page.
    */
-  consentLogged(account, eduCoexistenceToSVersion) {}
+  consentLogged(account: string, eduCoexistenceToSVersion: string):
+      Promise<boolean>;
 
   /** Sends 'dialogClose' message to close the login dialog. */
-  dialogClose() {}
+  dialogClose(): void;
 
   /**
    * Sends 'error' message to handler.
-   * @param {Array<string>} msg Error messages.
    */
-  onError(msg) {}
+  onError(msg: string[]): void;
 
   /**
-   * @return {?string} JSON-encoded dialog arguments.
+   * Returns JSON-encoded dialog arguments.
    */
-  getDialogArguments() {}
+  getDialogArguments(): string;
 }
 
-/**
- * @implements {EduCoexistenceBrowserProxy}
- */
-export class EduCoexistenceBrowserProxyImpl {
-  /** @override */
+export class EduCoexistenceBrowserProxyImpl implements
+    EduCoexistenceBrowserProxy {
   initializeLogin() {
     chrome.send('initialize');
   }
 
-  /** @override */
   initializeEduArgs() {
     return sendWithPromise('initializeEduArgs');
   }
 
-
-  /** @override */
   authExtensionReady() {
     chrome.send('authExtensionReady');
   }
 
-  /** @override */
-  completeLogin(credentials) {
+  completeLogin(credentials: AuthCompletedCredentials) {
     chrome.send('completeLogin', [credentials]);
   }
 
-  /** @override */
   getAccounts() {
     return sendWithPromise('getAccounts');
   }
 
-  /** @override */
   consentValid() {
     chrome.send('consentValid');
   }
 
-  /** @override */
-  consentLogged(account, eduCoexistenceToSVersion) {
+  consentLogged(account: string, eduCoexistenceToSVersion: string) {
     return sendWithPromise(
         'consentLogged', [account, eduCoexistenceToSVersion]);
   }
 
-  /** @override */
   dialogClose() {
     chrome.send('dialogClose');
   }
 
-  /** @override */
-  onError(msg) {
+  onError(msg: string[]) {
     chrome.send('error', msg);
   }
 
-  /** @override */
   getDialogArguments() {
     return chrome.getVariableValue('dialogArguments');
   }
 
-  /** @return {!EduCoexistenceBrowserProxy} */
-  static getInstance() {
+  static getInstance(): EduCoexistenceBrowserProxy {
     return instance || (instance = new EduCoexistenceBrowserProxyImpl());
   }
 
-  /** @param {!EduCoexistenceBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: EduCoexistenceBrowserProxy) {
     instance = obj;
   }
 }
 
-/** @type {?EduCoexistenceBrowserProxy} */
-let instance = null;
+let instance: EduCoexistenceBrowserProxy|null = null;
