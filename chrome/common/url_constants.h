@@ -486,7 +486,7 @@ inline constexpr char16_t kTrackingProtectionHelpCenterURL[] =
 
 // The URL for the Help Center page about User Bypass.
 inline constexpr char16_t kUserBypassHelpCenterURL[] =
-    u"https://support.google.com/chrome?p=user_bypass";
+    u"https://support.google.com/chrome?p=pause_protections";
 
 inline constexpr char kUpgradeHelpCenterBaseURL[] =
     "https://support.google.com/installer/?product="
