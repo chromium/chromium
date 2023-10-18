@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-PASS Interfaces and attributes in ServiceWorkerGlobalScope
-FAIL Event constructors assert_equals: FetchEvent.isReload should not exist expected (undefined) undefined but got (boolean) false
-PASS xhr is not exposed
-PASS URL.createObjectURL is not exposed
+[PASS] Interfaces and attributes in ServiceWorkerGlobalScope
+[FAIL] Event constructors
+  assert_equals: FetchEvent.isReload should not exist expected (undefined) undefined but got (boolean) false
+[PASS] xhr is not exposed
+[PASS] URL.createObjectURL is not exposed
 Harness: the test ran to completion.
 

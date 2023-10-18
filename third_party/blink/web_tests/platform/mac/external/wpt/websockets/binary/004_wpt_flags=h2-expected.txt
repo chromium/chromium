@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL WebSockets: Send/Receive ArrayBuffer, size greater than network array buffer assert_unreached: close event should not fire Reached unreachable code
+[FAIL] WebSockets: Send/Receive ArrayBuffer, size greater than network array buffer
+  assert_unreached: close event should not fire Reached unreachable code
 Harness: the test ran to completion.
 

@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
-FAIL Registering a new script URL while an unregistered registration is in use assert_equals: before activated registration.installing expected null but got object "[object ServiceWorker]"
-PASS Registering a new script URL that 404s does not resurrect unregistered registration
-FAIL Registering a new script URL that fails to install does not resurrect unregistered registration assert_not_equals: New registration is different got disallowed value object "[object ServiceWorkerRegistration]"
+[FAIL] Registering a new script URL while an unregistered registration is in use
+  assert_equals: before activated registration.installing expected null but got object "[object ServiceWorker]"
+[PASS] Registering a new script URL that 404s does not resurrect unregistered registration
+[FAIL] Registering a new script URL that fails to install does not resurrect unregistered registration
+  assert_not_equals: New registration is different got disallowed value object "[object ServiceWorkerRegistration]"
 Harness: the test ran to completion.
 

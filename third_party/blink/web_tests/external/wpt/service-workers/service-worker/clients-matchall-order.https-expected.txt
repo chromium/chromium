@@ -1,10 +1,14 @@
 This is a testharness.js-based test.
-PASS Clients.matchAll() returns non-focused controlled windows in creation order.
-PASS Clients.matchAll() returns controlled windows in focus order.  Case 1.
-PASS Clients.matchAll() returns controlled windows in focus order.  Case 2.
-FAIL Clients.matchAll() returns non-focused uncontrolled windows in creation order. assert_equals: expected 6 but got 5
-FAIL Clients.matchAll() returns uncontrolled windows in focus order.  Case 1. assert_equals: expected 6 but got 5
-FAIL Clients.matchAll() returns uncontrolled windows in focus order.  Case 2. assert_equals: expected 6 but got 5
-FAIL Clients.matchAll() returns controlled windows and frames in focus order. assert_equals: expected URL index 1 expected "https://web-platform.test:8444/service-workers/service-worker/resources/empty.html?name=focus-controlled-nested-windows&q=1" but got "https://web-platform.test:8444/service-workers/service-worker/resources/empty.html?name=focus-controlled-nested-windows&q=1&nested=true"
+[PASS] Clients.matchAll() returns non-focused controlled windows in creation order.
+[PASS] Clients.matchAll() returns controlled windows in focus order.  Case 1.
+[PASS] Clients.matchAll() returns controlled windows in focus order.  Case 2.
+[FAIL] Clients.matchAll() returns non-focused uncontrolled windows in creation order.
+  assert_equals: expected 6 but got 5
+[FAIL] Clients.matchAll() returns uncontrolled windows in focus order.  Case 1.
+  assert_equals: expected 6 but got 5
+[FAIL] Clients.matchAll() returns uncontrolled windows in focus order.  Case 2.
+  assert_equals: expected 6 but got 5
+[FAIL] Clients.matchAll() returns controlled windows and frames in focus order.
+  assert_equals: expected URL index 1 expected "https://web-platform.test:8444/service-workers/service-worker/resources/empty.html?name=focus-controlled-nested-windows&q=1" but got "https://web-platform.test:8444/service-workers/service-worker/resources/empty.html?name=focus-controlled-nested-windows&q=1&nested=true"
 Harness: the test ran to completion.
 

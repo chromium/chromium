@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Test Clients.get() with window and worker clients
-Harness: the test ran to completion.
-

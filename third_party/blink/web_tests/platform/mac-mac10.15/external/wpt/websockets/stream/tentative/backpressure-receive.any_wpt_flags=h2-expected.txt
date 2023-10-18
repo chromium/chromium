@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS backpressure should be applied to received messages
-Harness: the test ran to completion.
-

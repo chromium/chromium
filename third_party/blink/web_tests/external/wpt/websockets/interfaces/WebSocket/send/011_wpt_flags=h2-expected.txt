@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL WebSockets: sending non-ascii, combining chars and non-BMP assert_unreached: Reached unreachable code
+[FAIL] WebSockets: sending non-ascii, combining chars and non-BMP
+  assert_unreached: Reached unreachable code
 Harness: the test ran to completion.
 

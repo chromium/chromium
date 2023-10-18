@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Create WebSocket - Server initiated Close - Client sends back a CLOSE - readyState should be in CLOSED state and wasClean is TRUE - Connection should be closed assert_true: WebSocket connection should be open expected true got false
+[FAIL] Create WebSocket - Server initiated Close - Client sends back a CLOSE - readyState should be in CLOSED state and wasClean is TRUE - Connection should be closed
+  assert_true: WebSocket connection should be open expected true got false
 Harness: the test ran to completion.
 
