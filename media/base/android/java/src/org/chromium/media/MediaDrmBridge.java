@@ -85,7 +85,7 @@ public class MediaDrmBridge {
     // the one-byte key ID 0 and the MediaKeyStatus most appropriate for the aggregated status of
     // this object."
     // See details: https://www.w3.org/TR/encrypted-media/#dom-mediakeysession-keystatuses
-    private static final byte[] DUMMY_KEY_ID = new byte[] {0};
+    private static final byte[] PLACEHOLDER_KEY_ID = new byte[] {0};
 
     // Special provision response to remove the cert.
     private static final byte[] UNPROVISION = ApiCompatibilityUtils.getBytesUtf8("unprovision");
@@ -230,12 +230,12 @@ public class MediaDrmBridge {
     }
 
     /**
-     *  Creates a dummy single element list of KeyStatus with a dummy key ID and
-     *  the specified keyStatus.
+     * Creates a placeholder single element list of KeyStatus with a placeholder key ID and the
+     * specified keyStatus.
      */
-    private static List<KeyStatus> getDummyKeysInfo(int statusCode) {
+    private static List<KeyStatus> getPlaceholderKeysInfo(int statusCode) {
         List<KeyStatus> keysInfo = new ArrayList<KeyStatus>();
-        keysInfo.add(new KeyStatus(DUMMY_KEY_ID, statusCode));
+        keysInfo.add(new KeyStatus(PLACEHOLDER_KEY_ID, statusCode));
         return keysInfo;
     }
 
@@ -1041,10 +1041,12 @@ public class MediaDrmBridge {
 
                 // Report keystatuseschange event to JS. Ideally we should report the event with
                 // list of known key IDs. However we can't get the key IDs from MediaDrm. Just
-                // report with dummy key IDs.
-                onSessionKeysChange(sessionId,
-                        getDummyKeysInfo(MediaDrm.KeyStatus.STATUS_EXPIRED).toArray(),
-                        false /* hasAdditionalUsableKey */, true /* isKeyRelease */);
+                // report with placeholder key IDs.
+                onSessionKeysChange(
+                        sessionId,
+                        getPlaceholderKeysInfo(MediaDrm.KeyStatus.STATUS_EXPIRED).toArray(),
+                        false /* hasAdditionalUsableKey */,
+                        true /* isKeyRelease */);
                 return;
             }
 
