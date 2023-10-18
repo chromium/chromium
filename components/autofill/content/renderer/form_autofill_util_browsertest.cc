@@ -1591,10 +1591,11 @@ INSTANTIATE_TEST_SUITE_P(
         // do not belong to the form of interest.
         std::string html;
         for (const FieldOrFrame& field_or_frame : fields_and_frames) {
-          html += base::StringPrintf(field_or_frame.is_frame
-                                         ? "<iframe id='%s'></iframe>"
-                                         : "<input id='%s'>",
-                                     field_or_frame.id);
+          html +=
+              field_or_frame.is_frame
+                  ? base::StringPrintf("<iframe id='%s'></iframe>",
+                                       field_or_frame.id)
+                  : base::StringPrintf("<input id='%s'>", field_or_frame.id);
         }
         if (!is_synthetic_form) {
           html = base::StringPrintf("<form id='%s'>%s</form>", form_id,
