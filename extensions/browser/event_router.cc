@@ -340,19 +340,21 @@ BrowserContext* EventRouter::GetIncognitoContext() {
 }
 
 void EventRouter::AddListenerForMainThread(
-    mojom::EventListenerOwnerPtr listener_owner,
-    const std::string& event_name) {
+    mojom::EventListenerPtr event_listener) {
   auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process)
     return;
 
-  if (listener_owner->is_extension_id() &&
-      crx_file::id_util::IdIsValid(listener_owner->get_extension_id())) {
-    AddEventListener(event_name, process, listener_owner->get_extension_id());
-  } else if (listener_owner->is_listener_url() &&
-             listener_owner->get_listener_url().is_valid()) {
-    AddEventListenerForURL(event_name, process,
-                           listener_owner->get_listener_url());
+  const mojom::EventListenerOwner& listener_owner =
+      *event_listener->listener_owner;
+  if (listener_owner.is_extension_id() &&
+      crx_file::id_util::IdIsValid(listener_owner.get_extension_id())) {
+    AddEventListener(event_listener->event_name, process,
+                     listener_owner.get_extension_id());
+  } else if (listener_owner.is_listener_url() &&
+             listener_owner.get_listener_url().is_valid()) {
+    AddEventListenerForURL(event_listener->event_name, process,
+                           listener_owner.get_listener_url());
   } else {
     mojo::ReportBadMessage(kAddEventListenerWithInvalidParam);
   }
@@ -434,20 +436,21 @@ void EventRouter::AddFilteredListenerForServiceWorker(
 }
 
 void EventRouter::RemoveListenerForMainThread(
-    mojom::EventListenerOwnerPtr listener_owner,
-    const std::string& event_name) {
+    mojom::EventListenerPtr event_listener) {
   auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process)
     return;
 
-  if (listener_owner->is_extension_id() &&
-      crx_file::id_util::IdIsValid(listener_owner->get_extension_id())) {
-    RemoveEventListener(event_name, process,
-                        listener_owner->get_extension_id());
-  } else if (listener_owner->is_listener_url() &&
-             listener_owner->get_listener_url().is_valid()) {
-    RemoveEventListenerForURL(event_name, process,
-                              listener_owner->get_listener_url());
+  const mojom::EventListenerOwner& listener_owner =
+      *event_listener->listener_owner;
+  if (listener_owner.is_extension_id() &&
+      crx_file::id_util::IdIsValid(listener_owner.get_extension_id())) {
+    RemoveEventListener(event_listener->event_name, process,
+                        listener_owner.get_extension_id());
+  } else if (listener_owner.is_listener_url() &&
+             listener_owner.get_listener_url().is_valid()) {
+    RemoveEventListenerForURL(event_listener->event_name, process,
+                              listener_owner.get_listener_url());
   } else {
     mojo::ReportBadMessage(kRemoveEventListenerWithInvalidParam);
   }

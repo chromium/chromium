@@ -90,8 +90,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    GetEventRouter()->AddListenerForMainThread(GetEventListenerOwner(context),
-                                               event_name);
+    GetEventRouter()->AddListenerForMainThread(mojom::EventListener::New(
+        GetEventListenerOwner(context), event_name, nullptr, absl::nullopt));
   }
 
   void SendRemoveUnfilteredEventListenerIPC(
@@ -100,8 +100,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    GetEventRouter()->RemoveListenerForMainThread(
-        GetEventListenerOwner(context), event_name);
+    GetEventRouter()->RemoveListenerForMainThread(mojom::EventListener::New(
+        GetEventListenerOwner(context), event_name, nullptr, absl::nullopt));
   }
 
   void SendAddUnfilteredLazyEventListenerIPC(

@@ -162,8 +162,8 @@ class EventRouter : public KeyedService,
   ~EventRouter() override;
 
   // mojom::EventRouter:
-  void AddListenerForMainThread(mojom::EventListenerOwnerPtr listener_owner,
-                                const std::string& name) override;
+  void AddListenerForMainThread(
+      mojom::EventListenerPtr event_listener) override;
 
   void AddListenerForServiceWorker(
       const std::string& extension_id,
@@ -190,8 +190,8 @@ class EventRouter : public KeyedService,
       base::Value::Dict filter,
       bool add_lazy_listener) override;
 
-  void RemoveListenerForMainThread(mojom::EventListenerOwnerPtr listener_owner,
-                                   const std::string& name) override;
+  void RemoveListenerForMainThread(
+      mojom::EventListenerPtr event_listener) override;
 
   void RemoveListenerForServiceWorker(
       const std::string& extension_id,
