@@ -6285,6 +6285,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ShortcutCustomization.CustomizationsLoadedOnStartup"
+    units="count" expires_after="2024-08-17">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record the number of customized accelerator modifications on startup.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.ShortcutCustomization.RemoveDefaultAccelerator.{ActionName}"
     units="Shortcuts" expires_after="2024-08-17">

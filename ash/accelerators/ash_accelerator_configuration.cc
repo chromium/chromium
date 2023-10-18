@@ -22,6 +22,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -207,6 +208,15 @@ void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
   // Store a copy of the pref overrides.
   accelerator_overrides_ =
       pref_service->GetDict(prefs::kShortcutCustomizationOverrides).Clone();
+
+  // Count the total number of modifications and store the histogram.
+  int num_entries = 0;
+  for (const auto entry : accelerator_overrides_) {
+    num_entries += entry.second.GetList().size();
+  }
+  base::UmaHistogramCounts1000(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", num_entries);
+
   // Reset to default first.
   ResetAllAccelerators();
   ApplyPrefOverrides();
