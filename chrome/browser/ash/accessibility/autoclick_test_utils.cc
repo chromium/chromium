@@ -163,6 +163,11 @@ gfx::Rect AutoclickTestUtils::GetNodeBoundsInRoot(const std::string& name,
   return automation_utils_->GetNodeBoundsInRoot(name, role);
 }
 
+gfx::Rect AutoclickTestUtils::GetBoundsForNodeInRootByClassName(
+    const std::string& class_name) {
+  return automation_utils_->GetBoundsForNodeInRootByClassName(class_name);
+}
+
 void AutoclickTestUtils::WaitForAutoclickReady() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::string script = base::StringPrintf(R"JS(

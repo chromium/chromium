@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
 #include "ash/constants/ash_pref_names.h"
@@ -13,10 +14,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/autoclick_test_utils.h"
-#include "chrome/browser/ash/accessibility/caret_bounds_changed_waiter.h"
-#include "chrome/browser/ash/accessibility/html_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -26,8 +24,6 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_utils.h"
-#include "extensions/browser/browsertest_util.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
@@ -156,8 +152,22 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
 
   LoadURLAndAutoclick(
       "data:text/html;charset=utf-8,"
-      "<textarea id='test_textarea' rows='2'' cols='20'>" +
+      "<textarea id='test_textarea' class='scrollableField' rows='2'' "
+      "cols='20'>" +
       kQuoteText + "</textarea>");
+
+  gfx::Rect bounds =
+      utils()->GetBoundsForNodeInRootByClassName("scrollableField");
+  gfx::Rect found_bounds;
+  base::RunLoop waiter;
+  Shell::Get()->autoclick_controller()->SetScrollableBoundsCallbackForTesting(
+      base::BindLambdaForTesting([&waiter, &bounds, &found_bounds](
+                                     const gfx::Rect& scrollable_bounds) {
+        found_bounds = scrollable_bounds;
+        if (scrollable_bounds == bounds && waiter.running()) {
+          waiter.Quit();
+        }
+      }));
 
   AccessibilityFocusRingControllerImpl* controller =
       Shell::Get()->accessibility_focus_ring_controller();
@@ -179,6 +189,11 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
   std::vector<std::unique_ptr<AccessibilityFocusRingLayer>> const& focus_rings =
       focus_ring_group->focus_layers_for_testing();
   ASSERT_EQ(focus_rings.size(), 1u);
+
+  if (found_bounds != bounds) {
+    // Wait for bounds changed.
+    waiter.Run();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LongDelay) {
