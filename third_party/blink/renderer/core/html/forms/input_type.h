@@ -55,6 +55,47 @@ class InputTypeView;
 // other than HTMLInputElement.
 class CORE_EXPORT InputType : public GarbageCollected<InputType> {
  public:
+  // The type attribute of HTMLInputElement is an enumerated attribute:
+  // https://html.spec.whatwg.org/multipage/input.html#attr-input-type
+  // These values are a subset of the `FormControlType` enum. They have the same
+  // binary representation so that FormControlType() reduces to a type cast.
+  enum class Type : std::underlying_type_t<mojom::blink::FormControlType> {
+    kButton = base::to_underlying(mojom::blink::FormControlType::kInputButton),
+    kColor = base::to_underlying(mojom::blink::FormControlType::kInputColor),
+    kFile = base::to_underlying(mojom::blink::FormControlType::kInputFile),
+    kHidden = base::to_underlying(mojom::blink::FormControlType::kInputHidden),
+    kImage = base::to_underlying(mojom::blink::FormControlType::kInputImage),
+    kNumber = base::to_underlying(mojom::blink::FormControlType::kInputNumber),
+    kRange = base::to_underlying(mojom::blink::FormControlType::kInputRange),
+    kReset = base::to_underlying(mojom::blink::FormControlType::kInputReset),
+    kSubmit = base::to_underlying(mojom::blink::FormControlType::kInputSubmit),
+
+    // BaseCheckable
+    kRadio = base::to_underlying(mojom::blink::FormControlType::kInputRadio),
+    kCheckbox =
+        base::to_underlying(mojom::blink::FormControlType::kInputCheckbox),
+
+    // BaseTemporal
+    kDate = base::to_underlying(mojom::blink::FormControlType::kInputDate),
+    kDateTimeLocal =
+        base::to_underlying(mojom::blink::FormControlType::kInputDatetimeLocal),
+    kMonth = base::to_underlying(mojom::blink::FormControlType::kInputMonth),
+    kTime = base::to_underlying(mojom::blink::FormControlType::kInputTime),
+    kWeek = base::to_underlying(mojom::blink::FormControlType::kInputWeek),
+
+    // BaseText
+    kEmail = base::to_underlying(mojom::blink::FormControlType::kInputEmail),
+    kPassword =
+        base::to_underlying(mojom::blink::FormControlType::kInputPassword),
+    kSearch = base::to_underlying(mojom::blink::FormControlType::kInputSearch),
+    kTelephone =
+        base::to_underlying(mojom::blink::FormControlType::kInputTelephone),
+    kURL = base::to_underlying(mojom::blink::FormControlType::kInputUrl),
+    kText = base::to_underlying(mojom::blink::FormControlType::kInputText),
+  };
+
+  static const AtomicString& TypeToString(Type);
+
   static InputType* Create(HTMLInputElement&, const AtomicString&);
   static const AtomicString& NormalizeTypeName(const AtomicString&);
   InputType(const InputType&) = delete;
@@ -63,6 +104,8 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual void Trace(Visitor*) const;
 
   virtual InputTypeView* CreateView() = 0;
+
+  Type type() const { return type_; }
 
   const AtomicString& FormControlTypeAsString() const;
   mojom::blink::FormControlType FormControlType() const {
@@ -288,45 +331,6 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual ColorChooserClient* GetColorChooserClient();
 
  protected:
-  // The type attribute of HTMLInputElement is an enumerated attribute:
-  // https://html.spec.whatwg.org/multipage/input.html#attr-input-type
-  // These values are a subset of the `FormControlType` enum. They have the same
-  // binary representation so that FormControlType() reduces to a type cast.
-  enum class Type : std::underlying_type_t<mojom::blink::FormControlType> {
-    kButton = base::to_underlying(mojom::blink::FormControlType::kInputButton),
-    kColor = base::to_underlying(mojom::blink::FormControlType::kInputColor),
-    kFile = base::to_underlying(mojom::blink::FormControlType::kInputFile),
-    kHidden = base::to_underlying(mojom::blink::FormControlType::kInputHidden),
-    kImage = base::to_underlying(mojom::blink::FormControlType::kInputImage),
-    kNumber = base::to_underlying(mojom::blink::FormControlType::kInputNumber),
-    kRange = base::to_underlying(mojom::blink::FormControlType::kInputRange),
-    kReset = base::to_underlying(mojom::blink::FormControlType::kInputReset),
-    kSubmit = base::to_underlying(mojom::blink::FormControlType::kInputSubmit),
-
-    // BaseCheckable
-    kRadio = base::to_underlying(mojom::blink::FormControlType::kInputRadio),
-    kCheckbox =
-        base::to_underlying(mojom::blink::FormControlType::kInputCheckbox),
-
-    // BaseTemporal
-    kDate = base::to_underlying(mojom::blink::FormControlType::kInputDate),
-    kDateTimeLocal =
-        base::to_underlying(mojom::blink::FormControlType::kInputDatetimeLocal),
-    kMonth = base::to_underlying(mojom::blink::FormControlType::kInputMonth),
-    kTime = base::to_underlying(mojom::blink::FormControlType::kInputTime),
-    kWeek = base::to_underlying(mojom::blink::FormControlType::kInputWeek),
-
-    // BaseText
-    kEmail = base::to_underlying(mojom::blink::FormControlType::kInputEmail),
-    kPassword =
-        base::to_underlying(mojom::blink::FormControlType::kInputPassword),
-    kSearch = base::to_underlying(mojom::blink::FormControlType::kInputSearch),
-    kTelephone =
-        base::to_underlying(mojom::blink::FormControlType::kInputTelephone),
-    kURL = base::to_underlying(mojom::blink::FormControlType::kInputUrl),
-    kText = base::to_underlying(mojom::blink::FormControlType::kInputText),
-  };
-
   InputType(Type type, HTMLInputElement& element)
       : type_(type), element_(element) {}
   HTMLInputElement& GetElement() const { return *element_; }

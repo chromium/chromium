@@ -33,6 +33,7 @@
 
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/forms/input_type.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -51,7 +52,11 @@ struct DateTimeChooserParameters {
       delete;
   CORE_EXPORT ~DateTimeChooserParameters();
 
-  AtomicString type;
+  // InputType::Type is a subset of FormControlType. InputType::Type is
+  // sufficient because DateTimeChooser only deals with HTMLInputElements. It's
+  // preferable over FormControlType because with InputType::TypeToString() a
+  // string conversion is already available.
+  InputType::Type type;
   gfx::Rect anchor_rect_in_screen;
   // Locale name for which the chooser should be localized. This
   // might be an invalid name because it comes from HTML lang

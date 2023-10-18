@@ -415,8 +415,7 @@ void MultipleFieldsTemporalInputTypeView::CreateShadowSubtree() {
       MakeGarbageCollected<DateTimeEditElement, Document&,
                            DateTimeEditElement::EditControlOwner&>(document,
                                                                    *this));
-  if (LayoutTheme::GetTheme().SupportsCalendarPicker(
-          input_type_->FormControlTypeAsString())) {
+  if (LayoutTheme::GetTheme().SupportsCalendarPicker(input_type_->type())) {
     picker_indicator_is_always_visible_ = true;
   }
   container->AppendChild(

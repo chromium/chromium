@@ -270,7 +270,7 @@ class PagePopupSuppressionTest : public testing::Test {
     LocalFrame* frame = main_frame_->GetFrame();
     DateTimeChooserParameters params;
     params.locale = DefaultLanguage();
-    params.type = input_type_names::kTime;
+    params.type = InputType::Type::kTime;
     DateTimeChooser* chooser = chrome_client_impl_->OpenDateTimeChooser(
         frame, date_time_chooser_client_, params);
     if (chooser)
