@@ -10,7 +10,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/package_id.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 
 AppServicePromiseAppIconLoader::AppServicePromiseAppIconLoader(
     Profile* profile,

@@ -19,6 +19,7 @@ component("app_types") {
     "capability_access.h",
     "features.cc",
     "features.h",
+    "icon_effects.h",
     "icon_types.cc",
     "icon_types.h",
     "intent_filter.cc",

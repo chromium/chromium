@@ -7,8 +7,8 @@
 
 #include <map>
 
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/package_id.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 

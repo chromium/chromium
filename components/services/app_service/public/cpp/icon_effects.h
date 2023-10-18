@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_ICON_EFFECTS_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_ICON_EFFECTS_H_
+#ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_EFFECTS_H_
+#define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_EFFECTS_H_
 
 #include <cstdint>
 
@@ -61,4 +61,4 @@ inline IconEffects operator&=(IconEffects& a, uint32_t b) {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_ICON_EFFECTS_H_
+#endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_EFFECTS_H_
