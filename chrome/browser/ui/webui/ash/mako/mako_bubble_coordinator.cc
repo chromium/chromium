@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
@@ -25,7 +27,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kCursorVerticalPadding = 8;
+constexpr int kMakoUIPadding = 16;
 
 constexpr int kMakoCornerRadius = 20;
 
@@ -51,7 +53,8 @@ class MakoRewriteView : public WebUIBubbleDialogView {
         caret_bounds_(caret_bounds) {
     set_has_parent(false);
     set_corner_radius(kMakoCornerRadius);
-    set_adjust_if_offscreen(true);
+    // Disable the default offscreen adjustment so that we can customise it.
+    set_adjust_if_offscreen(false);
   }
   MakoRewriteView(const MakoRewriteView&) = delete;
   MakoRewriteView& operator=(const MakoRewriteView&) = delete;
@@ -59,20 +62,47 @@ class MakoRewriteView : public WebUIBubbleDialogView {
 
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override {
+    const gfx::Rect screen_work_area = display::Screen::GetScreen()
+                                           ->GetDisplayMatching(caret_bounds_)
+                                           .work_area();
+
+    // If the UI is very tall, just place it at the center of the screen.
     if (new_size.height() > kMakoRewriteHeightThreshold) {
-      // Place tall UI at the center of the screen.
       SetArrowWithoutResizing(views::BubbleBorder::FLOAT);
-      SetAnchorRect(display::Screen::GetScreen()
-                        ->GetDisplayMatching(caret_bounds_)
-                        .work_area());
-    } else {
-      // Anchor short UI at the caret.
-      SetArrowWithoutResizing(views::BubbleBorder::TOP_LEFT);
-      gfx::Rect anchor_rect = caret_bounds_;
-      anchor_rect.Outset(gfx::Outsets::VH(kCursorVerticalPadding, 0));
-      SetAnchorRect(anchor_rect);
+      SetAnchorRect(screen_work_area);
+      WebUIBubbleDialogView::ResizeDueToAutoResize(source, new_size);
+      return;
     }
-    WebUIBubbleDialogView::ResizeDueToAutoResize(source, new_size);
+
+    // Otherwise, try to place it near the selection. First, try to left align
+    // with the selection, but adjust to keep on screen if needed.
+    int x = std::min(caret_bounds_.x(), screen_work_area.right() -
+                                            new_size.width() - kMakoUIPadding);
+
+    // Then, try to place the mako UI just under the top of the selection.
+    int y = caret_bounds_.y() + kMakoUIPadding;
+    // If that puts it offscreen, try placing it above the selection instead.
+    if (y + new_size.height() + kMakoUIPadding > screen_work_area.bottom()) {
+      y = caret_bounds_.y() - kMakoUIPadding - new_size.height();
+    }
+    // If it's still offscreen, place it at the bottom of the screen and adjust
+    // the horizontal position to try to move it out of the way of the
+    // selection.
+    if (y < screen_work_area.y() + kMakoUIPadding) {
+      y = screen_work_area.bottom() - kMakoUIPadding - new_size.height();
+      // Place it at the right of the selection edge if there is space
+      // (including padding), otherwise, place it to the left of the selection.
+      x = screen_work_area.right() - caret_bounds_.x() >
+                  new_size.width() + 2 * kMakoUIPadding
+              ? caret_bounds_.x() + kMakoUIPadding
+              : caret_bounds_.x() - kMakoUIPadding - new_size.width();
+    }
+
+    // If necessary, adjust again to ensure the UI is onscreen.
+    gfx::Rect widget_bounds({x, y}, new_size);
+    widget_bounds.AdjustToFit(screen_work_area);
+
+    GetWidget()->SetBounds(widget_bounds);
   }
 
  private:
