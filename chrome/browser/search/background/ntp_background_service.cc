@@ -155,6 +155,11 @@ void NtpBackgroundService::FetchCollectionInfo() {
   if (features::IsChromeWebuiRefresh2023()) {
     request.add_filtering_label(base::StrCat({kFilteringLabel, ".gm3"}));
   }
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpBackgroundImageErrorDetection)) {
+    request.add_filtering_label(
+        base::StrCat({kFilteringLabel, ".error_detection"}));
+  }
 
   std::string serialized_proto;
   request.SerializeToString(&serialized_proto);
