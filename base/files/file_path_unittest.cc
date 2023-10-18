@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "base/files/safe_base_name.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"

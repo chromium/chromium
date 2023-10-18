@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"

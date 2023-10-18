@@ -12,6 +12,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "build/build_config.h"
