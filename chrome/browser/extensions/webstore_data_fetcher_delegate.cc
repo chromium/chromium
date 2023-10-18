@@ -7,8 +7,6 @@
 namespace extensions {
 
 const char WebstoreDataFetcherDelegate::kAverageRatingKey[] = "average_rating";
-const char WebstoreDataFetcherDelegate::kExternalInstallDefaultButtonKey[] =
-    "external_install_default_button";
 const char WebstoreDataFetcherDelegate::kIconUrlKey[] = "icon_url";
 const char WebstoreDataFetcherDelegate::kIdKey[] = "id";
 const char WebstoreDataFetcherDelegate::kLocalizedDescriptionKey[] =

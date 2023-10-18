@@ -596,8 +596,6 @@ static_library("extensions") {
     "external_component_loader.h",
     "external_install_error.cc",
     "external_install_error.h",
-    "external_install_error_constants.cc",
-    "external_install_error_constants.h",
     "external_install_manager.cc",
     "external_install_manager.h",
     "external_loader.cc",

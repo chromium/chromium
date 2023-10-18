@@ -454,13 +454,6 @@ BASE_FEATURE(kExtensionDeferredIndividualSettings,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// If enabled, this feature's |kExternalInstallDefaultButtonKey| field trial
-// parameter value controls which |ExternalInstallBubbleAlert| button is the
-// default.
-BASE_FEATURE(kExternalExtensionDefaultButtonControl,
-             "ExternalExtensionDefaultButtonControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kFileTransferEnterpriseConnector,
              "FileTransferEnterpriseConnector",

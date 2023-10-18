@@ -67,7 +67,7 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
   WidgetDelegate::RegisterWindowClosingCallback(base::BindOnce(
       &GlobalErrorWithStandardBubble::BubbleViewDidClose, error_, browser));
 
-  SetDefaultButton(error_->GetDefaultDialogButton());
+  SetDefaultButton(ui::DIALOG_BUTTON_OK);
   SetButtons(!error_->GetBubbleViewCancelButtonLabel().empty()
                  ? (ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL)
                  : ui::DIALOG_BUTTON_OK);
