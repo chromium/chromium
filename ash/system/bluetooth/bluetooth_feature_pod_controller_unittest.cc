@@ -33,6 +33,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -137,32 +138,23 @@ class BluetoothFeaturePodControllerTest
 
   // Checks if the qs bubble is currently showing Bluetooth detailed view.
   void IsShowingDetailedView(bool is_showing = true) {
+    views::View* container;
     if (IsQsRevampEnabled()) {
       auto* quick_settings_view =
           GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
       EXPECT_TRUE(quick_settings_view->detailed_view_container());
-      const views::View::Views& children =
-          quick_settings_view->detailed_view_container()->children();
-      if (is_showing) {
-        EXPECT_EQ(1u, children.size());
-        EXPECT_STREQ("BluetoothDetailedViewImpl",
-                     children.at(0)->GetClassName());
-        return;
-      }
-      EXPECT_EQ(0u, children.size());
-
+      container = quick_settings_view->detailed_view_container();
     } else {
       EXPECT_TRUE(tray_view()->detailed_view_container());
-      const views::View::Views& children =
-          tray_view()->detailed_view_container()->children();
-      if (is_showing) {
-        EXPECT_EQ(1u, children.size());
-        EXPECT_STREQ("BluetoothDetailedViewLegacy",
-                     children.at(0)->GetClassName());
-        return;
-      }
-      EXPECT_EQ(0u, children.size());
+      container = tray_view()->detailed_view_container();
     }
+    const views::View::Views& children = container->children();
+    if (is_showing) {
+      EXPECT_EQ(1u, children.size());
+      EXPECT_STREQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
+      return;
+    }
+    EXPECT_EQ(0u, children.size());
   }
 
   void LockScreen() {
