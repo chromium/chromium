@@ -1093,7 +1093,6 @@ component("net") {
     ":net_deps",
     "//build:chromeos_buildflags",
     "//components/miracle_parameter/common",
-    "//net/data/ssl/chrome_root_store:gen_root_store_inc",
     "//net/http:transport_security_state_generated_files",
   ]
 
@@ -1471,7 +1470,10 @@ component("net") {
   }
 
   if (is_fuchsia) {
-    deps += [ "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp" ]
+    deps += [
+      "//net/data/ssl/chrome_root_store:gen_root_store_inc",
+      "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp",
+    ]
     public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces:fuchsia.net.interfaces_hlcpp" ]
     sources += [
       "base/fuchsia/network_interface_cache.cc",
