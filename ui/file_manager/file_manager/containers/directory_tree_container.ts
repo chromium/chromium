@@ -77,11 +77,31 @@ export class DirectoryTreeContainer {
   contextMenuForSubitems: Menu|null = null;
   /** Context menu element for disabled navigation items. */
   contextMenuForDisabledItems: Menu|null = null;
+
   /**
-   * Entry to be renamed. When this is set and the corresponding tree item is
-   * rendered, we will attach a rename input inside the item.
+   * Mark the tree item with a specific entry key as to be renamed. When rename
+   * is triggered from outside and the item to be renamed is yet to be rendered
+   * (e.g. "New folder" command), we store the entry key here in order to attach
+   * the rename input to the tree item when it's rendered.
    */
-  entryKeyToRename: FileKey|null = null;
+  private entryKeyToRename_: FileKey|null = null;
+
+  /**
+   * Mark the tree item with a specific entry key as to be focused. When we need
+   * to change the focus to a tree item which is yet to be rendered (e.g. an
+   * item is just renamed and the newly renamed item is not rendered yet), we
+   * store the entry key here in order to focus the tree item when it's
+   * rendered.
+   */
+  private entryKeyToFocus_: FileKey|null = null;
+
+  /**
+   * Deletion of the currently selected item can trigger the selection change
+   * from outside, if the deleted item is also the currently focused item, we
+   * need to wait for the next selected item to render and focus on that. This
+   * boolean value is used to control that.
+   */
+  private shouldFocusOnNextSelectedItem_: boolean = false;
 
   private store_: Store;
 
@@ -160,9 +180,14 @@ export class DirectoryTreeContainer {
     if (currentDirectory?.key &&
         currentDirectory.status === PropStatus.SUCCESS) {
       const element =
-          this.getNavigationDataFromKey(currentDirectory.key)?.element;
+          this.getNavigationDataFromKey_(currentDirectory.key)?.element;
       if (element && !element.selected) {
         element.selected = true;
+        if (this.shouldFocusOnNextSelectedItem_) {
+          this.shouldFocusOnNextSelectedItem_ = false;
+          this.tree.focusedItem = element;
+          element.focus();
+        }
       }
     }
 
@@ -200,6 +225,14 @@ export class DirectoryTreeContainer {
     }
   }
 
+  renameItemWithKeyWhenRendered(entryKey: FileKey) {
+    this.entryKeyToRename_ = entryKey;
+  }
+
+  focusItemWithKeyWhenRendered(entryKey: FileKey) {
+    this.entryKeyToFocus_ = entryKey;
+  }
+
   private renderRoots_(newRoots: NavigationRoot[]) {
     const newRootsSet = new Set(newRoots.map(root => root.key));
     // Remove non-exist navigation roots.
@@ -213,7 +246,7 @@ export class DirectoryTreeContainer {
     // Add new navigation roots.
     const state = this.store_.getState();
     const {androidApps} = state;
-    newRoots.forEach((navigationRoot, index) => {
+    for (const [index, navigationRoot] of newRoots.entries()) {
       const exists = this.navigationRootMap_.has(navigationRoot.key);
       const navigationData = this.navigationRootMap_.get(navigationRoot.key)!;
       const navigationRootItem = exists ?
@@ -225,23 +258,57 @@ export class DirectoryTreeContainer {
           fileData: null,
           androidAppData: null,
         });
+        // We put the navigationKey on the element's dataset, so when certain
+        // DOM events happens from the element, we know the corresponding
+        // navigation key.
+        navigationRootItem.dataset['navigationKey'] = navigationRoot.key;
       }
       const isAndroidApp = navigationRoot.type === NavigationType.ANDROID_APPS;
       const fileData = getFileData(state, navigationRoot.key);
       const androidAppData = androidApps[navigationRoot.key];
+      // The states here might be lost after `insertBefore`, we need to store
+      // it here and restore it later if needed.
+      const isFocused = document.activeElement === navigationRootItem;
+      const isRenaming = navigationRootItem.renaming;
+
       this.renderItem_(
           navigationRoot.key, isAndroidApp ? androidAppData : fileData,
           navigationRoot);
+
       // Always call insertBefore here even if the element already exists,
       // because the index can change. Calling insertBefore with existing
       // child element will move it to the correct position.
       this.tree.insertBefore(
           // Use `children` here because `items` is asynchronous.
           navigationRootItem, this.tree.children[index] || null);
-      if (!exists && !isAndroidApp) {
+
+      // For existing items, `insertBefore` call above might make the element
+      // lose some status (e.g. focus/rename), check if we need to restore
+      // them or not.
+      if (exists) {
+        if (isFocused) {
+          this.restoreFocus_(navigationRootItem, /* isExisting= */ true);
+        }
+        if (isRenaming) {
+          this.attachRename_(navigationRootItem);
+        }
+        continue;
+      }
+      // For newly rendered items, check if they are the next item to
+      // focus.
+      if (this.entryKeyToFocus_ === navigationRoot.key) {
+        // Item with entry to focus is rendered for the first time (e.g. right
+        // after rename finishes), focus on it.
+        this.entryKeyToFocus_ = null;
+        this.restoreFocus_(navigationRootItem, /* isExisting= */ false);
+      }
+      // No need to handle `entryKeyToRename_` here, because it's not allowed to
+      // create a new folder in the directory tree root.
+
+      if (!isAndroidApp) {
         this.handleInitialRender_(navigationRootItem, fileData, navigationRoot);
       }
-    });
+    }
 
     this.navigationRoots_ = newRoots;
   }
@@ -255,12 +322,8 @@ export class DirectoryTreeContainer {
     }
 
     const navigationData =
-        this.getNavigationDataFromKey(navigationKey, !!navigationRoot)!;
+        this.getNavigationDataFromKey_(navigationKey, !!navigationRoot)!;
     const {element} = navigationData;
-    // We put the navigationKey on the element's dataset, so when certain DOM
-    // events happens from the element, we know the corresponding navigation
-    // key.
-    element.dataset['navigationKey'] = navigationKey;
     const isAndroidApp = navigationRoot?.type === NavigationType.ANDROID_APPS;
     // Handle navigation items backed up by an android app. Note: only
     // navigation root item can be backed up by an android app.
@@ -334,7 +397,7 @@ export class DirectoryTreeContainer {
         }
       }
       const state = this.store_.getState();
-      newChildren.forEach((childKey, index) => {
+      for (const [index, childKey] of newChildren.entries()) {
         const exists = this.navigationItemMap_.has(childKey);
         const navigationData = this.navigationItemMap_.get(childKey)!;
         const navigationItem = exists ? navigationData.element :
@@ -344,10 +407,19 @@ export class DirectoryTreeContainer {
             element: navigationItem,
             fileData: null,
           });
+          // We put the navigationKey on the element's dataset, so when certain
+          // DOM events happens from the element, we know the corresponding
+          // navigation key.
+          navigationItem.dataset['navigationKey'] = childKey;
         }
         const childFileData = getFileData(state, childKey);
+        // The states here might be lost after `insertBefore`, we need to store
+        // it here and restore it later if needed.
+        const isFocused = document.activeElement === navigationItem;
         const isRenaming = navigationItem.renaming;
+
         this.renderItem_(childKey, childFileData);
+
         // Always call insertBefore here even if the element already exists,
         // because the index can change. Calling insertBefore with existing
         // child element will move it to the correct position.
@@ -355,24 +427,42 @@ export class DirectoryTreeContainer {
             navigationItem,
             // Use `.children` instead of `.items` here because `items` is
             // asynchronous.
-            element.children[index] || null);
-        // `insertBefore` here will be called multiple times because the private
-        // API `fileManagerPrivate.onDirectoryChanged` will be triggered more
-        // than once. If the current item in in renaming process, the call will
-        // blur the rename input, we need to resume the rename status here.
-        if (isRenaming) {
+            element.children[index] || null,
+        );
+
+        // For existing items, `insertBefore` call above might make the element
+        // lose some status (e.g. focus/rename), check if we need to restore
+        // them or not.
+        if (exists) {
+          if (isFocused) {
+            this.restoreFocus_(navigationItem, /* isExisting= */ true);
+          }
+          if (isRenaming) {
+            this.attachRename_(navigationItem);
+          }
+          continue;
+        }
+        // For newly rendered items, check if they are the next item to
+        // rename/focus.
+        if (this.entryKeyToFocus_ === childKey) {
+          // Item with entry to focus is rendered for the first time (e.g. right
+          // after rename finishes), focus on it.
+          this.entryKeyToFocus_ = null;
+          this.restoreFocus_(navigationItem, /* isExisting= */ false);
+        }
+        if (this.entryKeyToRename_ === childKey) {
+          // Item with entry to rename is rendered for the first time (e.g. "New
+          // folder" case), attach the rename input here.
+          this.entryKeyToRename_ = null;
+          // The parent element for the renaming item might not be expanded
+          // (e.g. Create a new folder on a collapsed parent element), we need
+          // to expand it first otherwise the renaming item won't show.
+          element.expanded = true;
           this.attachRename_(navigationItem);
         }
 
-        if (!exists) {
-          this.handleInitialRender_(navigationItem, childFileData);
-        }
-      });
-    }
-
-    if (this.entryKeyToRename === navigationKey) {
-      this.entryKeyToRename = null;
-      this.attachRename_(element);
+        this.handleInitialRender_(navigationItem, childFileData);
+      }
     }
 
     const isOdfs = util.isOneDriveId(
@@ -565,7 +655,8 @@ export class DirectoryTreeContainer {
   private deleteItem_(
       navigationKey: NavigationKey, shouldDeleteElement: boolean,
       isRoot: boolean) {
-    const navigationData = this.getNavigationDataFromKey(navigationKey, isRoot);
+    const navigationData =
+        this.getNavigationDataFromKey_(navigationKey, isRoot);
     if (!navigationData) {
       console.warn(
           'Couldn\'t find the navigation data for the item to be deleted in the store.');
@@ -574,7 +665,19 @@ export class DirectoryTreeContainer {
 
     const {element, fileData} = navigationData;
     if (shouldDeleteElement && element.parentElement) {
+      const isFocused = element === document.activeElement;
+      const isSelected = element.selected;
       element.parentElement.removeChild(element);
+      if (isFocused) {
+        if (isSelected) {
+          this.shouldFocusOnNextSelectedItem_ = true;
+        } else {
+          this.tree.focusedItem = this.tree.selectedItem;
+          // The focus now already changes back to BODY because of the
+          // `removeChild` above, we need to restore it back to the tree.
+          this.tree.focus();
+        }
+      }
     }
     if (isRoot) {
       this.navigationRootMap_.delete(navigationKey);
@@ -611,7 +714,7 @@ export class DirectoryTreeContainer {
    * Given an navigation DOM element, find out the corresponding navigation
    * data in the root map or item map.
    */
-  private getNavigationDataFromKey(
+  private getNavigationDataFromKey_(
       navigationKey: NavigationKey, isRoot?: boolean): NavigationItemData|null {
     // If isRoot is passed, we know clearly which map to search.
     if (isRoot !== undefined) {
@@ -636,7 +739,7 @@ export class DirectoryTreeContainer {
   private onNavigationItemExpanded_(event: TreeItemExpandedEvent) {
     const treeItem = event.detail.item;
     const navigationKey = treeItem.dataset['navigationKey']!;
-    const navigationData = this.getNavigationDataFromKey(navigationKey);
+    const navigationData = this.getNavigationDataFromKey_(navigationKey);
     if (!navigationData || !navigationData.fileData) {
       console.warn(
           'Couldn\'t find the navigation data for the expanded item in the store.');
@@ -663,7 +766,7 @@ export class DirectoryTreeContainer {
   private onNavigationItemCollapsed_(event: TreeItemCollapsedEvent) {
     const treeItem = event.detail.item;
     const navigationKey = treeItem.dataset['navigationKey']!;
-    const navigationData = this.getNavigationDataFromKey(navigationKey);
+    const navigationData = this.getNavigationDataFromKey_(navigationKey);
     if (!navigationData || !navigationData.fileData) {
       console.warn(
           'Couldn\'t find the navigation data for the collapsed item in the store.');
@@ -710,7 +813,7 @@ export class DirectoryTreeContainer {
     if (this.isCurrentDirectoryActive_(navigationKey)) {
       return;
     }
-    const navigationData = this.getNavigationDataFromKey(navigationKey);
+    const navigationData = this.getNavigationDataFromKey_(navigationKey);
     if (!navigationData) {
       console.warn(
           'Couldn\'t find the navigation data for the selected item in the store.');
@@ -965,7 +1068,7 @@ export class DirectoryTreeContainer {
                   if (root.type !== NavigationType.VOLUME) {
                     continue;
                   }
-                  const {fileData} = this.navigationItemMap_.get(root.key)!;
+                  const {fileData} = this.navigationRootMap_.get(root.key)!;
                   if (fileData && fileData.entry instanceof VolumeEntry &&
                       fileData.entry.volumeInfo === volumeInfo) {
                     this.store_.dispatch(readSubDirectories(
@@ -1037,10 +1140,30 @@ export class DirectoryTreeContainer {
     }
   }
 
+  /**
+   * Attach a rename input to the tree item.
+   */
   private async attachRename_(element: XfTreeItem) {
     await element.updateComplete;
+    // We need to focus the new folder item before renaming, the focus should
+    // be back to this item after renaming finishes (controlled by
+    // DirectoryTreeNamingController).
+    this.tree.focusedItem = element;
     window.fileManager.directoryTreeNamingController.attachAndStart(
         element, false, null);
+  }
+
+  /**
+   * Restore the focus to the tree item.
+   */
+  private async restoreFocus_(element: XfTreeItem, isExisting: boolean) {
+    if (!isExisting) {
+      await element.updateComplete;
+      // This call requires the tree item to finish the first render, hence the
+      // await above.
+      this.tree.focusedItem = element;
+    }
+    element.focus();
   }
 
   /**

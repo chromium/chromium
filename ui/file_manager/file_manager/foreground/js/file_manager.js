@@ -1199,7 +1199,7 @@ export class FileManager extends EventTarget {
     // Create directory tree naming controller.
     this.directoryTreeNamingController_ = new DirectoryTreeNamingController(
         this.directoryModel_, assert(this.ui_.directoryTree),
-        this.ui_.alertDialog);
+        this.ui_.directoryTreeContainer, this.ui_.alertDialog);
 
     // Create spinner controller.
     this.spinnerController_ =

@@ -22,9 +22,9 @@ import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_ap
 import {State} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {readSubDirectories} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {getFileData, getStore} from '../../state/store.js';
-import {XfTree} from '../../widgets/xf_tree.js';
 import {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
 import {ActionsModel} from './actions_model.js';
@@ -1024,14 +1024,12 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
                 // Select new directory and start rename operation.
                 if (executedFromDirectoryTree) {
                   if (util.isNewDirectoryTreeEnabled()) {
-                    // The above `targetDirectory.getDirectory` call will create
-                    // a new directory, the new directory's file watcher handler
-                    // will re-read the parent directory and the new tree item
-                    // will be rendered automatically, we just need to tell the
-                    // tree container which item should enter into rename
-                    // status.
-                    fileManager.ui.directoryTreeContainer.entryKeyToRename =
-                        newDirectory.toURL();
+                    // After new directory is created on parent directory, we
+                    // need to trigger a re-read for the parent directory to the
+                    // store.
+                    getStore().dispatch(readSubDirectories(targetDirectory));
+                    fileManager.ui.directoryTreeContainer
+                        .renameItemWithKeyWhenRendered(newDirectory.toURL());
                   } else {
                     const directoryTree =
                         /** @type {DirectoryTree} */ (
@@ -1871,8 +1869,6 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
     }
     if (isDirectoryTree(event.target) || isDirectoryTreeItem(event.target)) {
       if (isDirectoryTree(event.target)) {
-        const directoryTree =
-            /** @type {!DirectoryTree|!XfTree} */ (event.target);
         assert(fileManager.directoryTreeNamingController)
             .attachAndStart(
                 assert(getFocusedTreeItem(event.target)), isRemovableRoot,

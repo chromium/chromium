@@ -6,7 +6,10 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {util} from '../../common/js/util.js';
+import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
+import {readSubDirectoriesForRenamedEntry} from '../../state/ducks/all_entries.js';
+import {getStore} from '../../state/store.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 import {XfTreeItem} from '../../widgets/xf_tree_item.js';
 import {isTreeItem} from '../../widgets/xf_tree_util.js';
@@ -23,14 +26,19 @@ export class DirectoryTreeNamingController {
   /**
    * @param {!DirectoryModel} directoryModel
    * @param {!DirectoryTree|!XfTree} directoryTree
+   * @param {DirectoryTreeContainer|null} directoryTreeContainer
    * @param {!FilesAlertDialog} alertDialog
    */
-  constructor(directoryModel, directoryTree, alertDialog) {
+  constructor(
+      directoryModel, directoryTree, directoryTreeContainer, alertDialog) {
     /** @private @const @type {!DirectoryModel} */
     this.directoryModel_ = directoryModel;
 
     /** @private @const @type {!DirectoryTree|!XfTree} */
     this.directoryTree_ = directoryTree;
+
+    /** @private @const @type {DirectoryTreeContainer|null} */
+    this.directoryTreeContainer_ = directoryTreeContainer;
 
     /** @private @const @type {!FilesAlertDialog} */
     this.alertDialog_ = alertDialog;
@@ -198,7 +206,11 @@ export class DirectoryTreeNamingController {
         return;
       }
 
-      if (!util.isNewDirectoryTreeEnabled()) {
+      if (util.isNewDirectoryTreeEnabled() && this.directoryTreeContainer_) {
+        getStore().dispatch(readSubDirectoriesForRenamedEntry(newEntry));
+        this.directoryTreeContainer_.focusItemWithKeyWhenRendered(
+            newEntry.toURL());
+      } else {
         this.currentDirectoryItem_.entry = newEntry;
         this.currentDirectoryItem_.updateSubDirectories(/* recursive= */ true);
       }

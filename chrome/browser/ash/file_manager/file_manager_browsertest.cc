@@ -758,6 +758,72 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DirectoryTreeContextMenu, /* directory_tree_context_menu.js */
     FilesAppBrowserTest,
     ::testing::Values(
+        TestCase("dirCopyWithContextMenu").InGuestMode().NewDirectoryTree(),
+        TestCase("dirCopyWithContextMenu").NewDirectoryTree(),
+        TestCase("dirCopyWithKeyboard").InGuestMode().NewDirectoryTree(),
+        TestCase("dirCopyWithKeyboard").NewDirectoryTree(),
+        TestCase("dirCopyWithoutChangingCurrent").NewDirectoryTree(),
+        TestCase("dirPasteWithContextMenu").NewDirectoryTree(),
+        TestCase("dirPasteWithContextMenu").InGuestMode().NewDirectoryTree(),
+        TestCase("dirPasteWithoutChangingCurrent").NewDirectoryTree(),
+        TestCase("dirRenameWithContextMenu").NewDirectoryTree(),
+        TestCase("dirRenameWithContextMenu").InGuestMode().NewDirectoryTree(),
+        TestCase("dirRenameUpdateChildrenBreadcrumbs").NewDirectoryTree(),
+        TestCase("dirRenameWithKeyboard").NewDirectoryTree(),
+        TestCase("dirRenameWithKeyboard").InGuestMode().NewDirectoryTree(),
+        TestCase("dirRenameWithoutChangingCurrent").NewDirectoryTree(),
+        TestCase("dirRenameToEmptyString").NewDirectoryTree(),
+        TestCase("dirRenameToEmptyString").InGuestMode().NewDirectoryTree(),
+        TestCase("dirRenameToExisting").NewDirectoryTree(),
+#if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+        // TODO(http://crbug.com/1230054): Flaky on ASan non-DEBUG.
+        TestCase("dirRenameToExisting").InGuestMode().NewDirectoryTree(),
+#endif
+        TestCase("dirRenameRemovableWithKeyboard").NewDirectoryTree(),
+        TestCase("dirRenameRemovableWithKeyboard")
+            .InGuestMode()
+            .NewDirectoryTree(),
+        TestCase("dirRenameRemovableWithContentMenu").NewDirectoryTree(),
+        TestCase("dirRenameRemovableWithContentMenu")
+            .InGuestMode()
+            .NewDirectoryTree(),
+        TestCase("dirContextMenuForRenameInput").NewDirectoryTree(),
+        TestCase("dirCreateWithContextMenu").NewDirectoryTree(),
+        TestCase("dirCreateWithKeyboard").NewDirectoryTree(),
+        TestCase("dirCreateWithoutChangingCurrent").NewDirectoryTree(),
+        TestCase("dirContextMenuZip").NewDirectoryTree(),
+        // TODO(b/305121828): support eject button for zip archive mount.
+        // TestCase("dirContextMenuZipEject").NewDirectoryTree(),
+        TestCase("dirContextMenuRecent").NewDirectoryTree(),
+        TestCase("dirContextMenuMyFiles").NewDirectoryTree(),
+        TestCase("dirContextMenuMyFilesWithPaste").NewDirectoryTree(),
+        TestCase("dirContextMenuCrostini").NewDirectoryTree(),
+        TestCase("dirContextMenuPlayFiles").NewDirectoryTree(),
+        TestCase("dirContextMenuUsbs").NewDirectoryTree(),
+        // TODO(b/305119034): support single partition format for new tree.
+        // TestCase("dirContextMenuUsbs")
+        //     .EnableSinglePartitionFormat()
+        //     .NewDirectoryTree(),
+        TestCase("dirContextMenuFsp").NewDirectoryTree(),
+        TestCase("dirContextMenuDocumentsProvider")
+            .EnableGenericDocumentsProvider()
+            .NewDirectoryTree(),
+        // TODO(b/305119034): support single partition format for new tree.
+        TestCase("dirContextMenuUsbDcim").NewDirectoryTree(),
+        // TestCase("dirContextMenuUsbDcim")
+        //     .EnableSinglePartitionFormat()
+        //     .NewDirectoryTree(),
+        TestCase("dirContextMenuMtp").NewDirectoryTree(),
+        TestCase("dirContextMenuMyDrive").NewDirectoryTree(),
+        TestCase("dirContextMenuSharedDrive").NewDirectoryTree(),
+        TestCase("dirContextMenuSharedWithMe").NewDirectoryTree(),
+        TestCase("dirContextMenuOffline").NewDirectoryTree(),
+        // TODO(b/301340154): should Computers allow rename?
+        // TestCase("dirContextMenuComputers").NewDirectoryTree(),
+        TestCase("dirContextMenuTrash").NewDirectoryTree(),
+        TestCase("dirContextMenuShortcut").NewDirectoryTree(),
+        TestCase("dirContextMenuFocus").NewDirectoryTree(),
+        TestCase("dirContextMenuKeyboardNavigation").NewDirectoryTree(),
         TestCase("dirCopyWithContextMenu").InGuestMode(),
         TestCase("dirCopyWithContextMenu"),
         TestCase("dirCopyWithKeyboard").InGuestMode(),

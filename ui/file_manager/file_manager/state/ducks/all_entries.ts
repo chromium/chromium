@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getParentEntry} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {isDriveRootEntryList, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
@@ -864,4 +865,24 @@ async function readChildEntriesForDirectoryEntry(
     };
     readEntry();
   });
+}
+
+/**
+ * Read child entries for the newly renamed directory entry.
+ * We need to read its parent's children first before reading its own children,
+ * because the newly renamed entry might not be in the store yet after renaming.
+ */
+export async function*
+    readSubDirectoriesForRenamedEntry(newEntry: Entry): ActionsProducerGen {
+  const parentDirectory = await getParentEntry(newEntry);
+  // Read the children of the parent first to make sure the newly added entry
+  // appears in the store.
+  for await (const action of readSubDirectories(parentDirectory)) {
+    yield action;
+  }
+  // Read the children of the newly renamed entry.
+  for await (
+      const action of readSubDirectories(newEntry, /* recursive= */ true)) {
+    yield action;
+  }
 }
