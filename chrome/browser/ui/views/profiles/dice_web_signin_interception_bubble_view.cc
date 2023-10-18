@@ -146,8 +146,13 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   // Create the web view in the native bubble.
   std::unique_ptr<views::WebView> web_view =
       std::make_unique<views::WebView>(browser->profile());
-  // TODO(b/301431278): Use the new URL for the Chrome Signin intercept.
-  web_view->LoadInitialURL(GURL(chrome::kChromeUIDiceWebSigninInterceptURL));
+  GURL intercept_url =
+      bubble_parameters_.interception_type ==
+              WebSigninInterceptor::SigninInterceptionType::kChromeSignin
+          ? GURL(chrome::kChromeUIDiceWebSigninInterceptChromeSigninURL)
+          : GURL(chrome::kChromeUIDiceWebSigninInterceptURL);
+  web_view->LoadInitialURL(intercept_url);
+
   web_view->GetWebContents()->SetDelegate(this);
   web_view->SetPreferredSize(
       gfx::Size(kInterceptionBubbleWidth, kInterceptionBubbleBaseHeight));

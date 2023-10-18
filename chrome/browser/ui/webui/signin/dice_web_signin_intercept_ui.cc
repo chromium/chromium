@@ -80,6 +80,13 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
       {"test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS},
       {"test_loader_util.js", IDR_WEBUI_JS_TEST_LOADER_UTIL_JS},
       {"test_loader.html", IDR_WEBUI_TEST_LOADER_HTML},
+      // Resources for the Chrome signin sub page: chrome_signin/.
+      {chrome::kChromeUIDiceWebSigninInterceptChromeSigninSubPage,
+       IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_CHROME_SIGNIN_CHROME_SIGNIN_HTML},
+      {"chrome_signin/chrome_signin_app.js",
+       IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_CHROME_SIGNIN_CHROME_SIGNIN_APP_JS},
+      {"chrome_signin/chrome_signin_app.html.js",
+       IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_CHROME_SIGNIN_CHROME_SIGNIN_APP_HTML_JS},
   };
   source->AddResourcePaths(kResources);
 
@@ -109,8 +116,6 @@ void DiceWebSigninInterceptUI::Initialize(
     base::OnceCallback<void(int)> show_widget_with_height_callback,
     base::OnceCallback<void(SigninInterceptionUserChoice)>
         completion_callback) {
-  // TODO(b/301431278): Create a different handler for the Chrome Signin
-  // intercept UI.
   web_ui()->AddMessageHandler(std::make_unique<DiceWebSigninInterceptHandler>(
       bubble_parameters, std::move(show_widget_with_height_callback),
       std::move(completion_callback)));

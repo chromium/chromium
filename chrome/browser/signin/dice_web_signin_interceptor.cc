@@ -714,8 +714,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
                          base::Unretained(this), info, profile_color);
       break;
     case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
-      // TODO(b/301431278): Attach the right callback here.
-      callback = base::DoNothing();
+      callback = base::BindOnce(&DiceWebSigninInterceptor::OnChromeSigninChoice,
+                                base::Unretained(this));
       break;
   }
   ShowSigninInterceptionBubble(bubble_parameters, std::move(callback));
@@ -766,6 +766,16 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
           create == SigninInterceptionResult::kAcceptedWithGuest,
           base::BindOnce(&DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
                          base::Unretained(this), profile_color));
+}
+
+void DiceWebSigninInterceptor::OnChromeSigninChoice(
+    SigninInterceptionResult result) {
+  if (result == SigninInterceptionResult::kDeclined) {
+    Reset();
+    return;
+  }
+
+  // TODO(b/301431278): Implement the rest of the cases.
 }
 
 void DiceWebSigninInterceptor::OnProfileSwitchChoice(
