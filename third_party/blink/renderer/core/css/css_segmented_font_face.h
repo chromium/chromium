@@ -108,7 +108,7 @@ class CSSSegmentedFontFace final
 
   scoped_refptr<FontData> GetFontData(const FontDescription&);
 
-  bool CheckFont(const String&) const;
+  bool CheckFont(UChar32) const;
   void Match(const String&, HeapVector<Member<FontFace>>*) const;
   void WillUseFontData(const FontDescription&, const String& text);
   void WillUseRange(const FontDescription&, const blink::FontDataForRangeSet&);
