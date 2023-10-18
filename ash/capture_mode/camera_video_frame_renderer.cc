@@ -70,10 +70,8 @@ void CameraVideoFrameRenderer::Initialize() {
       context_provider_->ContextCapabilities().max_texture_size;
   video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
       context_provider_.get(), layer_tree_frame_sink_.get(),
-      &client_resource_provider_,
-      /*use_stream_video_draw_quad=*/false,
-      /*use_gpu_memory_buffer_resources=*/false,
-      /*use_r16_texture=*/false, max_texture_size);
+      &client_resource_provider_, /*use_stream_video_draw_quad=*/false,
+      /*use_gpu_memory_buffer_resources=*/false, max_texture_size);
 
   video_frame_handler_.StartHandlingFrames(/*delegate=*/this);
 }

@@ -43,7 +43,6 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/gpu/context_provider.h"
-#include "components/viz/common/resources/resource_settings.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/host/renderer_settings_creation.h"
@@ -192,23 +191,21 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
 #if BUILDFLAG(IS_APPLE)
   // Using CoreAnimation to composite requires using GpuMemoryBuffers, which
   // require zero copy.
-  settings.resource_settings.use_gpu_memory_buffer_resources =
-      settings.use_zero_copy;
+  settings.use_gpu_memory_buffer_resources = settings.use_zero_copy;
   settings.enable_elastic_overscroll = true;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Rasterized tiles must be overlay candidates to be forwarded.
   // This is very similar to the line above for Apple.
-  settings.resource_settings.use_gpu_memory_buffer_resources =
+  settings.use_gpu_memory_buffer_resources =
       features::IsDelegatedCompositingEnabled();
 #endif
 
   // Set use_gpu_memory_buffer_resources to false to disable delegated
   // compositing, if RawDraw is enabled.
-  if (settings.resource_settings.use_gpu_memory_buffer_resources &&
-      features::IsUsingRawDraw()) {
-    settings.resource_settings.use_gpu_memory_buffer_resources = false;
+  if (settings.use_gpu_memory_buffer_resources && features::IsUsingRawDraw()) {
+    settings.use_gpu_memory_buffer_resources = false;
   }
 
   settings.memory_policy.bytes_limit_when_visible =

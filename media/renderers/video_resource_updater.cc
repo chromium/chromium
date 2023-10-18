@@ -621,14 +621,12 @@ VideoResourceUpdater::VideoResourceUpdater(
     viz::ClientResourceProvider* resource_provider,
     bool use_stream_video_draw_quad,
     bool use_gpu_memory_buffer_resources,
-    bool use_r16_texture,
     int max_resource_size)
     : context_provider_(context_provider),
       shared_bitmap_reporter_(shared_bitmap_reporter),
       resource_provider_(resource_provider),
       use_stream_video_draw_quad_(use_stream_video_draw_quad),
       use_gpu_memory_buffer_resources_(use_gpu_memory_buffer_resources),
-      use_r16_texture_(use_r16_texture),
       max_resource_size_(max_resource_size),
       tracing_id_(g_next_video_resource_updater_id.GetNext()) {
   DCHECK(context_provider_ || shared_bitmap_reporter_);
@@ -845,8 +843,7 @@ viz::SharedImageFormat VideoResourceUpdater::YuvSharedImageFormat(
            caps.texture_rg);
     return GetSingleChannel8BitFormat(caps, shared_image_caps);
   }
-  if (caps.texture_norm16 &&
-      (shared_image_caps.supports_r16_shared_images || use_r16_texture_)) {
+  if (caps.texture_norm16 && shared_image_caps.supports_r16_shared_images) {
     return viz::SinglePlaneFormat::kR_16;
   }
   if (caps.texture_half_float_linear &&

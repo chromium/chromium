@@ -96,19 +96,15 @@ class VideoResourceUpdaterTest : public testing::Test {
       bool use_stream_video_draw_quad = false) {
     return std::make_unique<VideoResourceUpdater>(
         context_provider_.get(), nullptr, resource_provider_.get(),
-        use_stream_video_draw_quad,
-        /*use_gpu_memory_buffer_resources=*/false,
-        /*use_r16_texture=*/use_r16_texture_, /*max_resource_size=*/10000);
+        use_stream_video_draw_quad, /*use_gpu_memory_buffer_resources=*/false,
+        /*max_resource_size=*/10000);
   }
 
   std::unique_ptr<VideoResourceUpdater> CreateUpdaterForSoftware() {
     return std::make_unique<VideoResourceUpdater>(
         /*context_provider=*/nullptr, &shared_bitmap_reporter_,
-        resource_provider_.get(),
-        /*use_stream_video_draw_quad=*/false,
-        /*use_gpu_memory_buffer_resources=*/false,
-        /*use_r16_texture=*/false,
-        /*max_resource_size=*/10000);
+        resource_provider_.get(), /*use_stream_video_draw_quad=*/false,
+        /*use_gpu_memory_buffer_resources=*/false, /*max_resource_size=*/10000);
   }
 
   // Note that the number of pixels needed for |size| must be less than or equal
@@ -348,7 +344,6 @@ class VideoResourceUpdaterTest : public testing::Test {
   FakeSharedBitmapReporter shared_bitmap_reporter_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
   gpu::SyncToken release_sync_token_;
-  bool use_r16_texture_ = false;
 };
 
 const gpu::SyncToken VideoResourceUpdaterTest::kMailboxSyncToken =
@@ -539,7 +534,11 @@ TEST_F(VideoResourceUpdaterTestWithF16, HighBitFrame) {
 class VideoResourceUpdaterTestWithR16 : public VideoResourceUpdaterTest {
  public:
   VideoResourceUpdaterTestWithR16() : VideoResourceUpdaterTest() {
-    use_r16_texture_ = true;
+    auto* sii = context_provider_->SharedImageInterface();
+    auto shared_image_caps = sii->GetCapabilities();
+    shared_image_caps.supports_r16_shared_images = true;
+    sii->SetCapabilities(shared_image_caps);
+
     gl_->set_support_texture_norm16(true);
   }
 };

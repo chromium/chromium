@@ -31,7 +31,6 @@ mojom("mojom") {
     "compositing/quads.mojom",
     "compositing/region_capture_bounds.mojom",
     "compositing/resource_id.mojom",
-    "compositing/resource_settings.mojom",
     "compositing/returned_resource.mojom",
     "compositing/selection.mojom",
     "compositing/shared_quad_state.mojom",
@@ -457,24 +456,6 @@ mojom("mojom") {
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/view_transition_element_resource_id_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.BufferUsageAndFormat"
-          cpp = "::std::pair<::gfx::BufferUsage, gfx::BufferFormat>"
-        },
-        {
-          mojom = "viz.mojom.ResourceSettings"
-          cpp = "::viz::ResourceSettings"
-        },
-      ]
-      traits_sources = [ "//services/viz/public/cpp/compositing/resource_settings_mojom_traits.cc" ]
-      traits_headers = [ "//services/viz/public/cpp/compositing/resource_settings_mojom_traits.h" ]
-      traits_public_deps = [
-        "//components/viz/common",
-        "//ui/gfx/mojom",
-      ]
     },
     {
       types = [

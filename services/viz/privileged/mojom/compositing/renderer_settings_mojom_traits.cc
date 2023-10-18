@@ -5,7 +5,6 @@
 #include "services/viz/privileged/mojom/compositing/renderer_settings_mojom_traits.h"
 
 #include "build/build_config.h"
-#include "services/viz/public/cpp/compositing/resource_settings_mojom_traits.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/mojom/color_space_mojom_traits.h"

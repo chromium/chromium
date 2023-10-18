@@ -2882,7 +2882,7 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
       viz::PlatformColor::BestSupportedTextureFormat(context_caps);
 
   raster_caps_.tile_overlay_candidate =
-      settings_.resource_settings.use_gpu_memory_buffer_resources &&
+      settings_.use_gpu_memory_buffer_resources &&
       shared_image_caps.supports_scanout_shared_images;
   raster_caps_.tile_texture_target = GL_TEXTURE_2D;
 
@@ -4608,7 +4608,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     const auto& shared_image_caps =
         context_provider->SharedImageInterface()->GetCapabilities();
     overlay_candidate =
-        settings_.resource_settings.use_gpu_memory_buffer_resources &&
+        settings_.use_gpu_memory_buffer_resources &&
         shared_image_caps.supports_scanout_shared_images &&
         viz::CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
     if (overlay_candidate) {

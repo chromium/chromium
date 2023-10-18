@@ -16,7 +16,6 @@
 #include "cc/tiles/tile_manager_settings.h"
 #include "cc/trees/managed_memory_policy.h"
 #include "components/viz/common/display/renderer_settings.h"
-#include "components/viz/common/resources/resource_settings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -31,7 +30,6 @@ class CC_EXPORT LayerTreeSettings {
   SchedulerSettings ToSchedulerSettings() const;
   TileManagerSettings ToTileManagerSettings() const;
 
-  viz::ResourceSettings resource_settings;
   bool single_thread_proxy_scheduler = true;
   bool main_frame_before_activation_enabled = false;
   bool using_synchronous_renderer_compositor = false;
@@ -45,6 +43,7 @@ class CC_EXPORT LayerTreeSettings {
   float gpu_rasterization_skewport_target_time_in_seconds = 0.2f;
   bool create_low_res_tiling = false;
   bool use_stream_video_draw_quad = false;
+  bool use_gpu_memory_buffer_resources = false;
 
   enum ScrollbarAnimator {
     NO_ANIMATOR,

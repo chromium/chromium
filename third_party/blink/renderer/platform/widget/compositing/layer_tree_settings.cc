@@ -328,9 +328,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.percent_based_scrolling =
       ::features::IsPercentBasedScrollingEnabled();
 
-  settings.resource_settings.use_r16_texture =
-      base::FeatureList::IsEnabled(media::kUseR16Texture);
-
   settings.commit_to_active_tree = !is_threaded;
   settings.is_for_embedded_frame = is_for_embedded_frame;
   settings.is_for_scalable_page = is_for_scalable_page;
@@ -459,7 +456,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   // Partial raster is not supported with RawDraw
   settings.use_partial_raster &= !::features::IsUsingRawDraw();
   settings.enable_elastic_overscroll = platform->IsElasticOverscrollEnabled();
-  settings.resource_settings.use_gpu_memory_buffer_resources =
+  settings.use_gpu_memory_buffer_resources =
       cmd.HasSwitch(switches::kEnableGpuMemoryBufferCompositorResources);
   settings.use_painted_device_scale_factor = true;
 

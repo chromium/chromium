@@ -221,8 +221,6 @@ viz_component("common") {
     "resources/platform_color.h",
     "resources/release_callback.h",
     "resources/resource_id.h",
-    "resources/resource_settings.cc",
-    "resources/resource_settings.h",
     "resources/return_callback.h",
     "resources/returned_resource.cc",
     "resources/returned_resource.h",
