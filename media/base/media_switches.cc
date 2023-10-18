@@ -1652,7 +1652,7 @@ BASE_FEATURE(kTheoraVideoCodec,
 // allowed through the web in Chrome, but may be enabled by the local file app.
 BASE_FEATURE(kCrOSLegacyMediaFormats,
              "CrOSLegacyMediaFormats",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 #endif
 
