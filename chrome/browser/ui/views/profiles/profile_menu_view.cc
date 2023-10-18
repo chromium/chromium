@@ -498,7 +498,8 @@ void ProfileMenuView::BuildIdentity() {
   } else {
     if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
         account.IsEmpty()) {
-      account_info = signin_ui_util::GetSingleAccountForPromos(profile);
+      account_info =
+          signin_ui_util::GetSingleAccountForPromos(identity_manager);
     }
     menu_title_ = l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
     // The email may be empty.
@@ -609,7 +610,7 @@ void ProfileMenuView::BuildSyncInfo() {
   CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   AccountInfo account_info_for_promos =
-      signin_ui_util::GetSingleAccountForPromos(profile);
+      signin_ui_util::GetSingleAccountForPromos(identity_manager);
   std::u16string description;
   std::u16string button_text;
   ActionableItem button_type = ActionableItem::kSigninAccountButton;

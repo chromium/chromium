@@ -21,6 +21,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
@@ -209,8 +210,12 @@ base::Value::List SupportToolMessageHandler::GetAccountsList() {
   if (profile->IsGuestSession() || profile->IsIncognitoProfile()) {
     return account_list;
   }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
-           profile, /*restrict_to_accounts_eligible_for_sync=*/false)) {
+           identity_manager,
+           /*restrict_to_accounts_eligible_for_sync=*/false)) {
     if (!account.IsEmpty())
       account_list.Append(account.email);
   }

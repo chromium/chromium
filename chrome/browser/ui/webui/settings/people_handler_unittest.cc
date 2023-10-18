@@ -23,6 +23,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -1192,30 +1193,34 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
   ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-
-  // Do not be in first run, so that the profiles are not created as "new
-  // profiles" and automatically migrated to Dice.
-  first_run::ResetCachedSentinelDataForTesting();
-  base::ScopedClosureRunner scoped_closure_runner(
-      base::BindOnce(&first_run::ResetCachedSentinelDataForTesting));
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
-  ASSERT_FALSE(first_run::IsChromeFirstRun());
-
   content::BrowserTaskEnvironment task_environment;
 
-  // Setup the profile.
-  std::unique_ptr<TestingProfile> profile =
+  network::TestURLLoaderFactory url_loader_factory =
+      network::TestURLLoaderFactory();
+  TestingProfile::TestingFactories factories =
       IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment();
+          GetIdentityTestEnvironmentFactories();
+  factories.push_back(
+      {ChromeSigninClientFactory::GetInstance(),
+       base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                           &url_loader_factory)});
+
+  TestingProfile::Builder builder;
+  builder.AddTestingFactories(factories);
+
+  std::unique_ptr<TestingProfile> profile = builder.Build();
   ASSERT_EQ(true, AccountConsistencyModeManager::IsDiceEnabledForProfile(
                       profile.get()));
 
   auto identity_test_env_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
   auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
 
-  auto account_1 = identity_test_env->MakeAccountAvailable("a@gmail.com");
-  auto account_2 = identity_test_env->MakeAccountAvailable("b@gmail.com");
+  auto account_1 = identity_test_env->MakeAccountAvailable(
+      "a@gmail.com", {.set_cookie = true});
+  auto account_2 = identity_test_env->MakeAccountAvailable(
+      "b@gmail.com", {.set_cookie = true});
   identity_test_env->SetPrimaryAccount(account_1.email,
                                        signin::ConsentLevel::kSignin);
 
@@ -1315,8 +1320,19 @@ TEST(PeopleHandlerSecondaryProfile, SignoutWhenSyncing) {
 TEST(PeopleHandlerMainProfile, GetStoredAccountsList) {
   content::BrowserTaskEnvironment task_environment;
 
+  network::TestURLLoaderFactory url_loader_factory =
+      network::TestURLLoaderFactory();
+  TestingProfile::TestingFactories factories =
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactories();
+  factories.push_back(
+      {ChromeSigninClientFactory::GetInstance(),
+       base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                           &url_loader_factory)});
+
   TestingProfile::Builder builder;
   builder.SetIsMainProfile(true);
+  builder.AddTestingFactories(factories);
 
   std::unique_ptr<TestingProfile> profile =
       IdentityTestEnvironmentProfileAdaptor::
@@ -1325,13 +1341,14 @@ TEST(PeopleHandlerMainProfile, GetStoredAccountsList) {
   auto identity_test_env_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
   auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
   auto* identity_manager = identity_test_env->identity_manager();
 
   identity_test_env->MakePrimaryAccountAvailable("user@gmail.com",
                                                  ConsentLevel::kSignin);
   ASSERT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
 
-  identity_test_env->MakeAccountAvailable("a@gmail.com");
+  identity_test_env->MakeAccountAvailable("a@gmail.com", {.set_cookie = true});
   EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
 
   PeopleHandler handler(profile.get());
@@ -1346,8 +1363,19 @@ TEST(PeopleHandlerSecondaryProfile, GetStoredAccountsList) {
   ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
   content::BrowserTaskEnvironment task_environment;
 
+  network::TestURLLoaderFactory url_loader_factory =
+      network::TestURLLoaderFactory();
+  TestingProfile::TestingFactories factories =
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactories();
+  factories.push_back(
+      {ChromeSigninClientFactory::GetInstance(),
+       base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                           &url_loader_factory)});
+
   TestingProfile::Builder builder;
   builder.SetIsMainProfile(false);
+  builder.AddTestingFactories(factories);
 
   std::unique_ptr<TestingProfile> profile =
       IdentityTestEnvironmentProfileAdaptor::
@@ -1356,10 +1384,13 @@ TEST(PeopleHandlerSecondaryProfile, GetStoredAccountsList) {
   auto identity_test_env_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
   auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
   auto* identity_manager = identity_test_env->identity_manager();
 
-  auto account_1 = identity_test_env->MakeAccountAvailable("a@gmail.com");
-  auto account_2 = identity_test_env->MakeAccountAvailable("b@gmail.com");
+  auto account_1 = identity_test_env->MakeAccountAvailable(
+      "a@gmail.com", {.set_cookie = true});
+  auto account_2 = identity_test_env->MakeAccountAvailable(
+      "b@gmail.com", {.set_cookie = true});
   identity_test_env->SetPrimaryAccount(account_2.email,
                                        signin::ConsentLevel::kSignin);
   EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());

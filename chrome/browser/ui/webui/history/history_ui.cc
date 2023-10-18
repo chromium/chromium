@@ -128,7 +128,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       IdentityManagerFactory::GetForProfile(profile);
   bool has_primary_account =
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-  AccountInfo account_info = signin_ui_util::GetSingleAccountForPromos(profile);
+  AccountInfo account_info =
+      signin_ui_util::GetSingleAccountForPromos(identity_manager);
   if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
       !has_primary_account && !account_info.IsEmpty()) {
     source->AddString("turnOnSyncButton",
