@@ -759,7 +759,8 @@ class CORE_EXPORT Node : public EventTarget {
   // Detaches the node from the layout tree, making it invisible in the rendered
   // view. This method will remove the node's layout object from the layout tree
   // and delete it.
-  virtual void DetachLayoutTree(bool performing_reattach = false);
+  void DetachLayoutTree() { DetachLayoutTree(/*performing_reattach=*/false); }
+  virtual void DetachLayoutTree(bool performing_reattach);
 
   void ReattachLayoutTree(AttachContext&);
 

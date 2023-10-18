@@ -375,7 +375,7 @@ void Text::ReattachLayoutTreeIfNeeded(AttachContext& context) {
     LayoutTreeBuilderForText(*this, context, style_parent->GetComputedStyle())
         .CreateLayoutObject();
   } else {
-    DetachLayoutTree(true /* performing_reattach*/);
+    DetachLayoutTree(/*performing_reattach=*/true);
   }
   CharacterData::AttachLayoutTree(reattach_context);
 }

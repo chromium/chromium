@@ -157,8 +157,9 @@ class CORE_EXPORT ContainerNode : public Node {
 
   void CloneChildNodesFrom(const ContainerNode&, NodeCloningData&);
 
+  using Node::DetachLayoutTree;
   void AttachLayoutTree(AttachContext&) override;
-  void DetachLayoutTree(bool performing_reattach = false) override;
+  void DetachLayoutTree(bool performing_reattach) override;
   PhysicalRect BoundingBox() const final;
   void SetFocused(bool, mojom::blink::FocusType) override;
   void SetHasFocusWithinUpToAncestor(bool, Node* ancestor);
