@@ -7039,4 +7039,53 @@ TEST_F(FormStructureTestImpl, GetFormTypes_AutocompleteUnrecognized) {
               UnorderedElementsAre(FormType::kUnknownFormType));
 }
 
+// By default, the single field email heuristics are off. Although applying
+// heuristics in this case appears to have been intended behavior, the rollout
+// must be managed with care. This test is intended to ensure the default
+// experience does not change unintentionally.
+TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsDefaultBehavior) {
+  FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
+
+  // The form has too few fields; it should not run heuristics, falling back to
+  // the single field parsing.
+  EXPECT_FALSE(FormShouldRunHeuristics(form));
+  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
+
+  {
+    FormStructure form_structure(form);
+    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                           nullptr);
+    ASSERT_EQ(1U, form_structure.field_count());
+    ASSERT_EQ(0U, form_structure.autofill_count());
+    EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
+    EXPECT_FALSE(form_structure.IsAutofillable());
+  }
+}
+
+// When the single field email heuristics feature is enabled, a single field
+// email form should be parsed accordingly.
+TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsEnabled) {
+  base::test::ScopedFeatureList enabled{
+      features::kAutofillEnableEmailHeuristicOnlyAddressForms};
+
+  FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
+
+  // The form has too few fields; it should not run heuristics, falling back to
+  // the single field parsing.
+  EXPECT_FALSE(FormShouldRunHeuristics(form));
+  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
+
+  {
+    FormStructure form_structure(form);
+    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                           nullptr);
+    ASSERT_EQ(1U, form_structure.field_count());
+    // However, because the email field is in a form and matches the heuristics,
+    // it should be autofillable when the feature is enabled.
+    ASSERT_EQ(1U, form_structure.autofill_count());
+    EXPECT_EQ(EMAIL_ADDRESS, form_structure.field(0)->heuristic_type());
+    EXPECT_TRUE(form_structure.IsAutofillable());
+  }
+}
+
 }  // namespace autofill

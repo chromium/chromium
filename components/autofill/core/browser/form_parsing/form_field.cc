@@ -307,6 +307,19 @@ void FormField::ParseStandaloneCVCFields(
                       pattern_source, log_manager);
 }
 
+void FormField::ParseStandaloneEmailFields(
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    FieldCandidatesMap& field_candidates,
+    LogManager* log_manager) {
+  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
+  ParseFormFieldsPass(EmailField::Parse, processed_fields, field_candidates,
+                      client_country, page_language, pattern_source,
+                      log_manager);
+}
+
 // static
 bool FormField::ParseField(AutofillScanner* scanner,
                            base::StringPiece16 pattern,

@@ -1227,6 +1227,17 @@ void FormStructure::ParseFieldTypesWithPatterns(
     FormField::ParseStandaloneCVCFields(fields_, client_country, page_language,
                                         pattern_source, field_type_map,
                                         log_manager);
+
+    // For standalone email fields inside a form tag, allow heuristics even
+    // when the minimum number of fields is not met. See similar comments
+    // in `FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
+    if (is_form_tag_ &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableEmailHeuristicOnlyAddressForms)) {
+      FormField::ParseStandaloneEmailFields(fields_, client_country,
+                                            page_language, pattern_source,
+                                            field_type_map, log_manager);
+    }
   }
   if (field_type_map.empty())
     return;
