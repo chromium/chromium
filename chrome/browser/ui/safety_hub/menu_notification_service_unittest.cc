@@ -109,7 +109,7 @@ class SafetyHubMenuNotificationServiceTest
 };
 
 TEST_F(SafetyHubMenuNotificationServiceTest, GetNotificationToShowNoResult) {
-  absl::optional<std::pair<int, std::u16string>> notification =
+  absl::optional<MenuNotificationEntry> notification =
       menu_notification_service()->GetNotificationToShow();
   EXPECT_FALSE(notification.has_value());
 }
@@ -119,13 +119,13 @@ TEST_F(SafetyHubMenuNotificationServiceTest, SingleNotificationToShow) {
 
   // The notification to show should be the unused site permissions one with
   // one revoked permission. The relevant command should be to open Safety Hub.
-  absl::optional<std::pair<int, std::u16string>> notification =
+  absl::optional<MenuNotificationEntry> notification =
       menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
-      notification.value().second);
-  EXPECT_EQ(IDC_OPEN_SAFETY_HUB, notification.value().first);
+      notification.value().label);
+  EXPECT_EQ(IDC_OPEN_SAFETY_HUB, notification.value().command);
 }
 
 TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
@@ -133,7 +133,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
   // available.
   CreateMockUnusedSitePermissionsEntry();
 
-  absl::optional<std::pair<int, std::u16string>> notification =
+  absl::optional<MenuNotificationEntry> notification =
       menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   SafetyHubMenuNotification* old_notification =
@@ -181,13 +181,13 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsSequentially) {
   CreateMockUnusedSitePermissionsEntry();
 
   // Show the notification sufficient days and times.
-  absl::optional<std::pair<int, std::u16string>> notification;
+  absl::optional<MenuNotificationEntry> notification;
   for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount + 1; ++i) {
     notification = menu_notification_service()->GetNotificationToShow();
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
         IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
-        notification->second);
+        notification->label);
   }
   AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
                  base::Days(1));
@@ -209,12 +209,12 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
   CreateMockUnusedSitePermissionsEntry();
 
   // Show the notification once.
-  absl::optional<std::pair<int, std::u16string>> notification;
+  absl::optional<MenuNotificationEntry> notification;
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
-      notification->second);
+      notification->label);
 
   // Creating a notification permission shouldn't cause the active notification
   // to be overridden.
@@ -223,7 +223,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
-      notification->second);
+      notification->label);
 
   // Showing the notification sufficient days and times.
   for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount - 1; ++i) {
@@ -231,7 +231,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
         IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
-        notification->second);
+        notification->label);
   }
   AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
                  base::Days(1));
@@ -242,7 +242,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION,
-      1, notification->second);
+      1, notification->label);
 
   // Showing the new notification enough times and days.
   for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount; ++i) {
@@ -250,7 +250,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
         IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION,
-        1, notification->second);
+        1, notification->label);
   }
   AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
                  base::Days(1));

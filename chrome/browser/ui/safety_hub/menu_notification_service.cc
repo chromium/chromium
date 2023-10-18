@@ -46,7 +46,7 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
 
 SafetyHubMenuNotificationService::~SafetyHubMenuNotificationService() = default;
 
-absl::optional<std::pair<int, std::u16string>>
+absl::optional<MenuNotificationEntry>
 SafetyHubMenuNotificationService::GetNotificationToShow() {
   absl::optional<ResultMap> result_map = GetResultsFromAllServices();
   if (!result_map.has_value()) {
@@ -92,8 +92,8 @@ SafetyHubMenuNotificationService::GetNotificationToShow() {
   // The information related to showing the notification needs to be persisted
   // as well.
   SaveNotificationsToPrefs();
-  return std::make_pair(notification_to_show->GetNotificationCommandId(),
-                        notification_to_show->GetNotificationString());
+  return MenuNotificationEntry(notification_to_show->GetNotificationCommandId(),
+                               notification_to_show->GetNotificationString());
 }
 
 absl::optional<ResultMap>

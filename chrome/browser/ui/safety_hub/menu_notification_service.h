@@ -22,6 +22,11 @@ enum SafetyHubServiceType {
   NOTIFICATION_PERMISSIONS,
 };
 
+struct MenuNotificationEntry {
+  int command = 0;
+  std::u16string label;
+};
+
 namespace {
 
 enum MenuNotificationPriority {
@@ -71,7 +76,7 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // Returns the CommandID and notification string that should be shown in the
   // three-dot menu. When no notification should be shown, absl::nullopt will be
   // returned.
-  absl::optional<std::pair<int, std::u16string>> GetNotificationToShow();
+  absl::optional<MenuNotificationEntry> GetNotificationToShow();
 
   // Returns the |service_info_map_|. For testing purposes only.
   SafetyHubMenuNotification* GetNotificationForTesting(

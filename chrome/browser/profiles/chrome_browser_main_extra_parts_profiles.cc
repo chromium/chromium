@@ -185,6 +185,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 #include "chrome/browser/ui/media_router/cast_notification_controller_lacros_factory.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model_factory.h"
@@ -1033,6 +1034,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   safe_browsing::TailoredSecurityServiceFactory::GetInstance();
   safe_browsing::VerdictCacheManagerFactory::GetInstance();
   SafeSearchFactory::GetInstance();
+#if !BUILDFLAG(IS_ANDROID)
+  SafetyHubMenuNotificationServiceFactory::GetInstance();
+#endif
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   screen_ai::AXScreenAIAnnotatorFactory::EnsureFactoryBuilt();
   screen_ai::PdfOcrControllerFactory::GetInstance();
