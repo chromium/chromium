@@ -69,7 +69,6 @@ enum ActionType {
   kLastAction,
 };
 
-
 // A mojo conversion of the PublicCredentialType which is defined in
 // //third_party/nearby/src/internal/platform/implementation/credential_callbacks.h.
 // This definition should be kept consistent with the afformentioned file.
@@ -78,17 +77,7 @@ enum PublicCredentialType {
   kRemotePublicCredential = 2,
 };
 
-// Presence Device information to specify the device information when a device
-// is found/lost/changed during a scan.
-struct PresenceDevice {
-  string endpoint_id;
-  string device_name;
-  PresenceDeviceType device_type;
-  array<ActionType> actions;
-  string? stable_device_id;
-};
-
-// The metadata of a device. This struct represents
+// The metadata of a device. This struct should always match
 // //third_party/nearby/src/internal/proto/metadata.proto.
 struct Metadata {
   // The type of the device.
@@ -103,6 +92,16 @@ struct Metadata {
   string device_profile_url;
   // The Bluetooth MAC address of the device.
   array<uint8> bluetooth_mac_address;
+};
+
+// Presence Device information to specify the device information when a device
+// is found/lost/changed during a scan. This loosely represents
+// //third_party/nearby/src/presence/presence_device.h.
+struct PresenceDevice {
+  string endpoint_id;
+  array<ActionType> actions;
+  string? stable_device_id;
+  Metadata metadata;
 };
 
 // The Nearby Presence library is responsible for generating and storing Shared

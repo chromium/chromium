@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_impl.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "chromeos/ash/components/nearby/presence/credentials/fake_nearby_presence_credential_manager.h"
@@ -21,13 +23,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include <memory>
-
 namespace ash::nearby::presence {
 
+const char kAccountName[] = "Pepper@gmail.com";
 const char kDeviceName[] = "Pepper's Request";
+const char kDeviceProfileUrl[] = "some_url";
 const char kEndpointId[] = "00000001";
 const char kStableDeviceId[] = "00000002";
+const char kUserName[] = "Pepper";
+const std::vector<uint8_t> kMacAddress = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
 const mojom::ActionType kAction1 = mojom::ActionType::kInstantTetheringAction;
 const mojom::ActionType kAction2 = mojom::ActionType::kActiveUnlockAction;
 const mojom::ActionType kAction3 = mojom::ActionType::kPhoneHubAction;
@@ -138,10 +142,13 @@ class NearbyPresenceServiceImplTest : public testing::Test {
       actions.push_back(kAction1);
       actions.push_back(kAction2);
       actions.push_back(kAction3);
+
       fake_nearby_presence_.ReturnScanObserver()->OnDeviceFound(
-          mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                     mojom::PresenceDeviceType::kPhone, actions,
-                                     kStableDeviceId));
+          mojom::PresenceDevice::New(
+              kEndpointId, actions, kStableDeviceId,
+              mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
+                                   kAccountName, kDeviceName, kUserName,
+                                   kDeviceProfileUrl, kMacAddress)));
       run_loop.Run();
     }
 
@@ -218,13 +225,15 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
     scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
 
     std::vector<mojom::ActionType> actions;
-    ;
     actions.push_back(kAction1);
     actions.push_back(kAction2);
+
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceChanged(
-        mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                   mojom::PresenceDeviceType::kPhone, actions,
-                                   kStableDeviceId));
+        mojom::PresenceDevice::New(
+            kEndpointId, actions, kStableDeviceId,
+            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
+                                 kAccountName, kDeviceName, kUserName,
+                                 kDeviceProfileUrl, kMacAddress)));
     run_loop.Run();
   }
 
@@ -255,11 +264,12 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
     scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
 
     std::vector<mojom::ActionType> actions;
-    ;
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceLost(
-        mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                   mojom::PresenceDeviceType::kPhone, actions,
-                                   kStableDeviceId));
+        mojom::PresenceDevice::New(
+            kEndpointId, actions, kStableDeviceId,
+            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
+                                 kAccountName, kDeviceName, kUserName,
+                                 kDeviceProfileUrl, kMacAddress)));
     run_loop.Run();
   }
 
@@ -293,9 +303,11 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
     std::vector<mojom::ActionType> actions;
     actions.push_back(kAction1);
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceFound(
-        mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                   mojom::PresenceDeviceType::kPhone, actions,
-                                   kStableDeviceId));
+        mojom::PresenceDevice::New(
+            kEndpointId, actions, kStableDeviceId,
+            mojom::Metadata::New(mojom::PresenceDeviceType::kPhone,
+                                 kAccountName, kDeviceName, kUserName,
+                                 kDeviceProfileUrl, kMacAddress)));
 
     // Allow the ScanObserver function to finish before checking EXPECTs.
     run_loop.Run();
