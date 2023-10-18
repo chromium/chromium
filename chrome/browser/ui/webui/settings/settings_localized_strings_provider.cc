@@ -1226,6 +1226,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddString("plusAddressManagementUrl",
                          plus_addresses::kPlusAddressManagementUrl.Get());
+
+  html_source->AddBoolean("syncDecoupleAddressPaymentSettings",
+                          base::FeatureList::IsEnabled(
+                              syncer::kSyncDecoupleAddressPaymentSettings));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

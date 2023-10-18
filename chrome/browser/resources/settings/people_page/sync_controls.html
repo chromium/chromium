@@ -229,7 +229,8 @@
         <cr-policy-indicator indicator-type="userPolicy"
              hidden="[[!syncPrefs.autofillManaged]]">
          </cr-policy-indicator>
-        <cr-toggle checked="{{syncPrefs.autofillSynced}}"
+        <cr-toggle id="autofillCheckbox"
+            checked="{{syncPrefs.autofillSynced}}"
             on-change="onAutofillDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
               syncPrefs.syncAllDataTypes,syncPrefs.autofillManaged)]]"
@@ -249,7 +250,8 @@
         <cr-policy-indicator indicator-type="userPolicy"
             hidden="[[!syncPrefs.paymentsManaged]]">
         </cr-policy-indicator>
-        <cr-toggle checked="{{syncPrefs.paymentsSynced}}"
+        <cr-toggle id="paymentsCheckbox"
+            checked="{{syncPrefs.paymentsSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disablePaymentsCheckbox_(
                 syncPrefs.syncAllDataTypes, syncPrefs.autofillSynced,
