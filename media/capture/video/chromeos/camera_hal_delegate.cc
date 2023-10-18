@@ -28,6 +28,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/metrics/structured/structured_events.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
@@ -893,6 +894,10 @@ int32_t CameraHalDelegate::GetMaskedModuleID(const std::string module_id) {
     int vid = strtol(module_id.substr(0, 4).c_str(), nullptr, 16);
     int pid = strtol(module_id.substr(5, 8).c_str(), nullptr, 16);
     int decimal_module_id = (vid << 16) + pid;
+    metrics::structured::events::v2::camera_peripheral_info::OpenCamera()
+        .SetVendorId(vid)
+        .SetProductId(pid)
+        .Record();
     if (base::Contains(module_id_set, decimal_module_id)) {
       return decimal_module_id;
     }
@@ -906,6 +911,8 @@ void CameraHalDelegate::OpenDeviceOnIpcThread(
     mojo::PendingReceiver<cros::mojom::Camera3DeviceOps> device_ops_receiver,
     OpenDeviceCallback callback) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  // TODO(dorahkim): Remove UMA related codes after Structured Metrics starts
+  // collection (b/193493869).
   base::UmaHistogramSparse("ChromeOS.Camera.ModuleID",
                            GetMaskedModuleID(module_id));
 
