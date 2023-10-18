@@ -4253,18 +4253,8 @@ if (is_android || is_robolectric) {
 }  # is_android || is_robolectric
 
 if (is_android) {
-  java_library("jni_java") {
-    supports_android = true
-    sources = [
-      "android/java/src/org/chromium/base/annotations/AccessedByNative.java",
-      "android/java/src/org/chromium/base/annotations/CalledByNative.java",
-      "android/java/src/org/chromium/base/annotations/CalledByNativeForTesting.java",
-      "android/java/src/org/chromium/base/annotations/CalledByNativeUnchecked.java",
-      "android/java/src/org/chromium/base/annotations/JNINamespace.java",
-      "android/java/src/org/chromium/base/annotations/NativeClassQualifiedName.java",
-      "android/java/src/org/chromium/base/annotations/NativeMethods.java",
-    ]
-
+  # TODO(smaier): delete this once deps have been correctly added everywhere.
+  java_group("jni_java") {
     public_deps = [
       # Public because @CheckDiscard is added to generated *Jni.java files.
       "//build/android:build_java",
