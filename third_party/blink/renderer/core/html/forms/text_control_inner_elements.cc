@@ -290,4 +290,15 @@ bool PasswordRevealButtonElement::WillRespondToMouseClickEvents() {
 
   return HTMLDivElement::WillRespondToMouseClickEvents();
 }
+
+// ----------------------------
+
+PasswordStrongLabelElement::PasswordStrongLabelElement(Document& document)
+    : HTMLDivElement(document) {
+  SetShadowPseudoId(AtomicString("-internal-strong"));
+  setAttribute(html_names::kIdAttr,
+               shadow_element_names::kIdPasswordStrongLabel);
+  // TODO(crbug.com/1444073): Add internationalized string.
+  setTextContent("Strong password");
+}
 }  // namespace blink

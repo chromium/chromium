@@ -83,6 +83,14 @@ class PasswordRevealButtonElement final : public HTMLDivElement {
   bool SupportsFocus() const override { return false; }
 };
 
+class PasswordStrongLabelElement final : public HTMLDivElement {
+ public:
+  explicit PasswordStrongLabelElement(Document&);
+
+ private:
+  bool SupportsFocus() const override { return false; }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TEXT_CONTROL_INNER_ELEMENTS_H_

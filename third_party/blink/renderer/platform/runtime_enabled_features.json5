@@ -2849,6 +2849,10 @@
       base_feature: "none",
     },
     {
+      name: "PasswordStrongLabel",
+      status: "experimental",
+    },
+    {
       name: "PastingBlocksSVGUseNonLocalHrefs",
       status: "stable",
     },

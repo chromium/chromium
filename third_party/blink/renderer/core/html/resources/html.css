@@ -619,6 +619,12 @@ input[type="password" i]::-internal-reveal:focus {
   cursor: pointer;
 }
 
+input[type="password" i]::-internal-strong {
+  color: rgb(66, 133, 244);
+  font-family: roboto;
+  -webkit-text-security: none;
+}
+
 input[type="hidden" i], input[type="image" i], input[type="file" i] {
     appearance: none;
     padding: initial;

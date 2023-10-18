@@ -59,6 +59,10 @@
       Symbol: "kIdPasswordRevealButton",
     },
     {
+      name: "password-strong-label",
+      Symbol: "kIdPasswordStrongLabel",
+    },
+    {
       name: "thumb",
       Symbol: "kIdSliderThumb",
     },

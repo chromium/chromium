@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -75,7 +76,8 @@ bool PasswordInputType::ShouldRespectListAttribute() {
 }
 
 bool PasswordInputType::NeedsContainer() const {
-  return RuntimeEnabledFeatures::PasswordRevealEnabled();
+  return RuntimeEnabledFeatures::PasswordRevealEnabled() ||
+         RuntimeEnabledFeatures::PasswordStrongLabelEnabled();
 }
 
 void PasswordInputType::CreateShadowSubtree() {
@@ -91,6 +93,17 @@ void PasswordInputType::CreateShadowSubtree() {
                                 GetElement().GetDocument()),
                             view_port->nextSibling());
   }
+
+  if (RuntimeEnabledFeatures::PasswordStrongLabelEnabled()) {
+    Element* container = ContainerElement();
+    Element* view_port = GetElement().UserAgentShadowRoot()->getElementById(
+        shadow_element_names::kIdEditingViewPort);
+    DCHECK(container);
+    DCHECK(view_port);
+    container->InsertBefore(MakeGarbageCollected<PasswordStrongLabelElement>(
+                                GetElement().GetDocument()),
+                            view_port->nextSibling());
+  }
 }
 
 void PasswordInputType::DidSetValueByUserEdit() {
@@ -101,6 +114,12 @@ void PasswordInputType::DidSetValueByUserEdit() {
     }
     UpdatePasswordRevealButton();
   }
+  if (RuntimeEnabledFeatures::PasswordStrongLabelEnabled()) {
+    // If any character is edited by the user, we no longer display the label.
+    GetElement().SetShouldShowStrongPasswordLabel(false);
+    UpdateStrongPasswordLabel();
+  }
+
   BaseTextInputType::DidSetValueByUserEdit();
 }
 
@@ -112,6 +131,10 @@ void PasswordInputType::DidSetValue(const String& string, bool value_changed) {
       UpdatePasswordRevealButton();
     }
   }
+  if (RuntimeEnabledFeatures::PasswordStrongLabelEnabled() && value_changed) {
+    UpdateStrongPasswordLabel();
+  }
+
   BaseTextInputType::DidSetValue(string, value_changed);
 }
 
@@ -120,6 +143,10 @@ void PasswordInputType::UpdateView() {
 
   if (RuntimeEnabledFeatures::PasswordRevealEnabled())
     UpdatePasswordRevealButton();
+
+  if (RuntimeEnabledFeatures::PasswordStrongLabelEnabled()) {
+    UpdateStrongPasswordLabel();
+  }
 }
 
 void PasswordInputType::CapsLockStateMayHaveChanged() {
@@ -183,6 +210,16 @@ void PasswordInputType::UpdatePasswordRevealButton() {
   }
 }
 
+void PasswordInputType::UpdateStrongPasswordLabel() {
+  Element* label = GetElement().EnsureShadowSubtree()->getElementById(
+      shadow_element_names::kIdPasswordStrongLabel);
+  if (GetElement().ShouldShowStrongPasswordLabel()) {
+    label->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+  } else {
+    label->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
+  }
+}
+
 void PasswordInputType::ForwardEvent(Event& event) {
   BaseTextInputType::ForwardEvent(event);
 
@@ -197,6 +234,10 @@ void PasswordInputType::HandleBlurEvent() {
   if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
     should_show_reveal_button_ = false;
     UpdatePasswordRevealButton();
+  }
+
+  if (RuntimeEnabledFeatures::PasswordStrongLabelEnabled()) {
+    UpdateStrongPasswordLabel();
   }
 
   BaseTextInputType::HandleBlurEvent();

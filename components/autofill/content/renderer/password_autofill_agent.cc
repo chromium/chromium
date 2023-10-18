@@ -50,6 +50,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -1771,6 +1772,9 @@ void PasswordAutofillAgent::ClearPreview(WebInputElement* username,
         base::checked_cast<unsigned>(username->Value().length()));
   }
   if (!password->IsNull() && !password->SuggestedValue().IsEmpty()) {
+    if (base::FeatureList::IsEnabled(blink::features::kPasswordStrongLabel)) {
+      password->SetShouldShowStrongPasswordLabel(false);
+    }
     password->SetSuggestedValue(WebString());
     password->SetAutofillState(password_autofill_state_);
   }
