@@ -5112,9 +5112,6 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP" desc="The tooltip for the expand button, indicating action to collapse the notification.">
         Collapse <ph name="NOTIFICATION_TITLE">$1<ex>Restore</ex></ph> notification
       </message>
-      <message name="IDS_ASH_NOTIFICATION_EXPAND_DISABLED_TOOLTIP" desc="The tooltip for the expand button when it is disabled, indicating that user cannot expand the notification in this situation.">
-        You can't expand the notification while a panel is open. Close the panel below first.
-      </message>
       <message name="IDS_ASH_NOTIFICATION_INLINE_REPLY_PLACEHOLDER" desc="The placeholder string for the textfield of an in-line reply notification.">
         Reply
       </message>

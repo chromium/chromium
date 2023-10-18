@@ -9,7 +9,6 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/message_center/message_center_constants.h"
@@ -34,7 +33,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -121,21 +119,11 @@ void AshNotificationExpandButton::UpdateGroupedNotificationsCount(int count) {
 }
 
 void AshNotificationExpandButton::UpdateIcons() {
-  SkColor icon_color;
-  // `GetColorProvider()` might be null in tests.
-  if (disable_expand_collapse_ && GetColorProvider()) {
-    icon_color = GetColorProvider()->GetColor(
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabled)
-            : kColorAshButtonIconDisabledColor);
-  } else {
-    icon_color =
-        chromeos::features::IsJellyEnabled()
-            ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)
-            : AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kIconColorPrimary);
-  }
-
+  SkColor icon_color =
+      chromeos::features::IsJellyEnabled()
+          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)
+          : AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorPrimary);
   int icon_size = chromeos::features::IsJellyEnabled() ? kJellyChevronIconSize
                                                        : kChevronIconSize;
 
@@ -239,14 +227,6 @@ gfx::Size AshNotificationExpandButton::CalculatePreferredSize() const {
   return size;
 }
 
-void AshNotificationExpandButton::SetExpandCollapseEnabled(bool enabled) {
-  disable_expand_collapse_ = !enabled;
-
-  UpdateIcons();
-  UpdateBackgroundColor();
-  UpdateTooltip();
-}
-
 void AshNotificationExpandButton::SetNotificationTitleForButtonTooltip(
     const std::u16string& notification_title) {
   if (notification_title_ == notification_title) {
@@ -294,17 +274,6 @@ void AshNotificationExpandButton::AnimateBoundsChange(
 }
 
 void AshNotificationExpandButton::UpdateBackgroundColor() {
-  if (disable_expand_collapse_) {
-    layer()->SetColor(chromeos::features::IsJellyEnabled()
-                          ? GetColorProvider()->GetColor(
-                                cros_tokens::kCrosSysDisabledContainer)
-                          : AshColorProvider::Get()->GetControlsLayerColor(
-                                AshColorProvider::ControlsLayerType::
-                                    kControlBackgroundColorInactive));
-
-    return;
-  }
-
   layer()->SetColor(
       chromeos::features::IsJellyEnabled()
           ? GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase1)
@@ -314,17 +283,10 @@ void AshNotificationExpandButton::UpdateBackgroundColor() {
 }
 
 void AshNotificationExpandButton::UpdateTooltip() {
-  std::u16string tooltip_text;
-  if (disable_expand_collapse_) {
-    tooltip_text =
-        l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_EXPAND_DISABLED_TOOLTIP);
-  } else {
-    tooltip_text = l10n_util::GetStringFUTF16(
-        expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
-                  : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP,
-        notification_title_);
-  }
-
+  std::u16string tooltip_text = l10n_util::GetStringFUTF16(
+      expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
+                : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP,
+      notification_title_);
   image_->SetTooltipText(tooltip_text);
   SetAccessibleName(tooltip_text);
 }
