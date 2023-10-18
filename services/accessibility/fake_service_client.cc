@@ -133,6 +133,12 @@ void FakeServiceClient::SetHighlights(const std::vector<gfx::Rect>& rects,
     highlights_callback_.Run(rects, color);
   }
 }
+
+void FakeServiceClient::SetVirtualKeyboardVisible(bool is_visible) {
+  if (virtual_keyboard_visible_callback_) {
+    virtual_keyboard_visible_callback_.Run(is_visible);
+  }
+}
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 
 void FakeServiceClient::BindAccessibilityServiceClientForTest() {
@@ -181,6 +187,11 @@ void FakeServiceClient::SetHighlightsCallback(
     base::RepeatingCallback<void(const std::vector<gfx::Rect>& rects,
                                  SkColor color)> callback) {
   highlights_callback_ = callback;
+}
+
+void FakeServiceClient::SetVirtualKeyboardVisibleCallback(
+    base::RepeatingCallback<void(bool is_visible)> callback) {
+  virtual_keyboard_visible_callback_ = std::move(callback);
 }
 
 bool FakeServiceClient::UserInterfaceIsBound() const {

@@ -229,4 +229,11 @@ void FakeAccessibilityService::RequestSetHighlights(
   }
 }
 
+void FakeAccessibilityService::RequestSetVirtualKeyboardVisible(
+    bool is_visible) {
+  for (auto& ux_client : ux_remotes_) {
+    ux_client->SetVirtualKeyboardVisible(is_visible);
+  }
+}
+
 }  // namespace ash

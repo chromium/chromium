@@ -5,6 +5,8 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_highlight_layer.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
+#include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ash/accessibility/service/fake_accessibility_service.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -34,6 +37,33 @@
 #include "ui/compositor/layer.h"
 
 using ax::mojom::AssistiveTechnologyType;
+
+class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
+ public:
+  explicit KeyboardVisibleWaiter(bool visible) : visible_(visible) {
+    ChromeKeyboardControllerClient::Get()->AddObserver(this);
+  }
+
+  KeyboardVisibleWaiter(const KeyboardVisibleWaiter&) = delete;
+  KeyboardVisibleWaiter& operator=(const KeyboardVisibleWaiter&) = delete;
+
+  ~KeyboardVisibleWaiter() override {
+    ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // ChromeKeyboardControllerClient::Observer
+  void OnKeyboardVisibilityChanged(bool visible) override {
+    if (visible == visible_) {
+      run_loop_.QuitWhenIdle();
+    }
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  const bool visible_;
+};  // namespace
 
 namespace ash {
 
@@ -1018,6 +1048,31 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, SetHighlights) {
   fake_service_->RequestSetHighlights(rects, SK_ColorMAGENTA);
 
   waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       RequestSetVirtualKeyboardVisible) {
+  // Initialize ATP.
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Enable virtual keyboard.
+  keyboard::SetAccessibilityKeyboardEnabled(true);
+
+  // Verify keyboard is hidden.
+  KeyboardControllerImpl* keyboard_controller_ =
+      Shell::Get()->keyboard_controller();
+  EXPECT_FALSE(keyboard_controller_->IsKeyboardVisible());
+
+  // Show keyboard, and verify visible.
+  fake_service_->RequestSetVirtualKeyboardVisible(true);
+  KeyboardVisibleWaiter(true).Wait();
+  EXPECT_TRUE(keyboard_controller_->IsKeyboardVisible());
+
+  // Hide keyboard, and verify invisible.
+  fake_service_->RequestSetVirtualKeyboardVisible(false);
+  KeyboardVisibleWaiter(false).Wait();
+  EXPECT_FALSE(keyboard_controller_->IsKeyboardVisible());
 }
 
 }  // namespace ash

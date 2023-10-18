@@ -71,4 +71,7 @@ interface UserInterface {
 
     // Sets the bounds and color of the accessibility highlight.
     SetHighlights(array<gfx.mojom.Rect> rects, skia.mojom.SkColor color);
+
+    // Shows or hides the virtual keyboard.
+    SetVirtualKeyboardVisible(bool is_visible);
 };

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/service/user_interface_impl.h"
 
+#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "content/public/common/color_parser.h"
@@ -92,6 +93,10 @@ void UserInterfaceImpl::SetFocusRings(
 void UserInterfaceImpl::SetHighlights(const std::vector<gfx::Rect>& rects,
                                       SkColor color) {
   AccessibilityManager::Get()->SetHighlights(rects, color);
+}
+
+void UserInterfaceImpl::SetVirtualKeyboardVisible(bool is_visible) {
+  AccessibilityController::Get()->SetVirtualKeyboardVisible(is_visible);
 }
 
 }  // namespace ash

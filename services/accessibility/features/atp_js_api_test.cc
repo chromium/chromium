@@ -702,4 +702,30 @@ TEST_F(AccessibilityPrivateJSApiTest, SetHighlightsEmptyRects) {
   waiter.Run();
 }
 
+TEST_F(AccessibilityPrivateJSApiTest, SetVirtualKeyboardVisible) {
+  base::RunLoop waiter;
+  client_->SetVirtualKeyboardVisibleCallback(
+      base::BindLambdaForTesting([&waiter](bool is_visible) {
+        waiter.Quit();
+        ASSERT_EQ(is_visible, true);
+      }));
+  ExecuteJS(R"JS(
+    chrome.accessibilityPrivate.setVirtualKeyboardVisible(true);
+  )JS");
+  waiter.Run();
+}
+
+TEST_F(AccessibilityPrivateJSApiTest, SetVirtualKeyboardInvisible) {
+  base::RunLoop waiter;
+  client_->SetVirtualKeyboardVisibleCallback(
+      base::BindLambdaForTesting([&waiter](bool is_visible) {
+        waiter.Quit();
+        ASSERT_EQ(is_visible, false);
+      }));
+  ExecuteJS(R"JS(
+    chrome.accessibilityPrivate.setVirtualKeyboardVisible(false);
+  )JS");
+  waiter.Run();
+}
+
 }  // namespace ax

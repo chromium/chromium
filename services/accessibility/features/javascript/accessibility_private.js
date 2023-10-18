@@ -166,6 +166,14 @@ class AtpAccessibilityPrivate {
   }
 
   /**
+   * Shows or hides the virtual keyboard.
+   * @param {boolean} is_visible
+   */
+  setVirtualKeyboardVisible(is_visible) {
+    this.userInterfaceRemote_.setVirtualKeyboardVisible(is_visible);
+  }
+
+  /**
    * Convert array of accessibilityPrivate.ScreenRect to gfx.mojom.Rects.
    * @param {!Array<!chrome.accessibilityPrivate.ScreenRect>} rects
    * @return {!Array<!gfx.mojom.Rect>}

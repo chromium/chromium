@@ -69,6 +69,7 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
                      ax::mojom::AssistiveTechnologyType at_type) override;
   void SetHighlights(const std::vector<gfx::Rect>& rects,
                      SkColor color) override;
+  void SetVirtualKeyboardVisible(bool is_visible) override;
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 
   // Methods for testing.
@@ -94,6 +95,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void SetHighlightsCallback(
       base::RepeatingCallback<void(const std::vector<gfx::Rect>& rects,
                                    SkColor color)> callback);
+  void SetVirtualKeyboardVisibleCallback(
+      base::RepeatingCallback<void(bool is_visible)> callback);
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   base::WeakPtr<FakeServiceClient> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -123,6 +126,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   base::RepeatingCallback<void(const std::vector<gfx::Rect>& rects,
                                SkColor color)>
       highlights_callback_;
+  base::RepeatingCallback<void(bool is_visible)>
+      virtual_keyboard_visible_callback_;
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   mojo::Receiver<mojom::AccessibilityServiceClient> a11y_client_receiver_{this};
 

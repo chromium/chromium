@@ -31,6 +31,7 @@ class UserInterfaceImpl : public ax::mojom::UserInterface {
                      ax::mojom::AssistiveTechnologyType at_type) override;
   void SetHighlights(const std::vector<gfx::Rect>& rects,
                      SkColor color) override;
+  void SetVirtualKeyboardVisible(bool is_visible) override;
 
  private:
   mojo::ReceiverSet<ax::mojom::UserInterface> ui_receivers_;

@@ -148,6 +148,8 @@ class FakeAccessibilityService
 
   void RequestSetHighlights(const std::vector<gfx::Rect>& rects, SkColor color);
 
+  void RequestSetVirtualKeyboardVisible(bool is_visible);
+
   // Getters for automation events.
   std::vector<ui::AXTreeID> tree_destroyed_events() const {
     return tree_destroyed_events_;
