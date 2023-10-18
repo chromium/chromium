@@ -5,6 +5,17 @@
     --emoji-background: transparent;
   }
 
+  /**
+   * With jelly flag on, emoji buttons under symbol / emoticon group should be
+   * rounded.
+   *
+   * TODO(b/263055563): Remove the flag check once jelly is default one.
+   */
+  :host([category="emoticon"][jelly-support]),
+  :host([category="symbol"][jelly-support]) {
+    --emoji-button-border-radius: 4px;
+  }
+
   /* Base styles. */
   .emoji-button {
     background: var(--emoji-background);
@@ -29,7 +40,7 @@
   }
 
   .grid-layout .emoji-button {
-    border-radius: 50%;
+    border-radius: var(--emoji-button-border-radius, 50%);
     display: block;
     font-family: 'Noto Color Emoji';
     font-size: 19px;
@@ -53,6 +64,7 @@
   }
 
   .flex-layout .emoji-button {
+    border-radius: var(--emoji-button-border-radius, 0);
     color: var(--emoji-picker-symbol-color);
     font-family: 'Noto Sans CJK JP';
     font-size: 13px;
