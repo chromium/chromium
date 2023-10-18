@@ -222,15 +222,12 @@ std::string ConvertIPv6AddressToString(const NetAddress* net_addr,
       address16[2] == 0 && address16[3] == 0 &&
       address16[4] == 0 &&
       (address16[5] == 0 || address16[5] == 0xffff)) {
-    base::StringAppendF(
-        &description,
-        address16[5] == 0 ? "::%u.%u.%u.%u" : "::ffff:%u.%u.%u.%u",
-        net_addr->address[12],
-        net_addr->address[13],
-        net_addr->address[14],
-        net_addr->address[15]);
+    base::StringAppendF(&description, "::%s%u.%u.%u.%u",
+                        address16[5] == 0 ? "" : "ffff:", net_addr->address[12],
+                        net_addr->address[13], net_addr->address[14],
+                        net_addr->address[15]);
 
-  // "Real" IPv6 addresses.
+    // "Real" IPv6 addresses.
   } else {
     // Find the first longest run of 0s (of length > 1), to collapse to "::".
     int longest_start = 0;
@@ -259,7 +256,7 @@ std::string ConvertIPv6AddressToString(const NetAddress* net_addr,
         i += longest_length;
       } else {
         uint16_t v = ConvertFromNetEndian16(address16[i]);
-        base::StringAppendF(&description, need_sep ? ":%x" : "%x", v);
+        base::StringAppendF(&description, "%s%x", need_sep ? ":" : "", v);
         need_sep = true;
         i++;
       }
