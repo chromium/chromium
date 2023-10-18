@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
+#include "chrome/common/pdf_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -42,6 +43,24 @@ int GetNormalizedFontScale(double font_scale) {
 }
 
 }  // namespace
+
+ReadAnythingWebContentsObserver::ReadAnythingWebContentsObserver(
+    base::SafeRef<ReadAnythingUntrustedPageHandler> page_handler,
+    content::WebContents* web_contents)
+    : page_handler_(page_handler) {
+  Observe(web_contents);
+}
+
+ReadAnythingWebContentsObserver::~ReadAnythingWebContentsObserver() = default;
+
+void ReadAnythingWebContentsObserver::AccessibilityEventReceived(
+    const content::AXEventNotificationDetails& details) {
+  page_handler_->AccessibilityEventReceived(details);
+}
+
+void ReadAnythingWebContentsObserver::PrimaryPageChanged(content::Page& page) {
+  page_handler_->PrimaryPageChanged();
+}
 
 ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
     mojo::PendingRemote<UntrustedPage> page,
@@ -104,7 +123,8 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   TabStripModelObserver::StopObservingAll(this);
-  Observe(nullptr);
+  main_observer_.reset();
+  pdf_observer_.reset();
   LogTextStyle();
 
   if (!coordinator_) {
@@ -116,6 +136,16 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   // destroyed first, these will have been destroyed before this call.
   coordinator_->RemoveObserver(this);
   coordinator_->RemoveModelObserver(this);
+}
+
+void ReadAnythingUntrustedPageHandler::PrimaryPageChanged() {
+  OnActiveAXTreeIDChanged();
+}
+
+void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
+    const content::AXEventNotificationDetails& details) {
+  page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
+                                    details.events);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -131,7 +161,9 @@ void ReadAnythingUntrustedPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingUntrustedPageHandler::OnCopy() {
-  web_contents()->Copy();
+  if (main_observer_ && main_observer_->web_contents()) {
+    main_observer_->web_contents()->Copy();
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::OnLineSpaceChange(
@@ -213,7 +245,9 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
 }
 
 void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
-  web_contents()->CollapseSelection();
+  if (main_observer_ && main_observer_->web_contents()) {
+    main_observer_->web_contents()->CollapseSelection();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -307,20 +341,6 @@ void ReadAnythingUntrustedPageHandler::OnTabStripModelDestroyed(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// content::WebContentsObserver:
-///////////////////////////////////////////////////////////////////////////////
-
-void ReadAnythingUntrustedPageHandler::PrimaryPageChanged(content::Page& page) {
-  OnActiveAXTreeIDChanged();
-}
-
-void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
-    const content::AXEventNotificationDetails& details) {
-  page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
-                                    details.events);
-}
-
-///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
   // TODO(crbug.com/1266555): Disable accessibility.and stop observing events
@@ -335,7 +355,11 @@ void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
   if (active_) {
     web_contents = browser_->tab_strip_model()->GetActiveWebContents();
   }
-  Observe(web_contents);
+
+  main_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
+      weak_factory_.GetSafeRef(), web_contents);
+  pdf_observer_.reset();
+
   // Enable accessibility for the top level render frame and all descendants.
   // This causes AXTreeSerializer to reset and send accessibility events of
   // the AXTree when it is re-serialized.
@@ -347,21 +371,23 @@ void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
   OnActiveAXTreeIDChanged();
 }
 
-void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
+void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged(
+    bool force_update_state) {
   ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   GURL visible_url;
-  if (active_ && web_contents()) {
-    visible_url = web_contents()->GetVisibleURL();
+  if (active_ && main_observer_ && main_observer_->web_contents()) {
+    visible_url = main_observer_->web_contents()->GetVisibleURL();
     content::RenderFrameHost* render_frame_host =
-        web_contents()->GetPrimaryMainFrame();
+        main_observer_->web_contents()->GetPrimaryMainFrame();
     if (render_frame_host) {
       tree_id = render_frame_host->GetAXTreeID();
       ukm_source_id = render_frame_host->GetPageUkmSourceId();
     }
   }
 
-  page_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id, visible_url);
+  page_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id, visible_url,
+                                 force_update_state);
 }
 
 void ReadAnythingUntrustedPageHandler::LogTextStyle() {
@@ -400,4 +426,28 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
           prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing));
   base::UmaHistogramEnumeration(string_constants::kLetterSpacingHistogramName,
                                 letter_spacing);
+}
+
+void ReadAnythingUntrustedPageHandler::EnablePDFContentAccessibility(
+    const ui::AXTreeID& ax_tree_id) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromAXTreeID(ax_tree_id);
+  if (!render_frame_host) {
+    return;
+  }
+
+  content::WebContents* contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (contents == main_observer_->web_contents()) {
+    return;
+  }
+
+  CHECK(IsPdfExtensionOrigin(
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+  pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
+      weak_factory_.GetSafeRef(), contents);
+  contents->EnableWebContentsOnlyAccessibilityMode();
+
+  // Trigger distillation.
+  OnActiveAXTreeIDChanged(true);
 }

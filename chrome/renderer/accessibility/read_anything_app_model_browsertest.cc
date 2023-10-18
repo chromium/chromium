@@ -198,6 +198,11 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     return model_->GetSupportedFonts();
   }
 
+  bool IsPDFFormatted() { return model_->IsPDFFormatted(); }
+  void SetIsPdf(const GURL& url) { return model_->SetIsPdf(url); }
+  bool IsPdf() { return model_->is_pdf(); }
+  ui::AXTreeID GetPDFWebContents() { return model_->GetPDFWebContents(); }
+
   ui::AXTreeID tree_id_;
 
  private:
@@ -1081,4 +1086,76 @@ TEST_F(ReadAnythingAppModelTest,
   for (size_t i = 0; i < fonts.size(); i++) {
     ASSERT_EQ(fonts[i], expectedFonts[i]);
   }
+}
+
+TEST_F(ReadAnythingAppModelTest, IsPdf) {
+  GURL webpage_url("http://images.google.com/foo.html");
+  SetIsPdf(webpage_url);
+  ASSERT_FALSE(IsPdf());
+
+  GURL pdf_url("http://www.google.com/foo/bar.pdf");
+  SetIsPdf(pdf_url);
+  ASSERT_TRUE(IsPdf());
+}
+
+TEST_F(ReadAnythingAppModelTest, ValidPDF) {
+  // Need to set is_pdf_ for DCHECK in GetPDFWebContents().
+  GURL pdf_url("http://www.google.com/foo/bar.pdf");
+  SetIsPdf(pdf_url);
+
+  ui::AXTreeID pdf_web_contents_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeID pdf_iframe_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  // Main web contents should have one child.
+  ui::AXTreeUpdate update;
+  update.nodes.resize(1);
+  update.nodes[0].id = 1;
+  update.nodes[0].AddChildTreeId(pdf_web_contents_tree_id);
+  SetUpdateTreeID(&update);
+  AccessibilityEventReceived({update});
+
+  // IsPDFFormatted() should return true if tree updates from the pdf web
+  // contents and/or the pdf iframe haven't been sent yet.
+  ASSERT_TRUE(IsPDFFormatted());
+
+  // Pdf web contents should have one child.
+  update.nodes.resize(1);
+  update.root_id = 1;
+  update.nodes[0].id = 1;
+  update.nodes[0].AddChildTreeId(pdf_iframe_tree_id);
+  SetUpdateTreeID(&update, pdf_web_contents_tree_id);
+  AccessibilityEventReceived({update});
+
+  ASSERT_TRUE(IsPDFFormatted());
+
+  // Send pdf iframe tree to model.
+  update.nodes.resize(1);
+  update.root_id = 1;
+  update.nodes[0].id = 1;
+  SetUpdateTreeID(&update, pdf_iframe_tree_id);
+  AccessibilityEventReceived({update});
+
+  ASSERT_TRUE(IsPDFFormatted());
+  EXPECT_EQ(pdf_web_contents_tree_id, GetPDFWebContents());
+}
+
+TEST_F(ReadAnythingAppModelTest, InvalidPDFFormat) {
+  // Main web contents should have one child, the pdf web contents.
+  ui::AXTreeID pdf_web_contents_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update;
+  update.nodes.resize(1);
+  update.nodes[0].id = 1;
+  update.nodes[0].AddChildTreeId(pdf_web_contents_tree_id);
+  SetUpdateTreeID(&update);
+  AccessibilityEventReceived({update});
+
+  // This pdf web contents has no children, so this is an invalid PDF.
+  ui::AXTreeUpdate pdf_web_contents_update;
+  pdf_web_contents_update.nodes.resize(1);
+  pdf_web_contents_update.root_id = 1;
+  pdf_web_contents_update.nodes[0].id = 1;
+  SetUpdateTreeID(&pdf_web_contents_update, pdf_web_contents_tree_id);
+  AccessibilityEventReceived({pdf_web_contents_update});
+
+  ASSERT_FALSE(IsPDFFormatted());
 }
