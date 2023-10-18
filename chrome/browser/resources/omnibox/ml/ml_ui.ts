@@ -43,13 +43,14 @@ export class MlUiElement extends CustomElement {
 
     this.getRequiredElement('#ml-sync-batch-url-scoring-disabled-warning')
         .hidden = loadTimeData.getBoolean('isMlSyncBatchUrlScoringEnabled');
-    mlCalculator.mlBrowserProxy = this.mlBrowserProxy;
-    this.mlBrowserProxy.getModelVersion().then(
-        version => mlCalculator.version = version);
-    this.mlBrowserProxy.addResponseListener(
-        (...args) => mlTable.onNewResponse(...args));
     mlTable.addEventListener(
         'match-selected', ({detail}) => mlCalculator.signals = detail);
+
+    this.mlBrowserProxy.modelVersion.then(() => {
+      // ML model was loaded.
+      mlCalculator.mlBrowserProxy = this.mlBrowserProxy;
+      mlTable.mlBrowserProxy = this.mlBrowserProxy;
+    });
   }
 }
 

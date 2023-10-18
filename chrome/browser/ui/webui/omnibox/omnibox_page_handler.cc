@@ -501,7 +501,14 @@ void OmniboxPageHandler::StartOmniboxQuery(const std::string& input_string,
 
 void OmniboxPageHandler::GetMlModelVersion(GetMlModelVersionCallback callback) {
   if (auto* service = GetMlService()) {
-    std::move(callback).Run(service->GetModelVersion());
+    auto version = service->GetModelVersion();
+    if (version == -1) {
+      service->AddOnModelUpdatedCallback(
+          base::BindOnce(&OmniboxPageHandler::GetMlModelVersion,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+    } else {
+      std::move(callback).Run(version);
+    }
   } else {
     std::move(callback).Run(-1);
   }

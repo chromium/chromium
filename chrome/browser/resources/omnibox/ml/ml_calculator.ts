@@ -38,10 +38,10 @@ export class MlCalculatorElement extends CustomElement {
       return input;
     });
 
-    this.getRequiredElement('#copy').addEventListener('click', () => {
+    this.getRequiredElement('#copy').addEventListener('click', async () => {
       const copyObj = {
         url: window.location.href,
-        version: this.versionString,
+        version: (await this.mlBrowserProxy_.modelVersion).string,
         signals: this.signals,
         score: this.score,
       };
@@ -68,21 +68,12 @@ export class MlCalculatorElement extends CustomElement {
 
   set mlBrowserProxy(mlBrowserProxy: MlBrowserProxy) {
     this.mlBrowserProxy_ = mlBrowserProxy;
+    mlBrowserProxy.modelVersion.then(
+        version =>
+            createEl(
+                'a', this.getRequiredElement('#version'), [], version.string)
+                .href = version.url);
     this.update();
-  }
-
-  private get versionString(): string {
-    return this.getRequiredElement('#version a').textContent || '';
-  }
-
-  set version(version: number) {
-    const versionString = version === -1 ?
-        String(version) :
-        `${version} (${new Date(version * 1000).toLocaleDateString()})`;
-    const codeSearchPrefix =
-        'https://source.corp.google.com/search?q=file:google3/googledata/chrome/breve/cacao/models/data/omnibox/url_scoring/';
-    createEl('a', this.getRequiredElement('#version'), [], versionString).href =
-        `${codeSearchPrefix} ${version}`;
   }
 
   private static parseSignalStrings(signalStrings: string[]): Signals {

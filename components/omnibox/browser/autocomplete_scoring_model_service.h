@@ -40,6 +40,10 @@ class AutocompleteScoringModelService : public KeyedService {
   AutocompleteScoringModelService& operator=(
       const AutocompleteScoringModelService&) = delete;
 
+  // Passthrough to
+  // `AutocompleteScoringModelHandler::AddOnModelUpdatedCallback()`.
+  void AddOnModelUpdatedCallback(base::OnceClosure callback);
+
   // Returns the version from the model info.
   int GetModelVersion() const;
 

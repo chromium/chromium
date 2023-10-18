@@ -63,3 +63,19 @@ export const signalNames: Array<keyof Signals> = [
 export function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
+
+export class MlVersionObj {
+  version: number;
+  string: string;
+  url: string;
+
+  constructor(version: number) {
+    this.version = version;
+    this.string = version === -1 ?
+        String(version) :
+        `${version} (${new Date(version * 1000).toLocaleDateString()})`;
+    const codeSearchPrefix =
+        'https://source.corp.google.com/search?q=file:google3/googledata/chrome/breve/cacao/models/data/omnibox/url_scoring/';
+    this.url = `${codeSearchPrefix} ${version}`;
+  }
+}

@@ -8,7 +8,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {AutocompleteControllerType, AutocompleteMatch} from '../omnibox.mojom-webui.js';
 import {clearChildren, createEl, signalNames} from '../omnibox_util.js';
 
-import {ResponseFilter} from './ml_browser_proxy.js';
+import {MlBrowserProxy, ResponseFilter} from './ml_browser_proxy.js';
 // @ts-ignore:next-line
 import sheet from './ml_table.css' assert {type : 'css'};
 import {getTemplate} from './ml_table.html.js';
@@ -43,6 +43,11 @@ export class MlTableElement extends CustomElement {
     this.getRequiredElement('#table-filter').addEventListener('input', () => {
       this.$all('.tbody').forEach(clearChildren);
     });
+  }
+
+  set mlBrowserProxy(mlBrowserProxy: MlBrowserProxy) {
+    mlBrowserProxy.addResponseListener(
+        (...args) => this.onNewResponse(...args));
   }
 
   onNewResponse(

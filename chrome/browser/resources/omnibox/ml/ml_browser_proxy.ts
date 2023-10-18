@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {AutocompleteControllerType, AutocompleteMatch, OmniboxPageCallbackRouter, OmniboxPageHandler, OmniboxPageHandlerRemote, OmniboxResponse, Signals} from '../omnibox.mojom-webui.js';
+import {MlVersionObj} from '../omnibox_util.js';
 
 export enum ResponseFilter {
   FINAL = 'Final results',
@@ -13,13 +14,13 @@ type OnResponseCallback =
     (responseFilter: ResponseFilter, controllerType: AutocompleteControllerType,
      input: string, matches: AutocompleteMatch[]) => void;
 
-
 export class MlBrowserProxy {
   private readonly callbackRouter: OmniboxPageCallbackRouter =
       new OmniboxPageCallbackRouter();
   private readonly handler: OmniboxPageHandlerRemote =
       OmniboxPageHandler.getRemote();
   private onResponseCallbacks: OnResponseCallback[] = [];
+  private version: Promise<MlVersionObj>;
 
   constructor() {
     this.callbackRouter.handleNewAutocompleteResponse.addListener(
@@ -55,8 +56,9 @@ export class MlBrowserProxy {
     this.onResponse(ResponseFilter.ALL, controllerType, input, matches);
   }
 
-  getModelVersion(): Promise<number> {
-    return this.handler.getMlModelVersion().then(({version}) => version);
+  get modelVersion(): Promise<MlVersionObj> {
+    return this.version ||= this.handler.getMlModelVersion().then(
+               ({version}) => new MlVersionObj(version));
   }
 
   makeMlRequest(signals: Signals): Promise<number> {
