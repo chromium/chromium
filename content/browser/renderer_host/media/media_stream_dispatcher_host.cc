@@ -121,7 +121,10 @@ bool MayCrop(const GlobalRoutingID& capturing_id,
 
   // * crop_id.is_zero() = uncrop-request.
   // * !crop_id.is_zero() = crop-request.
-  return crop_id.is_zero() || helper->IsAssociatedWithCropId(crop_id);
+  // TODO(crbug.com/1418194): Extend to support other types.
+  return crop_id.is_zero() ||
+         helper->IsAssociatedWith(
+             crop_id, SubCaptureTargetIdWebContentsHelper::Type::kCropTarget);
 }
 
 MediaStreamDispatcherHost::CropCallback WrapCropCallback(

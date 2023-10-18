@@ -332,17 +332,18 @@ void MediaDevicesDispatcherHost::ProduceCropId(ProduceCropIdCallback callback) {
               return std::string();  // Might have been asynchronously closed.
             }
 
-            WebContents* const web_contents =
+            WebContents* const wc =
                 WebContents::FromRenderFrameHost(rfh->GetMainFrame());
-            DCHECK(web_contents);
+            DCHECK(wc);
 
             // No-op if already created.
-            SubCaptureTargetIdWebContentsHelper::CreateForWebContents(
-                web_contents);
+            SubCaptureTargetIdWebContentsHelper::CreateForWebContents(wc);
 
-            return SubCaptureTargetIdWebContentsHelper::FromWebContents(
-                       web_contents)
-                ->ProduceCropId();
+            SubCaptureTargetIdWebContentsHelper* const helper =
+                SubCaptureTargetIdWebContentsHelper::FromWebContents(wc);
+            // TODO(crbug.com/1418194): Extend to support other types.
+            return helper->ProduceId(
+                SubCaptureTargetIdWebContentsHelper::Type::kCropTarget);
           },
           render_process_id_, render_frame_id_),
       std::move(callback));

@@ -30,12 +30,19 @@ class CONTENT_EXPORT SubCaptureTargetIdWebContentsHelper final
     : public WebContentsObserver,
       public WebContentsUserData<SubCaptureTargetIdWebContentsHelper> {
  public:
-  // Limits the number of crop-IDs a given Web-application can produce
-  // so as to limit the potential for abuse.
+  // Multiplex between different SubCaptureTarget types, all backed by
+  // the same ID type behind the scenes.
+  enum class Type {
+    kCropTarget,
+    kRestrictionTarget,
+  };
+
+  // Limits the number of SubCaptureTargetIds a given Web-application can
+  // produce of a given type, so as to limit the potential for abuse.
   // Known and accepted issue - embedded iframes can be intentionally disruptive
-  // by producing too many crop-IDs. It's up to the Web-application to not
+  // by producing too many IDs. It's up to the Web-application to not
   // embed such iframes.
-  constexpr static size_t kMaxCropIdsPerWebContents = 100;
+  constexpr static size_t kMaxIdsPerWebContents = 100;
 
   explicit SubCaptureTargetIdWebContentsHelper(WebContents* web_contents);
   SubCaptureTargetIdWebContentsHelper(
@@ -44,17 +51,17 @@ class CONTENT_EXPORT SubCaptureTargetIdWebContentsHelper final
       const SubCaptureTargetIdWebContentsHelper&) = delete;
   ~SubCaptureTargetIdWebContentsHelper() final;
 
-  // Produces a new crop-ID, records its association with this WebContents
-  // and returns it.
-  // This method can soft-fail if invoked more than |kMaxCropIdsPerWebContents|
-  // times for a given WebContents. Failure is signaled by returning an
-  // empty string.
-  std::string ProduceCropId();
+  // Produces a new SubCaptureTargetId, records its association with
+  // this WebContents and returns it.
+  // This method can soft-fail if invoked more than |kMaxIdsPerWebContents|
+  // times for a given WebContents.
+  // Failure is signaled by returning an empty string.
+  std::string ProduceId(Type type);
 
-  // Checks whether this WebContents is associated with a crop-ID.
-  // This allows us to check whether a call to cropTo() by the Web-application
-  // is permitted.
-  bool IsAssociatedWithCropId(const base::Token& crop_id) const;
+  // Checks whether this WebContents is associated with a SubCaptureTargetId.
+  // This allows us to check whether a call to cropTo() or restrictTo()
+  // by the Web-application is permitted.
+  bool IsAssociatedWith(const base::Token& id, Type type) const;
 
  protected:
   // TODO(crbug.com/1264849): Remove this local copy of GUIDToToken().
@@ -69,19 +76,20 @@ class CONTENT_EXPORT SubCaptureTargetIdWebContentsHelper final
   friend class SubCaptureTargetIdWebContentsHelperTest;
 
   // WebContentsObserver implementation.
-  // Cross-document navigation of the top-level document discards all crop-IDs
-  // associated with the top-level WebContents.
+  // Cross-document navigation of the top-level document discards all
+  // SubCaptureTargetIds associated with the top-level WebContents.
   // TODO(crbug.com/1264849): Record per RFH and treat its navigation.
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) final;
 
-  // Forgets all associations of crop-IDs to this WebContents.
+  // Forgets all associations of SubCaptureTargetIds to this WebContents.
   // TODO(crbug.com/1264849): Clear per-RFH or throughout.
-  void ClearCropIds();
+  void ClearIds();
 
-  // Records which crop-IDs are associated with this WebContents.
-  // At most |kMaxCropIdsPerWebContents|, as discussed where
-  // |kMaxCropIdsPerWebContents| is defined.
+  // Records which SubCaptureTargetIds are associated with this WebContents.
+  // At most |kMaxIdsPerWebContents| of each type, as discussed where
+  // |kMaxIdsPerWebContents| is defined.
   std::vector<base::Token> crop_ids_;
+  std::vector<base::Token> restriction_ids_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

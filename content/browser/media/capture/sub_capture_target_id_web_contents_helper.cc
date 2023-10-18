@@ -63,35 +63,44 @@ SubCaptureTargetIdWebContentsHelper::SubCaptureTargetIdWebContentsHelper(
 SubCaptureTargetIdWebContentsHelper::~SubCaptureTargetIdWebContentsHelper() =
     default;
 
-std::string SubCaptureTargetIdWebContentsHelper::ProduceCropId() {
+std::string SubCaptureTargetIdWebContentsHelper::ProduceId(Type type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(type == Type::kCropTarget || type == Type::kRestrictionTarget);
 
-  // Prevent Web-applications from producing an excessive number of crop-IDs.
-  if (crop_ids_.size() >= kMaxCropIdsPerWebContents) {
+  std::vector<base::Token>& ids =
+      (type == Type::kCropTarget) ? crop_ids_ : restriction_ids_;
+
+  // Prevent Web-applications from producing an excessive number of IDs.
+  if (ids.size() >= kMaxIdsPerWebContents) {
     return std::string();
   }
 
   // Given the exceedingly low likelihood of collisions, the check for
   // uniqueness could have theoretically been skipped. But it's cheap
-  // enough to perform, given that `kMaxCropIdsPerWebContents` is so small
+  // enough to perform, given that `kMaxIdsPerWebContents` is so small
   // compared to the space of GUIDs, and it guarantees we never silently fail
-  // the application by cropping to the wrong, duplicate target.
+  // the application by cropping/restricting to the wrong, duplicate target.
   base::Uuid guid;
-  base::Token crop_id;
+  base::Token id;
   do {
     guid = base::Uuid::GenerateRandomV4();
-    crop_id = GUIDToToken(guid);
-  } while (IsAssociatedWithCropId(crop_id));
-  crop_ids_.push_back(crop_id);
+    id = GUIDToToken(guid);
+  } while (IsAssociatedWith(id, type));
+  ids.push_back(id);
 
   return guid.AsLowercaseString();
 }
 
-bool SubCaptureTargetIdWebContentsHelper::IsAssociatedWithCropId(
-    const base::Token& crop_id) const {
+bool SubCaptureTargetIdWebContentsHelper::IsAssociatedWith(
+    const base::Token& id,
+    Type type) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(type == Type::kCropTarget || type == Type::kRestrictionTarget);
 
-  return base::Contains(crop_ids_, crop_id);
+  const std::vector<base::Token>& ids =
+      (type == Type::kCropTarget) ? crop_ids_ : restriction_ids_;
+
+  return base::Contains(ids, id);
 }
 
 void SubCaptureTargetIdWebContentsHelper::ReadyToCommitNavigation(
@@ -99,20 +108,21 @@ void SubCaptureTargetIdWebContentsHelper::ReadyToCommitNavigation(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(navigation_handle);
 
-  // Cross-document navigation of the top-level frame invalidates all crop-IDs
+  // Cross-document navigation of the top-level frame invalidates all IDs
   // associated with the observed WebContents.
   // Using IsInPrimaryMainFrame is valid here since the browser only caches this
   // state for the active main frame.
   if (!navigation_handle->IsSameDocument() &&
       navigation_handle->IsInPrimaryMainFrame()) {
-    ClearCropIds();
+    ClearIds();
   }
 }
 
-void SubCaptureTargetIdWebContentsHelper::ClearCropIds() {
+void SubCaptureTargetIdWebContentsHelper::ClearIds() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   crop_ids_.clear();
+  restriction_ids_.clear();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SubCaptureTargetIdWebContentsHelper);

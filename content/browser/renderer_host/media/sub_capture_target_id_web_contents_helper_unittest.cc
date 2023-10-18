@@ -4,7 +4,10 @@
 
 #include "content/browser/media/capture/sub_capture_target_id_web_contents_helper.h"
 
+#include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -21,12 +24,20 @@ namespace content {
 
 namespace {
 
-MATCHER(IsEmptyCropId, "") {
+using ::testing::Values;
+using ::testing::WithParamInterface;
+
+using Type = SubCaptureTargetIdWebContentsHelper::Type;
+
+constexpr size_t kMaxIdsPerWebContents =
+    SubCaptureTargetIdWebContentsHelper::kMaxIdsPerWebContents;
+
+MATCHER(IsEmptyId, "") {
   static_assert(std::is_same<decltype(arg), const std::string&>::value, "");
   return arg.empty();
 }
 
-MATCHER(IsValidCropId, "") {
+MATCHER(IsValidId, "") {
   static_assert(std::is_same<decltype(arg), const std::string&>::value, "");
   return base::Uuid::ParseLowercase(arg).is_valid();
 }
@@ -34,8 +45,10 @@ MATCHER(IsValidCropId, "") {
 }  // namespace
 
 class SubCaptureTargetIdWebContentsHelperTest
-    : public RenderViewHostImplTestHarness {
+    : public RenderViewHostImplTestHarness,
+      public WithParamInterface<Type> {
  public:
+  SubCaptureTargetIdWebContentsHelperTest() : type_(GetParam()) {}
   ~SubCaptureTargetIdWebContentsHelperTest() override = default;
 
   void SetUp() override { RenderViewHostImplTestHarness::SetUp(); }
@@ -48,7 +61,7 @@ class SubCaptureTargetIdWebContentsHelperTest
     return TestWebContents::Create(GetBrowserContext(), std::move(instance));
   }
 
-  static SubCaptureTargetIdWebContentsHelper* helper(
+  static SubCaptureTargetIdWebContentsHelper* MakeHelper(
       WebContents* web_contents) {
     // No-op if already created.
     SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents);
@@ -58,10 +71,17 @@ class SubCaptureTargetIdWebContentsHelperTest
   static base::Token GUIDToToken(const base::Uuid& guid) {
     return SubCaptureTargetIdWebContentsHelper::GUIDToToken(guid);
   }
+
+ protected:
+  const Type type_;
 };
 
-TEST_F(SubCaptureTargetIdWebContentsHelperTest,
-       IsAssociatedWithCropIdReturnsFalseForUnknownCropId) {
+INSTANTIATE_TEST_SUITE_P(_,
+                         SubCaptureTargetIdWebContentsHelperTest,
+                         Values(Type::kCropTarget, Type::kRestrictionTarget));
+
+TEST_P(SubCaptureTargetIdWebContentsHelperTest,
+       IsAssociatedWithReturnsFalseForUnknownId) {
   const std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
   SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents.get());
   auto* helper =
@@ -69,26 +89,26 @@ TEST_F(SubCaptureTargetIdWebContentsHelperTest,
   ASSERT_NE(helper, nullptr);
 
   // Test focus.
-  const base::Uuid unknown_crop_id = base::Uuid::GenerateRandomV4();
-  EXPECT_FALSE(helper->IsAssociatedWithCropId(GUIDToToken(unknown_crop_id)));
+  const base::Uuid unknown_id = base::Uuid::GenerateRandomV4();
+  EXPECT_FALSE(helper->IsAssociatedWith(GUIDToToken(unknown_id), type_));
 
   // Extra-test: Ensure the query above did not accidentally record
-  // `unknown_crop_id` as a known crop-ID.
-  EXPECT_FALSE(helper->IsAssociatedWithCropId(GUIDToToken(unknown_crop_id)));
+  // `unknown_id` as a known ID.
+  EXPECT_FALSE(helper->IsAssociatedWith(GUIDToToken(unknown_id), type_));
 }
 
-TEST_F(SubCaptureTargetIdWebContentsHelperTest, ProduceCropIdReturnsCropId) {
+TEST_P(SubCaptureTargetIdWebContentsHelperTest, ProduceIdReturnsId) {
   const std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
   SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents.get());
   auto* helper =
       SubCaptureTargetIdWebContentsHelper::FromWebContents(web_contents.get());
   ASSERT_NE(helper, nullptr);
 
-  EXPECT_THAT(helper->ProduceCropId(), IsValidCropId());
+  EXPECT_THAT(helper->ProduceId(type_), IsValidId());
 }
 
-TEST_F(SubCaptureTargetIdWebContentsHelperTest,
-       IsAssociatedWithCropIdReturnsTrueForKnownCropIdIfCorrectWebContents) {
+TEST_P(SubCaptureTargetIdWebContentsHelperTest,
+       IsAssociatedWithReturnsTrueForKnownIdIfCorrectWebContents) {
   const std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
   SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents.get());
   auto* helper =
@@ -103,18 +123,34 @@ TEST_F(SubCaptureTargetIdWebContentsHelperTest,
       other_web_contents.get());
   ASSERT_NE(other_helper, nullptr);
 
-  const std::string crop_id_str = helper->ProduceCropId();
-  EXPECT_THAT(crop_id_str, IsValidCropId());
+  const std::string id_str = helper->ProduceId(type_);
+  EXPECT_THAT(id_str, IsValidId());
 
-  const base::Token crop_id =
-      GUIDToToken(base::Uuid::ParseLowercase(crop_id_str));
+  const base::Token id = GUIDToToken(base::Uuid::ParseLowercase(id_str));
 
-  EXPECT_TRUE(helper->IsAssociatedWithCropId(crop_id));
-  EXPECT_FALSE(other_helper->IsAssociatedWithCropId(crop_id));
+  EXPECT_TRUE(helper->IsAssociatedWith(id, type_));
+  EXPECT_FALSE(other_helper->IsAssociatedWith(id, type_));
 }
 
-TEST_F(SubCaptureTargetIdWebContentsHelperTest,
-       MaxCropIdsPerWebContentsObserved) {
+TEST_P(SubCaptureTargetIdWebContentsHelperTest, IsAssociatedWithObservesType) {
+  const std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
+  SubCaptureTargetIdWebContentsHelper* helper = MakeHelper(web_contents.get());
+
+  const std::string id_str = helper->ProduceId(type_);
+  ASSERT_THAT(id_str, IsValidId());
+
+  const base::Token id = GUIDToToken(base::Uuid::ParseLowercase(id_str));
+  ASSERT_TRUE(helper->IsAssociatedWith(id, type_));
+
+  const Type other_type = (type_ == Type::kCropTarget)
+                              ? Type::kRestrictionTarget
+                              : Type::kCropTarget;
+  EXPECT_FALSE(helper->IsAssociatedWith(id, other_type));
+}
+
+// Test that the limit of `kMaxIdsPerWebContents` is applied independently
+// for different WebContents.
+TEST_P(SubCaptureTargetIdWebContentsHelperTest, MaxIdsPerWebContentsObserved) {
   const std::unique_ptr<TestWebContents> web_contents[2] = {
       MakeTestWebContents(), MakeTestWebContents()};
   SubCaptureTargetIdWebContentsHelper::CreateForWebContents(
@@ -127,107 +163,147 @@ TEST_F(SubCaptureTargetIdWebContentsHelperTest,
       SubCaptureTargetIdWebContentsHelper::FromWebContents(
           web_contents[1].get())};
 
-  std::string crop_ids_str
-      [2][SubCaptureTargetIdWebContentsHelper::kMaxCropIdsPerWebContents];
+  std::string ids_str[2][kMaxIdsPerWebContents];
 
-  // Up to `kMaxCropIdsPerWebContents` allowed on each WebContents.
+  // Up to `kMaxIdsPerWebContents` allowed on each WebContents.
   for (size_t web_contents_idx = 0; web_contents_idx < 2; ++web_contents_idx) {
-    for (size_t i = 0;
-         i < SubCaptureTargetIdWebContentsHelper::kMaxCropIdsPerWebContents;
-         ++i) {
-      crop_ids_str[web_contents_idx][i] =
-          helpers[web_contents_idx]->ProduceCropId();
-      EXPECT_THAT(crop_ids_str[web_contents_idx][i], IsValidCropId());
+    for (size_t i = 0; i < kMaxIdsPerWebContents; ++i) {
+      ids_str[web_contents_idx][i] =
+          helpers[web_contents_idx]->ProduceId(type_);
+      EXPECT_THAT(ids_str[web_contents_idx][i], IsValidId());
     }
   }
 
-  // Attempts to produce more crop-IDs on either WebContents fail.
+  // Attempts to produce more IDs on either WebContents fail.
   for (SubCaptureTargetIdWebContentsHelper* helper : helpers) {
-    EXPECT_THAT(helper->ProduceCropId(), IsEmptyCropId());
+    EXPECT_THAT(helper->ProduceId(type_), IsEmptyId());
   }
 
-  // The original crop-IDs are not forgotten.
+  // The original IDs are not forgotten.
   for (size_t web_contents_idx = 0; web_contents_idx < 2; ++web_contents_idx) {
-    for (size_t i = 0;
-         i < SubCaptureTargetIdWebContentsHelper::kMaxCropIdsPerWebContents;
-         ++i) {
-      const base::Token crop_id = GUIDToToken(
-          base::Uuid::ParseLowercase(crop_ids_str[web_contents_idx][i]));
-      EXPECT_TRUE(helpers[web_contents_idx]->IsAssociatedWithCropId(crop_id));
+    for (size_t i = 0; i < kMaxIdsPerWebContents; ++i) {
+      const base::Token id =
+          GUIDToToken(base::Uuid::ParseLowercase(ids_str[web_contents_idx][i]));
+      EXPECT_TRUE(helpers[web_contents_idx]->IsAssociatedWith(id, type_));
 
       // Extra-test: They're also still associated *only* with the relevant WC.
       const size_t other_web_contents_idx = 1 - web_contents_idx;
       EXPECT_FALSE(
-          helpers[other_web_contents_idx]->IsAssociatedWithCropId(crop_id));
+          helpers[other_web_contents_idx]->IsAssociatedWith(id, type_));
     }
   }
 }
 
-TEST_F(SubCaptureTargetIdWebContentsHelperTest,
-       CrossDocumentNavigationClearsCropIdsAssociation) {
+// Test that the limit of `kMaxIdsPerWebContents` is applied independently
+// for different types (CropTarget, RestrictionTarget).
+TEST_P(SubCaptureTargetIdWebContentsHelperTest, MaxIdsPerTypeObserved) {
+  // This switch is no-op. It's only here to make the compiler emit a warning if
+  // a developer ever adds values to the Type enum without updating this test.
+  // Future developer, please update the container below to cover all types.
+  switch (Type()) {
+    case Type::kCropTarget:
+    case Type::kRestrictionTarget:
+      break;
+  }
+  const std::vector<Type> kAllTypes = {Type::kCropTarget,
+                                       Type::kRestrictionTarget};
+
+  // Note that this test does not need to be parameterized, but the overhead
+  // of separating it from the rest of the suite is not worth the savings.
+  // We therefore skip iterations of this test past the first possible value.
+  if (type_ != kAllTypes[0]) {
+    GTEST_SKIP();
+  }
+
+  std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
+  SubCaptureTargetIdWebContentsHelper* helper = MakeHelper(web_contents.get());
+
+  std::map<Type, std::vector<std::string>> id_strs;
+
+  // Up to `kMaxIdsPerWebContents` allowed on each type.
+  for (Type type : kAllTypes) {
+    std::vector<std::string>& ids = id_strs[type];
+    for (size_t i = 0; i < kMaxIdsPerWebContents; ++i) {
+      ids.push_back(helper->ProduceId(type));
+      EXPECT_THAT(ids.back(), IsValidId());
+    }
+  }
+
+  // Attempts to produce more IDs of either type fail.
+  for (Type type : kAllTypes) {
+    EXPECT_THAT(helper->ProduceId(type), IsEmptyId());
+  }
+
+  // The original IDs are not forgotten.
+  for (Type type : kAllTypes) {
+    for (const std::string& id_str : id_strs[type]) {
+      const base::Token id = GUIDToToken(base::Uuid::ParseLowercase(id_str));
+      EXPECT_TRUE(helper->IsAssociatedWith(id, type));
+    }
+  }
+}
+
+TEST_P(SubCaptureTargetIdWebContentsHelperTest,
+       CrossDocumentNavigationClearsIdAssociation) {
   std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
   SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents.get());
   auto* helper =
       SubCaptureTargetIdWebContentsHelper::FromWebContents(web_contents.get());
   ASSERT_NE(helper, nullptr);
 
-  // Setup - WebContents navigated to a document, crop-ID produced.
+  // Setup - WebContents navigated to a document, ID produced.
   web_contents->NavigateAndCommit(GURL("https://tests-r-us.com/first.html"));
-  base::Token crop_id_1;
+  base::Token id_1;
   {
-    const std::string crop_id_str = helper->ProduceCropId();
-    ASSERT_THAT(crop_id_str, IsValidCropId());
-    crop_id_1 = GUIDToToken(base::Uuid::ParseLowercase(crop_id_str));
+    const std::string id_str = helper->ProduceId(type_);
+    ASSERT_THAT(id_str, IsValidId());
+    id_1 = GUIDToToken(base::Uuid::ParseLowercase(id_str));
   }
-  ASSERT_TRUE(helper->IsAssociatedWithCropId(crop_id_1));  // Sanity-check.
+  ASSERT_TRUE(helper->IsAssociatedWith(id_1, type_));  // Sanity-check.
 
   // Cross-document navigation occurs.
   web_contents->NavigateAndCommit(GURL("https://tests-r-us.com/second.html"));
 
-  // Verification #1: The old crop-ID is forgotten.
-  ASSERT_FALSE(helper->IsAssociatedWithCropId(crop_id_1));
+  // Verification #1: The old ID is forgotten.
+  ASSERT_FALSE(helper->IsAssociatedWith(id_1, type_));
 
-  // Verification #2: New crop-IDs may be recorded.
+  // Verification #2: New IDs may be recorded.
   {
-    const std::string crop_id_str = helper->ProduceCropId();
-    EXPECT_THAT(crop_id_str, IsValidCropId());
-    const base::Token crop_id_2 =
-        GUIDToToken(base::Uuid::ParseLowercase(crop_id_str));
-    ASSERT_TRUE(helper->IsAssociatedWithCropId(crop_id_2));  // Sanity-check.
+    const std::string id_str = helper->ProduceId(type_);
+    EXPECT_THAT(id_str, IsValidId());
+    const base::Token id_2 = GUIDToToken(base::Uuid::ParseLowercase(id_str));
+    ASSERT_TRUE(helper->IsAssociatedWith(id_2, type_));  // Sanity-check.
   }
 
-  // Verification #3: The forgotten crop-ID is not counted against the limit
-  // of crop-IDs applied to a WebContents. (kMaxCropIdsPerWebContents - 1 more
+  // Verification #3: The forgotten ID is not counted against the limit
+  // of IDs applied to a WebContents. (kMaxIdsPerWebContents - 1 more
   // invocations allowed, then the next one fails.)
-  for (size_t i = 0;
-       i < SubCaptureTargetIdWebContentsHelper::kMaxCropIdsPerWebContents - 1;
-       ++i) {
-    EXPECT_THAT(helper->ProduceCropId(), IsValidCropId());
+  for (size_t i = 0; i < kMaxIdsPerWebContents - 1; ++i) {
+    EXPECT_THAT(helper->ProduceId(type_), IsValidId());
   }
-  EXPECT_THAT(helper->ProduceCropId(), IsEmptyCropId());
+  EXPECT_THAT(helper->ProduceId(type_), IsEmptyId());
 }
 
-TEST_F(SubCaptureTargetIdWebContentsHelperTest,
-       InDocumentNavigationDoesNotClearCropIdsAssociation) {
+TEST_P(SubCaptureTargetIdWebContentsHelperTest,
+       InDocumentNavigationDoesNotClearIdAssociation) {
   std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
   SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents.get());
   auto* helper =
       SubCaptureTargetIdWebContentsHelper::FromWebContents(web_contents.get());
   ASSERT_NE(helper, nullptr);
 
-  // Setup - WebContents navigated to a document, crop-ID produced.
+  // Setup - WebContents navigated to a document, ID produced.
   web_contents->NavigateAndCommit(GURL("https://tests-r-us.com/first.html"));
-  const std::string crop_id_str = helper->ProduceCropId();
-  ASSERT_THAT(crop_id_str, IsValidCropId());
-  const base::Token crop_id =
-      GUIDToToken(base::Uuid::ParseLowercase(crop_id_str));
+  const std::string id_str = helper->ProduceId(type_);
+  ASSERT_THAT(id_str, IsValidId());
+  const base::Token id = GUIDToToken(base::Uuid::ParseLowercase(id_str));
 
   // Test sanity-check.
-  ASSERT_TRUE(helper->IsAssociatedWithCropId(crop_id));
+  ASSERT_TRUE(helper->IsAssociatedWith(id, type_));
 
-  // In-document navigation occurs. The crop-ID is not forgotten.
+  // In-document navigation occurs. The ID is not forgotten.
   web_contents->NavigateAndCommit(GURL("https://tests-r-us.com/first.html#a"));
-  EXPECT_TRUE(helper->IsAssociatedWithCropId(crop_id));
+  EXPECT_TRUE(helper->IsAssociatedWith(id, type_));
 }
 
 }  // namespace content
