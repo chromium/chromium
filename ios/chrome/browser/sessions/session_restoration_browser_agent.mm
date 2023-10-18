@@ -167,6 +167,9 @@ SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
 
   std::vector<int> items_to_drop;
   NSMutableSet<NSString*>* seen_identifiers = [NSMutableSet set];
+  // Count the number of dropped tabs because they are duplicates, for
+  // reporting.
+  int duplicate_count = 0;
   for (int index = 0; index < sessions_count; ++index) {
     CRWSessionStorage* session = session_window.sessions[index];
     if (session.itemStorages.count == 0) {
@@ -177,10 +180,13 @@ SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
       // somewhere).
       if ([seen_identifiers containsObject:session.stableIdentifier]) {
         items_to_drop.push_back(index);
+        duplicate_count++;
       }
       [seen_identifiers addObject:session.stableIdentifier];
     }
   }
+  base::UmaHistogramCounts100("Tabs.DroppedDuplicatesCountOnSessionRestore",
+                              duplicate_count);
 
   // Nothing to do.
   if (items_to_drop.empty()) {
