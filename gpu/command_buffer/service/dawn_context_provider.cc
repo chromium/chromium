@@ -220,12 +220,9 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-  if (backend_type == wgpu::BackendType::Vulkan) {
-    // Vulkan doesn't support IOSurface image backing, so we need
-    // MultiPlanarFormatExtendedUsages to copy to/from multiplanar texture.
-    // And this feature is currently experimental.
-    enabled_toggles.push_back("allow_unsafe_apis");
-  }
+  // We need MultiPlanarFormatExtendedUsages to copy to/from multiplanar
+  // texture. And this feature is currently experimental.
+  enabled_toggles.push_back("allow_unsafe_apis");
 #endif  // BUILDFLAG(IS_APPLE)
 
   wgpu::DawnTogglesDescriptor toggles_desc;
@@ -249,6 +246,7 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   adapter_options.backendType = backend_type;
   adapter_options.forceFallbackAdapter = force_fallback_adapter;
   adapter_options.powerPreference = wgpu::PowerPreference::LowPower;
+  adapter_options.nextInChain = &toggles_desc;
 
 #if BUILDFLAG(IS_WIN)
   if (adapter_options.backendType == wgpu::BackendType::D3D11) {
@@ -273,6 +271,7 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
       wgpu::FeatureName::DualSourceBlending,
       wgpu::FeatureName::MultiPlanarFormatExtendedUsages,
       wgpu::FeatureName::MultiPlanarFormatP010,
+      wgpu::FeatureName::MultiPlanarRenderTargets,
       wgpu::FeatureName::Norm16TextureFormats,
       wgpu::FeatureName::TransientAttachments,
   };
