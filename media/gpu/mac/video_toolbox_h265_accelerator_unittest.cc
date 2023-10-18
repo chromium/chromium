@@ -201,8 +201,10 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_Reset) {
   EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample1));
   accelerator_->SubmitDecode(pic1);
 
-  // The two samples should still have the same configurations.
-  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0),
+  // The accelerator should have made a new configuration. (Technically it
+  // should be fine to reuse the old one because the parameter sets did not
+  // change.)
+  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0),
             CMSampleBufferGetFormatDescription(sample1));
 }
 

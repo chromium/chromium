@@ -370,6 +370,14 @@ bool VideoToolboxH265Accelerator::OutputPicture(
 void VideoToolboxH265Accelerator::Reset() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The decompression session will probably also be reset, so we can't expect
+  // it to know about any parameter sets. https://crbug.com/1493624
+  active_vps_data_.clear();
+  active_sps_data_.clear();
+  active_pps_data_.clear();
+  active_format_.reset();
+
   ResetFrameData();
 }
 
