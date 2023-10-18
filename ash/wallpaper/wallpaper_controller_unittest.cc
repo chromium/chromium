@@ -58,6 +58,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -5554,7 +5556,81 @@ TEST_P(
   EXPECT_EQ(WallpaperType::kDefault, current_info.type);
 }
 
-TEST_P(WallpaperControllerTest,
+class WallpaperControllerDailyRefreshSchedulerTest
+    : public WallpaperControllerTest,
+      public ScheduledFeature::Clock {
+ public:
+  WallpaperControllerDailyRefreshSchedulerTest() {
+    base::Time start_time = base::Time::Now();
+    clock_.SetNow(start_time);
+    tick_clock_.SetNowTicks(base::TimeTicks() + (start_time - base::Time()));
+  }
+
+  void SetUp() override {
+    WallpaperControllerTest::SetUp();
+
+    auto daily_refresh_scheduler =
+        controller_->daily_refresh_scheduler_for_testing();
+    // Disable any running timers to set a fake clock.
+    daily_refresh_scheduler->SetScheduleType(ScheduleType::kNone);
+    daily_refresh_scheduler->SetClockForTesting(this);
+    daily_refresh_scheduler->SetScheduleType(ScheduleType::kCustom);
+  }
+
+  void TearDown() override { WallpaperControllerTest::TearDown(); }
+
+  // ScheduledFeature::Clock:
+  base::Time Now() const override { return clock_.Now(); }
+
+  base::TimeTicks NowTicks() const override { return tick_clock_.NowTicks(); }
+
+  // Returns whether the total triggered a checkpoint change. This method only
+  // triggers the checkpoints and does not run any tasks.
+  bool AdvanceClock(base::TimeDelta total) {
+    const auto advance_time = [this](base::TimeDelta advancement) {
+      clock_.Advance(advancement);
+      tick_clock_.Advance(advancement);
+    };
+
+    bool checkpoint_reached = false;
+    auto* timer = Shell::Get()
+                      ->wallpaper_controller()
+                      ->daily_refresh_scheduler_for_testing()
+                      ->timer();
+    while (total.is_positive()) {
+      base::TimeDelta advance_increment;
+      if (timer->IsRunning() &&
+          timer->desired_run_time() <= NowTicks() + total) {
+        // Emulates the internal timer firing at its scheduled time.
+        advance_increment = timer->desired_run_time() - NowTicks();
+        advance_time(advance_increment);
+        timer->FireNow();
+        checkpoint_reached = true;
+      } else {
+        advance_increment = total;
+        advance_time(advance_increment);
+      }
+      CHECK_LE(advance_increment, total);
+      total -= advance_increment;
+    }
+    return checkpoint_reached;
+  }
+
+ private:
+  base::SimpleTestClock clock_;
+  base::SimpleTestTickClock tick_clock_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    WallpaperControllerDailyRefreshSchedulerTest,
+    ::testing::Values(JellyFeatureCombination::kDisabled,
+                      JellyFeatureCombination::kEnabled,
+                      JellyFeatureCombination::kEnabledWithTimeOfDay),
+    WallpaperControllerTest::PrintToStringParamName());
+
+TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
        OnCheckpointChanged_WallpaperDailyRefreshScheduler) {
   TestWallpaperControllerObserver observer(controller_);
   EXPECT_EQ(0, observer.daily_refresh_checkpoint_count());
@@ -5564,13 +5640,13 @@ TEST_P(WallpaperControllerTest,
   SimulateUserLogin(kAccountId1);
   // Clears signal on login.
   observer.ClearDailyRefreshCheckpointCount();
-  task_environment()->FastForwardBy(base::Days(1));
+  EXPECT_TRUE(AdvanceClock(base::Days(1)));
   // Expect that 2 signals are sent every day by WallpaperDailyRefreshScheduler.
   EXPECT_EQ(2, observer.daily_refresh_checkpoint_count());
 }
 
-TEST_P(WallpaperControllerTest,
-       OnCheckpointChanged_CalledOnLogin_WallpaperDailyRefreshScheduler) {
+TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
+       OnCheckpointChanged_CalledOnLogin) {
   TestWallpaperControllerObserver observer(controller_);
   EXPECT_EQ(0, observer.daily_refresh_checkpoint_count());
   // User's wallpaper info should exist.
@@ -5584,9 +5660,8 @@ TEST_P(WallpaperControllerTest,
   EXPECT_GE(observer.daily_refresh_checkpoint_count(), 1);
 }
 
-TEST_P(
-    WallpaperControllerTest,
-    SetDailyRefreshCollectionId_UpdatesCheckTimes_WallpaperDailyRefreshScheduler) {
+TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
+       SetDailyRefreshCollectionId_UpdatesCheckTimes) {
   auto daily_refresh_scheduler =
       controller_->daily_refresh_scheduler_for_testing();
   auto first_check_time = daily_refresh_scheduler->GetCustomStartTime();
@@ -5612,9 +5687,8 @@ TEST_P(
   EXPECT_NE(second_check_time, daily_refresh_scheduler->GetCustomEndTime());
 }
 
-TEST_P(
-    WallpaperControllerTest,
-    SetGooglePhotosDailyRefreshAlbumId_UpdatesCheckTimes_WallpaperDailyRefreshScheduler) {
+TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
+       SetGooglePhotosDailyRefreshAlbumId_UpdatesCheckTimes) {
   auto daily_refresh_scheduler =
       controller_->daily_refresh_scheduler_for_testing();
   auto first_check_time = daily_refresh_scheduler->GetCustomStartTime();
@@ -5638,8 +5712,8 @@ TEST_P(
   EXPECT_NE(second_check_time, daily_refresh_scheduler->GetCustomEndTime());
 }
 
-TEST_P(WallpaperControllerTest,
-       UpdateDailyRefreshWallpaper_OnLogin_WallpaperDailyRefreshScheduler) {
+TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
+       UpdateDailyRefreshWallpaper_OnLogin) {
   base::test::ScopedFeatureList feature_list(features::kWallpaperRefreshRevamp);
   SimulateUserLogin(kAccountId1);
 
@@ -5658,7 +5732,7 @@ TEST_P(WallpaperControllerTest,
 
   // Info is set as over a day old so we expect one task to run in under an hour
   // (due to fuzzing) then it will idle.
-  task_environment()->FastForwardBy(base::Hours(1));
+  AdvanceClock(base::Hours(1));
   // Make sure all the tasks such as syncing, setting wallpaper complete.
   RunAllTasksUntilIdle();
 
@@ -5666,9 +5740,8 @@ TEST_P(WallpaperControllerTest,
             client_.get_fetch_daily_refresh_wallpaper_param());
 }
 
-TEST_P(
-    WallpaperControllerTest,
-    UpdateDailyRefreshWallpaper_OnCheckpointChanged_WallpaperDailyRefreshScheduler) {
+TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
+       UpdateDailyRefreshWallpaper_OnCheckpointChanged) {
   base::test::ScopedFeatureList feature_list(features::kWallpaperRefreshRevamp);
   auto images = ImageSet();
   std::string collection_id{"my_wallpaper_collection"};
@@ -5697,7 +5770,8 @@ TEST_P(
   EXPECT_EQ(WallpaperType::kDaily, wallpaper_info_1.type);
 
   // Forward time to trigger checkpoints.
-  task_environment()->FastForwardBy(base::Hours(25));
+  EXPECT_TRUE(AdvanceClock(base::Hours(25)));
+  RunAllTasksUntilIdle();
 
   WallpaperInfo wallpaper_info_2;
   ASSERT_TRUE(
@@ -5708,9 +5782,8 @@ TEST_P(
   EXPECT_EQ(WallpaperType::kDaily, wallpaper_info_2.type);
 }
 
-TEST_P(
-    WallpaperControllerTest,
-    CheckGooglePhotosStaleness_OnCheckpointChanged_WallpaperDailyRefreshScheduler) {
+TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
+       CheckGooglePhotosStaleness_OnCheckpointChanged) {
   base::test::ScopedFeatureList feature_list(features::kWallpaperRefreshRevamp);
   SimulateUserLogin(kAccountId1);
 
@@ -5721,7 +5794,8 @@ TEST_P(
   client_.set_google_photo_has_been_deleted(true);
 
   // Forward time to trigger checkpoints.
-  task_environment()->FastForwardBy(base::Hours(25));
+  EXPECT_TRUE(AdvanceClock(base::Hours(25)));
+  RunAllTasksUntilIdle();
 
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
 }
