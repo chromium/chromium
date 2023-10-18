@@ -489,10 +489,14 @@ component("color_space") {
     sources += [
       "hdr_metadata_mac.h",
       "hdr_metadata_mac.mm",
+      "mac/color_space_util.h",
+      "mac/color_space_util.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
       "CoreGraphics.framework",
+      "CoreMedia.framework",
+      "CoreVideo.framework",
     ]
     if (is_mac) {
       sources += [

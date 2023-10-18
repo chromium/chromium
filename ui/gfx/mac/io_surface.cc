@@ -20,6 +20,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/icc_profile.h"
+#include "ui/gfx/mac/color_space_util.h"
 
 namespace gfx {
 
@@ -150,11 +151,13 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   if (!color_space.IsValid())
     return true;
 
+  static const bool prefer_srgb_trfn =
+      base::FeatureList::IsEnabled(kIOSurfaceUseNamedSRGBForREC709);
+
   // Prefer using named spaces.
   CFStringRef color_space_name = nullptr;
   if (color_space == ColorSpace::CreateSRGB() ||
-      (base::FeatureList::IsEnabled(kIOSurfaceUseNamedSRGBForREC709) &&
-       color_space == ColorSpace::CreateREC709())) {
+      (prefer_srgb_trfn && color_space == ColorSpace::CreateREC709())) {
     color_space_name = kCGColorSpaceSRGB;
   } else if (color_space == ColorSpace::CreateDisplayP3D65()) {
     color_space_name = kCGColorSpaceDisplayP3;
@@ -191,6 +194,24 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
       return true;
     }
   }
+
+  // https://crbug.com/1488397: Set parameters that will be rendering YUV
+  // content.
+  // TODO(b/304442486): Add gamma support here.
+  {
+    CFStringRef primaries = nullptr;
+    CFStringRef transfer = nullptr;
+    CFStringRef matrix = nullptr;
+    if (ColorSpaceToCVImageBufferKeys(color_space, prefer_srgb_trfn, &primaries,
+                                      &transfer, &matrix)) {
+      IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceColorPrimaries"),
+                        primaries);
+      IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceTransferFunction"),
+                        transfer);
+      IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceYCbCrMatrix"), matrix);
+    }
+  }
+
   if (color_space_name) {
     if (io_surface) {
       IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceColorSpace"),
