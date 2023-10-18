@@ -693,7 +693,7 @@
 <project name="TestProjectOne">
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
-  <scope>device</scope>
+  <scope>profile</scope>
   <key-rotation>90</key-rotation>
   <summary>
     Project for unit testing, do not use.

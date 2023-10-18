@@ -7,7 +7,6 @@
 #include <deque>
 #include <memory>
 
-#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -21,6 +20,7 @@
 #endif
 #include "components/metrics/structured/key_data.h"
 #include "components/metrics/structured/key_data_provider.h"
+#include "components/metrics/structured/project_validator.h"
 #include "components/metrics/structured/recorder.h"
 
 namespace metrics::structured {
@@ -30,29 +30,30 @@ namespace metrics::structured {
 // and should only be called on the browser UI sequence, because calls from the
 // metrics service come on the UI sequence.
 //
-// Initialization happens in several steps:
+// Initialization of the StructuredMetricsRecorder must wait until a profile is
+// added, because state is stored within the profile directory. Initialization
+// happens in several steps:
 //
 // 1. A StructuredMetricsRecorder instance is constructed and owned by the
-//    StructuredMetricsService. It registers itself as an observer of
+//    MetricsService. It registers itself as an observer of
 //    metrics::structured::Recorder.
 //
-// 2. Key data and events data are loaded from local state. Once both have been
-//    loaded, the recorder is ready to record events.
-//
-// 3. When a profile is added that is eligible for recording,
+// 2. When a profile is added that is eligible for recording,
 //    ChromeMetricsServiceClient calls Recorder::ProfileAdded, which notifies
-//    this class. Key data and events data are loaded from the profile's
-//    directory.
+//    this class.
 //
-// After step 2, this class accepts events to record from
-// StructuredMetricsRecorder::OnRecord via Recorder::Record via Event::Record.
-// These events are not uploaded immediately, and are cached in ready-to-upload
-// form.
+// 3. This class then begins initialization by asynchronously reading keys and
+//    unsent logs from the cryptohome.
 //
-// After a profile is loaded, all subsequent events recorded will be stored in
-// the profile directory.
+// 4. If the read succeeds, initialization is complete and this class starts
+//    accepting events to record.
 //
-// On a call to ProvideIndependentMetrics, the cache of unsent logs is added to
+// After initialization, this class accepts events to record from
+// StructuredMetricsRecorder::OnRecord via Recorder::Record via
+// Event::Record. These events are not uploaded immediately, and are cached
+// in ready-to-upload form.
+//
+// On a call to ProvideUmaEventMetrics, the cache of unsent logs is added to
 // a ChromeUserMetricsExtension for upload, and is then cleared.
 class StructuredMetricsRecorder : public Recorder::RecorderImpl {
  public:
@@ -81,22 +82,12 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   void InitializeKeyDataProvider(
       std::unique_ptr<KeyDataProvider> key_data_provider);
 
-  bool can_provide_local_state_metrics() const {
-    return recording_enabled() && IsReadyToRecordLocalStateEvents();
+  bool can_provide_metrics() const {
+    return recording_enabled() && is_init_state(InitState::kInitialized);
   }
-
-  bool can_provide_profile_metrics() const {
-    return recording_enabled() && IsReadyToRecordProfileEvents();
-  }
-
-  bool HasIndependentMetrics();
-
-  bool IsReadyToRecordLocalStateEvents() const;
-  bool IsReadyToRecordProfileEvents() const;
 
   // Returns pointer to in-memory events.
-  EventsProto* LocalStateEvents();
-  EventsProto* ProfileEvents();
+  EventsProto* events() { return events_->get(); }
 
  protected:
   friend class TestStructuredMetricsProvider;
@@ -106,16 +97,9 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   //
   // TODO(crbug/1350322): Use this ctor to replace existing ctor.
   StructuredMetricsRecorder(base::TimeDelta write_delay,
-                            metrics::MetricsProvider* system_profile_provider,
-                            const base::FilePath& device_events_store_path);
+                            metrics::MetricsProvider* system_profile_provider);
 
-  PersistentProto<EventsProto>& local_state_events_proto() {
-    return *local_state_events_.get();
-  }
-
-  PersistentProto<EventsProto>& profile_events_proto() {
-    return *profile_events_.get();
-  }
+  PersistentProto<EventsProto>& proto() { return *events_.get(); }
 
  private:
   friend class Recorder;
@@ -127,42 +111,24 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   friend class TestStructuredMetricsProvider;
   friend class StructuredMetricsServiceTest;
 
-  // Different initialization state for the recorder.
-  enum InitValue {
-    kUninitialized,
-    // Set once local state keys has been loaded.
-    kLocalStateKeyDataInitialized,
-    // Set once persistent storage of local state events has been loaded.
-    kLocalStateEventsDataLoaded,
-    // Set once a profile has been added.
-    kProfileAdded,
-    // Set once device key has been loaded.
-    kProfileKeyDataInitialized,
-    // Set once persistent storage of device events has been loaded.
-    kProfileEventsDataLoaded,
-    kMaxValue = kProfileEventsDataLoaded,
+  // files that are asynchronously read from disk at startup. When all files
+  // have been read, the provider has been initialized.
+  enum class InitState {
+    kUninitialized = 1,
+    // Set once InitializeKeyDataProvider has been called.
+    kKeyDataInitialized = 2,
+    // Set after we observe the recorder, which happens on construction.
+    kProfileAdded = 3,
+    // Set after all key and event files are read from disk.
+    kInitialized = 4,
   };
 
-  // Collection of InitValues that represents the current initialization state
-  // of the recorder.
-  //
-  // For events to be persisted, both k{LocalState|Profile|}KeyDataInitialized
-  // and k{LocalState|Profile|}EventsDataLoaded must be set for events to be
-  // stored in the local state or profile store, respectively.
-  using InitState =
-      base::EnumSet<InitValue, InitValue::kUninitialized, InitValue::kMaxValue>;
+  bool is_init_state(InitState state) const { return init_state_ == state; }
 
-  void OnLocalStateKeyDataInitialized();
-  void OnProfileKeyDataInitialized();
+  void OnKeyDataInitialized();
 
-  void OnLocalStateEventsRead(ReadStatus status);
-  void OnProfileEventsRead(ReadStatus status);
-
-  // Callbacks for reading,writing PersistentProto events respectively.
-  void LogReadStatus(ReadStatus status);
-  void LogWriteStatus(WriteStatus status);
-
-  // Adds the external metrics collected into |device_events_|.
+  void OnRead(ReadStatus status);
+  void OnWrite(WriteStatus status);
   void OnExternalMetricsCollected(const EventsProto& events);
 
   // Recorder::RecorderImpl:
@@ -177,8 +143,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   void SetExternalMetricsDirForTest(const base::FilePath& dir);
 #endif
   void SetOnReadyToRecord(base::OnceClosure callback);
-  void SetLocalStateMetricsPathForTest(const base::FilePath& path);
-  void SetLocalStateKeysPathForTest(const base::FilePath& path);
 
   // Sets a callback to be made every time an event is recorded. This is exposed
   // so that tests can check if a specific event is recorded since recording
@@ -210,36 +174,37 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   // Adds a project to the diallowed list for testing.
   void AddDisallowedProjectForTest(uint64_t project_name_hash);
 
-  bool IsLocalStateKeyDataInitialized();
+  bool IsDeviceKeyDataInitialized();
   bool IsProfileKeyDataInitialized();
+
+  // Increments |init_count_| and checks if the recorder is ready.
+  void UpdateAndCheckInitState();
 
   // Beyond this number of logging events between successive calls to
   // ProvideCurrentSessionData, we stop recording events.
   static int kMaxEventsPerUpload;
 
-  // Path to store persistent device events.
-  static char kLocalStateEventsPath[];
-
-  // The directory used to store unsent logs. Relative to the user's cryptohome.
-  // This file is created by chromium.
-  static char kUnsentLogsPath[];
-
   // Whether the metrics provider has completed initialization. Initialization
-  // states are captured in the InitState enum.
+  // occurs across OnProfileAdded and OnInitializationCompleted. No incoming
+  // events are recorded until initialization has succeeded.
   //
-  // For the recorder to be ready, both kDeviceKeyDataInitialized and
-  // kLocalStateEventsDataLoaded need to be true. These fields are flipped to
-  // true when the key data and events data have been loaded from local state,
-  // respectively.
-  //
-  // After a profile is added, two files need to be read from disk:
-  // per-profile keys and unsent events. kProfileKeyDataInitialized and
-  // kProfileEventsDataLoaded will be flipped to true when the data is loaded,
-  // respectively.
+  // Execution is:
+  //  - A profile is added.
+  //  - OnProfileAdded is called, which constructs |storage_| and
+  //    asynchronously reads events and keys.
+  //  - OnInitializationCompleted is called once reading from disk is complete,
+  //    which sets |init_count_| to kInitialized.
   //
   // The metrics provider does not handle multiprofile: initialization happens
   // only once, for the first-logged-in account aka. primary user.
-  InitState init_state_;
+  //
+  // After a profile is added, three files need to be read from disk:
+  // per-profile keys, per-device keys, and unsent events. |init_count_| tracks
+  // how many of these have been read and, when it reaches 3, we set
+  // |init_state_| to kInitialized.
+  InitState init_state_ = InitState::kUninitialized;
+  int init_count_ = 0;
+  static constexpr int kTargetInitCount = 3;
 
   // Tracks the recording state signalled to the metrics provider by
   // OnRecordingEnabled and OnRecordingDisabled. This is false until
@@ -260,31 +225,20 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   std::unique_ptr<ExternalMetrics> external_metrics_;
 #endif
 
-  // On-device storage to hold events before a profile has been added. This
-  // storage will be used until the profile events have been initialized.
-  //
-  // TODO(b/304586233): Once events from |local_state_events_| are staged to be
-  // uploaded, this pointer is no longer needed once a user has logged in.
-  std::unique_ptr<PersistentProto<EventsProto>> local_state_events_;
-
-  // On-device storage for unsent logs that are collected after a profile has
-  // been added. This storage will be used once the profile events and key have
-  // been initialized.
-  std::unique_ptr<PersistentProto<EventsProto>> profile_events_;
+  // On-device storage within the user's cryptohome for unsent logs.
+  std::unique_ptr<PersistentProto<EventsProto>> events_;
 
   // Key data provider that provides device and profile keys.
   std::unique_ptr<KeyDataProvider> key_data_provider_;
 
-  // Store for events that were recorded before device keys are loaded. These
-  // events will be flushed to persistent storage once the device keys are
-  // loaded.
-  //
-  // If a user event is recorded before a user has logged in, then it will be
-  // dropped.
+  // Store for events that were recorded before user/device keys are loaded.
   std::deque<Event> unhashed_events_;
 
   // Whether the system profile has been initialized.
   bool system_profile_initialized_ = false;
+
+  // File path where device keys will be persisted.
+  const base::FilePath device_key_path_;
 
   // Delay period for PersistentProto writes. Default value of 1000 ms used if
   // not specified in ctor.
@@ -308,12 +262,8 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   // Callback to be made once recorder is ready to persist events to disk.
   base::OnceClosure on_ready_callback_ = base::DoNothing();
 
-  // Path where local state events will be stored.
-  base::FilePath local_state_events_store_path_;
-
   base::WeakPtrFactory<StructuredMetricsRecorder> weak_factory_{this};
 };
-
 }  // namespace metrics::structured
 
 #endif  // COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_RECORDER_H_
