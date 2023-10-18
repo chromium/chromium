@@ -1036,7 +1036,6 @@ public class FakeUrlRequestTest {
         request.start();
         callback.waitForNextStep();
 
-        // crbug/866014: clang-format doesn't handle java lambda well
         IllegalStateException e =
                 assertThrows(
                         IllegalStateException.class,
@@ -1077,7 +1076,6 @@ public class FakeUrlRequestTest {
         request.start();
         callback.waitForNextStep();
 
-        // crbug/866014: clang-format doesn't handle java lambda well
         IllegalStateException e =
                 assertThrows(
                         IllegalStateException.class,

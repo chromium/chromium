@@ -372,7 +372,6 @@ public class AwContentsClientBridge {
                 new AwContentsClient.AwWebResourceRequest(url, isOutermostMainFrame, hasUserGesture,
                         method, requestHeaderNames, requestHeaderValues);
 
-        // TODO(ntfschr): remove clang-format directives once crbug/764582 is resolved
         Callback<AwSafeBrowsingResponse> callback =
                 response -> PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                         () -> AwContentsClientBridgeJni.get().takeSafeBrowsingAction(

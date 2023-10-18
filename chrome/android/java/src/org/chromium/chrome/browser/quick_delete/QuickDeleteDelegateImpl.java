@@ -22,7 +22,6 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
 
     @Override
     public void performQuickDelete(@NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod) {
-        // Note: clang-format does a bad job formatting lambdas so we turn it off here.
         BrowsingDataBridge.getInstance().clearBrowsingData(
                 onDeleteFinished::run,
                 new int[] {

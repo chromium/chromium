@@ -232,7 +232,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mListView = menu.findViewById(R.id.context_menu_list_view);
         mListView.setAdapter(adapter);
 
-        // Note: clang-format does a bad job formatting lambdas so we turn it off here.
         adapter.registerType(
                 ListItemType.HEADER,
                 new LayoutViewBuilder(R.layout.context_menu_header),

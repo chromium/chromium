@@ -82,7 +82,6 @@ public class ChromeCachedFlags {
         CachedFlagUtils.cacheNativeFlags(ChromeFeatureList.sFlagsCachedFullBrowser);
         cacheAdditionalNativeFlags();
 
-        //clang-format off
         List<CachedFieldTrialParameter> fieldTrialsToCache = List.of(
                 BrandingController.BRANDING_CADENCE_MS,
                 BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS,
