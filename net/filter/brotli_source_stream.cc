@@ -33,13 +33,13 @@ class BrotliSourceStream : public FilterSourceStream {
         dictionary_size_(dictionary_size) {
     brotli_state_ =
         BrotliDecoderCreateInstance(AllocateMemory, FreeMemory, this);
+    CHECK(brotli_state_);
     if (dictionary_) {
       BROTLI_BOOL result = BrotliDecoderAttachDictionary(
           brotli_state_, BROTLI_SHARED_DICTIONARY_RAW, dictionary_size_,
           reinterpret_cast<const unsigned char*>(dictionary_->data()));
       CHECK(result);
     }
-    CHECK(brotli_state_);
   }
 
   BrotliSourceStream(const BrotliSourceStream&) = delete;
