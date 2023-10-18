@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_alloc_features.h"
 
+#include "base/allocator/miracle_parameter.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
@@ -94,16 +95,17 @@ BASE_FEATURE(kPartitionAllocLargeThreadCacheSize,
              "PartitionAllocLargeThreadCacheSize",
              FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kPartitionAllocLargeThreadCacheSizeValue{
-    &kPartitionAllocLargeThreadCacheSize,
+MIRACLE_PARAMETER_FOR_INT(
+    GetPartitionAllocLargeThreadCacheSizeValue,
+    kPartitionAllocLargeThreadCacheSize,
     "PartitionAllocLargeThreadCacheSizeValue",
-    ::partition_alloc::ThreadCacheLimits::kLargeSizeThreshold};
+    ::partition_alloc::ThreadCacheLimits::kLargeSizeThreshold)
 
-const base::FeatureParam<int>
-    kPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid{
-        &kPartitionAllocLargeThreadCacheSize,
-        "PartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid",
-        ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold};
+MIRACLE_PARAMETER_FOR_INT(
+    GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid,
+    kPartitionAllocLargeThreadCacheSize,
+    "PartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid",
+    ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold)
 
 BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
              "PartitionAllocLargeEmptySlotSpanRing",

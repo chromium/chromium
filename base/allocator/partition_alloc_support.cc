@@ -1322,7 +1322,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeThreadCacheSize)) {
     largest_cached_size_ =
-        size_t(base::features::kPartitionAllocLargeThreadCacheSizeValue.Get());
+        size_t(base::features::GetPartitionAllocLargeThreadCacheSizeValue());
 
 #if BUILDFLAG(IS_ANDROID)
     // Use appropriately lower amount for Android devices with 3GB or less.
@@ -1332,7 +1332,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     if (base::SysInfo::AmountOfPhysicalMemoryMB() < 3.2 * 1024) {
       largest_cached_size_ = size_t(
           base::features::
-              kPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid.Get());
+              GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid());
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 
