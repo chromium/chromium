@@ -90,10 +90,8 @@ size_t EnsureInVector(const std::string& str,
 
 // Returns true if the |i|-th CPU is online; false otherwise.
 bool CpuIsOnline(const int i) {
-  const std::string online_file_format = base::StringPrintf(
-      "%s%s", kCpuDataPathBase, kCpuOnlinePathSuffixFormat);
-  const std::string cpu_online_file = base::StringPrintf(
-      online_file_format.c_str(), i);
+  const std::string cpu_online_file =
+      kCpuDataPathBase + base::StringPrintf(kCpuOnlinePathSuffixFormat, i);
   if (!base::PathExists(base::FilePath(cpu_online_file))) {
     // If the 'online' status file is missing, then it means that the CPU is
     // not hot-pluggable and hence is always online.
@@ -133,26 +131,26 @@ void SampleCpuIdleData(
     } else {
       idle_sample.cpu_online = true;
 
-      const std::string idle_state_dir_format = base::StringPrintf(
-          "%s%s", kCpuDataPathBase, kCpuIdleStateDirPathSuffixFormat);
       for (int state_count = 0; ; ++state_count) {
-        std::string idle_state_dir = base::StringPrintf(
-            idle_state_dir_format.c_str(), cpu, state_count);
+        std::string idle_state_dir =
+            kCpuDataPathBase +
+            base::StringPrintf(kCpuIdleStateDirPathSuffixFormat, cpu,
+                               state_count);
         // This insures us from the unlikely case wherein the 'cpuidle_stats'
         // kernel module is not loaded. This could happen on a VM.
         if (!base::DirectoryExists(base::FilePath(idle_state_dir)))
           break;
 
-        const std::string name_file_format = base::StringPrintf(
-            "%s%s", kCpuDataPathBase, kCpuIdleStateNamePathSuffixFormat);
-        const std::string name_file_path = base::StringPrintf(
-            name_file_format.c_str(), cpu, state_count);
+        const std::string name_file_path =
+            kCpuDataPathBase +
+            base::StringPrintf(kCpuIdleStateNamePathSuffixFormat, cpu,
+                               state_count);
         DCHECK(base::PathExists(base::FilePath(name_file_path)));
 
-        const std::string time_file_format = base::StringPrintf(
-            "%s%s", kCpuDataPathBase, kCpuIdleStateTimePathSuffixFormat);
-        const std::string time_file_path = base::StringPrintf(
-            time_file_format.c_str(), cpu, state_count);
+        const std::string time_file_path =
+            kCpuDataPathBase +
+            base::StringPrintf(kCpuIdleStateTimePathSuffixFormat, cpu,
+                               state_count);
         DCHECK(base::PathExists(base::FilePath(time_file_path)));
 
         std::string state_name, occupancy_time_string;
@@ -230,10 +228,9 @@ void SampleCpuFreqData(
   } else {
     for (int cpu = 0; cpu < cpu_count; ++cpu) {
       if ((*freq_samples)[cpu].cpu_online) {
-        const std::string time_in_state_path_format = base::StringPrintf(
-            "%s%s", kCpuDataPathBase, kCpuFreqTimeInStatePathSuffixFormat);
         const base::FilePath time_in_state_path(
-            base::StringPrintf(time_in_state_path_format.c_str(), cpu));
+            kCpuDataPathBase +
+            base::StringPrintf(kCpuFreqTimeInStatePathSuffixFormat, cpu));
         if (base::PathExists(time_in_state_path)) {
           if (!CpuDataCollector::ReadCpuFreqTimeInState(
                   time_in_state_path, cpu_freq_state_names,
@@ -243,10 +240,9 @@ void SampleCpuFreqData(
           }
         } else {
           freq_samples->clear();
-          const std::string cpu_freq_stats_path_format = base::StringPrintf(
-              "%s%s", kCpuDataPathBase, kCpuFreqStatsPathSuffixFormat);
           const base::FilePath cpu_freq_stats_path(
-              base::StringPrintf(cpu_freq_stats_path_format.c_str(), cpu));
+              kCpuDataPathBase +
+              base::StringPrintf(kCpuFreqStatsPathSuffixFormat, cpu));
           if (!base::PathExists(cpu_freq_stats_path)) {
             // If the path to 'stats' folder for a single CPU is missing, then
             // current platform does not produce discrete CPU frequency data.

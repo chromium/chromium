@@ -167,10 +167,10 @@ class DownloadFramePolicyBrowserTest
     )";
     static constexpr char kNavDownloadScript[] = "window.location = '%s'";
 
-    std::string script = base::StringPrintf(
-        source == DownloadSource::kAnchorAttribute ? kADownloadScript
-                                                   : kNavDownloadScript,
-        file_name.c_str());
+    std::string script =
+        source == DownloadSource::kAnchorAttribute
+            ? base::StringPrintf(kADownloadScript, file_name.c_str())
+            : base::StringPrintf(kNavDownloadScript, file_name.c_str());
 
     if (initiate_with_gesture) {
       EXPECT_TRUE(ExecJs(adapter, script));

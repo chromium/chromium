@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_tags.h"
@@ -322,8 +322,9 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
     // Setting the forcelist extension should install extension with ExtensionId
     // equal to id.
     base::Value::List forcelist;
-    forcelist.Append(base::StringPrintf(update_url.is_empty() ? "%s" : "%s;%s",
-                                        id.c_str(), update_url.spec().c_str()));
+    forcelist.Append(update_url.is_empty()
+                         ? id
+                         : base::StrCat({id, ";", update_url.spec()}));
     policies->Set(key::kExtensionInstallForcelist, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                   base::Value(std::move(forcelist)), nullptr);
