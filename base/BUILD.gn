@@ -1693,6 +1693,8 @@ component("base") {
       # Add stuff that doesn't work in NaCl.
       sources += [
         # PartitionAlloc uses SpinLock, which doesn't work in NaCl (see below).
+        "allocator/miracle_parameter.cc",
+        "allocator/miracle_parameter.h",
         "allocator/partition_alloc_features.cc",
         "allocator/partition_alloc_features.h",
         "allocator/partition_alloc_support.cc",
