@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_commands.h"
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -49,9 +50,9 @@ enum ItemType {
 
 @implementation TabPickupSettingsTableViewController {
   // State of the tab pickup feature.
-  bool _tabPickupEnabled;
+  BOOL _tabPickupEnabled;
   // State of the tab sync feature.
-  bool _tabSyncEnabled;
+  BOOL _tabSyncEnabled;
 }
 
 #pragma mark - Initialization
@@ -62,7 +63,7 @@ enum ItemType {
   if (self) {
     self.title =
         l10n_util::GetNSString(IDS_IOS_OPTIONS_TAB_PICKUP_SCREEN_TITLE);
-    _tabSyncEnabled = true;
+    _tabSyncEnabled = YES;
   }
   return self;
 }
@@ -85,6 +86,30 @@ enum ItemType {
       forSectionWithIdentifier:SectionIdentifier::kOptions];
 }
 
+#pragma mark - Public
+
+- (void)reloadSwitchItem {
+  NSIndexPath* switchPath =
+      [self.tableViewModel indexPathForItemType:ItemType::kSwitch
+                              sectionIdentifier:SectionIdentifier::kOptions];
+  TableViewSwitchCell* switchCell =
+      base::apple::ObjCCastStrict<TableViewSwitchCell>(
+          [self.tableView cellForRowAtIndexPath:switchPath]);
+
+  BOOL on = _tabSyncEnabled && _tabPickupEnabled;
+  UISwitch* switchView = switchCell.switchView;
+
+  // Update the switch cell.
+  if (on != switchView.isOn) {
+    [switchView setOn:on animated:YES];
+  }
+
+  // Also update the switch item.
+  TableViewSwitchItem* tabPickupSwitchItem = self.tabPickupSwitchItem;
+  tabPickupSwitchItem.on = on;
+  [self reconfigureCellsForItems:@[ tabPickupSwitchItem ]];
+}
+
 #pragma mark - TabPickupSettingsConsumer
 
 - (void)setTabPickupEnabled:(bool)enabled {
@@ -93,8 +118,7 @@ enum ItemType {
   if (tabPickupSwitchItem.on == enabled) {
     return;
   }
-  tabPickupSwitchItem.on = _tabSyncEnabled && enabled;
-  [self reconfigureCellsForItems:@[ tabPickupSwitchItem ]];
+  [self reloadSwitchItem];
 }
 
 - (void)setTabSyncEnabled:(bool)enabled {
@@ -102,10 +126,7 @@ enum ItemType {
     return;
   }
   _tabSyncEnabled = enabled;
-  TableViewSwitchItem* tabPickupSwitchItem = self.tabPickupSwitchItem;
-  tabPickupSwitchItem.enabled = enabled;
-  tabPickupSwitchItem.on = _tabPickupEnabled && enabled;
-  [self reconfigureCellsForItems:@[ tabPickupSwitchItem ]];
+  [self reloadSwitchItem];
 }
 
 #pragma mark - Properties
@@ -158,10 +179,17 @@ enum ItemType {
 
 #pragma mark - Private
 
-
 // Updates the switch item value and informs the model.
 - (void)switchChanged:(UISwitch*)switchView {
   self.tabPickupSwitchItem.on = switchView.isOn;
+  if (switchView.isOn && !_tabSyncEnabled) {
+    // The switch is set to ON, but the ivars are not updated. If the user
+    // cancels the sign-in flow, the switch should be reloaded to its initial
+    // state.
+    [self.tabPickupSettingsHandler showSign];
+    return;
+  }
+
   [self.delegate tabPickupSettingsTableViewController:self
                                    didEnableTabPickup:switchView.isOn];
 }

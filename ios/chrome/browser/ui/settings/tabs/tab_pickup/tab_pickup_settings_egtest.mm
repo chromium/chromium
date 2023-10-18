@@ -8,14 +8,17 @@
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -126,7 +129,58 @@ id<GREYMatcher> TabPickupSettingsSwitchItem(bool is_toggled_on, bool enabled) {
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:TabPickupSettingsSwitchItem(
-                                   /*is_toggled_on=*/false, /*enabled=*/false)]
+                                   /*is_toggled_on=*/false, /*enabled=*/true)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Ensures that the tab pickup settings are correctly working when sign in from
+// tab pickup settings.
+- (void)testTabPickupSettingsSignInFlow {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  OpenTabsSettings();
+  [[EarlGrey selectElementWithMatcher:TabsSettingsTabPickupDetailText(false)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  OpenTabPickupFromTabsSettings();
+  [[EarlGrey selectElementWithMatcher:SettingsTabPickupTableView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Toogle and skip sign-in.
+  [[EarlGrey
+      selectElementWithMatcher:TabPickupSettingsSwitchItem(
+                                   /*is_toggled_on=*/false, /*enabled=*/true)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+  [[EarlGrey
+      selectElementWithMatcher:TabPickupSettingsSwitchItem(
+                                   /*is_toggled_on=*/true, /*enabled=*/true)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Toogle and Sign-in.
+  [[EarlGrey
+      selectElementWithMatcher:TabPickupSettingsSwitchItem(
+                                   /*is_toggled_on=*/false, /*enabled=*/true)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+  [[EarlGrey
+      selectElementWithMatcher:TabPickupSettingsSwitchItem(
+                                   /*is_toggled_on=*/true, /*enabled=*/true)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          WebSigninPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+  // Accept History Sync.
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           HistoryOptInPrimaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TabPickupSettingsSwitchItem(
+                                   /*is_toggled_on=*/true, /*enabled=*/true)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

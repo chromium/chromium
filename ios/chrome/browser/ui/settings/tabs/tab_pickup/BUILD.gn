@@ -27,6 +27,7 @@ source_set("tab_pickup") {
 
 source_set("tab_pickup_ui") {
   sources = [
+    "tab_pickup_settings_commands.h",
     "tab_pickup_settings_consumer.h",
     "tab_pickup_settings_table_view_controller.h",
     "tab_pickup_settings_table_view_controller.mm",
@@ -62,6 +63,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/browser/ui/settings/tabs:tabs_constants",
