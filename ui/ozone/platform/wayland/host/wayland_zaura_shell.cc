@@ -24,7 +24,7 @@ namespace ui {
 namespace {
 
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 60;
+constexpr uint32_t kMaxVersion = ZAURA_TOPLEVEL_OVERVIEW_CHANGE_SINCE_VERSION;
 
 }  // namespace
 
@@ -197,27 +197,11 @@ void WaylandZAuraShell::OnActivated(void* data,
 // static
 void WaylandZAuraShell::OnSetOverviewMode(void* data,
                                           struct zaura_shell* zaura_shell) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* self = static_cast<WaylandZAuraShell*>(data);
-  for (auto* window : self->connection_->window_manager()->GetAllWindows()) {
-    if (auto* toplevel_window = window->AsWaylandToplevelWindow()) {
-      toplevel_window->OnOverviewModeChanged(true);
-    }
-  }
-#endif
 }
 
 // static
 void WaylandZAuraShell::OnUnsetOverviewMode(void* data,
                                             struct zaura_shell* zaura_shell) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* self = static_cast<WaylandZAuraShell*>(data);
-  for (auto* window : self->connection_->window_manager()->GetAllWindows()) {
-    if (auto* toplevel_window = window->AsWaylandToplevelWindow()) {
-      toplevel_window->OnOverviewModeChanged(false);
-    }
-  }
-#endif
 }
 
 // static
