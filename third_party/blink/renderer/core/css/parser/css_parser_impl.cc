@@ -2182,8 +2182,13 @@ void CSSParserImpl::ConsumeDeclarationList(
             stream.UncheckedConsume();  // kSemicolonToken
           }
           break;
-        } else if (!RuntimeEnabledFeatures::CSSNestingIdentEnabled()) {
-          // Error recovery.
+        } else if (!RuntimeEnabledFeatures::CSSNestingIdentEnabled() ||
+                   stream.UncheckedPeek().GetType() == kSemicolonToken) {
+          // Recover from an error when CSSNestingIdent is not enabled.
+          // When CSSNestingIdent is enabled, we would instead normally Restore
+          // the stream and retry as a nested style rule, but as an optimization
+          // we avoid this restart if we ended on a kSemicolonToken, as this situation
+          // can't produce a valid rule.
           stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
           if (!stream.AtEnd()) {
             stream.UncheckedConsume();  // kSemicolonToken
