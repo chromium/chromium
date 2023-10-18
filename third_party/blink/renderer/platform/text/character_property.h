@@ -19,7 +19,7 @@ enum class CharacterProperty : CharacterPropertyType {
 
   // Bits to store `HanKerningCharType`.
   kHanKerningShift = 4,
-  kHanKerningSize = 3,
+  kHanKerningSize = 4,
   kHanKerningMask = ((1 << kHanKerningSize) - 1),
   kHanKerningShiftedMask = kHanKerningMask << kHanKerningShift,
 

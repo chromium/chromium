@@ -95,6 +95,8 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
     case CharType::kOpen:
     case CharType::kClose:
     case CharType::kMiddle:
+    case CharType::kOpenNarrow:
+    case CharType::kCloseNarrow:
       return type;
     case CharType::kDot:
       return font_data.type_for_dot;
@@ -115,12 +117,13 @@ bool HanKerning::IsOpen(UChar ch) {
 inline bool HanKerning::ShouldKern(CharType type, CharType last_type) {
   return type == CharType::kOpen &&
          (last_type == CharType::kOpen || last_type == CharType::kMiddle ||
-          last_type == CharType::kClose);
+          last_type == CharType::kClose || last_type == CharType::kOpenNarrow);
 }
 
 inline bool HanKerning::ShouldKernLast(CharType type, CharType last_type) {
   return last_type == CharType::kClose &&
-         (type == CharType::kClose || type == CharType::kMiddle);
+         (type == CharType::kClose || type == CharType::kMiddle ||
+          type == CharType::kCloseNarrow);
 }
 
 // Compute kerning and apply features.

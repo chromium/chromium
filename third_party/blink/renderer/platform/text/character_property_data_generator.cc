@@ -70,6 +70,10 @@ class CharacterPropertyValues {
                      HanKerningCharType::kOpen);
     SetForUnicodeSet("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Pe:]]",
                      HanKerningCharType::kClose);
+    SetForUnicodeSet("[[:gc=Ps:] - [:blk=CJK_Symbols:] - [:ea=F:]]",
+                     HanKerningCharType::kOpenNarrow);
+    SetForUnicodeSet("[[:gc=Pe:] - [:blk=CJK_Symbols:] - [:ea=F:]]",
+                     HanKerningCharType::kCloseNarrow);
   }
 
   static CharacterProperty ToCharacterProperty(HanKerningCharType value) {

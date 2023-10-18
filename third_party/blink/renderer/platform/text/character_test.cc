@@ -251,6 +251,10 @@ TEST(CharacterTest, HanKerning) {
       {0xFF5F, HanKerningCharType::kOpen},
       {0x3009, HanKerningCharType::kClose},
       {0xFF60, HanKerningCharType::kClose},
+      {0x0028, HanKerningCharType::kOpenNarrow},
+      {0xFF62, HanKerningCharType::kOpenNarrow},
+      {0x0029, HanKerningCharType::kCloseNarrow},
+      {0xFF63, HanKerningCharType::kCloseNarrow},
   };
   for (const Data& data : data_list) {
     EXPECT_EQ(Character::GetHanKerningCharType(data.ch), data.type);

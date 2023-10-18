@@ -20,6 +20,13 @@ enum class HanKerningCharType : uint8_t {
   kClose,
   kMiddle,
 
+  // Unicode General Category `Ps` and `Pe` that are not fullwidth. They are not
+  // in the "Text Spacing Character Classes", but the "Fullwidth Punctuation
+  // Collapsing" has them.
+  // https://drafts.csswg.org/css-text-4/#fullwidth-collapsing
+  kOpenNarrow,
+  kCloseNarrow,
+
   // Following types depend on fonts. `HanKerning::GetCharType()` can resolve
   // them to types above.
   kDot,
