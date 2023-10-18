@@ -93,6 +93,26 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         git.add_list(['added_dir/added_file'])
         self.assertIn('added_dir/added_file', git.added_files())
 
+    def test_added_files(self):
+        self._chdir(self.untracking_checkout_path)
+        git = self.untracking_git
+        self._write_text_file('cat_file', 'new stuff')
+        git.add_list(['cat_file'])
+        self.assertIn('cat_file', git.added_files())
+
+    def test_deleted_files(self):
+        self._chdir(self.untracking_checkout_path)
+        git = self.untracking_git
+        git.delete_list(['foo_file'])
+        self.assertIn('foo_file', git.deleted_files())
+
+    def test_added_deleted_files_with_rename(self):
+        self._chdir(self.untracking_checkout_path)
+        git = self.untracking_git
+        git.move('foo_file', 'bar_file')
+        self.assertIn('foo_file', git.deleted_files())
+        self.assertIn('bar_file', git.added_files())
+
     def test_delete_recursively(self):
         self._chdir(self.untracking_checkout_path)
         git = self.untracking_git

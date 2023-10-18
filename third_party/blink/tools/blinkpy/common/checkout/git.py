@@ -285,6 +285,10 @@ class Git(object):
         return self._run_status_and_extract_filenames(self.status_command(),
                                                       self._status_regexp('A'))
 
+    def deleted_files(self):
+        return self._run_status_and_extract_filenames(self.status_command(),
+                                                      self._status_regexp('D'))
+
     def _run_status_and_extract_filenames(self, status_command, status_regexp):
         filenames = []
         # We run with cwd=self.checkout_root so that returned-paths are root-relative.

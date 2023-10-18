@@ -21,8 +21,9 @@ from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, SHERIFF_EMAIL_FALLBACK, RUBBER_STAMPER_BOT
 from blinkpy.w3c.wpt_github_mock import MockWPTGitHub
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
-from blinkpy.web_tests.port.android import ANDROID_DISABLED_TESTS
 from blinkpy.web_tests.builder_list import BuilderList
+from blinkpy.web_tests.port.android import ANDROID_DISABLED_TESTS
+from unittest.mock import patch
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
 MANIFEST_INSTALL_CMD = [
@@ -612,6 +613,211 @@ class TestImporterTest(LoggingTestCase):
         importer.chromium_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME]
         self.assertFalse(importer._has_wpt_changes())
+
+    def test_find_insert_index_ignore_pattern_empty_list(self):
+        host = self.mock_host()
+        test_importer = self._get_test_importer(host)
+
+        targets_list = []
+        insert_key = "test1"
+
+        insert_index = test_importer.find_insert_index_ignore_comments(
+            targets_list, insert_key)
+
+        self.assertEqual(insert_index, 0)
+
+    def test_find_insert_index_ignore_pattern_with_duplicate(self):
+        host = self.mock_host()
+        test_importer = self._get_test_importer(host)
+
+        targets_list = ["test1", "test2", "# test3", "test4", "test5"]
+        insert_key = "test2"
+
+        insert_index = test_importer.find_insert_index_ignore_comments(
+            targets_list, insert_key)
+
+        self.assertEqual(insert_index, 1)
+
+    def test_find_insert_index_ignore_comments_with_middle_start_index(self):
+        host = self.mock_host()
+        test_importer = self._get_test_importer(host)
+
+        targets_list = ["test1", "test2", "test3", "test4", "test5"]
+        insert_key = "test0"
+        start_index = 2
+
+        insert_index = test_importer.find_insert_index_ignore_comments(
+            targets_list, insert_key, start_index)
+
+        self.assertEqual(insert_index, 2)
+
+    def test_find_insert_index_ignore_comments_start_index_equal_to_list_length(
+            self):
+        host = self.mock_host()
+        test_importer = self._get_test_importer(host)
+
+        targets_list = ["test1", "test2", "test3", "test4", "test5"]
+
+        # smaller than last item
+        insert_index = test_importer.find_insert_index_ignore_comments(
+            targets_list, "test3", 5)
+        self.assertEqual(insert_index, 5)
+
+        # larger than last item
+
+        insert_index = test_importer.find_insert_index_ignore_comments(
+            targets_list, "test9", 5)
+        self.assertEqual(insert_index, 5)
+
+    def test_find_insert_index_ignore_comments_start_index_equal_to_last_index(
+            self):
+        host = self.mock_host()
+        test_importer = self._get_test_importer(host)
+
+        targets_list = ["test1", "test2", "test3", "test4", "test5"]
+
+        # smaller than last item
+        insert_index = test_importer.find_insert_index_ignore_comments(
+            targets_list, "test3", 4)
+        self.assertEqual(insert_index, 4)
+
+        # larger than last item
+        insert_index = test_importer.find_insert_index_ignore_comments(
+            targets_list, "test9", 4)
+        self.assertEqual(insert_index, 5)
+
+    def test_find_insert_index_ignore_pattern(self):
+        host = self.mock_host()
+        test_importer = self._get_test_importer(host)
+
+        targets_list = ["test1", "# test3", "test4", "test5"]
+        insert_key = "test2"
+        filter = lambda key: key.startswith("test")
+
+        insert_index = test_importer.find_insert_index_ignore_comments(
+            targets_list, insert_key)
+
+        self.assertEqual(insert_index, 2)
+
+    def test_update_testlist_lines(self):
+        host = self.mock_host()
+        test_importer = self._get_test_importer(host)
+
+        testlist_lines = [
+            "# comment",
+            "external/wpt/test1.html",
+            "# comment",
+            "external/wpt/test2.html",
+            "# comment",
+            "external/wpt/test3.html",
+            "# comment",
+        ]
+        added_tests = ["external/wpt/test4.html", "external/wpt/test5.html"]
+        deleted_tests = ["external/wpt/test2.html"]
+
+        new_testlist_lines = test_importer.update_testlist_lines(
+            testlist_lines, added_tests, deleted_tests)
+
+        expected_new_testlist_lines = [
+            "# comment",
+            "external/wpt/test1.html",
+            "# comment",
+            "# comment",
+            "external/wpt/test3.html",
+            "external/wpt/test4.html",
+            "external/wpt/test5.html",
+            "# comment",
+        ]
+
+        self.assertEqual(new_testlist_lines, expected_new_testlist_lines)
+
+    def test_update_testlist_with_idlharness_changes(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(host)
+
+        def _git_added_files():
+            return [
+                MOCK_WEB_TESTS + "external/wpt/2_added_idlharness.html",
+                MOCK_WEB_TESTS + "external/wpt/3_duplicate_idlharness.html",
+                MOCK_WEB_TESTS + "external/wpt/4_new_idlharness.html",
+            ]
+
+        def _git_deleted_files():
+            return [
+                MOCK_WEB_TESTS + "external/wpt/5_old_idlharness.html",
+                MOCK_WEB_TESTS + "external/wpt/6_deleted_idlharness.html",
+            ]
+
+        importer.chromium_git.added_files = _git_added_files
+        importer.chromium_git.deleted_files = _git_deleted_files
+        importer.chromium_git._relative_to_web_test_dir = \
+            lambda test_path: test_path
+        testlist_path = importer.finder.path_from_web_tests(
+            "TestLists", "android.filter")
+        test_list_lines = [
+            'external/wpt/1_first_idlharness.html',
+            'external/wpt/3_duplicate_idlharness.html',
+            'external/wpt/5_old_idlharness.html',
+            'external/wpt/6_deleted_idlharness.html',
+            'external/wpt/7_last_idlharness.html',
+        ]
+        expected_test_list_lines = [
+            'external/wpt/1_first_idlharness.html',
+            'external/wpt/2_added_idlharness.html',
+            'external/wpt/3_duplicate_idlharness.html',
+            'external/wpt/4_new_idlharness.html',
+            'external/wpt/7_last_idlharness.html',
+        ]
+        host.filesystem.write_text_file(testlist_path,
+                                        "\n".join(test_list_lines))
+        with patch.object(importer.chromium_git, "run") as mock_git_run:
+            importer.update_testlist_with_idlharness_changes(testlist_path)
+            actual_test_list_lines = host.filesystem.open_text_file_for_reading(
+                testlist_path).read().split("\n")
+            self.assertEqual(actual_test_list_lines, expected_test_list_lines)
+            mock_git_run.assert_called_with(['add', testlist_path])
+
+    def test_update_testlist_with_idlharness_changes_with_comment(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(host)
+
+        def _git_added_files():
+            return [
+                MOCK_WEB_TESTS + "external/wpt/9_added_idlharness.html",
+            ]
+
+        def _git_deleted_files():
+            return []
+
+        importer.chromium_git.added_files = _git_added_files
+        importer.chromium_git.deleted_files = _git_deleted_files
+        importer.chromium_git._relative_to_web_test_dir = \
+            lambda test_path: test_path
+        testlist_path = importer.finder.path_from_web_tests(
+            "TestLists", "android.filter")
+        test_list_lines = [
+            '# comment 1',
+            'external/wpt/1_first_idlharness.html',
+            '# comment 2',
+            'external/wpt/7_last_idlharness.html',
+            '# comment 3',
+        ]
+        expected_test_list_lines = [
+            '# comment 1',
+            'external/wpt/1_first_idlharness.html',
+            '# comment 2',
+            'external/wpt/7_last_idlharness.html',
+            "external/wpt/9_added_idlharness.html",
+            '# comment 3',
+        ]
+        host.filesystem.write_text_file(testlist_path,
+                                        "\n".join(test_list_lines))
+        with patch.object(importer.chromium_git, "run") as mock_git_run:
+            importer.update_testlist_with_idlharness_changes(testlist_path)
+            actual_test_list_lines = host.filesystem.open_text_file_for_reading(
+                testlist_path).read().split("\n")
+            self.assertEqual(actual_test_list_lines, expected_test_list_lines)
+            mock_git_run.assert_called_with(['add', testlist_path])
 
     def test_need_sheriff_attention(self):
         host = self.mock_host()

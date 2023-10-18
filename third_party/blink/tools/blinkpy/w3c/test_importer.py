@@ -172,6 +172,10 @@ class TestImporter(object):
         if not self._has_wpt_changes():
             _log.info('Only manifest or expectations was updated; skipping the import.')
             return 0
+        testlist_path = self.finder.path_from_web_tests(
+            "TestLists", "android.filter")
+        _log.info('Updating testlist based on file changes.')
+        self.update_testlist_with_idlharness_changes(testlist_path)
 
         self._commit_changes(commit_message)
         _log.info('Changes imported and committed.')
@@ -734,3 +738,75 @@ class TestImporter(object):
                       dry_run=not auto_file_bugs,
                       service_account_key_json=monorail_auth_json)
         return True
+
+    def update_testlist_with_idlharness_changes(self, testlist_path):
+        """Update testlist file to include idlharness test changes
+        """
+        added_files = self.chromium_git.added_files()
+        deleted_files = self.chromium_git.deleted_files()
+
+        # extract test name and filter for idlharness tests from file list
+        added_tests = list(
+            filter(Port.is_wpt_idlharness_test,
+                   map(self.finder.strip_web_tests_path, added_files)))
+        deleted_tests = list(
+            filter(Port.is_wpt_idlharness_test,
+                   map(self.finder.strip_web_tests_path, deleted_files)))
+
+        if added_files or deleted_files:
+            _log.info('Idlharness test changes:')
+            _log.info("Added tests:\n" + "\n".join(added_tests))
+            _log.info("Deleted tests:\n" + "\n".join(deleted_tests))
+        else:
+            _log.info(f'No idlharness changes. Skipping testlist update.')
+
+        with self.fs.open_text_file_for_reading(testlist_path) as f:
+            testlist_lines = f.read().split("\n")
+
+        new_testlist_lines = self.update_testlist_lines(
+            testlist_lines, added_tests, deleted_tests)
+
+        with self.fs.open_text_file_for_writing(testlist_path) as f:
+            f.write("\n".join(new_testlist_lines))
+        self.chromium_git.run(['add', testlist_path])
+
+    def update_testlist_lines(self, testlist_lines, added_tests,
+                              deleted_tests):
+        """Updates the lines from testlist to remove deleted tests,
+        and include the new tests"""
+        new_testlist_lines = []
+        for line in testlist_lines:
+            current_test = line.strip()
+            if current_test in deleted_tests:
+                continue
+            new_testlist_lines.append(line)
+        last_insertion_index = 0
+        # Pre-sort tests to be inserted
+        for new_test in sorted(added_tests):
+            insertion_index = self.find_insert_index_ignore_comments(
+                new_testlist_lines, new_test, start_index=last_insertion_index)
+            if (insertion_index < len(new_testlist_lines)
+                    and new_testlist_lines[insertion_index] == new_test):
+                _log.info(f'Skip duplicate test "{new_test}"')
+                continue
+            new_testlist_lines.insert(insertion_index, new_test)
+            last_insertion_index = insertion_index
+        return new_testlist_lines
+
+    def find_insert_index_ignore_comments(self,
+                                          targets_list,
+                                          insert_key,
+                                          start_index=0):
+        """Finds index where the insert key should be added.
+        The insert index points to the first item that is greater than
+        the insert key and is not comment (start with #) or empty line"""
+        last_insert_index = start_index
+        for index, target in enumerate(targets_list[start_index:],
+                                       start_index):
+            if not target.strip() or target.startswith("#"):
+                continue
+            elif insert_key <= target:
+                return index
+            else:
+                last_insert_index = index + 1
+        return last_insert_index
