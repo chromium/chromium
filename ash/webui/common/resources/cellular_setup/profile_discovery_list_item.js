@@ -42,11 +42,6 @@ Polymer({
       reflectToAttribute: true,
     },
 
-    /** TODO(b/281904820): Remove me. */
-    showLoadingIndicator: {
-      type: Boolean,
-    },
-
     /**
      * @type {boolean}
      * @private

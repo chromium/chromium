@@ -158,10 +158,9 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   }
 
   /**
-   * Simulates navigating forward to trigger a profile install.
-   * Asserts that the button_bar and page state is enabled and not busy before
-   * navigating forward. Asserts that the button_bar and page state is
-   * disabled and busy during the install.
+   * Simulates navigating forward to trigger a profile install. Asserts that the
+   * button_bar and page state is enabled before navigating forward. Asserts
+   * that the button_bar and page state is disabled during the install.
    * @param {HTMLElement} page
    */
   async function navigateForwardForInstall(page) {
