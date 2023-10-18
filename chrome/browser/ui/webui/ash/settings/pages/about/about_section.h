@@ -9,7 +9,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/crostini/crostini_section.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

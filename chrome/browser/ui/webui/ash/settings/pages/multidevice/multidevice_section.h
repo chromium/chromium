@@ -8,7 +8,7 @@
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_change_registrar.h"

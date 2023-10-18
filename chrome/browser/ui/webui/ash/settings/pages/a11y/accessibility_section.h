@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/tts_controller.h"
 #include "extensions/browser/extension_registry.h"

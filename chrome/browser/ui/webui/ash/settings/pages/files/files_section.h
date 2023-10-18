@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_FILES_FILES_SECTION_H_
 
 #include "base/values.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 
 namespace content {
 class WebUIDataSource;

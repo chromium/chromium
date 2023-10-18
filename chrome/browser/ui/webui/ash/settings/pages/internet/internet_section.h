@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_observer.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"

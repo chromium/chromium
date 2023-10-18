@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/power/device_power_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 class PrefService;
