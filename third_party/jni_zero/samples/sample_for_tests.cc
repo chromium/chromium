@@ -249,7 +249,7 @@ JNI_SampleForAnnotationProcessor_ReturnObjects(JNIEnv* env) {
 int main() {
   // On a regular application, you'd call AttachCurrentThread(). This sample is
   // not yet linking with all the libraries.
-  JNIEnv* env = /* AttachCurrentThread() */ NULL;
+  JNIEnv* env = /* AttachCurrentThread() */ nullptr;
 
   // This is how you call a java static method from C++.
   bool foo = base::android::Java_SampleForTests_staticJavaMethod(env);

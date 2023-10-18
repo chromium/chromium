@@ -215,7 +215,7 @@ JNI_GENERATOR_EXPORT jstring
     jlong nativeCPPClass,
     jobject caller) {
   CPPClass* native = reinterpret_cast<CPPClass*>(nativeCPPClass);
-  CHECK_NATIVE_PTR(env, jcaller, native, "ReturnAString", NULL);
+  CHECK_NATIVE_PTR(env, jcaller, native, "ReturnAString", nullptr);
   return native->ReturnAString(env, base::android::JavaParamRef<jobject>(env, caller)).Release();
 }
 
@@ -241,7 +241,7 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructo
     JniIntWrapper bar) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz,
-      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), NULL);
+      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -285,7 +285,7 @@ static base::android::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(JN
     base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jclass>& arg0) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), NULL);
+      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -307,7 +307,7 @@ static std::atomic<jmethodID>
 static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz,
-      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), NULL);
+      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -330,7 +330,7 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEn
     JniIntWrapper a) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz,
-      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), NULL);
+      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -353,7 +353,7 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerIn
     {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz,
-      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), NULL);
+      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -376,7 +376,7 @@ static base::android::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThro
     const base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jthrowable>& arg0) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), NULL);
+      this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -557,7 +557,7 @@ static base::android::ScopedJavaLocalRef<jobject> Java_InnerStructA_create(JNIEn
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructA_clazz(env);
   CHECK_CLAZZ(env, clazz,
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructA_clazz(env),
-          NULL);
+          nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -606,7 +606,7 @@ static base::android::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(JNI
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructB_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructB_clazz(env),
-          NULL);
+          nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
