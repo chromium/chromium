@@ -5,14 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_DISPLAY_VARIABLE_REFRESH_RATE_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_DISPLAY_VARIABLE_REFRESH_RATE_CONTROLLER_H_
 
+#include "ash/system/power/power_status.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/display/manager/display_configurator.h"
-
-namespace power_manager {
-class BatterySaverModeState;
-}  // namespace power_manager
 
 namespace ash {
 
@@ -25,12 +21,12 @@ using GameMode = ash::ResourcedClient::GameMode;
 // is meant to be enabled as long as Borealis game mode is active, except when
 // battery saver mode is also active.
 class VariableRefreshRateController
-    : public chromeos::PowerManagerClient::Observer,
+    : public PowerStatus::Observer,
       public game_mode::GameModeController::Observer {
  public:
   VariableRefreshRateController(
       display::DisplayConfigurator* display_configurator,
-      chromeos::PowerManagerClient* power_status,
+      PowerStatus* power_status,
       game_mode::GameModeController* game_mode_controller);
 
   VariableRefreshRateController(const VariableRefreshRateController&) = delete;
@@ -39,9 +35,8 @@ class VariableRefreshRateController
 
   ~VariableRefreshRateController() override;
 
-  // PowerManagerClient::Observer implementation.
-  void BatterySaverModeStateChanged(
-      const power_manager::BatterySaverModeState& state) override;
+  // PowerStatus::Observer:
+  void OnPowerStatusChanged() override;
 
   // GameModeController::Observer implementation.
   void OnSetGameMode(GameMode game_mode) override;
@@ -49,15 +44,14 @@ class VariableRefreshRateController
  private:
   void RefreshState();
 
-  bool battery_saver_mode_enabled_ = false;
   GameMode game_mode_ = GameMode::OFF;
 
   // Not owned.
   raw_ptr<display::DisplayConfigurator> display_configurator_;
+  const raw_ptr<PowerStatus, ExperimentalAsh> power_status_;
 
-  base::ScopedObservation<chromeos::PowerManagerClient,
-                          chromeos::PowerManagerClient::Observer>
-      battery_saver_mode_observer_{this};
+  base::ScopedObservation<ash::PowerStatus, ash::PowerStatus::Observer>
+      power_status_observer_{this};
   base::ScopedObservation<game_mode::GameModeController,
                           game_mode::GameModeController::Observer>
       game_mode_observer_{this};

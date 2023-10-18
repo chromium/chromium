@@ -4,25 +4,22 @@
 
 #include "chrome/browser/ash/display/variable_refresh_rate_controller.h"
 
-#include "chromeos/dbus/power_manager/battery_saver.pb.h"
 #include "ui/base/ui_base_features.h"
 
 namespace ash {
 
 VariableRefreshRateController::VariableRefreshRateController(
     display::DisplayConfigurator* display_configurator,
-    chromeos::PowerManagerClient* power_manager_client,
+    PowerStatus* power_status,
     game_mode::GameModeController* game_mode_controller)
-    : display_configurator_(display_configurator) {
-  battery_saver_mode_observer_.Observe(power_manager_client);
+    : display_configurator_(display_configurator), power_status_(power_status) {
+  power_status_observer_.Observe(power_status);
   game_mode_observer_.Observe(game_mode_controller);
 }
 
 VariableRefreshRateController::~VariableRefreshRateController() = default;
 
-void VariableRefreshRateController::BatterySaverModeStateChanged(
-    const power_manager::BatterySaverModeState& state) {
-  battery_saver_mode_enabled_ = state.has_enabled() && state.enabled();
+void VariableRefreshRateController::OnPowerStatusChanged() {
   RefreshState();
 }
 
@@ -32,10 +29,11 @@ void VariableRefreshRateController::OnSetGameMode(GameMode game_mode) {
 }
 
 void VariableRefreshRateController::RefreshState() {
+  const bool battery_saver_mode_enabled = power_status_->IsBatterySaverActive();
   display_configurator_->SetVrrEnabled(
       ::features::IsVariableRefreshRateAlwaysOn() ||
       (::features::IsVariableRefreshRateEnabled() &&
-       !battery_saver_mode_enabled_ && game_mode_ == GameMode::BOREALIS));
+       !battery_saver_mode_enabled && game_mode_ == GameMode::BOREALIS));
 }
 
 }  // namespace ash
