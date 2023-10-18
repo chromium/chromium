@@ -9729,6 +9729,26 @@
             ]
         }
     ],
+    "LiveCaptionMultiLanguageRollout": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "available_languages": "en-US,fr-FR,it-IT,de-DE"
+                    },
+                    "enable_features": [
+                        "LiveCaptionMultiLanguage"
+                    ]
+                }
+            ]
+        }
+    ],
     "LoadingPhaseBufferTimeAfterFirstMeaningfulPaint": [
         {
             "platforms": [
