@@ -11,6 +11,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debugger.js';
 
 (async function() {
   TestRunner.addResult(`Tests framework event listeners output in Sources panel when service worker is present.\n`);
@@ -34,7 +35,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope);
 
   var objectEventListenersPane =
-      BrowserDebugger.ObjectEventListenersSidebarPane.instance();
+      BrowserDebugger.ObjectEventListenersSidebarPane.ObjectEventListenersSidebarPane.instance();
 
   function isServiceWorker() {
     var target = UI.Context.Context.instance().flavor(SDK.RuntimeModel.ExecutionContext).target();

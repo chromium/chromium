@@ -8,6 +8,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
+import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debugger.js';
 
 (async function() {
   await TestRunner.showPanel('elements');
@@ -30,7 +31,7 @@ import * as Sources from 'devtools/panels/sources/sources.js';
       TestRunner.domDebuggerModel.setDOMBreakpoint(hostElement, Protocol.DOMDebugger.DOMBreakpointType.NodeRemoved);
   TestRunner.domDebuggerModel.toggleDOMBreakpoint(breakpoint, false);
 
-  const domBreakpointsPane = BrowserDebugger.DOMBreakpointsSidebarPane.instance();
+  const domBreakpointsPane = BrowserDebugger.DOMBreakpointsSidebarPane.DOMBreakpointsSidebarPane.instance();
 
   TestRunner.addResult(`DOM breakpoints container text content: ${domBreakpointContainer.contentElement.deepTextContent()}`);
   TestRunner.addResult(

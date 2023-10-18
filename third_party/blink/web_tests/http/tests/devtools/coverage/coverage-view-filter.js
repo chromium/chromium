@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {CoverageTestRunner} from 'coverage_test_runner';
 
+import * as Coverage from 'devtools/panels/coverage/coverage.js';
+
 (async function() {
   TestRunner.addResult(`Tests the filter is properly applied to coverage list view.\n`);
   await TestRunner.loadLegacyModule('panels/coverage');
@@ -14,7 +16,7 @@ import {CoverageTestRunner} from 'coverage_test_runner';
   await TestRunner.evaluateInPagePromise('performActions()');
   await CoverageTestRunner.stopCoverage();
 
-  var coverageView = Coverage.CoverageView.instance();
+  var coverageView = Coverage.CoverageView.CoverageView.instance();
   setFilter('devtools');
   CoverageTestRunner.dumpCoverageListView();
   setFilter('CES/COV');
