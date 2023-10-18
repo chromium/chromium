@@ -16,9 +16,6 @@
 #include "net/disk_cache/disk_cache.h"
 
 namespace base {
-namespace android {
-class ApplicationStatusListener;
-}  // namespace android
 class FilePath;
 }  //  namespace base
 
@@ -37,12 +34,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryDiskCache {
   SharedDictionaryDiskCache& operator=(const SharedDictionaryDiskCache&) =
       delete;
 
-  void Initialize(const base::FilePath& cache_directory_path,
+  void Initialize(
+      const base::FilePath& cache_directory_path,
 #if BUILDFLAG(IS_ANDROID)
-                  base::android::ApplicationStatusListener* app_status_listener,
+      disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
-                  scoped_refptr<disk_cache::BackendFileOperationsFactory>
-                      file_operations_factory);
+      scoped_refptr<disk_cache::BackendFileOperationsFactory>
+          file_operations_factory);
 
   disk_cache::EntryResult OpenOrCreateEntry(
       const std::string& key,
@@ -62,7 +60,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryDiskCache {
   virtual disk_cache::BackendResult CreateCacheBackend(
       const base::FilePath& cache_directory_path,
 #if BUILDFLAG(IS_ANDROID)
-      base::android::ApplicationStatusListener* app_status_listener,
+      disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
       scoped_refptr<disk_cache::BackendFileOperationsFactory>
           file_operations_factory,

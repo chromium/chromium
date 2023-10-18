@@ -30,6 +30,8 @@
 namespace {
 
 using FileEnumerator = disk_cache::BackendFileOperations::FileEnumerator;
+using ApplicationStatusListenerGetter =
+    disk_cache::ApplicationStatusListenerGetter;
 
 // Builds an instance of the backend depending on platform, type, experiments
 // etc. Takes care of the retry state. This object will self-destroy when
@@ -44,7 +46,7 @@ class CacheCreator {
                scoped_refptr<disk_cache::BackendFileOperationsFactory>
                    file_operations_factory,
 #if BUILDFLAG(IS_ANDROID)
-               base::android::ApplicationStatusListener* app_status_listener,
+               ApplicationStatusListenerGetter app_status_listener_getter,
 #endif
                net::NetLog* net_log,
                base::OnceClosure post_cleanup_callback,
@@ -81,7 +83,7 @@ class CacheCreator {
       file_operations_factory_;
   std::unique_ptr<disk_cache::BackendFileOperations> file_operations_;
 #if BUILDFLAG(IS_ANDROID)
-  raw_ptr<base::android::ApplicationStatusListener> app_status_listener_;
+  ApplicationStatusListenerGetter app_status_listener_getter_;
 #endif
   base::OnceClosure post_cleanup_callback_;
   disk_cache::BackendResultCallback callback_;
@@ -98,7 +100,7 @@ CacheCreator::CacheCreator(
     net::BackendType backend_type,
     scoped_refptr<disk_cache::BackendFileOperationsFactory> file_operations,
 #if BUILDFLAG(IS_ANDROID)
-    base::android::ApplicationStatusListener* app_status_listener,
+    ApplicationStatusListenerGetter app_status_listener_getter,
 #endif
     net::NetLog* net_log,
     base::OnceClosure post_cleanup_callback,
@@ -110,7 +112,7 @@ CacheCreator::CacheCreator(
       backend_type_(backend_type),
       file_operations_factory_(std::move(file_operations)),
 #if BUILDFLAG(IS_ANDROID)
-      app_status_listener_(app_status_listener),
+      app_status_listener_getter_(std::move(app_status_listener_getter)),
 #endif
       post_cleanup_callback_(std::move(post_cleanup_callback)),
       callback_(std::move(callback)),
@@ -142,8 +144,9 @@ net::Error CacheCreator::Run() {
     disk_cache::SimpleBackendImpl* simple_cache = cache.get();
     created_cache_ = std::move(cache);
 #if BUILDFLAG(IS_ANDROID)
-    if (app_status_listener_)
-      simple_cache->set_app_status_listener(app_status_listener_);
+    if (app_status_listener_getter_) {
+      simple_cache->set_app_status_listener_getter(app_status_listener_getter_);
+    }
 #endif
     simple_cache->Init(
         base::BindOnce(&CacheCreator::OnIOComplete, base::Unretained(this)));
@@ -315,7 +318,7 @@ BackendResult CreateCacheBackendImpl(
     int64_t max_bytes,
     ResetHandling reset_handling,
 #if BUILDFLAG(IS_ANDROID)
-    base::android::ApplicationStatusListener* app_status_listener,
+    ApplicationStatusListenerGetter app_status_listener_getter,
 #endif
     net::NetLog* net_log,
     base::OnceClosure post_cleanup_callback,
@@ -342,7 +345,7 @@ BackendResult CreateCacheBackendImpl(
       path, reset_handling, max_bytes, type, backend_type,
       std::move(file_operations),
 #if BUILDFLAG(IS_ANDROID)
-      std::move(app_status_listener),
+      std::move(app_status_listener_getter),
 #endif
       net_log, std::move(post_cleanup_callback), std::move(callback));
   if (type == net::DISK_CACHE) {
@@ -365,26 +368,26 @@ BackendResult CreateCacheBackend(
   return CreateCacheBackendImpl(type, backend_type, std::move(file_operations),
                                 path, max_bytes, reset_handling,
 #if BUILDFLAG(IS_ANDROID)
-                                nullptr,
+                                ApplicationStatusListenerGetter(),
 #endif
                                 net_log, base::OnceClosure(),
                                 std::move(callback));
 }
 
 #if BUILDFLAG(IS_ANDROID)
-NET_EXPORT BackendResult CreateCacheBackend(
-    net::CacheType type,
-    net::BackendType backend_type,
-    scoped_refptr<BackendFileOperationsFactory> file_operations,
-    const base::FilePath& path,
-    int64_t max_bytes,
-    ResetHandling reset_handling,
-    net::NetLog* net_log,
-    BackendResultCallback callback,
-    base::android::ApplicationStatusListener* app_status_listener) {
+NET_EXPORT BackendResult
+CreateCacheBackend(net::CacheType type,
+                   net::BackendType backend_type,
+                   scoped_refptr<BackendFileOperationsFactory> file_operations,
+                   const base::FilePath& path,
+                   int64_t max_bytes,
+                   ResetHandling reset_handling,
+                   net::NetLog* net_log,
+                   BackendResultCallback callback,
+                   ApplicationStatusListenerGetter app_status_listener_getter) {
   return CreateCacheBackendImpl(type, backend_type, std::move(file_operations),
                                 path, max_bytes, reset_handling,
-                                std::move(app_status_listener), net_log,
+                                std::move(app_status_listener_getter), net_log,
                                 base::OnceClosure(), std::move(callback));
 }
 #endif
@@ -402,7 +405,7 @@ BackendResult CreateCacheBackend(
   return CreateCacheBackendImpl(type, backend_type, std::move(file_operations),
                                 path, max_bytes, reset_handling,
 #if BUILDFLAG(IS_ANDROID)
-                                nullptr,
+                                ApplicationStatusListenerGetter(),
 #endif
                                 net_log, std::move(post_cleanup_callback),
                                 std::move(callback));

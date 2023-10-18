@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
@@ -21,9 +22,6 @@
 class GURL;
 
 namespace base {
-namespace android {
-class ApplicationStatusListener;
-}  // namespace android
 class FilePath;
 }  //  namespace base
 
@@ -44,7 +42,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       uint64_t cache_max_size,
       uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
-      base::android::ApplicationStatusListener* app_status_listener,
+      disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
       scoped_refptr<disk_cache::BackendFileOperationsFactory>
           file_operations_factory);

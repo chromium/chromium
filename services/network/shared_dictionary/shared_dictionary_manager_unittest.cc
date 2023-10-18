@@ -170,7 +170,7 @@ class SharedDictionaryManagerTest
             database_path_, cache_directory_path_, /*cache_max_size=*/0,
             kCacheMaxCount,
 #if BUILDFLAG(IS_ANDROID)
-            /*app_status_listener=*/nullptr,
+            disk_cache::ApplicationStatusListenerGetter(),
 #endif  // BUILDFLAG(IS_ANDROID)
             /*file_operations_factory=*/nullptr);
     }

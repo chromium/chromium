@@ -104,10 +104,11 @@ disk_cache::BackendResult HttpCache::DefaultBackend::CreateBackend(
                   : disk_cache::ResetHandling::kResetOnError;
   LOCAL_HISTOGRAM_BOOLEAN("HttpCache.HardReset", hard_reset_);
 #if BUILDFLAG(IS_ANDROID)
-  if (app_status_listener_) {
+  if (app_status_listener_getter_) {
     return disk_cache::CreateCacheBackend(
         type_, backend_type_, file_operations_factory_, path_, max_bytes_,
-        reset_handling, net_log, std::move(callback), app_status_listener_);
+        reset_handling, net_log, std::move(callback),
+        app_status_listener_getter_);
   }
 #endif
   return disk_cache::CreateCacheBackend(
@@ -116,9 +117,9 @@ disk_cache::BackendResult HttpCache::DefaultBackend::CreateBackend(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void HttpCache::DefaultBackend::SetAppStatusListener(
-    base::android::ApplicationStatusListener* app_status_listener) {
-  app_status_listener_ = app_status_listener;
+void HttpCache::DefaultBackend::SetAppStatusListenerGetter(
+    disk_cache::ApplicationStatusListenerGetter app_status_listener_getter) {
+  app_status_listener_getter_ = std::move(app_status_listener_getter);
 }
 #endif
 

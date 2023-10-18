@@ -141,9 +141,12 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
 
 #if BUILDFLAG(IS_ANDROID)
-  void set_app_status_listener(
-      base::android::ApplicationStatusListener* app_status_listener) {
-    app_status_listener_ = app_status_listener;
+  // Note: null callback is OK, and will make the cache use a
+  // base::android::ApplicationStatusListener. Callback returning nullptr
+  // means to not use an app status listener at all.
+  void set_app_status_listener_getter(
+      ApplicationStatusListenerGetter app_status_listener_getter) {
+    app_status_listener_getter_ = std::move(app_status_listener_getter);
   }
 #endif
 
@@ -277,8 +280,7 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   uint32_t entry_count_ = 0;
 
 #if BUILDFLAG(IS_ANDROID)
-  raw_ptr<base::android::ApplicationStatusListener, DanglingUntriaged>
-      app_status_listener_ = nullptr;
+  ApplicationStatusListenerGetter app_status_listener_getter_;
 #endif
 };
 

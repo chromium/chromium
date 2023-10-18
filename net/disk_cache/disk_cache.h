@@ -108,20 +108,25 @@ CreateCacheBackend(net::CacheType type,
                    net::NetLog* net_log,
                    BackendResultCallback callback);
 
+// Note: this is permitted to return nullptr when things are in process of
+// shutting down.
+using ApplicationStatusListenerGetter =
+    base::RepeatingCallback<base::android::ApplicationStatusListener*()>;
+
 #if BUILDFLAG(IS_ANDROID)
-// Similar to the function above, but takes an |app_status_listener| which is
-// used to listen for when the Android application status changes, so we can
-// flush the cache to disk when the app goes to the background.
-NET_EXPORT BackendResult CreateCacheBackend(
-    net::CacheType type,
-    net::BackendType backend_type,
-    scoped_refptr<BackendFileOperationsFactory> file_operations,
-    const base::FilePath& path,
-    int64_t max_bytes,
-    ResetHandling reset_handling,
-    net::NetLog* net_log,
-    BackendResultCallback callback,
-    base::android::ApplicationStatusListener* app_status_listener);
+// Similar to the function above, but takes an |app_status_listener_getter|
+// which is used to listen for when the Android application status changes, so
+// we can flush the cache to disk when the app goes to the background.
+NET_EXPORT BackendResult
+CreateCacheBackend(net::CacheType type,
+                   net::BackendType backend_type,
+                   scoped_refptr<BackendFileOperationsFactory> file_operations,
+                   const base::FilePath& path,
+                   int64_t max_bytes,
+                   ResetHandling reset_handling,
+                   net::NetLog* net_log,
+                   BackendResultCallback callback,
+                   ApplicationStatusListenerGetter app_status_listener_getter);
 #endif
 
 // Variant of the above that calls |post_cleanup_callback| once all the I/O

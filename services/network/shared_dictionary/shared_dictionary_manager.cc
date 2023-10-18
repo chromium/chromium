@@ -34,14 +34,14 @@ std::unique_ptr<SharedDictionaryManager> SharedDictionaryManager::CreateOnDisk(
     uint64_t cache_max_size,
     uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
-    base::android::ApplicationStatusListener* app_status_listener,
+    disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
     scoped_refptr<disk_cache::BackendFileOperationsFactory>
         file_operations_factory) {
   return std::make_unique<SharedDictionaryManagerOnDisk>(
       database_path, cache_directory_path, cache_max_size, cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
-      app_status_listener,
+      app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
       std::move(file_operations_factory));
 }

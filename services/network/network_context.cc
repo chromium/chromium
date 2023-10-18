@@ -330,6 +330,16 @@ class NetworkContextApplicationStatusListener
  private:
   ApplicationStateChangeCallback callback_;
 };
+
+base::android::ApplicationStatusListener* ReturnAppStatusListenerIfAlive(
+    base::WeakPtr<NetworkContext> network_context,
+    base::android::ApplicationStatusListener* listener) {
+  if (!network_context) {
+    return nullptr;
+  }
+  return listener;
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 struct TestVerifyCertState {
@@ -550,7 +560,9 @@ NetworkContext::NetworkContext(
           params_->shared_dictionary_cache_max_size,
           shared_dictionary::kDictionaryMaxCountPerNetworkContext,
 #if BUILDFLAG(IS_ANDROID)
-          app_status_listeners_.rbegin()->get(),
+          base::BindRepeating(&ReturnAppStatusListenerIfAlive,
+                              weak_factory_.GetWeakPtr(),
+                              app_status_listeners_.rbegin()->get()),
 #endif  // BUILDFLAG(IS_ANDROID)
           /*file_operations_factory=*/nullptr);
     } else {
@@ -2596,7 +2608,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 #if BUILDFLAG(IS_ANDROID)
     app_status_listeners_.push_back(
         std::make_unique<NetworkContextApplicationStatusListener>());
-    cache_params.app_status_listener = app_status_listeners_.rbegin()->get();
+    cache_params.app_status_listener_getter = base::BindRepeating(
+        &ReturnAppStatusListenerIfAlive, weak_factory_.GetWeakPtr(),
+        app_status_listeners_.rbegin()->get());
 #endif  // BUILDFLAG(IS_ANDROID)
     builder.EnableHttpCache(cache_params);
   }

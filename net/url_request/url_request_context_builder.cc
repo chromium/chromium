@@ -559,8 +559,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
           HttpCache::DefaultBackend::InMemory(http_cache_params_.max_size);
     }
 #if BUILDFLAG(IS_ANDROID)
-    http_cache_backend->SetAppStatusListener(
-        http_cache_params_.app_status_listener);
+    http_cache_backend->SetAppStatusListenerGetter(
+        http_cache_params_.app_status_listener_getter);
 #endif
 
     http_transaction_factory = std::make_unique<HttpCache>(
