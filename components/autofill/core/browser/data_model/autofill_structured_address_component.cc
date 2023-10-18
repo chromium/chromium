@@ -103,7 +103,7 @@ std::string AddressComponent::GetStorageTypeName() const {
 }
 
 void AddressComponent::CopyFrom(const AddressComponent& other) {
-  CHECK(GetStorageType() == other.GetStorageType());
+  CHECK_EQ(GetStorageType(), other.GetStorageType());
   if (this == &other) {
     return;
   }
@@ -116,7 +116,8 @@ void AddressComponent::CopyFrom(const AddressComponent& other) {
     UnsetValue();
   }
 
-  CHECK(other.subcomponents_.size() == subcomponents_.size());
+  CHECK_EQ(other.subcomponents_.size(), subcomponents_.size())
+      << GetStorageTypeName();
   for (size_t i = 0; i < other.subcomponents_.size(); i++)
     subcomponents_[i]->CopyFrom(*other.subcomponents_[i]);
 
@@ -134,7 +135,8 @@ bool AddressComponent::SameAs(const AddressComponent& other) const {
       value_verification_status_ != other.value_verification_status_) {
     return false;
   }
-  CHECK(other.subcomponents_.size() == subcomponents_.size());
+  CHECK_EQ(other.subcomponents_.size(), subcomponents_.size())
+      << GetStorageTypeName();
   for (size_t i = 0; i < other.subcomponents_.size(); i++) {
     if (!(subcomponents_[i]->SameAs(*other.subcomponents_[i]))) {
       return false;
@@ -823,7 +825,8 @@ void AddressComponent::MergeVerificationStatuses(
       HasNewerValuePrecedenceInMerging(newer_component)) {
     value_verification_status_ = newer_component.GetVerificationStatus();
   }
-  CHECK(newer_component.subcomponents_.size() == subcomponents_.size());
+  CHECK_EQ(newer_component.subcomponents_.size(), subcomponents_.size())
+      << GetStorageTypeName();
   for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
     subcomponents_[i]->MergeVerificationStatuses(
         *newer_component.subcomponents_.at(i));
@@ -935,7 +938,8 @@ bool AddressComponent::IsMergeableWithComponent(
   // Checks if all child nodes are mergeable.
   if (merge_mode_ & kMergeChildrenAndReformatIfNeeded) {
     bool is_mergeable = true;
-    CHECK(newer_component.subcomponents_.size() == subcomponents_.size());
+    CHECK_EQ(newer_component.subcomponents_.size(), subcomponents_.size())
+        << GetStorageTypeName();
     for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
       if (!subcomponents_[i]->IsMergeableWithComponent(
               *newer_component.subcomponents_[i])) {
@@ -1134,7 +1138,7 @@ bool AddressComponent::MergeWithComponent(
   // If the corresponding mode is active, ignore this mode and pair-wise merge
   // the child tokens. Reformat this nodes from its children after the merge.
   if (merge_mode_ & kMergeChildrenAndReformatIfNeeded) {
-    CHECK(newer_component.subcomponents_.size() == subcomponents_.size());
+    CHECK_EQ(newer_component.subcomponents_.size(), subcomponents_.size());
     for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
       if (!subcomponents_[i]->MergeWithComponent(
               *newer_component.subcomponents_[i],
@@ -1211,7 +1215,8 @@ bool AddressComponent::MergeTokenEquivalentComponent(
 
   const SubcomponentsList& other_subcomponents =
       newer_component.Subcomponents();
-  CHECK(subcomponents_.size() == other_subcomponents.size());
+  CHECK_EQ(subcomponents_.size(), other_subcomponents.size())
+      << GetStorageTypeName();
   if (HasNewerValuePrecedenceInMerging(newer_component)) {
     SetValue(newer_component.GetValue(),
              newer_component.GetVerificationStatus());
@@ -1262,8 +1267,8 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   unmerged_indices.reserve(subcomponents_.size());
 
   for (size_t i = 0; i < subcomponents_.size(); i++) {
-    CHECK(subcomponents_[i]->GetStorageType() ==
-          other_subcomponents.at(i)->GetStorageType());
+    CHECK_EQ(subcomponents_[i]->GetStorageType(),
+             other_subcomponents.at(i)->GetStorageType());
     // If the components can't be merged directly, store the unmerged index and
     // sum the verification scores to decide which component's substructure to
     // use.
@@ -1317,7 +1322,7 @@ bool AddressComponent::MergeSubsetComponent(
     const AddressComponent& subset_component,
     const SortedTokenComparisonResult& token_comparison_result) {
   CHECK(token_comparison_result.IsSingleTokenSuperset());
-  CHECK(token_comparison_result.additional_tokens.size() == 1);
+  CHECK_EQ(token_comparison_result.additional_tokens.size(), 1u);
   std::u16string token_to_consume =
       token_comparison_result.additional_tokens.back().value;
 
@@ -1334,8 +1339,8 @@ bool AddressComponent::MergeSubsetComponent(
   unmerged_indices.reserve(subcomponents_.size());
 
   for (size_t i = 0; i < subcomponents_.size(); i++) {
-    CHECK(subcomponents_[i]->GetStorageType() ==
-          subset_subcomponents.at(i)->GetStorageType());
+    CHECK_EQ(subcomponents_[i]->GetStorageType(),
+             subset_subcomponents.at(i)->GetStorageType());
     std::unique_ptr<AddressComponent>& subcomponent = subcomponents_[i];
     const auto& subset_subcomponent = subset_subcomponents.at(i);
 
