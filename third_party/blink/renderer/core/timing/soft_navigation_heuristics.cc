@@ -112,8 +112,12 @@ void SoftNavigationHeuristics::UserInitiatedInteraction(
   ResetHeuristic();
   CHECK(script_state);
   if (is_unfocused_keyboard_event) {
-    // TODO(https://crbug.com/1479052): investigate if we need to consider
-    // including the current task also for other cases.
+    // TODO(https://crbug.com/1479052): It seems like the callback invocation is
+    // creating a task scope for the click event handler, but not for the key
+    // handlers. The reason for that is that the key handlers are running inside
+    // of an existing task. It's unclear if this situation is only due to our
+    // testing infrastructure limitations, or if key events can actually run
+    // inside of existing JS tasks in production.
     scheduler::TaskAttributionInfo* task = tracker->RunningTask(script_state);
     if (task) {
       potential_soft_navigation_task_ids_.insert(task->Id().value());
