@@ -337,9 +337,11 @@ void MediaDevicesDispatcherHost::ProduceCropId(ProduceCropIdCallback callback) {
             DCHECK(web_contents);
 
             // No-op if already created.
-            CropIdWebContentsHelper::CreateForWebContents(web_contents);
+            SubCaptureTargetIdWebContentsHelper::CreateForWebContents(
+                web_contents);
 
-            return CropIdWebContentsHelper::FromWebContents(web_contents)
+            return SubCaptureTargetIdWebContentsHelper::FromWebContents(
+                       web_contents)
                 ->ProduceCropId();
           },
           render_process_id_, render_frame_id_),

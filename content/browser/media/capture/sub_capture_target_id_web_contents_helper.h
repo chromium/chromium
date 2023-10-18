@@ -26,9 +26,9 @@ namespace content {
 
 class NavigationHandle;
 
-class CONTENT_EXPORT CropIdWebContentsHelper final
+class CONTENT_EXPORT SubCaptureTargetIdWebContentsHelper final
     : public WebContentsObserver,
-      public WebContentsUserData<CropIdWebContentsHelper> {
+      public WebContentsUserData<SubCaptureTargetIdWebContentsHelper> {
  public:
   // Limits the number of crop-IDs a given Web-application can produce
   // so as to limit the potential for abuse.
@@ -37,10 +37,12 @@ class CONTENT_EXPORT CropIdWebContentsHelper final
   // embed such iframes.
   constexpr static size_t kMaxCropIdsPerWebContents = 100;
 
-  explicit CropIdWebContentsHelper(WebContents* web_contents);
-  CropIdWebContentsHelper(const CropIdWebContentsHelper&) = delete;
-  CropIdWebContentsHelper& operator=(const CropIdWebContentsHelper&) = delete;
-  ~CropIdWebContentsHelper() final;
+  explicit SubCaptureTargetIdWebContentsHelper(WebContents* web_contents);
+  SubCaptureTargetIdWebContentsHelper(
+      const SubCaptureTargetIdWebContentsHelper&) = delete;
+  SubCaptureTargetIdWebContentsHelper& operator=(
+      const SubCaptureTargetIdWebContentsHelper&) = delete;
+  ~SubCaptureTargetIdWebContentsHelper() final;
 
   // Produces a new crop-ID, records its association with this WebContents
   // and returns it.
@@ -63,8 +65,8 @@ class CONTENT_EXPORT CropIdWebContentsHelper final
   static base::Token GUIDToToken(const base::Uuid& guid);
 
  private:
-  friend class WebContentsUserData<CropIdWebContentsHelper>;
-  friend class CropIdWebContentsHelperTest;
+  friend class WebContentsUserData<SubCaptureTargetIdWebContentsHelper>;
+  friend class SubCaptureTargetIdWebContentsHelperTest;
 
   // WebContentsObserver implementation.
   // Cross-document navigation of the top-level document discards all crop-IDs

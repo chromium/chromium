@@ -24,7 +24,8 @@ namespace content {
 
 // TODO(crbug.com/1264849): Remove this protected static function.
 // See header for more details.
-base::Token CropIdWebContentsHelper::GUIDToToken(const base::Uuid& guid) {
+base::Token SubCaptureTargetIdWebContentsHelper::GUIDToToken(
+    const base::Uuid& guid) {
   std::string lowercase = guid.AsLowercaseString();
 
   // |lowercase| is either empty, or follows the expected pattern.
@@ -51,16 +52,18 @@ base::Token CropIdWebContentsHelper::GUIDToToken(const base::Uuid& guid) {
   return base::Token(high, low);
 }
 
-CropIdWebContentsHelper::CropIdWebContentsHelper(WebContents* web_contents)
+SubCaptureTargetIdWebContentsHelper::SubCaptureTargetIdWebContentsHelper(
+    WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      WebContentsUserData<CropIdWebContentsHelper>(*web_contents) {
+      WebContentsUserData<SubCaptureTargetIdWebContentsHelper>(*web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(web_contents);
 }
 
-CropIdWebContentsHelper::~CropIdWebContentsHelper() = default;
+SubCaptureTargetIdWebContentsHelper::~SubCaptureTargetIdWebContentsHelper() =
+    default;
 
-std::string CropIdWebContentsHelper::ProduceCropId() {
+std::string SubCaptureTargetIdWebContentsHelper::ProduceCropId() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Prevent Web-applications from producing an excessive number of crop-IDs.
@@ -84,14 +87,14 @@ std::string CropIdWebContentsHelper::ProduceCropId() {
   return guid.AsLowercaseString();
 }
 
-bool CropIdWebContentsHelper::IsAssociatedWithCropId(
+bool SubCaptureTargetIdWebContentsHelper::IsAssociatedWithCropId(
     const base::Token& crop_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   return base::Contains(crop_ids_, crop_id);
 }
 
-void CropIdWebContentsHelper::ReadyToCommitNavigation(
+void SubCaptureTargetIdWebContentsHelper::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(navigation_handle);
@@ -106,12 +109,12 @@ void CropIdWebContentsHelper::ReadyToCommitNavigation(
   }
 }
 
-void CropIdWebContentsHelper::ClearCropIds() {
+void SubCaptureTargetIdWebContentsHelper::ClearCropIds() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   crop_ids_.clear();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CropIdWebContentsHelper);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SubCaptureTargetIdWebContentsHelper);
 
 }  // namespace content

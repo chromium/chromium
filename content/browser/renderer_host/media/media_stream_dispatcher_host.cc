@@ -109,8 +109,8 @@ bool MayCrop(const GlobalRoutingID& capturing_id,
     return false;
   }
 
-  CropIdWebContentsHelper* const helper =
-      CropIdWebContentsHelper::FromWebContents(captured_wc);
+  SubCaptureTargetIdWebContentsHelper* const helper =
+      SubCaptureTargetIdWebContentsHelper::FromWebContents(captured_wc);
   if (!helper) {
     // No crop-IDs were ever produced on this WebContents.
     // Any non-zero crop-ID should be rejected on account of being

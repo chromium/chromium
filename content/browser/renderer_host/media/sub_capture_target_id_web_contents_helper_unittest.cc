@@ -33,9 +33,10 @@ MATCHER(IsValidCropId, "") {
 
 }  // namespace
 
-class CropIdWebContentsHelperTest : public RenderViewHostImplTestHarness {
+class SubCaptureTargetIdWebContentsHelperTest
+    : public RenderViewHostImplTestHarness {
  public:
-  ~CropIdWebContentsHelperTest() override = default;
+  ~SubCaptureTargetIdWebContentsHelperTest() override = default;
 
   void SetUp() override { RenderViewHostImplTestHarness::SetUp(); }
 
@@ -47,22 +48,24 @@ class CropIdWebContentsHelperTest : public RenderViewHostImplTestHarness {
     return TestWebContents::Create(GetBrowserContext(), std::move(instance));
   }
 
-  static CropIdWebContentsHelper* helper(WebContents* web_contents) {
+  static SubCaptureTargetIdWebContentsHelper* helper(
+      WebContents* web_contents) {
     // No-op if already created.
-    CropIdWebContentsHelper::CreateForWebContents(web_contents);
-    return CropIdWebContentsHelper::FromWebContents(web_contents);
+    SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents);
+    return SubCaptureTargetIdWebContentsHelper::FromWebContents(web_contents);
   }
 
   static base::Token GUIDToToken(const base::Uuid& guid) {
-    return CropIdWebContentsHelper::GUIDToToken(guid);
+    return SubCaptureTargetIdWebContentsHelper::GUIDToToken(guid);
   }
 };
 
-TEST_F(CropIdWebContentsHelperTest,
+TEST_F(SubCaptureTargetIdWebContentsHelperTest,
        IsAssociatedWithCropIdReturnsFalseForUnknownCropId) {
   const std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
-  CropIdWebContentsHelper::CreateForWebContents(web_contents.get());
-  auto* helper = CropIdWebContentsHelper::FromWebContents(web_contents.get());
+  SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents.get());
+  auto* helper =
+      SubCaptureTargetIdWebContentsHelper::FromWebContents(web_contents.get());
   ASSERT_NE(helper, nullptr);
 
   // Test focus.
@@ -74,27 +77,30 @@ TEST_F(CropIdWebContentsHelperTest,
   EXPECT_FALSE(helper->IsAssociatedWithCropId(GUIDToToken(unknown_crop_id)));
 }
 
-TEST_F(CropIdWebContentsHelperTest, ProduceCropIdReturnsCropId) {
+TEST_F(SubCaptureTargetIdWebContentsHelperTest, ProduceCropIdReturnsCropId) {
   const std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
-  CropIdWebContentsHelper::CreateForWebContents(web_contents.get());
-  auto* helper = CropIdWebContentsHelper::FromWebContents(web_contents.get());
+  SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents.get());
+  auto* helper =
+      SubCaptureTargetIdWebContentsHelper::FromWebContents(web_contents.get());
   ASSERT_NE(helper, nullptr);
 
   EXPECT_THAT(helper->ProduceCropId(), IsValidCropId());
 }
 
-TEST_F(CropIdWebContentsHelperTest,
+TEST_F(SubCaptureTargetIdWebContentsHelperTest,
        IsAssociatedWithCropIdReturnsTrueForKnownCropIdIfCorrectWebContents) {
   const std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
-  CropIdWebContentsHelper::CreateForWebContents(web_contents.get());
-  auto* helper = CropIdWebContentsHelper::FromWebContents(web_contents.get());
+  SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents.get());
+  auto* helper =
+      SubCaptureTargetIdWebContentsHelper::FromWebContents(web_contents.get());
   ASSERT_NE(helper, nullptr);
 
   const std::unique_ptr<TestWebContents> other_web_contents =
       MakeTestWebContents();
-  CropIdWebContentsHelper::CreateForWebContents(other_web_contents.get());
-  auto* other_helper =
-      CropIdWebContentsHelper::FromWebContents(other_web_contents.get());
+  SubCaptureTargetIdWebContentsHelper::CreateForWebContents(
+      other_web_contents.get());
+  auto* other_helper = SubCaptureTargetIdWebContentsHelper::FromWebContents(
+      other_web_contents.get());
   ASSERT_NE(other_helper, nullptr);
 
   const std::string crop_id_str = helper->ProduceCropId();
@@ -107,21 +113,27 @@ TEST_F(CropIdWebContentsHelperTest,
   EXPECT_FALSE(other_helper->IsAssociatedWithCropId(crop_id));
 }
 
-TEST_F(CropIdWebContentsHelperTest, MaxCropIdsPerWebContentsObserved) {
+TEST_F(SubCaptureTargetIdWebContentsHelperTest,
+       MaxCropIdsPerWebContentsObserved) {
   const std::unique_ptr<TestWebContents> web_contents[2] = {
       MakeTestWebContents(), MakeTestWebContents()};
-  CropIdWebContentsHelper::CreateForWebContents(web_contents[0].get());
-  CropIdWebContentsHelper::CreateForWebContents(web_contents[1].get());
-  CropIdWebContentsHelper* helpers[2] = {
-      CropIdWebContentsHelper::FromWebContents(web_contents[0].get()),
-      CropIdWebContentsHelper::FromWebContents(web_contents[1].get())};
+  SubCaptureTargetIdWebContentsHelper::CreateForWebContents(
+      web_contents[0].get());
+  SubCaptureTargetIdWebContentsHelper::CreateForWebContents(
+      web_contents[1].get());
+  SubCaptureTargetIdWebContentsHelper* helpers[2] = {
+      SubCaptureTargetIdWebContentsHelper::FromWebContents(
+          web_contents[0].get()),
+      SubCaptureTargetIdWebContentsHelper::FromWebContents(
+          web_contents[1].get())};
 
-  std::string crop_ids_str[2]
-                          [CropIdWebContentsHelper::kMaxCropIdsPerWebContents];
+  std::string crop_ids_str
+      [2][SubCaptureTargetIdWebContentsHelper::kMaxCropIdsPerWebContents];
 
   // Up to `kMaxCropIdsPerWebContents` allowed on each WebContents.
   for (size_t web_contents_idx = 0; web_contents_idx < 2; ++web_contents_idx) {
-    for (size_t i = 0; i < CropIdWebContentsHelper::kMaxCropIdsPerWebContents;
+    for (size_t i = 0;
+         i < SubCaptureTargetIdWebContentsHelper::kMaxCropIdsPerWebContents;
          ++i) {
       crop_ids_str[web_contents_idx][i] =
           helpers[web_contents_idx]->ProduceCropId();
@@ -130,13 +142,14 @@ TEST_F(CropIdWebContentsHelperTest, MaxCropIdsPerWebContentsObserved) {
   }
 
   // Attempts to produce more crop-IDs on either WebContents fail.
-  for (CropIdWebContentsHelper* helper : helpers) {
+  for (SubCaptureTargetIdWebContentsHelper* helper : helpers) {
     EXPECT_THAT(helper->ProduceCropId(), IsEmptyCropId());
   }
 
   // The original crop-IDs are not forgotten.
   for (size_t web_contents_idx = 0; web_contents_idx < 2; ++web_contents_idx) {
-    for (size_t i = 0; i < CropIdWebContentsHelper::kMaxCropIdsPerWebContents;
+    for (size_t i = 0;
+         i < SubCaptureTargetIdWebContentsHelper::kMaxCropIdsPerWebContents;
          ++i) {
       const base::Token crop_id = GUIDToToken(
           base::Uuid::ParseLowercase(crop_ids_str[web_contents_idx][i]));
@@ -150,11 +163,12 @@ TEST_F(CropIdWebContentsHelperTest, MaxCropIdsPerWebContentsObserved) {
   }
 }
 
-TEST_F(CropIdWebContentsHelperTest,
+TEST_F(SubCaptureTargetIdWebContentsHelperTest,
        CrossDocumentNavigationClearsCropIdsAssociation) {
   std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
-  CropIdWebContentsHelper::CreateForWebContents(web_contents.get());
-  auto* helper = CropIdWebContentsHelper::FromWebContents(web_contents.get());
+  SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents.get());
+  auto* helper =
+      SubCaptureTargetIdWebContentsHelper::FromWebContents(web_contents.get());
   ASSERT_NE(helper, nullptr);
 
   // Setup - WebContents navigated to a document, crop-ID produced.
@@ -185,18 +199,20 @@ TEST_F(CropIdWebContentsHelperTest,
   // Verification #3: The forgotten crop-ID is not counted against the limit
   // of crop-IDs applied to a WebContents. (kMaxCropIdsPerWebContents - 1 more
   // invocations allowed, then the next one fails.)
-  for (size_t i = 0; i < CropIdWebContentsHelper::kMaxCropIdsPerWebContents - 1;
+  for (size_t i = 0;
+       i < SubCaptureTargetIdWebContentsHelper::kMaxCropIdsPerWebContents - 1;
        ++i) {
     EXPECT_THAT(helper->ProduceCropId(), IsValidCropId());
   }
   EXPECT_THAT(helper->ProduceCropId(), IsEmptyCropId());
 }
 
-TEST_F(CropIdWebContentsHelperTest,
+TEST_F(SubCaptureTargetIdWebContentsHelperTest,
        InDocumentNavigationDoesNotClearCropIdsAssociation) {
   std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
-  CropIdWebContentsHelper::CreateForWebContents(web_contents.get());
-  auto* helper = CropIdWebContentsHelper::FromWebContents(web_contents.get());
+  SubCaptureTargetIdWebContentsHelper::CreateForWebContents(web_contents.get());
+  auto* helper =
+      SubCaptureTargetIdWebContentsHelper::FromWebContents(web_contents.get());
   ASSERT_NE(helper, nullptr);
 
   // Setup - WebContents navigated to a document, crop-ID produced.
