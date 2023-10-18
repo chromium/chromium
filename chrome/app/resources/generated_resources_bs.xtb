@@ -2058,7 +2058,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2564520396658920462">Izvršavanje JavaScripti kroz AppleScript je isključeno. Da ga uključite, iz trake menija idite na Prikaz &gt; Programer &gt; Omogući JavaScript iz Appleovih događaja. Za više informacija, posjetite: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Poboljšana provjera pravopisa</translation>
 <translation id="256481480019204378">ID Google računa</translation>
-<translation id="256517381556987641">Sinkronizacija datoteka pronašla je datoteke (do sada njih <ph name="ITEMS_FOUND" />) te još uvijek provjerava prostor za pohranu. Pokušajte ponovno uključiti sinkronizaciju datoteka za nekoliko minuta.</translation>
+<translation id="256517381556987641">Sinhronizacija fajlova je dosad pronašla više fajlova (ukupno <ph name="ITEMS_FOUND" />) i još uvijek provjerava prostor za pohranu. Za nekoliko minuta pokušajte ponovo uključiti Sinhronizaciju fajlova.</translation>
 <translation id="2565214867520763227">Uključite čitač ekrana</translation>
 <translation id="2568694057933302218">U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na web lokacijama. Aktivnost pregledanja se ne koristi za stvari kao što je personaliziranje oglasa. Moguće je da funkcije neće raditi na nekim web lokacijama.</translation>
 <translation id="2568774940984945469">Spremnik trake s informacijama</translation>
@@ -4386,7 +4386,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4427365070557649936">Potvrđivanje koda za potvrdu...</translation>
 <translation id="4429163740524851942">Raspored fizičke tastature</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
-<translation id="4430204941092622397">Zbog toga biste mogli izgubiti vezu s mobilnom mrežom na nekoliko minuta.</translation>
+<translation id="4430204941092622397">Zbog toga možete izgubiti vezu s mobilnom mrežom na nekoliko minuta.</translation>
 <translation id="443031431654216610">Koristite samo cifre</translation>
 <translation id="4430369329743628066">Oznaka je dodana</translation>
 <translation id="4430422687972614133">Uključi virtuelnu karticu</translation>
@@ -4600,7 +4600,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4610162781778310380">Došlo je do greške na dodatku <ph name="PLUGIN_NAME" /></translation>
 <translation id="4610637590575890427">Htjeli ste ići na <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Veza za prijenos podataka je dostupna</translation>
-<translation id="4611759022973144129">Tu zaporku možete upotrebljavati za prijavu na uređaj <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4611759022973144129">Možete koristiti ovu lozinku da se prijavite na uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4612841084470706111">Dozvoli pristup svim zatraženim web lokacijama.</translation>
 <translation id="4613144866899789710">Otkazivanje instaliranja Linuxa...</translation>
 <translation id="4613271546271159013">Ekstenzija je promijenila sadržaj koji se prikazuje na ekranu kada otvorite novu karticu.</translation>
@@ -5100,7 +5100,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5027550639139316293">Potvrda za e-poštu</translation>
 <translation id="5027562294707732951">Dodaj ekstenziju</translation>
 <translation id="5028445315206872221">Ekstenzije su blokirane na ovoj web lokaciji</translation>
-<translation id="5029287942302939687">Zaporka je postavljena</translation>
+<translation id="5029287942302939687">Lozinka je postavljena</translation>
 <translation id="5029873138381728058">Provjera VM-ova nije uspjela</translation>
 <translation id="503155457707535043">Preuzimanje aplikacija</translation>
 <translation id="5032430150487044192">Nije moguće kreirati QR kôd</translation>
@@ -5129,7 +5129,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5054374119096692193">Pogledajte sve opcije kartica u odjeljku <ph name="BEGIN_LINK" />Prilagodite Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Povezivanje sa spremnikom</translation>
 <translation id="5057110919553308744">Kada kliknete na ekstenziju</translation>
-<translation id="5057127674016624293">Skeniranje traje dulje od očekivanog</translation>
+<translation id="5057127674016624293">Skeniranje traje duže od očekivanog</translation>
 <translation id="5059241099014281248">Ograniči prijavu</translation>
 <translation id="5059429103770496207">Stil prikaza</translation>
 <translation id="5059526285558225588">Odaberite šta ćete dijeliti</translation>
@@ -6025,7 +6025,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5797521893972859201">Briše historiju, uključujući onu u okviru za pretraživanje</translation>
 <translation id="5797934230382081317">Saznajte kako započeti na &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Androidu&lt;/a&gt; i &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS-u&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Web lokacije mogu instalirati obrađivače plaćanja</translation>
-<translation id="5798086737841799234">Unos potvrdnog koda</translation>
+<translation id="5798086737841799234">Unesite kôd za potvrdu</translation>
 <translation id="579915268381781820">Vaš sigurnosni ključ je uklonjen.</translation>
 <translation id="5799478978078236781">Primajte savjete, ponude i ažuriranja za uređaj <ph name="DEVICE_TYPE" /> i dijelite povratne informacije.</translation>
 <translation id="5799508265798272974">Linux virtuelni uređaj: <ph name="LINUX_VM_NAME" /></translation>
@@ -6167,7 +6167,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5901089233978050985">Pređi na snimanje kartice</translation>
 <translation id="5901494423252125310">Otvoren je poklopac štampača</translation>
 <translation id="5901630391730855834">Žuta</translation>
-<translation id="5902211418335330937">Ako web lokacija ne funkcionira prema očekivanjima, možete omogućiti kolačiće treće strane za tu web lokaciju odabirom blokiranja kolačića treće strane u trakama za pretraživanje i adresu.</translation>
 <translation id="5904614460720589786">Postavljanje aplikacije <ph name="APP_NAME" /> nije uspjelo zbog problema s konfiguracijom. Kontaktirajte administratora. Kȏd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Još malo pa je ažurirano! Ponovo pokrenite uređaj da završite ažuriranje.</translation>
 <translation id="5906732635754427568">Podaci koji su povezani s ovom aplikacijom bit će uklonjeni s ovog uređaja.</translation>
@@ -6934,7 +6933,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6532663472409656417">Uređaj prijavljenog preduzeća</translation>
 <translation id="6533315466883598769">Koristite Google Prevodioca</translation>
 <translation id="65334502113648172">Pritisnite tipke sa strelicama da smanjite ili proširite područje prikaza. Da pomjerate područje prikaza, pritisnite tipke shift i +, a zatim koristite tipke sa strelicama.</translation>
-<translation id="6533636340637966565">Uključivanje…</translation>
 <translation id="6535331821390304775">Uvijek dozvolite web lokaciji <ph name="ORIGIN" /> da otvara linkove ove vrste u povezanoj aplikaciji</translation>
 <translation id="653659894138286600">Skeniranje dokumenata i slika</translation>
 <translation id="6537613839935722475">Naziv može sadržavati slova, brojeve i crtice (-)</translation>
@@ -8104,7 +8102,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7475742997309661417">Čitač ekrana na ChromeOS-u, ChromeVox, prvenstveno koriste slijepe ili slabovidne osobe za čitanje teksta s ekrana pomoću sintisajzera govora ili Brailleovog ekrana. Da uključite ChromeVox, pritisnite i pet sekundi zadržite obje tipke za jačinu zvuka. Kada se ChromeVox aktivira, proći ćete brz obilazak.</translation>
 <translation id="7476454130948140105">Baterija nije dovoljno napunjena za ažuriranje (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Automatski blokirano: <ph name="PERMISSION" /> i još <ph name="COUNT" /></translation>
-<translation id="7477460499687558352">Odaberite eSIM profil za preuzimanje</translation>
+<translation id="7477460499687558352">Odaberite eSIM profil koji želite preuzeti</translation>
 <translation id="7477599578899108080">Veliko korištenje memorije: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Kreiraj QR kôd za ovu stranicu</translation>
 <translation id="7477793887173910789">Kontrolirajte muziku, videozapise i drugi sadržaj</translation>
@@ -9181,6 +9179,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8314835274931377415">Pokrenuti postavljanje prekidača za pristup?</translation>
 <translation id="8315018673856831477">Opcije uštede memorije</translation>
 <translation id="8315044115695361734">S iCloud Keychaina</translation>
+<translation id="8315514906653279104">Uključivanje…</translation>
 <translation id="8317671367883557781">Dodaj mrežnu vezu</translation>
 <translation id="8317965619823678157">kopirati lozinke</translation>
 <translation id="8318266828739827371">Koristite prikaz podijeljenog ekrana da vidite uvećanu površinu ekrana. Koristite tipku za pretraživanje + Ctrl + D da uključite i isključite priključeno povećalo.</translation>

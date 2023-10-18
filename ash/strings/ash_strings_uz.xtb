@@ -311,7 +311,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2276987123919776440">15 daq</translation>
 <translation id="2277103315734023688">Oldinga o‘tkazish</translation>
 <translation id="2282073721614284166">Havolani yangi varaqda ochish</translation>
-<translation id="2284237890386182187">Hech qanday qurilma ulanmagan</translation>
 <translation id="2292698582925480719">Ekran ko‘lami</translation>
 <translation id="229397294990920565">Mobil internet oʻchirilmoqda...</translation>
 <translation id="2295777434187870477">Mikrofon yoniq, uni oʻchirish uchun ustiga bosing.</translation>
@@ -620,7 +619,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3563775809269155755">Hotspotni yoqish</translation>
 <translation id="3566240529365775567">Hozirgina ochildi</translation>
 <translation id="3571734092741541777">Sozlash</translation>
-<translation id="3572988532398145777">Panel ochiqligida bildirishnoma yoyilmaydi. Avval quyidagi panelni yoping.</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" tiliga qaytarish (qayta yuklash kerak bo‘ladi)</translation>
 <translation id="3576141592585647168">Vaqt mintaqasini almashtirish</translation>
 <translation id="3577473026931028326">Xatolik yuz berdi. Qayta urining.</translation>
@@ -703,7 +701,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="385300504083504382">Boshi</translation>
 <translation id="3859364108019690">Ilovalar namoyish etilmaydi</translation>
 <translation id="3861651314799684201">Butun ekranni yozib olish uchun Enter tugmasini bosing</translation>
-<translation id="3865912916886104060">Hech qanday qurilma ulanmagan. Hotspotdan foydalanishni boshlash uchun Wi-Fi oʻchiriladi.</translation>
 <translation id="3886872229787704059">Bugun ochilgan</translation>
 <translation id="3891340733213178823">Chiqish uchun “Control+Shift+Q” tugmalarini ikki marta bosing.</translation>
 <translation id="3893630138897523026">ChromeVox (ovozli ta’rif)</translation>
@@ -790,7 +787,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4197790712631116042">Oʻchiq</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> mavjud emas.</translation>
 <translation id="4201051445878709314">Avvalgi oyni ko‘rsatish</translation>
-<translation id="4202362334312791952">1 ta qurilma ulandi. Hotspotdan foydalanishni boshlash uchun Wi-Fi oʻchiriladi.</translation>
 <translation id="4209973997261364186">Wi-Fi yoqildi</translation>
 <translation id="4212472694152630271">PIN kod kiritish</translation>
 <translation id="4215497585250573029">VPN sozlamalari</translation>
@@ -1100,7 +1096,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5426063383988017631">Sozlamalar menyusi yopildi</translation>
 <translation id="5428899915242071344">Matnni tanlashni boshlash</translation>
 <translation id="5429993543155113935">Inkognito oynalari ishlamaydi</translation>
-<translation id="5430931332414098647">Tezkor modem rejimi</translation>
 <translation id="5431318178759467895">Rang</translation>
 <translation id="5433020815079095860">Audio kirish</translation>
 <translation id="544691375626129091">Bu seansga barcha mavjud foydalanuvchilar qo‘shildi.</translation>
@@ -1129,6 +1124,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="554893713779400387">Diktovkani yoqish</translation>
 <translation id="5551456515017410630">Taqvimni ochish yoki yopish</translation>
 <translation id="5551974246223970793">Sahifadan qidirishda keyingi natijaga oʻtish</translation>
+<translation id="5555639311269196631">Hotspotni faolsizlantirish</translation>
 <translation id="5558091555391176027">Nearby Share uchun keng ruxsat berish</translation>
 <translation id="556042886152191864">Tugma</translation>
 <translation id="5570122939431135380">Yangi inkognito oynada yangi varaq ochish</translation>
@@ -1174,7 +1170,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5707775774148071965">Qurilmangizga maʼlumot uzatish tezligi yuqoriroq kabellarni ulash mumkin. Qurilma samaradorligi cheklanishi mumkin.</translation>
 <translation id="5710450975648804523">Bezovta qilinmasin rejimi yoniq</translation>
 <translation id="571295407079589142">Mobil internet yoqilmagan</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> ta qurilma ulangan. Hotspotdan foydalanishni boshlash uchun Wi-Fi oʻchiriladi.</translation>
 <translation id="5727460725221669831">Parolni unutsangiz yoki Google hisobi parolini yaqinda almashtirgan boʻlsangiz, bu foydalanuvchini tiklang.</translation>
 <translation id="573413375004481890">Bu qurilma barcha displeylaringiz bilan mos emasligi sababli bittasidan uzildi</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
@@ -1224,7 +1219,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Yoniq</translation>
 <translation id="5920710855273935292">Ovozsiz.</translation>
-<translation id="5924855612669061715">Hotspot yoniq</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> yoniq.</translation>
 <translation id="5947494881799873997">Bekor qilish</translation>
 <translation id="595202126637698455">Unumdorlik kuzatuvi yoniq</translation>
@@ -1240,6 +1234,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="598407983968395253">Andozadan foydalanish</translation>
 <translation id="598882571027504733">Yangilanishni o‘rnatish uchun Chromebook qurilmangizni tashqi klavuatura orqali o‘chirib yoqing.</translation>
 <translation id="6000279412553873020">Kalitlar, tugmalar va boshqalar</translation>
+<translation id="6002122790816966947">Qurilmalaringiz</translation>
 <translation id="6012623610530968780">Sahifa: <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Paneldagi keyingi elementni ajratish koʻrsatish</translation>
 <translation id="6015573907265691211">Bajarildi deb belgilash</translation>
@@ -1532,6 +1527,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7188494361780961876">Menyu ekranning yuqori chap burchagiga surildi.</translation>
 <translation id="7189412385142492784">Venera qanchalik uzoq</translation>
 <translation id="7198435252016571249">Kamera pastki oʻng burchakka joylandi. Tizim platfromasi bilan muammo chiqdi.</translation>
+<translation id="7219573373513695352">Hech qanday qurilma ulanmagan</translation>
 <translation id="7229029500464092426">Xotira: <ph name="AVAILABLE_MEMORY" /> | jami: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Batareyada <ph name="PERCENTAGE" />% quvvat qoldi. Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Yangilanish amalga oshishi uchun Chromebook qayta ishga tushirilishi lozim. Bu 1 daqiqacha vaqt olishi mumkin.</translation>

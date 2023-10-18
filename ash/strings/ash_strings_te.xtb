@@ -311,7 +311,6 @@
 <translation id="2276987123919776440">15నిమి</translation>
 <translation id="2277103315734023688">ముందుకు జరుపు</translation>
 <translation id="2282073721614284166">ట్యాబ్‌లో లింక్‌ను తెరవండి</translation>
-<translation id="2284237890386182187">ఆన్‌లో ఉంది, పరికరాలేవీ కనెక్ట్ అయి లేవు</translation>
 <translation id="2292698582925480719">ప్రదర్శన ప్రమాణం</translation>
 <translation id="229397294990920565">మొబైల్ డేటా ఆఫ్ చేయబడుతోంది...</translation>
 <translation id="2295777434187870477">మైక్ ఆన్‌లో ఉంది, టోగుల్ చేయడం వలన ఇన్‌పుట్ మ్యూట్ అవుతుంది.</translation>
@@ -620,7 +619,6 @@
 <translation id="3563775809269155755">హాట్‌స్పాట్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="3566240529365775567">ఇప్పుడే తెరిచారు</translation>
 <translation id="3571734092741541777">సెటప్ చేయి</translation>
-<translation id="3572988532398145777">ప్యానెల్ తెరిచి ఉన్నప్పుడు మీరు నోటిఫికేషన్‌ను విస్తరించలేరు. ముందుగా కింద ఉన్న ప్యానెల్‌ను మూసివేయండి.</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"కు వెనుక‌కు మార్చండి (పునఃప్రారంభం అవసరం)</translation>
 <translation id="3576141592585647168">సమయ మండలిని మార్చండి</translation>
 <translation id="3577473026931028326">ఏదో తప్పు జరిగింది. మళ్లీ ట్రై చేయండి.</translation>
@@ -704,7 +702,6 @@
 <translation id="385300504083504382">ప్రారంభం</translation>
 <translation id="3859364108019690">యాప్‌లను స్ట్రీమ్ చేయడం సాధ్యపడదు</translation>
 <translation id="3861651314799684201">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయడానికి enterను నొక్కండి</translation>
-<translation id="3865912916886104060">పరికరాలు ఏవీ కనెక్ట్ కాలేదు. హాట్‌స్పాట్‌ను ఉపయోగించడం ప్రారంభించడానికి Wi-Fiని ఆఫ్ చేయడం జరుగుతుంది.</translation>
 <translation id="3886872229787704059">ఈ రోజు తెరిచారు</translation>
 <translation id="3891340733213178823">సైన్ అవుట్ చేయడానికి Ctrl+Shift+Qని రెండుసార్లు నొక్కండి.</translation>
 <translation id="3893630138897523026">ChromeVox (చదవబడే అభిప్రాయం)</translation>
@@ -791,7 +788,6 @@
 <translation id="4197790712631116042">ఆఫ్</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> అందుబాటులో లేదు.</translation>
 <translation id="4201051445878709314">మునుపటి నెలను చూపుతుంది</translation>
-<translation id="4202362334312791952">1 పరికరం కనెక్ట్ అయింది. హాట్‌స్పాట్‌ను ఉపయోగించడం ప్రారంభించడానికి Wi-Fiని ఆఫ్ చేయడం జరుగుతుంది.</translation>
 <translation id="4209973997261364186">Wi-Fi ఆన్ చేయబడింది</translation>
 <translation id="4212472694152630271">పిన్‌కి స్విచ్ చేయి</translation>
 <translation id="4215497585250573029">VPN సెట్టింగ్‌లు</translation>
@@ -1101,7 +1097,6 @@
 <translation id="5426063383988017631">సెట్టింగ్‌ల మెనూ మూసివేయబడింది</translation>
 <translation id="5428899915242071344">ఎంచుకోవడం ప్రారంభించండి</translation>
 <translation id="5429993543155113935">అజ్ఞాత విండోలు ప్రస్తుత సపోర్ట్ చేయవు</translation>
-<translation id="5430931332414098647">తక్షణ టెథెరింగ్</translation>
 <translation id="5431318178759467895">రంగు</translation>
 <translation id="5433020815079095860">ఆడియో ఇన్‌పుట్</translation>
 <translation id="544691375626129091">అందుబాటులో ఉన్న వినియోగదారులందరూ ఇప్పటికే ఈ సెషన్‌కు జోడించబడ్డారు.</translation>
@@ -1130,6 +1125,7 @@
 <translation id="554893713779400387">డిక్టేషన్‌ను టోగుల్ చేయి</translation>
 <translation id="5551456515017410630">క్యాలెండర్‌ను తెరవండి/మూసివేయండి</translation>
 <translation id="5551974246223970793">ఒక పేజీని సెర్చ్ చేస్తున్నప్పుడు, తర్వాతి మ్యాచ్‌కు వెళ్లండి</translation>
+<translation id="5555639311269196631">హాట్‌స్పాట్‌ను ఆఫ్ చేయండి</translation>
 <translation id="5558091555391176027">సమీప షేరింగ్ అధిక విజిబిలిటీ మోడ్‌ను టోగుల్ చేయండి</translation>
 <translation id="556042886152191864">బటన్</translation>
 <translation id="5570122939431135380">కొత్త ట్యాబ్‌ను కొత్త అజ్ఞాత విండోలో తెరవండి</translation>
@@ -1175,7 +1171,6 @@
 <translation id="5707775774148071965">మీ పరికరం మీ కేబుల్ కంటే ఎక్కువ డేటా రేట్‌ను సపోర్ట్ చేస్తుంది. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
 <translation id="5710450975648804523">'అంతరాయం కలిగించవద్దు' మోడ్ ఆన్‌లో ఉంది</translation>
 <translation id="571295407079589142">మొబైల్ డేటా ఆఫ్ చేయబడింది</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> పరికరాలు కనెక్ట్ అయ్యాయి. హాట్‌స్పాట్‌ను ఉపయోగించడం ప్రారంభించడానికి Wi-Fiని ఆఫ్ చేయడం జరుగుతుంది.</translation>
 <translation id="5727460725221669831">మీరు మీ పాస్‌వర్డ్‌ను మరిచిపోతే లేదా ఇటీవల మీ Google ఖాతా పాస్‌వర్డ్‌ను మార్చినట్లయితే, ఈ యూజర్‌ను రికవర్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="573413375004481890">ఈ పరికరం మీ అన్ని ప్రదర్శన స్క్రీన్‌లకు మద్దతు ఇవ్వలేదు, కాబట్టి ఒకటి డిస్‌కనెక్ట్ చేయబడింది</translation>
 <translation id="5740328398383587084">సమీప షేరింగ్</translation>
@@ -1225,7 +1220,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="5920710855273935292">మైక్ మ్యూట్ చేయబడింది.</translation>
-<translation id="5924855612669061715">హాట్‌స్పాట్ ఆన్‌లో ఉంది</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ఆన్‌లో ఉంది.</translation>
 <translation id="5947494881799873997">తిరిగి పూర్వ స్థితికి మార్చు</translation>
 <translation id="595202126637698455">పనితీరుని గుర్తించడం ప్రారంభించబడింది</translation>
@@ -1241,6 +1235,7 @@
 <translation id="598407983968395253">టెంప్లేట్‌ను ఉపయోగించండి</translation>
 <translation id="598882571027504733">అప్‌డేట్‌ను పొందడానికి, కీబోర్డ్‌ను అలానే జోడించి ఉంచి మీ Chromebookను పునఃప్రారంభించండి.</translation>
 <translation id="6000279412553873020">కీలు, బటన్‌లు అలాగే మరిన్ని</translation>
+<translation id="6002122790816966947">మీ పరికరాలు</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />లో <ph name="SELECTED_PAGE" />వ పేజీ</translation>
 <translation id="601304062528754300">షెల్ఫ్‌లో తర్వాతి ఐటెమ్‌ను హైలైట్ చేయండి</translation>
 <translation id="6015573907265691211">పూర్తయిందని మార్క్ చేయండి</translation>
@@ -1533,6 +1528,7 @@
 <translation id="7188494361780961876">స్క్రీన్‌లో పైన ఎడమ వైపు మూలకు మెనూ తరలించబడింది.</translation>
 <translation id="7189412385142492784">శుక్రుడు ఎంత దూరంలో ఉన్నాడు</translation>
 <translation id="7198435252016571249">కెమెరా దిగువ కుడి మూలకు స్నాప్ చేయబడింది. సిస్టమ్ ప్లాట్‌ఫామ్‌కు విరుద్ధంగా.</translation>
+<translation id="7219573373513695352">పరికరాలు ఏవీ కనెక్ట్ కాలేదు</translation>
 <translation id="7229029500464092426">మెమరీ <ph name="AVAILABLE_MEMORY" /> | మొత్తం <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% బ్యాటరీ మిగిలి ఉంది. మీ పరికరాన్ని పవర్‌కు కనెక్ట్ చేయండి.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. ఒక అప్‌డేట్‌ను వర్తింపజేయడానికి ఈ Chromebookను రీస్టార్ట్ చేయాలి. దీనికి 1 నిమిషం వరకు పట్టవచ్చు.</translation>

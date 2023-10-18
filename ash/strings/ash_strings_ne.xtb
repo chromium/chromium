@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">१५ मिनेट</translation>
 <translation id="2277103315734023688">अगाडि जानुहोस्</translation>
 <translation id="2282073721614284166">यो लिंक नयाँ ट्याबमा खोल्नुहोस्</translation>
-<translation id="2284237890386182187">अन छ, कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="2292698582925480719">प्रदर्शनको अनुपात</translation>
 <translation id="229397294990920565">मोबाइल डेटा अफ गरिँदै छ...</translation>
 <translation id="2295777434187870477">माइक सक्रिय छ, टगल गर्नुले माइक म्युट गर्ने छ।</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">हटस्पट अन गर्नुहोस्</translation>
 <translation id="3566240529365775567">भर्खरै खोलिएको</translation>
 <translation id="3571734092741541777">सेटअप गर्नुहोस्</translation>
-<translation id="3572988532398145777">प्यानल खुला भएका बेला सूचना एक्स्पान्ड गर्न मिल्दैन। सुरुमा तलको प्यानल बन्द गर्नुहोस्।</translation>
 <translation id="3573179567135747900">पुन: "<ph name="FROM_LOCALE" />" मा परिवर्तन गर्नुहोस् (फेरि सुरु गर्न आवश्यक छ)</translation>
 <translation id="3576141592585647168">प्रामाणिक समय परिवर्तन गर्नुहोस्</translation>
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">पाठको सुरुवातमा जानुहोस्</translation>
 <translation id="3859364108019690">एपहरू स्ट्रिम गर्न सकिएन</translation>
 <translation id="3861651314799684201">पूरा स्क्रिन रेकर्ड गर्न इन्टर थिच्नुहोस्</translation>
-<translation id="3865912916886104060">कुनै पनि डिभाइस कनेक्ट गरिएको छैन। हटस्पट प्रयोग गर्न थाल्न Wi-Fi अफ गरिने छ।</translation>
 <translation id="3886872229787704059">आज खोलिएको</translation>
 <translation id="3891340733213178823">साइन आउट गर्न Ctrl+Shift+Q लाई दुईपटक थिच्नुहोस्।</translation>
 <translation id="3893630138897523026">ChromeVox (बोली पृष्ठपोषण)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">अफ</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> उपलब्ध छैन।</translation>
 <translation id="4201051445878709314">अघिल्लो महिना देखाउनुहोस्</translation>
-<translation id="4202362334312791952">एउटा डिभाइस कनेक्ट गरियो। हटस्पट प्रयोग गर्न थाल्न Wi-Fi अफ गरिने छ।</translation>
 <translation id="4209973997261364186">Wi-Fi अन गरियो</translation>
 <translation id="4212472694152630271">पिन प्रयोग गर्न थाल्नुहोस्</translation>
 <translation id="4215497585250573029">VPN सेटिङहरू</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">सेटिङ मेनु बन्द गरियो</translation>
 <translation id="5428899915242071344">पाठ चयन गर्न थालियोस्</translation>
 <translation id="5429993543155113935">इन्कोग्निटो विन्डो हाल प्रयोग गर्न मिल्दैन</translation>
-<translation id="5430931332414098647">तात्कालिक टेदरिङ</translation>
 <translation id="5431318178759467895">रङ्ग</translation>
 <translation id="5433020815079095860">अडियो इनपुट</translation>
 <translation id="544691375626129091">सबै उपलब्ध प्रयोगकर्ताहरू यस सत्रमा पहिले नै थपिएका छन्।</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">श्रुतिलेखन सुविधा टगल गर्नुहोस्</translation>
 <translation id="5551456515017410630">पात्रो खोल्नुहोस्/बन्द गर्नुहोस्</translation>
 <translation id="5551974246223970793">कुनै पेज खोज्दा खोज पदसँग मिल्दोजुल्दो अर्को परिणाममा जानुहोस्</translation>
+<translation id="5555639311269196631">हटस्पट अफ गर्नुहोस्</translation>
 <translation id="5558091555391176027">नजिकैका डिभाइससँग सेयर गर्ने सुविधाको उच्च भिजिबिलिटी मोड टगल गर्नुहोस्</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5570122939431135380">नयाँ ट्याब नयाँ इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">तपाईंको केबलको तुलनामा तपाईंको डिभाइसमा उच्च गतिमा डेटा ट्रान्सफर हुन्छ। डिभाइस राम्ररी नचल्न सक्छ।</translation>
 <translation id="5710450975648804523">बाधा नपुर्‍याउनुहोस् नामक सेवा सक्रिय छ</translation>
 <translation id="571295407079589142">मोबाइल डेटा अफ गरियो</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> वटा डिभाइस कनेक्ट गरिए। हटस्पट प्रयोग गर्न थाल्न Wi-Fi अफ गरिने छ।</translation>
 <translation id="5727460725221669831">तपाईंले आफ्नो पासवर्ड बिर्सनुभयो वा आफ्नो Google खाताको पासवर्ड बदल्नुभयो भने यो प्रयोगकर्ता खाता रिकभर गरी हेर्नुहोस्।</translation>
 <translation id="573413375004481890">यो यन्त्रले तपाईंको कुनै पनि डिस्प्ले समर्थन गर्न सकेन, त्यसैले एउटाको जडान विच्छेद गरियो</translation>
 <translation id="5740328398383587084">नजिकैका डिभाइससँग सेयर गर्ने सुविधा</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5920710855273935292">माइक म्युट गरिएको छ।</translation>
-<translation id="5924855612669061715">हटस्पट अन गरिएको छ</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> अन छ।</translation>
 <translation id="5947494881799873997">उल्टाउनुहोस्</translation>
 <translation id="595202126637698455">प्रदर्शन ट्रेसिङ सक्षम गरियो</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">टेम्प्लेट प्रयोग गर्नुहोस्</translation>
 <translation id="598882571027504733">अद्यावधिक प्राप्त गर्न, उक्त किबोर्ड जोडिएकै अवस्थामा आफ्नो Chromebook पुनः सुरु गर्नुहोस्।</translation>
 <translation id="6000279412553873020">की, बटन र अन्य कुरा</translation>
+<translation id="6002122790816966947">तपाईंका डिभाइसहरू</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> मध्ये <ph name="SELECTED_PAGE" /> पृष्ठ</translation>
 <translation id="601304062528754300">सेल्फमा भएको अर्को वस्तु हाइलाइट गर्नुहोस्</translation>
 <translation id="6015573907265691211">पूरा भएको कार्यका रूपमा चिन्ह लगाइयोस्</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">मेनु सारेर स्क्रिनको सिरानको बायाँ कुनामा लगियो।</translation>
 <translation id="7189412385142492784">शुक्र ग्रह पृथ्वीबाट कति टाढा छ</translation>
 <translation id="7198435252016571249">क्यामेरा पुछारको दायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
+<translation id="7219573373513695352">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="7229029500464092426">कुल <ph name="TOTAL_MEMORY" /> मध्ये <ph name="AVAILABLE_MEMORY" /> मेमोरी प्रयोग गरिएको छ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। कुनै अद्यावधिक लागू गर्न यो Chromebook पुनः सुरु गर्नु पर्ने हुन्छ। यो प्रक्रिया पूरा हुन १ मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="7256634071279256947">पछाडिको माइक्रोफोन</translation>

@@ -801,6 +801,42 @@ Jika kebijakan disetel ke Salah (False) atau tidak disetel, tidak ada peristiwa 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
+<translation id="173503685261877709">Kebijakan ini memberikan cara untuk mengganti daftar set yang digunakan browser untuk fitur Set Situs Terkait.
+
+Kebijakan ini menggantikan kebijakan <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
+
+Setiap set dalam daftar Set Situs Terkait browser harus memenuhi persyaratan Set Situs Terkait.
+Set Situs Terkait harus berisi situs utama dan satu atau beberapa situs anggota.
+Set juga dapat berisi daftar situs layanan yang dimilikinya, serta peta dari situs ke semua varian ccTLD-nya.
+Lihat https://github.com/WICG/first-party-sets untuk mendapatkan informasi selengkapnya terkait cara <ph name="PRODUCT_NAME" /> menggunakan Set Situs Terkait.
+
+
+Semua situs dalam Set Situs Terkait harus berupa domain yang dapat didaftarkan yang disajikan melalui HTTPS. Setiap situs dalam Set Situs Terkait juga harus unik.
+Artinya, situs tidak boleh tercantum lebih dari sekali dalam Set Situs Terkait.
+
+Jika kebijakan ini diberi kamus kosong, browser akan menggunakan daftar Set Situs Terkait publik.
+
+Untuk semua situs dalam Set Situs Terkait dari daftar <ph name="REPLACEMENTS" />, jika suatu situs juga ada
+di Set Situs Terkait di daftar browser, situs tersebut akan dihapus dari Set Situs Terkait browser.
+Setelahnya, Set Situs Terkait kebijakan akan ditambahkan ke daftar Set Situs Terkait browser.
+
+Untuk semua situs dalam Set Situs Terkait dari daftar <ph name="ADDITIONS" />, jika suatu situs juga ada
+di Set Situs Terkait di daftar browser, Set Situs Terkait browser akan diperbarui sehingga
+Set Situs Terkait baru dapat ditambahkan ke daftar browser. Setelah daftar browser diperbarui,
+Set Situs Terkait kebijakan akan ditambahkan ke daftar Set Situs Terkait browser.
+
+Daftar Set Situs Terkait browser mengharuskan semua situs dalam daftarnya tidak ada yang tercantum di
+lebih dari satu set. Ketentuan ini juga berlaku untuk daftar <ph name="REPLACEMENTS" />
+dan daftar <ph name="ADDITIONS" />. Situs juga tidak boleh ada dalam daftar
+<ph name="REPLACEMENTS" /> dan daftar <ph name="ADDITIONS" />.
+
+Karakter pengganti (*) tidak didukung sebagai nilai kebijakan, ataupun di Set Situs Terkait dalam daftar ini.
+
+Semua set yang disediakan oleh kebijakan harus berupa Set Situs Terkait yang valid. Jika kumpulan tidak valid, error yang sesuai akan ditampilkan.
+
+Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1736269219679256369">Memungkinkan melanjutkan dari halaman peringatan SSL</translation>
 <translation id="1736319469723030923">Jika kebijakan disetel ke Aktif atau tidak disetel, Pembersih Chrome akan memindai sistem secara berkala untuk menemukan software yang tidak diinginkan, dan jika ditemukan, akan menanyakan kepada pengguna apakah ia ingin menghapusnya atau tidak. Pembersih Chrome dapat dipicu secara manual dari chrome://settings.
 
@@ -5983,6 +6019,9 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
 <translation id="6141402445226505817">Selalu gunakan deteksi zona waktu kasar</translation>
 <translation id="6141944295566709543">Izinkan pengguna memutar media saat perangkat dikunci</translation>
 <translation id="6142501278956229253">Mencetak DPI PDF Raster</translation>
+<translation id="6143167485225352920">Jika kebijakan disetel ke Benar (True) atau tidak disetel, pengguna terkelola akan dapat menggunakan ARC di perangkat yang tidak terafiliasi, kecuali jika ARC dinonaktifkan dengan cara lain. Jika kebijakan disetel ke Salah (False), pengguna terkelola tidak boleh menggunakan ARC di perangkat yang tidak terafiliasi.
+
+Perlu diketahui bahwa pembatasan lain, sebagaimana yang diberlakukan oleh kebijakan ArcEnabled dan UnaffiliatedArcAllowed, tetap dipatuhi dan ARC akan dinonaktifkan jika ada kebijakan yang menetapkannya.</translation>
 <translation id="6144046700495610112">Jika kebijakan disetel ke Aktif, data formulir isi otomatis akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada data formulir isi otomatis yang akan diimpor saat pertama kali dijalankan.
 
       Pengguna dapat memicu dialog impor dan kontak centang data formulir isi otomatis akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>
@@ -6536,6 +6575,7 @@ CATATAN: Kebijakan ini salah didokumentasikan di M117, yaitu dengan setelan defa
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci agar kurang dari penundaan waktu tidak ada aktivitas.</translation>
 <translation id="6497085755801788141">Gunakan pemverifikasi sertifikat bawaan</translation>
+<translation id="6499579502664610993">Mengganti Set Situs Terkait.</translation>
 <translation id="6504720469162323184">Jika kebijakan disetel, jumlah waktu dalam milidetik tanpa aktivitas pengguna sebelum login otomatis ke akun lokal perangkat akan ditetapkan sebagaimana ditentukan oleh kebijakan <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
 Jika kebijakan tidak disetel, 0 milidetik akan digunakan sebagai waktu tunggu.
@@ -7031,6 +7071,7 @@ Jika kebijakan ini disetel ke salah (false) atau tidak disetel, tata letak tidak
 <translation id="685769593149966548">Terapkan Mode Terbatas Ketat untuk YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 atau lebih baru</translation>
 <translation id="6866755486434471318">Mengizinkan <ph name="PEPPER_NAME" /> menggunakan gambar yang dibagikan untuk decoding video.</translation>
+<translation id="6878757724611298427">Izinkan pengguna menggunakan aplikasi Android di perangkat yang tidak terafiliasi</translation>
 <translation id="6881447940489194100">Hash SHA-256 dengan enkode heksadesimal pada data.</translation>
 <translation id="68818134518270542">Menyetel kebijakan akan menentukan aplikasi yang dapat diaktifkan pengguna sebagai aplikasi pencatat di layar kunci <ph name="PRODUCT_OS_NAME" />.
 
@@ -7413,6 +7454,7 @@ Jika kebijakan ini tidak disetel atau disetel ke salah (false), kebijakan jaring
 Kebijakan ini akan dihapus jika fitur EphemeralNetworkPolicies diaktifkan secara default.</translation>
 <translation id="7157329428182136164">Aktifkan dukungan untuk 3D graphics API</translation>
 <translation id="7158358621906236999">Setelan default sensor</translation>
+<translation id="7158731543031879810">Mengizinkan pengguna versi bisnis menggunakan ARC di perangkat yang tidak terafiliasi.</translation>
 <translation id="7161568070244869726">Paksa pengaktifan AppCache</translation>
 <translation id="7165879643294314958">Jika kebijakan disetel ke Aktif atau tidak disetel, akun lokal perangkat akan disiapkan untuk login otomatis tanpa penundaan. <ph name="PRODUCT_OS_NAME" /> akan mematuhi pintasan keyboard Ctrl+Alt+S untuk melewati login otomatis dan menampilkan layar login.
 
@@ -7525,6 +7567,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Jika opsi ini dinonaktifkan atau tidak disetel, pengguna dapat menggunakan Developer Tools dan konsol JavaScript.
 
       Jika kebijakan DeveloperToolsAvailability disetel, nilai kebijakan DeveloperToolsDisabled diabaikan.</translation>
+<translation id="7265638080114610885">Jangan izinkan pengguna menggunakan aplikasi Android di perangkat yang tidak terafiliasi</translation>
 <translation id="7266471712301230894">Kebijakan ini telah dihapus mulai <ph name="PRODUCT_NAME" /> 64.
 
       Penelusuran dan penginstalan otomatis untuk plugin yang tidak ada, tidak didukung lagi.</translation>

@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15 минут</translation>
 <translation id="2277103315734023688">Перемотать вперед</translation>
 <translation id="2282073721614284166">Открыть ссылку в этой вкладке</translation>
-<translation id="2284237890386182187">Точка доступа работает. Подключенных устройств нет.</translation>
 <translation id="2292698582925480719">Масштаб экрана</translation>
 <translation id="229397294990920565">Отключение мобильного Интернета…</translation>
 <translation id="2295777434187870477">Микрофон включен. Нажмите, чтобы отключить его.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">Включить точку доступа</translation>
 <translation id="3566240529365775567">Открыто только что</translation>
 <translation id="3571734092741541777">Настроить</translation>
-<translation id="3572988532398145777">Нельзя развернуть уведомление, пока открыта панель. Сначала закройте панель внизу.</translation>
 <translation id="3573179567135747900">Вернуться к языку: "<ph name="FROM_LOCALE" />" (потребуется перезагрузка)</translation>
 <translation id="3576141592585647168">Изменение часового пояса</translation>
 <translation id="3577473026931028326">Произошла ошибка. Повторите попытку.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">В начало</translation>
 <translation id="3859364108019690">Ошибка трансляции приложений</translation>
 <translation id="3861651314799684201">Нажмите Ввод, чтобы записать видео со всего экрана</translation>
-<translation id="3865912916886104060">Нет подключенных устройств. Чтобы вы могли использовать точку доступа, Wi-Fi будет отключен.</translation>
 <translation id="3886872229787704059">Открыто сегодня</translation>
 <translation id="3891340733213178823">Чтобы выйти, дважды нажмите Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (голосовое сопровождение)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">Отключено</translation>
 <translation id="4201033867194214117">Функция "<ph name="FEATURE_NAME" />" недоступна</translation>
 <translation id="4201051445878709314">Показать предыдущий месяц</translation>
-<translation id="4202362334312791952">Подключено 1 устройство. Чтобы вы могли использовать точку доступа, Wi-Fi будет отключен.</translation>
 <translation id="4209973997261364186">Wi-Fi включен</translation>
 <translation id="4212472694152630271">Войти с помощью PIN-кода</translation>
 <translation id="4215497585250573029">Настройки VPN</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">Меню настроек закрыто</translation>
 <translation id="5428899915242071344">Начать выбор текста</translation>
 <translation id="5429993543155113935">Окна в режиме инкогнито пока не поддерживаются</translation>
-<translation id="5430931332414098647">Мгновенная точка доступа</translation>
 <translation id="5431318178759467895">Цветная печать</translation>
 <translation id="5433020815079095860">Ввод аудио</translation>
 <translation id="544691375626129091">В этот сеанс уже добавлены все доступные пользователи.</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">Включение голосового ввода</translation>
 <translation id="5551456515017410630">Открыть или закрыть календарь</translation>
 <translation id="5551974246223970793">Перейти к следующему результату поиска по странице</translation>
+<translation id="5555639311269196631">Отключить точку доступа</translation>
 <translation id="5558091555391176027">Включить или отключить широкий доступ для Обмена с окружением</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5570122939431135380">Открыть вкладку в новом окне в режиме инкогнито</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">Поддерживаемая скорость передачи данных для устройства выше, чем для кабеля. Производительность устройства может быть ограничена.</translation>
 <translation id="5710450975648804523">Режим "Не беспокоить" включен</translation>
 <translation id="571295407079589142">Передача данных отключена</translation>
-<translation id="5716891621595980681">Подключено несколько устройств (<ph name="DEVICECOUNT" />). Чтобы вы могли использовать точку доступа, Wi-Fi будет отключен.</translation>
 <translation id="5727460725221669831">Если вы забыли или недавно сменили пароль от аккаунта Google, попробуйте восстановить пользователя.</translation>
 <translation id="573413375004481890">Вы подключили к устройству больше дисплеев, чем оно может поддерживать, поэтому один из них пришлось отключить</translation>
 <translation id="5740328398383587084">Обмен с окружением</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5920710855273935292">Микрофон отключен.</translation>
-<translation id="5924855612669061715">Точка доступа включена</translation>
 <translation id="5946788582095584774">Функция "<ph name="FEATURE_NAME" />" включена</translation>
 <translation id="5947494881799873997">Отменить</translation>
 <translation id="595202126637698455">Включено отслеживание эффективности</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">Использовать шаблон</translation>
 <translation id="598882571027504733">Чтобы выполнить обновление, перезагрузите устройство Chromebook, не отключая от него клавиатуру.</translation>
 <translation id="6000279412553873020">Клавиши, кнопки и прочее</translation>
+<translation id="6002122790816966947">Ваши устройства</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> из <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Выделить следующий элемент на панели запуска</translation>
 <translation id="6015573907265691211">Отметить как выполненную</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">Меню перемещено в левый верхний угол экрана.</translation>
 <translation id="7189412385142492784">Расстояние до Венеры</translation>
 <translation id="7198435252016571249">Окно предварительного просмотра камеры привязано к правому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
+<translation id="7219573373513695352">Нет подключенных устройств.</translation>
 <translation id="7229029500464092426">Доступно памяти: <ph name="AVAILABLE_MEMORY" /> | Всего памяти: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Для установки обновления необходимо перезапустить Chromebook. Это может занять около минуты.</translation>
 <translation id="7256634071279256947">Основной микрофон</translation>

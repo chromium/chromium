@@ -169,7 +169,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> φωτογραφίες</translation>
 <translation id="2157660087437850958">εργαλείο επιλογής emoji</translation>
 <translation id="2157959690810728433">ΣΤΗΝ ΟΥΡΑ</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Ο διαχειριστής σας έχει ρυθμίσει την εφαρμογή <ph name="APP_NAME_1" /> να ξεκινά αυτόματα κάθε φορά που συνδέεστε.}=2{Ο διαχειριστής σας έχει ρυθμίσει τις εφαρμογές <ph name="APP_NAME_1" /> και <ph name="APP_NAME_2" /> να ξεκινούν αυτόματα κάθε φορά που συνδέεστε.}=3{Ο διαχειριστής σας έχει ρυθμίσει τις εφαρμογές <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> και <ph name="APP_NAME_3" /> να ξεκινούν αυτόματα κάθε φορά που συνδέεστε.}other{Ο διαχειριστής σας έχει ρυθμίσει τις εφαρμογές <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> και # ακόμη εφαρμογές να ξεκινούν αυτόματα κάθε φορά που συνδέεστε.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Επανάληψη</translation>
+<translation id="215916044711630446">Το κουμπί προσθήκης APN είναι πλέον απενεργοποιημένο</translation>
 <translation id="2161394479394250669">Ακύρωση εργασίας εκτύπωσης</translation>
 <translation id="2161656808144014275">Κείμενο</translation>
 <translation id="2163937499206714165">Ενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
@@ -398,6 +400,7 @@
 <translation id="4117637339509843559">Λειτουργία χαμηλού φωτισμού</translation>
 <translation id="4130035430755296270">Κρατήστε τον δείκτη πάνω από το στοιχείο για περισσότερες επιλογές διάταξης</translation>
 <translation id="4131410914670010031">Ασπρόμαυρο</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Η εφαρμογή <ph name="APP_NAME_1" /> ξεκίνησε αυτόματα}other{# εφαρμογές ξεκίνησαν αυτόματα}}</translation>
 <translation id="4145784616224233563">Τείχος προστασίας HTTP</translation>
 <translation id="4147897805161313378">Φωτογραφίες Google</translation>
 <translation id="4150201353443180367">Οθόνη</translation>
@@ -443,6 +446,7 @@
 <translation id="445059817448385655">Παλιός κωδικός πρόσβασης</translation>
 <translation id="4453205916657964690">Μάσκα υποδικτύου</translation>
 <translation id="4454245904991689773">Σάρωση σε</translation>
+<translation id="4456812688969919973">Το κουμπί αποθήκευσης APN είναι πλέον απενεργοποιημένο</translation>
 <translation id="4469288414739283461">Προστασία οθόνης Κίνηση της Γης</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
@@ -713,6 +717,7 @@
 <translation id="6423239382391657905">Άνοιγμα VPN</translation>
 <translation id="6439505561246192797">Αδύναμο (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Μετάβαση στις ρυθμίσεις λογαριασμού</translation>
+<translation id="6462978824459367242">Το κουμπί προσθήκης APN είναι πλέον ενεργοποιημένο</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Επανάληψη σάρωσης σελίδας;}=1{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER};}other{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER};}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Διαχείριση από τον τομέα <ph name="MANAGER" /></translation>
@@ -1051,6 +1056,7 @@
 <translation id="902638246363752736">Ρυθμίσεις πληκτρολογίου</translation>
 <translation id="9028832514430399253">Ενεργοποιήστε την εναλλαγή για να ορίσετε τις επιλογές προφύλαξης οθόνης</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">Το κουμπί αποθήκευσης APN είναι πλέον ενεργοποιημένο</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Η επίλυση DNS έχει υψηλό λανθάνοντα χρόνο</translation>
 <translation id="9065203028668620118">Επεξεργασία</translation>

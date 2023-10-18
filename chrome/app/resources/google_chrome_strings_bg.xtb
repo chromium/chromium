@@ -66,6 +66,7 @@
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> елемента ще се изтрият от това устройство. За да извлечете данните си по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Повторно стартиране за актуализиране на &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете за подобряването на Chrome, като подадете сигнал за <ph name="BEGIN_LINK" />текущите настройки<ph name="END_LINK" /></translation>
+<translation id="2126108037660393668">Проверката на изтегления файл не бе успешна.</translation>
 <translation id="2130870084309816036">Не може да се установи връзка с интернет. Ако използвате защитна стена, моля, поставете <ph name="PRODUCT_EXE_NAME" /> в списъка на разрешените.</translation>
 <translation id="2131230230468101642">С цел защита на поверителността ви автоматично изтриваме интересите, които са по-стари от 4 седмици. Докато сърфирате, даден интерес може отново да се покаже в списъка. Имате възможност също да премахвате интересите, които не искате Chrome да взема предвид.</translation>
 <translation id="2139300032719313227">Рестартиране на Chrome OS</translation>
@@ -96,6 +97,7 @@
 <translation id="2580411288591421699">Не може да се инсталира същата версия на Google Chrome, която се използва понастоящем. Моля, затворете браузъра и опитайте отново.</translation>
 <translation id="2586406160782125153">Данните за сърфирането ви ще се изтрият от това устройство. За да ги извлечете по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Използвайте нещата си в браузъра Chrome от <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="259935314519650377">Кеширането на изтеглената инсталационна програма не бе успешно. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome не може да провери за актуализации. Проверете връзката си с интернет.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649768380733403658">Браузърът Chrome редовно проверява дали настройките му са най-безопасните. Ще ви уведомим, ако е необходим преглед от ваша страна.</translation>
@@ -322,6 +324,7 @@
 <translation id="6676384891291319759">Достъп до интернет</translation>
 <translation id="6679975945624592337">Разрешаване на Google Chrome да се изпълнява на заден план</translation>
 <translation id="6696915334902295848">За този сайт Chrome се нуждае от разрешение за достъп до микрофона</translation>
+<translation id="6712881677154121168">Грешка при изтеглянето: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Ускорете Chrome</translation>
 <translation id="6735387454586646204">Система ChromeOS Flex</translation>
 <translation id="6739177684496155661">Искате ли да продължите с нов потребителски профил в Chrome?</translation>
@@ -336,6 +339,7 @@
 <translation id="6943584222992551122">Данните за сърфирането на този човек ще бъдат изтрити от устройството. За да ги възстановите, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Правило за Google Chrome бета за допускане на входящия трафик за mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome е актуализиран, но не сте го използвали от поне 30 дни.</translation>
+<translation id="7024536598735240744">Грешка при разпакетирането: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Инсталирането спря.</translation>
 <translation id="7025800014283535195">Оттук можете да превключвате между потребителските профили в Chrome</translation>
 <translation id="7036251913954633326">Ако искате да използвате този профил само веднъж, можете да се възползвате от <ph name="GUEST_LINK_BEGIN" />режима на гост<ph name="GUEST_LINK_END" /> в браузъра Chrome. В случай че искате да добавите профил за друго лице, <ph name="LINK_BEGIN" />добавете нов човек<ph name="LINK_END" /> към вашия <ph name="DEVICE_TYPE" />.
@@ -429,6 +433,7 @@
 <translation id="8516431725144212809">Вашите интереси според прогнозата на Chrome</translation>
 <translation id="8521348052903287641">Правило за Google Chrome Dev за допускане на входящия трафик за mDNS.</translation>
 <translation id="8550334526674375523">Този служебен потребителски профил е изцяло отделен от личния ви.</translation>
+<translation id="8555465886620020932">Грешка в услугата: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556340503434111824">Налице е нова версия на Google Chrome, която е по-бърза от всякога.</translation>
 <translation id="8571790202382503603">С помощта на потребителските профили в Chrome можете да разделите нещата си в браузъра. Това улеснява разграничаването на работата и забавленията.</translation>
 <translation id="8614913330719544658">Google Chrome блокира. Да се стартира ли отново сега?</translation>

@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Chromium में टैब ग्रिड खोलता है.</translation>
 <translation id="1617663976202781617">क्रोमियम सिंक से मिला डेटा</translation>
 <translation id="1647558790457890304">Chromium की सेटिंग</translation>
+<translation id="164952285225495380">यह पैकेज Chromium पर पहले से ही ट्रैक किया जा चुका है.</translation>
 <translation id="1722370509450468186">आपका पासवर्ड, आपके खाते (<ph name="EMAIL" />) में सेव किया जाएगा.</translation>
 <translation id="1736662517232558588">क्रोमियम का डेटा साफ़ हो गया</translation>
 <translation id="1791845338122684020">इससे आपका Chromium इतिहास पेज खुलता है.</translation>
@@ -138,6 +139,7 @@
 1. Settings खोलें
 2. डिफ़ॉल्ट ब्राउज़र ऐप्लिकेशन पर टैप करें
 3. Chromium चुनें.</translation>
+<translation id="6197255575340902638">अगर "<ph name="MODULE_NAME" />" को छिपाया जाता है, तो Chromium आपके आने वाले पैकेज को ऑटोमैटिक तरीके से ट्रैक नहीं करेगा. साथ ही, पैकेज ट्रैकिंग से जुड़ा आपका पुराना डेटा मिटा देगा.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">क्रोमियम से प्रस्थान करें?</translation>
 <translation id="6324041800010509197">Chromium में टैब ग्रिड पर जाएं</translation>

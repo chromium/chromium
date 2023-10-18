@@ -169,7 +169,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> сүрөт</translation>
 <translation id="2157660087437850958">быйтыкча тандагыч</translation>
 <translation id="2157959690810728433">КЕЗЕККЕ КОЮЛДУ</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Администраторуңуз <ph name="APP_NAME_1" /> колдонмосун сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}=2{Администраторуңуз <ph name="APP_NAME_1" /> жана <ph name="APP_NAME_2" /> колдонмолорун сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}=3{Администраторуңуз <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> жана <ph name="APP_NAME_3" /> колдонмолорун сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}other{Администраторуңуз <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> жана дагы # колдонмону сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Кайталоо</translation>
+<translation id="215916044711630446">APN кошуу баскычы өчүрүлдү</translation>
 <translation id="2161394479394250669">Басып чыгарууну токтотуу</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Караңгы теманы күйгүзүү</translation>
@@ -398,6 +400,7 @@
 <translation id="4117637339509843559">Караңгы режим</translation>
 <translation id="4130035430755296270">Дагы башка калыптарды көрүү үчүн үстүнө алып келиңиз</translation>
 <translation id="4131410914670010031">Ак-кара</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> автоматтык түрдө ачылды}other{# колдонмо автоматтык түрдө ачылды}}</translation>
 <translation id="4145784616224233563">HTTP тармактык коргоосу</translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4150201353443180367">Көрсөтүү</translation>
@@ -443,6 +446,7 @@
 <translation id="445059817448385655">Эски сырсөз</translation>
 <translation id="4453205916657964690">Көмөкчү тармактын маскасы</translation>
 <translation id="4454245904991689773">Төмөнкүгө скандоо:</translation>
+<translation id="4456812688969919973">APN сактоо баскычы өчүрүлдү</translation>
 <translation id="4469288414739283461">Жер көшөгөсү</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Демейкиден башка тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
@@ -713,6 +717,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Начар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Аккаунттун параметрлерине өтүү</translation>
+<translation id="6462978824459367242">APN кошуу баскычы иштетилди</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Бет кайра скандалсынбы?}=1{{PAGE_NUMBER} бет кайра скандалсынбы?}other{{PAGE_NUMBER} бет кайра скандалсынбы?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> башкарат</translation>
@@ -1051,6 +1056,7 @@
 <translation id="902638246363752736">Баскычтоп параметрлери</translation>
 <translation id="9028832514430399253">Көшөгө параметрлерин тандоо үчүн өчүрүү/күйгүзүү которгучун күйгүзүңүз</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">APN сактоо баскычы иштетилди</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS дааналыгын күтүү убакыты узакка созулат</translation>
 <translation id="9065203028668620118">Түзөтүү</translation>

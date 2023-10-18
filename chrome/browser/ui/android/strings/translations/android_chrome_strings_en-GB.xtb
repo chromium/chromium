@@ -352,7 +352,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Manage the topics that you're interested in</translation>
 <translation id="2912345083818861431">Use screen lock to see open Incognito tabs</translation>
-<translation id="2922568440285376746">Search inside image with Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Name is invalid</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> storage</translation>
 <translation id="2932222164150889403">Your keyboard won’t change</translation>
@@ -687,7 +686,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4684427112815847243">Sync everything</translation>
 <translation id="4685741273709472646">Select from the drop-down list</translation>
 <translation id="4687718960473379118">Site-suggested ads</translation>
-<translation id="4689792375321623175">Search image with Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}}</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4710167854527459075">Sort by newest</translation>

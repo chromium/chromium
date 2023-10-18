@@ -966,6 +966,7 @@
 <translation id="2977665033722899841">Сейчас выбрано – <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" />.</translation>
 <translation id="2978824962390592855">Опера</translation>
 <translation id="2979424420072875974">Ресурсы для писателей</translation>
+<translation id="2980742331521553164">CVC-код этой карты будет зашифрован и сохранен в вашем аккаунте Google, чтобы вы могли оплачивать покупки быстрее.</translation>
 <translation id="2983666748527428214">Открыть вкладку инкогнито</translation>
 <translation id="2985306909656435243">Если функция включена, Chromium будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
 <translation id="2985398929374701810">Укажите действительный адрес.</translation>
@@ -3396,6 +3397,7 @@
 <translation id="79338296614623784">Укажите действительный номер телефона.</translation>
 <translation id="7934414805353235750">С сайта <ph name="URL" /> поступил запрос на воспроизведение защищенного контента. Для вашего устройства будет проведена проверка Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">CVC-код этой карты будет зашифрован и сохранен на устройстве, чтобы вы могли оплачивать покупки быстрее.</translation>
 <translation id="7937554595067888181">Действует до <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сертификат сервера еще не действителен.</translation>
 <translation id="7939713744218886332">Кухни мира</translation>

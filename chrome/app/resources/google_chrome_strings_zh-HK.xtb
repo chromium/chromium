@@ -67,6 +67,7 @@
 <translation id="2120620239521071941">這會刪除此裝置上的 <ph name="ITEMS_COUNT" /> 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="2121284319307530122">重新啟動以更新 &amp;Chrome</translation>
 <translation id="2123055963409958220">只要報告<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chrome 更臻完美</translation>
+<translation id="2126108037660393668">已下載的檔案驗證失敗。</translation>
 <translation id="2131230230468101642">為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。您亦可移除不希望 Chrome 列在興趣喜好清單中的項目。</translation>
 <translation id="2139300032719313227">重新啟動 Chrome OS</translation>
 <translation id="2151406531797534936">請立即重新啟動 Chrome</translation>
@@ -95,6 +96,7 @@
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="2597976513418770460">從 <ph name="ACCOUNT_EMAIL" /> 取得 Chrome 瀏覽器內容</translation>
+<translation id="259935314519650377">無法快取已下載的安裝程式。錯誤代碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2622559029861875898">Chrome 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649768380733403658">Chrome 會定期檢查，確保瀏覽器採用最安全的設定。如有任何需要你檢查的事項，我們會通知你。</translation>
@@ -320,6 +322,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6676384891291319759">連線到互聯網</translation>
 <translation id="6679975945624592337">讓 Google Chrome 在背景執行</translation>
 <translation id="6696915334902295848">Chrome 需要麥克風權限，才能執行此網站要求的功能</translation>
+<translation id="6712881677154121168">下載錯誤：<ph name="DOWNLOAD_ERROR" />。</translation>
 <translation id="6718739135284199302">加快 Chrome 的運作速度</translation>
 <translation id="6735387454586646204">ChromeOS Flex 系統</translation>
 <translation id="6739177684496155661">要透過新的 Chrome 設定檔繼續瀏覽嗎？</translation>
@@ -334,6 +337,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6943584222992551122">系統將會從此裝置上刪除此使用者的瀏覽資料。如要復原資料，請以「<ph name="USER_EMAIL" />」的身分登入 Chrome。</translation>
 <translation id="6967962315388095737">允許 mDNS 流量的 Google Chrome 測試版輸入規則。</translation>
 <translation id="6989339256997917931">Google Chrome 已更新，但您至少已有 30 天未使用該瀏覽器。</translation>
+<translation id="7024536598735240744">未封裝錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安裝。</translation>
 <translation id="7025800014283535195">您可在此處切換不同的 Chrome 設定檔</translation>
 <translation id="7036251913954633326">如果您只想使用此帳戶一次，可以在 Chrome 瀏覽器中使用<ph name="GUEST_LINK_BEGIN" />訪客模式<ph name="GUEST_LINK_END" />。如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
@@ -427,6 +431,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8516431725144212809">Chrome 推測您有以下興趣</translation>
 <translation id="8521348052903287641">允許 mDNS 流量的 Google Chrome 開發人員版輸入規則。</translation>
 <translation id="8550334526674375523">此工作設定檔與個人設定檔是完全分開。</translation>
+<translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556340503434111824">Google Chrome 推出全新版本，速度更勝從前。</translation>
 <translation id="8571790202382503603">透過 Chrome 設定檔，您可將所有 Chrome 內容分門別類，從而更輕易劃分工作和娛樂內容。</translation>
 <translation id="8614913330719544658">Google Chrome 沒有回應，要立即重新啟動嗎？</translation>

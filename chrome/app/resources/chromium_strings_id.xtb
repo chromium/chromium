@@ -56,10 +56,12 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="2088953378266246249">Informasi tentang cara Chromium mengelola root certificate-nya</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}other{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}}</translation>
 <translation id="2126108037660393668">Verifikasi file yang didownload gagal.</translation>
+<translation id="2130870084309816036">Tidak dapat terhubung ke internet. Jika Anda menggunakan firewall, tambahkan <ph name="PRODUCT_EXE_NAME" /> ke daftar yang diizinkan.</translation>
 <translation id="215352261310130060">Chromium memblokir download ini karena situs tidak menggunakan koneksi yang aman dan file mungkin telah dimodifikasi</translation>
 <translation id="2174178932569897599">Sesuaikan Chromium</translation>
 <translation id="2174917724755363426">Penginstalan tidak selesai. Yakin ingin membatalkan?</translation>
 <translation id="2185166961232948079">Chromium - Login Jaringan - <ph name="PAGE_TITLE" /></translation>
+<translation id="2190166659037789668">Error pemeriksaan update: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2241627712206172106">Jika Anda berbagi komputer, teman dan keluarga bisa menjelajah secara terpisah dan menyiapkan Chromium sesuai keinginannya.</translation>
 <translation id="2313870531055795960">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="2329088755516916767">Saat diaktifkan, Chromium akan melakukan pramuat halaman yang membuat penjelajahan dan penelusuran menjadi lebih cepat.</translation>
@@ -86,6 +88,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="268602741124540128">Selamat Datang di Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Tab Chromium</translation>
 <translation id="2718390899429598676">Untuk keamanan tambahan, Chromium akan mengenkripsi data Anda.</translation>
+<translation id="2738871930057338499">Tidak dapat terhubung ke internet. HTTP 403 Terlarang. Periksa konfigurasi proxy Anda.</translation>
 <translation id="2770231113462710648">Ubah browser default ke:</translation>
 <translation id="2785438272836277133">Ekstensi ini berisi malware dan tidak aman. Hapus dari Chromium agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
@@ -133,6 +136,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="3639635944603682591">Data browsing pengguna ini akan dihapus dari perangkat ini. Untuk memulihkan data, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Update baru untuk Chromium telah tersedia dan akan diterapkan segera setelah diluncurkan kembali.}=1{Update baru untuk Chromium telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. Jendela Samaran Anda tidak akan dibuka kembali.}other{Update baru untuk Chromium telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="3651803019964686660">Untuk mengirimkan nomor dari <ph name="ORIGIN" /> ke ponsel Android Anda, login ke Chromium di kedua perangkat.</translation>
+<translation id="3667616615096815454">Tidak dapat menginstal, aplikasi tidak dikenali oleh server.</translation>
 <translation id="3685209450716071127">Chromium tidak dapat memeriksa sandi Anda. Coba periksa koneksi internet Anda.</translation>
 <translation id="3702352323269013324">Pelajari lebih lanjut personalisasi iklan di Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administrator meminta Anda meluncurkan kembali Chromium untuk menerapkan update ini}=1{Administrator meminta Anda meluncurkan kembali Chromium untuk menerapkan update ini. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator meminta Anda meluncurkan kembali Chromium untuk menerapkan update ini. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
@@ -180,6 +184,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="4423735387467980091">Menyesuaikan dan mengontrol Chromium</translation>
 <translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
 <translation id="4447409407328223819">Tentang Chrome for Testing</translation>
+<translation id="4501471624619070934">Penginstalan gagal karena akses dibatasi untuk negara ini.</translation>
 <translation id="452711251841752011">Selamat datang di Chromium; jendela browser baru terbuka</translation>
 <translation id="4544142686420020088">Chromium tidak dapat diupdate, terjadi error. <ph name="BEGIN_LINK" />Perbaiki masalah update Chrome dan update yang gagal.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Lanjutkan di profil Chromium baru?</translation>
@@ -229,6 +234,8 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5653831366781983928">Mulai ulang Chromium sekarang</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Tampilkan Chromium dalam bahasa ini</translation>
+<translation id="569897634095159764">Tidak dapat terhubung ke internet. Server proxy memerlukan autentikasi.</translation>
+<translation id="5809516625706423866">Tidak dapat terhubung ke internet. HTTP 401 Tidak Sah. Periksa konfigurasi proxy Anda.</translation>
 <translation id="5862307444128926510">Selamat Datang di Chromium</translation>
 <translation id="5883558403894052917">Chromium menemukan bahwa item berikut berisi malware:</translation>
 <translation id="5889361821821684993">Chromium memeriksa secara berkala untuk memastikan browser memiliki setelan yang paling aman. Kami akan memberi tahu Anda jika ada yang perlu ditinjau.</translation>

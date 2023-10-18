@@ -310,7 +310,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Keri edasi</translation>
 <translation id="2282073721614284166">Lingi avamine vahelehel</translation>
-<translation id="2284237890386182187">Sees, ühtegi seadet pole ühendatud</translation>
 <translation id="2292698582925480719">Ekraani skaala</translation>
 <translation id="229397294990920565">Mobiilne andmeside lülitatakse välja …</translation>
 <translation id="2295777434187870477">Mikrofon on sees, lülitamisel sisend vaigistatakse.</translation>
@@ -617,7 +616,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3563775809269155755">Kuumkoha lubamine</translation>
 <translation id="3566240529365775567">Äsja avatud</translation>
 <translation id="3571734092741541777">Seadista</translation>
-<translation id="3572988532398145777">Märguannet ei saa laiendada, kui paneel on avatud. Kõigepealt sulgege allolev paneel.</translation>
 <translation id="3573179567135747900">Muuda tagasi seadele <ph name="FROM_LOCALE" /> (nõuab taaskäivitust)</translation>
 <translation id="3576141592585647168">Ajavööndi muutmine</translation>
 <translation id="3577473026931028326">Midagi läks valesti. Proovige uuesti.</translation>
@@ -701,7 +699,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="385300504083504382">Algus</translation>
 <translation id="3859364108019690">Rakendusi ei saa voogesitada</translation>
 <translation id="3861651314799684201">Vajutage täisekraani salvestamiseks sisestusklahvi</translation>
-<translation id="3865912916886104060">Ükski seade pole ühendatud. Kuumkoha kasutamise alustamiseks lülitatakse WiFi välja.</translation>
 <translation id="3886872229787704059">Täna avatud</translation>
 <translation id="3891340733213178823">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni Ctrl + tõstuklahv + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (kõnena esitatud tagasiside)</translation>
@@ -786,7 +783,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4197790712631116042">Väljas</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> pole saadaval.</translation>
 <translation id="4201051445878709314">Eelmise kuu kuvamine</translation>
-<translation id="4202362334312791952">1 seade on ühendatud. Kuumkoha kasutamise alustamiseks lülitatakse WiFi välja.</translation>
 <translation id="4209973997261364186">WiFi on sisse lülitatud.</translation>
 <translation id="4212472694152630271">Kasuta PIN-koodi</translation>
 <translation id="4215497585250573029">VPN-i seaded</translation>
@@ -1093,7 +1089,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5426063383988017631">Seadete menüü on suletud</translation>
 <translation id="5428899915242071344">Alustage valimist</translation>
 <translation id="5429993543155113935">Inkognito aknaid praegu ei toetata</translation>
-<translation id="5430931332414098647">Automaatne jagamine</translation>
 <translation id="5431318178759467895">Värv</translation>
 <translation id="5433020815079095860">Helisisend</translation>
 <translation id="544691375626129091">Kõik saadaval kasutajad on sellesse seanssi juba lisatud.</translation>
@@ -1122,6 +1117,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="554893713779400387">Dikteerimise sisse-/väljalülitamine</translation>
 <translation id="5551456515017410630">Ava/sule kalender</translation>
 <translation id="5551974246223970793">Lehel otsimisel järgmise vaste juurde liikumine</translation>
+<translation id="5555639311269196631">Lülita kuumkoht välja</translation>
 <translation id="5558091555391176027">Läheduses jagamise hea nähtavuse sisse-/väljalülitamine</translation>
 <translation id="556042886152191864">Nupp</translation>
 <translation id="5570122939431135380">Uue vahelehe avamine uues inkognito aknas</translation>
@@ -1167,7 +1163,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5707775774148071965">Teie seade toetab kiiremat andmesidet kui teie kaabel. Seadme toimivus võib olla piiratud.</translation>
 <translation id="5710450975648804523">Režiim Mitte segada on sees</translation>
 <translation id="571295407079589142">Mobiilne andmeside on välja lülitatud</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> seadet on ühendatud. Kuumkoha kasutamise alustamiseks lülitatakse WiFi välja.</translation>
 <translation id="5727460725221669831">Kui unustasite parooli või muutsite hiljuti oma Google'i konto parooli, proovige konto taastada.</translation>
 <translation id="573413375004481890">See seade ei saanud kõiki teie ekraane toetada, seetõttu ühe ühendus katkestati</translation>
 <translation id="5740328398383587084">Läheduses jagamine</translation>
@@ -1217,7 +1212,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5920710855273935292">Mikrofon on vaigistatud.</translation>
-<translation id="5924855612669061715">Kuumkoht on sees</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> on sees.</translation>
 <translation id="5947494881799873997">Ennista</translation>
 <translation id="595202126637698455">Toimivuse jälgimine on lubatud</translation>
@@ -1233,6 +1227,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="598407983968395253">Kasuta malli</translation>
 <translation id="598882571027504733">Värskenduse hankimiseks taaskäivitage Chromebook koos ühendatud klaviatuuriga.</translation>
 <translation id="6000279412553873020">Võtmed, nupud ja palju muud</translation>
+<translation id="6002122790816966947">Teie seadmed</translation>
 <translation id="6012623610530968780">Leht <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Riiulil järgmise üksuse esiletõstmine</translation>
 <translation id="6015573907265691211">Märgi tehtuks</translation>
@@ -1522,6 +1517,7 @@ Uus installimine</translation>
 <translation id="7188494361780961876">Menüü teisaldati ekraanikuva vasakusse ülanurka.</translation>
 <translation id="7189412385142492784">Kui kaugel on Veenus</translation>
 <translation id="7198435252016571249">Kaamera kinnitati paremasse alanurka. Konflikt süsteemi platvormiga.</translation>
+<translation id="7219573373513695352">Ühendatud seadmeid pole</translation>
 <translation id="7229029500464092426">Kasutatud mälu: <ph name="AVAILABLE_MEMORY" /> | kogumälu:<ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. See Chromebook tuleb värskenduse rakendamiseks taaskäivitada. Selleks võib kuluda kuni 1 minut.</translation>
 <translation id="7256634071279256947">Tagumine mikrofon</translation>

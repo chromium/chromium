@@ -6172,7 +6172,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5901089233978050985">Perjungti į užfiksuojamą skirtuką</translation>
 <translation id="5901494423252125310">Spausdintuvo durelės atidarytos</translation>
 <translation id="5901630391730855834">Geltona</translation>
-<translation id="5902211418335330937">Jei svetainė neveikia taip, kaip tikėjotės, galite įgalinti joje trečiųjų šalių slapukus paieškos ir adreso juostoje pasirinkę trečiosios šalies slapukų blokavimą.</translation>
 <translation id="5904614460720589786">Nepavyko nustatyti programos „<ph name="APP_NAME" />“ dėl konfigūravimo problemos. Susisiekite su administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Beveik įdiegta naujausia versija! Paleiskite įrenginį iš naujo, kad būtų užbaigtas naujinimas.</translation>
 <translation id="5906732635754427568">Su šia programa susieti duomenys bus pašalinti iš šio įrenginio.</translation>
@@ -6939,7 +6938,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6532663472409656417">Užregistruota įmonėje</translation>
 <translation id="6533315466883598769">„Google“ vertėjo naudojimas</translation>
 <translation id="65334502113648172">Rodyklių klavišais sutraukite arba išskleiskite rodomą sritį. Jei norite perkelti rodomą sritį, paspauskite „Shift“ ir +, tada naudokite rodyklių klavišus.</translation>
-<translation id="6533636340637966565">Įjungiama...</translation>
 <translation id="6535331821390304775">Visada leisti <ph name="ORIGIN" /> atidaryti šio tipo nuorodas naudojant susietą programą</translation>
 <translation id="653659894138286600">Nuskaitykite dokumentus ir vaizdus</translation>
 <translation id="6537613839935722475">Pavadinimą gali sudaryti raidės, skaičiai ir brūkšneliai (-)</translation>
@@ -9188,6 +9186,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8314835274931377415">Pradėti prieigos jungikliu sąranką?</translation>
 <translation id="8315018673856831477">Atminties taupymo priemonės parinktys</translation>
 <translation id="8315044115695361734">Iš „iCloud Keychain“</translation>
+<translation id="8315514906653279104">Įjungiama...</translation>
 <translation id="8317671367883557781">Pridėti tinklo ryšį</translation>
 <translation id="8317965619823678157">kopijuoti slaptažodžius</translation>
 <translation id="8318266828739827371">Naudokite išskaidyto ekrano režimo rodinį, kad galėtumėte matyti padidintą ekrano sritį. Norėdami įjungti ar išjungti įstatomąjį didintuvą, naudokite paieškos klavišą + „Ctrl“ + D.</translation>

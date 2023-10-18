@@ -169,7 +169,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ફોટા</translation>
 <translation id="2157660087437850958">ઇમોજી પિકર</translation>
 <translation id="2157959690810728433">કતારમાં</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="APP_NAME_1" />ને તમે લૉગ ઇન કરો તે દરેક વખતે ઑટોમૅટિક રીતે ચાલુ થવા માટે સેટ કરવામાં આવી છે.}=2{તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="APP_NAME_1" />ને તથા <ph name="APP_NAME_2" />ને તમે લૉગ ઇન કરો તે દરેક વખતે ઑટોમૅટિક રીતે ચાલુ થવા માટે સેટ કરવામાં આવી છે.}=3{તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="APP_NAME_1" />ને, <ph name="APP_NAME_2" />ને તથા <ph name="APP_NAME_3" />ને તમે લૉગ ઇન કરો તે દરેક વખતે ઑટોમૅટિક રીતે ચાલુ થવા માટે સેટ કરવામાં આવી છે.}one{તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="APP_NAME_1" />ને, <ph name="APP_NAME_2" />ને તથા અન્ય # ઍપને તમે લૉગ ઇન કરો તે દરેક વખતે ઑટોમૅટિક રીતે ચાલુ થવા માટે સેટ કરવામાં આવી છે.}other{તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="APP_NAME_1" />ને, <ph name="APP_NAME_2" />ને તથા અન્ય # ઍપને તમે લૉગ ઇન કરો તે દરેક વખતે ઑટોમૅટિક રીતે ચાલુ થવા માટે સેટ કરવામાં આવી છે.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ફરી પ્રયાસ કરો</translation>
+<translation id="215916044711630446">APN ઉમેરો બટન હમણાં બંધ છે</translation>
 <translation id="2161394479394250669">પ્રિન્ટ જોબ રદ કરો</translation>
 <translation id="2161656808144014275">ટેક્સ્ટ</translation>
 <translation id="2163937499206714165">ઘેરો મોડ ચાલુ કરો</translation>
@@ -398,6 +400,7 @@
 <translation id="4117637339509843559">ઘેરો મોડ</translation>
 <translation id="4130035430755296270">લેઆઉટના વધુ વિકલ્પો માટે માઉસ ફેરવતા રહો</translation>
 <translation id="4131410914670010031">કાળો અને સફેદ</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}one{# ઍપ ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}other{# ઍપ ઑટોમૅટિક રીતે ચાલુ થઈ ગઈ હતી}}</translation>
 <translation id="4145784616224233563">HTTP ફાયરવૉલ</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ડિસ્પ્લે</translation>
@@ -443,6 +446,7 @@
 <translation id="445059817448385655">જૂનો પાસવર્ડ</translation>
 <translation id="4453205916657964690">સબનેટ માસ્ક</translation>
 <translation id="4454245904991689773">સ્કૅન કરીને અહીં સાચવો</translation>
+<translation id="4456812688969919973">APN સાચવો બટન હમણાં બંધ છે</translation>
 <translation id="4469288414739283461">અર્થ ફ્લો સ્ક્રીન સેવર</translation>
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4483049906298469269">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
@@ -713,6 +717,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">નબળું (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">એકાઉન્ટ સેટિંગ પર જાઓ</translation>
+<translation id="6462978824459367242">APN ઉમેરો બટન હમણાં ચાલુ છે</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{પેજ ફરીથી સ્કૅન કરીએ?}=1{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરીએ?}one{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરીએ?}other{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરીએ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
@@ -1051,6 +1056,7 @@
 <translation id="902638246363752736">કીબોર્ડ સેટિંગ્સ</translation>
 <translation id="9028832514430399253">સ્ક્રીન સેવરના વિકલ્પો પસંદ કરવા માટે ટૉગલને ચાલુ કરો</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">APN સાચવો બટન હમણાં ચાલુ છે</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNSના રિઝોલ્યુશનની વિલંબતાનો સમય ઘણો વધુ છે</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>

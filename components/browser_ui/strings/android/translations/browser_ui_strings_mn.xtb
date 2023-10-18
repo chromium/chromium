@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Та гуравдагч талын күүкинүүдийг яагаад зөвшөөрсөн талаараа бидэнд хэлснээр Chrome-г сайжруулахад туслаарай. <ph name="BEGIN_LINK" />Санал хүсэлт илгээх<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1181037720776840403">Хасах</translation>
+<translation id="1192844206376121885">Энэ нь <ph name="ORIGIN" />-н хадгалсан бүх өгөгдөл болон күүкиг устгана.</translation>
 <translation id="1201402288615127009">Дараагийнх</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-д оруулсан</translation>
 <translation id="1272079795634619415">Зогс</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">Дороти болон түүний нөхөд ногоон өнгийн шилээр нүдээ хамгаалсан байсан ч гайхамшигт хотын гялтганах гэрэлд нүд гялбаж байлаа.</translation>
 <translation id="2176704795966505152">Үндсэн цэсэд томруулалтын сонголтыг харуулах</translation>
 <translation id="2182457891543959921">Сайтуудад таны эргэн тойрны 3D газрын зургийг үүсгэх эсвэл камерын хөдөлгөөнийг хянахыг зөвшөөрөхийн өмнө асуух (санал болгосон)</translation>
+<translation id="2185965788978862351">Энэ нь сайт эсвэл таны Үндсэн нүүрэн дээрх аппуудаас хадгалсан <ph name="DATASIZE" />-н өгөгдөл болон күүкиг устгана.</translation>
 <translation id="2194856509914051091">Анхаарч үзэх зүйлс</translation>
 <translation id="2212565012507486665">Күүкиг зөвшөөрөх</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />-д камертаа хандахыг зөвшөөрөхийн тулд камерыг мөн <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">Татаж дууссан <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Зарим сайт дээрх онцлогууд Нууцлалын горимд ажиллахгүй байж магадгүй</translation>
 <translation id="2442870161001914531">Үргэлж дэлгэцийн сайтын хүсэлт тавих</translation>
+<translation id="2469312991797799607">Энэ үйлдэл <ph name="ORIGIN" />-н болон үүний доорх бүх сайтын бүх өгөгдөл, күүкиг устгана</translation>
 <translation id="2479148705183875116">Тохиргоо руу очих</translation>
 <translation id="2482878487686419369">Мэдэгдэл</translation>
 <translation id="2485422356828889247">Устгах</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">Ашиглалт</translation>
 <translation id="5091013926750941408">Мобайл сайт</translation>
 <translation id="509133520954049755">Дэлгэц дээр харагдах байдлаар харах хүсэлт тавих</translation>
+<translation id="5099358668261120049">Энэ нь <ph name="ORIGIN" />-н эсвэл таны Үндсэн нүүрэн дээрх үүний аппаас хадгалсан бүх өгөгдөл болон күүкиг устгана.</translation>
 <translation id="5100237604440890931">Задарсан, энд дарж өргөтгөнө үү.</translation>
 <translation id="5123685120097942451">Нууцлалтай таб</translation>
 <translation id="5186036860380548585">Сонголт дэлгэцийн дээд хэсэгт байна</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5922853908706496913">Таны дэлгэцийг хуваалцаж байна</translation>
 <translation id="5922967540311291836">Гуравдагч талын күүкиг блоклох:</translation>
+<translation id="5923512600150154850">Энэ нь сайтаас хадгалсан <ph name="DATASIZE" />-н өгөгдөл болон күүкиг устгана.</translation>
 <translation id="5939518447894949180">Дахин сэргээх</translation>
 <translation id="5964247741333118902">Оруулсан контент</translation>
 <translation id="5968921426641056619">Веб хаяг оруулна уу</translation>
@@ -337,6 +342,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> килобайт</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7188508872042490670">Төхөөрөмж дээрх сайтын өгөгдөл</translation>
+<translation id="7201549776650881587">Энэ үйлдэл <ph name="ORIGIN" />-н доорх бүх сайтын эсвэл таны Үндсэн нүүрэн дээрх аппынх нь хадгалсан бүх өгөгдөл, күүкиг устгана</translation>
 <translation id="7203150201908454328">Өргөтгөсөн</translation>
 <translation id="7219254577985949841">Сайтын өгөгдлийг устгах уу?</translation>
 <translation id="723171743924126238">Зураг сонгох</translation>

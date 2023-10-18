@@ -310,7 +310,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Ir hacia delante</translation>
 <translation id="2282073721614284166">Abrir enlace en una pestaña</translation>
-<translation id="2284237890386182187">Activado, no hay dispositivos conectados</translation>
 <translation id="2292698582925480719">Escala de pantalla</translation>
 <translation id="229397294990920565">Los datos móviles se están desactivando...</translation>
 <translation id="2295777434187870477">El micrófono está activado. Utiliza el botón para silenciarlo.</translation>
@@ -617,7 +616,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3563775809269155755">Compartir Internet</translation>
 <translation id="3566240529365775567">Abierto hace un momento</translation>
 <translation id="3571734092741541777">Configurar</translation>
-<translation id="3572988532398145777">No podrás desplegar la notificación mientras haya un panel abierto. Cierra el panel de abajo primero.</translation>
 <translation id="3573179567135747900">Cambiar de nuevo por "<ph name="FROM_LOCALE" />" (requiere reiniciar)</translation>
 <translation id="3576141592585647168">Cambiar zona horaria</translation>
 <translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
@@ -701,7 +699,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="385300504083504382">Principio</translation>
 <translation id="3859364108019690">No se pueden emitir aplicaciones</translation>
 <translation id="3861651314799684201">Pulsa Intro para grabar toda la pantalla</translation>
-<translation id="3865912916886104060">No hay dispositivos conectados. La conexión Wi‐Fi se desactivará para empezar a usar el punto de acceso.</translation>
 <translation id="3886872229787704059">Abierto hoy</translation>
 <translation id="3891340733213178823">Pulsa Ctrl+Mayús+Q dos veces para cerrar sesión.</translation>
 <translation id="3893630138897523026">ChromeVox (mensajes de voz)</translation>
@@ -786,7 +783,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4197790712631116042">Desactivado</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no está disponible.</translation>
 <translation id="4201051445878709314">Mostrar mes anterior</translation>
-<translation id="4202362334312791952">1 dispositivo conectado. La conexión Wi‐Fi se desactivará para empezar a usar el punto de acceso.</translation>
 <translation id="4209973997261364186">La conexión Wi-Fi está activada</translation>
 <translation id="4212472694152630271">Cambiar a PIN</translation>
 <translation id="4215497585250573029">Ajustes de VPN</translation>
@@ -1093,7 +1089,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5426063383988017631">Menú Ajustes cerrado</translation>
 <translation id="5428899915242071344">Empezar a seleccionar</translation>
 <translation id="5429993543155113935">Las ventanas de Incógnito no se admiten actualmente</translation>
-<translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="5433020815079095860">Entrada de audio</translation>
 <translation id="544691375626129091">Todos los usuarios disponibles ya se han añadido a esta sesión.</translation>
@@ -1122,6 +1117,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="554893713779400387">Activar o desactivar dictado</translation>
 <translation id="5551456515017410630">Abrir/Cerrar calendario</translation>
 <translation id="5551974246223970793">Al buscar en una página, ir a la siguiente coincidencia</translation>
+<translation id="5555639311269196631">Desactivar punto de acceso</translation>
 <translation id="5558091555391176027">Activar o desactivar alta visibilidad en Compartir con Nearby</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5570122939431135380">Abrir una pestaña nueva en una ventana de Incógnito nueva</translation>
@@ -1167,7 +1163,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5707775774148071965">Tu dispositivo admite una tasa de datos mayor que tu cable. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="5710450975648804523">Modo No molestar activado</translation>
 <translation id="571295407079589142">Los datos móviles están desactivados</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> dispositivos conectados. La conexión Wi‐Fi se desactivará para empezar a usar el punto de acceso.</translation>
 <translation id="5727460725221669831">Si has olvidado la contraseña o has cambiado la contraseña de tu cuenta de Google recientemente, prueba a recuperar este usuario.</translation>
 <translation id="573413375004481890">Este dispositivo no puede admitir todas tus pantallas, así que se ha desconectado una</translation>
 <translation id="5740328398383587084">Compartir con Nearby</translation>
@@ -1217,7 +1212,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
-<translation id="5924855612669061715">Punto de acceso activado</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> está activado.</translation>
 <translation id="5947494881799873997">Deshacer</translation>
 <translation id="595202126637698455">Se ha habilitado el control del rendimiento</translation>
@@ -1233,6 +1227,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="598407983968395253">Utilizar plantilla</translation>
 <translation id="598882571027504733">Para recibir la actualización, reinicia tu Chromebook con el teclado conectado.</translation>
 <translation id="6000279412553873020">Teclas, botones y más</translation>
+<translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Destaca el siguiente elemento de la estantería</translation>
 <translation id="6015573907265691211">Marcar como completada</translation>
@@ -1522,6 +1517,7 @@ Nueva instalación</translation>
 <translation id="7188494361780961876">Se ha movido el menú a la esquina superior izquierda de la pantalla.</translation>
 <translation id="7189412385142492784">¿A qué distancia está Venus?</translation>
 <translation id="7198435252016571249">Cámara ajustada a la esquina inferior derecha. Conflicto con la superficie del sistema.</translation>
+<translation id="7219573373513695352">No hay dispositivos conectados</translation>
 <translation id="7229029500464092426">Memoria: <ph name="AVAILABLE_MEMORY" /> | Memoria total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. El Chromebook debe reiniciarse para aplicar una actualización. Este proceso puede tardar hasta 1 minuto.</translation>
 <translation id="7256634071279256947">Micrófono trasero</translation>

@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">ຊ່ວຍພວກເຮົາປັບປຸງ Chrome ໂດຍແຈ້ງໃຫ້ພວກເຮົາຮູ້ເຫດຜົນທີ່ທ່ານໄດ້ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມ. <ph name="BEGIN_LINK" />ສົ່ງຄຳຕິຊົມ<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
+<translation id="1192844206376121885">ການດຳເນີນການນີ້ຈະລຶບຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ <ph name="ORIGIN" /> ຈັດເກັບໄວ້.</translation>
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
 <translation id="1242008676835033345">ຝັງຕິດໃນ <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">ຢຸດ</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">ເຖິງແມ່ນວ່າມີຕາທີ່ປ້ອງກັນດ້ວຍແວ່ນສາຍຕາສີຂຽວ, ທຳອິດໂດໂຣທີ ແລະ ໝູ່ຂອງລາວກໍຕື່ນຕາຕື່ນໃຈກັບ</translation>
 <translation id="2176704795966505152">ສະແດງຕົວເລືອກການຊູມໃນເມນູຫຼັກ</translation>
 <translation id="2182457891543959921">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕາມຕຳແໜ່ງກ້ອງ (ແນະນຳ)</translation>
+<translation id="2185965788978862351">ການດຳເນີນການນີ້ຈະລຶບຂໍ້ມູນ ແລະ ຄຸກກີ້ທີ່ເວັບໄຊ ຫຼື ແອັບຕ່າງໆໃນໜ້າຈໍຫຼັກຂອງທ່ານຈັດເກັບໄວ້ທັງໝົດ <ph name="DATASIZE" />.</translation>
 <translation id="2194856509914051091">ສິ່ງທີ່ຕ້ອງພິຈາລະນາ</translation>
 <translation id="2212565012507486665">ອະນຸຍາດຄຸກກີ້</translation>
 <translation id="2228071138934252756">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຂອງທ່ານ, ກະລຸນາເປີດກ້ອງຖ່າຍຮູບໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">ການດາວໂຫຼດສຳເລັດແລ້ວ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">ຄຸນສົມບັດຢູ່ບາງເວັບໄຊອາດບໍ່ເຮັດວຽກໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="2442870161001914531">ຮ້ອງຂໍເວັບໄຊເດັສທັອບທຸກເທື່ອ</translation>
+<translation id="2469312991797799607">ຄຳສັ່ງນີ້ຈະລຶບຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດຂອງ <ph name="ORIGIN" /> ຮວມທັງທຸກເວັບໄຊຈາກຕົ້ນທາງນີ້</translation>
 <translation id="2479148705183875116">ໄປທີ່ການຕັ້ງຄ່າ</translation>
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
 <translation id="2485422356828889247">ຖອນ​ຕິດ​ຕັ້ງ</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">ການນໍາໃຊ້</translation>
 <translation id="5091013926750941408">ເວັບໄຊມືຖື</translation>
 <translation id="509133520954049755">ຮ້ອງຂໍມຸມມອງເດັສທັອບ</translation>
+<translation id="5099358668261120049">ການດຳເນີນການນີ້ຈະລຶບຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ <ph name="ORIGIN" /> ຫຼື ແອັບທີ່ຢູ່ໃນໜ້າຈໍຫຼັກຂອງທ່ານຈັດເກັບໄວ້.</translation>
 <translation id="5100237604440890931">ຫຍໍ້ລົງແລ້ວ - ຄລິກ​ເພື່ອ​ຂະ​ຫຍາຍ.</translation>
 <translation id="5123685120097942451">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນ</translation>
 <translation id="5186036860380548585">ຕົວເລືອກມີໃຫ້ນຳໃຊ້ຢູ່ໃກ້ສ່ວນເທິງສຸດຂອງໜ້າຈໍ</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">ເປີດ</translation>
 <translation id="5922853908706496913">ກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="5922967540311291836">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມ:</translation>
+<translation id="5923512600150154850">ການດຳເນີນການນີ້ຈະລຶບຂໍ້ມູນ ແລະ ຄຸກກີ້ທີ່ເວັບໄຊຕ່າງໆຈັດເກັບໄວ້ທັງໝົດ <ph name="DATASIZE" />.</translation>
 <translation id="5939518447894949180">ຕັ້ງຄ່າຄືນໃໝ່</translation>
 <translation id="5964247741333118902">ເນື້ອຫາທີ່ຝັງໄວ້</translation>
 <translation id="5968921426641056619">ລະບຸທີ່ຢູ່ເວັບ</translation>
@@ -337,6 +342,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7188508872042490670">ຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນ</translation>
+<translation id="7201549776650881587">ຄຳສັ່ງນີ້ຈະລຶບຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ທຸກເວັບໄຊຈາກ <ph name="ORIGIN" /> ຫຼື ແອັບທີ່ຢູ່ໃນໂຮມສະກຣີນຂອງທ່ານຈັດເກັບໄວ້</translation>
 <translation id="7203150201908454328">ຂະ​ຫຍາຍ​ແລ້ວ</translation>
 <translation id="7219254577985949841">ລຶບຂໍ້ມູນເວັບໄຊອອກບໍ?</translation>
 <translation id="723171743924126238">ເລືອກຮູບ</translation>

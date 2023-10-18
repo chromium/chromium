@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15 мин</translation>
 <translation id="2277103315734023688">Придвижване напред</translation>
 <translation id="2282073721614284166">Отваряне на връзката в раздел</translation>
-<translation id="2284237890386182187">Включено, няма свързани устройства</translation>
 <translation id="2292698582925480719">Мащаб на показване</translation>
 <translation id="229397294990920565">Мобилните данни се изключват…</translation>
 <translation id="2295777434187870477">Микрофонът е включен. Превключването ще го заглуши.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">Активиране на точката за достъп</translation>
 <translation id="3566240529365775567">Отворено току-що</translation>
 <translation id="3571734092741541777">Настройване</translation>
-<translation id="3572988532398145777">Не можете да разгънете известието, докато има отворен панел. Първо затворете панела по-долу.</translation>
 <translation id="3573179567135747900">Връщане към „<ph name="FROM_LOCALE" />“ (изисква рестартиране)</translation>
 <translation id="3576141592585647168">Промяна на часовата зона</translation>
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">Началото</translation>
 <translation id="3859364108019690">Поточното предаване на приложения не е възможно</translation>
 <translation id="3861651314799684201">Натиснете Enter за записване на целия екран</translation>
-<translation id="3865912916886104060">Няма свързани устройства. Wi-Fi ще се изключи, за да започнете да използвате точката за достъп.</translation>
 <translation id="3886872229787704059">Отваряно днес</translation>
 <translation id="3891340733213178823">Натиснете два пъти „Ctrl+Shift+Q“ за изход.</translation>
 <translation id="3893630138897523026">ChromeVox (обратна връзка с говор)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">Изключено</translation>
 <translation id="4201033867194214117">„<ph name="FEATURE_NAME" />“ не е налице.</translation>
 <translation id="4201051445878709314">Показване на предишния месец</translation>
-<translation id="4202362334312791952">1 устройство е свързано. Wi-Fi ще се изключи, за да започнете да използвате точката за достъп.</translation>
 <translation id="4209973997261364186">Функцията за Wi-Fi е включена</translation>
 <translation id="4212472694152630271">Превключване към ПИН</translation>
 <translation id="4215497585250573029">Настройки за VPN</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">Менюто за настройки е затворено</translation>
 <translation id="5428899915242071344">Стартиране на избирането</translation>
 <translation id="5429993543155113935">Понастоящем не се поддържат прозорци в режим „инкогнито“</translation>
-<translation id="5430931332414098647">Незабавен тетъринг</translation>
 <translation id="5431318178759467895">Цветно</translation>
 <translation id="5433020815079095860">Аудиовход</translation>
 <translation id="544691375626129091">Всички налични потребители вече са добавени към тази сесия.</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">Превключване на режима на диктуване</translation>
 <translation id="5551456515017410630">Отваряне или затваряне на календара</translation>
 <translation id="5551974246223970793">Преминаване към следващото съответствие за заявката при търсене на страница</translation>
+<translation id="5555639311269196631">Изключване на точката за достъп</translation>
 <translation id="5558091555391176027">Превключване на увеличената видимост за „Споделяне наблизо“</translation>
 <translation id="556042886152191864">Бутон</translation>
 <translation id="5570122939431135380">Отваряне на нов раздел в нов прозорец в режим „инкогнито“</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">Устройството ви поддържа по-висока скорост на пренос на данни в сравнение с кабела. Ефективността на устройството може да е ограничена.</translation>
 <translation id="5710450975648804523">Режимът „Не безпокойте“ е включен</translation>
 <translation id="571295407079589142">Мобилните данни са изключени</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> устройства са свързани. Wi-Fi ще се изключи, за да започнете да използвате точката за достъп.</translation>
 <translation id="5727460725221669831">Ако сте забравили паролата си или наскоро сте променили паролата за профила си в Google, опитайте да възстановите този потребител.</translation>
 <translation id="573413375004481890">Това устройство не може да поддържа всичките ви екрани, затова връзката на един от тях бе прекратена</translation>
 <translation id="5740328398383587084">Споделяне наблизо</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5920710855273935292">Микрофонът е заглушен.</translation>
-<translation id="5924855612669061715">Точката за достъп е включена</translation>
 <translation id="5946788582095584774">„<ph name="FEATURE_NAME" />“ е включено.</translation>
 <translation id="5947494881799873997">Възстановяване</translation>
 <translation id="595202126637698455">Проследяването на ефективността е активирано</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">Използване на шаблон</translation>
 <translation id="598882571027504733">За да инсталирате актуализацията, рестартирайте своя Chromebook, докато клавиатурата е прикачена.</translation>
 <translation id="6000279412553873020">Клавиши, бутони и др.</translation>
+<translation id="6002122790816966947">Вашите устройства</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> от <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Открояване на следващия елемент в лентата</translation>
 <translation id="6015573907265691211">Означаване като завършено</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">Менюто е преместено в горния ляв ъгъл на екрана.</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
 <translation id="7198435252016571249">Картината от камерата е прилепена към долния десен ъгъл. Възникна конфликт с интерфейса на системата.</translation>
+<translation id="7219573373513695352">Няма свързани устройства</translation>
 <translation id="7229029500464092426">Използвана памет: <ph name="AVAILABLE_MEMORY" /> | общо: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Този Chromebook трябва да бъде рестартиран, за да се приложи актуализация. Това може да отнеме до минута.</translation>
 <translation id="7256634071279256947">Заден микрофон</translation>

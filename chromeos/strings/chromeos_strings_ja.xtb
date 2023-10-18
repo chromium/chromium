@@ -75,6 +75,7 @@
 <translation id="1499900233129743732">このユーザーは <ph name="MANAGER" /> によって管理されています。設定の管理とユーザー アクティビティの監視がリモートで行われることがあります。</translation>
 <translation id="150962533380566081">無効な PUK です。</translation>
 <translation id="1510238584712386396">ランチャー</translation>
+<translation id="1515129336378114413">ブラウザのホーム</translation>
 <translation id="1526389707933164996">スクリーン セーバーのアニメーション</translation>
 <translation id="152892567002884378">音量を上げる</translation>
 <translation id="1555130319947370107">青</translation>
@@ -168,7 +169,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> 枚の写真</translation>
 <translation id="2157660087437850958">絵文字選択ツール</translation>
 <translation id="2157959690810728433">待機中</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{ログインするたびに <ph name="APP_NAME_1" /> を自動的に開始するよう管理者が設定しています。}=2{ログインするたびに <ph name="APP_NAME_1" /> と <ph name="APP_NAME_2" /> を自動的に開始するよう管理者が設定しています。}=3{ログインするたびに <ph name="APP_NAME_1" />、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> を自動的に開始するよう管理者が設定しています。}other{ログインするたびに <ph name="APP_NAME_1" />、<ph name="APP_NAME_2" />、その他 # 個のアプリを自動的に開始するよう管理者が設定しています。}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 再試行</translation>
+<translation id="215916044711630446">[APN を追加] ボタンが無効になりました</translation>
 <translation id="2161394479394250669">印刷ジョブをキャンセル</translation>
 <translation id="2161656808144014275">テキスト</translation>
 <translation id="2163937499206714165">ダークモードをオンにする</translation>
@@ -397,6 +400,7 @@
 <translation id="4117637339509843559">ダークモード</translation>
 <translation id="4130035430755296270">カーソルを合わせると他のレイアウト オプションが表示されます</translation>
 <translation id="4131410914670010031">白黒</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> が自動的に開始されました}other{# 個のアプリが自動的に開始されました}}</translation>
 <translation id="4145784616224233563">HTTP ファイアウォール</translation>
 <translation id="4147897805161313378">Google フォト</translation>
 <translation id="4150201353443180367">表示</translation>
@@ -442,6 +446,7 @@
 <translation id="445059817448385655">古いパスワード</translation>
 <translation id="4453205916657964690">サブネット マスク</translation>
 <translation id="4454245904991689773">スキャンの保存先</translation>
+<translation id="4456812688969919973">[APN を保存] ボタンが無効になりました</translation>
 <translation id="4469288414739283461">「地球の動き」のスクリーン セーバー</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
@@ -712,6 +717,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">弱い（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="6447630859861661624">アカウント設定に移動</translation>
+<translation id="6462978824459367242">[APN を追加] ボタンが有効になりました</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ページを再スキャンしますか？}=1{ページ {PAGE_NUMBER} を再スキャンしますか？}other{ページ {PAGE_NUMBER} を再スキャンしますか？}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> によって管理されています</translation>
@@ -746,6 +752,7 @@
 <translation id="6659594942844771486">タブ</translation>
 <translation id="6673898378497337661">キーボードの明るさを上げる</translation>
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
+<translation id="6694534975463174713">ロック</translation>
 <translation id="6704062477274546131">DNS の解決</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723847290197874913">キーボード バックライト</translation>
@@ -1049,6 +1056,7 @@
 <translation id="902638246363752736">キーボードの設定</translation>
 <translation id="9028832514430399253">オンに切り替えてスクリーン セーバーのオプションを選択します</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">[APN を保存] ボタンが有効になりました</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS の解決のレイテンシが高くなっています</translation>
 <translation id="9065203028668620118">編集</translation>

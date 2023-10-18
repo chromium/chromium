@@ -75,6 +75,7 @@
 <translation id="1499900233129743732">Pinapamahalaan ng <ph name="MANAGER" /> ang user na ito at puwede nitong pamahalaan ang mga setting at subaybayan ang aktibidad ng user sa remote na paraan.</translation>
 <translation id="150962533380566081">Di-wasto ang PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1515129336378114413">home ng browser</translation>
 <translation id="1526389707933164996">Animation ng screen saver</translation>
 <translation id="152892567002884378">Lakasan ang volume</translation>
 <translation id="1555130319947370107">Asul</translation>
@@ -746,6 +747,7 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6673898378497337661">taasan ang liwanag ng keyboard</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
+<translation id="6694534975463174713">lock</translation>
 <translation id="6704062477274546131">Resolution ng DNS</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6723847290197874913">Backlight ng keyboard</translation>

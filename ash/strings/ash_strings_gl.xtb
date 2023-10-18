@@ -310,7 +310,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Avanzar</translation>
 <translation id="2282073721614284166">Abre a ligazón nunha pestana</translation>
-<translation id="2284237890386182187">Activada. Sen dispositivos conectados</translation>
 <translation id="2292698582925480719">Escala de visualización</translation>
 <translation id="229397294990920565">Os datos móbiles están desactivándose...</translation>
 <translation id="2295777434187870477">O micrófono está activado. Utiliza o botón para silencialo.</translation>
@@ -617,7 +616,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3563775809269155755">Activar zona wifi</translation>
 <translation id="3566240529365775567">Abriuse hai uns intres</translation>
 <translation id="3571734092741541777">Configurar</translation>
-<translation id="3572988532398145777">Non podes despregar a notificación se hai un panel aberto. Primeiro pecha o panel de abaixo.</translation>
 <translation id="3573179567135747900">Volver cambiar a "<ph name="FROM_LOCALE" />" (é necesario reiniciar)</translation>
 <translation id="3576141592585647168">Cambiar fuso horario</translation>
 <translation id="3577473026931028326">Produciuse un erro. Téntao de novo.</translation>
@@ -701,7 +699,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="385300504083504382">Comezo</translation>
 <translation id="3859364108019690">Non se pode reproducir en tempo real o contido das aplicacións</translation>
 <translation id="3861651314799684201">Premer Introducir para gravar a pantalla completa</translation>
-<translation id="3865912916886104060">Ningún dispositivo conectado. Desactivarase a wifi para comezar a usar a zona wifi.</translation>
 <translation id="3886872229787704059">Abriuse hoxe</translation>
 <translation id="3891340733213178823">Preme Ctrl + Maiús + Q dúas veces para pechar sesión.</translation>
 <translation id="3893630138897523026">ChromeVox (comentarios orais)</translation>
@@ -786,7 +783,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4197790712631116042">Desactivado</translation>
 <translation id="4201033867194214117">A función <ph name="FEATURE_NAME" /> non está dispoñible.</translation>
 <translation id="4201051445878709314">Mostrar mes anterior</translation>
-<translation id="4202362334312791952">1 dispositivo conectado. Desactivarase a wifi para comezar a usar a zona wifi.</translation>
 <translation id="4209973997261364186">A wifi está activada</translation>
 <translation id="4212472694152630271">Cambiar ao PIN</translation>
 <translation id="4215497585250573029">Configuración de VPN</translation>
@@ -1093,7 +1089,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5426063383988017631">Pechouse o menú de configuración</translation>
 <translation id="5428899915242071344">Comezar selección</translation>
 <translation id="5429993543155113935">As ventás do modo de incógnito agora mesmo non son compatibles</translation>
-<translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5433020815079095860">Entrada de audio</translation>
 <translation id="544691375626129091">Xa se engadiron todos os usuarios dispoñibles a esta sesión.</translation>
@@ -1122,6 +1117,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="554893713779400387">Activar ou desactivar ditado</translation>
 <translation id="5551456515017410630">Abre ou pecha o calendario</translation>
 <translation id="5551974246223970793">Ir á seguinte coincidencia ao buscar nunha páxina</translation>
+<translation id="5555639311269196631">Desactivar zona wifi</translation>
 <translation id="5558091555391176027">Activar/desactivar o modo de alta visibilidade da función Compartir por Nearby</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5570122939431135380">Abrir nova pestana nunha ventá nova do modo de incógnito</translation>
@@ -1167,7 +1163,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5707775774148071965">O teu dispositivo admite unha velocidade de datos maior que o cable. O rendemento do dispositivo podería verse limitado.</translation>
 <translation id="5710450975648804523">O modo Non molestar está activado</translation>
 <translation id="571295407079589142">Os datos móbiles están desactivados</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> dispositivos conectados. Desactivarase a wifi para comezar a usar a zona wifi.</translation>
 <translation id="5727460725221669831">Se esqueciches o contrasinal ou cambiaches o da Conta de Google recentemente, proba a recuperar este usuario.</translation>
 <translation id="573413375004481890">Este dispositivo non puido admitir todas as túas liñas de braille, así que se desconectou unha</translation>
 <translation id="5740328398383587084">Compartir por Nearby</translation>
@@ -1217,7 +1212,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5920710855273935292">O micrófono está silenciado.</translation>
-<translation id="5924855612669061715">A zona wifi está activada</translation>
 <translation id="5946788582095584774">A función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Seguimento do rendemento activado</translation>
@@ -1233,6 +1227,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="598407983968395253">Usar modelo</translation>
 <translation id="598882571027504733">Para recibir a actualización, reinicia o dispositivo Chromebook co teclado conectado.</translation>
 <translation id="6000279412553873020">Teclas, botóns e moito máis</translation>
+<translation id="6002122790816966947">Os teus dispositivos</translation>
 <translation id="6012623610530968780">Páxina <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Destaca o elemento seguinte no andel</translation>
 <translation id="6015573907265691211">Marcar como finalizada</translation>
@@ -1522,6 +1517,7 @@ Nova instalación</translation>
 <translation id="7188494361780961876">O menú moveuse á esquina superior esquerda da pantalla.</translation>
 <translation id="7189412385142492784">A que distancia está Venus?</translation>
 <translation id="7198435252016571249">Cámara axustada á esquina inferior dereita. Conflito coa plataforma do sistema.</translation>
+<translation id="7219573373513695352">Non hai ningún dispositivo conectado</translation>
 <translation id="7229029500464092426">Memoria dispoñible: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tes que reiniciar este Chromebook para aplicar unha actualización. Esta acción pode tardar 1 minuto.</translation>
 <translation id="7256634071279256947">Micrófono traseiro</translation>

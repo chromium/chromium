@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15 דקות</translation>
 <translation id="2277103315734023688">הרצה קדימה</translation>
 <translation id="2282073721614284166">פתיחת הקישור בכרטיסייה</translation>
-<translation id="2284237890386182187">הנקודה פועלת, אין מכשירים מחוברים</translation>
 <translation id="2292698582925480719">קנה המידה של התצוגה</translation>
 <translation id="229397294990920565">מתבצע כיבוי של הנתונים הסלולריים…</translation>
 <translation id="2295777434187870477">המיקרופון פועל. החלפת המצב תשתיק אותו.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">הפעלת נקודה לשיתוף אינטרנט</translation>
 <translation id="3566240529365775567">נפתח ממש עכשיו</translation>
 <translation id="3571734092741541777">הגדרה</translation>
-<translation id="3572988532398145777">אי אפשר להרחיב את ההתראה כשיש חלונית פתוחה. קודם צריך לסגור את החלונית שלמטה.</translation>
 <translation id="3573179567135747900">לשינוי בחזרה ל"<ph name="FROM_LOCALE" />" (נדרשת הפעלה מחדש)</translation>
 <translation id="3576141592585647168">שינוי אזור הזמן</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">התחלה</translation>
 <translation id="3859364108019690">לא ניתן לשדר אפליקציות</translation>
 <translation id="3861651314799684201">‏כדי להקליט את המסך המלא, מקישים על Enter</translation>
-<translation id="3865912916886104060">‏אין מכשירים מחוברים. החיבור ל-Wi-Fi יושבת כדי שניתן יהיה להתחיל להשתמש בנקודה לשיתוף אינטרנט (Hotspot).</translation>
 <translation id="3886872229787704059">נפתח היום</translation>
 <translation id="3891340733213178823">‏יש להקיש פעמיים על Ctrl+Shift+Q כדי לצאת.</translation>
 <translation id="3893630138897523026">‏ChromeVox (משוב קולי)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">כבוי</translation>
 <translation id="4201033867194214117">התכונה <ph name="FEATURE_NAME" /> לא זמינה.</translation>
 <translation id="4201051445878709314">הצגת חודש קודם</translation>
-<translation id="4202362334312791952">‏מכשיר אחד מחובר. החיבור ל-Wi-Fi יושבת כדי שניתן יהיה להתחיל להשתמש בנקודה לשיתוף אינטרנט (Hotspot).</translation>
 <translation id="4209973997261364186">‏Wi-Fi פועל</translation>
 <translation id="4212472694152630271">מעבר לקוד אימות</translation>
 <translation id="4215497585250573029">‏הגדרות VPN</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">תפריט ההגדרות נסגר</translation>
 <translation id="5428899915242071344">אני רוצה להתחיל לבחור</translation>
 <translation id="5429993543155113935">בשלב זה, אין תמיכה בחלונות פרטיים</translation>
-<translation id="5430931332414098647">שיתוף אינטרנט מיידי בין ניידים</translation>
 <translation id="5431318178759467895">צבע</translation>
 <translation id="5433020815079095860">קלט אודיו</translation>
 <translation id="544691375626129091">כל המשתמשים הזמינים כבר נוספו לפעילות זו באתר.</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">הפעלת הכתבה או הפסקתה</translation>
 <translation id="5551456515017410630">פתיחה/סגירה של היומן</translation>
 <translation id="5551974246223970793">מעבר להתאמה הבאה לחיפוש במהלך חיפוש בדף</translation>
+<translation id="5555639311269196631">כיבוי הנקודה לשיתוף אינטרנט</translation>
 <translation id="5558091555391176027">החלפת מצב השיתוף בקרבת מקום במידת חשיפה גבוהה</translation>
 <translation id="556042886152191864">לחצן</translation>
 <translation id="5570122939431135380">פתיחת כרטיסייה חדשה בחלון פרטי חדש</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">קצב התקשורת של הכבל נמוך מזה של המכשיר. יכול להיות שביצועי המכשיר יוגבלו.</translation>
 <translation id="5710450975648804523">מצב 'נא לא להפריע' מופעל</translation>
 <translation id="571295407079589142">חבילת הגלישה כבויה</translation>
-<translation id="5716891621595980681">‏<ph name="DEVICECOUNT" /> מכשירים מחוברים. החיבור ל-Wi-Fi יושבת כדי שניתן יהיה להתחיל להשתמש בנקודה לשיתוף אינטרנט (Hotspot).</translation>
 <translation id="5727460725221669831">‏אם שינית לאחרונה את הסיסמה לחשבון Google או ששכחת אותה, אפשר לנסות לשחזר את הגישה למשתמש הזה.</translation>
 <translation id="573413375004481890">המכשיר הזה לא הצליח לתמוך בכל המסכים, ולכן אחד מהם נותק</translation>
 <translation id="5740328398383587084">שיתוף בקרבת מקום</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5920710855273935292">המיקרופון מושתק.</translation>
-<translation id="5924855612669061715">נקודת האינטרנט פועלת</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> פעילות.</translation>
 <translation id="5947494881799873997">חזרה לגרסה הקודמת</translation>
 <translation id="595202126637698455">מעקב אחר הביצועים מופעל</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">שימוש בתבנית</translation>
 <translation id="598882571027504733">‏כדי להתקין את העדכון, יש להפעיל מחדש את ה-Chromebook כשהמקלדת מחוברת.</translation>
 <translation id="6000279412553873020">מקשים, לחצנים ועוד</translation>
+<translation id="6002122790816966947">המכשירים שלך</translation>
 <translation id="6012623610530968780">דף <ph name="SELECTED_PAGE" /> מתוך <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">הדגשת הפריט הבא במדף</translation>
 <translation id="6015573907265691211">סימון כמשימה שהושלמה</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">התפריט הועבר לפינה הימנית העליונה של המסך.</translation>
 <translation id="7189412385142492784">מה המרחק בין כדור הארץ לנוגה</translation>
 <translation id="7198435252016571249">המצלמה מוצמדת לפינה השמאלית התחתונה. התנגשות עם תצוגת המערכת.</translation>
+<translation id="7219573373513695352">אין מכשירים מחוברים</translation>
 <translation id="7229029500464092426">זיכרון פנוי: <ph name="AVAILABLE_MEMORY" /> | סה"כ: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. יש להפעיל את ה-Chromebook מחדש כדי להחיל עדכון. התהליך עשוי להימשך עד דקה אחת.</translation>
 <translation id="7256634071279256947">מיקרופון אחורי</translation>

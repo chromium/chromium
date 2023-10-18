@@ -311,7 +311,6 @@
 <translation id="2276987123919776440">15 മിനിറ്റ്</translation>
 <translation id="2277103315734023688">മുന്നോട്ട് നീക്കുക</translation>
 <translation id="2282073721614284166">ടാബ് ലിങ്ക് തുറക്കുക</translation>
-<translation id="2284237890386182187">ഓണാണ്, ഉപകരണങ്ങളൊന്നും കണക്റ്റ് ചെയ്തിട്ടില്ല</translation>
 <translation id="2292698582925480719">ഡിസ്പ്ലേ സ്കെയിൽ</translation>
 <translation id="229397294990920565">മൊബൈൽ ഡാറ്റ ഓഫാക്കുന്നു...</translation>
 <translation id="2295777434187870477">മൈക്ക് ഓണാണ്, മാറ്റുന്നത് ഇൻപുട്ടിനെ മ്യൂട്ട് ചെയ്യും.</translation>
@@ -620,7 +619,6 @@
 <translation id="3563775809269155755">ഹോട്ട്‌സ്പോട്ട് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3566240529365775567">ഇപ്പോൾ തുറന്നത്</translation>
 <translation id="3571734092741541777">സജ്ജീകരിക്കുക</translation>
-<translation id="3572988532398145777">പാനൽ തുറന്നിരിക്കുമ്പോൾ നിങ്ങൾക്ക് അറിയിപ്പ് വികസിപ്പിക്കാനാകില്ല. ആദ്യം താഴെയുള്ള പാനൽ അടയ്ക്കുക.</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" ഭാഷയിലേയ്‌ക്ക് തിരികെ മാറ്റുക (പുനരാരംഭിക്കേണ്ടതുണ്ട്)</translation>
 <translation id="3576141592585647168">സമയമേഖല മാറ്റുക</translation>
 <translation id="3577473026931028326">എന്തോ കുഴപ്പമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -703,7 +701,6 @@
 <translation id="385300504083504382">ആരംഭം</translation>
 <translation id="3859364108019690">ആപ്പുകൾ സ്ട്രീം ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="3861651314799684201">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യാൻ Enter അമർത്തുക</translation>
-<translation id="3865912916886104060">ഉപകരണങ്ങളൊന്നും കണക്‌റ്റ് ചെയ്തിട്ടില്ല. ഹോട്ട്‌സ്‌പോട്ട് ഉപയോഗിച്ച് തുടങ്ങാൻ വൈഫൈ ഓഫാക്കും.</translation>
 <translation id="3886872229787704059">ഇന്ന് തുറന്നത്</translation>
 <translation id="3891340733213178823">സൈൻ ഔട്ട് ചെയ്യുന്നതിന് രണ്ടു‌തവണ Ctrl+Shift+Q അമർത്തുക.</translation>
 <translation id="3893630138897523026">ChromeVox (സ്‌പോക്കൺ ഫീഡ്‌ബാക്ക്)</translation>
@@ -790,7 +787,6 @@
 <translation id="4197790712631116042">ഓഫാണ്</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ലഭ്യമല്ല.</translation>
 <translation id="4201051445878709314">മുമ്പത്തെ മാസം കാണിക്കുക</translation>
-<translation id="4202362334312791952">ഒരു ഉപകരണം കണക്റ്റ് ചെയ്‌തു. ഹോട്ട്‌സ്‌പോട്ട് ഉപയോഗിച്ച് തുടങ്ങാൻ വൈഫൈ ഓഫാക്കും.</translation>
 <translation id="4209973997261364186">വൈഫൈ ഓണാക്കി</translation>
 <translation id="4212472694152630271">പിൻ നമ്പറിലേക്ക് മാറുക</translation>
 <translation id="4215497585250573029">VPN ക്രമീകരണം</translation>
@@ -1100,7 +1096,6 @@
 <translation id="5426063383988017631">ക്രമീകരണം മെനു അടച്ചു</translation>
 <translation id="5428899915242071344">തിരഞ്ഞെടുക്കാൻ ആരംഭിക്കുക</translation>
 <translation id="5429993543155113935">അദൃശ്യ വിൻഡോകൾക്ക് നിലവിൽ പിന്തുണയില്ല</translation>
-<translation id="5430931332414098647">തൽക്ഷണ ടെതറിംഗ്</translation>
 <translation id="5431318178759467895">വര്‍ണ്ണം</translation>
 <translation id="5433020815079095860">ഓഡിയോ ഇൻപുട്ട്</translation>
 <translation id="544691375626129091">ലഭ്യമായ എല്ലാ ഉപയോക്താക്കളേയും ഈ സെഷനിൽ ഇതിനകം ചേർത്തു.</translation>
@@ -1129,6 +1124,7 @@
 <translation id="554893713779400387">പറഞ്ഞ് കൊടുക്കൽ മാറ്റുക</translation>
 <translation id="5551456515017410630">കലണ്ടർ തുറക്കുകയോ അടയ്ക്കുകയോ ചെയ്യുക</translation>
 <translation id="5551974246223970793">ഒരു പേജ് തിരയുമ്പോൾ, തിരയാൻ അടുത്ത പൊരുത്തത്തിലേക്ക് പോകുക</translation>
+<translation id="5555639311269196631">ഹോട്ട്സ്പോട്ട് ഓഫാക്കുക</translation>
 <translation id="5558091555391176027">സമീപമുള്ള പങ്കിടലിന്റെ ഉയർന്ന ദൃശ്യപരത മാറ്റുക</translation>
 <translation id="556042886152191864">ബട്ടൺ</translation>
 <translation id="5570122939431135380">പുതിയ അദൃശ്യ വിൻഡോയിൽ പുതിയ ടാബ് തുറക്കുക</translation>
@@ -1174,7 +1170,6 @@
 <translation id="5707775774148071965">നിങ്ങളുടെ ഉപകരണം, നിങ്ങളുടെ കേബിളിനേക്കാൾ കൂടുതൽ ഡാറ്റാ നിരക്കിനെ പിന്തുണയ്ക്കുന്നു. ഉപകരണ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം.</translation>
 <translation id="5710450975648804523">'ശല്യപ്പെടുത്തരുത്' ഓണാണ്</translation>
 <translation id="571295407079589142">മൊബൈൽ ഡാറ്റ ഓഫാക്കി</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> ഉപകരണങ്ങൾ കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു. ഹോട്ട്‌സ്‌പോട്ട് ഉപയോഗിച്ച് തുടങ്ങാൻ വൈഫൈ ഓഫാക്കും.</translation>
 <translation id="5727460725221669831">നിങ്ങൾ പാസ്‌വേഡ് മറന്നെങ്കിലോ അടുത്തിടെ നിങ്ങളുടെ Google Account പാസ്‌വേഡ് മാറ്റിയിട്ടുണ്ടെങ്കിലോ ഈ ഉപയോക്താവിനെ വീണ്ടെടുക്കാൻ ശ്രമിക്കുക.</translation>
 <translation id="573413375004481890">ഈ ഉപകരണത്തിന് നിങ്ങളുടെ എല്ലാ ഡിസ്പ്ലേകൾക്കും പിന്തുണ നൽകാനാവാത്തതിനാൽ ഒന്ന് വിച്ഛേദിച്ചു</translation>
 <translation id="5740328398383587084">സമീപമുള്ള പങ്കിടൽ</translation>
@@ -1224,7 +1219,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5920710855273935292">മൈക്ക് മ്യൂട്ട് ചെയ്തിരിക്കുന്നു.</translation>
-<translation id="5924855612669061715">ഹോട്ട്സ്പോട്ട് ഓണാണ്</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ഓണാണ്.</translation>
 <translation id="5947494881799873997">പഴയപടിയാക്കുക</translation>
 <translation id="595202126637698455">പ്രകടനം പിന്തുടരൽ പ്രവർത്തനക്ഷമമാക്കി</translation>
@@ -1240,6 +1234,7 @@
 <translation id="598407983968395253">ടെംപ്ലേറ്റ് ഉപയോഗിക്കുക</translation>
 <translation id="598882571027504733">അപ്ഡേറ്റ് നേടാൻ, അറ്റാച്ച് ചെയ്‌ത കീബോഡിനൊപ്പം Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="6000279412553873020">കീകളും ബട്ടണുകളും മറ്റും</translation>
+<translation id="6002122790816966947">നിങ്ങളുടെ ഉപകരണങ്ങൾ</translation>
 <translation id="6012623610530968780">പേജ് <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">ഷെൽഫിലെ അടുത്ത ഇനം ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="6015573907265691211">പൂർത്തിയാക്കിയെന്ന് അടയാളപ്പെടുത്തുക</translation>
@@ -1532,6 +1527,7 @@
 <translation id="7188494361780961876">സ്‌ക്രീനിന്റെ മുകളിൽ ഇടത് കോണിലേക്ക് മെനു നീക്കിയിരിക്കുന്നു.</translation>
 <translation id="7189412385142492784">ശുക്രനിലേക്ക് എത്ര ദൂരമുണ്ട്</translation>
 <translation id="7198435252016571249">താഴെ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>
+<translation id="7219573373513695352">ഉപകരണങ്ങളൊന്നും ബന്ധിപ്പിച്ചിട്ടില്ല</translation>
 <translation id="7229029500464092426">മെമ്മറി <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ആകെ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ബാറ്ററി ചാർജ് ശേഷിക്കുന്നു.
 നിങ്ങളുടെ ഉപകരണം പവറിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>

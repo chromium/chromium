@@ -285,6 +285,7 @@
 <translation id="2571834852878229351">நானே உருவாக்கிக்கொள்கிறேன்</translation>
 <translation id="2573452357057307036">Chromeமை இயல்பு உலாவியாக அமைப்பது எப்படி என அறிக</translation>
 <translation id="2574249610672786438">நீங்கள் Chromeமைப் பயன்படுத்தும் சாதனங்களில் உங்கள் தாவல்களைப் பார்க்க, அனைத்துச் சாதனங்களிலும் உள்நுழையவும்</translation>
+<translation id="2578337197553672982">இளம் வயதினருக்கு Google வழங்கும் உள்ளடக்கம்</translation>
 <translation id="2581165646603367611">முக்கியமில்லை என்று Chrome கருதும் குக்கீகள், தற்காலிகச் சேமிப்பு, தளங்களின் பிற தரவு ஆகியவற்றை இது அழிக்கும்.</translation>
 <translation id="2587052924345400782">புதிய பதிப்பு உள்ளது</translation>
 <translation id="2593272815202181319">மோனோஸ்பேஸ்</translation>
@@ -352,7 +353,6 @@
 <translation id="2909615210195135082">Google அறிவிப்புகள் பிளாட்ஃபார்ம்</translation>
 <translation id="2912296070571964914">உங்களுக்கு ஆர்வமுள்ள தலைப்புகளை நிர்வகிக்கலாம்</translation>
 <translation id="2912345083818861431">திறந்துள்ள மறைநிலைப் பக்கங்களைப் பார்க்க, திரைப் பூட்டு அம்சத்தைப் பயன்படுத்தவும்</translation>
-<translation id="2922568440285376746">படத்திலுள்ளதை Google மூலம் தேடு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">தவறான பெயர்</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> இன் சேமிப்பகம்</translation>
 <translation id="2932222164150889403">கீபோர்டு மாற்றப்படாது</translation>
@@ -687,7 +687,6 @@
 <translation id="4684427112815847243">அனைத்தையும் ஒத்திசை</translation>
 <translation id="4685741273709472646">கீழ்த்தோன்றல் பட்டியலில் இருந்து தேர்ந்தெடுக்கலாம்</translation>
 <translation id="4687718960473379118">தளம் பரிந்துரைக்கும் விளம்பரங்கள்</translation>
-<translation id="4689792375321623175">Google மூலம் படத்தைத் தேடு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பம்}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பங்கள்}}</translation>
 <translation id="4699172675775169585">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்களும் ஃபைல்களும்</translation>
 <translation id="4710167854527459075">புதியவற்றின்படி வரிசைப்படுத்து</translation>
@@ -701,6 +700,7 @@
 <translation id="4742970037960872810">ஹைலைட்டை அகற்று</translation>
 <translation id="4743664893327841597">முகவரிப் பட்டி அல்லது தேடல் பெட்டியில் டைப் செய்பவை உங்களின் இயல்புத் தேடல் இன்ஜினுக்கு அனுப்பப்படும்</translation>
 <translation id="4749960740855309258">புதிய தாவலைத் திறக்கும்</translation>
+<translation id="4750356170202299988">இளம் வயதினருக்கான உள்ளடக்கம்</translation>
 <translation id="4758061975920522644">படத்தை மட்டும் பகிரும்</translation>
 <translation id="4759238208242260848">பதிவிறக்கங்கள்</translation>
 <translation id="4763480195061959176">வீடியோ</translation>
@@ -1182,6 +1182,7 @@
 <translation id="7187993566681480880">Chromeமைப் பயன்படுத்தும்போது இது பாதுகாப்பை வழங்கும், அத்துடன் நீங்கள் பிற Google ஆப்ஸில் உள்நுழைந்திருக்கும்போது உங்கள் பாதுகாப்பை மேம்படுத்துவதற்காக இதைப் பயன்படுத்தலாம்.</translation>
 <translation id="7191430249889272776">தாவல் பின்புலத்தில் திறக்கப்பட்டது.</translation>
 <translation id="7196215469483532480">தனியுரிமை வழிகாட்டியின் விளக்கம் முழுத் திரையில் காட்டப்பட்டுள்ளது</translation>
+<translation id="7205672015775254816">இளம் வயதினருக்கு Google வழங்கும் உள்ளடக்கம் - முடக்கப்பட்டுள்ளது</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> பக்கங்களைப் புதிய பின்னணிப் பக்கங்களாக மீட்டெடுக்கும்.</translation>
 <translation id="7217781228893594884">Chromeமை விட்டு வெளியேறும்போது மறைநிலைப் பக்கங்கள் பூட்டப்படும்</translation>
 <translation id="7221869452894271364">இந்தப் பக்கத்தை மீண்டும் ஏற்று</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7876243839304621966">அனைத்தையும் அகற்று</translation>
 <translation id="7886917304091689118">Chrome இல் இயங்குகிறது</translation>
 <translation id="7887174313503389866">முக்கியமான தனியுரிமை மற்றும் பாதுகாப்புக் கட்டுப்பாடுகள் குறித்த டெமோவைப் பாருங்கள். கூடுதல் விருப்பங்களுக்கு, தனிப்பட்ட அமைப்புகளுக்குச் செல்லவும்.</translation>
+<translation id="7896724475402191389">இளம் வயதினருக்கான உள்ளடக்கம் - முடக்கப்பட்டுள்ளது</translation>
 <translation id="7903184275147100332">இதற்கு ஒரு நிமிடம் ஆகக்கூடும்</translation>
 <translation id="7914399737746719723">ஆப்ஸ் நிறுவப்பட்டது</translation>
 <translation id="7919123827536834358">தானாக மொழிபெயர்க்கப்படும் மொழிகள்</translation>

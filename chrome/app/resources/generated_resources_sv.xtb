@@ -6147,7 +6147,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5901089233978050985">Byt till fliken som spelar in</translation>
 <translation id="5901494423252125310">Skrivarens lucka är öppen</translation>
 <translation id="5901630391730855834">Gul</translation>
-<translation id="5902211418335330937">Om en webbplats inte fungerar som förväntat kan du aktivera tredjepartscookies för den genom att välja blockering av tredjepartscookies i sökfältet och adressfältet.</translation>
 <translation id="5904614460720589786">Det gick inte att installera <ph name="APP_NAME" /> på grund av ett konfigurationsproblem. Kontakta administratören. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Uppdateringen är nästan klar! Slutför den genom att starta om enheten.</translation>
 <translation id="5906732635754427568">Data kopplad till den här appen tas bort från enheten.</translation>
@@ -6913,7 +6912,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6532663472409656417">Med företagsregistrering</translation>
 <translation id="6533315466883598769">Använda Google Översätt</translation>
 <translation id="65334502113648172">Tryck på piltangenterna för att förminska eller förstora visningsområdet. Du kan flytta runt visningsområdet genom att trycka på Skift och + och sedan använda piltangenterna.</translation>
-<translation id="6533636340637966565">Aktiverar …</translation>
 <translation id="6535331821390304775">Tillåt alltid att <ph name="ORIGIN" /> öppnar den här typen av länkar i den kopplade appen</translation>
 <translation id="653659894138286600">Skanna dokument och bilder</translation>
 <translation id="6537613839935722475">Namnet kan innehålla bokstäver, siffror och bindestreck (-)</translation>
@@ -9150,6 +9148,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8314835274931377415">Vill du starta konfigureringsguiden för brytarstyrning?</translation>
 <translation id="8315018673856831477">Alternativ för minnessparläge</translation>
 <translation id="8315044115695361734">Från iCloud-nyckelringen</translation>
+<translation id="8315514906653279104">Aktiverar …</translation>
 <translation id="8317671367883557781">Lägg till nätverksanslutning</translation>
 <translation id="8317965619823678157">kopiera lösenord</translation>
 <translation id="8318266828739827371">Använd vyn delad skärm för att se det förstorade området av skärmen. Aktivera och inaktivera dockad skärmförstoring med Sök + Ctrl + D.</translation>

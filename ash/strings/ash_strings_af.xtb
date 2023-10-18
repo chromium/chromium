@@ -310,7 +310,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2276987123919776440">15 minute</translation>
 <translation id="2277103315734023688">Soek vorentoe</translation>
 <translation id="2282073721614284166">Maak skakel in oortjie oop</translation>
-<translation id="2284237890386182187">Aan, geen toestelle is gekoppel nie</translation>
 <translation id="2292698582925480719">Vertoonskaal</translation>
 <translation id="229397294990920565">Mobiele data skakel tans af …</translation>
 <translation id="2295777434187870477">Mikrofoon is aan. Wissel om invoer te demp.</translation>
@@ -617,7 +616,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3563775809269155755">Aktiveer warmkol</translation>
 <translation id="3566240529365775567">Sopas oopgemaak</translation>
 <translation id="3571734092741541777">Stel op</translation>
-<translation id="3572988532398145777">Jy kan nie die kennisgewing uitvou terwyl ’n paneel oop is nie. Maak eers die paneel hieronder toe.</translation>
 <translation id="3573179567135747900">Verander terug na "<ph name="FROM_LOCALE" />" (vereis herbegin)</translation>
 <translation id="3576141592585647168">Verander tydsone</translation>
 <translation id="3577473026931028326">Iets was fout. Probeer weer.</translation>
@@ -701,7 +699,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="385300504083504382">Begin</translation>
 <translation id="3859364108019690">Kan nie apps stroom nie</translation>
 <translation id="3861651314799684201">Druk Enter om volskerm op te neem</translation>
-<translation id="3865912916886104060">Geen toestelle is gekoppel nie. Wi-fi sal afgeskakel word om warmkol te begin gebruik.</translation>
 <translation id="3886872229787704059">Vandag oopgemaak</translation>
 <translation id="3891340733213178823">Druk Ctrl+Shift+Q twee keer om af te meld.</translation>
 <translation id="3893630138897523026">ChromeVox (gesproke terugvoer)</translation>
@@ -786,7 +783,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4197790712631116042">Af</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> is nie beskikbaar nie.</translation>
 <translation id="4201051445878709314">Wys vorige maand</translation>
-<translation id="4202362334312791952">1 toestel is gekoppel. Wi-fi sal afgeskakel word om warmkol te begin gebruik.</translation>
 <translation id="4209973997261364186">Wi-fi is aangeskakel</translation>
 <translation id="4212472694152630271">Skakel oor na PIN</translation>
 <translation id="4215497585250573029">VPN-instellings</translation>
@@ -1093,7 +1089,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5426063383988017631">Instellingskieslys is gesluit</translation>
 <translation id="5428899915242071344">Begin kies</translation>
 <translation id="5429993543155113935">Incognito-vensters word nie tans gesteun nie</translation>
-<translation id="5430931332414098647">Kitsverbinding</translation>
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="5433020815079095860">Oudio-invoer</translation>
 <translation id="544691375626129091">Alle beskikbare gebruikers is reeds by hierdie sessie gevoeg.</translation>
@@ -1122,6 +1117,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="554893713779400387">Wissel diktering</translation>
 <translation id="5551456515017410630">Maak kalender oop/toe</translation>
 <translation id="5551974246223970793">Gaan na volgende passing vir soektog wanneer ’n bladsy deurgesoek word</translation>
+<translation id="5555639311269196631">Skakel warmkol af</translation>
 <translation id="5558091555391176027">Wissel hoë sigbaarheid van Nabydeling</translation>
 <translation id="556042886152191864">Knoppie</translation>
 <translation id="5570122939431135380">Maak nuwe oortjie in nuwe Incognito-venster oop</translation>
@@ -1167,7 +1163,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5707775774148071965">Jou toestel steun ’n hoër datakoers as jou kabel. Toestelwerkverrigting kan beperk wees.</translation>
 <translation id="5710450975648804523">Moenie Steur Nie is aan</translation>
 <translation id="571295407079589142">Mobiele data is afgeskakel</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> toestelle is gekoppel. Wi-fi sal afgeskakel word om warmkol te begin gebruik.</translation>
 <translation id="5727460725221669831">As jy jou wagwoord vergeet het of jou Google-rekeningwagwoord onlangs verander het, kan jy probeer om hierdie gebruiker terug te stel.</translation>
 <translation id="573413375004481890">Hierdie toestel kon nie al jou skerms steun nie en daarom is een ontkoppel</translation>
 <translation id="5740328398383587084">Nabydeling</translation>
@@ -1217,7 +1212,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Mikrofoon is gedemp.</translation>
-<translation id="5924855612669061715">Warmkol is aan</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is aan.</translation>
 <translation id="5947494881799873997">Stel terug</translation>
 <translation id="595202126637698455">Prestasie-nasporing geaktiveer</translation>
@@ -1233,6 +1227,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="598407983968395253">Gebruik templaat</translation>
 <translation id="598882571027504733">Herbegin jou Chromebook met die sleutelbord aangeheg om die opdatering te kry.</translation>
 <translation id="6000279412553873020">Sleutels, knoppies en nog meer</translation>
+<translation id="6002122790816966947">Jou toestelle</translation>
 <translation id="6012623610530968780">Bladsy <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Merk volgende item op rak</translation>
 <translation id="6015573907265691211">Merk as voltooi</translation>
@@ -1522,6 +1517,7 @@ Nuwe installasie</translation>
 <translation id="7188494361780961876">Kieslys is na die skerm se hoek links onder geskuif.</translation>
 <translation id="7189412385142492784">Hoe ver is Venus</translation>
 <translation id="7198435252016571249">Kamera is geglip na hoek onder regs. Konflik met stelseloppervlak.</translation>
+<translation id="7219573373513695352">Geen toestelle is gekoppel nie</translation>
 <translation id="7229029500464092426">Geheue <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totaal</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Hierdie Chromebook moet herbegin om 'n opdatering toe te pas. Dit kan tot 1 minuut neem.</translation>
 <translation id="7256634071279256947">Agterste mikrofoon</translation>

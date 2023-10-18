@@ -333,6 +333,7 @@
 <translation id="2856503607207334158">साइन इन नहीं हो सका</translation>
 <translation id="2860954141821109167">पक्का करें कि इस डिवाइस पर फ़ोन ऐप्लिकेशन चालू है</translation>
 <translation id="2861923151411510142">Chrome की कुछ सुविधाएं अब उपलब्ध नहीं होंगी</translation>
+<translation id="2869430948265924908">कार में अपने संवेदनशील कॉन्टेंट को सुरक्षित रखने के लिए, आपको कार का प्रोफ़ाइल लॉक सेट अप करना होगा.  इसके लिए, पिन, कोड या पासवर्ड का इस्तेमाल किया जा सकता है.</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेजों को पहले से लोड करना</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> ने आपसे इस वेबसाइट का ऐक्सेस देने का अनुरोध किया है:</translation>
@@ -348,7 +349,6 @@
 <translation id="2909615210195135082">Google सूचना प्लैटफ़ॉर्म</translation>
 <translation id="2912296070571964914">अपनी पसंद के विषयों को मैनेज करें</translation>
 <translation id="2912345083818861431">खुले हुए गुप्त टैब देखने के लिए, स्क्रीन लॉक का इस्तेमाल करें</translation>
-<translation id="2922568440285376746">Google से इमेज खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">नाम अमान्य है</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> मेमोरी</translation>
 <translation id="2932222164150889403">आपका कीबोर्ड नहीं बदलेगा</translation>
@@ -452,6 +452,7 @@
 <translation id="3421726884497337397">चुनें कि तीसरे पक्ष की कुकी को कब ब्लॉक करना है</translation>
 <translation id="3428747202529429621">अगर आप Chrome में साइन इन हैं, तो यह सुविधा आपको सुरक्षित रखती है. साथ ही, अन्य Google ऐप्लिकेशन में इसका इस्तेमाल सुरक्षा को बेहतर बनाने में भी हो सकता है</translation>
 <translation id="3429160811076349561">ट्रायल की सुविधाएं बंद हैं</translation>
+<translation id="3430670036890315772">अपना प्रोफ़ाइल लॉक बंद करने पर, आपकी सेव की गई जानकारी हट जाएगी</translation>
 <translation id="3435465986463792564">कई विंडो खुली हैं? उन सभी को यहां से मैनेज किया जा सकता है</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3439276997620616816">आपको हाल ही में खोले गए टैब, यहां दिखेंगे</translation>
@@ -623,6 +624,7 @@
 <translation id="4378154925671717803">फ़ोन</translation>
 <translation id="438319986296050901">सिर्फ़ कार्ड शेयर करें</translation>
 <translation id="4384468725000734951">खोज के लिए Sogou का इस्तेमाल कर रहे हैं</translation>
+<translation id="4387647248986092471">कार का प्रोफ़ाइल लॉक सेट करें</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - डाउनलोड हो रही है…</translation>
 <translation id="4404568932422911380">कोई बुकमार्क नहीं</translation>
 <translation id="4405224443901389797">इसमें ले जाएं…</translation>
@@ -681,7 +683,6 @@
 <translation id="4684427112815847243">सब कुछ सिंक करें</translation>
 <translation id="4685741273709472646">ड्रॉपडाउन सूची में से चुनें</translation>
 <translation id="4687718960473379118">साइट की ओर से सुझाए गए विज्ञापन</translation>
-<translation id="4689792375321623175">Google से इमेज खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}}</translation>
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
 <translation id="4710167854527459075">नए के क्रम से लगाएं</translation>
@@ -790,6 +791,7 @@
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5171045022955879922">यूआरएल खोजें या टाइप करें</translation>
 <translation id="5174700554036517242">टैब की लंबाई पहले जैसी कर दी गई है</translation>
+<translation id="5180063720319462041">पेज का अनुवाद <ph name="TARGET_LANGUAGE" /> में किया गया</translation>
 <translation id="5186634140793586141">अपनी पसंद के विषयों और खोजों को मैनेज करें</translation>
 <translation id="5191251636205085390">तीसरे पक्ष की कुकी की जगह इस्तेमाल करने के मकसद से बनाई गई नई टेक्नोलॉजी के बारे में जानें और उन्हें कंट्रोल करें</translation>
 <translation id="5193988420012215838">आपके क्लिपबोर्ड पर कॉपी की गई</translation>
@@ -798,6 +800,7 @@
 <translation id="5210286577605176222">सीधे पिछले टैब पर जाएं</translation>
 <translation id="5210365745912300556">टैब बंद करें</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>
+<translation id="5226378907213531272">हर बार कार का इस्तेमाल करने पर, आपकी स्क्रीन अनलॉक होगी</translation>
 <translation id="5227554086496586518">खोज नतीजे देखने के लिए टैप करें</translation>
 <translation id="5233638681132016545">नया टैब</translation>
 <translation id="5235196193381275927">साइन इन करते समय कोई गड़बड़ी हुई है</translation>
@@ -1279,6 +1282,7 @@
 <translation id="7691043218961417207">उस कॉन्टेंट को एक्सप्लोर करें जिसे फ़ॉलो करना है</translation>
 <translation id="7697383401610880082">खींचकर छोड़ने वाला हैंडल</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> में ईमेल बनाएं</translation>
+<translation id="7702388902581909985">ब्राउज़िंग डेटा मिटाने का मतलब यह नहीं है कि आपको Google खाते से साइन आउट कर दिया जाएगा. ऐसा करने के लिए, <ph name="BEGIN_LINK1" />Chrome से साइन आउट करें<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">मोबाइल डेटा का उपयोग करें</translation>
 <translation id="7709918231054955894">अपने सभी डिवाइसों पर खुले हुए टैब ऐक्सेस करें</translation>
 <translation id="772434085369393266">नेविगेशन को एचटीटीपीएस पर अपग्रेड करें. ऐसा करने से, आपको उन साइटों के लोड होने से पहले चेतावनी मिलेगी जो एचटीटीपीएस पर काम नहीं करतीं. इस सेटिंग को नहीं बदला जा सकता, क्योंकि आपने बेहतर सुरक्षा की सेटिंग चालू की हुई है.</translation>

@@ -966,6 +966,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, hiện đã chọn. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Tài nguyên của nhà văn</translation>
+<translation id="2980742331521553164">CVC của thẻ này sẽ được mã hoá và lưu vào Tài khoản Google của bạn để giúp bạn thanh toán nhanh hơn</translation>
 <translation id="2983666748527428214">Mở thẻ ẩn danh</translation>
 <translation id="2985306909656435243">Nếu được bật, Chromium sẽ lưu trữ bản sao thẻ của bạn trên thiết bị này để điền vào biểu mẫu nhanh hơn.</translation>
 <translation id="2985398929374701810">Nhập địa chỉ hợp lệ</translation>
@@ -3399,6 +3400,7 @@ Thông tin chi tiết bổ sung:
 <translation id="79338296614623784">Nhập số điện thoại hợp lệ</translation>
 <translation id="7934414805353235750"><ph name="URL" /> muốn phát nội dung được bảo vệ. Thông tin định danh thiết bị của bạn sẽ được Google xác minh.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">CVC của thẻ này sẽ được mã hoá và lưu vào thiết bị của bạn để giúp bạn thanh toán nhanh hơn</translation>
 <translation id="7937554595067888181">Hết hạn vào <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Chứng chỉ của máy chủ chưa hợp lệ.</translation>
 <translation id="7939713744218886332">Ẩm thực thế giới</translation>

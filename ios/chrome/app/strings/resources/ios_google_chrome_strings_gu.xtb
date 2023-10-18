@@ -4,6 +4,7 @@
 <translation id="1105362920864247682">Chromeમાં બ્રાઉઝિંગ ડેટા સાફ કરો.</translation>
 <translation id="1143896152279775643">તમારો પાસવર્ડ <ph name="EMAIL" /> માટેના Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવશે.</translation>
 <translation id="1180362651362502943">તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખો.</translation>
+<translation id="1200396280085622191">જ્યારે પણ તમે મેસેજ અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
 <translation id="1282031177488366470">Chromeની સુવિધાઓ અને કાર્યપ્રદર્શનને સુધારવામાં સહાય કરો</translation>
 <translation id="1333745675627230582">Chrome Dino ગેમ રમો</translation>
 <translation id="1352919863522755794">Google Password Manager તમારા પાસવર્ડ ચેક કરી શક્યું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
@@ -33,16 +34,19 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાંની લિંક પર ટૅપ કરો, ત્યારે ઑટોમૅટિક રીતે Chromeનો ઉપયોગ કરો.</translation>
 <translation id="1917964099031477364">આ ડિવાઇસ પરની Chrome અને અન્ય Google ઍપમાંથી આ એકાઉન્ટ અને સાચવવામાં ન આવ્યો હોય એવો કોઈપણ ડેટા કાઢી નાખવામાં આવશે.</translation>
+<translation id="1987779152850321833">Chromeનો સૌથી વધુ લાભ મેળવવા માટે નીચે સૂચવેલી આ ક્રિયાઓ પૂર્ણ કરો.</translation>
 <translation id="2009224836393115614">Chrome તમારા પાસવર્ડ ચેક કરી શક્યું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="2056123005618757196">Google Chromeના સરળ, સુરક્ષિત અને અત્યાર સુધીના સૌથી ઝડપી વર્ઝન વડે વધુ કાર્યો પૂર્ણ કરો.</translation>
 <translation id="2120238739383482109">Chrome બુકમાર્ક ખોલે છે.</translation>
 <translation id="2147651015520127414">Chrome એ ચકાસણી કરી છે કે <ph name="ISSUER" /> એ આ વેબસાઇટનું પ્રમાણપત્ર ઇસ્યુ કર્યું છે.</translation>
 <translation id="2199719347983604670">Chrome સિંકમાંનો ડેટા</translation>
+<translation id="2242467532204595597">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
 <translation id="2311240109311056604">Chrome Dino ગેમ ખોલે છે.</translation>
 <translation id="2339201583852607431">તમારો પાસવર્ડ તમારા Google એકાઉન્ટ (<ph name="EMAIL" />)માં સાચવવામાં આવશે.</translation>
 <translation id="2342919707875585281">Chrome તમે મંજૂરી આપો છો તે સાઇટ સાથે તમારા સ્થાનની માહિતી શેર કરે છે.</translation>
 <translation id="2347208864470321755">જ્યારે આ સુવિધા ચાલુ કરી હોય, ત્યારે Chrome, Google Translateનો ઉપયોગ કરીને અન્ય ભાષાઓમાં લખેલા પેજના અનુવાદ ઑફર કરશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2414068465746584414">તમારા ડિવાઇસના સેટિંગમાંથી, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ખોલો અને "Chrome" પસંદ કરો</translation>
+<translation id="2423077901494354337">તમે હવે તમારા ડિવાઇસ પર Chromeનો વધુને વધુ લાભ મેળવશો.</translation>
 <translation id="2427791862912929107">Chromeમાં એવી સુવિધાઓ છે કે જે તમને તમારા ઇન્ટરનેટ ડેટાને મેનેજ કરવામાં અને વેબપેજને ઝડપથી લોડ કરવામાં સહાય કરે છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">તમારી અન્ય ઍપમાં તમારા સાચવેલા પાસવર્ડ સરળતાથી મેળવવા માટે, Chromeની ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરો</translation>
@@ -61,6 +65,7 @@
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome તમારા ડેટાને કેવી રીતે ખાનગી રાખે છે<ph name="END_LINK" /> તે વિશે વધુ જાણો</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome <ph name="END_BOLD" />પસંદ કરો</translation>
 <translation id="3030414234702425231">કારણ કે તમે <ph name="SIGNOUT_MANAGED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવેલ એકાઉન્ટમાંથી સાઇન આઉટ કરી રહ્યાં છો, આ ડિવાઇસમાંથી તમારા Chrome ડેટા ડિલીટ થઈ જશે. તમારો ડેટા તમારા Google એકાઉન્ટમાં જળવાઈ રહેશે.</translation>
+<translation id="309672519329227863">તમારા Chrome પાસવર્ડ અને બીજું ઘણું અન્ય ઍપ પર ઍક્સેસ કરો.</translation>
 <translation id="3167189358072330585">તમારું એકાઉન્ટ, Google Chrome પર કાર્ય કરતું નથી. કૃપા કરીને તમારા ડોમેન એડમિનનો સંપર્ક કરો અથવા સાઇન ઇન કરવા માટે નિયમિત Google એકાઉન્ટનો ઉપયોગ કરો.</translation>
 <translation id="3173834708294760622">Google Chrome પેજ</translation>
 <translation id="3196546062792660320">વેબ પર તમારા એકાઉન્ટ લાવીને Chrome તમારો સમય બચાવે છે. તમે સેટિંગમાં એકાઉન્ટ ઉમેરી અથવા કાઢી નાખી શકો છો.</translation>
@@ -71,6 +76,7 @@
 <translation id="3503014945441706099">આ Chrome પ્રોફાઇલ માટે પણ Safe Browsingમાં વધારેલી સુરક્ષા મેળવો</translation>
 <translation id="3522659714780527202">તમે જ્યાંથી Chromeનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="3533694711092285624">કોઈ સાચવેલો પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chrome તેને ચેક કરી શકે છે.</translation>
+<translation id="3577555362230509265">અન્ય ઍપમાં Chromeનો ઉપયોગ કરો.</translation>
 <translation id="3594076341410558780">“Chromeનો મહત્તમ લાભ મેળવો” કાર્ડ છુપાવો</translation>
 <translation id="3655656110921623717">આનો અર્થ છે કે Chrome દરેક વખતે મોબાઇલ સાઇટની વિનંતી કરશે.</translation>
 <translation id="3720541637541300822">તમે Chrome બંધ કરો ત્યારે છૂપી ટૅબ લૉક કરો</translation>
@@ -140,6 +146,7 @@
 <translation id="6181930887571472871">Chrome પર સ્વિચ કરો</translation>
 <translation id="6238746320622508509">Chromeને તમારી છૂપી ટૅબ લૉક કરવા દો.</translation>
 <translation id="6247557882553405851">Google પાસવર્ડ મેનેજર</translation>
+<translation id="6348855835728304880">આ ડિવાઇસ પર અન્ય ઍપ માટેના Chromeના તમારા પાસવર્ડ જેવી બીજી ઘણી બાબતોને ઍક્સેસ કરો.</translation>
 <translation id="6412673304250309937">URLsને Chromeમાં સ્ટોર કરેલી અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
 <translation id="6427126399757991875">તમારી સંસ્થા Chromeનું સેટઅપ કરી રહી છે…</translation>
 <translation id="6545449117344801102">Chrome તમને દિશાનિર્દેશો તેમજ સ્થાનિક માહિતી આપવા માટે, Google Maps પર સરનામાં શોધે છે અને પછી તેનો ઉપયોગ કરે છે.</translation>
@@ -168,6 +175,7 @@
 <translation id="7187993566681480880">તમને Chrome પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં ઉપયોગમાં લેવાઈ શકે છે.</translation>
 <translation id="7200524487407690471">Chrome દરરોજ ઑટોમૅટિક રીતે સલામતી માટે તપાસ ચલાવે છે, જેથી તમને ડેટા ઉલ્લંઘનની ઘટનાઓ, અસલામત વેબસાઇટ અને બીજા ઘણા જોખમોથી સલામત રાખી શકાય. તમે સેટિંગમાં જઈને સલામતી માટે તપાસની સુવિધા વિશે વધુ જાણી શકો છો.</translation>
 <translation id="72119412072970160">તમે Google પાસવર્ડ મેનેજરમાં સાચવેલા તમારા પાસવર્ડનો ઉપયોગ તમારા iPad પરની અન્ય ઍપમાં કરી શકો છો.</translation>
+<translation id="723787869754590019">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chromeનો ઉપયોગ કરો</translation>
 <translation id="7254380941803999489">Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="7261678641327190792">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
 <translation id="7272930098487145294">છબીઓ સાચવવા માટે, સેટિંગ પર ટૅપ કરો જેથી Chrome તમારા ફોટા ઉમેરી શકે</translation>
@@ -207,8 +215,10 @@
   2. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો
   3. Chrome પસંદ કરો.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8577978202917232774">તમારા અન્ય ડિવાઇસ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિના આધારે સૂચનો બતાવવામાં આવે છે. સૂચનો મેળવવા માટે, તમારા બધા ડિવાઇસ પર Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="8587647598504233556">"Chrome" પર ટૅપ કર્યા પછી "ડિફૉલ્ટ બ્રાઉઝર ઍપ" પર ટૅપ કરો.</translation>
 <translation id="8603022514504485810">Google Password Manager બધા પાસવર્ડ ચેક કરી શક્યું નથી. આવતી કાલે ફરી પ્રયાસ કરજો અથવા <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટમાં પાસવર્ડ ચેક કરો.<ph name="END_LINK" /></translation>
+<translation id="8727043961453758442">Chromeનો વધુને વધુ લાભ મેળવો</translation>
 <translation id="8736550665979974340">Google Chromeનો ઉપયોગ કરીને સલામત રહો</translation>
 <translation id="8760668027640688122">Chromeમાં નવું ટૅબ ખોલો</translation>
 <translation id="8765470054473112089">જ્યારે તમે ઍડ્રેસ બાર અથવા શોધ બૉક્સમાં ટાઇપ કરો છો, ત્યારે બહેતર સૂચનો મેળવવા માટે Chrome તમે જે ટાઇપ કરો છો તેને તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલે છે. આ સુવિધા છૂપા મોડમાં કામ કરતી નથી.</translation>
@@ -232,4 +242,5 @@
 <translation id="9112744793181547300">Chromeને ડિફૉલ્ટ તરીકે સેટ કરીએ?</translation>
 <translation id="9122931302567044771">આનો અર્થ છે કે Chrome દરેક વખતે ડેસ્કટૉપ સાઇટની વિનંતી કરશે.</translation>
 <translation id="9181628561061032322">Chromeના તાજેતરના ટૅબ ખોલે છે.</translation>
+<translation id="97300214378190234">જ્યારે પણ તમે અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
 </translationbundle>

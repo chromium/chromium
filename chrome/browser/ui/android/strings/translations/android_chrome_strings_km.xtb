@@ -353,7 +353,6 @@
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">គ្រប់គ្រងប្រធានបទ​ដែលអ្នកចាប់អារម្មណ៍</translation>
 <translation id="2912345083818861431">ប្រើ​ការចាក់សោអេក្រង់ ដើម្បីមើលឃើញ​ផ្ទាំងឯកជនដែលបើក</translation>
-<translation id="2922568440285376746">ស្វែងរកក្នុងរូបភាពតាមរយៈ Google <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">ឈ្មោះ​មិន​ត្រឹមត្រូវ​ទេ</translation>
 <translation id="2932150158123903946">ទំហំផ្ទុក Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">ក្ដារចុច​របស់អ្នក​នឹងមិន​ផ្លាស់ប្ដូរ​ទេ</translation>
@@ -688,7 +687,6 @@
 <translation id="4684427112815847243">ធ្វើសមកម្មគ្រប់យ៉ាង</translation>
 <translation id="4685741273709472646">ជ្រើសរើស​ពី​បញ្ជី​ធ្លាក់ចុះ</translation>
 <translation id="4687718960473379118">ការផ្សាយពាណិជ្ជកម្មដែលណែនាំ​ដោយ​គេហទំព័រ</translation>
-<translation id="4689792375321623175">ស្វែងរករូបភាពតាមរយៈ Google <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ទៀត}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ទៀត}}</translation>
 <translation id="4699172675775169585">រូបភាព និងឯកសារដែលផ្ទុកក្នុងឃ្លាំងសម្ងាត់</translation>
 <translation id="4710167854527459075">តម្រៀប​តាម​ថ្មីបំផុត</translation>

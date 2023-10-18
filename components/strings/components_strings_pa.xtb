@@ -1120,6 +1120,7 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ਨੀਤੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="3295444047715739395">Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="3299098170013242198">Windows Hello ਪਾਸਵਰਡ ਭਰਨ ਲਈ ਚਾਲੂ ਹੈ</translation>
+<translation id="3299720788264079132"><ph name="FEATURE_NAME" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਵੇਲੇ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="3303176609391916566">30 x 42 ਇੰਚ</translation>
 <translation id="3303855915957856445">ਕੋਈ ਖੋਜ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="3304073249511302126">ਬਲੂਟੁੱਥ ਸਕੈਨਿੰਗ</translation>
@@ -1953,6 +1954,7 @@
 <translation id="4989163558385430922">ਸਭ ਦੇਖੋ</translation>
 <translation id="4989542687859782284">ਅਣਉਪਲਬਧ</translation>
 <translation id="4989809363548539747">ਇਹ ਪਲੱਗਇਨ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
+<translation id="4990226362263043042">ਇਤਿਹਾਸ ਸਾਈਡ ਪੈਨਲ</translation>
 <translation id="4990241977441916452">A2 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="4992066212339426712">ਅਨਮਿਊਟ ਕਰੋ</translation>
 <translation id="4995216769782533993">ਇਸ ਸਾਈਟ ਨਾਲ ਆਪਣੇ ਕਾਰਡ ਵੇਰਵੇ ਸਾਂਝੇ ਕਰਨ ਲਈ ਸੁਰੱਖਿਆ ਕੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
@@ -2220,6 +2222,7 @@
 <translation id="5541086400771735334">ਮੇਲਬਾਕਸ 7</translation>
 <translation id="5541546772353173584">ਈਮੇਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5543722831081909240">180 ਡਿਗਰੀ</translation>
+<translation id="5544512018309093956">ਇਤਿਹਾਸ ਸਾਈਡ ਪੈਨਲ</translation>
 <translation id="555128936272638662">ਮੋਬਾਈਲ ਅਤੇ ਵਾਇਰਲੈੱਸ ਐਕਸੈਸਰੀਆਂ</translation>
 <translation id="5551890439174915351">100 x 200 ਮਿ.ਮੀ.</translation>
 <translation id="5552137475244467770">Chrome ਨਿਯਮਿਤ ਤੌਰ 'ਤੇ ਆਨਲਾਈਨ ਪ੍ਰਕਾਸ਼ਿਤ ਕੀਤੀਆਂ ਗਈਆਂ ਸੂਚੀਆਂ ਨਾਲ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰਦਾ ਹੈ। ਅਜਿਹਾ ਕਰਨ ਵੇਲੇ, ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਅਤੇ ਵਰਤੋਂਕਾਰ ਨਾਮ ਇਨਕ੍ਰਿਪਟ ਕੀਤੇ ਜਾਂਦੇ ਹਨ, ਇਸ ਲਈ ਉਹ Google ਸਮੇਤ ਕਿਸੇ ਵੱਲੋਂ ਵੀ ਪੜ੍ਹੇ ਨਹੀਂ ਜਾ ਸਕਦੇ।</translation>

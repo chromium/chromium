@@ -286,6 +286,7 @@
 <translation id="2571834852878229351">カスタムで作成</translation>
 <translation id="2573452357057307036">Chrome を既定のブラウザに設定する方法</translation>
 <translation id="2574249610672786438">どのデバイスからでも Chrome で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
+<translation id="2578337197553672982">若者向けの Google コンテンツ</translation>
 <translation id="2581165646603367611">Chrome で重要度が低いと判断されるサイトの Cookie やキャッシュなどのデータを削除します。</translation>
 <translation id="2587052924345400782">新しいバージョンをご利用いただけます</translation>
 <translation id="2593272815202181319">等幅</translation>
@@ -337,6 +338,7 @@
 <translation id="2856503607207334158">ログインできませんでした</translation>
 <translation id="2860954141821109167">このデバイスで通話アプリが有効になっていることを確認してください</translation>
 <translation id="2861923151411510142">Chrome の一部の機能は使用できなくなります</translation>
+<translation id="2869430948265924908">車内で機密性の高いコンテンツを保護するには、車のプロフィールのロックを作成する必要があります。ロックには PIN、コード、パスワードを使用できます。</translation>
 <translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2871733351037274014">ページをプリロードする</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> さんが次のウェブサイトの承認を求めています。</translation>
@@ -352,7 +354,6 @@
 <translation id="2909615210195135082">Google 通知プラットフォーム</translation>
 <translation id="2912296070571964914">興味のあるトピックを管理します</translation>
 <translation id="2912345083818861431">画面ロックを使用して、開いているシークレット タブを表示します</translation>
-<translation id="2922568440285376746">Google で画像内を検索<ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">名前が無効です</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ストレージ</translation>
 <translation id="2932222164150889403">キーボードは変更されません</translation>
@@ -456,6 +457,7 @@
 <translation id="3421726884497337397">サードパーティの Cookie をどのようなときにブロックするかを選択する</translation>
 <translation id="3428747202529429621">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります</translation>
 <translation id="3429160811076349561">試用版機能はオフになっています</translation>
+<translation id="3430670036890315772">プロフィールのロックをオフにすると、保存した情報が削除されます</translation>
 <translation id="3435465986463792564">ウィンドウの数が多くてお困りの場合も、ここで管理できます</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="3439276997620616816">最近使ったタブがここに表示されます</translation>
@@ -627,6 +629,7 @@
 <translation id="4378154925671717803">電話</translation>
 <translation id="438319986296050901">カードのみ共有</translation>
 <translation id="4384468725000734951">検索に Sogou を使用します</translation>
+<translation id="4387647248986092471">車のプロフィールのロックを作成</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ダウンロードしています…</translation>
 <translation id="4404568932422911380">ブックマークがありません</translation>
 <translation id="4405224443901389797">移動…</translation>
@@ -685,7 +688,6 @@
 <translation id="4684427112815847243">すべてを同期する</translation>
 <translation id="4685741273709472646">プルダウン リストから選択します</translation>
 <translation id="4687718960473379118">ウェブサイトによる広告の提案</translation>
-<translation id="4689792375321623175">Google で画像を検索<ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}}</translation>
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4710167854527459075">新しい順に並べ替え</translation>
@@ -699,6 +701,7 @@
 <translation id="4742970037960872810">テキストの選択を解除</translation>
 <translation id="4743664893327841597">アドレスバーまたは検索ボックスに入力した内容は、デフォルトの検索エンジンに送信されます</translation>
 <translation id="4749960740855309258">新しいタブを開く</translation>
+<translation id="4750356170202299988">若者向けのコンテンツ</translation>
 <translation id="4758061975920522644">画像のみ共有</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
 <translation id="4763480195061959176">動画</translation>
@@ -794,6 +797,7 @@
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5171045022955879922">検索または URL を入力</translation>
 <translation id="5174700554036517242">タブが最初の高さに戻りました</translation>
+<translation id="5180063720319462041">ページが<ph name="TARGET_LANGUAGE" />に翻訳されました</translation>
 <translation id="5186634140793586141">関心のあるトピックと検索内容を管理する</translation>
 <translation id="5191251636205085390">サードパーティの Cookie に代わる新しい技術の詳細と管理方法について</translation>
 <translation id="5193988420012215838">クリップボードにコピーされました</translation>
@@ -802,6 +806,7 @@
 <translation id="5210286577605176222">前のタブに移動する</translation>
 <translation id="5210365745912300556">タブを閉じる</translation>
 <translation id="5222676887888702881">ログアウト</translation>
+<translation id="5226378907213531272">車を使うたびに画面ロックが解除されます</translation>
 <translation id="5227554086496586518">タップして検索結果を見る</translation>
 <translation id="5233638681132016545">新しいタブ</translation>
 <translation id="5235196193381275927">ログイン中に問題が発生しました</translation>
@@ -1178,6 +1183,7 @@
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
 <translation id="7196215469483532480">プライバシー ガイドの説明が画面全体に表示されています</translation>
+<translation id="7205672015775254816">若者向けの Google コンテンツ - オフ</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> 個のタブを新しいバックグラウンドのタブとして復元します。</translation>
 <translation id="7217781228893594884">シークレット タブは Chrome を終了するときにロックされます</translation>
 <translation id="7221869452894271364">このページを再読み込みします</translation>
@@ -1286,6 +1292,7 @@
 <translation id="7691043218961417207">フォローするコンテンツを探しましょう</translation>
 <translation id="7697383401610880082">ドラッグ ハンドル</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> でメールを作成</translation>
+<translation id="7702388902581909985">閲覧データを削除しても、Google アカウントからはログアウトされません。ログアウトするには、<ph name="BEGIN_LINK1" />Chrome からログアウト<ph name="END_LINK1" />する手順を行います。</translation>
 <translation id="7707922173985738739">モバイルデータを使用します</translation>
 <translation id="7709918231054955894">使用したすべてのタブを表示</translation>
 <translation id="772434085369393266">移動先を HTTPS にアップグレードし、HTTPS をサポートしていないサイトは読み込む前に警告を表示します。高度な保護機能が有効になっているため、この設定は変更できません。</translation>
@@ -1324,6 +1331,7 @@
 <translation id="7876243839304621966">すべて削除</translation>
 <translation id="7886917304091689118">Chrome で実行中です</translation>
 <translation id="7887174313503389866">ガイドに沿って、プライバシーとセキュリティに関する重要な設定を確認します。その他のオプションについては、それぞれの設定で行います。</translation>
+<translation id="7896724475402191389">若者向けのコンテンツ - オフ</translation>
 <translation id="7903184275147100332">1 分ほどかかる場合があります</translation>
 <translation id="7914399737746719723">アプリをインストールしました</translation>
 <translation id="7919123827536834358">これらの言語を自動的に翻訳する</translation>

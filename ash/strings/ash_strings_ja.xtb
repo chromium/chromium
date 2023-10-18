@@ -191,6 +191,7 @@
 <translation id="1737078180382804488">スマートフォンの通知の表示の設定を行わない</translation>
 <translation id="174102739345480129">マーカーはオフになっています。</translation>
 <translation id="1743570585616704562">認識されませんでした</translation>
+<translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> の通知を閉じる</translation>
 <translation id="1746730358044914197">入力方法は管理者によって設定されています。</translation>
 <translation id="1747336645387973286">期限 <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">画面キーボードが有効です</translation>
@@ -310,7 +311,6 @@
 <translation id="2276987123919776440">15 分</translation>
 <translation id="2277103315734023688">前方に移動</translation>
 <translation id="2282073721614284166">タブでリンクを開く</translation>
-<translation id="2284237890386182187">オン: 接続されているデバイスはありません</translation>
 <translation id="2292698582925480719">表示スケール</translation>
 <translation id="229397294990920565">モバイルデータ通信は無効になっています...</translation>
 <translation id="2295777434187870477">マイクはオンです。切り替えるとミュートになります。</translation>
@@ -531,6 +531,7 @@
 <translation id="3217205077783620295">音量はオンになっています。切り替えると音声がミュートされます。</translation>
 <translation id="3226991577105957773">他 <ph name="COUNT" /> 件</translation>
 <translation id="3227137524299004712">マイク</translation>
+<translation id="3233611303007751344">バッテリー セーバーがオフになりました</translation>
 <translation id="324366796737464147">ノイズ キャンセリング</translation>
 <translation id="3249513730522716925">ウィンドウ <ph name="WINDOW_TITLE" /> がデスク <ph name="ACTIVE_DESK" /> からデスク <ph name="TARGET_DESK" /> に移動されました</translation>
 <translation id="3253743281242075461">授業の種類: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -553,6 +554,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> が後でログインすることは引き続き可能です。</translation>
 <translation id="3321628682574733415">保護者のコードが間違っています</translation>
 <translation id="332827762492701193">通知は非表示になっています</translation>
+<translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> の通知を開く</translation>
 <translation id="3339826665088060472">スクリーンショットの撮影や録画ができるスクリーン キャプチャ</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341303451326249809">スクリーンショットをキャプチャしました</translation>
@@ -617,7 +619,6 @@
 <translation id="3563775809269155755">アクセス ポイントを有効にする</translation>
 <translation id="3566240529365775567">数秒前に開いたファイル</translation>
 <translation id="3571734092741541777">設定</translation>
-<translation id="3572988532398145777">パネルが開いているときは通知を展開できません。先に下のパネルを閉じてください。</translation>
 <translation id="3573179567135747900">「<ph name="FROM_LOCALE" />」に戻します（再起動が必要です）</translation>
 <translation id="3576141592585647168">タイムゾーンを変更</translation>
 <translation id="3577473026931028326">エラーが発生しました。もう一度お試しください。</translation>
@@ -768,6 +769,8 @@
 <translation id="4146671046252289537">次の単語の末尾に移動</translation>
 <translation id="4146833061457621061">音楽を再生して</translation>
 <translation id="4150201353443180367">表示</translation>
+<translation id="4156293514828496577">バッテリー残量が <ph name="PERCENTAGE" />% です（約 <ph name="TIME_LEFT" />）。
+バッテリー駆動時間を延ばすため、一部の機能が制限されています。</translation>
 <translation id="4165275524535002941">ケーブルはディスプレイに対応していない可能性があります</translation>
 <translation id="4177415338862979658">クリックして詳細を確認してください</translation>
 <translation id="4177913004758410636">{0,plural, =1{1 日以内にデバイスを更新してください}other{# 日以内にデバイスを更新してください}}</translation>
@@ -897,6 +900,7 @@
 <translation id="4659419629803378708">ChromeVox を有効にしました</translation>
 <translation id="4666911709726371538">表示するアプリを増やす</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> をダウンロードしています</translation>
+<translation id="4672539464599646374">バッテリー セーバーがオンになりました</translation>
 <translation id="468293128311738995">スマートフォンのアプリ</translation>
 <translation id="4690510401873698237">シェルフは一番下にあります</translation>
 <translation id="4696813013609194136">保護者のコードでデバイスをロック解除</translation>
@@ -1046,6 +1050,7 @@
 <translation id="5258528442992323769">保存したデスクはありません</translation>
 <translation id="5260676007519551770">デスク 4</translation>
 <translation id="5268819379131021772">Google ToDo リストのタスク一覧</translation>
+<translation id="5275923704957843041">デスクのプレビュー</translation>
 <translation id="5277869901083657836">タッチペン ツールを切り替える</translation>
 <translation id="5278086053818066789">ChromeVox（音声フィードバック）をオンまたはオフにします</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> から通知が届いています。</translation>
@@ -1056,6 +1061,8 @@
 <translation id="5297704307811127955">オフ</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5302048478445481009">言語</translation>
+<translation id="5303319262469238330">バッテリー残量が <ph name="PERCENTAGE" />% です。
+バッテリー駆動時間を延ばすため、一部の機能が制限されています。</translation>
 <translation id="5308380583665731573">接続</translation>
 <translation id="5313326810920013265">Bluetooth 設定</translation>
 <translation id="5314219114274263156">画面を録画しました</translation>
@@ -1089,7 +1096,6 @@
 <translation id="5426063383988017631">設定メニューは閉じています</translation>
 <translation id="5428899915242071344">選択を開始</translation>
 <translation id="5429993543155113935">シークレット ウィンドウは現在サポートされていません</translation>
-<translation id="5430931332414098647">インスタント テザリング</translation>
 <translation id="5431318178759467895">カラー</translation>
 <translation id="5433020815079095860">音声入力</translation>
 <translation id="544691375626129091">該当するすべてのユーザーをこのセッションに追加済みです。</translation>
@@ -1118,6 +1124,7 @@
 <translation id="554893713779400387">音声入力を切り替え</translation>
 <translation id="5551456515017410630">カレンダーを開くまたは閉じます</translation>
 <translation id="5551974246223970793">ページ検索時に次の一致箇所に移動する</translation>
+<translation id="5555639311269196631">アクセス ポイントをオフにする</translation>
 <translation id="5558091555391176027">ニアバイシェアで付近のデバイスに表示されるモードのオンとオフを切り替えます</translation>
 <translation id="556042886152191864">ボタン</translation>
 <translation id="5570122939431135380">新しいシークレット ウィンドウで新しいタブを開く</translation>
@@ -1212,7 +1219,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" />（<ph name="MAIL" />）</translation>
 <translation id="5916664084637901428">ON</translation>
 <translation id="5920710855273935292">マイクはミュートです。</translation>
-<translation id="5924855612669061715">アクセス ポイントはオンです</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> はオンになっています。</translation>
 <translation id="5947494881799873997">元に戻す</translation>
 <translation id="595202126637698455">パフォーマンス追跡機能が有効です</translation>
@@ -1228,6 +1234,7 @@
 <translation id="598407983968395253">テンプレートを使用</translation>
 <translation id="598882571027504733">アップデートを取得するには、キーボードを接続した状態で Chromebook を再起動してください。</translation>
 <translation id="6000279412553873020">キー、ボタンなど</translation>
+<translation id="6002122790816966947">他のデバイス</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /> ページ</translation>
 <translation id="601304062528754300">シェルフで次のアイテムをハイライト表示します</translation>
 <translation id="6015573907265691211">完了とする</translation>
@@ -1296,6 +1303,7 @@
 <translation id="6231419273573514727">周辺機器のパフォーマンスが制限されている可能性があります</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> がカメラとマイクを使用しています</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">バッテリー残量が低下しています。バッテリー セーバーがオンになりました。</translation>
 <translation id="6247728804802644171">通知を開きます</translation>
 <translation id="6254629735336163724">横に固定</translation>
 <translation id="6259254695169772643">タッチペンを使って選択してください</translation>
@@ -1410,6 +1418,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">カメラとマイクを使用中</translation>
 <translation id="6739144137573853180">設定に移動</translation>
+<translation id="6747985245839783873">バッテリー残量が <ph name="PERCENTAGE" />% です。バッテリー セーバーがオンになりました。</translation>
 <translation id="6751052314767925245">管理者によって適用</translation>
 <translation id="6751826523481687655">パフォーマンス追跡機能が有効になっています</translation>
 <translation id="6752912906630585008">デスク <ph name="REMOVED_DESK" /> が削除されデスク <ph name="RECEIVE_DESK" /> に統合されました</translation>
@@ -1509,6 +1518,7 @@
 <translation id="7131634465328662194">制限時間になると自動的にログアウトします。</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7144942256906679589">バッテリーの状態</translation>
+<translation id="7145639536026937076">バッテリー残量が <ph name="PERCENTAGE" />% です（現在充電中）。バッテリー セーバーがオンになりました。</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />、
         <ph name="NETWORK" /></translation>
@@ -1517,7 +1527,9 @@
 <translation id="7188494361780961876">メニューは画面左上に移動しました。</translation>
 <translation id="7189412385142492784">金星までの距離は</translation>
 <translation id="7198435252016571249">カメラは右下にスナップされています。システムのサーフェスと競合しています。</translation>
+<translation id="7219573373513695352">接続されているデバイスはありません</translation>
 <translation id="7229029500464092426">メモリ <ph name="AVAILABLE_MEMORY" /> | 合計 <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7244725679040769470">バッテリー残量が <ph name="PERCENTAGE" />% です。デバイスを電源に接続してください。</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。アップデートを適用するには、Chromebook を再起動する必要があります。再起動には最長で 1 分ほどかかります。</translation>
 <translation id="7256634071279256947">後方のマイク</translation>
 <translation id="7258828758145722155">昨日編集したファイル</translation>
@@ -1911,6 +1923,7 @@
 <translation id="8878886163241303700">画面を拡張しています</translation>
 <translation id="888982883502837004">デバイスで利用可能なファームウェアのアップデートがあります。確認して更新するにはクリックしてください。</translation>
 <translation id="8896630965521842259">「<ph name="DESK_TEMPLATE_NAME" />」を完全に削除します</translation>
+<translation id="889790758758811533">バッテリー残量が <ph name="PERCENTAGE" />% です（約 <ph name="TIME_LEFT" />）。デバイスを電源に接続してください。</translation>
 <translation id="88986195241502842">ページ内を下に移動</translation>
 <translation id="8905919797434099235">（タイトルなし）</translation>
 <translation id="890616557918890486">ソースを変更</translation>

@@ -2058,6 +2058,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2564520396658920462">JavaScriptin suorittaminen AppleScriptin kautta on poistettu käytöstä. Voit ottaa sen käyttöön valitsemalla valikkoriviltä Näytä &gt; Kehittäjä &gt; Salli JavaScript Apple Eventsistä. Lisätietoja: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Parannettu oikeinkirjoituksen tarkistus</translation>
 <translation id="256481480019204378">Google-tilin tunnus</translation>
+<translation id="256517381556987641">Tiedostojen synkronointi on löytänyt tähän mennessä <ph name="ITEMS_FOUND" /> tiedostoa ja tarkistaa tallennustilaa yhä. Yritä laittaa tiedostojen synkronointi uudelleen päälle muutaman minuutin kuluttua.</translation>
 <translation id="2565214867520763227">Laita näytönlukuohjelma päälle</translation>
 <translation id="2568694057933302218">Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta. Selaustoimintaasi ei käytetä mainosten personointiin tai muuhun vastaavaan. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="2568774940984945469">Tietopalkki</translation>
@@ -4382,6 +4383,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4427365070557649936">Vahvistuskoodia vahvistetaan…</translation>
 <translation id="4429163740524851942">Fyysisen näppäimistön asettelu</translation>
 <translation id="4430019312045809116">Äänenvoimakkuus</translation>
+<translation id="4430204941092622397">Tämä voi katkaista mobiiliverkkoyhteyden muutamaksi minuutiksi.</translation>
 <translation id="443031431654216610">Käytä vain numeroita</translation>
 <translation id="4430369329743628066">Kirjanmerkki lisättiin</translation>
 <translation id="4430422687972614133">Laita virtuaalinen kortti päälle</translation>
@@ -4595,6 +4597,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> on havainnut virheen.</translation>
 <translation id="4610637590575890427">Halusitko siirtyä osoitteeseen <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Datayhteys käytettävissä</translation>
+<translation id="4611759022973144129">Voit kirjautua laitteelle (<ph name="DEVICE_TYPE" />) tällä salasanalla.</translation>
 <translation id="4612841084470706111">Myönnä pääsy kaikille pyydetyille sivustoille.</translation>
 <translation id="4613144866899789710">Peruutetaan Linux-asennusta…</translation>
 <translation id="4613271546271159013">Laajennus vaihtoi sivua, joka näytetään avatessasi uuden välilehden.</translation>
@@ -5094,6 +5097,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5027550639139316293">Sähköpostivarmenne</translation>
 <translation id="5027562294707732951">Lisää laajennus</translation>
 <translation id="5028445315206872221">Laajennukset on estetty tällä sivustolla</translation>
+<translation id="5029287942302939687">Salasana on asetettu</translation>
 <translation id="5029873138381728058">VM:ien tarkistus ei onnistunut</translation>
 <translation id="503155457707535043">Sovelluksia ladataan</translation>
 <translation id="5032430150487044192">QR-koodin luominen ei onnistu</translation>
@@ -5122,6 +5126,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5054374119096692193">Katso kaikki korttivaihtoehdot <ph name="BEGIN_LINK" />Yksilöi Chromea<ph name="END_LINK" /> ‑osiosta</translation>
 <translation id="5056950756634735043">Muodostetaan yhteyttä säilöön</translation>
 <translation id="5057110919553308744">Kun klikkaat laajennusta</translation>
+<translation id="5057127674016624293">Skannaus kestää odotettua kauemmin</translation>
 <translation id="5059241099014281248">Rajoita kirjautumista</translation>
 <translation id="5059429103770496207">Näyttötyyli</translation>
 <translation id="5059526285558225588">Valitse, mitä jaat</translation>
@@ -6017,6 +6022,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5797521893972859201">Tyhjentää historian esim. hakukentästä</translation>
 <translation id="5797934230382081317">Lue lisää &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Androidin&lt;/a&gt; ja &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS:n&lt;/a&gt; käytön aloittamisesta</translation>
 <translation id="5798079537501238810">Sivustot voivat asentaa maksunkäsittelijöitä</translation>
+<translation id="5798086737841799234">Lisää vahvistuskoodi</translation>
 <translation id="579915268381781820">Suojausavain poistettiin.</translation>
 <translation id="5799478978078236781">Tilaa vinkkejä, tarjouksia ja päivityksiä (<ph name="DEVICE_TYPE" />) ja anna palautetta.</translation>
 <translation id="5799508265798272974">Linux-virtuaalikone: <ph name="LINUX_VM_NAME" /></translation>
@@ -6158,7 +6164,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5901089233978050985">Vaihda tallennettavalle välilehdelle</translation>
 <translation id="5901494423252125310">Tulostimen luukku auki</translation>
 <translation id="5901630391730855834">Keltainen</translation>
-<translation id="5902211418335330937">Jos sivusto ei toimi odotetulla tavalla, voit ottaa kolmansien osapuolten evästeet käyttöön kyseisellä sivustolla valitsemalla haku- ja osoitepalkista kolmansien osapuolten evästeiden eston.</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" />:n asennus ei onnistunut konfiguraatio-ongelman vuoksi. Ota yhteyttä järjestelmänvalvojaasi. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Melkein ajan tasalla. Viimeistele päivitys käynnistämällä laite uudelleen.</translation>
 <translation id="5906732635754427568">Tähän sovellukseen liittyvät tiedot poistetaan tältä laitteelta.</translation>
@@ -6925,7 +6930,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6532663472409656417">Yritys rekisteröity</translation>
 <translation id="6533315466883598769">Käytä Google Kääntäjää</translation>
 <translation id="65334502113648172">Pienennä tai laajenna näyttöaluetta nuolinäppäimillä. Voit liikkua näyttöalueella painamalla vaihto ja + ja käyttämällä sitten nuolinäppäimiä.</translation>
-<translation id="6533636340637966565">Laitetaan päälle…</translation>
 <translation id="6535331821390304775"><ph name="ORIGIN" /> saa aina avata tällaiset linkit sovelluksessaan</translation>
 <translation id="653659894138286600">Skannaa asiakirjoja ja kuvia</translation>
 <translation id="6537613839935722475">Nimessä voi olla kirjaimia, numeroita ja yhdysmerkkejä (-)</translation>
@@ -7278,6 +7282,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6815376457351236663">Avaa silti</translation>
 <translation id="6815787852028615386">Tiedosto on harhaanjohtava ja se voi tehdä odottamattomia muutoksia laitteellesi</translation>
 <translation id="6816097980753839617">Sini-keltasokeus (tritanomalia)</translation>
+<translation id="6816443526270499804">Etsitään käytettävissä olevia eSIM-profiileja</translation>
 <translation id="6818198425579322765">Käännettävän sivun kieli</translation>
 <translation id="6818547713623251698">Katsele puhelimesi kuvia, mediaa, ilmoituksia ja sovelluksia</translation>
 <translation id="6818802132960437751">Sisäänrakennettu virustorjunta</translation>
@@ -8090,6 +8095,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7475742997309661417">ChromeOS:n ja ChromeVoxin näytönlukuohjelmaa käyttävät ensisijaisesti sokeat ja heikkonäköiset. Sen avulla näytöllä näkyvää tekstiä voi lukea puhesyntetisaattorilla tai pistekirjoitusnäytöllä. Laita ChromeVox päälle painamalla molempia äänenvoimakkuuspainikkeita viiden sekunnin ajan. Kun ChromeVox on aktivoitu, näet lyhyen esittelyn.</translation>
 <translation id="7476454130948140105">Akun varaus ei riitä päivittämiseen (<ph name="BATTERY_PERCENT" /> %).</translation>
 <translation id="7476989672001283112">Estetty automaattisesti: <ph name="PERMISSION" /> ja <ph name="COUNT" /> muuta</translation>
+<translation id="7477460499687558352">Valitse ladattava eSIM-profiili</translation>
 <translation id="7477599578899108080">Korkea muistin käyttö: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Luo QR-koodi tälle sivulle</translation>
 <translation id="7477793887173910789">Ohjaa musiikkia, videoita ja muuta</translation>
@@ -9165,6 +9171,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8314835274931377415">Aloitetaanko Kytkimen käytön käyttöönotto?</translation>
 <translation id="8315018673856831477">Muistinsäästömahdollisuudet</translation>
 <translation id="8315044115695361734">iCloud-avainnipusta</translation>
+<translation id="8315514906653279104">Laitetaan päälle…</translation>
 <translation id="8317671367883557781">Lisää verkkoyhteys</translation>
 <translation id="8317965619823678157">kopioi salasanat</translation>
 <translation id="8318266828739827371">Käytä jaettua näyttöä, kun haluat nähdä suurennetun kohdan. Laita kiinnitetty suurennus päälle tai pois päältä painamalla Haku + Ctrl + D.</translation>

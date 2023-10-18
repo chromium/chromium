@@ -67,6 +67,7 @@
 <translation id="2120620239521071941">हे या डिव्‍हाइस मधून <ph name="ITEMS_COUNT" /> आयटम हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="2121284319307530122">&amp;Chrome अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />वर्तमान सेटिंग्ज<ph name="END_LINK" /> चा अहवाल देऊन Chrome ला आणखी चांगले बनवण्यात मदत करा</translation>
+<translation id="2126108037660393668">डाउनलोड झालेल्या फाइलची पडताळणी करता आली नाही.</translation>
 <translation id="2131230230468101642">तुमच्या गोपनीयतेचे संरक्षण करण्यासाठी, आम्ही तुमची चार आठवड्यांपेक्षा जुनी स्वारस्ये ऑटो-डिलीट करतो. तुम्ही ब्राउझ करत राहाल, तसे सूचीमध्ये स्वारस्य पुन्हा दिसू शकते. किंवा Chrome ने विचारात घेऊ नये असे तुम्हाला वाटत असलेली स्वारस्ये तुम्ही काढून टाकू शकता.</translation>
 <translation id="2139300032719313227">ChromeOS रीस्टार्ट करा</translation>
 <translation id="2151406531797534936">कृपया आता Chrome रीस्टार्ट करा</translation>
@@ -95,6 +96,7 @@
 <translation id="2580411288591421699">सध्या चालत असलेली Google Chrome ची समान आवृत्ती इंस्टॉल करू शकत नाही. कृपया Google Chrome बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2586406160782125153">हे या डिव्‍हाइस मधून तुमचा ब्राउझिंग डेटा हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" /> वरून तुमच्या Chrome ब्राउझरवरील गोष्टी मिळवा</translation>
+<translation id="259935314519650377">डाउनलोड केलेला इंस्टॉलर कॅशे करता आला नाही. एरर: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome अपडेट तपासू शकत नाही. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">तुमच्या ब्राउझरमध्ये सर्वात सुरक्षित सेटिंग्ज असल्याची खात्री करण्यासाठी Chrome नियमितपणे तपासते. तुम्ही एखाद्या गोष्टीचे पुनरावलोकन करणे आवश्यक असल्यास, आम्ही तुम्हाला कळवू.</translation>
@@ -319,6 +321,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6676384891291319759">इंटरनेट ॲक्सेस करा</translation>
 <translation id="6679975945624592337">Google Chrome बॅकग्राउंडमध्ये सुरू द्या</translation>
 <translation id="6696915334902295848">Chrome ला या साइटसाठी मायक्रोफोनची परवानगी आवश्यक आहे</translation>
+<translation id="6712881677154121168">डाउनलोडशी संबंधित एरर: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome ला आणखी जलद बनवा</translation>
 <translation id="6735387454586646204">ChromeOS Flex सिस्टीम</translation>
 <translation id="6739177684496155661">नवीन Chrome प्रोफाइलमध्ये सुरू ठेवायचे आहे का?</translation>
@@ -333,6 +336,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6943584222992551122">या व्यक्तीचा ब्राउझिंग डेटा या डिव्हाइसवरून हटवला जाईल. डेटा रीकव्हर करण्यासाठी, Chrome वर <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="6967962315388095737">Google Chrome बीटाचा mDNS रहदारीस अनुमती देण्यासाठी इनबाउंड नियम.</translation>
 <translation id="6989339256997917931">Google Chrome अपडेट केला गेला, परंतु तुम्ही तो किमान 30 दिवसांपासून वापरलेला नाही.</translation>
+<translation id="7024536598735240744">उघडण्याशी संबंधित एरर: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">इंस्टॉलेशन थांबवले</translation>
 <translation id="7025800014283535195">तुम्ही Chrome प्रोफाइलदरम्यान येथे स्विच करू शकता</translation>
 <translation id="7036251913954633326">तुम्हाला हे खाते फक्त एकदाच वापरायचे असल्यास, तुम्ही Chrome ब्राउझरमध्ये <ph name="GUEST_LINK_BEGIN" />अतिथी मोड<ph name="GUEST_LINK_END" /> वापरू शकता. तुम्हाला दुसऱ्या व्यक्तीसाठी खाते जोडायचे असल्यास, तुमच्या <ph name="DEVICE_TYPE" /> मध्ये <ph name="LINK_BEGIN" />नवीन व्यक्ती जोडा<ph name="LINK_END" />.
@@ -426,6 +430,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8516431725144212809">Chrome च्या अंदाजानुसार तुमची स्वारस्ये</translation>
 <translation id="8521348052903287641">Google Chrome विकासकाने mDNS रहदारीस अनुमती देण्यासाठी इनबाउंड नियम.</translation>
 <translation id="8550334526674375523">ही कार्य प्रोफाइल तुमच्या वैयक्तिक प्रोफाइलपेक्षा पूर्णपणे स्वतंत्र आहे.</translation>
+<translation id="8555465886620020932">सेवेशी संबंधित एरर: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556340503434111824">Google Chrome ची नवीन आवृत्ती उपलब्ध आहे, आणि ही नेहमीपेक्षा द्रुत आहे. </translation>
 <translation id="8571790202382503603">Chrome प्रोफाइल वापरून तुम्ही तुमच्या सर्व गोष्टी Chrome वर वेगवेगळ्या ठेवू शकता. ती काम आणि मनोरंजन यामध्ये विभागणी करणे सोपे करते.</translation>
 <translation id="8614913330719544658">Google Chrome प्रतिसाद देत नाही. त्वरित पुन्हा लाँच करायचा?</translation>

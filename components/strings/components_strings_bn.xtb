@@ -967,6 +967,7 @@
 <translation id="2977665033722899841">এখন <ph name="ROW_NAME" /> বেছে নিয়েছেন। <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">অপেরা</translation>
 <translation id="2979424420072875974">লেখক সম্পর্কিত রিসোর্স</translation>
+<translation id="2980742331521553164">আরও দ্রুত চেক-আউটের জন্য এই কার্ডের CVC আপনার Google অ্যাকাউন্টে এনক্রিপ্ট করে সেভ করা হবে</translation>
 <translation id="2983666748527428214">ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="2985306909656435243">চালু করা হলে, ফর্ম পূরণের কাজ দ্রুত করতে Chromium এই ডিভাইসে আপনার কার্ডের একটি কপি স্টোর করবে।</translation>
 <translation id="2985398929374701810">একটি সঠিক ঠিকানা লিখুন</translation>
@@ -3397,6 +3398,7 @@
 <translation id="79338296614623784">একটি সঠিক ফোন নম্বর লিখুন</translation>
 <translation id="7934414805353235750"><ph name="URL" /> সুরক্ষিত কন্টেন্ট চালাতে চায়। আপনার ডিভাইসের পরিচয় Google-এর মাধ্যমে যাচাই করা হবে।</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">আরও দ্রুত চেক-আউটের জন্য এই কার্ডের CVC আপনার ডিভাইসে এনক্রিপ্ট করে সেভ করা হবে</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> তারিখে মেয়াদ শেষ হবে</translation>
 <translation id="7938958445268990899">সার্ভারের সার্টিফিকেট এখন আ কার্যকর নয়৷</translation>
 <translation id="7939713744218886332">বিশ্ব রন্ধনপ্রণালী</translation>

@@ -67,6 +67,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2120620239521071941">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relaunch to Update &amp;Chrome</translation>
 <translation id="2123055963409958220">Help make Chrome better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
+<translation id="2126108037660393668">The downloaded file failed verification.</translation>
 <translation id="2130870084309816036">Unable to connect to the Internet. If you use a firewall, please allowlist <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="2131230230468101642">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don't want Chrome to consider.</translation>
 <translation id="2139300032719313227">Restart Chrome OS</translation>
@@ -97,6 +98,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2580411288591421699">Cannot install the same Google Chrome version that is currently running. Please close Google Chrome and try again.</translation>
 <translation id="2586406160782125153">This will delete your browsing data from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="259935314519650377">Failed to cache the downloaded installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome can't check for updates. Try checking your Internet connection.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649768380733403658">Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
@@ -327,6 +329,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
 <translation id="6679975945624592337">Let Google Chrome Run in the Background</translation>
 <translation id="6696915334902295848">Chrome needs microphone permission for this site</translation>
+<translation id="6712881677154121168">Download error: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Make Chrome faster</translation>
 <translation id="6735387454586646204">Chrome OS Flex system</translation>
 <translation id="6739177684496155661">Continue in a new Chrome profile?</translation>
@@ -341,6 +344,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6943584222992551122">This person's browsing data will be deleted from this device. To recover the data, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Inbound rule for Google Chrome Beta to allow mDNS traffic.</translation>
 <translation id="6989339256997917931">Google Chrome has been updated, but you haven't used it for at least 30 days.</translation>
+<translation id="7024536598735240744">Unpack error: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation stopped.</translation>
 <translation id="7025800014283535195">You can switch between Chrome profiles here</translation>
 <translation id="7036251913954633326">If you only want to use this account once, you can use <ph name="GUEST_LINK_BEGIN" />guest mode<ph name="GUEST_LINK_END" /> in Chrome browser. If you want to add an account for someone else, <ph name="LINK_BEGIN" />add a new person<ph name="LINK_END" /> to your <ph name="DEVICE_TYPE" />.
@@ -434,6 +438,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8516431725144212809">Your interests as estimated by Chrome</translation>
 <translation id="8521348052903287641">Inbound rule for Google Chrome Dev to allow mDNS traffic.</translation>
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
+<translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556340503434111824">There's a new version of Google Chrome available and it's faster than ever.</translation>
 <translation id="8571790202382503603">With Chrome profiles you can separate all of your Chrome things. This makes it easier to split between work and fun.</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>

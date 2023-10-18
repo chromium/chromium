@@ -2055,6 +2055,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2564520396658920462">Функцията за изпълнение на JavaScript чрез AppleScript е изключена. За да я включите, от лентата с менюта отворете View &gt; Developer &gt; Allow JavaScript from Apple Events. За повече информация: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Подобрена проверка на правописа</translation>
 <translation id="256481480019204378">Идентификатор за профила в Google</translation>
+<translation id="256517381556987641">Досега функцията за синхронизиране на файловете откри <ph name="ITEMS_FOUND" /> файла и все още проверява мястото в хранилището. Опитайте да я включите отново след няколко минути.</translation>
 <translation id="2565214867520763227">Включете екранния четец</translation>
 <translation id="2568694057933302218">Докато сте в режим „инкогнито“, сайтовете не могат да използват „бисквитките“ ви, за да виждат активността ви при сърфиране в други сайтове. Активността ви при сърфиране не се използва за неща като персонализиране на рекламите. Функциите в някои сайтове може да не работят.</translation>
 <translation id="2568774940984945469">Контейнер на инфолента</translation>
@@ -4383,6 +4384,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4427365070557649936">Кодът за потвърждение се проверява...</translation>
 <translation id="4429163740524851942">Подредба на физическата клавиатура</translation>
 <translation id="4430019312045809116">Звук</translation>
+<translation id="4430204941092622397">Това може да доведе до прекъсване на връзката с мобилната ви мрежа за няколко минути.</translation>
 <translation id="443031431654216610">Използвайте само цифри</translation>
 <translation id="4430369329743628066">Отметката бе добавена</translation>
 <translation id="4430422687972614133">Включване на виртуалната карта</translation>
@@ -4596,6 +4598,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4610162781778310380">Възникна грешка в приставката <ph name="PLUGIN_NAME" /></translation>
 <translation id="4610637590575890427">Може би искахте да отворите <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Налице е връзка за пренос на данни</translation>
+<translation id="4611759022973144129">Можете да използвате тази парола, за да влизате в своя <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4612841084470706111">Предоставяне на достъп до всички заявени сайтове.</translation>
 <translation id="4613144866899789710">Инсталирането на Linux се анулира...</translation>
 <translation id="4613271546271159013">Разширение промени страницата, която се показва при отваряне на нов раздел.</translation>
@@ -5095,6 +5098,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5027550639139316293">Сертификат за имейл</translation>
 <translation id="5027562294707732951">Добавяне на разширението</translation>
 <translation id="5028445315206872221">Разширенията са блокирани на този сайт</translation>
+<translation id="5029287942302939687">Паролата ви е зададена</translation>
 <translation id="5029873138381728058">Проверката на виртуалните машини не бе успешна</translation>
 <translation id="503155457707535043">Приложенията се изтеглят</translation>
 <translation id="5032430150487044192">Не може да се създаде QR код</translation>
@@ -5123,6 +5127,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5054374119096692193">Вижте всички опции за картите на <ph name="BEGIN_LINK" />страницата за персонализиране на Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Установява се връзка с контейнера</translation>
 <translation id="5057110919553308744">При кликване върху разширението</translation>
+<translation id="5057127674016624293">Сканирането отнема повече време от очакваното</translation>
 <translation id="5059241099014281248">Ограничаване на влизането в профил</translation>
 <translation id="5059429103770496207">Стил на показване</translation>
 <translation id="5059526285558225588">Изберете какво да споделите</translation>
@@ -6019,6 +6024,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5797521893972859201">Изчиства историята, включително в полето за търсене</translation>
 <translation id="5797934230382081317">Научете как да започнете да използвате &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; и &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Сайтовете могат да инсталират инструменти за обработване на плащания</translation>
+<translation id="5798086737841799234">Въвеждане на код за потвърждение</translation>
 <translation id="579915268381781820">Ключът за сигурност бе премахнат.</translation>
 <translation id="5799478978078236781">Получавайте съвети, оферти и актуална информация за <ph name="DEVICE_TYPE" /> и споделяйте отзиви.</translation>
 <translation id="5799508265798272974">Виртуална машина с Linux: <ph name="LINUX_VM_NAME" /></translation>
@@ -6160,7 +6166,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5901089233978050985">Превключване към записващия раздел</translation>
 <translation id="5901494423252125310">Вратичката на принтера е отворена</translation>
 <translation id="5901630391730855834">жълто</translation>
-<translation id="5902211418335330937">Ако даден сайт не работи според очакванията, можете да активирате „бисквитките“ на трети страни за него, като изберете иконата за блокиране на „бисквитките“ на трети страни в лентата за търсене и адресната лента.</translation>
 <translation id="5904614460720589786">Настройването на <ph name="APP_NAME" /> не бе успешно поради проблем с конфигурирането. Моля, обърнете се към администратора си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Актуализирането почти завърши! Остава само да рестартирате устройството си.</translation>
 <translation id="5906732635754427568">Данните, свързани с това приложение, ще бъдат премахнати от устройството.</translation>
@@ -6927,7 +6932,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6532663472409656417">Корпоративно записано</translation>
 <translation id="6533315466883598769">Използване на Google Преводач</translation>
 <translation id="65334502113648172">Натиснете клавишите със стрелки, за да свиете или разгънете областта за показване. За да я преместите, натиснете Shift и +, след което използвайте клавишите със стрелки.</translation>
-<translation id="6533636340637966565">Включва се…</translation>
 <translation id="6535331821390304775">Винаги да се разрешава на <ph name="ORIGIN" /> да отваря връзки от този тип в свързаното приложение</translation>
 <translation id="653659894138286600">Сканиране на документи и изображения</translation>
 <translation id="6537613839935722475">Можете да ползвате букви, цифри и къси тирета (-)</translation>
@@ -7280,6 +7284,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6815376457351236663">Отваряне въпреки това</translation>
 <translation id="6815787852028615386">Този файл е измамнически и може да извърши неочаквани промени на устройството ви</translation>
 <translation id="6816097980753839617">Синьо-жълт (тританомалия)</translation>
+<translation id="6816443526270499804">Търсят се налични потребителски профили за електронна SIM карта</translation>
 <translation id="6818198425579322765">Изходен език на страницата</translation>
 <translation id="6818547713623251698">Преглед на снимките, мултимедийните файлове, известията и приложенията на телефона ви</translation>
 <translation id="6818802132960437751">Вградена защита от вируси</translation>
@@ -8092,6 +8097,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7475742997309661417">ChromeVox, екранният четец в ChromeOS, се използва основно от незрящи хора и лица със слабо зрение за четене на показван на екрана текст с помощта на синтезатор на говор или екран за брайлово писмо. Натиснете и двата бутона за силата на звука и ги задръжте за пет секунди, за да включите ChromeVox. Когато екранният четец е активиран, ще преминете през кратка обиколка.</translation>
 <translation id="7476454130948140105">Батерията е твърде изтощена (<ph name="BATTERY_PERCENT" />%) за стартиране на актуализацията</translation>
 <translation id="7476989672001283112">Автоматично са блокирани „<ph name="PERMISSION" />“ и още <ph name="COUNT" /></translation>
+<translation id="7477460499687558352">Изберете потребителски профил за електронна SIM карта, който да бъде изтеглен</translation>
 <translation id="7477599578899108080">Голямо количество използвана памет: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Създаване на QR код за тази страница</translation>
 <translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
@@ -9168,6 +9174,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8314835274931377415">Да започне ли настройването на „Достъп с превключване“?</translation>
 <translation id="8315018673856831477">Опции за икономия на памет</translation>
 <translation id="8315044115695361734">От iCloud Keychain</translation>
+<translation id="8315514906653279104">Включва се...</translation>
 <translation id="8317671367883557781">Добавяне на мрежова връзка</translation>
 <translation id="8317965619823678157">копиране на паролите</translation>
 <translation id="8318266828739827371">Използвайте режима за разделен екран, за да виждате увеличената част от екрана. Ползвайте клавиша „търсене“ + Ctrl + D, за да включите или изключите лупата в прикрепен режим.</translation>

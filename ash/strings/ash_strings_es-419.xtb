@@ -310,7 +310,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Buscar más adelante</translation>
 <translation id="2282073721614284166">Abrir el vínculo en una pestaña</translation>
-<translation id="2284237890386182187">Activado; no hay dispositivos conectados</translation>
 <translation id="2292698582925480719">Escala de visualización</translation>
 <translation id="229397294990920565">Desactivando los datos móviles…</translation>
 <translation id="2295777434187870477">El micrófono está activado. Si lo seleccionas, se silenciará.</translation>
@@ -617,7 +616,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3563775809269155755">Habilitar el hotspot</translation>
 <translation id="3566240529365775567">Se abrió justo ahora</translation>
 <translation id="3571734092741541777">Configurar</translation>
-<translation id="3572988532398145777">No puedes expandir la notificación cuando hay un panel abierto. Primero, cierra el panel que se encuentra a continuación.</translation>
 <translation id="3573179567135747900">Volver a "<ph name="FROM_LOCALE" />" (debes reiniciar).</translation>
 <translation id="3576141592585647168">Cambiar zona horaria</translation>
 <translation id="3577473026931028326">Se produjo un error. Vuelve a intentarlo.</translation>
@@ -701,7 +699,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="385300504083504382">Inicio</translation>
 <translation id="3859364108019690">No se pueden transmitir apps</translation>
 <translation id="3861651314799684201">Presiona intro para grabar la pantalla completa</translation>
-<translation id="3865912916886104060">No hay dispositivos conectados. Se desactivará la conexión Wi-Fi para comenzar a usar el hotspot.</translation>
 <translation id="3886872229787704059">Se abrió hoy</translation>
 <translation id="3891340733213178823">Presiona Ctrl + Mayús + Q dos veces para salir.</translation>
 <translation id="3893630138897523026">ChromeVox (comentarios por voz)</translation>
@@ -786,7 +783,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4197790712631116042">No</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no está disponible.</translation>
 <translation id="4201051445878709314">Mostrar el mes anterior</translation>
-<translation id="4202362334312791952">Se conectó un dispositivo. Se desactivará la conexión Wi-Fi para comenzar a usar el hotspot.</translation>
 <translation id="4209973997261364186">La conexión Wi-Fi está activada.</translation>
 <translation id="4212472694152630271">Cambiar a PIN</translation>
 <translation id="4215497585250573029">Configuración de la VPN</translation>
@@ -1093,7 +1089,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5426063383988017631">Se cerró el menú de configuración</translation>
 <translation id="5428899915242071344">Comenzar a seleccionar</translation>
 <translation id="5429993543155113935">Por el momento, las ventanas de incógnito no son compatibles</translation>
-<translation id="5430931332414098647">Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="5433020815079095860">Entrada de audio</translation>
 <translation id="544691375626129091">Todos los usuarios disponibles ya se agregaron a esta sesión.</translation>
@@ -1122,6 +1117,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="554893713779400387">Activar o desactivar el dictado</translation>
 <translation id="5551456515017410630">Abrir o cerrar el calendario</translation>
 <translation id="5551974246223970793">Ir a la siguiente coincidencia de búsqueda al buscar en una página</translation>
+<translation id="5555639311269196631">Desactiva el hotspot</translation>
 <translation id="5558091555391176027">Activar o desactivar la alta visibilidad de Compartir con Nearby</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5570122939431135380">Abrir una nueva pestaña en una nueva ventana de incógnito</translation>
@@ -1167,7 +1163,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5707775774148071965">El dispositivo admite una mayor velocidad de datos que el cable. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="5710450975648804523">"No interrumpir" activado</translation>
 <translation id="571295407079589142">Los datos móviles están desactivados.</translation>
-<translation id="5716891621595980681">Se conectaron <ph name="DEVICECOUNT" /> dispositivos. Se desactivará la conexión Wi-Fi para comenzar a usar el hotspot.</translation>
 <translation id="5727460725221669831">Si olvidaste tu contraseña o cambiaste la de tu Cuenta de Google recientemente, intenta recuperar este usuario.</translation>
 <translation id="573413375004481890">Este dispositivo no admite tantas pantallas, por lo que se desconectó una de ellas</translation>
 <translation id="5740328398383587084">Compartir con Nearby</translation>
@@ -1217,7 +1212,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
-<translation id="5924855612669061715">El hotspot está activado</translation>
 <translation id="5946788582095584774">La función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Revertir</translation>
 <translation id="595202126637698455">Seguimiento de rendimiento habilitado</translation>
@@ -1233,6 +1227,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="598407983968395253">Utilizar plantilla</translation>
 <translation id="598882571027504733">Para obtener la actualización, reinicia tu Chromebook con el teclado conectado.</translation>
 <translation id="6000279412553873020">Teclas, botones y más</translation>
+<translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Destacar el elemento siguiente en la barra</translation>
 <translation id="6015573907265691211">Marcar como completada</translation>
@@ -1522,6 +1517,7 @@ Nueva instalación</translation>
 <translation id="7188494361780961876">El menú se movió a la esquina superior izquierda de la pantalla.</translation>
 <translation id="7189412385142492784">A qué distancia está Venus</translation>
 <translation id="7198435252016571249">Se ajustó la cámara a la esquina inferior derecha. Entra en conflicto con la superficie del sistema.</translation>
+<translation id="7219573373513695352">No hay dispositivos conectados</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> de memoria | <ph name="TOTAL_MEMORY" /> en total</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Debes reiniciar esta Chromebook para aplicar una actualización. Este proceso puede tardar 1 minuto.</translation>
 <translation id="7256634071279256947">Micrófono posterior</translation>

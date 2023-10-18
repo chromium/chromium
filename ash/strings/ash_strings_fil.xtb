@@ -310,7 +310,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2276987123919776440">15min</translation>
 <translation id="2277103315734023688">Mag-seek Pasulong</translation>
 <translation id="2282073721614284166">Buksan ang link sa tab</translation>
-<translation id="2284237890386182187">Naka-on, walang nakakonektang device</translation>
 <translation id="2292698582925480719">Scale ng display</translation>
 <translation id="229397294990920565">Ino-off ang mobile data...</translation>
 <translation id="2295777434187870477">Naka-on ang mikropono, mamu-mute ang input kapag nag-toggle.</translation>
@@ -617,7 +616,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3563775809269155755">I-enable ang hotspot</translation>
 <translation id="3566240529365775567">Kakabukas lang</translation>
 <translation id="3571734092741541777">I-set up</translation>
-<translation id="3572988532398145777">Hindi mo puwedeng palawakin ang notification habang may nakabukas na panel. Isara muna ang panel sa ibaba.</translation>
 <translation id="3573179567135747900">Palitan pabalik sa "<ph name="FROM_LOCALE" />" (kailangang i-restart)</translation>
 <translation id="3576141592585647168">Baguhin ang timezone</translation>
 <translation id="3577473026931028326">Nagkaproblema. Subukan ulit.</translation>
@@ -700,7 +698,6 @@ Isaksak ang iyong device.</translation>
 <translation id="385300504083504382">Simula</translation>
 <translation id="3859364108019690">Hindi makapag-stream ng mga app</translation>
 <translation id="3861651314799684201">Pindutin ang enter para mag-record nang full screen</translation>
-<translation id="3865912916886104060">Walang nakakonektang device. Io-off ang WiFi para simulan ang paggamit ng Hotspot.</translation>
 <translation id="3886872229787704059">Binuksan ngayon</translation>
 <translation id="3891340733213178823">Pindutin ang Ctrl+Shift+Q nang dalawang beses upang mag-sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (pasalitang feedback)</translation>
@@ -785,7 +782,6 @@ Isaksak ang iyong device.</translation>
 <translation id="4197790712631116042">Naka-off</translation>
 <translation id="4201033867194214117">Hindi available ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="4201051445878709314">Ipakita ang nakaraang buwan</translation>
-<translation id="4202362334312791952">1 device ang nakakonekta. Io-off ang WiFi para simulan ang paggamit ng Hotspot.</translation>
 <translation id="4209973997261364186">Naka-on ang Wi-Fi</translation>
 <translation id="4212472694152630271">Lumipat sa PIN</translation>
 <translation id="4215497585250573029">Mga setting ng VPN</translation>
@@ -1092,7 +1088,6 @@ Isaksak ang iyong device.</translation>
 <translation id="5426063383988017631">Isinara ang menu ng Mga Setting</translation>
 <translation id="5428899915242071344">Simulang pumili</translation>
 <translation id="5429993543155113935">Kasalukuyang hindi sinusuportahan ang mga Incognito window</translation>
-<translation id="5430931332414098647">Instant na Pag-tether</translation>
 <translation id="5431318178759467895">Kulay</translation>
 <translation id="5433020815079095860">Audio input</translation>
 <translation id="544691375626129091">Naidagdag na ang lahat ng available na user sa session na ito.</translation>
@@ -1121,6 +1116,7 @@ Isaksak ang iyong device.</translation>
 <translation id="554893713779400387">I-toggle ang pagdidikta</translation>
 <translation id="5551456515017410630">Buksan/isara ang kalendaryo</translation>
 <translation id="5551974246223970793">Kapag naghahanap sa isang page, pumunta sa susunod na tugma para sa paghahanap</translation>
+<translation id="5555639311269196631">I-off ang hotspot</translation>
 <translation id="5558091555391176027">I-toggle ang mataas na visibility ng Nearby Share</translation>
 <translation id="556042886152191864">Pindutan</translation>
 <translation id="5570122939431135380">Magbukas ng bagong tab sa bagong Incognito window</translation>
@@ -1166,7 +1162,6 @@ Isaksak ang iyong device.</translation>
 <translation id="5707775774148071965">Sinusuportahan ng iyong device ang mas mataas na rate ng data kaysa sa iyong cable. Posibleng maging limitado ang performance ng device.</translation>
 <translation id="5710450975648804523">Naka-on ang Huwag Istorbohin</translation>
 <translation id="571295407079589142">Naka-off ang mobile data</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> (na) device ang nakakonekta. Io-off ang WiFi para simulan ang paggamit ng Hotspot.</translation>
 <translation id="5727460725221669831">Kung nakalimutan mo ang iyong password o pinalitan mo ang iyong password ng Google Account kamakailan, subukang i-recover ang user na ito.</translation>
 <translation id="573413375004481890">Hindi masuportahan ng device na ito ang lahat ng iyong display kaya may isang nadiskonekta</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
@@ -1216,7 +1211,6 @@ Isaksak ang iyong device.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5920710855273935292">Naka-mute ang mikropono.</translation>
-<translation id="5924855612669061715">Naka-on ang Hotspot</translation>
 <translation id="5946788582095584774">Naka-on ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="5947494881799873997">I-revert</translation>
 <translation id="595202126637698455">Naka-enable ang pagte-trace sa pagganap</translation>
@@ -1232,6 +1226,7 @@ Isaksak ang iyong device.</translation>
 <translation id="598407983968395253">Gamitin ang template</translation>
 <translation id="598882571027504733">Para makuha ang update, i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
 <translation id="6000279412553873020">Mga key, button, at higit pa</translation>
+<translation id="6002122790816966947">Ang iyong mga device</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> ng <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">I-highlight ang susunod na item sa shelf</translation>
 <translation id="6015573907265691211">Markahang nakumpleto na</translation>
@@ -1520,6 +1515,7 @@ Kaka-install lang</translation>
 <translation id="7188494361780961876">Inilipat ang menu sa kaliwang sulok sa itaas ng screen.</translation>
 <translation id="7189412385142492784">Gaano kalayo ang Venus</translation>
 <translation id="7198435252016571249">Nag-snap ang camera sa kanang sulok sa ibaba. Pagsasalungat sa surface ng system.</translation>
+<translation id="7219573373513695352">Walang nakakonektang device</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> na memory | <ph name="TOTAL_MEMORY" /> sa kabuuan</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kailangang i-restart ang Chromebook na ito para mailapat ang isang update. Puwede itong umabot nang hanggang 1 minuto</translation>
 <translation id="7256634071279256947">Mikropono sa likod</translation>

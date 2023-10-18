@@ -67,6 +67,7 @@
 <translation id="2120620239521071941">З гэтай прылады будзе выдалена наступная колькасць элементаў: <ph name="ITEMS_COUNT" />. Каб потым атрымаць свае даныя, увайдзіце ў Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Перазапусціць, каб абнавіць &amp;Chrome</translation>
 <translation id="2123055963409958220">Дапамажыце палепшыць Chrome, паведаміўшы <ph name="BEGIN_LINK" />бягучыя налады<ph name="END_LINK" /></translation>
+<translation id="2126108037660393668">Спампаваны файл не прайшоў праверку.</translation>
 <translation id="2131230230468101642">У мэтах аховы вашай прыватнасці старэйшыя за 4 тыдні звесткі пра вашы інтарэсы аўтаматычна выдаляюцца. Па меры прагляду сайтаў у інтэрнэце пэўныя інтарэсы могуць з'яўляцца ў спісе зноў. Вы таксама можаце выдаляць пэўныя інтарэсы, калі не хочаце, каб браўзер Chrome іх улічваў.</translation>
 <translation id="2139300032719313227">Перазапусціце Chrome OS</translation>
 <translation id="2151406531797534936">Перазапусціце Chrome</translation>
@@ -95,6 +96,7 @@
 <translation id="2580411288591421699">Немагчыма ўсталяваць тую ж версію Google Chrome, што зараз працуе. Закрыйце Google Chrome і паўтарыце спробу.</translation>
 <translation id="2586406160782125153">Гэта дзеянне выдаліць з прылады даныя прагляду старонак у інтэрнэце. Каб потым атрымаць свае даныя, увайдзіце ва ўліковы запіс Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Атрымайце доступ да даных браўзера Chrome, звязаных з уліковым запісам <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="259935314519650377">Не ўдалося кэшаваць спампаваны ўсталёўшчык. Памылка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Браўзеру Chrome не ўдаецца праверыць наяўнасць абнаўленняў. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649768380733403658">Chrome пастаянна сочыць за тым, каб у вашым браўзеры былі самыя бяспечныя налады. Мы паведамім вам, калі нешта будзе патрабаваць вашай увагі.</translation>
@@ -320,6 +322,7 @@
 <translation id="6676384891291319759">Доступ у інтэрнэт</translation>
 <translation id="6679975945624592337">Дазволіць браўзеру Google Chrome працаваць у фонавым рэжыме</translation>
 <translation id="6696915334902295848">Chrome запытвае дазвол на доступ да мікрафона для гэтага сайта</translation>
+<translation id="6712881677154121168">Памылка спампоўкі: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Паскорце працу Chrome</translation>
 <translation id="6735387454586646204">Сістэма Chrome OS Flex</translation>
 <translation id="6739177684496155661">Працягнуць працу ў новым профілі Chrome?</translation>
@@ -334,6 +337,7 @@
 <translation id="6943584222992551122">Даныя аб прагледжаных гэтым карыстальнікам старонках будуць выдалены з прылады. Каб аднавіць гэтыя даныя, увайдзіце ў Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Уваходнае правіла для бэта-версіі Google Chrome, якое дазваляе трафік mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome быў абноўлены, але вы не выкарыстоўвалі яго на працягу як мінімум 30 дзён.</translation>
+<translation id="7024536598735240744">Памылка распакоўкі: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Усталяванне спынена.</translation>
 <translation id="7025800014283535195">Пераключацца паміж профілямі Chrome можна тут</translation>
 <translation id="7036251913954633326">Калі вам трэба ўвайсці ў гэты ўліковы запіс адзін раз, можна выкарыстаць <ph name="GUEST_LINK_BEGIN" />Гасцявы рэжым<ph name="GUEST_LINK_END" /> браўзера Chrome. Калі вы хочаце дадаць уліковы запіс для каго-небудзь яшчэ, <ph name="LINK_BEGIN" />дадайце новага карыстальніка<ph name="LINK_END" /> на прыладу <ph name="DEVICE_TYPE" />.
@@ -427,6 +431,7 @@
 <translation id="8516431725144212809">Вашы інтарэсы паводле ацэнкі Chrome</translation>
 <translation id="8521348052903287641">Уваходнае правіла версіі Google Chrome для распрацоўшчыкаў, якое дазваляе трафік mDNS.</translation>
 <translation id="8550334526674375523">Гэты працоўны профіль і ваш асабісты профіль з'яўляюцца поўнасцю асобнымі профілямі.</translation>
+<translation id="8555465886620020932">Памылка службы: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556340503434111824">Даступная новая версія Google Chrome. Яшчэ хутчэйшая.</translation>
 <translation id="8571790202382503603">Профілі Chrome патрэбны для раздзельнага выкарыстання браўзера рознымі людзьмі або ў розных мэтах. Выкарыстоўваючы іх, прасцей раздзяляць работу і забавы.</translation>
 <translation id="8614913330719544658">Google Chrome не адказвае. Перазапусціць?</translation>

@@ -352,7 +352,6 @@
 <translation id="2909615210195135082">Google বিজ্ঞপ্তি প্ল্যাটফর্ম</translation>
 <translation id="2912296070571964914">আপনার পছন্দের বিষয়গুলি ম্যানেজ করুন</translation>
 <translation id="2912345083818861431">খোলা 'ছদ্মবেশী' ট্যাব দেখার জন্য স্ক্রিন লক ব্যবহার করুন</translation>
-<translation id="2922568440285376746">Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" /> ব্যবহার করে ছবির মধ্যে সার্চ করুন</translation>
 <translation id="2923908459366352541">নাম সঠিক নয়</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> স্টোরেজ</translation>
 <translation id="2932222164150889403">আপনার কীবোর্ড পরিবর্তন হবে না</translation>
@@ -687,7 +686,6 @@
 <translation id="4684427112815847243">সবকিছু সিঙ্ক করুন</translation>
 <translation id="4685741273709472646">ড্রপডাউন তালিকা থেকে বেছে নিন</translation>
 <translation id="4687718960473379118">সাইট-প্রস্তাবিত বিজ্ঞাপন</translation>
-<translation id="4689792375321623175">Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" /> ব্যবহার করে ছবি সার্চ করুন</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}}</translation>
 <translation id="4699172675775169585">ক্যাশে করা ছবি এবং ফাইলগুলি</translation>
 <translation id="4710167854527459075">নতুন অনুযায়ী সাজান</translation>

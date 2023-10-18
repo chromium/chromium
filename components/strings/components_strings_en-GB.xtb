@@ -966,6 +966,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, currently selected. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Writers Resources</translation>
+<translation id="2980742331521553164">This card's CVC will be encrypted and saved in your Google Account for faster checkout</translation>
 <translation id="2983666748527428214">Open Incognito Tab</translation>
 <translation id="2985306909656435243">If enabled, Chromium will store a copy of your card on this device for faster form filling.</translation>
 <translation id="2985398929374701810">Enter a valid address</translation>
@@ -1121,6 +1122,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3293642807462928945">Learn more about <ph name="POLICY_NAME" /> policy</translation>
 <translation id="3295444047715739395">View and manage your passwords in Chrome settings</translation>
 <translation id="3299098170013242198">Windows Hello is on for filling passwords</translation>
+<translation id="3299720788264079132">Something went wrong while using <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 in x 42 in</translation>
 <translation id="3303855915957856445">No search results found</translation>
 <translation id="3304073249511302126">bluetooth scanning</translation>
@@ -3397,6 +3399,7 @@ Additional details:
 <translation id="79338296614623784">Enter a valid phone number</translation>
 <translation id="7934414805353235750"><ph name="URL" /> wants to play protected content. Your device’s identity will be verified by Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">This card's CVC will be encrypted and saved to your device for faster checkout</translation>
 <translation id="7937554595067888181">Expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Server's certificate is not yet valid.</translation>
 <translation id="7939713744218886332">World cuisine</translation>

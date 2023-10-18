@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15 хв</translation>
 <translation id="2277103315734023688">Перайсці ўперад</translation>
 <translation id="2282073721614284166">Адкрыць спасылку ва ўкладцы</translation>
-<translation id="2284237890386182187">Няма падключаных прылад</translation>
 <translation id="2292698582925480719">Маштаб паказу</translation>
 <translation id="229397294990920565">Ідзе выключэнне мабільнай перадачы даных...</translation>
 <translation id="2295777434187870477">Мікрафон уключаны, выключыць яго можна з дапамогай гэтага пераключальніка.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">Уключыць хот-спот</translation>
 <translation id="3566240529365775567">Адкрывалася толькі што</translation>
 <translation id="3571734092741541777">Наладзіць</translation>
-<translation id="3572988532398145777">Нельга разгарнуць апавяшчэнне, калі адкрыта панэль. Спачатку закрыйце панэль ніжэй.</translation>
 <translation id="3573179567135747900">Вярнуць вярнуцца да мовы: <ph name="FROM_LOCALE" /> (патрабуецца перазапуск)</translation>
 <translation id="3576141592585647168">Змена часавага пояса</translation>
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">У пачатак</translation>
 <translation id="3859364108019690">Не ўдаецца перадаць праграмы плынню</translation>
 <translation id="3861651314799684201">Каб запісаць увесь экран, націсніце Увод</translation>
-<translation id="3865912916886104060">Няма падключаных прылад. Каб вы маглі выкарыстоўваць хот-спот, Wi-Fi выключыцца.</translation>
 <translation id="3886872229787704059">Адкрывалася сёння</translation>
 <translation id="3891340733213178823">Каб выйсці з уліковага запісу, двойчы націсніце "Ctrl+Shift+Q".</translation>
 <translation id="3893630138897523026">ChromeVox (галасавая зваротная сувязь)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">Выключана</translation>
 <translation id="4201033867194214117">Функцыя "<ph name="FEATURE_NAME" />" недаступная.</translation>
 <translation id="4201051445878709314">Паказаць папярэдні месяц</translation>
-<translation id="4202362334312791952">Падключана 1 прылада. Каб вы маглі выкарыстоўваць хот-спот, Wi-Fi выключыцца.</translation>
 <translation id="4209973997261364186">Wi-Fi уключаны</translation>
 <translation id="4212472694152630271">Пераключыцца на PIN-код</translation>
 <translation id="4215497585250573029">Налады VPN</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">Меню налад закрыта</translation>
 <translation id="5428899915242071344">Пачаць выбар</translation>
 <translation id="5429993543155113935">Вокны ў рэжыме інкогніта зараз не падтрымліваюцца</translation>
-<translation id="5430931332414098647">Імгненны рэжым мадэма</translation>
 <translation id="5431318178759467895">Колер</translation>
 <translation id="5433020815079095860">Аўдыяўваход</translation>
 <translation id="544691375626129091">Усе даступныя карыстальнікі ўжо дададзены да гэтага сеанса.</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">Уключыць або выключыць галасавы ўвод</translation>
 <translation id="5551456515017410630">Адкрыць або закрыць каляндар</translation>
 <translation id="5551974246223970793">Пры пошуку на старонцы перайсці да наступнага супадзення</translation>
+<translation id="5555639311269196631">Выключыць хот-спот</translation>
 <translation id="5558091555391176027">Уключыць або выключыць рэжым высокай бачнасці для функцыі "Абагульванне паблізу"</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5570122939431135380">Адкрыць новую ўкладку ў новым акне ў рэжыме інкогніта</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">Ваша прылада падтрымлівае больш высокую хуткасць перадачы даных, чым кабель. Прадукцыйнасць прылады можа быць абмежавана.</translation>
 <translation id="5710450975648804523">Рэжым "Не турбаваць" уключаны</translation>
 <translation id="571295407079589142">Мабільная перадача даных выключана</translation>
-<translation id="5716891621595980681">Падключана прылад: <ph name="DEVICECOUNT" />. Каб вы маглі выкарыстоўваць хот-спот, Wi-Fi выключыцца.</translation>
 <translation id="5727460725221669831">Калі вы забылі пароль або нядаўна мянялі пароль Уліковага запісу Google, паспрабуйце аднавіць доступ для гэтага карыстальніка.</translation>
 <translation id="573413375004481890">Гэта прылада не можа падтрымліваць усе вашы дысплэі, таму адзін з іх быў адключаны</translation>
 <translation id="5740328398383587084">Абагульванне паблізу</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5920710855273935292">Мікрафон выключаны.</translation>
-<translation id="5924855612669061715">Хот-спот уключаны</translation>
 <translation id="5946788582095584774">Стан функцыі "<ph name="FEATURE_NAME" />": уключана.</translation>
 <translation id="5947494881799873997">Вярнуць</translation>
 <translation id="595202126637698455">Уключана трасіроўка прадукцыйнасці</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">Выкарыстаць шаблон</translation>
 <translation id="598882571027504733">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook.</translation>
 <translation id="6000279412553873020">Клавішы, кнопкі і іншае</translation>
+<translation id="6002122790816966947">Вашы прылады</translation>
 <translation id="6012623610530968780">Старонка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Вылучыць наступны элемент на панэлі доступу</translation>
 <translation id="6015573907265691211">Пазначыць як выкананае</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">Меню перамешчана ў левы верхні вугал экрана.</translation>
 <translation id="7189412385142492784">Якая адлегласць да Венеры</translation>
 <translation id="7198435252016571249">Акно перадпрагляду камеры прывязана да правага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
+<translation id="7219573373513695352">Няма падключаных прылад</translation>
 <translation id="7229029500464092426">Даступны аб'ём памяці: <ph name="AVAILABLE_MEMORY" /> | Усяго: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Для ўсталявання абнаўлення патрабуецца перазапуск Chromebook. Гэта можа заняць да 1 хвіліны.</translation>
 <translation id="7256634071279256947">Задні мікрафон</translation>

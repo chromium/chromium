@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gerencia o usuário. Esse administrador pode controlar as configurações e monitorar a atividade do usuário remotamente.</translation>
 <translation id="150962533380566081">PUK inválida.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
+<translation id="1515129336378114413">página inicial do navegador</translation>
 <translation id="1526389707933164996">Animação do protetor de tela</translation>
 <translation id="152892567002884378">Aumentar volume</translation>
 <translation id="1555130319947370107">Azul</translation>
@@ -168,7 +169,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2157660087437850958">seletor de emojis</translation>
 <translation id="2157959690810728433">EM FILA</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Seu administrador definiu <ph name="APP_NAME_1" /> para iniciar automaticamente sempre que você fizer login.}=2{Seu administrador definiu <ph name="APP_NAME_1" /> e <ph name="APP_NAME_2" /> para iniciar automaticamente sempre que você fizer login.}=3{Seu administrador definiu <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> para iniciar automaticamente sempre que você fizer login.}one{Seu administrador definiu <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e mais # app para iniciar automaticamente sempre que você fizer login.}other{Seu administrador definiu <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e mais # apps para iniciar automaticamente sempre que você fizer login.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar novamente</translation>
+<translation id="215916044711630446">O botão "Adicionar APN" está desativado</translation>
 <translation id="2161394479394250669">Cancelar trabalho de impressão</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2163937499206714165">Ativar o modo escuro</translation>
@@ -397,6 +400,7 @@
 <translation id="4117637339509843559">Modo escuro</translation>
 <translation id="4130035430755296270">Passe o cursor para ver mais opções de layout</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> foi iniciado automaticamente}one{# app foi iniciado automaticamente}other{# apps foram iniciado automaticamente}}</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4150201353443180367">Exibição</translation>
@@ -442,6 +446,7 @@
 <translation id="445059817448385655">Senha antiga</translation>
 <translation id="4453205916657964690">Máscara de sub-rede</translation>
 <translation id="4454245904991689773">Salvar em</translation>
+<translation id="4456812688969919973">O botão "Salvar APN" está desativado</translation>
 <translation id="4469288414739283461">Protetor de tela Fluxo da Terra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha no ping do gateway de rede não padrão</translation>
@@ -712,6 +717,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraco (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Acessar as configurações da conta</translation>
+<translation id="6462978824459367242">O botão "Adicionar APN" está ativado</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Digitalizar a página novamente?}=1{Digitalizar a página {PAGE_NUMBER} novamente?}one{Digitalizar a página {PAGE_NUMBER} novamente?}other{Digitalizar a página {PAGE_NUMBER} novamente?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gerenciado por <ph name="MANAGER" /></translation>
@@ -746,6 +752,7 @@
 <translation id="6659594942844771486">Guia</translation>
 <translation id="6673898378497337661">aumentar brilho do teclado</translation>
 <translation id="6692996468359469499">Veja informações relacionadas à sua seleção</translation>
+<translation id="6694534975463174713">cadeado</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6723839937902243910">Energia</translation>
 <translation id="6723847290197874913">Luz de fundo do teclado</translation>
@@ -1049,6 +1056,7 @@
 <translation id="902638246363752736">Configurações do teclado</translation>
 <translation id="9028832514430399253">Ative o modo ambiente para selecionar as opções de protetor de tela</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">O botão "Salvar APN" está ativado</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">A resolução de DNS tem alta latência</translation>
 <translation id="9065203028668620118">Editar</translation>

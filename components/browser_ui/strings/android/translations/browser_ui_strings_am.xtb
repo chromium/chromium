@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">የሦስተኛ ወገን ኩኪዎችን ለምን እንደፈቀዱ ለእኛ በመንገር Chrome እንድናሻሽል ያግዙን። <ph name="BEGIN_LINK" />ግብረመልስ ይላኩ<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
+<translation id="1192844206376121885">ይህ በ<ph name="ORIGIN" /> የተከማቹ ሁሉንም ውሂብ እና ኩኪዎች ይሰርዛል።</translation>
 <translation id="1201402288615127009">ቀጣይ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> ላይ ተካትቷል</translation>
 <translation id="1272079795634619415">አቁም</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">ዓይኖች በአረንጓዴ መነጽሮች ቢጠበቁም ዶሮቲ እና ጓደኞቿ በመጀመሪያ ላይ ፈዘው ነበር በ</translation>
 <translation id="2176704795966505152">በዋና ምናሌ ውስጥ የማጉላት አማራጭን ያሳዩ</translation>
 <translation id="2182457891543959921">ጣቢያዎች የዙሪያዎ የ3ል ካርታ እንዲፈጥሩ ወይም የካሜራ ቦታን እንዲከታተል ከመፍቀድ በፊት ጠይቅ (የሚመከር)</translation>
+<translation id="2185965788978862351">ይህ በጣቢያዎች ወይም በመነሻ ገፅዎ ላይ ባሉ መተግበሪያዎች የተከማቹ <ph name="DATASIZE" /> ውሂብ እና ኩኪዎችን ይሰርዛል።</translation>
 <translation id="2194856509914051091">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
 <translation id="2212565012507486665">ኩኪዎችን ፍቀድ</translation>
 <translation id="2228071138934252756">የእርስዎን ካሜራ <ph name="APP_NAME" /> እንዲደርስበት ለማድረግ፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">ማውረድ ተጠናቅቋል <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ማንነትን በማያሳውቅ ሁነታ ውስጥ ላይሰሩ ይችላሉ</translation>
 <translation id="2442870161001914531">ሁልጊዜ የዴስክቶፕ ጣቢያን ጠይቅ</translation>
+<translation id="2469312991797799607">ይህ እርምጃ ለ<ph name="ORIGIN" /> እና በሥሩ ለሚገኙ ሁሉም ጣቢያዎች ሁሉንም ውሂብ እና ኩኪዎች ይሰርዛል</translation>
 <translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
 <translation id="2485422356828889247">አራግፍ</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">አጠቃቀም</translation>
 <translation id="5091013926750941408">የተንቀሳቃሽ ስልክ ጣቢያ</translation>
 <translation id="509133520954049755">የዴስክቶፕ እይታን ይጠይቁ</translation>
+<translation id="5099358668261120049">ይህ በ<ph name="ORIGIN" /> ወይም በመነሻ ገፅዎ ላይ ባለው መተግበሪያው የተከማቹ ሁሉንም ውሂብ እና ኩኪዎች ይሰርዛል።</translation>
 <translation id="5100237604440890931">ተሰብስቧል - ለመዘርጋት ጠቅ ያድርጉ</translation>
 <translation id="5123685120097942451">ማንነት የማያሳውቅ ትር</translation>
 <translation id="5186036860380548585">አማራጮች ከማያ ገጹ አናት አጠገብ ይገኛሉ</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5922853908706496913">ማያ ገጽዎን በማጋራት ላይ</translation>
 <translation id="5922967540311291836">የሶስተኛ ወገን ኩኪዎችን ያግዱ፦</translation>
+<translation id="5923512600150154850">ይህ በጣቢያዎች የተከማቹ <ph name="DATASIZE" /> ውሂብ እና ኩኪዎችን ይሰርዛል።</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
 <translation id="5964247741333118902">የተከተተ ይዘት</translation>
 <translation id="5968921426641056619">የድር አድራሻን ያስገቡ</translation>
@@ -337,6 +342,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ኪባ</translation>
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7188508872042490670">በመሣሪያ ላይ ያለ የጣቢያ ውሂብ</translation>
+<translation id="7201549776650881587">ይህ እርምጃ <ph name="ORIGIN" /> ሥር ባሉ ሁሉም ጣቢያዎች ወይም በመነሻ ማያ ገፅዎ ላይ ባለው መተግበሪያው የተከማቹ ሁሉንም ውሂብ እና ኩኪዎች ይሰርዛል</translation>
 <translation id="7203150201908454328">ተዘርግቷል</translation>
 <translation id="7219254577985949841">የጣቢያ ውሂብ ይሰረዝ?</translation>
 <translation id="723171743924126238">ምስሎችን ይምረጡ</translation>

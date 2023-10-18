@@ -41,7 +41,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1176932207622159128">Error al guardar imagen</translation>
 <translation id="1177414119866731261">Abre el menú de Chrome</translation>
 <translation id="1181037720776840403">Quitar</translation>
-<translation id="1200396280085622191">Usa Chrome cada vez que toques enlaces de mensajes y otras aplicaciones.</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1207113853726624428">Nueva búsqueda</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -83,10 +82,12 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1360432990279830238">¿Cerrar sesión y detener sincronización?</translation>
 <translation id="1363028406613469049">Pista</translation>
 <translation id="1365106417372288489">Tu iPhone se ha restaurado recientemente, lo que puede que haya cambiado tu navegador predeterminado.</translation>
+<translation id="136942498637440594">Puedes buscar imágenes y lo que ves.</translation>
 <translation id="1375321115329958930">Contraseñas guardadas</translation>
 <translation id="1377255359165588604">La sincronización ha dejado de funcionar.</translation>
 <translation id="1377321085342047638">Número de tarjeta</translation>
 <translation id="1377508275003315939">Contraseñas</translation>
+<translation id="1380914240355562929">Ahora, <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> podrá usar tu nombre de usuario y contraseña cuando use el Gestor de contraseñas de Google para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Últimas 4 semanas</translation>
@@ -192,7 +193,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1980417445547898121">{count,plural, =1{Accede en este iPhone a {count} pestaña activa recientemente de tu otro dispositivo}other{Accede en este iPhone a {count} pestañas activas recientemente de tu otro dispositivo}}</translation>
 <translation id="1981118202195772574">Móvil</translation>
-<translation id="1987779152850321833">Completa las siguientes acciones sugeridas para sacar el máximo partido a Chrome.</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="1990820278544963435">Buscar</translation>
 <translation id="1991153180045413119">Contraseña compartida</translation>
@@ -231,7 +231,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="2220529011494928058">Notificar un problema</translation>
 <translation id="2230173723195178503">Página web cargada</translation>
 <translation id="2239626343334228536">Borrando datos de navegación...</translation>
-<translation id="2242467532204595597">Utiliza Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
 <translation id="2252674110805316998">Búsqueda web</translation>
 <translation id="2256933947031277845">Tu organización solo te permite iniciar sesión con determinadas cuentas.</translation>
@@ -270,7 +269,6 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2411749908844615428">{count,plural, =1{{count} dirección guardada disponible encima del teclado.}other{{count} direcciones guardadas disponibles encima del teclado.}}</translation>
 <translation id="2421004566762153674">Bloquear cookies de terceros</translation>
 <translation id="2421044535038393232">Seguir editando</translation>
-<translation id="2423077901494354337">Ahora podrás sacar el máximo partido a Chrome en tu dispositivo.</translation>
 <translation id="2434405374328098816">Ya has guardado una contraseña para <ph name="USERNAME" /> en <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2459155039684421202">En la barra de direcciones, introduce una tarea como "borrar mi historial" o "editar contraseñas".</translation>
@@ -316,7 +314,6 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2671426118752779020">Puedes usar las contraseñas que has guardado en el Gestor de contraseñas de Google en otras aplicaciones de tu iPhone.</translation>
 <translation id="2690858294534178585">La cámara se está utilizando</translation>
-<translation id="26915454213703967">Buscar dentro de la imagen con Google</translation>
 <translation id="2691653761409724435">No disponible sin conexión</translation>
 <translation id="2695507686909505111">Página traducida</translation>
 <translation id="2696180352517415858">No se cerrará la sesión de tu cuenta de Google. Es posible que <ph name="BEGIN_LINK" />otros tipos de actividad<ph name="END_LINK" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlos cuando quieras.
@@ -410,7 +407,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3080525922482950719">Puedes guardar páginas para leerlas más tarde o sin conexión</translation>
 <translation id="3081338492074632642">La contraseña que guardes debe coincidir con tu contraseña de <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Inferior</translation>
-<translation id="309672519329227863">Accede a tus contraseñas de Chrome y más en otras aplicaciones.</translation>
 <translation id="309710370695886264">Tienes 1 contraseña reutilizada. Corrige el problema para protegerte.</translation>
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
@@ -498,7 +494,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3551320343578183772">Cerrar pestaña</translation>
 <translation id="3565207542107370586">Borrar datos de navegación…</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
-<translation id="3577555362230509265">Usa Chrome en otras aplicaciones.</translation>
 <translation id="3581564640715911333">Ofrecer la traducción de páginas que estén en otros idiomas</translation>
 <translation id="3587885837929752825">Tu organización limita lo que puedes guardar en tu cuenta de Google.</translation>
 <translation id="3588820906588687999">Abrir imagen en una pestaña nueva</translation>
@@ -774,6 +769,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5121618895923301719">Ya estás siguiendo este producto. Esta página se ha guardado en <ph name="BEGIN_LINK" />Marcadores del móvil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tienes varios problemas relacionados con contraseñas.</translation>
 <translation id="5126465625664020024">Iniciar sesión y sincronizar</translation>
+<translation id="5131062416352684089">Ahora, los miembros de tu familia podrán usar tu nombre de usuario y contraseña cuando usen el Gestor de contraseñas de Google para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
 <translation id="5149188072385105201">Añadir contraseña...</translation>
@@ -947,7 +943,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
 <translation id="6045460247888249350">Añade un título</translation>
-<translation id="6054613632208573261">Usa Chrome de forma predeterminada</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla tus noticias y tu actividad aquí</translation>
 <translation id="6064824697233747382">Tu organización requiere que desactives la sincronización.</translation>
@@ -1007,7 +1002,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6346549652287021269">¿Quieres iniciar una nueva descarga?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Esta dirección se eliminará de tu cuenta de Google (<ph name="USER_EMAIL" />) y de este dispositivo.}other{Estas direcciones se eliminarán de tu cuenta de Google (<ph name="USER_EMAIL" />) y de este dispositivo.}}</translation>
 <translation id="634878792104344809">Sincroniza tus contraseñas, tu historial y mucho más en todos tus dispositivos</translation>
-<translation id="6348855835728304880">Accede a tus contraseñas de Chrome y más en otras aplicaciones de este dispositivo.</translation>
 <translation id="63519665078626091">Para usar el inspector web, conéctate a Safari en tu ordenador mediante un cable y accede a tu iPad desde el menú Desarrollo. Puedes habilitar el menú Desarrollo en la sección Avanzado de los ajustes de Safari de tu ordenador.</translation>
 <translation id="6355820205320395730">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de que tus contraseñas sean seguras. <ph name="BEGIN_LINK" />Consulta más consejos sobre seguridad<ph name="END_LINK" />.</translation>
 <translation id="6361681885917591592">Hecho</translation>
@@ -1192,7 +1186,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7221173315674413369">Descubre nuevas funciones y consejos en Novedades</translation>
 <translation id="7223102419539744003">Cerrar pestaña</translation>
 <translation id="722454870747268814">Nueva pestaña de Incógnito</translation>
-<translation id="723787869754590019">Usar Chrome para autocompletar</translation>
 <translation id="7265758999917665941">Jamás para este sitio web</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. No se ha copiado la contraseña.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nuevo paquete con seguimiento}other{Nuevos paquetes con seguimiento}}</translation>
@@ -1465,7 +1458,6 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="8717864919010420084">Copiar enlace</translation>
 <translation id="8721297211384281569">Menú de herramientas</translation>
 <translation id="8725066075913043281">Reintentar</translation>
-<translation id="8727043961453758442">Sácale el máximo partido a Chrome</translation>
 <translation id="8730621377337864115">Hecho</translation>
 <translation id="8731958888085671579">Ocultar Buscar en la página</translation>
 <translation id="87371078663613140">Explora las opciones en la barra de menú</translation>
@@ -1578,7 +1570,6 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="959066944189734975">Estás siguiendo a <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Mostrar sugerencias de pestañas de otros dispositivos</translation>
 <translation id="972300586996227526">{COUNT,plural, =1{Puedes guardar la contraseña de {DOMAIN_ONE} en tu cuenta de Google ({EMAIL})}=2{Puedes guardar las contraseñas de {DOMAIN_ONE} y {DOMAIN_TWO} en tu cuenta de Google ({EMAIL})}=3{Puedes guardar las contraseñas de {DOMAIN_ONE}, {DOMAIN_TWO} y {OTHER_DOMAINS_COUNT} más en tu cuenta de Google ({EMAIL})}other{Puedes guardar las contraseñas de {DOMAIN_ONE}, {DOMAIN_TWO} y {OTHER_DOMAINS_COUNT} más en tu cuenta de Google ({EMAIL})}}</translation>
-<translation id="97300214378190234">Usa Chrome cada vez que toques enlaces de otras aplicaciones.</translation>
 <translation id="973493300226275298">Haz un seguimiento del precio de un producto en las tiendas online. Recibirás alertas cuando baje de precio.</translation>
 <translation id="981498610235328462">Tu organización solo te permite iniciar sesión con determinadas cuentas. Las cuentas no permitidas están ocultas.</translation>
 <translation id="984509647832111802">La sincronización no funciona.</translation>

@@ -352,7 +352,6 @@
 <translation id="2909615210195135082">Google सूचना प्लॅटफॉर्म</translation>
 <translation id="2912296070571964914">तुम्हाला स्वारस्य असलेले विषय व्यवस्थापित करा</translation>
 <translation id="2912345083818861431">उघडे असलेले गुप्त टॅब पाहण्यासाठी स्क्रीन लॉक वापरा</translation>
-<translation id="2922568440285376746">Google सह इमेजमध्ये शोधा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">नाव अवैध आहे</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> स्टोरेज</translation>
 <translation id="2932222164150889403">तुमचा कीबोर्ड बदलणार नाही</translation>
@@ -687,7 +686,6 @@
 <translation id="4684427112815847243">सर्व सिंक करा</translation>
 <translation id="4685741273709472646">ड्रॉपडाउन सूचीमधून निवडा</translation>
 <translation id="4687718960473379118">साइटने सुचवलेल्या जाहिराती</translation>
-<translation id="4689792375321623175">Google सह इमेज शोधा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अधिक}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अधिक}}</translation>
 <translation id="4699172675775169585">कॅशे   इमेज आणि फाइल</translation>
 <translation id="4710167854527459075">नवीनतेनुसार क्रमाने लावा</translation>

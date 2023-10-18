@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">Chromium-en fitxen sareta irekitzen du.</translation>
 <translation id="1617663976202781617">Chromium-en sinkronizazioaren datuak</translation>
 <translation id="1647558790457890304">Chromium-en ezarpenak</translation>
+<translation id="164952285225495380">Pakete honen jarraipena Chromium-en egin da jada.</translation>
 <translation id="1722370509450468186">Pasahitza kontuan gordeko da (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Garbitu dira Chromium datuak</translation>
 <translation id="1791845338122684020">Chromium-eko historiaren orria irekitzen du.</translation>
@@ -139,6 +140,7 @@ Kontuan hartu beharrekoak:
 1. Ireki Ezarpenak.
 2. Sakatu Arakatzaile lehenetsia.
 3. Hautatu Chromium.</translation>
+<translation id="6197255575340902638">"<ph name="MODULE_NAME" />" ezkutatzen baduzu, Chromium-ek ezin izango du jarraitu etorkizuneko paketeen jarraipena automatikoki egiten, eta iraganeko paketeen jarraipenari buruzko datu guztiak ezabatuko ditu.</translation>
 <translation id="6247557882553405851">Google-ren Pasahitz-kudeatzailea</translation>
 <translation id="6268381023930128611">Chromium-eko saioa amaitu?</translation>
 <translation id="6324041800010509197">Bisitatu fitxen sareta Chromium-en</translation>
@@ -157,6 +159,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="6911341667534646387">Jarraitu Google-ko kontuko Chromium-en datuak erabiltzen</translation>
 <translation id="7006920032187763988">iPad-eko beste aplikazio batzuk erabiltzen ari zinela Pasahitz-kudeatzailea zerbitzuan gorde zenituen pasahitzak erabil ditzakezu.</translation>
 <translation id="7018284295775193585">Ezin da eguneratu Chromium</translation>
+<translation id="7025471822960602362">Egin hautemandako paketeen jarraipena Chromium-en</translation>
 <translation id="7045244423563602563">Pertsonalizatu Chromium</translation>
 <translation id="7055269218854630176"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabiltzen ari zaren kontua eta Chromium erabiltzeko modua. Administratzaileak eginbide batzuk konfiguratu edo muga ditzake.</translation>
 <translation id="7099326575020694068">Chromium-ek ezin du erabili kamera Ikuspegi zatitua moduan</translation>

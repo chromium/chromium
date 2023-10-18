@@ -966,6 +966,7 @@
 <translation id="2977665033722899841">सध्या निवडलेली <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ऑपेरा</translation>
 <translation id="2979424420072875974">लेखक स्रोत</translation>
+<translation id="2980742331521553164">या कार्डचा CVC एन्क्रिप्ट केला जाईल आणि जलद चेकआउट करण्यासाठी तुमच्या Google खाते मध्ये सेव्ह केला जाईल</translation>
 <translation id="2983666748527428214">गुप्त टॅब उघडा</translation>
 <translation id="2985306909656435243">सक्षम केल्‍यास, Chromium जलदपणे फॉर्म भरण्‍यासाठी तुमच्या कार्डची एक प्रत या डिव्‍हाइसवर संग्रहित करेल.</translation>
 <translation id="2985398929374701810">वैध पत्ता एंटर करा</translation>
@@ -3397,6 +3398,7 @@
 <translation id="79338296614623784">वैध फोन नंबर एंटर करा</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ला संरक्षित आशय सुरू करायचा आहे. तुमच्या डिव्हाइसची ओळख Google द्वारे पडताळली जाईल</translation>
 <translation id="7935318582918952113">DOM डिस्टिलर</translation>
+<translation id="7937163678541954811">या कार्डचा CVC एन्क्रिप्ट केला जाईल आणि जलद चेकआउट करण्यासाठी तुमच्या डिव्हाइसवर सेव्ह केला जाईल</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> रोजी एक्स्पायर होईल</translation>
 <translation id="7938958445268990899">सर्व्हरचे सर्टिफिकेट अद्याप वैध नाही.</translation>
 <translation id="7939713744218886332">जगभरातील पाकशैली</translation>

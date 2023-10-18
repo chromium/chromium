@@ -310,7 +310,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2276987123919776440">15 Min.</translation>
 <translation id="2277103315734023688">Vorwärts springen</translation>
 <translation id="2282073721614284166">Link auf Tab öffnen</translation>
-<translation id="2284237890386182187">An – keine Geräte verbunden</translation>
 <translation id="2292698582925480719">Displaymaßstab</translation>
 <translation id="229397294990920565">Mobile Daten werden deaktiviert…</translation>
 <translation id="2295777434187870477">Mikrofon ist an. Du kannst es hier stummschalten.</translation>
@@ -617,7 +616,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3563775809269155755">Hotspot aktivieren</translation>
 <translation id="3566240529365775567">Soeben geöffnet</translation>
 <translation id="3571734092741541777">Einrichten</translation>
-<translation id="3572988532398145777">Du kannst die Benachrichtigung nicht maximieren, während ein Steuerfeld geöffnet ist. Schließe zuerst das Steuerfeld unten.</translation>
 <translation id="3573179567135747900">Zurücksetzen auf "<ph name="FROM_LOCALE" />" (Neustart erforderlich)</translation>
 <translation id="3576141592585647168">Zeitzone ändern</translation>
 <translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
@@ -699,7 +697,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="385300504083504382">Anfang</translation>
 <translation id="3859364108019690">Apps können nicht gestreamt werden</translation>
 <translation id="3861651314799684201">Eingabetaste drücken, um den ganzen Bildschirm aufzuzeichnen</translation>
-<translation id="3865912916886104060">Keine Geräte verbunden. Das WLAN wird deaktiviert, damit du den Hotspot nutzen kannst.</translation>
 <translation id="3886872229787704059">Heute geöffnet</translation>
 <translation id="3891340733213178823">Drücke zum Abmelden zweimal Strg + Umschalttaste + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (gesprochenes Feedback)</translation>
@@ -784,7 +781,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4197790712631116042">Aus</translation>
 <translation id="4201033867194214117">"<ph name="FEATURE_NAME" />" ist nicht verfügbar.</translation>
 <translation id="4201051445878709314">Vorherigen Monat anzeigen</translation>
-<translation id="4202362334312791952">1 Gerät verbunden. Das WLAN wird deaktiviert, damit du den Hotspot nutzen kannst.</translation>
 <translation id="4209973997261364186">WLAN ist aktiviert</translation>
 <translation id="4212472694152630271">Zu PIN wechseln</translation>
 <translation id="4215497585250573029">VPN-Einstellungen</translation>
@@ -1048,6 +1044,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
 <translation id="5268819379131021772">Google Tasks-Liste</translation>
 <translation id="5275923704957843041">Desktopvorschau</translation>
+<translation id="5277869901083657836">Eingabestift-Tools ein-/ausblenden</translation>
 <translation id="5278086053818066789">ChromeVox aktivieren oder deaktivieren (gesprochenes Feedback)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> erfordert deine Aufmerksamkeit.</translation>
 <translation id="5283198616748585639">1 min hinzufügen</translation>
@@ -1090,7 +1087,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5426063383988017631">Einstellungsmenü geschlossen</translation>
 <translation id="5428899915242071344">Auswahl starten</translation>
 <translation id="5429993543155113935">Inkognitofenster werden derzeit nicht unterstützt</translation>
-<translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Farbe</translation>
 <translation id="5433020815079095860">Audioeingabe</translation>
 <translation id="544691375626129091">Alle verfügbaren Nutzer wurden bereits zur Sitzung hinzugefügt.</translation>
@@ -1119,6 +1115,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="554893713779400387">Diktierfunktion ein-/ausschalten</translation>
 <translation id="5551456515017410630">Kalender öffnen/schließen</translation>
 <translation id="5551974246223970793">Bei der Suche auf einer Seite zur nächsten Übereinstimmung für die Suche gehen</translation>
+<translation id="5555639311269196631">Hotspot deaktivieren</translation>
 <translation id="5558091555391176027">Hohe Sichtbarkeit bei Nearby Share aktivieren/deaktivieren</translation>
 <translation id="556042886152191864">Schaltfläche</translation>
 <translation id="5570122939431135380">Neuen Tab in neuem Inkognitofenster öffnen</translation>
@@ -1164,7 +1161,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5707775774148071965">Dein Gerät unterstützt eine höhere Datenübertragungsrate als das Kabel. Dies kann die Geräteleistung beeinträchtigen.</translation>
 <translation id="5710450975648804523">„Bitte nicht stören“ ist aktiviert</translation>
 <translation id="571295407079589142">Mobile Daten sind deaktiviert</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> Geräte verbunden Das WLAN wird deaktiviert, damit du den Hotspot nutzen kannst.</translation>
 <translation id="5727460725221669831">Wenn du dein Passwort vergessen oder das Passwort für dein Google-Konto vor Kurzem geändert hast, versuche, diesen Nutzer wiederherzustellen.</translation>
 <translation id="573413375004481890">Dieses Gerät kann nicht alle deine Displays unterstützen. Daher wurde die Verbindung zu einem Display getrennt.</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
@@ -1214,7 +1210,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5920710855273935292">Mikrofon ist stummgeschaltet.</translation>
-<translation id="5924855612669061715">Hotspot aktiviert</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ist aktiviert.</translation>
 <translation id="5947494881799873997">Rückgängig machen</translation>
 <translation id="595202126637698455">Leistungsnachverfolgung aktiviert</translation>
@@ -1230,6 +1225,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="598407983968395253">Vorlage verwenden</translation>
 <translation id="598882571027504733">Du kannst das Update vornehmen, indem du dein Chromebook mit angeschlossener Tastatur neu startest.</translation>
 <translation id="6000279412553873020">Tasten, Knöpfe und mehr</translation>
+<translation id="6002122790816966947">Meine Geräte</translation>
 <translation id="6012623610530968780">Seite <ph name="SELECTED_PAGE" /> von <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Nächstes Element in der Ablage hervorheben</translation>
 <translation id="6015573907265691211">Als abgeschlossen markieren</translation>
@@ -1519,6 +1515,7 @@ Neuinstallation</translation>
 <translation id="7188494361780961876">Menü wurde nach links oben auf dem Bildschirm verschoben.</translation>
 <translation id="7189412385142492784">Wie weit ist die Venus entfernt?</translation>
 <translation id="7198435252016571249">Kamera ist an der unteren rechten Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>
+<translation id="7219573373513695352">Keine verbundenen Geräte</translation>
 <translation id="7229029500464092426">Arbeitsspeicher <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> insgesamt</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Dieses Chromebook muss zur Installation eines Updates neu gestartet werden. Dies kann bis zu einer Minute dauern.</translation>
 <translation id="7256634071279256947">Mikrofon auf der Rückseite</translation>

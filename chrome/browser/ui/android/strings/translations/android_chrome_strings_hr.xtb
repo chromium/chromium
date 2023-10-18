@@ -352,7 +352,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2909615210195135082">Googleova platforma za obavijesti</translation>
 <translation id="2912296070571964914">Upravljajte temama koje vas zanimaju</translation>
 <translation id="2912345083818861431">Upotreba zaključavanja zaslona za prikaz otvorenih anonimnih kartica</translation>
-<translation id="2922568440285376746">Pretraži na slici pomoću Googlea <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Naziv nije važeći</translation>
 <translation id="2932150158123903946">Pohrana aplikacije Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tipkovnica se neće promijeniti</translation>
@@ -687,7 +686,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4684427112815847243">Sinkroniziraj sve</translation>
 <translation id="4685741273709472646">Odaberite na padajućem popisu</translation>
 <translation id="4687718960473379118">Oglasi koje predlažu web-lokacije</translation>
-<translation id="4689792375321623175">Pretraži sliku na Googleu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Predmemorirane slike i datoteke</translation>
 <translation id="4710167854527459075">Poredaj od najnovijeg</translation>

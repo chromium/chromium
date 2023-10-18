@@ -285,6 +285,7 @@
 <translation id="2571834852878229351">Δημιουργία δικού μου</translation>
 <translation id="2573452357057307036">Μάθετε πώς μπορείτε να ορίσετε το Chrome ως το προεπιλεγμένο πρόγραμμα περιήγησης</translation>
 <translation id="2574249610672786438">Για να βλέπετε τις καρτέλες σας από όπου και αν χρησιμοποιείτε το Chrome, συνδεθείτε σε όλες τις συσκευές σας.</translation>
+<translation id="2578337197553672982">Περιεχόμενο από την Google για νεαρούς χρήστες</translation>
 <translation id="2581165646603367611">Αυτό θα διαγράψει τα cookie, την κρυφή μνήμη και άλλα δεδομένα ιστοτόπων που το Chrome θεωρεί ότι δεν είναι σημαντικά.</translation>
 <translation id="2587052924345400782">Διατίθεται νεότερη έκδοση</translation>
 <translation id="2593272815202181319">Monospace</translation>
@@ -352,7 +353,6 @@
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Διαχειριστείτε τα θέματα που σας ενδιαφέρουν</translation>
 <translation id="2912345083818861431">Χρήση του κλειδώματος οθόνης για εμφάνιση των ανοιχτών καρτελών ανώνυμης περιήγησης</translation>
-<translation id="2922568440285376746">Αναζήτηση εντός εικόνας με το Google <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Το όνομα δεν είναι έγκυρο</translation>
 <translation id="2932150158123903946">Αποθηκευτικός χώρος Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Το πληκτρολόγιό σας δεν θα αλλάξει</translation>
@@ -687,7 +687,6 @@
 <translation id="4684427112815847243">Συγχρονισμός όλων</translation>
 <translation id="4685741273709472646">Επιλέξτε από την αναπτυσσόμενη λίστα</translation>
 <translation id="4687718960473379118">Διαφημίσεις που προτείνονται από ιστότοπο</translation>
-<translation id="4689792375321623175">Αναζήτηση εικόνας με το Google <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}}</translation>
 <translation id="4699172675775169585">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="4710167854527459075">Ταξινόμηση κατά νεότερο</translation>
@@ -701,6 +700,7 @@
 <translation id="4742970037960872810">Κατάργηση επισήμανσης</translation>
 <translation id="4743664893327841597">Το περιεχόμενο που πληκτρολογείτε στη γραμμή διευθύνσεων ή στο πλαίσιο αναζήτησης αποστέλλεται στην προεπιλεγμένη μηχανή αναζήτησης</translation>
 <translation id="4749960740855309258">Άνοιγμα νέας καρτέλας</translation>
+<translation id="4750356170202299988">Περιεχόμενο για νεαρούς χρήστες</translation>
 <translation id="4758061975920522644">Κοινοποίηση μόνο εικόνας</translation>
 <translation id="4759238208242260848">Λήψεις</translation>
 <translation id="4763480195061959176">βίντεο</translation>
@@ -1182,6 +1182,7 @@
 <translation id="7187993566681480880">Διατηρεί την ασφάλειά σας στο Chrome και μπορεί να χρησιμοποιηθεί για τη βελτίωση της ασφάλειάς σας σε άλλες εφαρμογές Google όταν είστε συνδεδεμένοι.</translation>
 <translation id="7191430249889272776">Η καρτέλα άνοιξε στο παρασκήνιο.</translation>
 <translation id="7196215469483532480">Η επεξήγηση Οδηγού απορρήτου άνοιξε σε πλήρες ύψος.</translation>
+<translation id="7205672015775254816">Περιεχόμενο από την Google για νεαρούς χρήστες – ανενεργό</translation>
 <translation id="7207760545532569765">Επαναφέρετε <ph name="TAB_COUNT" /> καρτέλες ως νέες καρτέλες στο παρασκήνιο.</translation>
 <translation id="7217781228893594884">Οι καρτέλες ανώνυμης περιήγησης θα κλειδώνουν όταν αποχωρείτε από το Chrome</translation>
 <translation id="7221869452894271364">Επαναφόρτωση αυτής της σελίδας</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7876243839304621966">Κατάργηση όλων</translation>
 <translation id="7886917304091689118">Εκτέλεση στο Chrome</translation>
 <translation id="7887174313503389866">Δείτε μια ξενάγηση για σημαντικά στοιχεία ελέγχου για το απόρρητο και την ασφάλεια. Για περισσότερες επιλογές, μεταβείτε σε μεμονωμένες ρυθμίσεις.</translation>
+<translation id="7896724475402191389">Περιεχόμενο για νεαρούς χρήστες – ανενεργό</translation>
 <translation id="7903184275147100332">Μπορεί να χρειαστεί λίγα λεπτά</translation>
 <translation id="7914399737746719723">Η εφαρμογή εγκαταστάθηκε</translation>
 <translation id="7919123827536834358">Αυτόματη μετάφραση αυτών των γλωσσών</translation>

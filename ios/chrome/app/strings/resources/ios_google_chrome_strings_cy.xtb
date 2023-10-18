@@ -4,6 +4,7 @@
 <translation id="1105362920864247682">Clirio Data Pori yn Chrome.</translation>
 <translation id="1143896152279775643">Bydd eich cyfrinair yn cael ei gadw i Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Parhewch i ddefnyddio'r data Chrome yn eich Cyfrif Google.</translation>
+<translation id="1200396280085622191">Defnyddiwch Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon ac apiau eraill.</translation>
 <translation id="1282031177488366470">Helpu i Wella Nodweddion a Pherfformiad Chrome</translation>
 <translation id="1333745675627230582">Chwarae'r Gêm Chrome Dino</translation>
 <translation id="1352919863522755794">Ni allai Rheolwr Cyfrineiriau Google wirio'ch cyfrineiriau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
@@ -33,16 +34,19 @@ Pethau i'w hystyried:
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Defnyddio Chrome yn awtomatig pan fyddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="1917964099031477364">Bydd y cyfrif hwn ac unrhyw ddata sydd heb eu cadw yn cael eu tynnu o Chrome ac apiau Google eraill ar y ddyfais hon.</translation>
+<translation id="1987779152850321833">Cwblhewch y gweithredoedd a awgrymir isod i gael y gorau o Chrome.</translation>
 <translation id="2009224836393115614">Ni all Chrome wirio'ch cyfrineiriau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
 <translation id="2056123005618757196">Gwneud rhagor â Chrome syml, diogel a chyflymach nag erioed.</translation>
 <translation id="2120238739383482109">Yn agor y nodau tudalen Chrome.</translation>
 <translation id="2147651015520127414">Gwnaeth Chrome ddilysu bod <ph name="ISSUER" /> wedi cyhoeddi tystysgrif y wefan hon.</translation>
 <translation id="2199719347983604670">Data o gysoni Chrome</translation>
+<translation id="2242467532204595597">Defnyddiwch Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="2311240109311056604">Yn agor Gêm Dino Chrome.</translation>
 <translation id="2339201583852607431">Bydd eich cyfrinair yn cael ei gadw yn eich Cyfrif Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Mae Chrome yn rhannu eich lleoliad â gwefannau rydych yn eu caniatáu.</translation>
 <translation id="2347208864470321755">Pan fydd y nodwedd hon yn cael ei throi ymlaen, bydd Chrome yn cynnig cyfieithu tudalennau sydd wedi'u hysgrifennu mewn ieithoedd eraill gan ddefnyddio Google Translate. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="2414068465746584414">O'r Gosodiadau ar eich dyfais, agorwch "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" a dewiswch "Chrome"</translation>
+<translation id="2423077901494354337">Byddwch nawr yn manteisio i'r eithaf ar Chrome ar eich dyfais.</translation>
 <translation id="2427791862912929107">Mae gan Chrome nodweddion sy'n eich helpu i reoli'ch data rhyngrwyd a pha mor gyflym rydych yn gallu llwytho tudalennau gwe.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">I gael eich cyfrineiriau sydd wedi'u cadw yn eich apiau eraill yn hawdd, defnyddiwch Chrome ar gyfer Awtolenwi</translation>
@@ -61,6 +65,7 @@ Pethau i'w hystyried:
 <translation id="2876628302275096482">Dysgu rhagor am <ph name="BEGIN_LINK" />sut mae Chrome yn cadw eich data yn breifat<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Dewiswch <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="SIGNOUT_MANAGED_DOMAIN" />, bydd eich data Chrome yn cael eu dileu o'r ddyfais hon. Bydd eich data yn aros yn eich Cyfrif Google.</translation>
+<translation id="309672519329227863">Cyrchwch eich cyfrineiriau Chrome a rhagor ar draws apiau eraill.</translation>
 <translation id="3167189358072330585">Nid yw'ch cyfrif yn gweithio ar Google Chrome. Cysylltwch â'ch gweinyddwr parth neu defnyddiwch Gyfrif Google rheolaidd i fewngofnodi.</translation>
 <translation id="3173834708294760622">Tudalen Google Chrome</translation>
 <translation id="3196546062792660320">Mae Chrome yn arbed amser i chi drwy ddod â'ch cyfrifon i'r we. Gallwch ychwanegu neu dynnu cyfrifon yn y Gosodiadau.</translation>
@@ -71,6 +76,7 @@ Pethau i'w hystyried:
 <translation id="3503014945441706099">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chrome hwn hefyd</translation>
 <translation id="3522659714780527202">I weld eich tabiau o ble bynnag rydych yn defnyddio Chrome, trowch gysoni ymlaen</translation>
 <translation id="3533694711092285624">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Chrome wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
+<translation id="3577555362230509265">Defnyddiwch Chrome mewn apiau eraill.</translation>
 <translation id="3594076341410558780">Cuddio “Manteisio i'r eithaf ar Chrome”</translation>
 <translation id="3655656110921623717">Mae hyn yn golygu y bydd Chrome yn gofyn am y wefan symudol bob tro.</translation>
 <translation id="3720541637541300822">Cloi Tabiau Anhysbys Pan Fyddwch yn Cau Chrome</translation>
@@ -91,6 +97,7 @@ Pethau i'w hystyried:
 <translation id="424864128008805179">Allgofnodi o Chrome?</translation>
 <translation id="4251174643044751591">Yn Agor Y Dudalen Gosodiad Dulliau Talu yn Chrome.</translation>
 <translation id="4453284704333523777">Rheoli Gosodiadau Chrome</translation>
+<translation id="4471662743048412085">Olrhain Pecynnau Wedi'u Canfod ar Chrome</translation>
 <translation id="4508370294876102450">Agor Chrome o Unrhyw Ap</translation>
 <translation id="4523886039239821078">Mae rhai ychwanegion yn achosi i Chrome dorri. Dadosodwch:</translation>
 <translation id="4633328489441962921">Ni all Chrome wirio am ddiweddariadau</translation>
@@ -139,6 +146,7 @@ Pethau i'w hystyried:
 <translation id="6181930887571472871">Newid i Chrome</translation>
 <translation id="6238746320622508509">Caniatáu i Chrome gloi eich tabiau Anhysbys</translation>
 <translation id="6247557882553405851">Rheolwr Cyfrineiriau Google</translation>
+<translation id="6348855835728304880">Gallwch gael mynediad at eich cyfrineiriau Chrome a rhagor ar draws apiau eraill ar y ddyfais hon.</translation>
 <translation id="6412673304250309937">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chrome. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chrome hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>
 <translation id="6427126399757991875">Mae'ch sefydliad wrthi'n gosod Chrome…</translation>
 <translation id="6545449117344801102">Mae Chrome yn canfod cyfeiriadau ac yn defnyddio Google Maps i roi cyfarwyddiadau a gwybodaeth leol i chi.</translation>
@@ -167,6 +175,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7187993566681480880">Yn eich cadw'n ddiogel ar Chrome a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi.</translation>
 <translation id="7200524487407690471">Mae Chrome yn cynnal Gwiriad Diogelwch yn awtomatig bob dydd i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor. Gallwch ddysgu rhagor am Wiriad Diogelwch yn y Gosodiadau.</translation>
 <translation id="72119412072970160">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i Reolwr Cyfrineiriau Google mewn apiau eraill ar eich iPad.</translation>
+<translation id="723787869754590019">Defnyddiwch Chrome ar gyfer Awtolenwi</translation>
 <translation id="7254380941803999489">Gosod Chrome Fel Porwr Diofyn</translation>
 <translation id="7261678641327190792">Ni all Chrome wirio'ch cyfrineiriau</translation>
 <translation id="7272930098487145294">I gadw lluniau, tapiwch ar Gosodiadau i ganiatáu i Chrome ychwanegu at eich lluniau</translation>
@@ -208,6 +217,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8587647598504233556">Tapiwch "Chrome" yna "Ap Porwr Diofyn."</translation>
 <translation id="8603022514504485810">Ni allai Rheolwr Cyfrineiriau Google wirio pob cyfrinair. Rhowch gynnig arall arni yfory neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>
+<translation id="8727043961453758442">Manteisio i'r eithaf ar Chrome</translation>
 <translation id="8736550665979974340">Cadwch yn Ddiogel gyda Google Chrome</translation>
 <translation id="8760668027640688122">Agor Tab Newydd yn Chrome</translation>
 <translation id="8765470054473112089">Pan fyddwch yn teipio yn y bar cyfeiriad neu'r blwch chwilio, bydd Chrome yn anfon yr hyn rydych yn ei deipio i'ch peiriant chwilio diofyn i gael awgrymiadau gwell. Mae hwn wedi'i ddiffodd yn y modd Anhysbys.</translation>
@@ -233,4 +243,5 @@ Pethau i'w hystyried:
 <translation id="9112744793181547300">Gosod Chrome fel y porwr diofyn?</translation>
 <translation id="9122931302567044771">Mae hyn yn golygu y bydd Chrome yn gofyn am y wefan bwrdd gwaith bob tro.</translation>
 <translation id="9181628561061032322">Yn Agor y Tabiau Diweddar Chrome.</translation>
+<translation id="97300214378190234">Defnyddiwch Chrome unrhyw bryd y byddwch yn tapio dolenni mewn apiau eraill.</translation>
 </translationbundle>

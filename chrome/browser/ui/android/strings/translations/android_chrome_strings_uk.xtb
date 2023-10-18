@@ -352,7 +352,6 @@
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Керуйте цікавими вам темами</translation>
 <translation id="2912345083818861431">Використовувати метод розблокування екрана, щоб переглядати відкриті анонімні вкладки</translation>
-<translation id="2922568440285376746">Пошук на зображенні через Google <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Недійсна назва</translation>
 <translation id="2932150158123903946">Дані додатка Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Розкладка клавіатури не зміниться</translation>
@@ -687,7 +686,6 @@
 <translation id="4684427112815847243">Синхронізувати все</translation>
 <translation id="4685741273709472646">Виберіть варіант зі спадного списку</translation>
 <translation id="4687718960473379118">Реклама, пропонована сайтами</translation>
-<translation id="4689792375321623175">Пошук зображень через Google <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Кешовані зображення та файли</translation>
 <translation id="4710167854527459075">Сортувати за новішими</translation>

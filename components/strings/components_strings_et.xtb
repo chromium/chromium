@@ -966,6 +966,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, praegu valitud. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Ooper</translation>
 <translation id="2979424420072875974">Ressursid kirjanikele ja kirjutajatele</translation>
+<translation id="2980742331521553164">Selle kaardi CVC krüpteeritakse ja salvestatakse teie Google'i kontole, et saaksite kiiremini maksta</translation>
 <translation id="2983666748527428214">Inkognito vahelehe avamine</translation>
 <translation id="2985306909656435243">Kui see on lubatud, salvestab Chromium teie kaardi koopia vormide kiiremaks täitmiseks sellesse seadmesse.</translation>
 <translation id="2985398929374701810">Sisestage kehtiv aadress</translation>
@@ -3397,6 +3398,7 @@ Lisateave:
 <translation id="79338296614623784">Sisestage kehtiv telefoninumber</translation>
 <translation id="7934414805353235750"><ph name="URL" /> soovib esitada kaitstud sisu. Google kontrollib teie seadme identiteeti.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">Selle kaardi CVC krüpteeritakse ja salvestatakse teie seadmesse, et saaksite kiiremini maksta</translation>
 <translation id="7937554595067888181">Aegub <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Serveri sertifikaat ei kehti veel.</translation>
 <translation id="7939713744218886332">Maailma köök</translation>

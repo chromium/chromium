@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">१५ मिनिटे</translation>
 <translation id="2277103315734023688">पुढे जा</translation>
 <translation id="2282073721614284166">टॅबमध्ये लिंक उघडा</translation>
-<translation id="2284237890386182187">सुरू आहे, कोणतीही डिव्हाइस कनेक्ट केलेली नाहीत</translation>
 <translation id="2292698582925480719">स्केल दाखवा</translation>
 <translation id="229397294990920565">मोबाइल डेटा बंद करत आहे...</translation>
 <translation id="2295777434187870477">माइक सुरू आहे, टॉगल केल्याने इनपुट म्यूट होईल.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">हॉटस्पॉट सुरू करा</translation>
 <translation id="3566240529365775567">आताच उघडलेली</translation>
 <translation id="3571734092741541777">सेट अप</translation>
-<translation id="3572988532398145777">पॅनल उघडे असताना, तुम्ही सूचनांचा विस्तार करू शकत नाही. आधी खाली पॅनल बंद करा.</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"मध्ये परत बदला (रीस्टार्ट करणे आवश्यक)</translation>
 <translation id="3576141592585647168">टाइमझोन बदला</translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">सुरुवातीला</translation>
 <translation id="3859364108019690">ॲप्स स्ट्रीम करू शकत नाही</translation>
 <translation id="3861651314799684201">फुल स्क्रीन रेकॉर्ड करण्यासाठी एंटर प्रेस करा</translation>
-<translation id="3865912916886104060">कोणतीही डिव्हाइस कनेक्ट केलेली नाहीत. हॉटस्पॉट वापरणे सुरू करण्यासाठी वायफाय बंद केले जाईल.</translation>
 <translation id="3886872229787704059">आज उघडलेली</translation>
 <translation id="3891340733213178823">साइन आउट करण्यासाठी Ctrl+Shift+Q दोनदा प्रेस करा.</translation>
 <translation id="3893630138897523026">ChromeVox (वाचिक अभिप्राय)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">बंद</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> उपलब्ध नाही.</translation>
 <translation id="4201051445878709314">मागील महिना दर्शवा</translation>
-<translation id="4202362334312791952">१ डिव्हाइस कनेक्ट केले आहे. हॉटस्पॉट वापरणे सुरू करण्यासाठी वायफाय बंद केले जाईल.</translation>
 <translation id="4209973997261364186">वाय-फाय सुरू केले आहे</translation>
 <translation id="4212472694152630271">पिन वर स्विच करा</translation>
 <translation id="4215497585250573029">VPN सेटिंग्ज</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">सेटिंग्ज मेनू बंद केला आहे</translation>
 <translation id="5428899915242071344">निवडणे सुरू करा</translation>
 <translation id="5429993543155113935">गुप्त विंडोना सध्या सपोर्ट नाही</translation>
-<translation id="5430931332414098647">झटपट टेदरिंग</translation>
 <translation id="5431318178759467895">रंग</translation>
 <translation id="5433020815079095860">ऑडिओ इनपुट</translation>
 <translation id="544691375626129091">सर्व उपलब्‍ध वापरकर्ते आधीपासून या सेशनवर जोडले गेले आहेत.</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">डिक्टेशन टॉगल करा</translation>
 <translation id="5551456515017410630">कॅलेंडर सुरू/बंद करा</translation>
 <translation id="5551974246223970793">पेज शोधत असताना, शोधासाठी नवीन जुळणीवर जा</translation>
+<translation id="5555639311269196631">हॉटस्पॉट बंद करा</translation>
 <translation id="5558091555391176027">Nearby सह शेअरिंग चा उच्च दृश्यमानता मोड टॉगल करा</translation>
 <translation id="556042886152191864">बटण</translation>
 <translation id="5570122939431135380">नवीन टॅबमध्ये नवीन गुप्त विंडो उघडा</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">तुमचे डिव्हाइस हे तुमच्या केबलच्या तुलनेत जास्त डेटा दराला सपोर्ट करते. डिव्हाइसचा परफॉर्मन्स मर्यादित असू शकतो.</translation>
 <translation id="5710450975648804523">व्यत्यय आणू नका सुरू आहे</translation>
 <translation id="571295407079589142">मोबाइल डेटा बंद केला आहे</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केली आहेत. हॉटस्पॉट वापरणे सुरू करण्यासाठी वायफाय बंद केले जाईल.</translation>
 <translation id="5727460725221669831">तुम्ही तुमचा पासवर्ड विसरला असल्यास किंवा अलीकडे तुमचा Google खाते पासवर्ड बदलला असल्यास, हा वापरकर्ता रिकव्‍हर करण्याचा प्रयत्न करा.</translation>
 <translation id="573413375004481890">हे डिव्हाइस तुमच्या सर्व डिस्प्लेंना सपोर्ट करू शकले नाही, त्यामुळे एक डिस्प्ले डिस्कनेक्ट केला गेला</translation>
 <translation id="5740328398383587084">Nearby सह शेअरिंग</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5920710855273935292">माइक म्यूट केलेला आहे.</translation>
-<translation id="5924855612669061715">हॉटस्पॉट सुरू आहे</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> सुरू आहे.</translation>
 <translation id="5947494881799873997">परत करा</translation>
 <translation id="595202126637698455">कार्यप्रदर्शन ट्रेसिंग सक्षम केले</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">टेंप्लेट वापरा</translation>
 <translation id="598882571027504733">अपडेट करण्यासाठी, संलग्न केलेल्या कीबोर्डसह तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="6000279412553873020">की, बटण आणि आणखी बरेच काही</translation>
+<translation id="6002122790816966947">तुमची डिव्हाइस</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> पैकी <ph name="SELECTED_PAGE" /> पेज</translation>
 <translation id="601304062528754300">शेल्फवरील पुढील आयटम हायलाइट करा</translation>
 <translation id="6015573907265691211">पूर्ण झाले म्हणून मार्क करा</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">मेनू स्क्रीनच्या वरच्या डाव्या कोपर्‍यात हलवला.</translation>
 <translation id="7189412385142492784">शुक्र किती दूर आहे</translation>
 <translation id="7198435252016571249">कॅमेरा सर्वात खालच्या उजव्या कोपऱ्यात स्नॅप केला आहे. सिस्टीम सर्फेसवरील इतर ॲपवर ओव्‍हरलॅप होत आहे.</translation>
+<translation id="7219573373513695352">कोणतीही डिव्हाइस कनेक्ट केलेली नाहीत</translation>
 <translation id="7229029500464092426">मेमरी <ph name="AVAILABLE_MEMORY" /> | एकूण <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. अपडेट लागू करण्यासाठी तुम्ही हे Chromebook रीस्टार्ट करणे आवश्यक आहे. याला सुमारे एक मिनिट लागू शकते.</translation>
 <translation id="7256634071279256947">मागील मायक्रोफोन</translation>

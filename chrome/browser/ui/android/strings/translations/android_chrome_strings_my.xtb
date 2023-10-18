@@ -353,7 +353,6 @@
 <translation id="2909615210195135082">Google အကြောင်းကြားချက်များ စနစ်</translation>
 <translation id="2912296070571964914">သင်စိတ်ဝင်စားသော အကြောင်းအရာများကို စီမံနိုင်သည်</translation>
 <translation id="2912345083818861431">ဖွင့်ထားသောရုပ်ဖျက်တဘ်များ ကြည့်ရန် ဖန်သားပြင်လော့ခ် သုံးနိုင်သည်</translation>
-<translation id="2922568440285376746">Google ဖြင့် အတွင်းရှိပုံ ရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">အမည် မမှန်ကန်ပါ</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> သိုလှောင်ခန်း</translation>
 <translation id="2932222164150889403">သင်၏ကီးဘုတ် ပြောင်းသွားမည် မဟုတ်ပါ</translation>
@@ -688,7 +687,6 @@
 <translation id="4684427112815847243">အားလုံး စင့်ခ်ရန်</translation>
 <translation id="4685741273709472646">ဆွဲချမီနူးစာရင်းမှ ရွေးချယ်နိုင်သည်</translation>
 <translation id="4687718960473379118">ဝဘ်ဆိုက်အကြံပြု ကြော်ငြာများ</translation>
-<translation id="4689792375321623175">Google ဖြင့် ပုံရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}}</translation>
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
 <translation id="4710167854527459075">အသစ်ဆုံးဖြင့် စီရန်</translation>

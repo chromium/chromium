@@ -6129,7 +6129,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5901089233978050985">Kalo në shkrepjen e skedës</translation>
 <translation id="5901494423252125310">Dera e printerit është e hapur</translation>
 <translation id="5901630391730855834">E verdhë</translation>
-<translation id="5902211418335330937">Nëse një sajt nuk funksionon siç pritet, mund të aktivizosh kukit e palëve të treta për të duke zgjedhur bllokimin e kukive të palëve të treta në shiritin e kërkimit dhe të adresës.</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> nuk mund të konfigurohej për shkak të një problemi në konfigurim. Kontakto me administratorin tënd. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Pothuajse i përditësuar! Rinise pajisjen për të përfunduar përditësimin.</translation>
 <translation id="5906732635754427568">Të dhënat e lidhura me këtë aplikacion do të hiqen nga kjo pajisje.</translation>
@@ -6895,7 +6894,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6532663472409656417">E regjistruar për ndërmarrjen</translation>
 <translation id="6533315466883598769">Përdor "Përkthe me Google"</translation>
 <translation id="65334502113648172">Shtyp tastet e shigjetave për të tkurrur ose zgjeruar zonën e pamjes. Për ta zhvendosur përreth zonën e pamjes, shtyp Shift dhe + dhe më pas përdor tastet e shigjetave.</translation>
-<translation id="6533636340637966565">Po aktivizohet...</translation>
 <translation id="6535331821390304775">Lejo gjithmonë që <ph name="ORIGIN" /> të hapë lidhjet e këtij lloji në aplikacionin përkatës</translation>
 <translation id="653659894138286600">Skano dokumentet dhe imazhet</translation>
 <translation id="6537613839935722475">Emri mund të përdorë shkronja, numra dhe viza ndarëse (-)</translation>
@@ -9129,6 +9127,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8314835274931377415">Të niset konfigurimi i "Qasjes me çelës"?</translation>
 <translation id="8315018673856831477">Opsionet e "Kursyesit të memories"</translation>
 <translation id="8315044115695361734">Nga iCloud Keychain</translation>
+<translation id="8315514906653279104">Po aktivizohet...</translation>
 <translation id="8317671367883557781">Shto lidhje rrjeti</translation>
 <translation id="8317965619823678157">të kopjojë fjalëkalimet</translation>
 <translation id="8318266828739827371">Përdor pamjen e ekranit të ndarë për të parë zonën e zmadhuar të ekranit. Përdor "Kërko" + Ctrl + D për të aktivizuar dhe çaktivizuar zmadhuesin e stacionuar.</translation>

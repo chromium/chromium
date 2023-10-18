@@ -41,7 +41,6 @@
 <translation id="1176932207622159128">يتعذر حفظ الصورة</translation>
 <translation id="1177414119866731261">‏افتح قائمة Chrome.</translation>
 <translation id="1181037720776840403">إزالة</translation>
-<translation id="1200396280085622191">‏يؤدي هذا الإعداد إلى فتح Chrome عند النقر على الروابط في الرسائل والتطبيقات الأخرى.</translation>
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1207113853726624428">بحث جديد</translation>
 <translation id="1207493287814084192">‫5:30 مساءً</translation>
@@ -196,7 +195,6 @@
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
 <translation id="1980417445547898121">{count,plural, =1{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على علامة تبويب واحدة ({count}) نشطة مؤخرًا على جهازك الآخر.}zero{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}two{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على علامتَي تبويب ({count}) نشطتَين مؤخرًا على جهازك الآخر.}few{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامات تبويب نشطة مؤخرًا على جهازك الآخر.}many{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}other{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}}</translation>
 <translation id="1981118202195772574">الجهاز الجوّال</translation>
-<translation id="1987779152850321833">‏يمكنك إكمال هذه الإجراءات المقترَحة أدناه للاستفادة إلى أقصى حدّ من Chrome.</translation>
 <translation id="1989112275319619282">تصفّح</translation>
 <translation id="1990820278544963435">بحث</translation>
 <translation id="1991153180045413119">تمت مشاركة كلمة المرور</translation>
@@ -235,7 +233,6 @@
 <translation id="2220529011494928058">الإبلاغ عن مشكلة</translation>
 <translation id="2230173723195178503">تم تحميل الصفحة المطلوبة</translation>
 <translation id="2239626343334228536">جارٍ محو بيانات التصفُّح...</translation>
-<translation id="2242467532204595597">‏يمكنك فتح Chrome عند النقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="2251686759395008410">القائمة ← السجلّ</translation>
 <translation id="2252674110805316998">بحث الويب</translation>
 <translation id="2256933947031277845">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط.</translation>
@@ -274,7 +271,6 @@
 <translation id="2411749908844615428">{count,plural, =1{يتوفّر عنوان واحد ({count}) محفوظ أعلى لوحة المفاتيح.}zero{يتوفّر {count} عنوان محفوظ أعلى لوحة المفاتيح.}two{يتوفّر عنوانَان ({count}) محفوظان أعلى لوحة المفاتيح.}few{تتوفّر {count} عناوين محفوظة أعلى لوحة المفاتيح.}many{يتوفّر {count} عنوانًا محفوظًا أعلى لوحة المفاتيح.}other{يتوفّر {count} عنوان محفوظ أعلى لوحة المفاتيح.}}</translation>
 <translation id="2421004566762153674">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2421044535038393232">متابعة التعديل</translation>
-<translation id="2423077901494354337">‏يمكنك الآن الاستفادة بشكل أفضل من Chrome على جهازك.</translation>
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="2459155039684421202">في شريط العناوين، أدخِل مَهمة مثل "محو السجلّ" أو "تعديل كلمات المرور".</translation>
@@ -320,7 +316,6 @@
 <translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها.</translation>
 <translation id="2671426118752779020">‏يمكنك استخدام كلمات المرور التي حفظتها في "مدير كلمات المرور" من Google في التطبيقات الأخرى على هاتف iPhone.</translation>
 <translation id="2690858294534178585">الكاميرا قيد الاستخدام</translation>
-<translation id="26915454213703967">‏البحث في الصور باستخدام Google</translation>
 <translation id="2691653761409724435">غير متاح بلا اتصال</translation>
 <translation id="2695507686909505111">تمت ترجمة الصفحة</translation>
 <translation id="2696180352517415858">‏لن يتم تسجيل خروجك من حساب Google. قد يتم حفظ <ph name="BEGIN_LINK" />بيانات الأنشطة الأخرى<ph name="END_LINK" /> في حسابك على Google وأنت مسجِّل الدخول إليه. ويمكنك حذفها في أي وقت.
@@ -414,7 +409,6 @@
 <translation id="3080525922482950719">يمكنك حفظ صفحات لقرائتها لاحقًا أو بلا إنترنت.</translation>
 <translation id="3081338492074632642">يُرجى التأكّد من أنّ كلمة المرور التي تريد حفظها تطابِق كلمة مرور <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">أسفل</translation>
-<translation id="309672519329227863">‏يمكنك الوصول إلى كلمات مرورك على Chrome وغيرها من البيانات في التطبيقات الأخرى.</translation>
 <translation id="309710370695886264">لديك كلمة مرور واحدة مستخدَمة لحساب آخر. عليك تغييرها الآن للحفاظ على أمانك.</translation>
 <translation id="3112556859945124369">وضع علامة...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />التعرُّف على أنواع البيانات التي يمكنك مزامنتها<ph name="END_LINK" /></translation>
@@ -502,7 +496,6 @@
 <translation id="3551320343578183772">إغلاق علامة التبويب</translation>
 <translation id="3565207542107370586">محو بيانات التصفُّح…</translation>
 <translation id="3575234738189584619">‏البحث باستخدام "عدسة Google"</translation>
-<translation id="3577555362230509265">‏استخدام Chrome في تطبيقات أخرى</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
 <translation id="3587885837929752825">‏تفرض مؤسستك قيودًا على ما يمكنك حفظه في حسابك على Google.</translation>
 <translation id="3588820906588687999">فتح صورة في علامة تبويب جديدة</translation>
@@ -952,7 +945,6 @@
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
 <translation id="6045460247888249350">إضافة عنوان</translation>
-<translation id="6054613632208573261">‏استخدام Chrome بشكلٍ تلقائي</translation>
 <translation id="605721222689873409">العام</translation>
 <translation id="6059830886158432458">يمكنك التحكُّم بقصصك ونشاطك هنا.</translation>
 <translation id="6064824697233747382">تفرض عليك مؤسستك إيقاف المزامنة.</translation>
@@ -1012,7 +1004,6 @@
 <translation id="6346549652287021269">هل تريد بدء تنزيل جديد؟</translation>
 <translation id="6347953390226388422">{count,plural, =1{‏سيتم حذف هذا العنوان من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز}zero{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز}two{‏سيتم حذف هذين العنوانَين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز}few{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز}many{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز}other{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز}}</translation>
 <translation id="634878792104344809">مزامنة كلمات المرور والسجلّ وغير ذلك على جميع أجهزتك</translation>
-<translation id="6348855835728304880">‏يمكنك الوصول إلى كلمات مرورك على Chrome وغيرها في التطبيقات الأخرى على هذا الجهاز.</translation>
 <translation id="63519665078626091">‏لاستخدام Web Inspector (أداة فحص الويب)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPad من القائمة Develop (تطوير). يمكنك تفعيل القائمة Develop (تطوير) من خلال قسم Advanced (إعدادات متقدّمة) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
 <translation id="6355820205320395730">يمكن تخمين كلمات المرور الضعيفة بسهولة، ولذلك ننصحك بإنشاء كلمات مرور قوية. <ph name="BEGIN_LINK" />الاطّلاع على مزيد من نصائح الأمان<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">تم</translation>
@@ -1197,7 +1188,6 @@
 <translation id="7221173315674413369">تعرَّف على ميزات ومعلومات جديدة في صفحة "الميزات الجديدة".</translation>
 <translation id="7223102419539744003">إغلاق علامة التبويب</translation>
 <translation id="722454870747268814">علامة تبويب جديدة للتصفح المتخفي</translation>
-<translation id="723787869754590019">‏استخدام Chrome للملء التلقائي</translation>
 <translation id="7265758999917665941">عدم الحفظ لهذا الموقع أبدًا</translation>
 <translation id="7272437679830969316">تعذَّر التحقق من هويتك. لم يتم نسخ كلمة المرور.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{تم تتبُّع حزمة جديدة}zero{تم تتبُّع حِزم جديدة}two{تم تتبُّع حِزمتَين جديدتَين}few{تم تتبُّع حِزم جديدة}many{تم تتبُّع حِزم جديدة}other{تم تتبُّع حِزم جديدة}}</translation>
@@ -1470,7 +1460,6 @@
 <translation id="8717864919010420084">نسخ الرابط</translation>
 <translation id="8721297211384281569">قائمة الأدوات</translation>
 <translation id="8725066075913043281">إعادة المحاولة</translation>
-<translation id="8727043961453758442">‏الاستفادة بشكل أفضل من Chrome</translation>
 <translation id="8730621377337864115">تم</translation>
 <translation id="8731958888085671579">إخفاء ميزة "البحث في الصفحة"</translation>
 <translation id="87371078663613140">اطّلِع على الخيارات في شريط القوائم.</translation>
@@ -1583,7 +1572,6 @@
 <translation id="959066944189734975">تتم حاليًا متابعة <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">عرض اقتراحات علامات التبويب من أجهزة أخرى</translation>
 <translation id="972300586996227526">{COUNT,plural, =1{‏يمكنك حفظ كلمة المرور الخاصة بـ {DOMAIN_ONE} في حسابك على Google، {EMAIL}.}=2{‏يمكنك حفظ كلمتَيْ المرور لـ {DOMAIN_ONE} و{DOMAIN_TWO} في حسابك على Google، {EMAIL}.}=3{‏يمكنك حفظ كلمات المرور الخاصة بـ {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT}غيرها في حسابك على Google، {EMAIL}.}zero{‏يمكنك حفظ كلمات المرور الخاصة بـ {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} غيرها في حسابك على Google، {EMAIL}.}few{‏يمكنك حفظ كلمات المرور الخاصة بـ {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} غيرها في حسابك على Google، {EMAIL}.}many{‏يمكنك حفظ كلمات المرور الخاصة بـ {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} غيرها في حسابك على Google، {EMAIL}.}other{‏يمكنك حفظ كلمات المرور الخاصة بـ {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} غيرها في حسابك على Google، {EMAIL}.}}</translation>
-<translation id="97300214378190234">‏يؤدي هذا الإعداد إلى فتح Chrome عند النقر على الروابط في التطبيقات الأخرى.</translation>
 <translation id="973493300226275298">يمكنك تتبُّع سعر منتج معيَّن في المتاجر على الإنترنت. وستتلقّى تنبيهات عند انخفاض السعر.</translation>
 <translation id="981498610235328462">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها.</translation>
 <translation id="984509647832111802">المزامنة لا تعمل.</translation>

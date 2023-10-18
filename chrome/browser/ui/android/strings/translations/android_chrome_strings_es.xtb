@@ -352,7 +352,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2909615210195135082">Plataforma de notificaciones de Google</translation>
 <translation id="2912296070571964914">Gestiona los temas que te interesan</translation>
 <translation id="2912345083818861431">Usa el bloqueo de pantalla para ver las pestañas de Incógnito abiertas</translation>
-<translation id="2922568440285376746">Buscar en la imagen con Google <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">El nombre no es válido</translation>
 <translation id="2932150158123903946">Almacenamiento de Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tu teclado no cambiará</translation>
@@ -687,7 +686,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4684427112815847243">Sincronizar todo</translation>
 <translation id="4685741273709472646">Selecciona una opción de la lista desplegable</translation>
 <translation id="4687718960473379118">Anuncios sugeridos por sitios</translation>
-<translation id="4689792375321623175">Buscar imagen con Google <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}}</translation>
 <translation id="4699172675775169585">Archivos e imágenes en caché</translation>
 <translation id="4710167854527459075">Ordenar por más reciente</translation>

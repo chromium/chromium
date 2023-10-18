@@ -966,6 +966,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2977665033722899841">Fila <ph name="ROW_NAME" /> seleccionada. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Ópera</translation>
 <translation id="2979424420072875974">Recursos para escritores</translation>
+<translation id="2980742331521553164">Se encriptará el CVC de esta tarjeta y se guardará en tu Cuenta de Google para agilizar las confirmaciones de compras</translation>
 <translation id="2983666748527428214">Abrir una pestaña de incógnito</translation>
 <translation id="2985306909656435243">Si se habilita esta opción, Chromium almacenará una copia de la tarjeta en el dispositivo para completar más rápidamente los formularios.</translation>
 <translation id="2985398929374701810">Ingresa una dirección válida</translation>
@@ -3398,6 +3399,7 @@ Detalles adicionales:
 <translation id="79338296614623784">Ingresa un número de teléfono válido</translation>
 <translation id="7934414805353235750"><ph name="URL" /> desea reproducir contenido protegido. Google verificará la identidad de tu dispositivo.</translation>
 <translation id="7935318582918952113">Filtro de DOM</translation>
+<translation id="7937163678541954811">Se encriptará el CVC de esta tarjeta y se guardará en tu dispositivo para agilizar las confirmaciones de compras</translation>
 <translation id="7937554595067888181">Fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">El certificado del servidor aún no es válido.</translation>
 <translation id="7939713744218886332">Cocina internacional</translation>

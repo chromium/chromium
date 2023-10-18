@@ -311,7 +311,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Vai avanti</translation>
 <translation id="2282073721614284166">Apri link in una scheda</translation>
-<translation id="2284237890386182187">Attivo, nessun dispositivo collegato</translation>
 <translation id="2292698582925480719">Scala di visualizzazione</translation>
 <translation id="229397294990920565">Disattivazione dei dati mobili…</translation>
 <translation id="2295777434187870477">L'audio del microfono è attivo: la disattivazione impedirà l'ingresso audio.</translation>
@@ -620,7 +619,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3563775809269155755">Attiva hotspot</translation>
 <translation id="3566240529365775567">Aperto poco fa</translation>
 <translation id="3571734092741541777">Configura</translation>
-<translation id="3572988532398145777">Non puoi espandere la notifica mentre è aperto un riquadro. Devi prima chiudere il riquadro qui sotto.</translation>
 <translation id="3573179567135747900">Torna a "<ph name="FROM_LOCALE" />" (è necessario riavviare)</translation>
 <translation id="3576141592585647168">Cambia fuso orario</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
@@ -700,7 +698,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="385300504083504382">Inizio</translation>
 <translation id="3859364108019690">Impossibile trasmettere app in streaming</translation>
 <translation id="3861651314799684201">Premi invio per registrare a schermo intero</translation>
-<translation id="3865912916886104060">Nessun dispositivo connesso. Il Wi-Fi verrà disattivato per iniziare a utilizzare l'hotspot.</translation>
 <translation id="3886872229787704059">Aperto oggi</translation>
 <translation id="3891340733213178823">Premi due volte Ctrl+Maiusc+Q per uscire.</translation>
 <translation id="3893630138897523026">ChromeVox (lettura vocale)</translation>
@@ -787,7 +784,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4197790712631116042">Off</translation>
 <translation id="4201033867194214117">La funzionalità <ph name="FEATURE_NAME" /> non è disponibile.</translation>
 <translation id="4201051445878709314">Mostra mese precedente</translation>
-<translation id="4202362334312791952">1 dispositivo connesso. Il Wi-Fi verrà disattivato per iniziare a utilizzare l'hotspot.</translation>
 <translation id="4209973997261364186">Il Wi-Fi è attivo</translation>
 <translation id="4212472694152630271">Passa al PIN</translation>
 <translation id="4215497585250573029">Impostazioni VPN</translation>
@@ -1097,7 +1093,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5426063383988017631">Menu Impostazioni chiuso</translation>
 <translation id="5428899915242071344">Inizia la selezione</translation>
 <translation id="5429993543155113935">Al momento le finestre di navigazione in incognito non sono supportate</translation>
-<translation id="5430931332414098647">Tethering istantaneo</translation>
 <translation id="5431318178759467895">A colori</translation>
 <translation id="5433020815079095860">Ingresso audio</translation>
 <translation id="544691375626129091">A questa sessione sono già stati aggiunti tutti gli utenti disponibili.</translation>
@@ -1126,6 +1121,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="554893713779400387">Attiva/disattiva la dettatura</translation>
 <translation id="5551456515017410630">Apri/chiudi il calendario</translation>
 <translation id="5551974246223970793">Quando cerchi una pagina, vai alla corrispondenza successiva</translation>
+<translation id="5555639311269196631">Disattiva l'hotspot</translation>
 <translation id="5558091555391176027">Attiva/disattiva alta visibilità di Condivisione nelle vicinanze</translation>
 <translation id="556042886152191864">Pulsante</translation>
 <translation id="5570122939431135380">Apri nuova scheda in nuova finestra di navigazione in incognito</translation>
@@ -1171,7 +1167,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5707775774148071965">Il dispositivo supporta una velocità dati superiore rispetto al cavo. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
 <translation id="5710450975648804523">Funzione Non disturbare attiva</translation>
 <translation id="571295407079589142">I dati mobili non sono attivi</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> dispositivi connessi. Il Wi-Fi verrà disattivato per iniziare a utilizzare l'hotspot.</translation>
 <translation id="5727460725221669831">Se hai dimenticato la password o hai modificato la password del tuo Account Google di recente, prova a recuperare questo utente.</translation>
 <translation id="573413375004481890">Questo dispositivo non può supportare tutti i tuoi display, pertanto uno è stato scollegato</translation>
 <translation id="5740328398383587084">Condivisione nelle vicinanze</translation>
@@ -1221,7 +1216,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">L'audio del microfono è disattivato.</translation>
-<translation id="5924855612669061715">L'hotspot è attivato</translation>
 <translation id="5946788582095584774">La funzionalità <ph name="FEATURE_NAME" /> è attiva.</translation>
 <translation id="5947494881799873997">Ripristina</translation>
 <translation id="595202126637698455">Rilevamento del rendimento attivo</translation>
@@ -1237,6 +1231,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="598407983968395253">Utilizza modello</translation>
 <translation id="598882571027504733">Per scaricare l'aggiornamento, riavvia il Chromebook con la tastiera collegata.</translation>
 <translation id="6000279412553873020">Tasti, pulsanti e altro</translation>
+<translation id="6002122790816966947">I tuoi dispositivi</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> di <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Evidenzia l'elemento successivo nella barra delle app</translation>
 <translation id="6015573907265691211">Segna come completata</translation>
@@ -1529,6 +1524,7 @@ Nuova installazione</translation>
 <translation id="7188494361780961876">Menu spostato nell'angolo in alto a sinistra dello schermo.</translation>
 <translation id="7189412385142492784">Quanto è distante Venere</translation>
 <translation id="7198435252016571249">Fotocamera allineata all'angolo in basso a destra. Conflitto con la piattaforma di sistema.</translation>
+<translation id="7219573373513695352">Nessun dispositivo collegato</translation>
 <translation id="7229029500464092426">Memoria usata: <ph name="AVAILABLE_MEMORY" /> | Totale: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Batteria rimanente: <ph name="PERCENTAGE" />%. Collega il dispositivo all'alimentazione.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. È richiesto il riavvio del Chromebook per installare un aggiornamento. L'operazione può richiedere fino a 1 minuto.</translation>

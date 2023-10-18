@@ -352,7 +352,6 @@
 <translation id="2909615210195135082">Google දැනුම්දීම් වේදිකාව</translation>
 <translation id="2912296070571964914">ඔබ ලැදිකමක් දක්වන මාතෘකා කළමනාකරණය කරන්න</translation>
 <translation id="2912345083818861431">අප්‍රකට ටැබ විවෘත කිරීමට තිර අගුල භාවිත කරන්න</translation>
-<translation id="2922568440285376746">Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" /> සමග රූපය ඇතුළත සොයන්න</translation>
 <translation id="2923908459366352541">නම අවලංගුයි</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ආචයනය</translation>
 <translation id="2932222164150889403">ඔබගේ යතුරු පුවරුව වෙනස් නොවනු ඇත</translation>
@@ -687,7 +686,6 @@
 <translation id="4684427112815847243">සියල්ල සම්මුහුර්ත කරන්න</translation>
 <translation id="4685741273709472646">පතන ලැයිස්තුවෙන් තෝරන්න</translation>
 <translation id="4687718960473379118">අඩවියෙන්-යෝජිත දැන්වීම්</translation>
-<translation id="4689792375321623175">Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" /> සමග රූපය සොයන්න</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">අනුරූ සහ ගොනු කෑෂ් කරන්න</translation>
 <translation id="4710167854527459075">නවතම අනුව වර්ග කරන්න</translation>

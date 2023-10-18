@@ -310,7 +310,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Kelaa eteenpäin</translation>
 <translation id="2282073721614284166">Avaa linkki välilehdellä</translation>
-<translation id="2284237890386182187">Päällä, ei yhdistettyjä laitteita</translation>
 <translation id="2292698582925480719">Näytön skaalaus</translation>
 <translation id="229397294990920565">Mobiilidataa laitetaan pois päältä…</translation>
 <translation id="2295777434187870477">Mikrofoni on päällä, asetuksen vaihtaminen mykistää äänitulon.</translation>
@@ -617,7 +616,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3563775809269155755">Ota hotspot käyttöön</translation>
 <translation id="3566240529365775567">Avattu äsken</translation>
 <translation id="3571734092741541777">Ota käyttöön</translation>
-<translation id="3572988532398145777">Et voi laajentaa ilmoitusta, kun paneeli on auki. Sulje ensin alla oleva paneeli.</translation>
 <translation id="3573179567135747900">Vaihda takaisin kieleksi <ph name="FROM_LOCALE" /> (vaatii uudelleenkäynnistyksen)</translation>
 <translation id="3576141592585647168">Muuta aikavyöhykettä</translation>
 <translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
@@ -700,7 +698,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="385300504083504382">Alku</translation>
 <translation id="3859364108019690">Sovelluksia ei voi striimata</translation>
 <translation id="3861651314799684201">Tallenna koko näytön sisältö painamalla Enter</translation>
-<translation id="3865912916886104060">Ei liitettyjä laitteita. Wi-Fi-yhteys laitetaan pois päältä, jotta voit aloittaa hotspotin käytön.</translation>
 <translation id="3886872229787704059">Avattu tänään</translation>
 <translation id="3891340733213178823">Kirjaudu ulos painamalla Ctrl+Shift+Q kahdesti.</translation>
 <translation id="3893630138897523026">ChromeVox (äänipalaute)</translation>
@@ -785,7 +782,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4197790712631116042">Poissa päältä</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ei ole käytettävissä.</translation>
 <translation id="4201051445878709314">Näytä edellinen kuukausi</translation>
-<translation id="4202362334312791952">Yksi laite yhdistetty. Wi-Fi-yhteys laitetaan pois päältä, jotta voit aloittaa hotspotin käytön.</translation>
 <translation id="4209973997261364186">Wi-Fi on päällä</translation>
 <translation id="4212472694152630271">Vaihda PIN-koodiin</translation>
 <translation id="4215497585250573029">VPN-asetukset</translation>
@@ -1092,7 +1088,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5426063383988017631">Asetusvalikko suljettu</translation>
 <translation id="5428899915242071344">Aloita valitseminen</translation>
 <translation id="5429993543155113935">Incognito-ikkunoita ei tällä hetkellä tueta</translation>
-<translation id="5430931332414098647">Yhteyden pikajakaminen</translation>
 <translation id="5431318178759467895">Väri</translation>
 <translation id="5433020815079095860">Äänitulo</translation>
 <translation id="544691375626129091">Kaikki käytettävissä olevat käyttäjät on jo lisätty tähän istuntoon.</translation>
@@ -1121,6 +1116,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="554893713779400387">Laita sanelu päälle tai pois päältä</translation>
 <translation id="5551456515017410630">Avaa/sulje kalenteri</translation>
 <translation id="5551974246223970793">Kun haet sivua, siirry haun seuraavaan osumaan</translation>
+<translation id="5555639311269196631">Laita hotspot pois päältä</translation>
 <translation id="5558091555391176027">Laita lähijakamisen näkyvyys päälle/pois</translation>
 <translation id="556042886152191864">Painike</translation>
 <translation id="5570122939431135380">Avaa uusi välilehti uudessa incognito-ikkunassa</translation>
@@ -1166,7 +1162,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5707775774148071965">Laitteesi tukee nopeampaa tiedonsiirtoa kuin johto</translation>
 <translation id="5710450975648804523">Älä häiritse -tila on päällä</translation>
 <translation id="571295407079589142">Mobiilidata on poissa päältä</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> laitetta yhdistetty. Wi-Fi-yhteys laitetaan pois päältä, jotta voit aloittaa hotspotin käytön.</translation>
 <translation id="5727460725221669831">Jos olet unohtanut salasanasi tai vaihtanut äskettäin Google-tilisi salasanan, kokeile palauttaa kyseinen käyttäjä.</translation>
 <translation id="573413375004481890">Tämä laite ei voinut tukea kaikkia näyttöjäsi, joten yhden yhteys on katkaistu</translation>
 <translation id="5740328398383587084">Lähijakaminen</translation>
@@ -1216,7 +1211,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5920710855273935292">Mikrofoni on mykistetty.</translation>
-<translation id="5924855612669061715">Hotspot on päällä</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> on päällä.</translation>
 <translation id="5947494881799873997">Palauta</translation>
 <translation id="595202126637698455">Tehokkuuden seuranta on käytössä</translation>
@@ -1232,6 +1226,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="598407983968395253">Käytä mallia</translation>
 <translation id="598882571027504733">Voit asentaa päivityksen käynnistämällä Chromebookisi uudelleen niin, että näppäimistö on kytkettynä.</translation>
 <translation id="6000279412553873020">Näppäimet, painikkeet ja muuta</translation>
+<translation id="6002122790816966947">Omat laitteet</translation>
 <translation id="6012623610530968780">Sivu <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Korosta seuraava kohde hyllyssä</translation>
 <translation id="6015573907265691211">Merkitse valmiiksi</translation>
@@ -1521,6 +1516,7 @@ Uusi asennus</translation>
 <translation id="7188494361780961876">Valikko siirretty näytön vasempaan ylänurkkaan</translation>
 <translation id="7189412385142492784">Kuinka kaukana Venus on</translation>
 <translation id="7198435252016571249">Kamera kohdistettu oikeaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
+<translation id="7219573373513695352">Ei liitettyjä laitteita</translation>
 <translation id="7229029500464092426">Muisti <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> yhteensä</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tämä Chromebook on käynnistettävä uudelleen, jotta päivitys voidaan ottaa käyttöön. Tämä voi kestää enintään minuutin.</translation>
 <translation id="7256634071279256947">Takamikrofoni</translation>

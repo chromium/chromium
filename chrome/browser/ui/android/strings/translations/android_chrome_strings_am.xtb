@@ -352,7 +352,6 @@
 <translation id="2909615210195135082">የGoogle ማሳወቂያዎች መሣሪያ ስርዓት</translation>
 <translation id="2912296070571964914">የሚፈልጓቸውን ርዕሶች ያቀናብሩ</translation>
 <translation id="2912345083818861431">ክፍት ማንነት የማያሳውቁ ትሮችን ለማየት ማያ ገፅ መቆለፊያ ይጠቀሙ</translation>
-<translation id="2922568440285376746">በGoogle <ph name="BEGIN_NEW" />New<ph name="END_NEW" /> ምስል ውስጥ ይፈልጉ</translation>
 <translation id="2923908459366352541">ስም ልክ ያልሆነ ነው</translation>
 <translation id="2932150158123903946">የGoogle <ph name="APP_NAME" /> ማከማቻ</translation>
 <translation id="2932222164150889403">የእርስዎ የቁልፍ ሰሌዳ አይለወጥም</translation>
@@ -687,7 +686,6 @@
 <translation id="4684427112815847243">ሁሉንም ያመሳስሉ</translation>
 <translation id="4685741273709472646">ከተቆልቋይ ዝርዝሩ ይምረጡ</translation>
 <translation id="4687718960473379118">በጣቢያ የተጠቆሙ ማስታወቂያዎች</translation>
-<translation id="4689792375321623175">በGoogle <ph name="BEGIN_NEW" />New<ph name="END_NEW" /> ምስልን ይፈልጉ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}}</translation>
 <translation id="4699172675775169585">የተሸጎጡ ምስሎች እና ፋይሎች</translation>
 <translation id="4710167854527459075">በአዲሶች ደርድር</translation>

@@ -6133,7 +6133,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5901089233978050985">Ouvrir l'onglet de capture</translation>
 <translation id="5901494423252125310">Capot de l'imprimante ouvert</translation>
 <translation id="5901630391730855834">Jaune</translation>
-<translation id="5902211418335330937">Si un site ne fonctionne pas comme prévu, vous pouvez activer les cookies tiers pour celui-ci en sélectionnant le blocage des cookies tiers dans la barre de recherche et d'adresse.</translation>
 <translation id="5904614460720589786">Impossible d'installer <ph name="APP_NAME" /> en raison d'un problème de configuration. Veuillez contacter votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Mise à jour presque terminée. Pour la finaliser, veuillez redémarrer votre appareil.</translation>
 <translation id="5906732635754427568">Les données associées à cette application seront supprimées de cet appareil.</translation>
@@ -6899,7 +6898,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6532663472409656417">Enregistré auprès de l'entreprise</translation>
 <translation id="6533315466883598769">Utiliser Google Traduction</translation>
 <translation id="65334502113648172">Appuyez sur les touches fléchées pour réduire ou développer la zone d'affichage. Pour vous déplacer, appuyez sur Maj et +, puis utilisez les touches fléchées.</translation>
-<translation id="6533636340637966565">Activation…</translation>
 <translation id="6535331821390304775">Toujours autoriser <ph name="ORIGIN" /> à ouvrir les liens de ce type dans l'application associée</translation>
 <translation id="653659894138286600">Numériser les documents et les images</translation>
 <translation id="6537613839935722475">Le nom peut contenir des lettres, des chiffres et des traits d'union (-)</translation>
@@ -9138,6 +9136,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8314835274931377415">Commencer la configuration de Switch Access ?</translation>
 <translation id="8315018673856831477">Options de l'économiseur de mémoire</translation>
 <translation id="8315044115695361734">Provenant du trousseau iCloud</translation>
+<translation id="8315514906653279104">Activation…</translation>
 <translation id="8317671367883557781">Ajouter une connexion réseau</translation>
 <translation id="8317965619823678157">de copier les mots de passe</translation>
 <translation id="8318266828739827371">Créez un écran partagé pour voir la zone agrandie de l'écran. Appuyez sur Recherche+Ctrl+D pour activer ou désactiver la loupe ancrée.</translation>

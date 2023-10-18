@@ -2055,6 +2055,7 @@
 <translation id="2564520396658920462">透過 AppleScript 執行 JavaScript 的功能已關閉。如要開啟此功能，請從選單列前往「檢視模式」&gt;「開發人員」&gt;「允許透過 Apple 活動執行 JavaScript」。如需瞭解詳情，請瀏覽：https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">強化的拼字檢查</translation>
 <translation id="256481480019204378">Google 帳戶 ID</translation>
+<translation id="256517381556987641">「檔案同步」程序目前已找到 <ph name="ITEMS_FOUND" /> 個檔案，且仍在檢查儲存空間。請在數分鐘後再次啟用「檔案同步」。</translation>
 <translation id="2565214867520763227">開啟螢幕閱讀器</translation>
 <translation id="2568694057933302218">在無痕模式下，網站無法使用 Cookie 瞭解您的跨網站瀏覽活動，因此無法根據瀏覽活動提供個人化廣告等服務。部分網站的功能可能會無法正常運作。</translation>
 <translation id="2568774940984945469">資料列容器</translation>
@@ -4370,6 +4371,7 @@
 <translation id="4427365070557649936">正在驗證確認碼…</translation>
 <translation id="4429163740524851942">實體鍵盤配置</translation>
 <translation id="4430019312045809116">音量</translation>
+<translation id="4430204941092622397">這可能導致流動網絡中斷連線幾分鐘。</translation>
 <translation id="443031431654216610">只使用數字</translation>
 <translation id="4430369329743628066">已新增書籤</translation>
 <translation id="4430422687972614133">啟用虛擬卡</translation>
@@ -4582,6 +4584,7 @@
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> 發生錯誤</translation>
 <translation id="4610637590575890427">您的意思是想瀏覽 <ph name="SITE" /> 嗎？</translation>
 <translation id="4611114513649582138">可使用數據連線</translation>
+<translation id="4611759022973144129">你可使用此密碼登入 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="4612841084470706111">向所有要求的網站授予存取權。</translation>
 <translation id="4613144866899789710">正在取消安裝 Linux…</translation>
 <translation id="4613271546271159013">擴充功能已變更開啟新分頁時所顯示的頁面。</translation>
@@ -5080,6 +5083,7 @@
 <translation id="5027550639139316293">電郵憑證</translation>
 <translation id="5027562294707732951">新增擴充程式</translation>
 <translation id="5028445315206872221">系統已封鎖此網站上的擴充程式</translation>
+<translation id="5029287942302939687">已設定密碼</translation>
 <translation id="5029873138381728058">無法檢查虛擬機器</translation>
 <translation id="503155457707535043">正在下載應用程式</translation>
 <translation id="5032430150487044192">無法建立 QR 碼</translation>
@@ -5108,6 +5112,7 @@
 <translation id="5054374119096692193">在「<ph name="BEGIN_LINK" />自訂 Chrome<ph name="END_LINK" />」中查看所有資訊卡選項</translation>
 <translation id="5056950756634735043">正在連線至容器</translation>
 <translation id="5057110919553308744">當您點擊擴充程式時</translation>
+<translation id="5057127674016624293">掃瞄所需時間比預期長</translation>
 <translation id="5059241099014281248">限制登入</translation>
 <translation id="5059429103770496207">顯示樣式</translation>
 <translation id="5059526285558225588">選擇分享內容</translation>
@@ -5996,6 +6001,7 @@
 <translation id="5797521893972859201">清除記錄 (包括搜尋框中的記錄)</translation>
 <translation id="5797934230382081317">瞭解如何在 &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; 和 &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; 裝置上開始使用密碼管理工具</translation>
 <translation id="5798079537501238810">網站可安裝付款處理常式</translation>
+<translation id="5798086737841799234">輸入確認碼</translation>
 <translation id="579915268381781820">您的安全密鑰已被移除。</translation>
 <translation id="5799478978078236781">取得 <ph name="DEVICE_TYPE" /> 提示、優惠和最新資訊，並分享意見。</translation>
 <translation id="5799508265798272974">Linux 虛擬機器：<ph name="LINUX_VM_NAME" /></translation>
@@ -6135,7 +6141,6 @@
 <translation id="5901089233978050985">切換至正在擷取的分頁</translation>
 <translation id="5901494423252125310">打印機的外蓋應關上</translation>
 <translation id="5901630391730855834">黃色</translation>
-<translation id="5902211418335330937">如果網站唔可以正常運作，可以喺搜尋同網址列度揀第三方 Cookie 封鎖功能，為嗰個網站啟用第三方 Cookie。</translation>
 <translation id="5904614460720589786">設定發生問題，因此無法設定 <ph name="APP_NAME" />。請聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5906655207909574370">即將更新至最新版本！重新啟動您的裝置即可完成更新程序。</translation>
 <translation id="5906732635754427568">系統會從裝置中移除與此應用程式相關的資料。</translation>
@@ -6901,7 +6906,6 @@
 <translation id="6532663472409656417">已註冊企業</translation>
 <translation id="6533315466883598769">使用 Google 翻譯</translation>
 <translation id="65334502113648172">按下方向鍵可縮減或擴大顯示區域。如要移動顯示區域，請按下 shift 和 + 鍵，然後使用方向鍵操控。</translation>
-<translation id="6533636340637966565">正在開啟…</translation>
 <translation id="6535331821390304775">永遠允許 <ph name="ORIGIN" /> 使用相關聯的應用程式開啟這類連結</translation>
 <translation id="653659894138286600">掃瞄文件及圖片</translation>
 <translation id="6537613839935722475">名稱可以使用字母、數字和連字號 (-)</translation>
@@ -7252,6 +7256,7 @@
 <translation id="6815376457351236663">仍要開啟</translation>
 <translation id="6815787852028615386">這是欺詐檔案，可能會對裝置造成非預期的變更</translation>
 <translation id="6816097980753839617">藍 - 黃 (藍色弱視)</translation>
+<translation id="6816443526270499804">正在尋找可用的 eSIM 設定檔</translation>
 <translation id="6818198425579322765">要翻譯的網頁語言</translation>
 <translation id="6818547713623251698">查看手機上的相片、媒體、通知和應用程式</translation>
 <translation id="6818802132960437751">內置防毒功能</translation>
@@ -8061,6 +8066,7 @@
 <translation id="7475742997309661417">ChromeOS 嘅螢幕閱讀器 ChromeVox 主要係俾失明或者低視力人士用嚟透過語音合成器或者點字顯示器閱讀螢幕上面顯示嘅文字。同時㩒住校高同校低音量掣 5 秒就可以啟用 ChromeVox。ChromeVox 啟動之後，系統就會提供快速導覽。</translation>
 <translation id="7476454130948140105">電量過低，無法更新 (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">已自動封鎖<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
+<translation id="7477460499687558352">選擇要下載的 eSIM 設定檔</translation>
 <translation id="7477599578899108080">高記憶體用量：<ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">為此頁面建立 QR 碼</translation>
 <translation id="7477793887173910789">控制音樂、影片及其他內容</translation>
@@ -9135,6 +9141,7 @@
 <translation id="8314835274931377415">要開始設定按鈕控制功能嗎？</translation>
 <translation id="8315018673856831477">記憶體節省模式選項</translation>
 <translation id="8315044115695361734">來自 iCloud 鑰匙圈</translation>
+<translation id="8315514906653279104">正在開啟…</translation>
 <translation id="8317671367883557781">新增網絡連線</translation>
 <translation id="8317965619823678157">複製密碼</translation>
 <translation id="8318266828739827371">使用分割螢幕檢視模式查看畫面放大的區域。使用搜尋鍵 + Ctrl + D 鍵即可開啟或關閉固定放大鏡。</translation>

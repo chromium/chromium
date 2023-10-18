@@ -310,7 +310,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2276987123919776440">15 min.</translation>
 <translation id="2277103315734023688">Derulează înainte</translation>
 <translation id="2282073721614284166">Deschide linkul într-o filă</translation>
-<translation id="2284237890386182187">Activat, niciun dispozitiv conectat</translation>
 <translation id="2292698582925480719">Scară afișaj</translation>
 <translation id="229397294990920565">Datele mobile se dezactivează...</translation>
 <translation id="2295777434187870477">Microfonul este activat. Comutarea îl va dezactiva.</translation>
@@ -617,7 +616,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3563775809269155755">Activează hotspotul</translation>
 <translation id="3566240529365775567">Deschis adineauri</translation>
 <translation id="3571734092741541777">Configurează</translation>
-<translation id="3572988532398145777">Nu poți extinde notificarea atât timp cât este deschis un panou. Mai întâi închide panoul de mai jos.</translation>
 <translation id="3573179567135747900">Modifică înapoi la „<ph name="FROM_LOCALE" />” (este necesară repornirea)</translation>
 <translation id="3576141592585647168">Modifică fusul orar</translation>
 <translation id="3577473026931028326">A apărut o eroare. Încearcă din nou.</translation>
@@ -700,7 +698,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="385300504083504382">Început</translation>
 <translation id="3859364108019690">Nu se pot reda în stream aplicațiile</translation>
 <translation id="3861651314799684201">Apasă pe Enter pentru a înregistra ecranul complet</translation>
-<translation id="3865912916886104060">Niciun dispozitiv conectat. Rețeaua Wi-Fi va fi dezactivată pentru a începe folosirea hotspotului.</translation>
 <translation id="3886872229787704059">Deschis astăzi</translation>
 <translation id="3891340733213178823">Apăsați de două ori Ctrl+Shift+Q pentru a vă deconecta.</translation>
 <translation id="3893630138897523026">ChromeVox (feedback rostit)</translation>
@@ -785,7 +782,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4197790712631116042">Dezactivat</translation>
 <translation id="4201033867194214117">Opțiunea <ph name="FEATURE_NAME" /> nu este disponibilă.</translation>
 <translation id="4201051445878709314">Afișează luna anterioară</translation>
-<translation id="4202362334312791952">Un dispozitiv conectat. Rețeaua Wi-Fi va fi dezactivată pentru a începe folosirea hotspotului.</translation>
 <translation id="4209973997261364186">Conexiunea Wi-Fi este activată</translation>
 <translation id="4212472694152630271">Comută la PIN</translation>
 <translation id="4215497585250573029">Setări VPN</translation>
@@ -1092,7 +1088,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5426063383988017631">Meniul Setări închis</translation>
 <translation id="5428899915242071344">Începe selectarea</translation>
 <translation id="5429993543155113935">Ferestrele incognito nu sunt acceptate</translation>
-<translation id="5430931332414098647">Tethering instantaneu</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="5433020815079095860">Intrare audio</translation>
 <translation id="544691375626129091">Toți utilizatorii disponibili au fost deja adăugați la această sesiune.</translation>
@@ -1121,6 +1116,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="554893713779400387">Activează/dezactivează dictarea</translation>
 <translation id="5551456515017410630">Deschide / închide calendarul</translation>
 <translation id="5551974246223970793">Când cauți o pagină, accesează următoarea potrivire pentru căutare</translation>
+<translation id="5555639311269196631">Dezactivează hotspotul</translation>
 <translation id="5558091555391176027">Activează / dezactivează vizibilitatea crescută pentru Trimiterea în apropiere</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5570122939431135380">Deschide o filă nouă într-o fereastră incognito nouă</translation>
@@ -1166,7 +1162,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5707775774148071965">Dispozitivul acceptă o rată mai mare de transfer de date decât cablul. Este posibil ca performanța dispozitivului să fie limitată.</translation>
 <translation id="5710450975648804523">Funcția Nu deranja este activată</translation>
 <translation id="571295407079589142">Datele mobile sunt dezactivate</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> dispozitive conectate. Rețeaua Wi-Fi va fi dezactivată pentru a începe folosirea hotspotului.</translation>
 <translation id="5727460725221669831">Dacă ai uitat parola sau ai schimbat recent parola Contului Google, încearcă să recuperezi acest utilizator.</translation>
 <translation id="573413375004481890">Acest dispozitiv nu acceptă toate afișajele, prin urmare unul a fost deconectat</translation>
 <translation id="5740328398383587084">Trimitere în apropiere</translation>
@@ -1216,7 +1211,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">Microfonul este dezactivat.</translation>
-<translation id="5924855612669061715">Hotspotul este activat</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> este activat.</translation>
 <translation id="5947494881799873997">Reveniți</translation>
 <translation id="595202126637698455">Urmărirea performanței este activată</translation>
@@ -1232,6 +1226,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="598407983968395253">Folosește șablonul</translation>
 <translation id="598882571027504733">Pentru a obține actualizarea, repornește Chromebookul cu tastatura atașată.</translation>
 <translation id="6000279412553873020">Chei, butoane și altele</translation>
+<translation id="6002122790816966947">Dispozitivele tale</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> din <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Evidențiază elementul următor de pe raft</translation>
 <translation id="6015573907265691211">Marchează ca finalizată</translation>
@@ -1521,6 +1516,7 @@ Instalare nouă</translation>
 <translation id="7188494361780961876">Meniul a fost mutat în colțul din stânga sus al ecranului.</translation>
 <translation id="7189412385142492784">Cât de departe este Venus</translation>
 <translation id="7198435252016571249">Camera foto este aliniată cu colțul din dreapta jos. Conflict cu platforma de sistem.</translation>
+<translation id="7219573373513695352">Niciun dispozitiv conectat</translation>
 <translation id="7229029500464092426">Memorie <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Este necesară repornirea Chromebookului pentru aplicarea unei actualizări. Poate dura cel mult un minut.</translation>
 <translation id="7256634071279256947">Microfonul din spate</translation>

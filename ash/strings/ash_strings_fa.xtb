@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">‫۱۵ دقیقه</translation>
 <translation id="2277103315734023688">رفتن به جلو</translation>
 <translation id="2282073721614284166">باز کردن پیوند در برگه</translation>
-<translation id="2284237890386182187">روشن، هیچ دستگاهی متصل نیست</translation>
 <translation id="2292698582925480719">مقیاس نمایش</translation>
 <translation id="229397294990920565">داده تلفن همراه درحال خاموش شدن است...</translation>
 <translation id="2295777434187870477">میکروفون روشن است، با تغییر وضعیت صامت می‌شود.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">فعال کردن نقطه اتصال</translation>
 <translation id="3566240529365775567">لحظاتی پیش باز شده است</translation>
 <translation id="3571734092741541777">تنظیم</translation>
-<translation id="3572988532398145777">وقتی پانل باز باشد، نمی‌توانید اعلان را ازهم باز کنید. ابتدا پانل زیر را ببندید.</translation>
 <translation id="3573179567135747900">به "<ph name="FROM_LOCALE" />" تغییر دهید (به راه‌اندازی دوباره نیاز دارد)</translation>
 <translation id="3576141592585647168">تغییر منطقه زمانی</translation>
 <translation id="3577473026931028326">مشکلی پیش آمد. دوباره امتحان کنید.</translation>
@@ -699,7 +697,6 @@
 <translation id="385300504083504382">آغاز</translation>
 <translation id="3859364108019690">برنامه‌ها جاری‌سازی نشدند</translation>
 <translation id="3861651314799684201">برای ضبط تمام صفحه، کلید «ورود» را فشار دهید</translation>
-<translation id="3865912916886104060">‏هیچ دستگاهی متصل نیست. ‫Wi-Fi برای استفاده از نقطه اتصال خاموش خواهد شد.</translation>
 <translation id="3886872229787704059">امروز باز شده است</translation>
 <translation id="3891340733213178823">‏برای خروج از سیستم Ctrl+Shift+Q را دو بار فشار دهید.</translation>
 <translation id="3893630138897523026">‏ChromeVox (بازخورد گفتاری)</translation>
@@ -784,7 +781,6 @@
 <translation id="4197790712631116042">خاموش</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> دردسترس نیست.</translation>
 <translation id="4201051445878709314">نمایش ماه قبلی</translation>
-<translation id="4202362334312791952">‏‫۱ دستگاه متصل است. ‫Wi-Fi برای استفاده از نقطه اتصال خاموش خواهد شد.</translation>
 <translation id="4209973997261364186">‏Wi-Fi روشن است</translation>
 <translation id="4212472694152630271">رفتن به پین</translation>
 <translation id="4215497585250573029">‏تنظیمات VPN</translation>
@@ -1091,7 +1087,6 @@
 <translation id="5426063383988017631">منوی تنظیمات بسته شد</translation>
 <translation id="5428899915242071344">شروع کردن انتخاب</translation>
 <translation id="5429993543155113935">درحال‌حاضر از پنجره‌های «ناشناس» پشتیبانی نمی‌شود</translation>
-<translation id="5430931332414098647">اشتراک‌گذاری اینترنت فوری</translation>
 <translation id="5431318178759467895">رنگ</translation>
 <translation id="5433020815079095860">ورودی صوتی</translation>
 <translation id="544691375626129091">تمام کاربران موجود قبلاً به این جلسه اضافه شده‌اند.</translation>
@@ -1120,6 +1115,7 @@
 <translation id="554893713779400387">روشن/خاموش کردن املا</translation>
 <translation id="5551456515017410630">باز کردن/ بستن تقویم</translation>
 <translation id="5551974246223970793">رفتن به مورد منطبق بعدی در جستجو هنگام جستجوی صفحه</translation>
+<translation id="5555639311269196631">خاموش کردن نقطه اتصال</translation>
 <translation id="5558091555391176027">روشن/خاموش کردن «هم‌رسانی با اطراف» با میزان بالای نمایان بودن</translation>
 <translation id="556042886152191864">دکمه</translation>
 <translation id="5570122939431135380">باز کردن برگه جدید در پنجره ناشناس جدید</translation>
@@ -1165,7 +1161,6 @@
 <translation id="5707775774148071965">دستگاه از سرعت انتقال داده بیشتری نسبت به کابلتان پشتیبانی می‌کند. ممکن است عملکرد دستگاه محدود شود.</translation>
 <translation id="5710450975648804523">«مزاحم نشوید» روشن است</translation>
 <translation id="571295407079589142">داده تلفن همراه خاموش است</translation>
-<translation id="5716891621595980681">‏‫<ph name="DEVICECOUNT" /> دستگاه متصل است. ‫Wi-Fi برای استفاده از نقطه اتصال خاموش خواهد شد.</translation>
 <translation id="5727460725221669831">‏اگر گذرواژه‌تان را فراموش کرده‌اید یا گذرواژه «حساب Google» خود را اخیراً تغییر داده‌اید، بازیابی این کاربر را امتحان کنید.</translation>
 <translation id="573413375004481890">این دستگاه از همه نمایشگرهایتان پشتیبانی نمی‌کند، بنابراین ارتباط یک نمایشگر قطع شده است</translation>
 <translation id="5740328398383587084">هم‌رسانی با اطراف</translation>
@@ -1215,7 +1210,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5920710855273935292">میکروفون صامت است.</translation>
-<translation id="5924855612669061715">«نقطه اتصال» روشن است</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> روشن است.</translation>
 <translation id="5947494881799873997">برگرداندن</translation>
 <translation id="595202126637698455">ردیابی عملکرد فعال شد</translation>
@@ -1231,6 +1225,7 @@
 <translation id="598407983968395253">استفاده از الگو</translation>
 <translation id="598882571027504733">‏برای دریافت به‌روزرسانی، Chromebook را با صفحه‌کلید متصل بازراه‌اندازی کنید.</translation>
 <translation id="6000279412553873020">کلیدها، دکمه‌ها، و غیره</translation>
+<translation id="6002122790816966947">دستگاه‌های شما</translation>
 <translation id="6012623610530968780">صفحه <ph name="SELECTED_PAGE" /> از <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">برجسته کردن مورد بعدی در قفسه</translation>
 <translation id="6015573907265691211">علامت‌گذاری به‌عنوان تکمیل‌شده</translation>
@@ -1520,6 +1515,7 @@
 <translation id="7188494361780961876">منو به گوشه راست بالای صفحه منتقل شد.</translation>
 <translation id="7189412385142492784">‏How far is Venus (فاصله سیاره ناهید از ما چقدر است)</translation>
 <translation id="7198435252016571249">دوربین به گوشه پایین سمت راست چسبید. تداخلی با سطح سیستم روی داد.</translation>
+<translation id="7219573373513695352">دستگاهی متصل نیست</translation>
 <translation id="7229029500464092426">حافظه <ph name="AVAILABLE_MEMORY" /> | مجموع <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. این Chromebook برای اعمال به‌روزرسانی باید بازراه‌اندازی شود. این کار ممکن است تا ۱ دقیقه طول بکشد.</translation>
 <translation id="7256634071279256947">میکروفون پشت</translation>

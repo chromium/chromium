@@ -352,7 +352,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2909615210195135082">Mfumo wa Arifa za Google</translation>
 <translation id="2912296070571964914">Dhibiti mada zinazokuvutia</translation>
 <translation id="2912345083818861431">Tumia kipengele cha kufunga skrini ili uone vichupo fiche vilivyofunguliwa</translation>
-<translation id="2922568440285376746">Tafuta kwenye picha ukitumia Google <ph name="BEGIN_NEW" />Kipya<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Jina si sahihi</translation>
 <translation id="2932150158123903946">Hifadhi ya Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Kibodi yako haitabadilika</translation>
@@ -687,7 +686,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4684427112815847243">Sawazisha kila kitu</translation>
 <translation id="4685741273709472646">Chagua kwenye orodha ya menyu kunjuzi</translation>
 <translation id="4687718960473379118">Matangazo yanayopendekezwa na tovuti</translation>
-<translation id="4689792375321623175">Tafuta picha ukitumia Google <ph name="BEGIN_NEW" />Kipya<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> zaidi}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> zaidi}}</translation>
 <translation id="4699172675775169585">Picha na faili zilizoakibishwa</translation>
 <translation id="4710167854527459075">Panga kulingana na alamisho mpya zaidi</translation>

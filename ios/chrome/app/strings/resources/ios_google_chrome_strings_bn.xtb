@@ -4,6 +4,7 @@
 <translation id="1105362920864247682">Chrome-এ ব্রাউজ করা ডেটা মুছুন।</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" />-এর জন্য Google পাসওয়ার্ড ম্যানেজারে আপনার পাসওয়ার্ড সেভ হয়ে যাবে।</translation>
 <translation id="1180362651362502943">আপনার Google অ্যাকাউন্টে Chrome ডেটা ব্যবহার করা চালিয়ে যান।</translation>
+<translation id="1200396280085622191">মেসেজ এবং অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করার সময় Chrome ব্যবহার করুন।</translation>
 <translation id="1282031177488366470">Chrome-এর ফিচার এবং পারফর্ম্যান্স উন্নত করতে সাহায্য করুন</translation>
 <translation id="1333745675627230582">Chrome ডাইনো গেম খেলুন</translation>
 <translation id="1352919863522755794">Google Password Manager আপনার পাসওয়ার্ড চেক করতে পারছে না। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
@@ -33,16 +34,19 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">মেসেজ, ডকুমেন্ট ও অন্যান্য অ্যাপে থাকা বিভিন্ন লিঙ্কে আপনি ট্যাপ করলে, Chrome ব্রাউজারে ওয়েবপেজ অটোমেটিক খুলে যায়।</translation>
 <translation id="1917964099031477364">এই ডিভাইসের Chrome এবং অন্যান্য Google অ্যাপ থেকে এই অ্যাকাউন্টটি এবং কোনও সেভ না করা ডেটা থাকলে তা সরানো হবে।</translation>
+<translation id="1987779152850321833">Chrome ব্যবহার করার সবচেয়ে ভাল সুবিধা পেতে নিচে সাজেস্ট করা এইসব অ্যাকশন সম্পূর্ণ করুন।</translation>
 <translation id="2009224836393115614">Chrome আপনার পাসওয়ার্ড চেক করতে পারেনি। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
 <translation id="2056123005618757196">সহজ, সুরক্ষিত ও এখনও পর্যন্ত উপলভ্য সবচেয়ে দ্রুত ভার্সনের Google Chrome-এর সাহায্যে আরও কাজ করুন।</translation>
 <translation id="2120238739383482109">Chrome-এর বুকমার্ক খোলে।</translation>
 <translation id="2147651015520127414"><ph name="ISSUER" /> যে এই ওয়েবসাইটের সার্টিফিকেট প্রকাশ করেছে Chrome তা যাচাই করেছে।</translation>
 <translation id="2199719347983604670">Chrome সিঙ্ক থেকে ডেটা</translation>
+<translation id="2242467532204595597">মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করার সময় Chrome ব্যবহার করুন।</translation>
 <translation id="2311240109311056604">Chrome ডাইনো গেম খোলে।</translation>
 <translation id="2339201583852607431">পাসওয়ার্ড আপনার Google অ্যাকাউন্টে (<ph name="EMAIL" />) সেভ করা হবে।</translation>
 <translation id="2342919707875585281">Chrome আপনার অনুমোদিত সাইটের সাথে লোকেশন শেয়ার করে।</translation>
 <translation id="2347208864470321755">যখন এই বৈশিষ্ট্যটি চালু করা হয় তখন Chrome, Google অনুবাদ ব্যবহার করে অন্যান্য ভাষায় লিখিত পৃষ্ঠাগুলি অনুবাদ করার অফার করবে৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2414068465746584414">আপনার ডিভাইসের সেটিংসে গিয়ে, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" খুলুন এবং "Chrome" বেছে নিন</translation>
+<translation id="2423077901494354337">এখন আপনার ডিভাইসেই Chrome থেকে সবচেয়ে বেশি সুবিধা লাভ করতে পারবেন।</translation>
 <translation id="2427791862912929107">Chrome-এ এমন কিছু ফিচার রয়েছে যা আপনাকে ইন্টারনেট ডেটা ম্যানেজ করতে এবং অত্যন্ত দ্রুত ওয়েবপেজ লোড করতে সাহায্য করে।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">আপনার অন্যান্য অ্যাপে আপনার সেভ করা পাসওয়ার্ডগুলি সহজেই পেতে, অটোফিলের জন্য Chrome ব্যবহার করুন</translation>
@@ -61,6 +65,7 @@
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome কীভাবে আপনার ডেটা ব্যক্তিগত রাখে<ph name="END_LINK" /> সেই সম্পর্কে আরও জানুন</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বেছে নিন</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> দ্বারা ম্যানেজ করা একটি অ্যাকাউন্ট থেকে আপনি সাইন-আউট করছেন বলে, এই ডিভাইস থেকে আপনার Chrome ডেটা মুছে যাবে। আপনার Google অ্যাকাউন্টে এই ডেটা থেকে যাবে।</translation>
+<translation id="309672519329227863">অন্যান্য অ্যাপ জুড়ে আপনার Chrome পাসওয়ার্ড ও আরও অনেক কিছু অ্যাক্সেস করুন।</translation>
 <translation id="3167189358072330585">আপনার অ্যাকাউন্ট Google Chrome-এ কাজ করে না৷ সাইন-ইন করার জন্য আপনার ডোমেন অ্যাডমিনিস্ট্রেটরের সঙ্গে যোগাযোগ করুন বা কোন সাধারণ Google অ্যাকাউন্ট ব্যবহার করুন৷</translation>
 <translation id="3173834708294760622">Google Chrome পৃষ্ঠা</translation>
 <translation id="3196546062792660320">Chrome আপনার অ্যাকাউন্টগুলিকে ওয়েবে নিয়ে এসে আপনার সময় বাঁচায়। আপনি সেটিংস থেকে অ্যাকাউন্ট জুড়তে বা সরাতে পারবেন।</translation>
@@ -71,6 +76,7 @@
 <translation id="3503014945441706099">এছাড়াও, এই Chrome প্রোফাইলের জন্য উন্নত Safe Browsing-এর সুবিধা পান</translation>
 <translation id="3522659714780527202">সিঙ্ক চালু করে রাখুন, যাতে আপনি যেখান থেকেই Chrome ব্যবহার করুন না কেন, সেখানেই আপনি নিজের ট্যাবগুলি দেখতে পারেন</translation>
 <translation id="3533694711092285624">কোনও পাসওয়ার্ড সেভ করা নেই। আপনি পাসওয়ার্ড সেভ করলে Chrome সেটি চেক করতে পারবে।</translation>
+<translation id="3577555362230509265">অন্যান্য অ্যাপের জন্য Chrome ব্যবহার করুন।</translation>
 <translation id="3594076341410558780">"Chrome থেকে সবচেয়ে বেশি সুবিধা পান" মেনু লুকান</translation>
 <translation id="3655656110921623717">এর মানে Chrome প্রতিবার মোবাইল সাইটের অনুরোধ করবে।</translation>
 <translation id="3720541637541300822">Chrome বন্ধ করলে, 'ছদ্মবেশী' ট্যাব লক হয়ে যায়</translation>
@@ -139,6 +145,7 @@
 <translation id="6181930887571472871">Chrome-এ পাল্টান</translation>
 <translation id="6238746320622508509">Chrome-কে আপনার ছদ্মবেশী ট্যাব লক করার অনুমতি দিন।</translation>
 <translation id="6247557882553405851">Google পাসওয়ার্ড ম্যানেজার</translation>
+<translation id="6348855835728304880">এই ডিভাইসে অন্যান্য অ্যাপ জুড়ে আপনার Chrome পাসওয়ার্ড এবং আরও অনেক কিছু অ্যাক্সেস করুন।</translation>
 <translation id="6412673304250309937">Chrome-এ স্টোর করা নিরাপদ নয় এমন সাইটের তালিকা থেকে সাইটগুলির ইউআরএল পরীক্ষা করে দেখে। যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Safe Browsing-এ Chrome পৃষ্ঠার কিছু কন্টেন্ট সহ ইউআরএলও হয়ত পাঠাতে পারে।</translation>
 <translation id="6427126399757991875">আপনার সংস্থা Chrome সেট আপ করছে...</translation>
 <translation id="6545449117344801102">Chrome আপনাকে দিকনির্দেশ এবং স্থানীয় তথ্য দিতে ঠিকানা শনাক্ত ও Google Maps ব্যবহার করে।</translation>
@@ -167,6 +174,7 @@
 <translation id="7187993566681480880">এই সুরক্ষা আপনাকে Chrome-এ সাইন-ইন করা অবস্থাতে নিরাপদে রাখে এবং যদি অন্যান্য Google অ্যাপে আপনি সাইন-ইন করে থাকেন, সেখানেও আপনার নিরাপত্তার বিষয়টি উন্নত করতে এটিকে ব্যবহার করা যেতে পারে।</translation>
 <translation id="7200524487407690471">Chrome, ডেটার নিরাপত্তা লঙ্ঘন, অসুরক্ষিত ওয়েবসাইট ও আরও অনেক কিছু থেকে আপনাকে রক্ষা করতে, প্রতিদিন অটোমেটিক 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার রান করে। সেটিংস থেকে আপনি 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার সম্পর্কে আরও জানতে পারবেন।</translation>
 <translation id="72119412072970160">আপনার iPad-এর অন্যান্য অ্যাপে Google পাসওয়ার্ড ম্যানেজারে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
+<translation id="723787869754590019">অটোফিলের জন্য Chrome ব্যবহার করুন</translation>
 <translation id="7254380941803999489">Chrome-কে ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
 <translation id="7261678641327190792">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না</translation>
 <translation id="7272930098487145294">ছবি সেভ করতে, সেটিংসে ট্যাপ করুন যাতে Chrome আপনার ফটো যোগ করতে পারে</translation>
@@ -208,6 +216,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8587647598504233556">"Chrome"-এ, তারপর "ডিফল্ট ব্রাউজার অ্যাপ"-এ ট্যাপ করুন।</translation>
 <translation id="8603022514504485810">Google Password Manager সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করুন বা <ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্টের পাসওয়ার্ড চেক করুন।<ph name="END_LINK" /></translation>
+<translation id="8727043961453758442">Chrome থেকে সবচেয়ে বেশি সুবিধা পান</translation>
 <translation id="8736550665979974340">Google Chrome-এর সাহায্যে নিরাপদে থাকুন</translation>
 <translation id="8760668027640688122">Chrome-এ নতুন ট্যাব খুলুন</translation>
 <translation id="8765470054473112089">আপনি যখন অ্যাড্রেস বার বা সার্চ বক্সে টাইপ করেন, তখন আরও ভালো পরামর্শ পেতে Chrome আপনি যা টাইপ করেন তা আপনার ডিফল্ট সার্চ ইঞ্জিনে পাঠায়। এটি ছদ্মবেশী মোডে বন্ধ আছে।</translation>
@@ -233,4 +242,5 @@
 <translation id="9112744793181547300">Chrome ডিফল্ট হিসেবে সেট করতে চান?</translation>
 <translation id="9122931302567044771">এর মানে Chrome প্রতিবার ডেস্কটপ সাইটের অনুরোধ করবে।</translation>
 <translation id="9181628561061032322">Chrome-এর সাম্প্রতিক ট্যাব খোলে।</translation>
+<translation id="97300214378190234">অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করার সময় Chrome ব্যবহার করুন।</translation>
 </translationbundle>

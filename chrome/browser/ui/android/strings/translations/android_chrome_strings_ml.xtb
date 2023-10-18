@@ -353,7 +353,6 @@
 <translation id="2909615210195135082">Google അറിയിപ്പുകൾ പ്ലാറ്റ്‌ഫോം</translation>
 <translation id="2912296070571964914">നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="2912345083818861431">തുറന്നിരിക്കുന്ന അദൃശ്യ ടാബുകൾ കാണാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുക</translation>
-<translation id="2922568440285376746">Google ഉപയോഗിച്ച് ചിത്രത്തിലുള്ളവ തിരയൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">പേര് അസാധുവാണ്</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> സ്‌റ്റോറേജ്</translation>
 <translation id="2932222164150889403">നിങ്ങളുടെ കീബോഡ് മാറില്ല</translation>
@@ -688,7 +687,6 @@
 <translation id="4684427112815847243">എല്ലാം സമന്വയിപ്പിക്കുക</translation>
 <translation id="4685741273709472646">ഡ്രോപ്പ്ഡൗൺ ലിസ്റ്റിൽ നിന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4687718960473379118">സൈറ്റ് നിർദ്ദേശിത പരസ്യം</translation>
-<translation id="4689792375321623175">Google ഉപയോഗിച്ച് ചിത്രം തിരയൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="4699172675775169585">കാഷെ ചെയ്‌ത ചിത്രങ്ങളും ഫയലുകളും</translation>
 <translation id="4710167854527459075">ഏറ്റവും പുതിയത് ആദ്യം</translation>

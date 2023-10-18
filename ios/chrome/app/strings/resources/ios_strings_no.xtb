@@ -41,7 +41,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1176932207622159128">Kan ikke lagre bildet</translation>
 <translation id="1177414119866731261">Åpne Chrome-menyen</translation>
 <translation id="1181037720776840403">Fjern</translation>
-<translation id="1200396280085622191">Bruk Chrome hver gang du trykker på linker i meldinger og andre apper.</translation>
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1207113853726624428">Nytt søk</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -194,7 +193,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1974060860693918893">Avanserte</translation>
 <translation id="1980417445547898121">{count,plural, =1{Få {count} nylig aktiv fane fra den andre enheten din på denne iPhonen}other{Få {count} nylig aktive faner fra den andre enheten din på denne iPhonen}}</translation>
 <translation id="1981118202195772574">Mobil</translation>
-<translation id="1987779152850321833">Fullfør de foreslåtte handlingene under for å få mest mulig ut av Chrome.</translation>
 <translation id="1989112275319619282">Bla gjennom</translation>
 <translation id="1990820278544963435">Finn</translation>
 <translation id="1991153180045413119">Passordet er delt</translation>
@@ -233,7 +231,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="2220529011494928058">Rapporter et problem</translation>
 <translation id="2230173723195178503">Nettsiden er lastet inn</translation>
 <translation id="2239626343334228536">Sletter nettlesingsdata …</translation>
-<translation id="2242467532204595597">Bruk Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="2251686759395008410">Meny → Logg</translation>
 <translation id="2252674110805316998">Nettsøk</translation>
 <translation id="2256933947031277845">Organisasjonen din lar deg kun logge på med visse kontoer.</translation>
@@ -272,7 +269,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2411749908844615428">{count,plural, =1{{count} lagret adresse er tilgjengelig over tastaturet.}other{{count} lagrede adresser er tilgjengelige over tastaturet.}}</translation>
 <translation id="2421004566762153674">Blokkerer informasjonskapsler fra tredjeparter</translation>
 <translation id="2421044535038393232">Fortsett redigeringen</translation>
-<translation id="2423077901494354337">Nå får du mest mulig ut av Chrome på enheten din.</translation>
 <translation id="2434405374328098816">Du har allerede lagret et passord for «<ph name="USERNAME" />» på <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Vis passord</translation>
 <translation id="2459155039684421202">Skriv inn en oppgave i adressefeltet, for eksempel «tøm loggen» eller «rediger passord».</translation>
@@ -318,7 +314,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
 <translation id="2671426118752779020">Du kan bruke passordene du har lagret i Google Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
-<translation id="26915454213703967">Søk i bildet med Google</translation>
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
 <translation id="2695507686909505111">Siden er oversatt</translation>
 <translation id="2696180352517415858">Du blir ikke logget av Google-kontoen din. <ph name="BEGIN_LINK" />Andre typer aktiviteter<ph name="END_LINK" /> kan bli lagret i Google-kontoen din når du er pålogget. Du kan slette dem når som helst.
@@ -412,7 +407,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3080525922482950719">Du kan lagre sider for å lese dem senere eller uten nett</translation>
 <translation id="3081338492074632642">Sørg for at passordet du lagrer, samsvarer med passordet ditt for <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bunn</translation>
-<translation id="309672519329227863">Få tilgang til Chrome-passord med mer i andre apper.</translation>
 <translation id="309710370695886264">Du har ett gjenbrukt passord. Løs problemet nå for å ivareta sikkerheten.</translation>
 <translation id="3112556859945124369">Merk…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Se hva du kan synkronisere<ph name="END_LINK" /></translation>
@@ -500,7 +494,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3551320343578183772">Lukk fanen</translation>
 <translation id="3565207542107370586">Slett nettlesingsdata…</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
-<translation id="3577555362230509265">Bruk Chrome i andre apper.</translation>
 <translation id="3581564640715911333">Tilby å oversette sider på andre språk</translation>
 <translation id="3587885837929752825">Organisasjonen din begrenser hva du kan lagre i Google-kontoen din.</translation>
 <translation id="3588820906588687999">Åpne bildet i en ny fane</translation>
@@ -950,7 +943,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6042308850641462728">Mer</translation>
 <translation id="6045460247888249350">Legg til en tittel</translation>
-<translation id="6054613632208573261">Bruk Chrome som standard</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr nyhetssakene dine og aktiviteten din her</translation>
 <translation id="6064824697233747382">Organisasjonen din krever at du slår av synkronisering.</translation>
@@ -1010,7 +1002,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6346549652287021269">Vil du starte en ny nedlasting?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Denne adressen slettes fra Google-kontoen din (<ph name="USER_EMAIL" />) og denne enheten.}other{Disse adressene slettes fra Google-kontoen din (<ph name="USER_EMAIL" />) og denne enheten.}}</translation>
 <translation id="634878792104344809">Synkroniser blant annet passord og logg på alle enhetene dine</translation>
-<translation id="6348855835728304880">Få tilgang til Chrome-passord med mer i andre apper på denne enheten.</translation>
 <translation id="63519665078626091">For å bruke Nettinspektør, koble til Safari på datamaskinen med en kabel og åpne iPad på Utvikle-menyen. Du kan aktivere denne menyen i Avansert-delen i Safari-innstillingene på datamaskinen.</translation>
 <translation id="6355820205320395730">Svake passord er enkle å gjette. Sørg for at du lager sterke passord. <ph name="BEGIN_LINK" />Se flere sikkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">Ferdig</translation>
@@ -1195,7 +1186,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7221173315674413369">Utforsk nye funksjoner og tips i Nyheter</translation>
 <translation id="7223102419539744003">Lukk fane</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>
-<translation id="723787869754590019">Bruk Chrome for autofyll</translation>
 <translation id="7265758999917665941">Aldri for dette nettstedet</translation>
 <translation id="7272437679830969316">Kan ikke bekrefte identiteten din. Passordet er ikke kopiert.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{En ny pakke spores}other{Nye pakker spores}}</translation>
@@ -1468,7 +1458,6 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8717864919010420084">Kopiér linken</translation>
 <translation id="8721297211384281569">Verktøy-menyen</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
-<translation id="8727043961453758442">Få mest mulig ut av Chrome</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8731958888085671579">Skjul Finn på siden</translation>
 <translation id="87371078663613140">Utforsk alternativene på menylinjen</translation>
@@ -1581,7 +1570,6 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Vis faneforslag fra andre enheter</translation>
 <translation id="972300586996227526">{COUNT,plural, =1{Du kan lagre passordet for {DOMAIN_ONE} i Google-kontoen din, {EMAIL}}=2{Du kan lagre passordene for {DOMAIN_ONE} og {DOMAIN_TWO} i Google-kontoen din, {EMAIL}}=3{Du kan lagre passordene for {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} til i Google-kontoen din, {EMAIL}}other{Du kan lagre passordene for {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} til i Google-kontoen din, {EMAIL}}}</translation>
-<translation id="97300214378190234">Bruk Chrome hver gang du trykker på linker i andre apper.</translation>
 <translation id="973493300226275298">Spor prisen på et produkt i flere nettbutikker. Du får varsler når prisen går ned.</translation>
 <translation id="981498610235328462">Organisasjonen din lar deg kun logge på med visse kontoer. Kontoer som ikke tillates, er skjult.</translation>
 <translation id="984509647832111802">Synkroniseringen fungerer ikke.</translation>

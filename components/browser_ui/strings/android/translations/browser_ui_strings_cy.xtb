@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Helpwch ni i wella Chrome trwy ddweud wrthym pam eich bod wedi caniatáu cwcis trydydd parti. <ph name="BEGIN_LINK" />Anfon adborth<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Seibio</translation>
 <translation id="1181037720776840403">Dileu</translation>
+<translation id="1192844206376121885">Bydd hyn yn dileu'r holl ddata a chwcis sy'n cael eu storio gan <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1242008676835033345">Plannwyd ar <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stopio</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">Hyd yn oed gyda'u llygaid wedi'u hamddiffyn gan y sbectol werdd roedd Dorothy a'i ffrindiau wedi'u syfrdanu i ddechrau gan y</translation>
 <translation id="2176704795966505152">Dangos yr opsiwn chwyddo yn y brif ddewislen</translation>
 <translation id="2182457891543959921">Gofyn cyn caniatáu i wefannau greu map 3D o'ch amgylchoedd neu olrhain safle eich camera (argymhellir)</translation>
+<translation id="2185965788978862351">Bydd hyn yn dileu <ph name="DATASIZE" /> o ddata a chwcis sy'n cael eu storio gan wefannau neu gan apiau ar eich sgrîn Hafan.</translation>
 <translation id="2194856509914051091">Pethau i'w hystyried</translation>
 <translation id="2212565012507486665">Caniatáu cwcis</translation>
 <translation id="2228071138934252756">I adael i <ph name="APP_NAME" /> gael mynediad at eich camera, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">Mae'r lawrlwythiad wedi'i gwblhau <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio yn y modd anhysbys</translation>
 <translation id="2442870161001914531">Gofyn am wefan bwrdd gwaith bob amser</translation>
+<translation id="2469312991797799607">Bydd y weithred hon yn dileu'r holl ddata a chwcis ar gyfer <ph name="ORIGIN" /> a'r holl wefannau oddi tano</translation>
 <translation id="2479148705183875116">Mynd i'r Gosodiadau</translation>
 <translation id="2482878487686419369">Hysbysiadau</translation>
 <translation id="2485422356828889247">Dadosod</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">Defnydd</translation>
 <translation id="5091013926750941408">Gwefan symudol</translation>
 <translation id="509133520954049755">Gofyn am wedd bwrdd gwaith</translation>
+<translation id="5099358668261120049">Bydd hyn yn dileu'r holl ddata a chwcis sy'n cael eu storio gan <ph name="ORIGIN" /> neu gan ei ap ar eich sgrîn Hafan.</translation>
 <translation id="5100237604440890931">Wedi'i grebachu - cliciwch i'w ehangu.</translation>
 <translation id="5123685120097942451">Tab anhysbys</translation>
 <translation id="5186036860380548585">Mae'r opsiwn ar gael yn agos at frig y sgrîn</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5922853908706496913">Wrthi'n rhannu eich sgrîn</translation>
 <translation id="5922967540311291836">Rhwystro cwcis trydydd parti:</translation>
+<translation id="5923512600150154850">Bydd hyn yn dileu <ph name="DATASIZE" /> o ddata a chwcis sy'n cael eu storio gan wefannau.</translation>
 <translation id="5939518447894949180">Ailosod</translation>
 <translation id="5964247741333118902">Cynnwys wedi'i fewnblannu</translation>
 <translation id="5968921426641056619">Rhowch gyfeiriad gwe</translation>
@@ -337,6 +342,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
 <translation id="7188508872042490670">Data gwefan ar y ddyfais</translation>
+<translation id="7201549776650881587">Bydd y weithred hon yn dileu'r holl ddata a chwcis sy'n cael eu storio gan bob gwefan o dan <ph name="ORIGIN" /> neu gan ei ap ar eich sgrîn Hafan</translation>
 <translation id="7203150201908454328">Wedi'i ehangu</translation>
 <translation id="7219254577985949841">Dileu data gwefan?</translation>
 <translation id="723171743924126238">Dewis lluniau</translation>

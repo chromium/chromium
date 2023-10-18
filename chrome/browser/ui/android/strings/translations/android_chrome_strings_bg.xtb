@@ -352,7 +352,6 @@
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Управлявайте темите, от които се интересувате</translation>
 <translation id="2912345083818861431">Използване на функцията за заключване на екрана за преглед на отворените раздели в режим „инкогнито“</translation>
-<translation id="2922568440285376746">Търсене в изобр. с Google <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Името е невалидно</translation>
 <translation id="2932150158123903946">Хранилище на Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Клавиатурата ви няма да се промени</translation>
@@ -687,7 +686,6 @@
 <translation id="4684427112815847243">Синхронизиране на всичко</translation>
 <translation id="4685741273709472646">Избиране от падащия списък</translation>
 <translation id="4687718960473379118">Предложени от сайтовете реклами</translation>
-<translation id="4689792375321623175">Търс. на изобр. с Google <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Кеширани изображения и файлове</translation>
 <translation id="4710167854527459075">Сортиране по най-нови</translation>

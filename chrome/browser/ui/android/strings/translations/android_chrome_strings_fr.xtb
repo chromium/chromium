@@ -352,7 +352,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2909615210195135082">Plate-forme de notifications Google</translation>
 <translation id="2912296070571964914">Gérer les thèmes qui vous intéressent</translation>
 <translation id="2912345083818861431">Utiliser le verrouillage de l'écran pour voir les onglets de navigation privée ouverts</translation>
-<translation id="2922568440285376746">Rech. dans image avec Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Le nom n'est pas valide</translation>
 <translation id="2932150158123903946">Stockage Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Votre clavier ne sera pas modifié</translation>
@@ -687,7 +686,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4684427112815847243">Tout synchroniser</translation>
 <translation id="4685741273709472646">Sélectionnez depuis la liste déroulante</translation>
 <translation id="4687718960473379118">Annonces suggérées par les sites</translation>
-<translation id="4689792375321623175">Rech. image avec Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}}</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4710167854527459075">Trier par le plus récent</translation>

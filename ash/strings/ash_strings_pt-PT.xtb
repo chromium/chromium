@@ -311,7 +311,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Procurar para a frente</translation>
 <translation id="2282073721614284166">Abrir o link no separador</translation>
-<translation id="2284237890386182187">Ativada, sem dispositivos ligados</translation>
 <translation id="2292698582925480719">Escala de apresentação</translation>
 <translation id="229397294990920565">Os dados móveis estão a ser desativados…</translation>
 <translation id="2295777434187870477">O microfone está ativado. Se o desativar, irá desativar a entrada de som.</translation>
@@ -620,7 +619,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3563775809269155755">Ativar zona Wi-Fi</translation>
 <translation id="3566240529365775567">Aberto agora mesmo</translation>
 <translation id="3571734092741541777">Configurar</translation>
-<translation id="3572988532398145777">Não pode expandir a notificação enquanto um painel estiver aberto. Feche o painel abaixo primeiro.</translation>
 <translation id="3573179567135747900">Reverter alteração para <ph name="FROM_LOCALE" /> (requer reinicio)</translation>
 <translation id="3576141592585647168">Altere o fuso horário</translation>
 <translation id="3577473026931028326">Algo correu mal. Tente novamente.</translation>
@@ -703,7 +701,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="385300504083504382">Início</translation>
 <translation id="3859364108019690">Não é possível fazer stream de apps</translation>
 <translation id="3861651314799684201">Prima Enter para gravar o ecrã inteiro</translation>
-<translation id="3865912916886104060">Nenhum dispositivo ligado. O Wi-Fi vai ser desativado para começar a usar a zona Wi-Fi.</translation>
 <translation id="3886872229787704059">Aberto hoje</translation>
 <translation id="3891340733213178823">Prima Ctrl+Shift+Q duas vezes para terminar sessão.</translation>
 <translation id="3893630138897523026">ChromeVox (respostas faladas)</translation>
@@ -790,7 +787,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4197790712631116042">Desativado</translation>
 <translation id="4201033867194214117">A funcionalidade <ph name="FEATURE_NAME" /> não está disponível.</translation>
 <translation id="4201051445878709314">Mostrar mês anterior</translation>
-<translation id="4202362334312791952">1 dispositivo ligado. O Wi-Fi vai ser desativado para começar a usar a zona Wi-Fi.</translation>
 <translation id="4209973997261364186">O Wi-Fi está ativado</translation>
 <translation id="4212472694152630271">Mudar para PIN</translation>
 <translation id="4215497585250573029">Definições da VPN</translation>
@@ -1100,7 +1096,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5426063383988017631">Menu de definições fechado</translation>
 <translation id="5428899915242071344">Iniciar seleção</translation>
 <translation id="5429993543155113935">De momento, as janelas de navegação anónima não são suportadas</translation>
-<translation id="5430931332414098647">Ligação via telemóvel instantânea</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5433020815079095860">Entrada de áudio</translation>
 <translation id="544691375626129091">Já foram adicionados a esta sessão todos os utilizadores disponíveis.</translation>
@@ -1129,6 +1124,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="554893713779400387">Ativar/desativar o ditado</translation>
 <translation id="5551456515017410630">Abrir/fechar o calendário</translation>
 <translation id="5551974246223970793">Ao pesquisar numa página, aceder à próxima correspondência da pesquisa</translation>
+<translation id="5555639311269196631">Desativar zona Wi-Fi</translation>
 <translation id="5558091555391176027">Ative/desative a alta visibilidade da funcionalidade Partilhar na proximidade</translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5570122939431135380">Abrir o novo separador numa nova janela de navegação anónima</translation>
@@ -1174,7 +1170,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5707775774148071965">O dispositivo suporta uma taxa de dados mais elevada do que o cabo. O desempenho do dispositivo pode estar limitado.</translation>
 <translation id="5710450975648804523">Modo Não incomodar ativado</translation>
 <translation id="571295407079589142">Os dados móveis estão desativados</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> dispositivos ligados. O Wi-Fi vai ser desativado para começar a usar a zona Wi-Fi.</translation>
 <translation id="5727460725221669831">Se se esqueceu da palavra-passe ou alterou a palavra-passe da sua Conta Google recentemente, experimente recuperar este utilizador.</translation>
 <translation id="573413375004481890">Este dispositivo não conseguiu suportar todos os seus ecrãs, pelo que um foi desligado.</translation>
 <translation id="5740328398383587084">Partilhar na proximidade</translation>
@@ -1224,7 +1219,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5920710855273935292">O som do microfone está desativado.</translation>
-<translation id="5924855612669061715">A zona Wi-Fi está ativada</translation>
 <translation id="5946788582095584774">A funcionalidade <ph name="FEATURE_NAME" /> está ativada.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Rastreio do desempenho ativado</translation>
@@ -1240,6 +1234,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="598407983968395253">Usar modelo</translation>
 <translation id="598882571027504733">Para obter a atualização, reinicie o Chromebook com o teclado ligado.</translation>
 <translation id="6000279412553873020">Teclas, botões e muito mais</translation>
+<translation id="6002122790816966947">Os seus dispositivos</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Realçar o item seguinte na prateleira</translation>
 <translation id="6015573907265691211">Marcar como concluída</translation>
@@ -1532,6 +1527,7 @@ Nova instalação</translation>
 <translation id="7188494361780961876">O menu foi movido para o canto superior esquerdo do ecrã.</translation>
 <translation id="7189412385142492784">Qual é a distância para Vénus?</translation>
 <translation id="7198435252016571249">Câmara ajustada ao canto inferior direito. Há um conflito com a superfície do sistema.</translation>
+<translation id="7219573373513695352">Nenhum dispositivo ligado</translation>
 <translation id="7229029500464092426">Memória: <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> no total</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% de bateria restante. Ligue o dispositivo à alimentação.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. É necessário reiniciar o Chromebook para aplicar uma atualização. Esta ação pode demorar até 1 minuto.</translation>

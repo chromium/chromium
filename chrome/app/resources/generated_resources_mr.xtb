@@ -2054,6 +2054,7 @@
 <translation id="2564520396658920462">AppleScript द्वारे JavaScript एक्झिक्युट करणे बंद केले आहे. ते सुरू करण्यासाठी, मेनू बारवरून, पहा &gt; डेव्हलपर &gt; Apple इव्‍हेंटवरून JavaScript चालवू द्या यावर जा. अधिक माहितीसाठी: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">वर्धित केलेले स्पेल चेक</translation>
 <translation id="256481480019204378">Google खाते आयडी</translation>
+<translation id="256517381556987641">फाइल सिंकला आतापर्यंत <ph name="ITEMS_FOUND" /> फाइल आढळल्या आहेत आणि ते अजूनही स्टोरेज जागा तपासत आहे. काही मिनिटांमध्ये फाइल सिंक पुन्हा सुरू करून पहा.</translation>
 <translation id="2565214867520763227">स्क्रीन रीडर सुरू करा</translation>
 <translation id="2568694057933302218">गुप्त मोडमध्ये असताना, साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट तुमच्या कुकी वापरू शकत नाहीत. जाहिराती पर्सनलाइझ करणे यासारख्या गोष्टींसाठी तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी वापरली जात नाही. काही साइटवरील वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
 <translation id="2568774940984945469">इंफोबार कंटेनर</translation>
@@ -4371,6 +4372,7 @@
 <translation id="4427365070557649936">कंफर्मेशन कोडची पडताळणी करत आहे…</translation>
 <translation id="4429163740524851942">वास्तविक कीबोर्ड लेआउट</translation>
 <translation id="4430019312045809116">व्हॉल्यूम</translation>
+<translation id="4430204941092622397">यामुळे तुमचे मोबाइल नेटवर्क काही मिनिटांसाठी डिस्कनेक्ट होऊ शकते.</translation>
 <translation id="443031431654216610">फक्त अंक वापरा</translation>
 <translation id="4430369329743628066">बुकमार्क जोडला</translation>
 <translation id="4430422687972614133">व्हर्च्युअल कार्ड सुरू करा</translation>
@@ -4583,6 +4585,7 @@
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> ला एरर आली</translation>
 <translation id="4610637590575890427">तुम्हाला <ph name="SITE" /> कडे जायचे असे म्हणायचे होते काय?</translation>
 <translation id="4611114513649582138">डेटा कनेक्शन उपलब्ध आहे</translation>
+<translation id="4611759022973144129">तुमच्या <ph name="DEVICE_TYPE" /> मध्ये साइन इन करण्यासाठी तुम्ही हा पासवर्ड वापरू शकता.</translation>
 <translation id="4612841084470706111">सर्व विनंती केलेल्या साइटचा अ‍ॅक्सेस द्या.</translation>
 <translation id="4613144866899789710">Linux चे इंस्टॉलेशन रद्द करत आहे…</translation>
 <translation id="4613271546271159013">तुम्ही नवीन टॅब उघडता तेव्हा कोणते पेज दर्शविले जाते हे एक्स्टेंशनने बदलले आहे.</translation>
@@ -5081,6 +5084,7 @@
 <translation id="5027550639139316293">ईमेल सर्टिफिकेट</translation>
 <translation id="5027562294707732951">एक्स्टेंशन जोडा</translation>
 <translation id="5028445315206872221">या साइटवर एक्स्टेंशन ब्लॉक केले आहेत</translation>
+<translation id="5029287942302939687">तुमचा पासवर्ड सेट केला आहे</translation>
 <translation id="5029873138381728058">VM तपासता आले नाही</translation>
 <translation id="503155457707535043">अ‍ॅप्स डाउनलोड होत आहेत</translation>
 <translation id="5032430150487044192">QR कोड तयार करता आला नाही</translation>
@@ -5109,6 +5113,7 @@
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome कस्टमाइझ करा<ph name="END_LINK" /> मध्ये कार्डशी संबंधित सर्व पर्याय पहा</translation>
 <translation id="5056950756634735043">कंटेनरशी कनेक्ट करत आहे</translation>
 <translation id="5057110919553308744">तुम्ही एक्स्टेंशनवर क्लिक करता तेव्हा</translation>
+<translation id="5057127674016624293">स्कॅनिंगला अपेक्षेपेक्षा जास्त वेळ लागत आहे</translation>
 <translation id="5059241099014281248">साइन इन मर्यादित करा</translation>
 <translation id="5059429103770496207">डिस्प्ले शैली</translation>
 <translation id="5059526285558225588">काय शेअर करायचे ते निवडा</translation>
@@ -5999,6 +6004,7 @@
 <translation id="5797521893972859201">सर्च बॉक्समधील इतिहासाच्या समावेशासह, इतिहास साफ करते</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; आणि &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; वर सुरुवात कशी करावी हे जाणून घ्या</translation>
 <translation id="5798079537501238810">साइट पेमेंट हँडलर इंस्टॉल करू शकतात</translation>
+<translation id="5798086737841799234">कंफर्मेशन कोड एंटर करा</translation>
 <translation id="579915268381781820">तुमची सिक्युरिटी की काढून टाकली होती.</translation>
 <translation id="5799478978078236781"><ph name="DEVICE_TYPE" /> बाबत टिपा, ऑफर व अपडेट मिळवा आणि फीडबॅक शेअर करा.</translation>
 <translation id="5799508265798272974">Linux व्हर्च्युअल मशीन: <ph name="LINUX_VM_NAME" /></translation>
@@ -6138,7 +6144,6 @@
 <translation id="5901089233978050985">कॅप्चर करणाऱ्या टॅबवर स्विच करा</translation>
 <translation id="5901494423252125310">प्रिंटरचे दार उघडे आहे</translation>
 <translation id="5901630391730855834">पिवळा</translation>
-<translation id="5902211418335330937">एखादी साइट अपेक्षेप्रमाणे काम करत नसल्यास, तुम्ही शोध आणि ॲड्रेस बारमध्ये तृतीय पक्ष कुकी ब्लॉक करणे निवडून त्यासाठी तृतीय पक्ष कुकी सुरू करू शकता.</translation>
 <translation id="5904614460720589786">कॉन्फिगरेशनच्या समस्येमुळे <ph name="APP_NAME" /> सेट करता आले नाही. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">अद्ययावत करणे जवळजवळ पूर्ण झाले! अपडेट करणे समाप्त करण्यासाठी तुमचे डिव्हाइस रीस्टार्ट करा.</translation>
 <translation id="5906732635754427568">या डिव्हाइस वरून या ॲपसह संबद्ध असलेला डेटा काढला जाईल.</translation>
@@ -6905,7 +6910,6 @@
 <translation id="6532663472409656417">एंटरप्राइझची नोंदणी केली</translation>
 <translation id="6533315466883598769">Google Translate वापरा</translation>
 <translation id="65334502113648172">डिस्प्लेचा भाग लहान किंवा मोठा करण्यासाठी अ‍ॅरो की प्रेस नका. डिस्प्लेचा भाग आजूबाजूला हलवण्यासाठी, shift आणि + प्रेस करा, नंतर ॲरो की वापरा.</translation>
-<translation id="6533636340637966565">सुरू करत आहे…</translation>
 <translation id="6535331821390304775">या प्रकारच्या लिंक संबंधित अ‍ॅपमध्ये उघडण्याची <ph name="ORIGIN" /> ला नेहमी अनुमती द्या</translation>
 <translation id="653659894138286600">दस्तऐवज आणि इमेज स्कॅन करा</translation>
 <translation id="6537613839935722475">नावामध्ये अक्षरे, अंक आणि हायफन (-) वापरू शकता</translation>
@@ -7256,6 +7260,7 @@
 <translation id="6815376457351236663">तरीही उघडा</translation>
 <translation id="6815787852028615386">ही फाइल फसवी आहे आणि तुमच्या डिव्हाइसमध्ये अनपेक्षित बदल करू शकते</translation>
 <translation id="6816097980753839617">निळा-पिवळा (तृतीयवर्ण दृष्टिक्षीणता)</translation>
+<translation id="6816443526270499804">उपलब्ध eSIM प्रोफाइल शोधत आहे</translation>
 <translation id="6818198425579322765">भाषांतर करण्यासाठी पेजची भाषा</translation>
 <translation id="6818547713623251698">तुमच्या फोनमधील फोटो, मीडिया, सूचना आणि अ‍ॅप्स पहा</translation>
 <translation id="6818802132960437751">बिल्ट-इन व्हायरस संरक्षण</translation>
@@ -8066,6 +8071,7 @@
 <translation id="7475742997309661417">ChromeOS, ChromeVox वरील स्क्रीन रीडर प्रामुख्याने दृष्टिहीन किंवा दृष्टिदोष असलेल्या लोकांद्वारे स्क्रीनवर प्रदर्शित केलेला मजकूर हा स्पीच सिंथेसायझर अथवा ब्रेल डिस्प्लेसह वाचण्यासाठी वापरले जाते. ChromeVox सुरू करण्यासाठी दोन्ही व्हॉल्यूम की पाच सेकंदांसाठी प्रेस करून धरून ठेवा. ChromeVox अ‍ॅक्टिव्हेट झाल्यावर, तुम्हाला झटपट फेरफटका मिळेल.</translation>
 <translation id="7476454130948140105">अपडेटसाठी बॅटरी खूप कमी (<ph name="BATTERY_PERCENT" />%) आहे</translation>
 <translation id="7476989672001283112">आपोआप ब्लॉक केलेले <ph name="PERMISSION" /> आणि आणखी <ph name="COUNT" /></translation>
+<translation id="7477460499687558352">डाउनलोड करण्यासाठी eSIM प्रोफाइल निवडा</translation>
 <translation id="7477599578899108080">उच्च मेमरी वापर: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">या पेजसाठी QR कोड तयार करा</translation>
 <translation id="7477793887173910789">व्हिडिओ पहा आणि बरेच काही नियंत्रित करा</translation>
@@ -9138,6 +9144,7 @@
 <translation id="8314835274931377415">स्विच अ‍ॅक्सेसचा सेटअप सुरू करायचा आहे का?</translation>
 <translation id="8315018673856831477">मेमरी सेव्हर पर्याय</translation>
 <translation id="8315044115695361734">iCloud Keychain कडील</translation>
+<translation id="8315514906653279104">सुरू करत आहे...</translation>
 <translation id="8317671367883557781">नेटवर्क कनेक्शन जोडा</translation>
 <translation id="8317965619823678157">पासवर्ड कॉपी करा</translation>
 <translation id="8318266828739827371">तुमच्या स्क्रीनचा मॅग्निफाय केलेला भाग पाहण्यासाठी स्प्लिट-स्क्रीन व्ह्यू वापरा. डॉक केलेले मॅग्निफायर सुरू आणि बंद करण्यासाठी Search + Ctrl + D वापरा.</translation>

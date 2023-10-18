@@ -41,7 +41,6 @@
 <translation id="1176932207622159128">Slike ni mog. shran.</translation>
 <translation id="1177414119866731261">Odprite Chromov meni</translation>
 <translation id="1181037720776840403">Odstrani</translation>
-<translation id="1200396280085622191">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih in drugih aplikacijah.</translation>
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1207113853726624428">Novo iskanje</translation>
 <translation id="1207493287814084192">17.30</translation>
@@ -194,7 +193,6 @@
 <translation id="1974060860693918893">Dodatno</translation>
 <translation id="1980417445547898121">{count,plural, =1{Dobite {count} nedavno aktivni zavihek iz druge naprave v tem iPhonu}one{Dobite {count} nedavno aktivni zavihek iz druge naprave v tem iPhonu}two{Dobite {count} nedavno aktivna zavihka iz druge naprave v tem iPhonu}few{Dobite {count} nedavno aktivne zavihke iz druge naprave v tem iPhonu}other{Dobite {count} nedavno aktivnih zavihkov iz druge naprave v tem iPhonu}}</translation>
 <translation id="1981118202195772574">Mobilna naprava</translation>
-<translation id="1987779152850321833">Če želite kar najbolje izkoristiti Chrome, upoštevajte ta predlagana dejanja.</translation>
 <translation id="1989112275319619282">Brskanje</translation>
 <translation id="1990820278544963435">Iskanje</translation>
 <translation id="1991153180045413119">Geslo je deljeno</translation>
@@ -233,7 +231,6 @@
 <translation id="2220529011494928058">Prijavite težavo</translation>
 <translation id="2230173723195178503">Spletna stran je naložena</translation>
 <translation id="2239626343334228536">Brisanje podatkov brskanja …</translation>
-<translation id="2242467532204595597">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="2251686759395008410">Meni → Zgodovina</translation>
 <translation id="2252674110805316998">Spletno iskanje</translation>
 <translation id="2256933947031277845">Organizacija dovoli prijavo samo z nekaterimi računi.</translation>
@@ -272,7 +269,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2411749908844615428">{count,plural, =1{Nad tipkovnico je na voljo {count} shranjen naslov.}one{Nad tipkovnico je na voljo {count} shranjen naslov.}two{Nad tipkovnico sta na voljo {count} shranjena naslova.}few{Nad tipkovnico so na voljo {count} shranjeni naslovi.}other{Nad tipkovnico je na voljo {count} shranjenih naslovov.}}</translation>
 <translation id="2421004566762153674">Blokiranje piškotkov drugih spletnih mest</translation>
 <translation id="2421044535038393232">Nadaljuj urejanje</translation>
-<translation id="2423077901494354337">Zdaj boste lahko v napravi kar najbolje izkoristili Chrome.</translation>
 <translation id="2434405374328098816">Na <ph name="WEBSITE" /> ste že shranili geslo za »<ph name="USERNAME" />«.</translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
 <translation id="2459155039684421202">V naslovni vrstici vnesite opravilo, kot je »clear my history« (počisti mojo zgodovino) ali »edit passwords« (uredi gesla).</translation>
@@ -318,7 +314,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2669454659051515572">Prenesene datoteke lahko vidijo vsi, ki uporabljajo to napravo.</translation>
 <translation id="2671426118752779020">Gesla, ki ste jih shranili v Googlovem upravitelju gesel, lahko uporabite v drugih aplikacijah v iPhonu.</translation>
 <translation id="2690858294534178585">Kamera je v uporabi</translation>
-<translation id="26915454213703967">Išči po sliki z Googlom</translation>
 <translation id="2691653761409724435">Ni na voljo brez povezave</translation>
 <translation id="2695507686909505111">Stran je prevedena</translation>
 <translation id="2696180352517415858">Iz računa Google ne boste odjavljeni. Ko ste prijavljeni, se v računu Google morda shranjujejo <ph name="BEGIN_LINK" />druge oblike dejavnosti<ph name="END_LINK" />. Izbrišete jih lahko kadar koli.
@@ -412,7 +407,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3080525922482950719">Strani lahko shranite, če želite brati pozneje ali brez povezave</translation>
 <translation id="3081338492074632642">Geslo, ki ga želite shraniti, se mora ujemati z geslom za <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Na dno</translation>
-<translation id="309672519329227863">Dostopajte do gesel v Chromu in drugega v drugih aplikacijah.</translation>
 <translation id="309710370695886264">Imate 1 znova uporabljeno geslo. Popravite ga, če se želite zavarovati.</translation>
 <translation id="3112556859945124369">Označi …</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Oglejte si, kaj lahko sinhronizirate.<ph name="END_LINK" /></translation>
@@ -500,7 +494,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3551320343578183772">Zapri zavihek</translation>
 <translation id="3565207542107370586">Izbris podatkov brskanja …</translation>
 <translation id="3575234738189584619">Iskanje z Googlom Lens</translation>
-<translation id="3577555362230509265">Uporabite Chrome v drugih aplikacijah.</translation>
 <translation id="3581564640715911333">Ponudi prevajanje strani v drugih jezikih</translation>
 <translation id="3587885837929752825">Vaša organizacija omejuje, kaj je mogoče shraniti v računu Google.</translation>
 <translation id="3588820906588687999">Odpri sliko na novem zavihku</translation>
@@ -950,7 +943,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6042308850641462728">Več</translation>
 <translation id="6045460247888249350">Dodajanje naslova</translation>
-<translation id="6054613632208573261">Privzeto uporabljajte Chrome</translation>
 <translation id="605721222689873409">LL</translation>
 <translation id="6059830886158432458">Nadzirajte članke in dejavnost tukaj</translation>
 <translation id="6064824697233747382">Vaša organizacija zahteva, da izklopite sinhronizacijo.</translation>
@@ -1010,7 +1002,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6346549652287021269">Želite začeti nov prenos?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Ta naslov bo izbrisan iz računa Google (<ph name="USER_EMAIL" />) in iz te naprave.}one{Ti naslovi bodo izbrisani iz računa Google (<ph name="USER_EMAIL" />) in iz te naprave.}two{Ti naslovi bodo izbrisani iz računa Google (<ph name="USER_EMAIL" />) in iz te naprave.}few{Ti naslovi bodo izbrisani iz računa Google (<ph name="USER_EMAIL" />) in iz te naprave.}other{Ti naslovi bodo izbrisani iz računa Google (<ph name="USER_EMAIL" />) in iz te naprave.}}</translation>
 <translation id="634878792104344809">Sinhronizirajte gesla, zgodovino in druge podatke v vseh svojih napravah.</translation>
-<translation id="6348855835728304880">Dostopajte do gesel v Chromu in drugega v drugih aplikacijah v tej napravi.</translation>
 <translation id="63519665078626091">Če želite uporabljati spletni pregledovalnik, se s kablom povežite s Safarijem v računalniku in v meniju za razvijalce dostopajte do iPada. Meni za razvijalce lahko omogočite v razdelku »Advanced« (Dodatno) v nastavitvah Safarija v računalniku.</translation>
 <translation id="6355820205320395730">Šibka gesla je preprosto ugotoviti. Vedno ustvarite zapletena gesla. <ph name="BEGIN_LINK" />Oglejte si več varnostnih nasvetov.<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">Končano</translation>
@@ -1195,7 +1186,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7221173315674413369">Raziščite nove funkcije in nasvete v »Novosti«</translation>
 <translation id="7223102419539744003">Zapri zavihek</translation>
 <translation id="722454870747268814">New Incognito Tab</translation>
-<translation id="723787869754590019">Uporaba Chroma za samodejno izpolnjevanje</translation>
 <translation id="7265758999917665941">Nikoli za to spletno mesto</translation>
 <translation id="7272437679830969316">Identitete ni mogoče preveriti. Geslo ni kopirano.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Sledenje novemu paketu}one{Sledenje novim paketom}two{Sledenje novim paketom}few{Sledenje novim paketom}other{Sledenje novim paketom}}</translation>
@@ -1468,7 +1458,6 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="8717864919010420084">Kopiraj povezavo</translation>
 <translation id="8721297211384281569">Meni »Orodja«</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
-<translation id="8727043961453758442">Izkoristite Chrome na najboljši način</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8731958888085671579">Skrij »Iskanje na strani«</translation>
 <translation id="87371078663613140">Raziščite možnosti v menijski vrstici</translation>
@@ -1581,7 +1570,6 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="959066944189734975">Spremljate kanal <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Pokaži predlagane zavihke iz drugih naprav</translation>
 <translation id="972300586996227526">{COUNT,plural, =1{Geslo za {DOMAIN_ONE} lahko shranite v računu Google, {EMAIL}.}=2{Gesli za {DOMAIN_ONE} in {DOMAIN_TWO} lahko shranite v računu Google, {EMAIL}}=3{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}one{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}two{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}few{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}other{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}}</translation>
-<translation id="97300214378190234">Chrome lahko uporabljate, kadar koli se dotaknete povezav v drugih aplikacijah.</translation>
 <translation id="973493300226275298">Spremljajte ceno izdelka v več spletnih trgovinah. Ko se cena zniža, boste prejeli opozorilo.</translation>
 <translation id="981498610235328462">Organizacija dovoli prijavo samo z nekaterimi računi. Nedovoljeni računi so skriti.</translation>
 <translation id="984509647832111802">Sinhronizacija ne deluje.</translation>

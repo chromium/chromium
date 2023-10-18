@@ -2042,6 +2042,7 @@
 <translation id="2564520396658920462">Executing JavaScript through AppleScript is turned off. To turn it on, from the menu bar, go to View &gt; Developer &gt; Allow JavaScript from Apple Events. For more information: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">વધારેલ જોડણીની તપાસ</translation>
 <translation id="256481480019204378">Google એકાઉન્ટનું ID</translation>
+<translation id="256517381556987641">ફાઇલ સિંકને અત્યાર સુધીમાં <ph name="ITEMS_FOUND" /> ફાઇલ મળી છે અને હજી પણ સ્ટોરેજ સ્પેસ ચેક કરી રહ્યું છે. ફાઇલ સિંકને થોડી મિનિટમાં ફરીથી ચાલુ કરવાનો પ્રયાસ કરી જુઓ.</translation>
 <translation id="2565214867520763227">સ્ક્રીન રીડર ચાલુ કરો</translation>
 <translation id="2568694057933302218">છૂપા મોડમાં, વિવિધ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકતી નથી. તમારી બ્રાઉઝિંગ પ્રવૃત્તિનો ઉપયોગ જાહેરાતોને મનગમતી બનાવવા જેવી વસ્તુઓ માટે કરવામાં આવતો નથી. સુવિધાઓ કેટલીક સાઇટ પર કામ ન કરે એવું બની શકે છે.</translation>
 <translation id="2568774940984945469">માહિતી બાર સંગ્રહક</translation>
@@ -4369,6 +4370,7 @@
 <translation id="4427365070557649936">કન્ફર્મેશન કોડ ચકાસી રહ્યાં છીએ...</translation>
 <translation id="4429163740524851942">વાસ્તવિક કીબોર્ડનું લેઆઉટ</translation>
 <translation id="4430019312045809116">વૉલ્યૂમ</translation>
+<translation id="4430204941092622397">આને કારણે કદાચ થોડીવાર માટે તમારું મોબાઇલ નેટવર્ક ડિસ્કનેક્ટ થઈ શકે છે.</translation>
 <translation id="443031431654216610">માત્ર સંખ્યાવાચક અંકનો ઉપયોગ કરો</translation>
 <translation id="4430369329743628066">બુકમાર્ક ઉમેરાયો</translation>
 <translation id="4430422687972614133">વર્ચ્યુઅલ કાર્ડની સુવિધા ચાલુ કરો</translation>
@@ -4581,6 +4583,7 @@
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />માં એક ભૂલ આવી છે</translation>
 <translation id="4610637590575890427">શું તમારી ઈચ્છા <ph name="SITE" /> પર જવાની હતી?</translation>
 <translation id="4611114513649582138">ડેટા કનેક્શન ઉપલબ્ધ</translation>
+<translation id="4611759022973144129">તમે તમારા <ph name="DEVICE_TYPE" />માં સાઇન ઇન કરવા માટે આ પાસવર્ડનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="4612841084470706111">વિનંતી કરવામાં આવેલી બધી સાઇટને ઍક્સેસ આપો.</translation>
 <translation id="4613144866899789710">Linuxનું ઇન્સ્ટૉલેશન રદ કરી રહ્યાં છીએ...</translation>
 <translation id="4613271546271159013">જ્યારે તમે કોઈ નવું ટૅબ ખોલો છો ત્યારે જે પેજ બતાવવામાં આવે છે તેને એક્સ્ટેન્શને બદલ્યું છે.</translation>
@@ -5080,6 +5083,7 @@
 <translation id="5027550639139316293">ઇમેઇલ પ્રમાણપત્ર</translation>
 <translation id="5027562294707732951">એક્સ્ટેન્શન ઉમેરો</translation>
 <translation id="5028445315206872221">આ સાઇટ પર એક્સ્ટેન્શન બ્લૉક કરવામાં આવ્યા છે</translation>
+<translation id="5029287942302939687">તમારો પાસવર્ડ સેટ કરવામાં આવ્યો છે</translation>
 <translation id="5029873138381728058">VMs ચેક કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="503155457707535043">ઍપ ડાઉનલોડ થઈ રહી છે</translation>
 <translation id="5032430150487044192">QR કોડ બનાવી શકતા નથી</translation>
@@ -5108,6 +5112,7 @@
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chromeને કસ્ટમાઇઝ કરો<ph name="END_LINK" />માં કાર્ડના તમામ વિકલ્પો જુઓ</translation>
 <translation id="5056950756634735043">કન્ટેનર સાથે કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="5057110919553308744">તમે એક્સ્ટેંશનને ક્લિક કરો ત્યારે</translation>
+<translation id="5057127674016624293">સ્કૅન કરવામાં અપેક્ષા કરતાં વધુ સમય લાગી રહ્યો છે</translation>
 <translation id="5059241099014281248">સાઇન ઇન કરવાનું પ્રતિબંધિત કરો</translation>
 <translation id="5059429103770496207">ડિસ્પ્લેની શૈલી</translation>
 <translation id="5059526285558225588">શું શેર કરવું તે પસંદ કરો</translation>
@@ -6004,6 +6009,7 @@
 <translation id="5797521893972859201">શોધ બૉક્સમાંના ઇતિહાસ સહિતનો ઇતિહાસ સાફ કરે છે</translation>
 <translation id="5797934230382081317">&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; અને &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; પર શરૂઆત કરવાની રીત જાણો</translation>
 <translation id="5798079537501238810">સાઇટ ચુકવણી હૅન્ડલર ઇન્સ્ટૉલ કરી શકે છે</translation>
+<translation id="5798086737841799234">કન્ફર્મેશન કોડ દાખલ કરો</translation>
 <translation id="579915268381781820">તમારો સુરક્ષા કોડ કાઢી નાખવામાં આવ્યો હતો.</translation>
 <translation id="5799478978078236781"><ph name="DEVICE_TYPE" /> માટે ટિપ, ઑફરો અને અપડેટ મેળવો તથા પ્રતિસાદ શેર કરો.</translation>
 <translation id="5799508265798272974">Linux વર્ચ્યુઅલ મશીન: <ph name="LINUX_VM_NAME" /></translation>
@@ -6145,7 +6151,6 @@
 <translation id="5901089233978050985">ટૅબ કૅપ્ચર કરવા પર સ્વિચ કરો</translation>
 <translation id="5901494423252125310">પ્રિન્ટરનું ઢાંકણ ખૂલ્લું છે</translation>
 <translation id="5901630391730855834">પીળો</translation>
-<translation id="5902211418335330937">જો કોઈ સાઇટ અપેક્ષા મુજબ કાર્ય કરતી નથી, તો તમે શોધ અને ઍડ્રેસ બારમાં ત્રીજા પક્ષની કુકી બ્લૉક કરવાનું પસંદ કરીને તેના માટે ત્રીજા પક્ષની કુકીને ચાલુ કરી શકો છો.</translation>
 <translation id="5904614460720589786">ગોઠવણીમાં સમસ્યાને લીધે <ph name="APP_NAME" />ને સેટઅપ કરી શક્યાં નહીં. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">અપ ટૂ ડેટ થવામાં છે! અપડેટ કરવાનું સમાપ્ત કરવા માટે તમારા ઉપકરણને પુનઃપ્રારંભ કરો.</translation>
 <translation id="5906732635754427568">આ ઍપ્લિકેશન સાથે સંકળાયેલ ડેટાને આ ઉપકરણમાંથી દૂર કરવામાં આવશે.</translation>
@@ -6913,7 +6918,6 @@ USB ડિવાઇસ</translation>
 <translation id="6532663472409656417">એન્ટરપ્રાઇઝ દ્વારા નોંધણી કરાયેલું</translation>
 <translation id="6533315466883598769">Google Translateનો ઉપયોગ કરો</translation>
 <translation id="65334502113648172">ડિસ્પ્લેના વિસ્તારને નાનો કે મોટો કરવા માટે, ઍરો કી દબાવો. ડિસ્પ્લેના વિસ્તારને આસપાસ ખસેડવા માટે shift અને + દબાવો, પછી ઍરો કીનો ઉપયોગ કરો.</translation>
-<translation id="6533636340637966565">ચાલુ કરી રહ્યાં છીએ...</translation>
 <translation id="6535331821390304775">આ પ્રકારની લિંકને હંમેશાં સંકળાયેલી ઍપમાં ખોલવા <ph name="ORIGIN" />ને મંજૂરી આપો</translation>
 <translation id="653659894138286600">દસ્તાવેજો અને છબીઓ સ્કૅન કરો</translation>
 <translation id="6537613839935722475">નામ માટે અક્ષરો, સંખ્યાઓ અને હાયફન (-)નો ઉપયોગ કરી શકાય છે</translation>
@@ -7268,6 +7272,7 @@ USB ડિવાઇસ</translation>
 <translation id="6815376457351236663">તેમ છતાં ખોલો</translation>
 <translation id="6815787852028615386">આ ફાઇલ છેતરામણી છે અને તે તમારા ડિવાઇસમાં અનપેક્ષિત ફેરફારો કરે તેમ બની શકે છે</translation>
 <translation id="6816097980753839617">વાદળી-પીળો (ટ્રાઇટેનોમલી)</translation>
+<translation id="6816443526270499804">ઉપલબ્ધ ઇ-સિમ પ્રોફાઇલ શોધી રહ્યાં છીએ</translation>
 <translation id="6818198425579322765">અનુવાદ કરવા માટે પેજની ભાષા</translation>
 <translation id="6818547713623251698">તમારા ફોનના ફોટા, મીડિયા, નોટિફિકેશન અને ઍપ જુઓ</translation>
 <translation id="6818802132960437751">બિલ્ટ-ઇન વાયરસ સુરક્ષા</translation>
@@ -8080,6 +8085,7 @@ USB ડિવાઇસ</translation>
 <translation id="7475742997309661417">ChromeOS, ChromeVox પર સ્ક્રીન રીડરનો ઉપયોગ મુખ્યત્વે અંધત્વ કે નબળી દૃષ્ટિ ધરાવતા લોકો દ્વારા સ્પીચ સિન્થેસાઇઝર અથવા બ્રેઇલ ડિસ્પ્લે વડે સ્ક્રીન પર બતાવવામાં આવેલી ટેક્સ્ટ વાંચવા માટે કરવામાં આવે છે. ChromeVox ચાલુ કરવા માટે બન્ને વૉલ્યૂમ કીને પાંચ સેકન્ડ માટે દબાવી રાખો. જ્યારે ChromeVox સક્રિય થાય, ત્યારે તમે એક ઝડપી ટૂરમાંથી પસાર થશો.</translation>
 <translation id="7476454130948140105">અપડેટ માટે બૅટરી ખૂબ ઓછી છે (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> અને વધુ <ph name="COUNT" /> ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવી</translation>
+<translation id="7477460499687558352">ડાઉનલોડ કરવા માટે ઇ-સિમ પ્રોફાઇલ પસંદ કરો</translation>
 <translation id="7477599578899108080">મેમરીનો ઉચ્ચ વપરાશ: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">આ પેજ માટે QR કોડ બનાવો</translation>
 <translation id="7477793887173910789">તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો</translation>
@@ -9150,6 +9156,7 @@ USB ડિવાઇસ</translation>
 <translation id="8314835274931377415">સ્વિચ ઍક્સેસનું સેટઅપ શરૂ કરીએ?</translation>
 <translation id="8315018673856831477">મેમરી સેવરના વિકલ્પો</translation>
 <translation id="8315044115695361734">iCloud કીચેનમાંથી</translation>
+<translation id="8315514906653279104">ચાલુ કરી રહ્યાં છીએ…</translation>
 <translation id="8317671367883557781">નેટવર્ક કનેક્શન ઉમેરો</translation>
 <translation id="8317965619823678157">પાસવર્ડ કૉપિ કરો</translation>
 <translation id="8318266828739827371">તમારી સ્ક્રીનનો મૅગ્નિફાઇ કરેલો વિસ્તાર જોવા માટે, સ્પ્લિટ-સ્ક્રીન વ્યૂનો ઉપયોગ કરો. ડૉક કરેલા મૅગ્નિફાયરને ચાલુ કે બંધ કરવા માટે Search + Ctrl + Dનો ઉપયોગ કરો.</translation>

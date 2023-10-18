@@ -63,6 +63,7 @@
 <translation id="2120620239521071941">С устройства будут удалены объекты (<ph name="ITEMS_COUNT" />). Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Перезапустить для обновления &amp;Chrome</translation>
 <translation id="2123055963409958220">Отправьте отчет о <ph name="BEGIN_LINK" />текущих настройках Chrome<ph name="END_LINK" />, чтобы помочь нам улучшить браузер</translation>
+<translation id="2126108037660393668">Не удалось выполнить проверку скачанного файла.</translation>
 <translation id="2131230230468101642">Для защиты вашей конфиденциальности интересы автоматически удаляются через 4 недели с момента создания. Если после этого вы продолжите использовать браузер, то удаленные интересы могут вновь появиться в списке. Чтобы Chrome не учитывал конкретные интересы, вы можете их удалить.</translation>
 <translation id="2139300032719313227">Перезапустите Chrome OS</translation>
 <translation id="2151406531797534936">Перезапустите Chrome</translation>
@@ -91,6 +92,7 @@
 <translation id="2580411288591421699">Не удается установить версию Google Chrome, аналогичную уже выполняемой. Закройте Google Chrome и повторите попытку.</translation>
 <translation id="2586406160782125153">Данные о работе в браузере будут удалены с устройства. Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Получите доступ к данным браузера Chrome, сохраненным в аккаунте <ph name="ACCOUNT_EMAIL" />.</translation>
+<translation id="259935314519650377">Не удалось кешировать скачанный установщик. Ошибка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Не удалось проверить наличие обновлений в Chrome. Проверьте подключение к Интернету.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome регулярно проверяет, используются ли в браузере максимально безопасные настройки. Мы сообщим, если потребуется ваше участие.</translation>
@@ -312,6 +314,7 @@
 <translation id="6676384891291319759">Доступ в Интернет</translation>
 <translation id="6679975945624592337">Разрешить Google Chrome работать в фоновом режиме</translation>
 <translation id="6696915334902295848">Браузер Chrome запрашивает доступ к микрофону для этого сайта.</translation>
+<translation id="6712881677154121168">Ошибка при скачивании: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome может работать ещё быстрее</translation>
 <translation id="6735387454586646204">Система Chrome OS Flex</translation>
 <translation id="6739177684496155661">Продолжить работу в новом профиле Chrome?</translation>
@@ -326,6 +329,7 @@
 <translation id="6943584222992551122">Данные о работе этого пользователя в браузере будут удалены с устройства. Чтобы восстановить их, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Разрешить в Google Chrome (бета) передачу входящего трафика по протоколу mDNS</translation>
 <translation id="6989339256997917931">Google Chrome был обновлен, однако вы не использовали его в течение последних 30 дней.</translation>
+<translation id="7024536598735240744">Ошибка при распаковке: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Установка отменена.</translation>
 <translation id="7025800014283535195">Здесь можно переключиться на другой профиль Chrome</translation>
 <translation id="7036251913954633326">Если этот аккаунт в браузере Chrome вам больше не понадобится, можно воспользоваться <ph name="GUEST_LINK_BEGIN" />гостевым режимом<ph name="GUEST_LINK_END" />. Если вы хотите добавить аккаунт для другого человека, <ph name="LINK_BEGIN" />создайте профиль пользователя<ph name="LINK_END" /> на <ph name="DEVICE_TYPE" />.
@@ -419,6 +423,7 @@
 <translation id="8516431725144212809">Ваши интересы по данным Chrome</translation>
 <translation id="8521348052903287641">Разрешить в Google Chrome для разработчиков передачу входящего трафика по протоколу mDNS</translation>
 <translation id="8550334526674375523">Этот рабочий профиль никак не связан с вашим личным профилем.</translation>
+<translation id="8555465886620020932">Ошибка службы: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556340503434111824">Доступна новая версия Google Chrome, которая стала еще быстрее.</translation>
 <translation id="8571790202382503603">Профили Chrome позволяют хранить личные и рабочие данные в браузере раздельно.</translation>
 <translation id="8614913330719544658">Google Chrome не отвечает. Перезапустить сейчас?</translation>

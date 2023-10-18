@@ -191,6 +191,7 @@
 <translation id="1737078180382804488">Телефонуңуздагы билдирмелерди көрүү параметрин жабуу</translation>
 <translation id="174102739345480129">Белгилегич өчүк.</translation>
 <translation id="1743570585616704562">Таанылган жок</translation>
+<translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> билдирмесин жыйыштыруу</translation>
 <translation id="1746730358044914197">Киргизүү ыкмасы администратор тарабынан конфигурацияланат.</translation>
 <translation id="1747336645387973286">бүтүрүү мөөнөтү: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Экрандагы баскычтоп күйгүзүлдү</translation>
@@ -310,7 +311,6 @@
 <translation id="2276987123919776440">15 мүн.</translation>
 <translation id="2277103315734023688">Алдыга түрдүрүү</translation>
 <translation id="2282073721614284166">Шилтемени өтмөктө ачуу</translation>
-<translation id="2284237890386182187">Күйүк, түзмөктөр туташкан эмес</translation>
 <translation id="2292698582925480719">Дисплей шкаласы</translation>
 <translation id="229397294990920565">Мобилдик Интернет өчүрүлүүдө...</translation>
 <translation id="2295777434187870477">Микрофон күйүк, өчүрүү менен микрофондун үнү басылат.</translation>
@@ -531,6 +531,7 @@
 <translation id="3217205077783620295">Үнү чыгып турат, өчүрүү менен аудионун үнү басылат.</translation>
 <translation id="3226991577105957773">+ дагы <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
+<translation id="3233611303007751344">Батареяны үнөмдөгүч өчүрүлдү</translation>
 <translation id="324366796737464147">Чуу басар</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> терезеси <ph name="ACTIVE_DESK" /> иш тактасынан <ph name="TARGET_DESK" /> иш тактасына жылдырылды</translation>
 <translation id="3253743281242075461">Класс ишинин түрү: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -553,6 +554,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> аккаунтка кийинчерээк дагы кире алат.</translation>
 <translation id="3321628682574733415">Ата-эненин кирүү коду туура эмес</translation>
 <translation id="332827762492701193">Билдирмелер жашырылды</translation>
+<translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> билдирмесин жайып көрсөтүү</translation>
 <translation id="3339826665088060472">Экранды тартып алуу, скриншотторду тартуу жана экрандан видео жаздырып алуу куралдары</translation>
 <translation id="3340978935015468852">жөндөөлөр</translation>
 <translation id="3341303451326249809">Скриншот тартылды</translation>
@@ -617,7 +619,6 @@
 <translation id="3563775809269155755">Туташуу түйүнүн иштетүү</translation>
 <translation id="3566240529365775567">Жаңы эле ачылды</translation>
 <translation id="3571734092741541777">Орнотуу</translation>
-<translation id="3572988532398145777">Панель ачылып турганда, билдирмени жайып көрсөтө албайсыз. Алгач төмөндөгү панелди жабыңыз.</translation>
 <translation id="3573179567135747900">Төмөнкүгө кайра өзгөртүү "<ph name="FROM_LOCALE" />" (өчүрүп күйгүзүү керек)</translation>
 <translation id="3576141592585647168">Убакыт алкагын өзгөртүү</translation>
 <translation id="3577473026931028326">Бир жерден ката кетти. Кайталап көрүңүз.</translation>
@@ -700,7 +701,6 @@
 <translation id="385300504083504382">Киришүү</translation>
 <translation id="3859364108019690">Колдонмолорду алып ойнотууга болбойт</translation>
 <translation id="3861651314799684201">Толук экранды жаздыруу үчүн "Enter" баскычын басыңыз</translation>
-<translation id="3865912916886104060">Туташып турган түзмөктөр жок. Байланыш түйүнүн колдонуп баштоо үчүн WiFi өчүрүлөт.</translation>
 <translation id="3886872229787704059">Бүгүн ачылды</translation>
 <translation id="3891340733213178823">Чыгуу үчүн эки ирет Ctrl+Shift+Q басыңыз.</translation>
 <translation id="3893630138897523026">ChromeVox (айтылуучу жооп пикир)</translation>
@@ -769,6 +769,8 @@
 <translation id="4146671046252289537">Кийинки сөздүн аягына жылуу</translation>
 <translation id="4146833061457621061">Музыканы ойнотуу</translation>
 <translation id="4150201353443180367">Көрсөтүү</translation>
+<translation id="4156293514828496577">Батареянын кубаты <ph name="PERCENTAGE" />% калды (болжол менен <ph name="TIME_LEFT" />).
+Батареяны көбүрөөк убакытка жеткирүү үчүн айрым функциялар чектелди.</translation>
 <translation id="4165275524535002941">Кабель дисплейлерди колдоого албашы мүмкүн</translation>
 <translation id="4177415338862979658">Маалыматты текшерүү үчүн басыңыз</translation>
 <translation id="4177913004758410636">{0,plural, =1{Түзмөктү бир күндүн ичинде жаңыртыңыз}other{Түзмөктү # күндүн ичинде жаңыртыңыз}}</translation>
@@ -785,7 +787,6 @@
 <translation id="4197790712631116042">Өчүк</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> жеткиликтүү эмес.</translation>
 <translation id="4201051445878709314">Мурунку айды көрсөтүү</translation>
-<translation id="4202362334312791952">1 түзмөк туташты Байланыш түйүнүн колдонуп баштоо үчүн WiFi өчүрүлөт.</translation>
 <translation id="4209973997261364186">Wi-Fi күйгүзүлгөн</translation>
 <translation id="4212472694152630271">PIN кодго которулуу</translation>
 <translation id="4215497585250573029">VPN параметрлери</translation>
@@ -899,6 +900,7 @@
 <translation id="4659419629803378708">ChromeVox иштетилди</translation>
 <translation id="4666911709726371538">Дагы башка колдонмолор</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> жүктөлүп алынууда</translation>
+<translation id="4672539464599646374">Батареяны үнөмдөгүч күйгүзүлдү</translation>
 <translation id="468293128311738995">Телефонуңуздагы колдонмолор</translation>
 <translation id="4690510401873698237">Текче экрандын ылдый жагында</translation>
 <translation id="4696813013609194136">Түзмөктүн кулпусун ата-эненин коду менен ачуу</translation>
@@ -1059,6 +1061,8 @@
 <translation id="5297704307811127955">Өчүк</translation>
 <translation id="5300589172476337783">Көрсөтүү</translation>
 <translation id="5302048478445481009">Тил</translation>
+<translation id="5303319262469238330">Батареянын кубаты <ph name="PERCENTAGE" />% калды.
+Батареяны көбүрөөк убакытка жеткирүү үчүн айрым функциялар чектелди.</translation>
 <translation id="5308380583665731573">Туташуу</translation>
 <translation id="5313326810920013265">Bluetooth параметрлери</translation>
 <translation id="5314219114274263156">Экрандан видео жаздырылып алынды</translation>
@@ -1092,7 +1096,6 @@
 <translation id="5426063383988017631">Параметрлер менюсу жабылды</translation>
 <translation id="5428899915242071344">Тандап баштоо</translation>
 <translation id="5429993543155113935">Жашыруун терезелер учурда колдоого алынбайт</translation>
-<translation id="5430931332414098647">Ыкчам байланыш түйүнү</translation>
 <translation id="5431318178759467895">Түс</translation>
 <translation id="5433020815079095860">Оозеки киргизүү</translation>
 <translation id="544691375626129091">Бардык мүмкүн болгон колдонуучулар бул сеанска буга чейин эле кошулган.</translation>
@@ -1121,6 +1124,7 @@
 <translation id="554893713779400387">Үн менен жазууну күйгүзүү же өчүрүү</translation>
 <translation id="5551456515017410630">Жылнааманы ачуу/жабуу</translation>
 <translation id="5551974246223970793">Баракты издеп жатканда кийинки дал келген нерсеге өтүү</translation>
+<translation id="5555639311269196631">Байланыш түйүнүн өчүрүү</translation>
 <translation id="5558091555391176027">Жакын жердеги түзмөктөргө так көрүнүү үчүн Nearby Share режимин өчүрүп күйгүзүңүз</translation>
 <translation id="556042886152191864">Баскыч</translation>
 <translation id="5570122939431135380">Жаңы өтмөктү жаңы жашыруун терезеде ачуу</translation>
@@ -1166,7 +1170,6 @@
 <translation id="5707775774148071965">Түзмөктөгү маалыматты өткөрүү ылдамдыгы бул кабелден жогору. Түзмөктүн майнаптуулугу чектелиши мүмкүн.</translation>
 <translation id="5710450975648804523">"Тынчымды алба" режими күйүк</translation>
 <translation id="571295407079589142">Мобилдик трафик өчүрүлгөн</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> түзмөк туташты. Байланыш түйүнүн колдонуп баштоо үчүн WiFi өчүрүлөт.</translation>
 <translation id="5727460725221669831">Эгер сырсөзүңүздү унутуп же Google аккаунтуңуздун сырсөзүн жакында өзгөрткөн болсоңуз, бул колдонуучуну калыбына келтирип көрүңүз.</translation>
 <translation id="573413375004481890">Бул түзмөк дисплейлериңиздин баарын кошо алган жок, андыктан алардын бирөө ажыратылды</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
@@ -1216,7 +1219,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Күйүк</translation>
 <translation id="5920710855273935292">Микрофондун үнү өчүрүлдү.</translation>
-<translation id="5924855612669061715">Байланыш түйүнү күйүк</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> күйүк.</translation>
 <translation id="5947494881799873997">Кайтаруу</translation>
 <translation id="595202126637698455">Иштин майнаптуулугуна көз салуу аракети иштетилди</translation>
@@ -1232,6 +1234,7 @@
 <translation id="598407983968395253">Үлгүнү колдонуу</translation>
 <translation id="598882571027504733">Жаңыртуу үчүн, туташкан баскычтопту үзбөй туруп, Chromebook'ту өчүрүп-күйгүзүңүз.</translation>
 <translation id="6000279412553873020">Ачкычтар, баскычтар жана башкалар</translation>
+<translation id="6002122790816966947">Түзмөктөрүңүз</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> барактын ичинен <ph name="SELECTED_PAGE" /> барак</translation>
 <translation id="601304062528754300">Текчедеги кийинки нерсени бөлүп көрсөтүү</translation>
 <translation id="6015573907265691211">Аткарылды деп белгилөө</translation>
@@ -1300,6 +1303,7 @@
 <translation id="6231419273573514727">Перифериялык жөндөөлөр чектелиши мүмкүн</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> учурда камера менен микрофонуңузду колдонуп жатат</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">Батарея отурайын деп калды. Батареяны үнөмдөгүч күйгүзүлдү.</translation>
 <translation id="6247728804802644171">Билдирмелерди ачуу</translation>
 <translation id="6254629735336163724">Тикесинен бекитилген</translation>
 <translation id="6259254695169772643">Стилус менен тандаңыз</translation>
@@ -1414,6 +1418,7 @@
 <translation id="6732800389263199929">дагы <ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Камера менен микрофон колдонулууда</translation>
 <translation id="6739144137573853180">ЖӨНДӨӨЛӨРГӨ ӨТҮҮ</translation>
+<translation id="6747985245839783873">Батареянын кубаты <ph name="PERCENTAGE" /> пайыз. Батареяны үнөмдөгүч күйүк.</translation>
 <translation id="6751052314767925245">Администраторуңуз ишке киргизди</translation>
 <translation id="6751826523481687655">Майнаптуулукка көз салуу күйгүзүлгөн</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> иш тактасы өчүрүлдү жана <ph name="RECEIVE_DESK" /> иш тактасы менен бириктирилди</translation>
@@ -1513,6 +1518,7 @@
 <translation id="7131634465328662194">Андан кийин тутумдан автоматтык түрдө чыгарыласыз.</translation>
 <translation id="7143207342074048698">Туташууда</translation>
 <translation id="7144942256906679589">Батареянын абалы</translation>
+<translation id="7145639536026937076">Батареянын деңгээли <ph name="PERCENTAGE" />%, кубатталууда. Батареяны үнөмдөгүч күйүк.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1521,7 +1527,9 @@
 <translation id="7188494361780961876">Меню экрандын жогорку сол бурчуна жылдырылды.</translation>
 <translation id="7189412385142492784">Венера канчалык алыс жайгашкан?</translation>
 <translation id="7198435252016571249">Камера төмөнкү оң бурчка кадалды. Системанын платформасына туура келген жок.</translation>
+<translation id="7219573373513695352">Бир да түзмөк туташкан эмес</translation>
 <translation id="7229029500464092426"><ph name="TOTAL_MEMORY" /> ичинен <ph name="AVAILABLE_MEMORY" /> эстутум колдонулду</translation>
+<translation id="7244725679040769470">Батареянын кубаты <ph name="PERCENTAGE" />% калды. Түзмөгүңүздү электр кубатына туташтырыңыз.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Жаңыртууну колдонуу үчүн Chromebook'ту өчүрүп күйгүзүү керек. Бул 1 мүнөткө созулушу мүмкүн.</translation>
 <translation id="7256634071279256947">Арткы микрофон</translation>
 <translation id="7258828758145722155">Кечээ түзөтүлгөн</translation>
@@ -1915,6 +1923,7 @@
 <translation id="8878886163241303700">Кеңейтилген экран</translation>
 <translation id="888982883502837004">Түзмөгүңүздө орнотулган программаны жаңыртууга болот. Жаңыртууну көрүү үчүн басыңыз.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> биротоло өчүрүлөт</translation>
+<translation id="889790758758811533">Батареянын кубаты <ph name="PERCENTAGE" />% калды (болжол менен <ph name="TIME_LEFT" />). Түзмөгүңүздү электр кубатына туташтырыңыз.</translation>
 <translation id="88986195241502842">Ылдый барактоо</translation>
 <translation id="8905919797434099235">(Аталышы жок)</translation>
 <translation id="890616557918890486">Булагын өзгөртүү</translation>

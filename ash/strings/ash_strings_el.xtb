@@ -191,6 +191,7 @@
 <translation id="1737078180382804488">Παράβλεψη ρύθμισης προβολής των ειδοποιήσεων του τηλεφώνου σας</translation>
 <translation id="174102739345480129">Ο μαρκαδόρος είναι ανενεργός.</translation>
 <translation id="1743570585616704562">Δεν αναγνωρίστηκε</translation>
+<translation id="1743927604032653654">Σύμπτυξη της ειδοποίησης <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="1746730358044914197">Οι μέθοδοι εισαγωγής έχουν διαμορφωθεί από τον διαχειριστή σας.</translation>
 <translation id="1747336645387973286">ημερομηνία λήξης: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Το πληκτρολόγιο οθόνης είναι ενεργοποιημένο</translation>
@@ -310,7 +311,6 @@
 <translation id="2276987123919776440">15 λεπτά</translation>
 <translation id="2277103315734023688">Αναζήτηση προς τα εμπρός</translation>
 <translation id="2282073721614284166">Άνοιγμα συνδέσμου στην καρτέλα</translation>
-<translation id="2284237890386182187">Ενεργό, δεν υπάρχουν συνδεδεμένες συσκευές</translation>
 <translation id="2292698582925480719">Κλίμακα προβολής</translation>
 <translation id="229397294990920565">Γίνεται απενεργοποίηση των δεδομένων κινητής τηλεφωνίας…</translation>
 <translation id="2295777434187870477">Το μικρόφωνο είναι ενεργοποιημένο, η εναλλαγή θα ενεργοποιήσει τη σίγαση εισόδου.</translation>
@@ -531,6 +531,7 @@
 <translation id="3217205077783620295">Ο ήχος είναι ενεργοποιημένος, η εναλλαγή θα ενεργοποιήσει τη σίγαση ήχου.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> ακόμη</translation>
 <translation id="3227137524299004712">Μικρόφωνο</translation>
+<translation id="3233611303007751344">Η Εξοικονόμηση μπαταρίας απενεργοποιήθηκε</translation>
 <translation id="324366796737464147">Εξουδετέρωση θορύβου</translation>
 <translation id="3249513730522716925">Η επιφάνεια εργασίας <ph name="WINDOW_TITLE" /> μετακινήθηκε από την επιφάνεια εργασίας <ph name="ACTIVE_DESK" /> στην επιφάνεια εργασίας <ph name="TARGET_DESK" />.</translation>
 <translation id="3253743281242075461">Τύπος εργασιών: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -553,6 +554,7 @@
 <translation id="3308453408813785101">Ο χρήστης <ph name="USER_EMAIL_ADDRESS" /> μπορεί να συνδεθεί αργότερα.</translation>
 <translation id="3321628682574733415">Λανθασμένος κωδικός γονέα</translation>
 <translation id="332827762492701193">Οι ειδοποιήσεις είναι κρυφές</translation>
+<translation id="3333674550998107387">Ανάπτυξη της ειδοποίησης <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">Καταγραφή οθόνης, εργαλεία για τη λήψη στιγμιότυπων και εγγραφών οθόνης</translation>
 <translation id="3340978935015468852">ρυθμίσεις</translation>
 <translation id="3341303451326249809">Έγινε λήψη του στιγμιότυπου οθόνης.</translation>
@@ -617,7 +619,6 @@
 <translation id="3563775809269155755">Ενεργοποίηση σημείου πρόσβασης Wi-Fi</translation>
 <translation id="3566240529365775567">Ανοίχτηκαν μόλις τώρα</translation>
 <translation id="3571734092741541777">Ρύθμιση</translation>
-<translation id="3572988532398145777">Δεν είναι δυνατή η ανάπτυξη της ειδοποίησης όταν είναι ανοιχτό κάποιο πλαίσιο. Κλείστε πρώτα το παρακάτω πλαίσιο.</translation>
 <translation id="3573179567135747900">Αλλάξτε το πάλι σε "<ph name="FROM_LOCALE" />" (απαιτείται επανεκκίνηση)</translation>
 <translation id="3576141592585647168">Αλλαγή ζώνης ώρας</translation>
 <translation id="3577473026931028326">Παρουσιάστηκε κάποιο πρόβλημα. Επανάληψη.</translation>
@@ -700,7 +701,6 @@
 <translation id="385300504083504382">Αρχή</translation>
 <translation id="3859364108019690">Δεν είναι δυνατή η ροή εφαρμογών</translation>
 <translation id="3861651314799684201">Press Enter για εγγραφή πλήρους οθόνης</translation>
-<translation id="3865912916886104060">Δεν υπάρχουν συνδεδεμένες συσκευές. Το Wi-Fi θα απενεργοποιηθεί για να ξεκινήσει η χρήση του σημείου πρόσβασης Wi-Fi.</translation>
 <translation id="3886872229787704059">Ανοίχτηκαν σήμερα</translation>
 <translation id="3891340733213178823">Πατήστε Ctrl + Shift + Q δύο φορές για να αποσυνδεθείτε.</translation>
 <translation id="3893630138897523026">ChromeVox (προφορικά σχόλια)</translation>
@@ -769,6 +769,8 @@
 <translation id="4146671046252289537">Μετακίνηση στο τέλος της επόμενης λέξης</translation>
 <translation id="4146833061457621061">Αναπαραγωγή μουσικής</translation>
 <translation id="4150201353443180367">Οθόνη</translation>
+<translation id="4156293514828496577">Απομένει <ph name="PERCENTAGE" />% μπαταρία (περίπου <ph name="TIME_LEFT" />).
+Ορισμένες λειτουργίες έχουν περιοριστεί, προκειμένου να αυξηθεί η διάρκεια ζωής της μπαταρίας.</translation>
 <translation id="4165275524535002941">Το καλώδιο δεν υποστηρίζει οθόνες</translation>
 <translation id="4177415338862979658">Κάντε κλικ για να δείτε λεπτομέρειες</translation>
 <translation id="4177913004758410636">{0,plural, =1{Ενημέρωση συσκευής εντός μίας ημέρας}other{Ενημέρωση συσκευής εντός # ημερών}}</translation>
@@ -785,7 +787,6 @@
 <translation id="4197790712631116042">Ανενεργό</translation>
 <translation id="4201033867194214117">Η λειτουργία <ph name="FEATURE_NAME" /> δεν είναι διαθέσιμη.</translation>
 <translation id="4201051445878709314">Εμφάνιση προηγούμενου μήνα</translation>
-<translation id="4202362334312791952">1 συνδεδεμένη συσκευή. Το Wi-Fi θα απενεργοποιηθεί για να ξεκινήσει η χρήση του σημείου πρόσβασης Wi-Fi.</translation>
 <translation id="4209973997261364186">Το Wi-Fi είναι ενεργοποιημένο</translation>
 <translation id="4212472694152630271">Αλλαγή σε PIN</translation>
 <translation id="4215497585250573029">Ρυθμίσεις VPN</translation>
@@ -899,6 +900,7 @@
 <translation id="4659419629803378708">Το ChromeVox ενεργοποιήθηκε</translation>
 <translation id="4666911709726371538">Περισσότερες εφαρμογές</translation>
 <translation id="4667099493359681081">Λήψη <ph name="FILENAME" /></translation>
+<translation id="4672539464599646374">Η Εξοικονόμηση μπαταρίας ενεργοποιήθηκε</translation>
 <translation id="468293128311738995">Εφαρμογές από το τηλέφωνό σας</translation>
 <translation id="4690510401873698237">Ράφι στο κάτω μέρος</translation>
 <translation id="4696813013609194136">Ξεκλείδωμα συσκευής με κωδικό γονέα</translation>
@@ -1059,6 +1061,8 @@
 <translation id="5297704307811127955">Ανενεργό</translation>
 <translation id="5300589172476337783">Εμφάνιση</translation>
 <translation id="5302048478445481009">Γλώσσα</translation>
+<translation id="5303319262469238330">Απομένει <ph name="PERCENTAGE" />% μπαταρία.
+Ορισμένες λειτουργίες έχουν περιοριστεί, προκειμένου να αυξηθεί η διάρκεια ζωής της μπαταρίας.</translation>
 <translation id="5308380583665731573">Σύνδεση</translation>
 <translation id="5313326810920013265">Ρυθμίσεις Bluetooth</translation>
 <translation id="5314219114274263156">Λήψη εγγραφής οθόνης</translation>
@@ -1092,7 +1096,6 @@
 <translation id="5426063383988017631">Το μενού Ρυθμίσεις έκλεισε.</translation>
 <translation id="5428899915242071344">Έναρξη επιλογής</translation>
 <translation id="5429993543155113935">Προς το παρόν, δεν υποστηρίζονται τα παράθυρα για ανώνυμη περιήγηση</translation>
-<translation id="5430931332414098647">Άμεση σύνδεση</translation>
 <translation id="5431318178759467895">Χρώμα</translation>
 <translation id="5433020815079095860">Είσοδος ήχου</translation>
 <translation id="544691375626129091">Όλοι οι διαθέσιμοι χρήστες έχουν ήδη προστεθεί σε αυτή την περίοδο σύνδεσης.</translation>
@@ -1121,6 +1124,7 @@
 <translation id="554893713779400387">Εναλλαγή υπαγόρευσης</translation>
 <translation id="5551456515017410630">Άνοιγμα/κλείσιμο ημερολογίου</translation>
 <translation id="5551974246223970793">Κατά την αναζήτηση μιας σελίδας, μεταβείτε στο επόμενο αποτέλεσμα για αναζήτηση</translation>
+<translation id="5555639311269196631">Απενεργοποίηση σημείου πρόσβασης Wi-Fi</translation>
 <translation id="5558091555391176027">Εναλλαγή υψηλής ορατότητας της λειτουργίας Κοινοποίηση κοντά</translation>
 <translation id="556042886152191864">Κουμπί</translation>
 <translation id="5570122939431135380">Άνοιγμα νέας καρτέλας σε νέο παράθυρο για ανώνυμη περιήγηση</translation>
@@ -1166,7 +1170,6 @@
 <translation id="5707775774148071965">Η συσκευή σας υποστηρίζει υψηλότερο ρυθμό μετάδοσης δεδομένων σε σχέση με το καλώδιό σας. Η απόδοση της συσκευής ενδέχεται να είναι περιορισμένη.</translation>
 <translation id="5710450975648804523">Η λειτουργία "Μην ενοχλείτε" είναι ενεργή</translation>
 <translation id="571295407079589142">Τα δεδομένα κινητής τηλεφωνίας είναι απενεργοποιημένα</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> συνδεδεμένες συσκευές Το Wi-Fi θα απενεργοποιηθεί για να ξεκινήσει η χρήση του σημείου πρόσβασης Wi-Fi.</translation>
 <translation id="5727460725221669831">Εάν ξεχάσατε τον κωδικό πρόσβασης ή αλλάξατε πρόσφατα τον κωδικό πρόσβασης του Λογαριασμού σας Google, δοκιμάστε να ανακτήσετε αυτόν τον χρήστη.</translation>
 <translation id="573413375004481890">Αυτή η συσκευή δεν μπορεί να υποστηρίξει όλες τις οθόνες σας. Για αυτόν τον λόγο, μια οθόνη αποσυνδέθηκε.</translation>
 <translation id="5740328398383587084">Κοινοποίηση κοντά</translation>
@@ -1216,7 +1219,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5920710855273935292">Έγινε σίγαση του μικροφώνου</translation>
-<translation id="5924855612669061715">Σημείο πρόσβασης Wi-Fi ενεργό</translation>
 <translation id="5946788582095584774">Η λειτουργία <ph name="FEATURE_NAME" /> είναι ενεργοποιημένη.</translation>
 <translation id="5947494881799873997">Επαναφορά</translation>
 <translation id="595202126637698455">Η παρακολούθηση απόδοσης έχει ενεργοποιηθεί</translation>
@@ -1232,6 +1234,7 @@
 <translation id="598407983968395253">Χρήση προτύπου</translation>
 <translation id="598882571027504733">Για να λάβετε την ενημέρωση, επανεκκινήστε το Chromebook με το συνδεδεμένο πληκτρολόγιο.</translation>
 <translation id="6000279412553873020">Πλήκτρα, κουμπιά κ.ά.</translation>
+<translation id="6002122790816966947">Οι συσκευές σας</translation>
 <translation id="6012623610530968780">Σελίδα <ph name="SELECTED_PAGE" /> από <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Επισήμανση επόμενου στοιχείου στο ράφι</translation>
 <translation id="6015573907265691211">Επισήμανση ως ολοκληρωμένης</translation>
@@ -1300,6 +1303,7 @@
 <translation id="6231419273573514727">Η απόδοση των περιφερειακών ενδέχεται να είναι περιορισμένη</translation>
 <translation id="6232891689835436217">Η εφαρμογή <ph name="APP_NAME" /> χρησιμοποιεί την κάμερα και το μικρόφωνό σας αυτήν τη στιγμή.</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">Χαμηλή στάθμη μπαταρίας. Η Εξοικονόμηση μπαταρίας ενεργοποιήθηκε.</translation>
 <translation id="6247728804802644171">Άνοιγμα ειδοποιήσεων</translation>
 <translation id="6254629735336163724">Κλειδωμένη σε οριζόντια</translation>
 <translation id="6259254695169772643">Χρησιμοποιήστε τη γραφίδα σας για επιλογή</translation>
@@ -1414,6 +1418,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Κάμερα και μικρόφωνο σε χρήση</translation>
 <translation id="6739144137573853180">ΜΕΤΑΒΑΣΗ ΣΤΙΣ ΡΥΘΜΙΣΕΙΣ</translation>
+<translation id="6747985245839783873">Η μπαταρία βρίσκεται στο <ph name="PERCENTAGE" /> τοις εκατό. Η Εξοικονόμηση μπαταρίας είναι ενεργή.</translation>
 <translation id="6751052314767925245">Επιβάλλεται από τον διαχειριστή σας</translation>
 <translation id="6751826523481687655">Η παρακολούθηση απόδοσης έχει ενεργοποιηθεί</translation>
 <translation id="6752912906630585008">Η επιφάνεια εργασίας <ph name="REMOVED_DESK" /> καταργήθηκε και συγχωνεύτηκε με την επιφάνεια εργασίας <ph name="RECEIVE_DESK" />.</translation>
@@ -1513,6 +1518,7 @@
 <translation id="7131634465328662194">Θα αποσυνδεθείτε αυτόματα.</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="7144942256906679589">Κατάσταση μπαταρίας</translation>
+<translation id="7145639536026937076">Η μπαταρία είναι στο <ph name="PERCENTAGE" />% και φορτίζει. Η Εξοικονόμηση μπαταρίας είναι ενεργή.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1521,7 +1527,9 @@
 <translation id="7188494361780961876">Το μενού μεταφέρθηκε στην επάνω αριστερή γωνία της οθόνης.</translation>
 <translation id="7189412385142492784">Πόσο απέχει η Αφροδίτη</translation>
 <translation id="7198435252016571249">Η προεπισκόπηση κάμερας τοποθετήθηκε στην κάτω δεξιά γωνία. Διένεξη με επιφάνεια συστήματος.</translation>
+<translation id="7219573373513695352">Δεν υπάρχουν συνδεδεμένες συσκευές</translation>
 <translation id="7229029500464092426">Διαθέσιμη μνήμη <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> συνολική μνήμη</translation>
+<translation id="7244725679040769470">Απομένει περίπου <ph name="PERCENTAGE" />% μπαταρία. Συνδέστε τη συσκευή σας στο ρεύμα.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Θα πρέπει να γίνει επανεκκίνηση αυτού του Chromebook για την εφαρμογή μιας ενημέρωσης. Η ενέργεια μπορεί να διαρκέσει έως 1 λεπτό.</translation>
 <translation id="7256634071279256947">Πίσω μικρόφωνο</translation>
 <translation id="7258828758145722155">Έγινε επεξεργασία χθες</translation>
@@ -1915,6 +1923,7 @@
 <translation id="8878886163241303700">Επέκταση οθόνης</translation>
 <translation id="888982883502837004">Διατίθενται ενημερώσεις υλικολογισμικού για τη συσκευή σας. Κάντε κλικ για έλεγχο και ενημέρωση.</translation>
 <translation id="8896630965521842259">Το <ph name="DESK_TEMPLATE_NAME" /> θα διαγραφεί οριστικά.</translation>
+<translation id="889790758758811533">Απομένει <ph name="PERCENTAGE" />% μπαταρία (περίπου <ph name="TIME_LEFT" />). Συνδέστε τη συσκευή σας στο ρεύμα.</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8905919797434099235">(Χωρίς τίτλο)</translation>
 <translation id="890616557918890486">Αλλαγή πηγής</translation>

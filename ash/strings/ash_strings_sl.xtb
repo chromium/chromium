@@ -310,7 +310,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Išči naprej</translation>
 <translation id="2282073721614284166">Odpiranje povezave na zavihku</translation>
-<translation id="2284237890386182187">Vklopljeno, povezana ni nobena naprava</translation>
 <translation id="2292698582925480719">Zaslonsko razmerje</translation>
 <translation id="229397294990920565">Prenos podatkov v mobilnem omrežju se izklaplja …</translation>
 <translation id="2295777434187870477">Mikrofon je vklopljen; če ga preklopite, bo izklopljen vhodni zvok.</translation>
@@ -617,7 +616,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3563775809269155755">Omogočanje dostopne točke</translation>
 <translation id="3566240529365775567">Pravkar odprto</translation>
 <translation id="3571734092741541777">Nastavi</translation>
-<translation id="3572988532398145777">Obvestila ni mogoče razširiti, ko je podokno odprto. Najprej zaprite spodnje podokno.</translation>
 <translation id="3573179567135747900">Spremeni nazaj v jezik »<ph name="FROM_LOCALE" />« (potreben vnovični zagon)</translation>
 <translation id="3576141592585647168">Spreminjanje časovnega pasu</translation>
 <translation id="3577473026931028326">Prišlo je do napake. Poskusite znova.</translation>
@@ -700,7 +698,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="385300504083504382">Začetek</translation>
 <translation id="3859364108019690">Aplikacij ni mogoče pretočno predvajati</translation>
 <translation id="3861651314799684201">Pritisnite Enter, če želite snemati v celozaslonskem načinu</translation>
-<translation id="3865912916886104060">Nobena naprava ni povezana. Wi-Fi bo izklopljen, da bo mogoče začeti uporabljati dostopno točko.</translation>
 <translation id="3886872229787704059">Odprto danes</translation>
 <translation id="3891340733213178823">Dvakrat pritisnite Ctrl + Shift + Q, če se želite odjaviti.</translation>
 <translation id="3893630138897523026">ChromeVox (izgovorjava povratnih informacij)</translation>
@@ -785,7 +782,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4197790712631116042">Izklopljeno</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ni na voljo.</translation>
 <translation id="4201051445878709314">Prikaz prejšnjega meseca</translation>
-<translation id="4202362334312791952">1 naprava je povezana. Wi-Fi bo izklopljen, da bo mogoče začeti uporabljati dostopno točko.</translation>
 <translation id="4209973997261364186">Povezava Wi-Fi je vklopljena.</translation>
 <translation id="4212472694152630271">Preklopi na kodo PIN</translation>
 <translation id="4215497585250573029">Nastavitve VPN-ja</translation>
@@ -1092,7 +1088,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5426063383988017631">Meni z nastavitvami je zaprt</translation>
 <translation id="5428899915242071344">Začni izbiranje</translation>
 <translation id="5429993543155113935">Anonimna okna trenutno niso podprta.</translation>
-<translation id="5430931332414098647">Takojšnji internet prek mobilnega telefona</translation>
 <translation id="5431318178759467895">Barvno</translation>
 <translation id="5433020815079095860">Zvočni vhod</translation>
 <translation id="544691375626129091">Vsi razpoložljivi uporabniki so že bili dodani tej seji.</translation>
@@ -1121,6 +1116,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="554893713779400387">Preklop narekovanja</translation>
 <translation id="5551456515017410630">Odpiranje/zapiranje koledarja</translation>
 <translation id="5551974246223970793">Preklop na naslednje ujemanje za iskanje pri iskanju na strani</translation>
+<translation id="5555639311269196631">Izklopi dostopno točko</translation>
 <translation id="5558091555391176027">Preklop visoke vidnosti deljenja v bližini</translation>
 <translation id="556042886152191864">Gumb</translation>
 <translation id="5570122939431135380">Odpiranje novega zavihka v novem anonimnem oknu</translation>
@@ -1166,7 +1162,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5707775774148071965">Naprava podpira višjo podatkovno hitrost od kabla. Delovanje naprave bo morda omejeno.</translation>
 <translation id="5710450975648804523">Način »ne moti« je vklopljen</translation>
 <translation id="571295407079589142">Prenos podatkov v mobilnem omrežju je izklopljen</translation>
-<translation id="5716891621595980681">Povezanih je toliko naprav: <ph name="DEVICECOUNT" />. Wi-Fi bo izklopljen, da bo mogoče začeti uporabljati dostopno točko.</translation>
 <translation id="5727460725221669831">Če ste pozabili geslo ali nedavno spremenili geslo za račun Google, poskusite obnoviti tega uporabnika.</translation>
 <translation id="573413375004481890">Ta naprava ne podpira vseh zaslonov, zato je bila z enim prekinjena povezava</translation>
 <translation id="5740328398383587084">Deljenje v bližini</translation>
@@ -1216,7 +1211,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5920710855273935292">Zvok mikrofona je izklopljen.</translation>
-<translation id="5924855612669061715">Dostopna točka je vklopljena</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je vklopljena.</translation>
 <translation id="5947494881799873997">Razveljavi</translation>
 <translation id="595202126637698455">Sledenje učinkovitosti delovanja je omogočeno</translation>
@@ -1232,6 +1226,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="598407983968395253">Uporabi predlogo</translation>
 <translation id="598882571027504733">Če želite prejeti posodobitev, znova zaženite Chromebook s priklopljeno tipkovnico.</translation>
 <translation id="6000279412553873020">Tipke, gumbi in drugo</translation>
+<translation id="6002122790816966947">Vaše naprave</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stran od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Označevanje naslednjega elementa na polici</translation>
 <translation id="6015573907265691211">Označi kot končano</translation>
@@ -1521,6 +1516,7 @@ Nova namestitev</translation>
 <translation id="7188494361780961876">Meni je bil premaknjen v zgornji levi kot zaslona.</translation>
 <translation id="7189412385142492784">Kako daleč je Venera</translation>
 <translation id="7198435252016571249">Fotoaparat je pripet v spodnji desni kot. To je v navzkrižju s sistemskim okoljem.</translation>
+<translation id="7219573373513695352">Nobena naprava ni povezana</translation>
 <translation id="7229029500464092426">Pomnilnik <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (skupno)</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ta Chromebook je treba znova zagnati, če želite uveljaviti posodobitev. Traja lahko največ eno minuto.</translation>
 <translation id="7256634071279256947">Zadnji mikrofon</translation>

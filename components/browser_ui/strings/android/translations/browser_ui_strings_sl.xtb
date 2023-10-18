@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Pomagajte nam izboljšati Chrome, tako da nam poveste, zakaj ste dovolili piškotke tretjih oseb. <ph name="BEGIN_LINK" />Pošiljanje povratnih informacij<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Prekini</translation>
 <translation id="1181037720776840403">Odstrani</translation>
+<translation id="1192844206376121885">S tem boste izbrisali vse podatke in piškotke, ki jih je shranilo spletno mesto <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1242008676835033345">Vdelano v <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Ustavi</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">Kljub zelenim očalom za zaščito oči je Dorothy in njene prijatelje sprva zaslepilo</translation>
 <translation id="2176704795966505152">Prikaz možnosti povečave/pomanjšave v glavnem meniju</translation>
 <translation id="2182457891543959921">Vprašaj, preden se spletnim mestom dovoli ustvarjanje 3D-zemljevida vaše okolice ali spremljanje položaja kamere (priporočljivo)</translation>
+<translation id="2185965788978862351">S tem boste izbrisali <ph name="DATASIZE" /> podatkov in piškotkov, ki so jih shranila spletna mesta ali aplikacije na začetnem zaslonu.</translation>
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2212565012507486665">Dovoli piškotke</translation>
 <translation id="2228071138934252756">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do fotoaparata, fotoaparat vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">Prenos je končan <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Funkcije na nekaterih spletnih mestih morda ne bodo delovale v anonimnem načinu</translation>
 <translation id="2442870161001914531">Vedno zahtevaj spletno mesto za namizne računalnike</translation>
+<translation id="2469312991797799607">To dejanje bo izbrisalo vse podatke in piškotke za spletno mesto <ph name="ORIGIN" /> ter vsa njegova podrejena spletna mesta.</translation>
 <translation id="2479148705183875116">V nastavitve</translation>
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="2485422356828889247">Odmeščanje</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">Uporaba</translation>
 <translation id="5091013926750941408">Spletno mesto za mobilne naprave</translation>
 <translation id="509133520954049755">Zahtevaj pogled za namizni računalnik</translation>
+<translation id="5099358668261120049">S tem boste izbrisali vse podatke in piškotke, ki jih je shranilo spletno mesto <ph name="ORIGIN" /> ali njegova aplikacija na vašem začetnem zaslonu.</translation>
 <translation id="5100237604440890931">Strnjeno – kliknite, če želite razširiti.</translation>
 <translation id="5123685120097942451">Anonimni zavihek</translation>
 <translation id="5186036860380548585">Možnosti so na voljo blizu vrha zaslona</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5922853908706496913">Deljenje zaslona</translation>
 <translation id="5922967540311291836">Blokiranje piškotkov tretjih oseb:</translation>
+<translation id="5923512600150154850">S tem boste izbrisali <ph name="DATASIZE" /> podatkov in piškotkov, ki so jih shranila spletna mesta.</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
 <translation id="5964247741333118902">Vdelana vsebina</translation>
 <translation id="5968921426641056619">Vnesite spletni naslov</translation>
@@ -337,6 +342,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7188508872042490670">Podatki spletnih mest v napravi</translation>
+<translation id="7201549776650881587">To dejanje bo izbrisalo vse podatke in piškotke, ki so jih shranila vsa spletna mesta v skupini <ph name="ORIGIN" /> ali z njo povezana aplikacija na začetnem zaslonu.</translation>
 <translation id="7203150201908454328">Razširjeno</translation>
 <translation id="7219254577985949841">Želite izbrisati podatke spletnega mesta?</translation>
 <translation id="723171743924126238">Izberite slike</translation>

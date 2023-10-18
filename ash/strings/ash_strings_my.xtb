@@ -311,7 +311,6 @@
 <translation id="2276987123919776440">၁၅ မိနစ်</translation>
 <translation id="2277103315734023688">အရှေ့သို့ ရစ်ရန်</translation>
 <translation id="2282073721614284166">လင့်ခ်ကို တဘ်တွင်ဖွင့်ရန်</translation>
-<translation id="2284237890386182187">ဖွင့်၊ ချိတ်ထားသည့်စက် မရှိပါ</translation>
 <translation id="2292698582925480719">မြင်ကွင်း စကေး</translation>
 <translation id="229397294990920565">မိုဘိုင်းဒေတာကို ပိတ်နေပါသည်...</translation>
 <translation id="2295777434187870477">မိုက်ဖွင့်ထားသည်၊ ပိတ်လိုက်ခြင်းဖြင့် အသံတိတ်သွားပါမည်။</translation>
@@ -620,7 +619,6 @@
 <translation id="3563775809269155755">ဟော့စပေါ့ဖွင့်ခြင်း</translation>
 <translation id="3566240529365775567">ယခုလေးတင် ဖွင့်ထားသည်</translation>
 <translation id="3571734092741541777">စဖွင့်သတ်မှတ်ရန်</translation>
-<translation id="3572988532398145777">အကန့်ကို ဖွင့်ထားစဉ် အကြောင်းကြားချက်ကို ချဲ့၍မရပါ။ အောက်ရှိအကန့်ကို ဦးစွာပိတ်ပါ။</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" သို့ပြန်ပြောင်းရန် (ပြန်လည်အစပြုရန် လိုအပ်သည်)</translation>
 <translation id="3576141592585647168">စံတော်ချိန် ပြောင်းခြင်း</translation>
 <translation id="3577473026931028326">တစ်ခုခုမှားသွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
@@ -703,7 +701,6 @@
 <translation id="385300504083504382">အစ</translation>
 <translation id="3859364108019690">အက်ပ်များ တိုက်ရိုက်မလွှင့်နိုင်ပါ</translation>
 <translation id="3861651314799684201">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
-<translation id="3865912916886104060">ချိတ်ဆက်ထားသောစက် မရှိပါ။ ‘ဟော့စပေါ့’ စသုံးရန် WiFi ကိုပိတ်ပါမည်။</translation>
 <translation id="3886872229787704059">ယနေ့ ဖွင့်ထားသည်</translation>
 <translation id="3891340733213178823">ထွက်ခွာရန် Ctrl+Shift+Q ကို နှစ်ကြိမ် နှိပ်ပါ။</translation>
 <translation id="3893630138897523026">ChromeVox (နှုတ်ပြော အကြံပြုချက်)</translation>
@@ -790,7 +787,6 @@
 <translation id="4197790712631116042">ပိတ်ရန်</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> မရနိုင်ပါ။</translation>
 <translation id="4201051445878709314">ယခင် လကို ပြရန်</translation>
-<translation id="4202362334312791952">စက် ၁ ခု ချိတ်ဆက်ထားသည်။ ‘ဟော့စပေါ့’ စသုံးရန် WiFi ကိုပိတ်ပါမည်။</translation>
 <translation id="4209973997261364186">Wi-Fi ဖွင့်ထားသည်</translation>
 <translation id="4212472694152630271">ပင်နံပါတ်သို့ပြောင်းရန်</translation>
 <translation id="4215497585250573029">VPN ဆက်တင်များ</translation>
@@ -1100,7 +1096,6 @@
 <translation id="5426063383988017631">ဆက်တင်များမီနူး ပိတ်ထားသည်</translation>
 <translation id="5428899915242071344">ရွေးချယ်ခြင်းကို စတင်ရန်</translation>
 <translation id="5429993543155113935">‘ရုပ်ဖျက်’ ဝင်ဒိုးများကို လောလောဆယ် ပံ့ပိုးမထားပါ</translation>
-<translation id="5430931332414098647">အလိုအလျောက် ချိတ်ဆက်မျှဝေခြင်း</translation>
 <translation id="5431318178759467895">အရောင်</translation>
 <translation id="5433020815079095860">အသံ အဝင်</translation>
 <translation id="544691375626129091">အသုံးပြုနိုင်သူ အားလုံးအား ဤ ကဏ္ဍသို့ ပေါင်းထည့်ပြီး ဖြစ်၏။</translation>
@@ -1129,6 +1124,7 @@
 <translation id="554893713779400387">အဖွင့်၊ အပိတ် ခလုတ်</translation>
 <translation id="5551456515017410630">ပြက္ခဒိန် ဖွင့်/ပိတ်ရန်</translation>
 <translation id="5551974246223970793">စာမျက်နှာရှာသောအခါ ရှာဖွေမှုအတွက် လာမည့်ကိုက်ညီမှုသို့ သွားရန်</translation>
+<translation id="5555639311269196631">ဟော့စပေါ့ ပိတ်ရန်</translation>
 <translation id="5558091555391176027">‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ အထူးမြင်နိုင်မှုကို ပြောင်းရန်</translation>
 <translation id="556042886152191864">ခလုတ်</translation>
 <translation id="5570122939431135380">ရုပ်ဖျက် ဝင်းဒိုးအသစ်တွင် တဘ်အသစ်ဖွင့်ရန်</translation>
@@ -1174,7 +1170,6 @@
 <translation id="5707775774148071965">စက်က ကေဘယ်ကြိုးထက် ပိုမြင့်သည့် ဒေတာသယ်ယူနှုန်းကို ပံ့ပိုးသည်။ စက်၏စွမ်းဆောင်ရည်သည် အကန့်အသတ်ရှိနိုင်သည်။</translation>
 <translation id="5710450975648804523">'မနှောင့်ယှက်ရ' ဖွင့်ထားသည်</translation>
 <translation id="571295407079589142">မိုဘိုင်းဒေတာ ပိတ်ထားသည်</translation>
-<translation id="5716891621595980681">စက် <ph name="DEVICECOUNT" /> ခု ချိတ်ဆက်ထားသည်။ ‘ဟော့စပေါ့’ စသုံးရန် WiFi ကိုပိတ်ပါမည်။</translation>
 <translation id="5727460725221669831">သင့်စကားဝှက်မေ့သွားပါက (သို့) သင့် Google Account စကားဝှက်ကို မကြာသေးမီက ပြောင်းထားပါက ဤအသုံးပြုသူကို ပြန်လည်ရယူကြည့်ပါ။</translation>
 <translation id="573413375004481890">ဤစက်သည် သင့်ဖန်သားပြင်ပြသမှုများအားလုံးကို မပံ့ပိုးသည့်အတွက် တစ်ခုကို ချိတ်ဆက်မှုဖြုတ်လိုက်ပါပြီ</translation>
 <translation id="5740328398383587084">မျှဝေခြင်း</translation>
@@ -1224,7 +1219,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5920710855273935292">မိုက်ပိတ်ထားသည်။</translation>
-<translation id="5924855612669061715">ဟော့စပေါ့ ဖွင့်လိုက်သည်</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ဖွင့်ထားသည်။</translation>
 <translation id="5947494881799873997">မူလအခြေအနေ ပြန်သွားရန်</translation>
 <translation id="595202126637698455">ဆောင်ရွက်ချက်များကို ခြေရာခံနေသည်။</translation>
@@ -1240,6 +1234,7 @@
 <translation id="598407983968395253">နမူနာပုံစံ သုံးရန်</translation>
 <translation id="598882571027504733">အပ်ဒိတ်ရယူနိုင်ရန်အတွက် ကီးဘုတ်ကို ချိတ်ဆက်ထားပြီး Chromebook ကို ပြန်လည်စတင်ပါ။</translation>
 <translation id="6000279412553873020">ကီး၊ ခလုတ် စသည်</translation>
+<translation id="6002122790816966947">သင်၏စက်များ</translation>
 <translation id="6012623610530968780">စာမျက်နှာ <ph name="TOTAL_PAGE_NUM" /> အနက် <ph name="SELECTED_PAGE" /></translation>
 <translation id="601304062528754300">စင်ပေါ်ရှိ နောက်အက်ပ်တစ်ခုကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="6015573907265691211">လုပ်ပြီးဟု မှတ်ရန်</translation>
@@ -1532,6 +1527,7 @@
 <translation id="7188494361780961876">မီနူးကို ဖန်သားပြင်၏ ဘယ်ဘက်ထိပ်ထောင့်သို့ ရွှေ့လိုက်သည်။</translation>
 <translation id="7189412385142492784">သောကြာဂြိုဟ်က ဘယ်လောက်ဝေးလဲ</translation>
 <translation id="7198435252016571249">ကင်မရာကို အောက်ညာဘက်ထောင့်သို့ ကပ်ထားသည်။ စနစ်မျက်နှာပြင်နှင့် ငြိနေသည်။</translation>
+<translation id="7219573373513695352">စက်ပစ္စည်းများ ချိတ်ဆက်မထားပါ</translation>
 <translation id="7229029500464092426">မှတ်ဉာဏ် <ph name="AVAILABLE_MEMORY" /> | စုစုပေါင်း <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည်။ စက်ကို အားသွင်းပါ။</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />။ အပ်ဒိတ် အသုံးပြုနိုင်ရန်အတွက် ဤ Chromebook ကို ပြန်လည်စတင်ရန် လိုအပ်သည်။ ၎င်းက ၁ မိနစ်အထိ ကြာနိုင်သည်။</translation>

@@ -4,6 +4,7 @@
 <translation id="1105362920864247682">Slett nettlesingsdata i Chrome.</translation>
 <translation id="1143896152279775643">Passordet blir lagret i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Fortsett å bruke Chrome-dataene i Google-kontoen din.</translation>
+<translation id="1200396280085622191">Bruk Chrome hver gang du trykker på linker i meldinger og andre apper.</translation>
 <translation id="1282031177488366470">Bidra til å gjøre Chrome bedre og raskere</translation>
 <translation id="1333745675627230582">Spill Chrome Dino-spillet</translation>
 <translation id="1352919863522755794">Google Passordlagring kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
@@ -33,16 +34,19 @@ Du bør tenke på følgende:
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Bruk Chrome automatisk når du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="1917964099031477364">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chrome og andre Google-apper på enheten.</translation>
+<translation id="1987779152850321833">Fullfør de foreslåtte handlingene under for å få mest mulig ut av Chrome.</translation>
 <translation id="2009224836393115614">Chrome kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
 <translation id="2056123005618757196">Få mer gjort med Google Chrome-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="2120238739383482109">Åpner Chrome-bokmerkene.</translation>
 <translation id="2147651015520127414">Chrome bekreftet at sertifikatet for dette nettstedet er utstedt av <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Data fra Chrome-synkronisering</translation>
+<translation id="2242467532204595597">Bruk Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="2311240109311056604">Åpner Chrome Dino-spillet.</translation>
 <translation id="2339201583852607431">Passordet blir lagret i Google-kontoen din (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome deler posisjonen din med nettsteder du tillater.</translation>
 <translation id="2347208864470321755">Når denne funksjonen er slått på, tilbyr Chrome å oversette sider som er skrevet på andre språk ved hjelp av Google Oversetter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="2414068465746584414">Åpne «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» fra enhetsinnstillingene, og velg «Chrome»</translation>
+<translation id="2423077901494354337">Nå får du mest mulig ut av Chrome på enheten din.</translation>
 <translation id="2427791862912929107">Chrome har funksjoner som hjelper deg med å administrere dataforbruket ditt og hastigheten for innlasting av nettsider.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Bruk Chrome for autofyll for å enkelt få tilgang til de lagrede passordene dine i de andre appene dine.</translation>
@@ -61,6 +65,7 @@ Du bør tenke på følgende:
 <translation id="2876628302275096482">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chrome holder dataene dine private<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Velg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chrome-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
+<translation id="309672519329227863">Få tilgang til Chrome-passord med mer i andre apper.</translation>
 <translation id="3167189358072330585">Kontoen din fungerer ikke i Google Chrome. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-side</translation>
 <translation id="3196546062792660320">Chrome sparer tid for deg ved å legge kontoene dine på nettet. Du kan legge til eller fjerne kontoer i Innstillinger.</translation>
@@ -71,6 +76,7 @@ Du bør tenke på følgende:
 <translation id="3503014945441706099">Få Safe Browsing med økt beskyttelse for denne Chrome-profilen også</translation>
 <translation id="3522659714780527202">For å se fanene dine overalt hvor du bruker Chrome, slå på synkronisering</translation>
 <translation id="3533694711092285624">Ingen lagrede passord. Chrome kan sjekke passordene dine når du lagrer dem.</translation>
+<translation id="3577555362230509265">Bruk Chrome i andre apper.</translation>
 <translation id="3594076341410558780">Skjul «Få mest mulig ut av Chrome»</translation>
 <translation id="3655656110921623717">Dette betyr at Chrome kommer til å forespørre mobilnettstedet hver gang.</translation>
 <translation id="3720541637541300822">Lås inkognitofaner når du lukker Chrome</translation>
@@ -140,6 +146,7 @@ Du bør tenke på følgende:
 <translation id="6181930887571472871">Bytt til Chrome</translation>
 <translation id="6238746320622508509">La Chrome låse inkognitofanene dine.</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
+<translation id="6348855835728304880">Få tilgang til Chrome-passord med mer i andre apper på denne enheten.</translation>
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="6427126399757991875">Organisasjonen din konfigurerer Chrome …</translation>
 <translation id="6545449117344801102">Chrome registrerer adresser og bruker Google Maps for å gi deg veibeskrivelser og lokal informasjon.</translation>
@@ -168,6 +175,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7187993566681480880">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
 <translation id="7200524487407690471">Chrome kjører sikkerhetssjekken automatisk hver dag for å beskytte deg mot databrudd, utrygge nettsteder med mer. Du kan finne ut mer om sikkerhetssjekken i innstillingene.</translation>
 <translation id="72119412072970160">Du kan bruke passordene du har lagret i Google Passordlagring, i andre apper på iPaden din.</translation>
+<translation id="723787869754590019">Bruk Chrome for autofyll</translation>
 <translation id="7254380941803999489">Angi Chrome som standardnettleser</translation>
 <translation id="7261678641327190792">Chrome kan ikke sjekke passordene dine</translation>
 <translation id="7272930098487145294">For å lagre bilder, trykk på Innstillinger for å la Chrome legge dem til i bildene dine</translation>
@@ -209,6 +217,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8587647598504233556">Trykk på «Chrome» og så på «Standard nettleserapp».</translation>
 <translation id="8603022514504485810">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
+<translation id="8727043961453758442">Få mest mulig ut av Chrome</translation>
 <translation id="8736550665979974340">Hold deg trygg med Google Chrome</translation>
 <translation id="8760668027640688122">Åpne en ny fane i Chrome</translation>
 <translation id="8765470054473112089">Når du skriver i adressefeltet eller søkefeltet, sender Chrome det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
@@ -234,4 +243,5 @@ Dette bør du tenke over:
 <translation id="9112744793181547300">Vil du angi Chrome som standard?</translation>
 <translation id="9122931302567044771">Dette betyr at Chrome kommer til å forespørre nettstedet for datamaskiner hver gang.</translation>
 <translation id="9181628561061032322">Åpner nylige faner fra Chrome.</translation>
+<translation id="97300214378190234">Bruk Chrome hver gang du trykker på linker i andre apper.</translation>
 </translationbundle>

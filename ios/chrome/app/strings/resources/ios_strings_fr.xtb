@@ -41,7 +41,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1176932207622159128">Imposs. enreg. image</translation>
 <translation id="1177414119866731261">Ouvrez le menu Chrome</translation>
 <translation id="1181037720776840403">Supprimer</translation>
-<translation id="1200396280085622191">Utilisez Chrome chaque fois que vous appuyez sur des liens dans des messages et d'autres applis.</translation>
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1207113853726624428">Nouvelle recherche</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -194,7 +193,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1974060860693918893">Paramètres avancés</translation>
 <translation id="1980417445547898121">{count,plural, =1{Affichez sur cet iPhone {count} onglet récemment actif sur votre autre appareil}one{Affichez sur cet iPhone {count} onglet récemment actif sur votre autre appareil}other{Affichez sur cet iPhone vos {count} onglets récemment actifs sur votre autre appareil}}</translation>
 <translation id="1981118202195772574">Mobile</translation>
-<translation id="1987779152850321833">Effectuez les actions suggérées ci-dessous pour exploiter tout le potentiel de Chrome.</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="1990820278544963435">Rechercher</translation>
 <translation id="1991153180045413119">Mot de passe partagé</translation>
@@ -233,7 +231,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2220529011494928058">Signaler un problème</translation>
 <translation id="2230173723195178503">Page Web chargée</translation>
 <translation id="2239626343334228536">Effacement des données de navigation…</translation>
-<translation id="2242467532204595597">Utilisez Chrome chaque fois que vous appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
 <translation id="2251686759395008410">Menu → Historique</translation>
 <translation id="2252674110805316998">Rechercher sur le Web</translation>
 <translation id="2256933947031277845">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes.</translation>
@@ -272,7 +269,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2411749908844615428">{count,plural, =1{{count} adresse enregistrée disponible au-dessus de votre clavier.}one{{count} adresse enregistrée disponible au-dessus de votre clavier.}other{{count} adresses enregistrées disponibles au-dessus de votre clavier.}}</translation>
 <translation id="2421004566762153674">Blocage des cookies tiers</translation>
 <translation id="2421044535038393232">Poursuivre les modifications</translation>
-<translation id="2423077901494354337">Vous allez maintenant exploiter tout le potentiel de Chrome sur votre appareil.</translation>
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour "<ph name="USERNAME" />" sur <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="2459155039684421202">Dans la barre d'adresse, saisissez une tâche telle que "Effacer mon historique" ou "Modifier les mots de passe".</translation>
@@ -318,7 +314,6 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2671426118752779020">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe Google dans d'autres applis sur votre iPhone.</translation>
 <translation id="2690858294534178585">Caméra en cours d'utilisation</translation>
-<translation id="26915454213703967">Rech. dans image avec Google</translation>
 <translation id="2691653761409724435">Indisponible hors connexion</translation>
 <translation id="2695507686909505111">Page traduite</translation>
 <translation id="2696180352517415858">Vous ne serez pas déconnecté de votre compte Google. D'<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent y être enregistrées lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
@@ -412,7 +407,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages pour les consulter plus tard ou hors connexion</translation>
 <translation id="3081338492074632642">Assurez-vous que le mot de passe que vous enregistrez correspond bien à celui que vous utilisez pour accéder à <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">En bas</translation>
-<translation id="309672519329227863">Accédez à vos mots de passe Chrome et plus, dans d'autres applis.</translation>
 <translation id="309710370695886264">Vous avez 1 mot de passe réutilisé. Modifiez-le maintenant pour vous protéger.</translation>
 <translation id="3112556859945124369">Marquer…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Voir ce que vous pouvez synchroniser<ph name="END_LINK" /></translation>
@@ -500,7 +494,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3551320343578183772">Fermer l'onglet</translation>
 <translation id="3565207542107370586">Effacer les données de navigation…</translation>
 <translation id="3575234738189584619">Rechercher avec Lens</translation>
-<translation id="3577555362230509265">Utilisez Chrome dans d'autres applis.</translation>
 <translation id="3581564640715911333">Proposer de traduire les pages dans d'autres langues</translation>
 <translation id="3587885837929752825">Votre organisation limite les éléments pouvant être enregistrés dans votre compte Google.</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
@@ -950,7 +943,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6042308850641462728">Plus</translation>
 <translation id="6045460247888249350">Ajouter un titre</translation>
-<translation id="6054613632208573261">Utiliser Chrome par défaut</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Contrôlez vos articles et votre activité via ce menu</translation>
 <translation id="6064824697233747382">Votre organisation vous oblige à désactiver la synchronisation.</translation>
@@ -1010,7 +1002,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6346549652287021269">Lancer un nouveau téléchargement ?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Cette adresse sera supprimée de votre compte Google (<ph name="USER_EMAIL" />) et de cet appareil.}one{Cette adresse sera supprimée de votre compte Google (<ph name="USER_EMAIL" />) et de cet appareil.}other{Ces adresses seront supprimées de votre compte Google (<ph name="USER_EMAIL" />) et de cet appareil.}}</translation>
 <translation id="634878792104344809">Synchronisez vos mots de passe, votre historique et plus sur tous vos appareils</translation>
-<translation id="6348855835728304880">Accédez à vos mots de passe Chrome et plus dans d'autres applis sur cet appareil.</translation>
 <translation id="63519665078626091">Pour utiliser l'inspecteur Web, connectez-vous à Safari sur votre ordinateur à l'aide d'un câble et accédez à votre iPad depuis le menu Développement. Vous pouvez activer ce menu dans la section "Avancé" de Safari sur votre ordinateur.</translation>
 <translation id="6355820205320395730">Les mots de passe peu sécurisés sont faciles à deviner. Assurez-vous de créer des mots de passe sécurisés. <ph name="BEGIN_LINK" />Découvrez d'autres conseils de sécurité.<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">OK</translation>
@@ -1196,7 +1187,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7223102419539744003">Fermer l'onglet</translation>
 <translation id="722454870747268814">Nouvel onglet de navigation privée 
 </translation>
-<translation id="723787869754590019">Utiliser Chrome pour la saisie automatique</translation>
 <translation id="7265758999917665941">Jamais pour ce site</translation>
 <translation id="7272437679830969316">Impossible de confirmer votre identité. Mot de passe non copié.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nouveau colis suivi}one{Nouveau colis suivi}other{Nouveaux colis suivis}}</translation>
@@ -1469,7 +1459,6 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8717864919010420084">Copier le lien</translation>
 <translation id="8721297211384281569">Menu "Outils"</translation>
 <translation id="8725066075913043281">Réessayer</translation>
-<translation id="8727043961453758442">Profiter pleinement de Chrome</translation>
 <translation id="8730621377337864115">OK</translation>
 <translation id="8731958888085671579">Masquer "Rechercher sur la page"</translation>
 <translation id="87371078663613140">Explorez les options de la barre de menu</translation>
@@ -1582,7 +1571,6 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="959066944189734975">Vous suivez <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Afficher les suggestions d'onglets d'autres appareils</translation>
 <translation id="972300586996227526">{COUNT,plural, =1{Vous pouvez enregistrer votre mot de passe pour {DOMAIN_ONE} dans votre compte Google ({EMAIL})}=2{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE} et {DOMAIN_TWO} dans votre compte Google ({EMAIL})}=3{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et {OTHER_DOMAINS_COUNT} autre domaine dans votre compte Google ({EMAIL})}one{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et {OTHER_DOMAINS_COUNT} autre domaine dans votre compte Google ({EMAIL})}other{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et {OTHER_DOMAINS_COUNT} autres domaines dans votre compte Google ({EMAIL})}}</translation>
-<translation id="97300214378190234">Utilisez Chrome chaque fois que vous appuyez sur des liens dans d'autres applis.</translation>
 <translation id="973493300226275298">Suivez le prix d'un produit sur toutes les boutiques en ligne. Vous serez averti en cas de baisse.</translation>
 <translation id="981498610235328462">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes. Ceux qui ne sont pas autorisés sont masqués.</translation>
 <translation id="984509647832111802">La synchronisation ne fonctionne pas.</translation>

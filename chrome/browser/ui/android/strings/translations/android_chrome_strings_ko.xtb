@@ -352,7 +352,6 @@
 <translation id="2909615210195135082">Google 알림 플랫폼</translation>
 <translation id="2912296070571964914">관심 주제 관리</translation>
 <translation id="2912345083818861431">화면 잠금을 사용해 열려 있는 시크릿 탭을 봅니다.</translation>
-<translation id="2922568440285376746">Google로 이미지 내 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">잘못된 이름</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 저장공간</translation>
 <translation id="2932222164150889403">키보드는 변경되지 않습니다</translation>
@@ -687,7 +686,6 @@
 <translation id="4684427112815847243">모두 동기화</translation>
 <translation id="4685741273709472646">드롭다운 목록에서 선택</translation>
 <translation id="4687718960473379118">사이트 추천 광고</translation>
-<translation id="4689792375321623175">Google로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}other{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}}</translation>
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
 <translation id="4710167854527459075">최신 기준 정렬</translation>

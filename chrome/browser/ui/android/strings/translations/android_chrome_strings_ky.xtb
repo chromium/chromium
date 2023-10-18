@@ -285,6 +285,7 @@
 <translation id="2571834852878229351">Өзүмдүкүн түзүү</translation>
 <translation id="2573452357057307036">Chrome'ду демейки серепчи катары жөндөгөндү үйрөнүп алыңыз</translation>
 <translation id="2574249610672786438">Chrome колдонулган түзмөктөрдүн баарындагы өтмөктөрүңүздү көрүү үчүн бардык түзмөктөрдөн аккаунтуңузга кириңиз</translation>
+<translation id="2578337197553672982">Жаштарга арналган Google контенти</translation>
 <translation id="2581165646603367611">Ушуну менен Chrome үчүн анча маанилүү болбогон кукилер, кэш жана сайттын башка нерселери тазаланат.</translation>
 <translation id="2587052924345400782">Жаңыраак версиясы бар</translation>
 <translation id="2593272815202181319">Monospace</translation>
@@ -352,7 +353,6 @@
 <translation id="2909615210195135082">Google билдирмелеринин платформасы</translation>
 <translation id="2912296070571964914">Кызыктуу темаларды башкарыңыз</translation>
 <translation id="2912345083818861431">Ачылып турган Жашыруун өтмөктөрдү көрүү үчүн экрандын кулпусун колдонуңуз</translation>
-<translation id="2922568440285376746">Google аркылуу сүрөттөн издөө <ph name="BEGIN_NEW" />Жаңылык<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Аты-жөнү жараксыз</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> сактагычы</translation>
 <translation id="2932222164150889403">Баскычтоп өзгөрбөйт</translation>
@@ -687,7 +687,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4684427112815847243">Баарын шайкештештирүү</translation>
 <translation id="4685741273709472646">Түрүлмө тизмеден тандоо</translation>
 <translation id="4687718960473379118">Сайт сунуштаган жарнамалар</translation>
-<translation id="4689792375321623175">Google аркылуу сүрөттөн издөө <ph name="BEGIN_NEW" />Жаңылык<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Кештелген сүрөттөр жана файлдар</translation>
 <translation id="4710167854527459075">Эң жаңылары боюнча иргөө</translation>
@@ -701,6 +700,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4742970037960872810">Бөлүп көрсөтүүнү өчүрүү</translation>
 <translation id="4743664893327841597">Дарек тилкесине же издөө кутучасына жазылган нерселер демейки издөө каражатына жөнөтүлөт</translation>
 <translation id="4749960740855309258">Жаңы өтмөк ачуу</translation>
+<translation id="4750356170202299988">Жаштарга арналган контент</translation>
 <translation id="4758061975920522644">Сүрөттү гана бөлүшүү</translation>
 <translation id="4759238208242260848">Жүктөлүп алынгандар</translation>
 <translation id="4763480195061959176">видео</translation>
@@ -1182,6 +1182,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7187993566681480880">Аккаунтуңузга киргенде Chrome'до жана башка Google колдонмолорунда коопсуздугуңузду коргоп турат.</translation>
 <translation id="7191430249889272776">Өтмөк фондо ачылды.</translation>
 <translation id="7196215469483532480">Купуялык жетектемесинин түшүндүрмөсү толугу менен ачылды</translation>
+<translation id="7205672015775254816">Жаштарга арналган Google контенти - өчүк</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> өтмөктү фондогу жаңы өтмөктөр катары калыбына келтирүү.</translation>
 <translation id="7217781228893594884">Chrome'дон чыкканыңызда жашыруун өтмөктөр кулпуланат</translation>
 <translation id="7221869452894271364">Бул бетти кайра жүктөө</translation>
@@ -1329,6 +1330,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7876243839304621966">Баарын алып салуу</translation>
 <translation id="7886917304091689118">Chrome'до иштеп жатат</translation>
 <translation id="7887174313503389866">Негизги купуялык жана коопсуздукту көзөмөлдөө каражаттары тууралуу коштомо. Кошумча параметрлерди көрүү үчүн жеке параметрлерге өтүңүз.</translation>
+<translation id="7896724475402191389">Жаштарга арналган контент - өчүк</translation>
 <translation id="7903184275147100332">Бир аз убакыт талап кылынышы мүмкүн</translation>
 <translation id="7914399737746719723">Колдонмо орнотулду</translation>
 <translation id="7919123827536834358">Төмөнкү тилдер автоматтык түрдө которулсун</translation>

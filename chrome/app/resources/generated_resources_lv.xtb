@@ -2042,6 +2042,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2564520396658920462">JavaScript izpilde, izmantojot AppleScript, ir izslēgta. Lai to ieslēgtu, izvēļņu joslā atveriet View (Skats) &gt; Developer (Izstrādātājs) &gt; Allow JavaScript from Apple Events (Atļaut izmantot JavaScript no Apple Events). Plašāku informāciju skatiet vietnē https://support.google.com/chrome/?p=applescript.</translation>
 <translation id="2564653188463346023">Uzlabota pareizrakstības pārbaude</translation>
 <translation id="256481480019204378">Google konta ID</translation>
+<translation id="256517381556987641">Failu sinhronizēšanas laikā tika atrasti faili (<ph name="ITEMS_FOUND" />), un joprojām tiek pārbaudīta krātuves vieta. Pēc dažām minūtēm mēģiniet vēlreiz ieslēgt failu sinhronizēšanu.</translation>
 <translation id="2565214867520763227">Ekrāna lasītāja ieslēgšana</translation>
 <translation id="2568694057933302218">Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs. Jūsu pārlūkošanas darbības netiek izmantotas, piemēram, reklāmu personalizēšanai. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="2568774940984945469">Informācijas joslas konteiners</translation>
@@ -4361,6 +4362,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4427365070557649936">Notiek apstiprinājuma koda verifikācija...</translation>
 <translation id="4429163740524851942">Fiziskās tastatūras izkārtojums</translation>
 <translation id="4430019312045809116">Skaļums</translation>
+<translation id="4430204941092622397">Uz dažām minūtēm var tikt pārtraukts savienojums ar mobilo tīklu.</translation>
 <translation id="443031431654216610">Ievadiet tikai ciparus.</translation>
 <translation id="4430369329743628066">Grāmatzīme pievienota</translation>
 <translation id="4430422687972614133">Ieslēgt virtuālo karti</translation>
@@ -4572,6 +4574,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4610162781778310380">Spraudnī <ph name="PLUGIN_NAME" /> radās kļūda.</translation>
 <translation id="4610637590575890427">Vai jūs vēlējāties doties uz <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Ir pieejams datu savienojums</translation>
+<translation id="4611759022973144129">Varat izmantot šo paroli, lai pierakstītos savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="4612841084470706111">Piešķirt piekļuvi visām pieprasītajām vietnēm.</translation>
 <translation id="4613144866899789710">Notiek Linux instalēšanas atcelšana...</translation>
 <translation id="4613271546271159013">Paplašinājums ir mainījis lapu, kas tiek parādīta, atverot jaunu cilni.</translation>
@@ -5070,6 +5073,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5027550639139316293">E-pasta sertifikāts</translation>
 <translation id="5027562294707732951">Pievienot paplašinājumu</translation>
 <translation id="5028445315206872221">Paplašinājumi ir bloķēti šajā vietnē</translation>
+<translation id="5029287942302939687">Parole ir iestatīta</translation>
 <translation id="5029873138381728058">Neizdevās pārbaudīt virtuālās mašīnas</translation>
 <translation id="503155457707535043">Pašlaik lejupielādētās lietotnes</translation>
 <translation id="5032430150487044192">Nevar izveidot kvadrātkodu</translation>
@@ -5098,6 +5102,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5054374119096692193">Skatiet visas kartīšu opcijas sadaļā <ph name="BEGIN_LINK" />Chrome pielāgošana<ph name="END_LINK" />.</translation>
 <translation id="5056950756634735043">Notiek savienojuma izveide ar konteineru</translation>
 <translation id="5057110919553308744">Kad noklikšķināt uz paplašinājuma</translation>
+<translation id="5057127674016624293">Pārbaude aizņem ilgāku laiku, nekā paredzēts</translation>
 <translation id="5059241099014281248">Pierakstīšanās ierobežojumu iestatīšana</translation>
 <translation id="5059429103770496207">Attēlojuma stils</translation>
 <translation id="5059526285558225588">Izvēlieties kopīgojamo saturu</translation>
@@ -5986,6 +5991,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5797521893972859201">Tiek notīrīta vēsture, tostarp arī meklēšanas lodziņā</translation>
 <translation id="5797934230382081317">Uzziniet, kā sākt darbu &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; vai &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; ierīcē</translation>
 <translation id="5798079537501238810">Atļaut vietnēm instalēt maksājumu apdarinātājus</translation>
+<translation id="5798086737841799234">Ievadiet apstiprinājuma kodu</translation>
 <translation id="579915268381781820">Drošības atslēga tika noņemta.</translation>
 <translation id="5799478978078236781">Saņemiet padomus par <ph name="DEVICE_TYPE" /> ierīcēm, piedāvājumus un jaunumus, kā arī sniedziet atsauksmes.</translation>
 <translation id="5799508265798272974">Linux virtuālā mašīna: <ph name="LINUX_VM_NAME" /></translation>
@@ -6125,7 +6131,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5901089233978050985">Pāriet uz ierakstošo cilni</translation>
 <translation id="5901494423252125310">Printera durvis ir atvērtas</translation>
 <translation id="5901630391730855834">Dzeltena</translation>
-<translation id="5902211418335330937">Ja vietne nedarbojas, kā paredzēts, varat tai iespējot trešo pušu sīkfailus, meklēšanas un adreses joslā atlasot trešo pušu sīkfailu bloķēšanu.</translation>
 <translation id="5904614460720589786">Konfigurācijas problēmas dēļ nevarēja iestatīt lietotni <ph name="APP_NAME" />. Lūdzu, sazinieties ar administratoru. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Atjaunināšana ir gandrīz pabeigta. Restartējiet ierīci, lai pabeigtu atjaunināšanu.</translation>
 <translation id="5906732635754427568">Ar šo lietotni saistītie dati tiks noņemti no šīs ierīces.</translation>
@@ -6890,7 +6895,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6532663472409656417">Reģistrēja uzņēmums</translation>
 <translation id="6533315466883598769">Izmantot Google tulkotāju</translation>
 <translation id="65334502113648172">Nospiediet bultiņas, lai sakļautu vai izvērstu attēlojuma apgabalu. Lai pārvietotu attēlojuma apgabalu, nospiediet pārslēgšanas taustiņu un pluszīmes taustiņu (+), pēc tam izmantojiet bultiņas.</translation>
-<translation id="6533636340637966565">Notiek ieslēgšana…</translation>
 <translation id="6535331821390304775">Vienmēr atļaut vietnei <ph name="ORIGIN" /> atvērt šī veida saites saistītajā lietotnē</translation>
 <translation id="653659894138286600">Skenēt dokumentus un attēlus</translation>
 <translation id="6537613839935722475">Nosaukumā var izmantot burtus, ciparus un defises (-)</translation>
@@ -7245,6 +7249,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6815376457351236663">Tomēr atvērt</translation>
 <translation id="6815787852028615386">Šis fails ir maldinošs un var veikt neparedzētas izmaiņas jūsu ierīcē</translation>
 <translation id="6816097980753839617">Zila un dzeltena (tritanomālija)</translation>
+<translation id="6816443526270499804">Notiek pieejamu eSIM profilu meklēšana…</translation>
 <translation id="6818198425579322765">Lapas valoda, no kuras jātulko saturs</translation>
 <translation id="6818547713623251698">Skatiet tālruņa fotoattēlus, multivides saturu, paziņojumus un lietotnes.</translation>
 <translation id="6818802132960437751">Iebūvēta aizsardzība pret vīrusiem</translation>
@@ -8055,6 +8060,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7475742997309661417">ChromeOS ekrāna lasītāju ChromeVox galvenokārt izmanto neredzīgi vai vājredzīgi lietotāji, lai ekrānā redzamo tekstu atskaņotu ar runas sintezatoru vai lasītu Braila displejā. Lai ieslēgtu ChromeVox, nospiediet un piecas sekundes turiet nospiestas abas skaļuma pogas. Kad ChromeVox būs aktivizēts, tiks parādīts īss ceļvedis.</translation>
 <translation id="7476454130948140105">Nevar veikt atjaunināšanu, jo akumulatora uzlādes līmenis ir pārāk zems (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Automātiski bloķēts: <ph name="PERMISSION" /> un vēl <ph name="COUNT" /></translation>
+<translation id="7477460499687558352">Izvēlieties lejupielādējamo eSIM profilu</translation>
 <translation id="7477599578899108080">Liels atmiņas lietojums: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Izveidot kvadrātkodu šai lapai</translation>
 <translation id="7477793887173910789">Pārvaldiet savu mūziku, videoklipus un citu saturu</translation>
@@ -9128,6 +9134,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8314835274931377415">Vai sākt slēdžu piekļuves iestatīšanu?</translation>
 <translation id="8315018673856831477">Atmiņas taupīšanas opcijas</translation>
 <translation id="8315044115695361734">No iCloud Keychain</translation>
+<translation id="8315514906653279104">Notiek ieslēgšana…</translation>
 <translation id="8317671367883557781">Pievienot tīkla savienojumu</translation>
 <translation id="8317965619823678157">kopēt paroles</translation>
 <translation id="8318266828739827371">Izmantojiet dalītā ekrāna skatu, lai skatītu palielināto ekrāna apgabalu. Lai ieslēgtu vai izslēgtu dokoto lupu, nospiediet meklēšanas taustiņu + Ctrl + D.</translation>

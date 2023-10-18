@@ -41,7 +41,6 @@
 <translation id="1176932207622159128">ছবি সেভ করা যায়নি</translation>
 <translation id="1177414119866731261">Chrome মেনু খুলুন</translation>
 <translation id="1181037720776840403">সরান</translation>
-<translation id="1200396280085622191">মেসেজ এবং অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করার সময় Chrome ব্যবহার করুন।</translation>
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1207113853726624428">নতুন সার্চ</translation>
 <translation id="1207493287814084192">বিকেল ৫:৩০</translation>
@@ -83,10 +82,12 @@
 <translation id="1360432990279830238">সাইন-আউট করে সিঙ্ক বন্ধ করবেন?</translation>
 <translation id="1363028406613469049">ট্র্যাক</translation>
 <translation id="1365106417372288489">আপনার iPhone সম্প্রতি ফিরিয়ে আনা হয়েছে, যেটি হয়ত আপনার ডিফল্ট ব্রাউজার পরিবর্তন করেছে।</translation>
+<translation id="136942498637440594">আপনি ছবি ও কী দেখতে পারেন তা সার্চ করতে পারবেন।</translation>
 <translation id="1375321115329958930">সংরক্ষিত পাসওয়ার্ড</translation>
 <translation id="1377255359165588604">সিঙ্ক কাজ করা বন্ধ করে দিয়েছে।</translation>
 <translation id="1377321085342047638">কার্ড নম্বর</translation>
 <translation id="1377508275003315939">পাসওয়ার্ড</translation>
+<translation id="1380914240355562929">Google Password Manager ব্যবহার করে <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-এ সাইন-ইন করার সময় <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> এখন আপনার ইউজারনেম ও পাসওয়ার্ড ব্যবহার করতে পারবেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> হিসেবে চালিয়ে যান</translation>
 <translation id="1400642268715879018">গত ৪ সপ্তাহ</translation>
@@ -192,7 +193,6 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1980417445547898121">{count,plural, =1{এই iPhone-এ, অন্য ডিভাইসে অ্যাক্টিভ থাকা আপনার {count}টি সাম্প্রতিক ট্যাব দেখুন}one{এই iPhone-এ, অন্য ডিভাইসে অ্যাক্টিভ থাকা আপনার {count}টি সাম্প্রতিক ট্যাব দেখুন}other{এই iPhone-এ, অন্য ডিভাইসে অ্যাক্টিভ থাকা আপনার {count}টি সাম্প্রতিক ট্যাব দেখুন}}</translation>
 <translation id="1981118202195772574">মোবাইল</translation>
-<translation id="1987779152850321833">Chrome ব্যবহার করার সবচেয়ে ভাল সুবিধা পেতে নিচে সাজেস্ট করা এইসব অ্যাকশন সম্পূর্ণ করুন।</translation>
 <translation id="1989112275319619282">ব্রাউজ করুন</translation>
 <translation id="1990820278544963435">খুঁজুন</translation>
 <translation id="1991153180045413119">পাসওয়ার্ড শেয়ার করা হয়েছে</translation>
@@ -231,7 +231,6 @@
 <translation id="2220529011494928058">কোনো সমস্যার অভিযোগ করুন</translation>
 <translation id="2230173723195178503">Webpage loaded</translation>
 <translation id="2239626343334228536">ব্রাউজিং ডেটা মোছা হচ্ছে…</translation>
-<translation id="2242467532204595597">মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করার সময় Chrome ব্যবহার করুন।</translation>
 <translation id="2251686759395008410">মেনু → ইতিহাস</translation>
 <translation id="2252674110805316998">ওয়েব সার্চ</translation>
 <translation id="2256933947031277845">আপনার সংস্থা আপনাকে শুধু কিছু নির্দিষ্ট অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করার অনুমতি দিয়েছে।</translation>
@@ -270,7 +269,6 @@
 <translation id="2411749908844615428">{count,plural, =1{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}one{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}other{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}}</translation>
 <translation id="2421004566762153674">থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="2421044535038393232">এডিট করতে থাকুন</translation>
-<translation id="2423077901494354337">এখন আপনার ডিভাইসেই Chrome থেকে সবচেয়ে বেশি সুবিধা লাভ করতে পারবেন।</translation>
 <translation id="2434405374328098816">আপনি আগে থেকেই "<ph name="USERNAME" />"-এর জন্য <ph name="WEBSITE" />-এ পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2459155039684421202">অ্যাড্রেস বারে, “আমার ইতিহাস মুছুন” বা “পাসওয়ার্ড এডিট করুন”-এর মতো টাস্ক লিখুন।</translation>
@@ -316,7 +314,6 @@
 <translation id="2669454659051515572">এই ডিভাইস ব্যবহার করছেন এমন যেকেউ ডাউনলোড করা ফাইলগুলি দেখতে পারবেন</translation>
 <translation id="2671426118752779020">আপনার iPhone-এর অন্যান্য অ্যাপে Google পাসওয়ার্ড ম্যানেজারে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="2690858294534178585">ক্যামেরা ব্যবহার করা হচ্ছে</translation>
-<translation id="26915454213703967">Google ব্যবহার করে ছবির মধ্যে সার্চ করুন</translation>
 <translation id="2691653761409724435">অফলাইনে উপলব্ধ নেই</translation>
 <translation id="2695507686909505111">পৃষ্ঠা অনুবাদ করা হয়ে গেছে</translation>
 <translation id="2696180352517415858">Google অ্যাকাউন্ট থেকে আপনি সাইন-আউট হয়ে যাবেন না। আপনি সাইন-ইন করে থাকলে <ph name="BEGIN_LINK" />অন্যান্য অ্যাক্টিভিটি<ph name="END_LINK" /> আপনার Google অ্যাকাউন্টে সেভ হয়ে যেতে পারে। আপনি যেকোনও সময় এগুলি মুছে দিতে পারবেন।
@@ -410,7 +407,6 @@
 <translation id="3080525922482950719">পরে বা অফলাইনে পড়ার জন্য আপনি পৃষ্ঠা সেভ করে রাখতে পারেন</translation>
 <translation id="3081338492074632642">আপনি যে পাসওয়ার্ডটি সেভ করছেন, সেটি <ph name="WEBSITE" />-এ আপনার দেওয়া পাসওয়ার্ডের সাথে মিলছে কিনা ভাল করে দেখে নিন</translation>
 <translation id="3087734570205094154">নিচে</translation>
-<translation id="309672519329227863">অন্যান্য অ্যাপ জুড়ে আপনার Chrome পাসওয়ার্ড ও আরও অনেক কিছু অ্যাক্সেস করুন।</translation>
 <translation id="309710370695886264">আপনার কাছে ১টি একই পাসওয়ার্ড আছে যা আবার ব্যবহার করা হয়েছে। নিরাপদ থাকতে এই সমস্যার সমাধান করুন।</translation>
 <translation id="3112556859945124369">চিহ্নিত করুন…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />আপনি কী সিঙ্ক করতে পারবেন তা দেখুন<ph name="END_LINK" /></translation>
@@ -498,7 +494,6 @@
 <translation id="3551320343578183772">ট্যাব বন্ধ করুন</translation>
 <translation id="3565207542107370586">ব্রাউজ করা ডেটা মুছে দিন…</translation>
 <translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
-<translation id="3577555362230509265">অন্যান্য অ্যাপের জন্য Chrome ব্যবহার করুন।</translation>
 <translation id="3581564640715911333">অন্য ভাষাতে পৃষ্ঠা অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="3587885837929752825">আপনার প্রতিষ্ঠান এটি ম্যানেজ করে যে আপনার কাছে Google অ্যাকাউন্টে কোন ধরনের ডেটা সেভ করার অনুমতি আছে।</translation>
 <translation id="3588820906588687999">নতুন ট্যাবে ছবি খুলুন</translation>
@@ -774,6 +769,7 @@
 <translation id="5121618895923301719">আপনি আগে থেকেই এই প্রোডাক্টটি ট্র্যাক করছেন। এই পৃষ্ঠাটি <ph name="BEGIN_LINK" />মোবাইল বুকমার্কে<ph name="END_LINK" /> সেভ করা আছে।</translation>
 <translation id="512533434554095351">আপনার পাসওয়ার্ডের ক্ষেত্রে বিভিন্ন ধরনের সমস্যা আছে।</translation>
 <translation id="5126465625664020024">প্রবেশ করুন এবং সিঙ্ক করুন</translation>
+<translation id="5131062416352684089">Google Password Manager ব্যবহার করে <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-এ সাইন-ইন করার সময় আপনার পরিবারের সদস্যরা এখন আপনার ইউজারনেম ও পাসওয়ার্ড ব্যবহার করতে পারবেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">সমস্ত ডিভাইসে আপনার পাসওয়ার্ড, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT}টি দুর্বল পাসওয়ার্ড}one{{COUNT}টি দুর্বল পাসওয়ার্ড}other{{COUNT}টি দুর্বল পাসওয়ার্ড}}</translation>
 <translation id="5149188072385105201">পাসওয়ার্ড যোগ করুন...</translation>
@@ -948,7 +944,6 @@
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6042308850641462728">আরও</translation>
 <translation id="6045460247888249350">শিরোনাম যোগ করুন</translation>
-<translation id="6054613632208573261">ডিফল্ট হিসেবে Chrome ব্যবহার করুন</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">আপনার খবর ও গতিবিধি এখানে নিয়ন্ত্রণ করুন</translation>
 <translation id="6064824697233747382">আপনার সংস্থার প্রয়োজনে আপনার সিঙ্ক প্রসেস বন্ধ করা হয়েছে।</translation>
@@ -1008,7 +1003,6 @@
 <translation id="6346549652287021269">নতুন ডাউনলোড শুরু করবেন?</translation>
 <translation id="6347953390226388422">{count,plural, =1{এই ডিভাইস ও আপনার Google অ্যাকাউন্ট (<ph name="USER_EMAIL" />) থেকে এই ঠিকানা মুছে ফেলা হবে।}one{এই ডিভাইস ও আপনার Google অ্যাকাউন্ট (<ph name="USER_EMAIL" />) থেকে এইসব ঠিকানা মুছে ফেলা হবে।}other{এই ডিভাইস ও আপনার Google অ্যাকাউন্ট (<ph name="USER_EMAIL" />) থেকে এইসব ঠিকানা মুছে ফেলা হবে।}}</translation>
 <translation id="634878792104344809">আপনার সমস্ত ডিভাইসে বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছু সিঙ্ক করুন</translation>
-<translation id="6348855835728304880">এই ডিভাইসে অন্যান্য অ্যাপ জুড়ে আপনার Chrome পাসওয়ার্ড এবং আরও অনেক কিছু অ্যাক্সেস করুন।</translation>
 <translation id="63519665078626091">ওয়েব ইন্সপেক্টর ব্যবহার করতে, আপনার কম্পিউটারে কেবেলের মাধ্যমে Safari ব্রাউজারের সাথে কানেক্ট করুন এবং 'ডেভেলপ' মেনু থেকে iPad অ্যাক্সেস করুন। আপনার কম্পিউটারে, Safari সেটিংসের 'উন্নত' বিভাগ থেকে আপনি 'ডেভেলপ' মেনু চালু করতে পারবেন।</translation>
 <translation id="6355820205320395730">দুর্বল পাসওয়ার্ড সহজেই অনুমান করা যায়। শক্তিশালী পাসওয়ার্ড তৈরি করছেন কিনা তা ভাল করে দেখে নিন। <ph name="BEGIN_LINK" />নিরাপত্তা সংক্রান্ত আরও পরামর্শ দেখুন।<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">হয়ে গেছে</translation>
@@ -1193,7 +1187,6 @@
 <translation id="7221173315674413369">'নতুন' বিভাগে নতুন ফিচার এবং পরামর্শ এক্সপ্লোর করুন</translation>
 <translation id="7223102419539744003">'ট্যাব' বন্ধ করুন</translation>
 <translation id="722454870747268814">নতুন ছদ্মবেশী ট্যাব</translation>
-<translation id="723787869754590019">অটোফিলের জন্য Chrome ব্যবহার করুন</translation>
 <translation id="7265758999917665941">এই সাইটের জন্য কখনই নয়</translation>
 <translation id="7272437679830969316">আপনার পরিচয় যাচাই করা যাবে না। পাসওয়ার্ড কপি করা হয়নি।</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{নতুন প্যাকেজ ট্র্যাক করা হয়েছে}one{নতুন প্যাকেজগুলি ট্র্যাক করা হয়েছে}other{নতুন প্যাকেজগুলি ট্র্যাক করা হয়েছে}}</translation>
@@ -1466,7 +1459,6 @@
 <translation id="8717864919010420084">লিঙ্কটি কপি করুন</translation>
 <translation id="8721297211384281569">টুল মেনু</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
-<translation id="8727043961453758442">Chrome থেকে সবচেয়ে বেশি সুবিধা পান</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8731958888085671579">'একটি পৃষ্ঠা খুঁজুন' বিকল্পটি লুকান</translation>
 <translation id="87371078663613140">মেনু বারে বিকল্প দেখুন</translation>
@@ -1579,7 +1571,6 @@
 <translation id="959066944189734975">আপনি <ph name="CHANNEL_NAME" /> ফলো করছেন</translation>
 <translation id="96615566463761848">অন্য ডিভাইসের 'ট্যাব' সংক্রান্ত সাজেশন দেখুন</translation>
 <translation id="972300586996227526">{COUNT,plural, =1{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}-এর জন্য পাসওয়ার্ড সেভ করতে পারবেন}=2{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE} ও {DOMAIN_TWO}-এর জন্য পাসওয়ার্ড সেভ করতে পারবেন}=3{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্য {OTHER_DOMAINS_COUNT}টির জন্য পাসওয়ার্ড সেভ করতে পারবেন}one{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির জন্য পাসওয়ার্ড সেভ করতে পারবেন}other{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির জন্য পাসওয়ার্ড সেভ করতে পারবেন}}</translation>
-<translation id="97300214378190234">অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করার সময় Chrome ব্যবহার করুন।</translation>
 <translation id="973493300226275298">অনলাইন স্টোর জুড়ে প্রোডাক্টের দাম ট্র্যাক করুন। দাম কমে গেলে আপনি বিজ্ঞপ্তি পাবেন।</translation>
 <translation id="981498610235328462">শুধুমাত্র নির্দিষ্ট অ্যাকাউন্টের মাধ্যমেই আপনার সংস্থা সাইন-ইন করার অনুমতি দেবে। অনুমোদন করা নেই এমন অ্যাকাউন্ট লুকানো আছে।</translation>
 <translation id="984509647832111802">সিঙ্ক কাজ করছে না।</translation>

@@ -353,7 +353,6 @@
 <translation id="2909615210195135082">Google 通知平台</translation>
 <translation id="2912296070571964914">管理你感興趣的主題</translation>
 <translation id="2912345083818861431">透過螢幕鎖定畫面查看開啟的無痕分頁</translation>
-<translation id="2922568440285376746">使用 Google 搜尋圖片內容 <ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">名稱無效</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 儲存資料量</translation>
 <translation id="2932222164150889403">這不會影響你的鍵盤設定</translation>
@@ -688,7 +687,6 @@
 <translation id="4684427112815847243">同步處理所有資料</translation>
 <translation id="4685741273709472646">開啟下拉式清單</translation>
 <translation id="4687718960473379118">網站建議廣告</translation>
-<translation id="4689792375321623175">使用 Google 搜尋圖片 <ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}}</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4710167854527459075">由新到舊排序</translation>

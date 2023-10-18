@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15 წთ</translation>
 <translation id="2277103315734023688">წინ გადახვევა</translation>
 <translation id="2282073721614284166">ბმულის გახსნა ჩანართზე</translation>
-<translation id="2284237890386182187">ჩართული, დაკავშირებული მოწყობილობები არ არის</translation>
 <translation id="2292698582925480719">ჩვენების მასშტაბი</translation>
 <translation id="229397294990920565">მიმდინარეობს მობილური ინტერნეტის გათიშვა...</translation>
 <translation id="2295777434187870477">მიკროფონი ჩართულია, გადართვისას აუდიოშეყვანა დადუმდება.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">ჩართეთ უსადენო ქსელი</translation>
 <translation id="3566240529365775567">ამ წამს გახსნილი</translation>
 <translation id="3571734092741541777">დაყენება</translation>
-<translation id="3572988532398145777">შეტყობინებას ვერ გააფართოებთ, სანამ პანელი გახსნილია. ჯერ დახურეთ პანელი ქვემოდან.</translation>
 <translation id="3573179567135747900">„<ph name="FROM_LOCALE" />“-ში დაბრუნება (საჭიროებს გადატვირთვას)</translation>
 <translation id="3576141592585647168">სასაათო სარტყლის შეცვლა</translation>
 <translation id="3577473026931028326">წარმოიქმნა შეფერხება. ცადეთ ხელახლა.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">დასაწყისი</translation>
 <translation id="3859364108019690">აპების სტრიმინგი ვერ ხერხდება</translation>
 <translation id="3861651314799684201">ეკრანის სრულად ჩასაწერად დააჭირეთ Enter-ს</translation>
-<translation id="3865912916886104060">დაკავშირებული მოწყობილობები არ არის. Wi-Fi გამოირთვება უსადენო ქსელით სარგებლობის დასაწყებად.</translation>
 <translation id="3886872229787704059">დღეს გახსნილი</translation>
 <translation id="3891340733213178823">დააჭირეთ Ctrl+Shift+Q ორჯერ, რათა გამოხვიდეთ.</translation>
 <translation id="3893630138897523026">ChromeVox (ხმოვანი შეფასება)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">გამორთვა</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> მიუწვდომელია.</translation>
 <translation id="4201051445878709314">წინა თვის ჩვენება</translation>
-<translation id="4202362334312791952">დაკავშირებულია 1 მოწყობილობა. Wi-Fi გამოირთვება უსადენო ქსელით სარგებლობის დასაწყებად.</translation>
 <translation id="4209973997261364186">Wi-Fi ჩართულია</translation>
 <translation id="4212472694152630271">PIN-კოდზე გადართვა</translation>
 <translation id="4215497585250573029">VPN-ის პარამეტრები</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">პარამეტრების მენიუ დახურულია</translation>
 <translation id="5428899915242071344">არჩევის დაწყება</translation>
 <translation id="5429993543155113935">ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია</translation>
-<translation id="5430931332414098647">მყისიერი ტეტერინგი</translation>
 <translation id="5431318178759467895">ფერი</translation>
 <translation id="5433020815079095860">შემავალი აუდიოსიგნალი</translation>
 <translation id="544691375626129091">ყველა ხელმისაწვდომი მომხმარებელი უკვე დამატებულია ამ სესიაში.</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">კარნახის გადართვა</translation>
 <translation id="5551456515017410630">კალენდრის გახსნა/დახურვა</translation>
 <translation id="5551974246223970793">ძიების მომდევნო შესატყვისზე გადასვლა გვერდზე ძიებისას</translation>
+<translation id="5555639311269196631">უსადენო ქსელის გამორთვა</translation>
 <translation id="5558091555391176027">მახლობლად გაზიარების მაღალი ხილვადობის გადართვა</translation>
 <translation id="556042886152191864">ღილაკი</translation>
 <translation id="5570122939431135380">ახალი ჩანართის გახსნა ახალ ინკოგნიტო ფანჯარაში</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">თქვენს მოწყობილობას აქვს მონაცემების გადაცემის უფრო მაღალი სიჩქარის მხარდაჭერა, ვიდრე თქვენს კაბელს. მოწყობილობის ეფექტურობა შეიძლება შეიზღუდოს.</translation>
 <translation id="5710450975648804523">„არ შემაწუხოთ“ ჩართულია</translation>
 <translation id="571295407079589142">მობილური ინტერნეტი გამორთულია</translation>
-<translation id="5716891621595980681">დაკავშირებულია <ph name="DEVICECOUNT" /> მოწყობილობა. Wi-Fi გამოირთვება უსადენო ქსელით სარგებლობის დასაწყებად.</translation>
 <translation id="5727460725221669831">თუ პაროლი დაგავიწყდათ, ან ახლახან შეცვალეთ თქვენი Google ანგარიშის პაროლი, ცადეთ ამ მომხმარებლის აღდგენა.</translation>
 <translation id="573413375004481890">ამ მოწყობილობას არ შეეძლო თქვენი ყველა ეკრანის მხარდაჭერა, ამიტომ ერთ-ერთი გაითიშა</translation>
 <translation id="5740328398383587084">მახლობლად გაზიარება</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5920710855273935292">მიკროფონი დადუმებულია.</translation>
-<translation id="5924855612669061715">უსადენო ქსელი ჩართულია</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ჩართულია.</translation>
 <translation id="5947494881799873997">დაბრუნება</translation>
 <translation id="595202126637698455">ეფექტურობის ტრასირება ჩართულია</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">შაბლონის გამოყენება</translation>
 <translation id="598882571027504733">განახლების ჩამოსატვირთად გადატვირთეთ თქვენი Chromebook და არ გამოართოთ კლავიატურა.</translation>
 <translation id="6000279412553873020">კლავიშები, ღილაკები და სხვა</translation>
+<translation id="6002122790816966947">თქვენი მოწყობილობები</translation>
 <translation id="6012623610530968780">გვერდი <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" />-დან</translation>
 <translation id="601304062528754300">შემდეგი ერთეულის გამოყოფა თაროზე</translation>
 <translation id="6015573907265691211">შესრულებულად მონიშვნა</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">მენიუ გადატანილია ეკრანის ზედა მარცხენა კუთხეში.</translation>
 <translation id="7189412385142492784">რა მანძილია ვენერამდე</translation>
 <translation id="7198435252016571249">კამერა მიზიდულია ქვედა მარჯვენა კუთხეში. ის კონფლიქტშია სისტემის ზედაპირთან.</translation>
+<translation id="7219573373513695352">დაკავშირებული მოწყობილობები არ არის</translation>
 <translation id="7229029500464092426">მეხსიერებაა <ph name="AVAILABLE_MEMORY" /> | ჯამში <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. გასაახლებლად ეს Chromebook საჭიროებს გადატვირთვას. ამას შეიძლება 1 წუთამდე დრო დასჭირდეს.</translation>
 <translation id="7256634071279256947">უკანა მიკროფონი</translation>

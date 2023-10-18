@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Aidake meil Chrome’i täiustada, andes teada, miks lubasite kolmanda osapoole küpsisefailid. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Peata</translation>
 <translation id="1181037720776840403">Eemalda</translation>
+<translation id="1192844206376121885">See kustutab kõik saidi <ph name="ORIGIN" /> salvestatud andmed ja küpsisefailid.</translation>
 <translation id="1201402288615127009">Järgmine</translation>
 <translation id="1242008676835033345">Manustatud aadressil <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Peata</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">Kuigi rohelised prillid olid silmade kaitseks ninale asetatud, olid Dorothy ja tema sõbrad esialgu</translation>
 <translation id="2176704795966505152">Kuva peamenüüs suumimisvalik</translation>
 <translation id="2182457891543959921">Küsi enne saitidele loa andmist mind ümbritsevast 3D-kaardi loomiseks või kaamera asendi jälgimiseks (soovitatav)</translation>
+<translation id="2185965788978862351">See kustutab <ph name="DATASIZE" /> andmeid ja küpsisefaile, mille saidid või rakendused on teie avakuvale salvestanud.</translation>
 <translation id="2194856509914051091">Olulised aspektid</translation>
 <translation id="2212565012507486665">Luba küpsisefailid</translation>
 <translation id="2228071138934252756">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie kaamerale, lülitage kaamera sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">Allalaadimine jõudis lõpule: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Mõne saidi funktsioonid ei pruugi inkognito režiimis toimida</translation>
 <translation id="2442870161001914531">Alati taotletakse arvutisaiti</translation>
+<translation id="2469312991797799607">See toiming kustutab kõik saidigrupi <ph name="ORIGIN" /> ning selle all olevate kõigi saitide andmed ja küpsised</translation>
 <translation id="2479148705183875116">Ava seaded</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">Kasutus</translation>
 <translation id="5091013926750941408">Mobiilisait</translation>
 <translation id="509133520954049755">Taotle arvutivaadet</translation>
+<translation id="5099358668261120049">See kustutab saidi <ph name="ORIGIN" /> või selle rakenduse salvestatud kõik andmed ja küpsisefailid teie avakuvalt.</translation>
 <translation id="5100237604440890931">Ahendatud – laiendamiseks klõpsake.</translation>
 <translation id="5123685120097942451">Inkognito vaheleht</translation>
 <translation id="5186036860380548585">Valik on saadaval ekraanikuva ülaosas</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5922853908706496913">Ekraanikuva jagamine</translation>
 <translation id="5922967540311291836">Kolmanda osapoole küpsisefailide blokeerimine</translation>
+<translation id="5923512600150154850">See kustutab <ph name="DATASIZE" /> andmed ja küpsisefailid, mille saidid on salvestanud.</translation>
 <translation id="5939518447894949180">Lähtesta</translation>
 <translation id="5964247741333118902">Manustatud sisu</translation>
 <translation id="5968921426641056619">Sisestage veebiaadress</translation>
@@ -337,6 +342,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Värskenda</translation>
 <translation id="7188508872042490670">Seadmes olevad saidi andmed</translation>
+<translation id="7201549776650881587">See toiming kustutab teie avakuval kõik saidigrupi <ph name="ORIGIN" /> alla kuuluvate saitide või selle rakenduse salvestatud andmed ja küpsised</translation>
 <translation id="7203150201908454328">Laiendatud</translation>
 <translation id="7219254577985949841">Kas kustutada saidi andmed?</translation>
 <translation id="723171743924126238">Kujutiste valimine</translation>

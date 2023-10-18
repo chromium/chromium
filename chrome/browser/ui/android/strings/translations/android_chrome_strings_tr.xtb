@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1011749477052068769">Buraya taşı</translation>
-<translation id="1014147525163127655">Bu cihazda <ph name="ORIGIN" /> için şifre anahtarı yok</translation>
+<translation id="1014147525163127655">Bu cihazda <ph name="ORIGIN" /> için geçiş anahtarı yok</translation>
 <translation id="1016498331642356377">Hızlıca sesinizle arama yapın. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> cihazına gönderiliyor...</translation>
@@ -352,7 +352,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">İlgilendiğiniz konuları yönetin</translation>
 <translation id="2912345083818861431">Açık Gizli sekmeleri görmek için ekran kilidini kullanın</translation>
-<translation id="2922568440285376746">Resmin içinde Google'la ara <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Ad geçersiz</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> depolama alanı</translation>
 <translation id="2932222164150889403">Klavyeniz değişmeyecek</translation>
@@ -687,7 +686,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4684427112815847243">Her şeyi senkronize et</translation>
 <translation id="4685741273709472646">Açılır listeden seçim yapın</translation>
 <translation id="4687718960473379118">Site tarafından önerilen reklamlar</translation>
-<translation id="4689792375321623175">Resmi Google'la ara <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> seçenek daha}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> seçenek daha}}</translation>
 <translation id="4699172675775169585">Önbelleğe alınan resimler ve dosyalar</translation>
 <translation id="4710167854527459075">Yeniden eskiye sırala</translation>

@@ -966,6 +966,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, şu anda seçili. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Yazar Kaynakları</translation>
+<translation id="2980742331521553164">Daha hızlı ödeme için bu kartın CVC'si şifrelenip Google Hesabınıza kaydedilir</translation>
 <translation id="2983666748527428214">Gizli Sekme Aç</translation>
 <translation id="2985306909656435243">Bu seçenek etkinleştirildiğinde Chromium, formları daha hızlı doldurmak için kartınızın bir kopyasını bu cihazda saklar.</translation>
 <translation id="2985398929374701810">Geçerli bir adres girin</translation>
@@ -3030,7 +3031,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7201591969684833065">Yöneticiniz şunları görebilir:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, yeni bir gizli sekme açıp gizli olarak göz atmak için Sekme tuşuna, sonra Enter'a basın</translation>
 <translation id="7203375778433816396">Chrome'u sistemin varsayılan tarayıcısı olarak ayarlayın</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Yok}=1{1 şifre anahtarı}other{# şifre anahtarı}}</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Yok}=1{1 geçiş anahtarı}other{# geçiş anahtarı}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> güvenlik standartlarına uymuyor.</translation>
 <translation id="7210993021468939304">Yönetici kapsayıcı içindeki Linux etkinliğini görebilir ve kapsayıcı içindeki Linux uygulamalarını yükleyip çalıştırabilir</translation>
 <translation id="721197778055552897">Bu sorun hakkında <ph name="BEGIN_LINK" />daha fazla<ph name="END_LINK" /> bilgi edinin.</translation>
@@ -3397,6 +3398,7 @@ Ek ayrıntılar:
 <translation id="79338296614623784">Geçerli bir telefon numarası girin</translation>
 <translation id="7934414805353235750"><ph name="URL" />, korumalı içeriği oynatmak istiyor. Cihazınızın kimliği Google tarafından doğrulanacak.</translation>
 <translation id="7935318582918952113">DOM Ayrıştırıcı</translation>
+<translation id="7937163678541954811">Daha hızlı ödeme için bu kartın CVC'si şifrelenip cihazınıza kaydedilir</translation>
 <translation id="7937554595067888181">Süre sonu: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Sunucunun sertifikası henüz geçerli değil.</translation>
 <translation id="7939713744218886332">Dünya mutfağı</translation>

@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Үшінші тарап cookie файлдарын рұқсат ету себебін айтып, Chrome браузерін жақсартуға көмектесіңіз. <ph name="BEGIN_LINK" />Пікір жіберу<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Кідірту</translation>
 <translation id="1181037720776840403">Өшіру</translation>
+<translation id="1192844206376121885"><ph name="ORIGIN" /> сақтаған барлық дерек пен cookie файлы жойылады.</translation>
 <translation id="1201402288615127009">Келесі</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> мекенжайына ендірілген</translation>
 <translation id="1272079795634619415">Тоқтату</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">Жасыл көзілдірік таққан Дороти мен оның достары қалаға алғаш келгенде, оның ғажайып көркіне таңғалды.</translation>
 <translation id="2176704795966505152">Негізгі мәзірде масштабтау опциясын көрсету</translation>
 <translation id="2182457891543959921">Cайттарға айналаңыздың 3D картасын жасауға немесе камераңыздың орнын бақылауға рұқсат беру алдында сізден сұраy (ұсынылады)</translation>
+<translation id="2185965788978862351">Негізгі экрандағы сайттар немесе қолданбалар сақтаған <ph name="DATASIZE" /> деректер мен cookie файлдары жойылады.</translation>
 <translation id="2194856509914051091">Ескеретін жайттар</translation>
 <translation id="2212565012507486665">Cookie файлдарына рұқсат беру</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> браузері камераны пайдалануы үшін, <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> оны да қосыңыз.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628"><ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /> жүктеп алынды</translation>
 <translation id="244264527810019436">Инкогнито режимінде кейбір сайттардағы функциялар істемеуі мүмкін.</translation>
 <translation id="2442870161001914531">Әрдайым сайттың компьютерлік нұсқасын сұрау</translation>
+<translation id="2469312991797799607"><ph name="ORIGIN" /> барлық дерегі мен cookie файлы және осы домендегі барлық сайт жойылады.</translation>
 <translation id="2479148705183875116">Параметрлерге өту</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
 <translation id="2485422356828889247">Жою</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">Пайдалану</translation>
 <translation id="5091013926750941408">Мобильдік сайт</translation>
 <translation id="509133520954049755">Компьютерлік нұсқаны сұрау</translation>
+<translation id="5099358668261120049"><ph name="ORIGIN" /> сақтаған немесе негізгі экрандағы оның қолданбасы сақтаған барлық дерек пен cookie файлы жойылады.</translation>
 <translation id="5100237604440890931">Жиылған – жаю үшін басыңыз.</translation>
 <translation id="5123685120097942451">Инкогнито қойындысы</translation>
 <translation id="5186036860380548585">Опциялар экранның жоғарғы жағында тұрады</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="5922853908706496913">Экранды бөлісіп жатырсыз.</translation>
 <translation id="5922967540311291836">Үшінші тарап cookie файлдарын бөгеу:</translation>
+<translation id="5923512600150154850">Сайттар сақтаған <ph name="DATASIZE" /> деректер мен cookie файлдары жойылады.</translation>
 <translation id="5939518447894949180">Қалпына келтіру</translation>
 <translation id="5964247741333118902">Ендірілген контент</translation>
 <translation id="5968921426641056619">Веб-мекенжайды енгізіңіз</translation>
@@ -337,6 +342,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7188508872042490670">Құрылғыдағы сайт деректері</translation>
+<translation id="7201549776650881587"><ph name="ORIGIN" /> доменіндегі барлық сайт немесе негізгі экрандағы оның қолданбасы сақтаған барлық дерек пен cookie файлы жойылады.</translation>
 <translation id="7203150201908454328">Кеңейтілген</translation>
 <translation id="7219254577985949841">Сайт деректерін жою керек пе?</translation>
 <translation id="723171743924126238">Кескіндерді таңдау</translation>

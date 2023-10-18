@@ -966,7 +966,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, trenutno odabrano. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Resursi za pisce</translation>
-<translation id="2980742331521553164">CVC te kartice šifrirat će se i spremiti na vaš Google račun radi brže naplate</translation>
+<translation id="2980742331521553164">CVC kartice će se šifrirati i sačuvati na Google račun radi bržeg nastavka na plaćanje</translation>
 <translation id="2983666748527428214">Otvori anonimnu karticu</translation>
 <translation id="2985306909656435243">Ako je omogućeno, Chromium će pohraniti kopiju vaše kartice na ovom uređaju za brže popunjavanje.</translation>
 <translation id="2985398929374701810">Unesite važeću adresu</translation>
@@ -3400,7 +3400,7 @@ Dodatni detalji:
 <translation id="79338296614623784">Unesite važeći broj telefona</translation>
 <translation id="7934414805353235750">URL <ph name="URL" /> želi reproducirati zaštićeni sadržaj. Google će potvrditi identitet vašeg uređaja.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7937163678541954811">CVC te kartice šifrirat će se i spremiti na vaš uređaj radi brže naplate</translation>
+<translation id="7937163678541954811">CVC kartice će se šifrirati i sačuvati na uređaj radi bržeg nastavka na plaćanje</translation>
 <translation id="7937554595067888181">Ističe <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Potvrda sa servera još uvijek nije ispravna.</translation>
 <translation id="7939713744218886332">Svjetska kuhinja</translation>

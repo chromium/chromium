@@ -352,7 +352,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2909615210195135082">Platforma de notificări Google</translation>
 <translation id="2912296070571964914">Gestionează subiectele care te interesează</translation>
 <translation id="2912345083818861431">Folosește blocarea ecranului ca să vezi filele incognito deschise</translation>
-<translation id="2922568440285376746">Caută în imagine cu Google <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Numele nu este valid</translation>
 <translation id="2932150158123903946">Stocarea Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tastatura nu se va schimba</translation>
@@ -687,7 +686,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4684427112815847243">Sincronizează tot</translation>
 <translation id="4685741273709472646">Selectează din lista drop-down</translation>
 <translation id="4687718960473379118">Anunțurile sugerate de site-uri</translation>
-<translation id="4689792375321623175">Caută imaginea cu Google <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Imaginile și fișierele memorate în cache</translation>
 <translation id="4710167854527459075">Sortează după noutate</translation>

@@ -310,7 +310,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Traži prema naprijed</translation>
 <translation id="2282073721614284166">Otvaranje veze u novoj kartici</translation>
-<translation id="2284237890386182187">Uključeno, nijedan uređaj nije povezan</translation>
 <translation id="2292698582925480719">Skala prikaza</translation>
 <translation id="229397294990920565">Mobilni podaci se isključuju...</translation>
 <translation id="2295777434187870477">Mikrofon je uključen, pomicanjem klizača ulijevo isključit će se zvuk.</translation>
@@ -617,7 +616,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3563775809269155755">Omogućivanje žarišne točke</translation>
 <translation id="3566240529365775567">Upravo otvoreno</translation>
 <translation id="3571734092741541777">Postavi</translation>
-<translation id="3572988532398145777">Ne možete proširiti obavijest dok je ploča otvorena. Najprije zatvorite ploču u nastavku.</translation>
 <translation id="3573179567135747900">Vratite na "<ph name="FROM_LOCALE" />" (zahtijeva ponovno pokretanje)</translation>
 <translation id="3576141592585647168">Promjena vremenske zone</translation>
 <translation id="3577473026931028326">Nešto nije u redu. Pokušajte ponovo.</translation>
@@ -699,7 +697,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="385300504083504382">Početak</translation>
 <translation id="3859364108019690">Aplikacije se ne mogu emitirati</translation>
 <translation id="3861651314799684201">Pritisnite Enter za snimanje cijelog zaslona</translation>
-<translation id="3865912916886104060">Nije povezan nijedan uređaj. Wi-Fi će se isključiti da bi se žarišna točka počela upotrebljavati.</translation>
 <translation id="3886872229787704059">Otvoreno danas</translation>
 <translation id="3891340733213178823">Pritisnite Ctrl + Shift + Q dvaput da biste se odjavili.</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>
@@ -784,7 +781,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4197790712631116042">Isključeno</translation>
 <translation id="4201033867194214117">Značajka <ph name="FEATURE_NAME" /> nije dostupna.</translation>
 <translation id="4201051445878709314">Prikaži prethodni mjesec</translation>
-<translation id="4202362334312791952">Jedan uređaj je povezan. Wi-Fi će se isključiti da bi se žarišna točka počela upotrebljavati.</translation>
 <translation id="4209973997261364186">Wi-Fi je uključen</translation>
 <translation id="4212472694152630271">Prelazak na PIN</translation>
 <translation id="4215497585250573029">VPN postavke</translation>
@@ -1091,7 +1087,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5426063383988017631">Izbornik postavki je zatvoren</translation>
 <translation id="5428899915242071344">Započni s odabirom</translation>
 <translation id="5429993543155113935">Anonimni prozori trenutačno nisu podržani</translation>
-<translation id="5430931332414098647">Automatsko modemsko povezivanje</translation>
 <translation id="5431318178759467895">Boja</translation>
 <translation id="5433020815079095860">Audioulaz</translation>
 <translation id="544691375626129091">Svi dostupni korisnici već su dodani ovoj sesiji.</translation>
@@ -1120,6 +1115,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="554893713779400387">Uključivanje/isključivanje diktata</translation>
 <translation id="5551456515017410630">Otvaranje/zatvaranje kalendara</translation>
 <translation id="5551974246223970793">Prilikom pretraživanja stranice idite na sljedeće podudaranje za pretraživanje</translation>
+<translation id="5555639311269196631">Isključi žarišnu točku</translation>
 <translation id="5558091555391176027">Prebacite visoku vidljivost dijeljenja u blizini</translation>
 <translation id="556042886152191864">Gumb</translation>
 <translation id="5570122939431135380">Otvaranje nove kartice u novom anonimnom prozoru</translation>
@@ -1165,7 +1161,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5707775774148071965">Vaš uređaj podržava veću brzinu prijenosa podataka od kabela. Izvedba uređaja može biti ograničena.</translation>
 <translation id="5710450975648804523">Način Ne uznemiravaj uključen</translation>
 <translation id="571295407079589142">Mobilni su podaci isključeni</translation>
-<translation id="5716891621595980681">Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />. Wi-Fi će se isključiti da bi se žarišna točka počela upotrebljavati.</translation>
 <translation id="5727460725221669831">Ako ste zaboravili zaporku ili ste nedavno promijenili zaporku Google računa, pokušajte oporaviti korisnika.</translation>
 <translation id="573413375004481890">Uređaj ne podržava sve vaše zaslone, pa je s jednim prekinuta veza.</translation>
 <translation id="5740328398383587084">Dijeljenje u blizini</translation>
@@ -1215,7 +1210,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Uključi</translation>
 <translation id="5920710855273935292">Mikrofon je isključen.</translation>
-<translation id="5924855612669061715">Žarišna je točka uključena</translation>
 <translation id="5946788582095584774">Značajka <ph name="FEATURE_NAME" /> je uključena.</translation>
 <translation id="5947494881799873997">Vrati</translation>
 <translation id="595202126637698455">Omogućeno je praćenje izvedbe</translation>
@@ -1231,6 +1225,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="598407983968395253">Koristi predložak</translation>
 <translation id="598882571027504733">Da biste preuzeli ažuriranje, ponovo pokrenite Chromebook dok je tipkovnica priključena.</translation>
 <translation id="6000279412553873020">Tipke, gumbi i ostalo</translation>
+<translation id="6002122790816966947">Vaši uređaji</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stranica od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Isticanje sljedeće stavke na traci</translation>
 <translation id="6015573907265691211">Označi kao dovršeno</translation>
@@ -1520,6 +1515,7 @@ Novo instaliranje</translation>
 <translation id="7188494361780961876">Izbornik je premješten u gornji lijevi kut zaslona.</translation>
 <translation id="7189412385142492784">Kolika je udaljenost do Venere</translation>
 <translation id="7198435252016571249">Kamera je poravnata s donjim desnim kutom. Došlo je do sukoba s površinom sustava.</translation>
+<translation id="7219573373513695352">Nije povezan nijedan uređaj</translation>
 <translation id="7229029500464092426">Memorija <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ukupno</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ovaj se Chromebook treba pokrenuti ponovo da bi se primijenilo ažuriranje. To može potrajati minutu.</translation>
 <translation id="7256634071279256947">Stražnji mikrofon</translation>

@@ -965,6 +965,7 @@
 <translation id="2977665033722899841">Ligne <ph name="ROW_NAME" /> actuellement sélectionnée. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opéra</translation>
 <translation id="2979424420072875974">Ressources pour les auteurs</translation>
+<translation id="2980742331521553164">Le code CVC de cette carte sera chiffré et enregistré dans votre compte Google pour un paiement plus rapide</translation>
 <translation id="2983666748527428214">Ouvrir l'onglet de navigation privée</translation>
 <translation id="2985306909656435243">Si l'option est activée, Chromium conservera une copie de votre carte sur cet appareil pour vous permettre de remplir plus rapidement vos formulaires.</translation>
 <translation id="2985398929374701810">Entrez une adresse valide</translation>
@@ -3395,6 +3396,7 @@ Détails supplémentaires :
 <translation id="79338296614623784">Entrez un numéro de téléphone valide</translation>
 <translation id="7934414805353235750"><ph name="URL" /> veut lire du contenu protégé. L'identité de votre appareil sera vérifiée par Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">Le code CVC de cette carte sera chiffré et enregistré sur votre appareil pour un paiement plus rapide</translation>
 <translation id="7937554595067888181">Expire le <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Le certificat du serveur n'est pas encore valide.</translation>
 <translation id="7939713744218886332">Cuisine du monde</translation>

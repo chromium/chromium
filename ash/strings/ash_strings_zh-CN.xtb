@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15 分钟</translation>
 <translation id="2277103315734023688">快进</translation>
 <translation id="2282073721614284166">在标签页中打开链接</translation>
-<translation id="2284237890386182187">已开启，未连接任何设备</translation>
 <translation id="2292698582925480719">显示比例</translation>
 <translation id="229397294990920565">移动数据网络正在关闭…</translation>
 <translation id="2295777434187870477">麦克风已开启，使用切换开关可将麦克风静音。</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">启用热点</translation>
 <translation id="3566240529365775567">刚才打开过</translation>
 <translation id="3571734092741541777">设置</translation>
-<translation id="3572988532398145777">面板处于打开状态时，您无法展开通知。请先关闭下面的面板。</translation>
 <translation id="3573179567135747900">重新更改为“<ph name="FROM_LOCALE" />”（需要重启）</translation>
 <translation id="3576141592585647168">更改时区</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">开头</translation>
 <translation id="3859364108019690">无法流式传输应用</translation>
 <translation id="3861651314799684201">按 Enter 键即可录制整个屏幕</translation>
-<translation id="3865912916886104060">未连接任何设备。Wi-Fi 将会关闭以开始使用热点。</translation>
 <translation id="3886872229787704059">今天打开过</translation>
 <translation id="3891340733213178823">连按两次Ctrl+Shift+Q即可退出。</translation>
 <translation id="3893630138897523026">ChromeVox（语音反馈）</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">已关闭</translation>
 <translation id="4201033867194214117">“<ph name="FEATURE_NAME" />”不可用。</translation>
 <translation id="4201051445878709314">显示上一个月</translation>
-<translation id="4202362334312791952">已连接 1 部设备。Wi-Fi 将会关闭以开始使用热点。</translation>
 <translation id="4209973997261364186">Wi-Fi 处于开启状态</translation>
 <translation id="4212472694152630271">切换到 PIN 码</translation>
 <translation id="4215497585250573029">VPN 设置</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">已关闭“设置”菜单</translation>
 <translation id="5428899915242071344">开始选择</translation>
 <translation id="5429993543155113935">尚不支持无痕式窗口</translation>
-<translation id="5430931332414098647">即时网络共享</translation>
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5433020815079095860">音频输入</translation>
 <translation id="544691375626129091">所有可参加的用户均已添加到此会话中。</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">开启/关闭语音输入</translation>
 <translation id="5551456515017410630">打开/关闭日历</translation>
 <translation id="5551974246223970793">搜索网页时，转到下一个相符的搜索结果</translation>
+<translation id="5555639311269196631">关闭热点</translation>
 <translation id="5558091555391176027">开启/关闭“附近分享”的高可见度模式</translation>
 <translation id="556042886152191864">按钮</translation>
 <translation id="5570122939431135380">在新的无痕式窗口中打开新标签页</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">您的设备支持的数据传输速率高于数据线的数据传输速率。设备性能可能会受到限制。</translation>
 <translation id="5710450975648804523">“请勿打扰”模式已开启</translation>
 <translation id="571295407079589142">移动数据网络处于关闭状态</translation>
-<translation id="5716891621595980681">已连接 <ph name="DEVICECOUNT" /> 部设备。Wi-Fi 将会关闭以开始使用热点。</translation>
 <translation id="5727460725221669831">如果您忘记了密码，或最近更改过自己的 Google 账号密码，请尝试让此用户恢复登录。</translation>
 <translation id="573413375004481890">此设备无法支持您的所有显示屏，因此断开了与其中一个显示屏的连接</translation>
 <translation id="5740328398383587084">附近分享</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">已启用</translation>
 <translation id="5920710855273935292">麦克风已静音。</translation>
-<translation id="5924855612669061715">热点已开启</translation>
 <translation id="5946788582095584774">“<ph name="FEATURE_NAME" />”功能已开启。</translation>
 <translation id="5947494881799873997">还原</translation>
 <translation id="595202126637698455">已启用性能跟踪</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">使用模板</translation>
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>
 <translation id="6000279412553873020">按键、按钮等</translation>
+<translation id="6002122790816966947">您的设备</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 页（共 <ph name="TOTAL_PAGE_NUM" /> 页）</translation>
 <translation id="601304062528754300">突出显示任务栏上的后一项</translation>
 <translation id="6015573907265691211">标为已完成</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">菜单已移至屏幕的左上角。</translation>
 <translation id="7189412385142492784">金星有多远</translation>
 <translation id="7198435252016571249">相机已对准右下角。与系统界面冲突。</translation>
+<translation id="7219573373513695352">未连接任何设备</translation>
 <translation id="7229029500464092426">可用内存为 <ph name="AVAILABLE_MEMORY" /> | 共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。此 Chromebook 需要重新启动才能让更新生效。此过程最多可能需要 1 分钟的时间。</translation>
 <translation id="7256634071279256947">后置麦克风</translation>

@@ -310,7 +310,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2276987123919776440">15 mín.</translation>
 <translation id="2277103315734023688">Spóla áfram</translation>
 <translation id="2282073721614284166">Opna tengil í flipa</translation>
-<translation id="2284237890386182187">Kveikt, engin tæki tengd</translation>
 <translation id="2292698582925480719">Skjástærð</translation>
 <translation id="229397294990920565">Slekkur á farsímagögnum...</translation>
 <translation id="2295777434187870477">Kveikt er á hljóðnemanum, ef hnappurinn er valinn verður slökkt á hljóðinntaki.</translation>
@@ -617,7 +616,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3563775809269155755">Kveikja á heitum reit</translation>
 <translation id="3566240529365775567">Opnað rétt í þessu</translation>
 <translation id="3571734092741541777">Setja upp</translation>
-<translation id="3572988532398145777">Þú getur ekki stækkað tilkynningu á meðan svæði er opið. Lokaðu svæðinu hér að neðan fyrst.</translation>
 <translation id="3573179567135747900">Skipta aftur yfir í „<ph name="FROM_LOCALE" />“ (krefst endurræsingar)</translation>
 <translation id="3576141592585647168">Breyta tímabelti</translation>
 <translation id="3577473026931028326">Eitthvað fór úrskeiðis. Reyndu aftur.</translation>
@@ -700,7 +698,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="385300504083504382">Byrjun</translation>
 <translation id="3859364108019690">Ekki er hægt að streyma forritum</translation>
 <translation id="3861651314799684201">Ýttu á Enter til að taka upp allan skjáinn</translation>
-<translation id="3865912916886104060">Engin tæki eru tengd. Slökkt verður á WiFi til að hægt sé að nota heitan reit.</translation>
 <translation id="3886872229787704059">Opnað í dag</translation>
 <translation id="3891340733213178823">Ýttu tvisvar á Ctrl+Shift+Q til að skrá þig út.</translation>
 <translation id="3893630138897523026">ChromeVox (raddsvörun)</translation>
@@ -785,7 +782,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4197790712631116042">Slökkt</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ekki tiltækt.</translation>
 <translation id="4201051445878709314">Sýna fyrri mánuð</translation>
-<translation id="4202362334312791952">1 tæki er tengt. Slökkt verður á WiFi til að hægt sé að nota heitan reit.</translation>
 <translation id="4209973997261364186">Kveikt er á Wi-Fi</translation>
 <translation id="4212472694152630271">Skipta yfir í PIN-númer</translation>
 <translation id="4215497585250573029">VPN-stillingar</translation>
@@ -1092,7 +1088,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5426063383988017631">Stillingavalmynd lokað</translation>
 <translation id="5428899915242071344">Byrja að velja</translation>
 <translation id="5429993543155113935">Huliðsgluggar eru ekki studdir eins og er</translation>
-<translation id="5430931332414098647">Skynditjóðrun</translation>
 <translation id="5431318178759467895">Í lit</translation>
 <translation id="5433020815079095860">Hljóðinntak</translation>
 <translation id="544691375626129091">Öllum tiltækum notendum hefur þegar verið bætt við þessa lotu.</translation>
@@ -1121,6 +1116,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="554893713779400387">Kveikja og slökkva á upplestri</translation>
 <translation id="5551456515017410630">Opna/loka dagatali</translation>
 <translation id="5551974246223970793">Fara að næstu leitarniðurstöðu þegar leitað er að síðu</translation>
+<translation id="5555639311269196631">Slökkva á heitum reit</translation>
 <translation id="5558091555391176027">Velja/afvelja mikinn sýnileika nærdeilingar</translation>
 <translation id="556042886152191864">Hnappur</translation>
 <translation id="5570122939431135380">Opna nýjan flipa í nýjum huliðsglugga</translation>
@@ -1166,7 +1162,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5707775774148071965">Tækið þitt styður meiri gagnahraða en snúran. Afköst tækisins kunna að vera takmörkuð.</translation>
 <translation id="5710450975648804523">Kveikt er á „Ónáðið ekki“</translation>
 <translation id="571295407079589142">Slökkt er á farsímagögnum</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> tæki tengd. Slökkt verður á WiFi til að hægt sé að nota heitan reit.</translation>
 <translation id="5727460725221669831">Ef þú gleymdir aðgangsorðinu þínu eða breyttir aðgangsorðinu að Google-reikningnum þínum nýlega geturðu reynt að endurheimta notandaaðganginn.</translation>
 <translation id="573413375004481890">Þetta tæki gat ekki stutt alla skjáina og því var einn aftengdur</translation>
 <translation id="5740328398383587084">Nærdeiling</translation>
@@ -1216,7 +1211,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5920710855273935292">Slökkt er á hljóðnemanum.</translation>
-<translation id="5924855612669061715">Kveikt er á heitum reit</translation>
 <translation id="5946788582095584774">Kveikt er á <ph name="FEATURE_NAME" /></translation>
 <translation id="5947494881799873997">Afturkalla</translation>
 <translation id="595202126637698455">Kveikt á afkastarakningu</translation>
@@ -1232,6 +1226,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="598407983968395253">Nota sniðmát</translation>
 <translation id="598882571027504733">Endurræstu Chromebook með lyklaborðið tengt til að uppfæra</translation>
 <translation id="6000279412553873020">Lyklar, hnappar og fleira</translation>
+<translation id="6002122790816966947">Tækin þín</translation>
 <translation id="6012623610530968780">Síða <ph name="SELECTED_PAGE" /> af <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Auðkenna næsta atriði á hillu</translation>
 <translation id="6015573907265691211">Merkja sem lokið</translation>
@@ -1521,6 +1516,7 @@ Ný uppsetning</translation>
 <translation id="7188494361780961876">Valmynd færð efst í vinstra horn skjásins.</translation>
 <translation id="7189412385142492784">Hvað er Venus langt í burtu?</translation>
 <translation id="7198435252016571249">Myndavél fest við neðra horn hægra megin. Skörun við vettvang kerfis.</translation>
+<translation id="7219573373513695352">Engin tæki eru tengd</translation>
 <translation id="7229029500464092426">Minni <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> samtals</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Endurræsa þarf Chromebook til að setja upp uppfærslu. Þetta getur tekið allt að mínútu.</translation>
 <translation id="7256634071279256947">Aftari hljóðnemi</translation>

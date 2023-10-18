@@ -966,6 +966,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> er i øjeblikket valgt. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Forfatterressourcer</translation>
+<translation id="2980742331521553164">Kortets CVC krypteres og gemmes på din Google-konto, så du kan betale hurtigere</translation>
 <translation id="2983666748527428214">Åbn inkognitofane</translation>
 <translation id="2985306909656435243">Hvis denne indstilling er slået til, gemmer Chromium en kopi af dit kort på denne enhed for at gøre det hurtigere at udfylde formularer.</translation>
 <translation id="2985398929374701810">Angiv en gyldig adresse</translation>
@@ -3397,6 +3398,7 @@ Yderligere oplysninger:
 <translation id="79338296614623784">Angiv et gyldigt telefonnummer</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vil afspille beskyttet indhold. Din enheds identitet verificeres af Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">Kortets CVC krypteres og gemmes på din enhed, så du kan betale hurtigere</translation>
 <translation id="7937554595067888181">Udløber <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Serverens certifikatet er endnu ikke gyldigt.</translation>
 <translation id="7939713744218886332">Verdensmad</translation>

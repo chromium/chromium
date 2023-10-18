@@ -311,7 +311,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2276987123919776440">15 phút</translation>
 <translation id="2277103315734023688">Tua tiến</translation>
 <translation id="2282073721614284166">Mở đường liên kết trong thẻ</translation>
-<translation id="2284237890386182187">Đang bật, chưa có thiết bị nào kết nối</translation>
 <translation id="2292698582925480719">Tỷ lệ hiển thị</translation>
 <translation id="229397294990920565">Đang tắt dữ liệu di động...</translation>
 <translation id="2295777434187870477">Micrô đang bật. Nhấn vào nút bật tắt sẽ tắt micrô và không thu được tiếng.</translation>
@@ -620,7 +619,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3563775809269155755">Bật điểm phát sóng</translation>
 <translation id="3566240529365775567">Vừa mới mở</translation>
 <translation id="3571734092741541777">Thiết lập</translation>
-<translation id="3572988532398145777">Bạn không thể mở rộng thông báo khi có một bảng điều khiển đang mở. Trước tiên, hãy đóng bảng điều khiển bên dưới.</translation>
 <translation id="3573179567135747900">Thay đổi lại thành "<ph name="FROM_LOCALE" />" (yêu cầu khởi động lại)</translation>
 <translation id="3576141592585647168">Thay đổi múi giờ</translation>
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
@@ -703,7 +701,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="385300504083504382">Phần đầu</translation>
 <translation id="3859364108019690">Không thể truyền trực tuyến các ứng dụng</translation>
 <translation id="3861651314799684201">Nhấn phím Enter để ghi toàn màn hình</translation>
-<translation id="3865912916886104060">Chưa kết nối thiết bị nào. Wi-Fi sẽ bị tắt để bắt đầu sử dụng Điểm phát sóng.</translation>
 <translation id="3886872229787704059">Mở hôm nay</translation>
 <translation id="3891340733213178823">Nhấn Ctrl+Shift+Q hai lần để đăng xuất.</translation>
 <translation id="3893630138897523026">ChromeVox (phản hồi bằng giọng nói)</translation>
@@ -790,7 +787,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4197790712631116042">Đang tắt</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> không dùng được.</translation>
 <translation id="4201051445878709314">Hiển thị tháng trước</translation>
-<translation id="4202362334312791952">Đã kết nối 1 thiết bị. Wi-Fi sẽ bị tắt để bắt đầu sử dụng Điểm phát sóng.</translation>
 <translation id="4209973997261364186">Wi-Fi đang bật</translation>
 <translation id="4212472694152630271">Chuyển sang mã PIN</translation>
 <translation id="4215497585250573029">Cài đặt mạng riêng ảo (VPN)</translation>
@@ -1100,7 +1096,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5426063383988017631">Đã đóng trình đơn Cài đặt</translation>
 <translation id="5428899915242071344">Bắt đầu chọn</translation>
 <translation id="5429993543155113935">Hiện không hỗ trợ cửa sổ ẩn danh</translation>
-<translation id="5430931332414098647">Chia sẻ Internet tức thì</translation>
 <translation id="5431318178759467895">Màu</translation>
 <translation id="5433020815079095860">Thiết bị đầu vào âm thanh</translation>
 <translation id="544691375626129091">Tất cả người dùng hiện có mặt đã được thêm vào phiên này.</translation>
@@ -1129,6 +1124,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="554893713779400387">Bật/tắt tính năng nhập bằng giọng nói</translation>
 <translation id="5551456515017410630">Mở/đóng lịch</translation>
 <translation id="5551974246223970793">Khi tìm kiếm trên trang, hãy chuyển đến kết quả phù hợp tiếp theo cho nội dung tìm kiếm</translation>
+<translation id="5555639311269196631">Tắt điểm phát sóng</translation>
 <translation id="5558091555391176027">Bật/tắt chế độ hiển thị ở mức cao cho tính năng Chia sẻ lân cận</translation>
 <translation id="556042886152191864">Nút</translation>
 <translation id="5570122939431135380">Mở thẻ mới trong Cửa sổ ẩn danh mới</translation>
@@ -1174,7 +1170,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5707775774148071965">Thiết bị của bạn hỗ trợ tốc độ dữ liệu cao hơn cáp của bạn. Hiệu suất của thiết bị có thể bị hạn chế.</translation>
 <translation id="5710450975648804523">Chế độ Không làm phiền đang bật</translation>
 <translation id="571295407079589142">Dữ liệu di động đang tắt</translation>
-<translation id="5716891621595980681">Đã kết nối <ph name="DEVICECOUNT" /> thiết bị. Wi-Fi sẽ bị tắt để bắt đầu sử dụng Điểm phát sóng.</translation>
 <translation id="5727460725221669831">Nếu gần đây bạn quên mật khẩu hoặc thay đổi mật khẩu của Tài khoản Google, hãy thử khôi phục người dùng này.</translation>
 <translation id="573413375004481890">Thiết bị này không thể hỗ trợ tất cả màn hình của bạn nên một màn hình đã bị ngắt kết nối</translation>
 <translation id="5740328398383587084">Chia sẻ lân cận</translation>
@@ -1224,7 +1219,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Bật</translation>
 <translation id="5920710855273935292">Micrô đang tắt.</translation>
-<translation id="5924855612669061715">Điểm phát sóng đang bật</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> đang bật.</translation>
 <translation id="5947494881799873997">Hoàn nguyên</translation>
 <translation id="595202126637698455">Đã bật theo dõi hoạt động</translation>
@@ -1240,6 +1234,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="598407983968395253">Sử dụng mẫu</translation>
 <translation id="598882571027504733">Để cập nhật, hãy khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
 <translation id="6000279412553873020">Phím, nút và các chế độ điều khiển khác</translation>
+<translation id="6002122790816966947">Thiết bị của bạn</translation>
 <translation id="6012623610530968780">Trang <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Đánh dấu mục tiếp theo trên kệ</translation>
 <translation id="6015573907265691211">Đánh dấu là đã hoàn thành</translation>
@@ -1532,6 +1527,7 @@ Mới cài đặt</translation>
 <translation id="7188494361780961876">Đã di chuyển trình đơn vào góc trên cùng bên trái màn hình.</translation>
 <translation id="7189412385142492784">Sao Kim cách đây bao xa</translation>
 <translation id="7198435252016571249">Máy ảnh đang bám theo góc dưới bên phải. Xung đột với khu vực hệ thống.</translation>
+<translation id="7219573373513695352">Chưa kết nối thiết bị nào</translation>
 <translation id="7229029500464092426">Bộ nhớ còn <ph name="AVAILABLE_MEMORY" /> | Tổng <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Còn <ph name="PERCENTAGE" />% pin. Hãy sạc thiết bị.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Cần khởi động lại Chromebook này để áp dụng bản cập nhật. Quá trình này có thể mất tối đa 1 phút.</translation>

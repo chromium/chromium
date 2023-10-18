@@ -352,7 +352,6 @@
 <translation id="2909615210195135082">‏פלטפורמת ההתראות של Google</translation>
 <translation id="2912296070571964914">ניהול הנושאים שמעניינים אותך</translation>
 <translation id="2912345083818861431">שימוש בנעילת המסך כדי לראות כרטיסיות פתוחות במצב אנונימי</translation>
-<translation id="2922568440285376746">‏חיפוש בתמונה עם Google <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">השם לא חוקי</translation>
 <translation id="2932150158123903946">‏נפח אחסון של <ph name="APP_NAME" />‏ Google</translation>
 <translation id="2932222164150889403">לא יהיה שינוי במקלדת</translation>
@@ -682,7 +681,6 @@
 <translation id="4684427112815847243">סנכרון הכל</translation>
 <translation id="4685741273709472646">בחירה מתוך הרשימה הנפתחת</translation>
 <translation id="4687718960473379118">מודעות שאתרים מציעים</translation>
-<translation id="4689792375321623175">‏חיפוש בתמונה עם Google <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספת}one{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}two{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}}</translation>
 <translation id="4699172675775169585">תמונות וקבצים במטמון</translation>
 <translation id="4710167854527459075">מיון לפי החדש ביותר</translation>

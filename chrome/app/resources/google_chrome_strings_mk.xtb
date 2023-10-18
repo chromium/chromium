@@ -68,6 +68,7 @@
 <translation id="2120620239521071941">Ова ќе избрише <ph name="ITEMS_COUNT" /> ставки од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Рестартирајте за да се ажурира &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете да го подобриме Chrome со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
+<translation id="2126108037660393668">Преземената датотека не можеше да се потврди.</translation>
 <translation id="2131230230468101642">Заради заштита на вашата приватност, автоматски ги бришеме вашите интереси што се постари од 4 седмици. Додека прелистувате, може да се појави интерес на списокот повторно. Или можете да ги отстраните интересите што не сакате Chrome да ги зема предвид.</translation>
 <translation id="2139300032719313227">Рестартирајте го Chrome OS</translation>
 <translation id="2151406531797534936">Рестартирајте го Chrome сега</translation>
@@ -96,6 +97,7 @@
 <translation id="2580411288591421699">Не може да се инсталира истата верзија на Google Chrome што работи во моментов. Затворете го Google Chrome и обидете се повторно.</translation>
 <translation id="2586406160782125153">Ова ќе ги избрише податоците од прелистувањето од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Преземете ги работите на прелистувачот Chrome од <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="259935314519650377">Преземениот инсталатор не можеше да се кешира. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome не може да провери дали се достапни ажурирања. Проверете ја интернет-врската.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649768380733403658">Chrome редовно проверува за да се погрижи вашиот прелистувач да ги има најбезбедните поставки. Ќе ве известиме ако треба да се прегледа нешто.</translation>
@@ -321,6 +323,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6676384891291319759">Пристап до интернет</translation>
 <translation id="6679975945624592337">Остави Google Chrome да работи во заднина</translation>
 <translation id="6696915334902295848">На Chrome му треба дозвола за микрофонот за сајтов</translation>
+<translation id="6712881677154121168">Грешка при преземање: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Имајте побрз Chrome</translation>
 <translation id="6735387454586646204">Системот ChromeOS Flex</translation>
 <translation id="6739177684496155661">Сакате да продолжите на нов профил на Chrome?</translation>
@@ -335,6 +338,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6943584222992551122">Податоците од прелистување на ова лице ќе се избришат од уредов. За да ги вратите податоците, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Дојдовно правило за Google Chrome Beta за овозможување mDNS-сообраќај.</translation>
 <translation id="6989339256997917931">Google Chrome се ажурираше, но не сте го употребиле најмалку 30 дена.</translation>
+<translation id="7024536598735240744">Грешка при отпакување: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Инсталирањето запре.</translation>
 <translation id="7025800014283535195">Може да се префрлате помеѓу профилите на Chrome тука</translation>
 <translation id="7036251913954633326">Ако сакате да ја користите сметкава само еднократно, може да го користите <ph name="GUEST_LINK_BEGIN" />Режимот на гостин<ph name="GUEST_LINK_END" /> во прелистувачот Chrome. Ако сакате да додадете сметка за некој друг, <ph name="LINK_BEGIN" />додајте ново лице<ph name="LINK_END" /> во вашиот <ph name="DEVICE_TYPE" />.
@@ -428,6 +432,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8516431725144212809">Вашите интереси како што се проценети од Chrome</translation>
 <translation id="8521348052903287641">Дојдовно правило за Google Chrome Dev за овозможување mDNS-сообраќај.</translation>
 <translation id="8550334526674375523">Овој работен профил е целосно одделен од вашиот личен профил.</translation>
+<translation id="8555465886620020932">Грешка на услугата: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556340503434111824">Достапна е нова верзија на Google Chrome и побрза е од кога било.</translation>
 <translation id="8571790202382503603">Со профилите на Chrome може да ги одделите сите ваши работи на Chrome. Со ова е полесно да се одделат работата и забавата.</translation>
 <translation id="8614913330719544658">Google Chrome не реагира. Да се рестартира сега?</translation>

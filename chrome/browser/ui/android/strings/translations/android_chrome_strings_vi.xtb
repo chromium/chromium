@@ -353,7 +353,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="2909615210195135082">Nền tảng thông báo của Google</translation>
 <translation id="2912296070571964914">Quản lý các chủ đề mà bạn quan tâm</translation>
 <translation id="2912345083818861431">Dùng phương thức khóa màn hình để xem các thẻ ẩn danh đang mở</translation>
-<translation id="2922568440285376746">Tìm trong ảnh bằng Google <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Tên không hợp lệ</translation>
 <translation id="2932150158123903946">Bộ nhớ Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Bàn phím của bạn sẽ không thay đổi</translation>
@@ -688,7 +687,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4684427112815847243">Đồng bộ hóa mọi thứ</translation>
 <translation id="4685741273709472646">Chọn từ danh sách thả xuống</translation>
 <translation id="4687718960473379118">Quảng cáo do trang web đề xuất</translation>
-<translation id="4689792375321623175">Tìm hình ảnh bằng Google <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn khác}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn khác}}</translation>
 <translation id="4699172675775169585">Tệp và hình ảnh được lưu trong bộ nhớ đệm</translation>
 <translation id="4710167854527459075">Mới nhất xếp trước</translation>

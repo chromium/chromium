@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15분</translation>
 <translation id="2277103315734023688">앞으로 탐색</translation>
 <translation id="2282073721614284166">탭에서 링크 열기</translation>
-<translation id="2284237890386182187">켜져 있으며 연결된 기기 없음</translation>
 <translation id="2292698582925480719">디스플레이 배율</translation>
 <translation id="229397294990920565">모바일 데이터를 사용 중지하는 중입니다.</translation>
 <translation id="2295777434187870477">마이크가 켜져 있으며 전환하면 음소거됩니다.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">핫스팟 사용</translation>
 <translation id="3566240529365775567">방금 열림</translation>
 <translation id="3571734092741541777">설정</translation>
-<translation id="3572988532398145777">패널이 열려 있는 동안에는 알림을 펼칠 수 없습니다. 먼저 아래 패널을 닫으세요.</translation>
 <translation id="3573179567135747900">'<ph name="FROM_LOCALE" />'(으)로 다시 변경(다시 시작해야 함)</translation>
 <translation id="3576141592585647168">시간대 변경</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">시작</translation>
 <translation id="3859364108019690">앱을 스트리밍할 수 없음</translation>
 <translation id="3861651314799684201">전체 화면을 녹화하려면 Enter를 누르세요</translation>
-<translation id="3865912916886104060">연결된 기기가 없습니다. 핫스팟을 사용하기 위해 Wi-Fi가 사용 중지됩니다.</translation>
 <translation id="3886872229787704059">오늘 열림</translation>
 <translation id="3891340733213178823">로그아웃하려면 Ctrl+Shift+Q를 두 번 누릅니다.</translation>
 <translation id="3893630138897523026">ChromeVox(음성 피드백)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">사용 안함</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" />를 사용할 수 없습니다.</translation>
 <translation id="4201051445878709314">이전 달 표시</translation>
-<translation id="4202362334312791952">기기 1대가 연결되었습니다. 핫스팟을 사용하기 위해 Wi-Fi가 사용 중지됩니다.</translation>
 <translation id="4209973997261364186">Wi-Fi가 사용 설정됨</translation>
 <translation id="4212472694152630271">PIN으로 전환</translation>
 <translation id="4215497585250573029">VPN 설정</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">설정 메뉴 닫힘</translation>
 <translation id="5428899915242071344">선택 시작</translation>
 <translation id="5429993543155113935">시크릿 창은 현재 지원되지 않습니다.</translation>
-<translation id="5430931332414098647">인스턴트 테더링</translation>
 <translation id="5431318178759467895">컬러</translation>
 <translation id="5433020815079095860">오디오 입력</translation>
 <translation id="544691375626129091">사용 가능한 모든 사용자가 이미 이 세션에 추가되었습니다.</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">음성기록 전환</translation>
 <translation id="5551456515017410630">캘린더 열기/닫기</translation>
 <translation id="5551974246223970793">페이지를 검색할 때 다음 일치 항목으로 이동</translation>
+<translation id="5555639311269196631">핫스팟 사용 중지</translation>
 <translation id="5558091555391176027">Nearby Share 모든 기기에 공개 설정 전환</translation>
 <translation id="556042886152191864">버튼</translation>
 <translation id="5570122939431135380">새 시크릿 창에서 새 탭 열기</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">기기에서 지원하는 데이터 속도가 케이블의 지원 속도보다 빠릅니다. 기기 성능이 제한될 수 있습니다.</translation>
 <translation id="5710450975648804523">방해 금지 모드 사용 중</translation>
 <translation id="571295407079589142">모바일 데이터 사용 중지</translation>
-<translation id="5716891621595980681">기기 <ph name="DEVICECOUNT" />대가 연결되었습니다. 핫스팟을 사용하기 위해 Wi-Fi가 사용 중지됩니다.</translation>
 <translation id="5727460725221669831">비밀번호를 잊어버렸거나 최근에 Google 계정 비밀번호를 변경한 경우 이 사용자를 복구해 보세요.</translation>
 <translation id="573413375004481890">사용 중인 일부 디스플레이가 기기에서 지원되지 않아 1개 디스플레이의 연결이 끊김</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" />(<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5920710855273935292">마이크가 음소거되어 있습니다.</translation>
-<translation id="5924855612669061715">핫스팟 사용 중</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> 기능이 켜져 있습니다.</translation>
 <translation id="5947494881799873997">되돌리기</translation>
 <translation id="595202126637698455">성능 추적 사용 중</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">템플릿 사용</translation>
 <translation id="598882571027504733">업데이트하려면 키보드가 연결된 상태로 Chromebook을 다시 시작하세요.</translation>
 <translation id="6000279412553873020">키, 버튼 등</translation>
+<translation id="6002122790816966947">내 기기</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" />페이지</translation>
 <translation id="601304062528754300">앱 표시줄의 다음 항목 강조 표시</translation>
 <translation id="6015573907265691211">완료로 표시</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">메뉴가 화면 왼쪽 상단으로 이동했습니다.</translation>
 <translation id="7189412385142492784">금성까지의 거리</translation>
 <translation id="7198435252016571249">카메라 미리보기가 오른쪽 하단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
+<translation id="7219573373513695352">연결된 기기 없음</translation>
 <translation id="7229029500464092426">총 메모리 <ph name="TOTAL_MEMORY" /> 중 <ph name="AVAILABLE_MEMORY" /> 사용</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. 업데이트를 적용하려면 Chromebook을 다시 시작해야 합니다. 여기에는 최대 1분이 걸릴 수 있습니다.</translation>
 <translation id="7256634071279256947">후면 마이크</translation>

@@ -352,7 +352,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2909615210195135082">Plataforma de notificacións de Google</translation>
 <translation id="2912296070571964914">Xestiona os temas que che interesan</translation>
 <translation id="2912345083818861431">Utiliza o bloqueo de pantalla para acceder ás pestanas do modo de incógnito que estean abertas</translation>
-<translation id="2922568440285376746">Buscar na imaxe con Google <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">O nome non é válido</translation>
 <translation id="2932150158123903946">Almacenamento de Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">O teclado non cambiará</translation>
@@ -687,7 +686,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="4684427112815847243">Sincronizar todo</translation>
 <translation id="4685741273709472646">Seleccionar elemento da lista despregable</translation>
 <translation id="4687718960473379118">Anuncios suxeridos polos sitios</translation>
-<translation id="4689792375321623175">Buscar na imaxe <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}}</translation>
 <translation id="4699172675775169585">Imaxes e ficheiros almacenados na memoria caché</translation>
 <translation id="4710167854527459075">Ordenar por máis recente</translation>

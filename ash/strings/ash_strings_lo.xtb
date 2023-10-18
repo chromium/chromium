@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15ນທ</translation>
 <translation id="2277103315734023688">ເລື່ອນໄປໜ້າ</translation>
 <translation id="2282073721614284166">ເປີດລິ້ງໃນແຖບ</translation>
-<translation id="2284237890386182187">ເປີດ, ບໍ່ມີອຸປະກອນທີ່ເຊື່ອມຕໍ່</translation>
 <translation id="2292698582925480719">ສະແດງຂະໜາດ</translation>
 <translation id="229397294990920565">ອິນເຕີເນັດມືຖືກຳລັງປິດ...</translation>
 <translation id="2295777434187870477">ໄມເປີດຢູ່, ການປິດໄມຈະປິດສຽງການປ້ອນຂໍ້ມູນ.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">ເປີດການນຳໃຊ້ຮັອດສະປອດ</translation>
 <translation id="3566240529365775567">ເປີດຕອນນີ້</translation>
 <translation id="3571734092741541777">ຕັ້ງຄ່າ</translation>
-<translation id="3572988532398145777">ທ່ານບໍ່ສາມາດຂະຫຍາຍການແຈ້ງເຕືອນໄດ້ໃນເວລາທີ່ເປີດແຜງຢູ່. ກະລຸນາປິດແຜງທາງລຸ່ມກ່ອນ.</translation>
 <translation id="3573179567135747900">ປ່ຽນ​​ກັບ​ຄືນ​ໄປຫາ "<ph name="FROM_LOCALE" />" (ຕ້ອງການໃຫ້ປິດເປີດຄືນໃໝ່)</translation>
 <translation id="3576141592585647168">ປ່ຽນເຂດເວລາ</translation>
 <translation id="3577473026931028326">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">ການເລີ່ມຕົ້ນ</translation>
 <translation id="3859364108019690">ສະຕຣີມແອັບບໍ່ໄດ້</translation>
 <translation id="3861651314799684201">ກົດ enter ເພື່ອບັນທຶກເຕັມຈໍ</translation>
-<translation id="3865912916886104060">ບໍ່ມີອຸປະກອນທີ່ເຊື່ອມຕໍ່ໄວ້. WiFi ຈະຖືກປິດໄວ້ເພື່ອເລີ່ມການໃຊ້ຮັອດສະປອດ.</translation>
 <translation id="3886872229787704059">ເປີດມື້ນີ້</translation>
 <translation id="3891340733213178823">ກົດ Ctrl+Shift+Q ສອງຄັ້ງເພື່ອອອກຈາກລະບົບ.</translation>
 <translation id="3893630138897523026">ChromeVox (ຄໍາ​ຄິດ​ເຫັນ​ທີ່ເວົ້າມາ​)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">ປິດ</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ບໍ່ສາມາດໃຊ້ໄດ້.</translation>
 <translation id="4201051445878709314">ສະແດງເດືອນກ່ອນນີ້</translation>
-<translation id="4202362334312791952">ເຊື່ອມຕໍ່ 1 ອຸປະກອນແລ້ວ. WiFi ຈະຖືກປິດໄວ້ເພື່ອເລີ່ມການໃຊ້ຮັອດສະປອດ.</translation>
 <translation id="4209973997261364186">ເປີດໃຊ້ Wi-Fi ແລ້ວ</translation>
 <translation id="4212472694152630271">ປ່ຽນໄປໃຊ້ PIN</translation>
 <translation id="4215497585250573029">ການຕັ້ງຄ່າ VPN</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">ປິດເມນູການຕັ້ງຄ່າ</translation>
 <translation id="5428899915242071344">ເລີ່ມການເລືອກ</translation>
 <translation id="5429993543155113935">ຕອນນີ້ບໍ່ຮອງຮັບໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນເທື່ອ</translation>
-<translation id="5430931332414098647">ການປ່ອຍສັນຍານທັນທີ</translation>
 <translation id="5431318178759467895">ສີ</translation>
 <translation id="5433020815079095860">ອິນພຸດສຽງ</translation>
 <translation id="544691375626129091">ຜູ້ໃຊ້ທີ່ມີຢູ່ຄົນອື່ນຖືກເອົາເພີ່ມເຂົ້າພາກນີ້ແລ້ວ.</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">ເປີດປິດການຂຽນຕາມຄຳບອກ</translation>
 <translation id="5551456515017410630">ເປີດ/ປິດປະຕິທິນ</translation>
 <translation id="5551974246223970793">ເມື່ອຊອກຫາໃນໜ້າ, ໃຫ້ເຂົ້າໄປລາຍການຕໍ່ໄປທີ່ກົງກັນກັບການຊອກຫາ</translation>
+<translation id="5555639311269196631">ປິດຮັອດສະປອດ</translation>
 <translation id="5558091555391176027">ສະຫຼັບການເບິ່ງເຫັນລະດັບສູງຂອງການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="556042886152191864">ປຸ່ມ</translation>
 <translation id="5570122939431135380">ເປີດແຖບໃໝ່ໃນໜ້າຈໍໃໝ່ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">ອຸປະກອນຂອງທ່ານຮອງຮັບອັດຕາຂໍ້ມູນທີ່ສູງກວ່າສາຍຂອງທ່ານ. ປະສິດທິພາບອຸປະກອນອາດຖືກຈຳກັດໄວ້.</translation>
 <translation id="5710450975648804523">ໂໝດຫ້າມລົບກວນເປີດຢູ່</translation>
 <translation id="571295407079589142">ອິນເຕີເນັດມືຖືປິດຢູ່</translation>
-<translation id="5716891621595980681">ເຊື່ອມຕໍ່ <ph name="DEVICECOUNT" /> ອຸປະກອນແລ້ວ. WiFi ຈະຖືກປິດໄວ້ເພື່ອເລີ່ມການໃຊ້ຮັອດສະປອດ.</translation>
 <translation id="5727460725221669831">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ປ່ຽນລະຫັດຜ່ານລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານໄປເມື່ອບໍ່ດົນມານີ້, ໃຫ້ລອງກູ້ຜູ້ໃຊ້ນີ້ຄືນມາ.</translation>
 <translation id="573413375004481890">ອຸປະກອນນີ້ບໍ່ສາມາດຮອງຮັບຈໍສະແດງທັງໝົດຂອງທ່ານໄດ້, ສະນັ້ນລະບົບໄດ້ຕັດການເຊື່ອມຕໍ່ອັນໜຶ່ງອອກແລ້ວ</translation>
 <translation id="5740328398383587084">ການແບ່ງປັນໃກ້ຄຽງ</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ເປີດ</translation>
 <translation id="5920710855273935292">ໄມປິດສຽງຢູ່.</translation>
-<translation id="5924855612669061715">ຮັອດສະປອດເປີດຢູ່</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ເປີດຢູ່.</translation>
 <translation id="5947494881799873997">ກັບຄືນ</translation>
 <translation id="595202126637698455">ການຕິດຕາມການປະຕິບັດເປີດໃຊ້ງານແລ້ວ</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">ໃຊ້ແມ່ແບບ</translation>
 <translation id="598882571027504733">ເພື່ອຮັບເອົາການອັບເດດ, ກະລຸນາປິດເປີດ Chromebook ຂອງທ່ານຄືນໃໝ່ທີ່ມີແປ້ນພິມເຊື່ອມຕໍ່ແລ້ວ.</translation>
 <translation id="6000279412553873020">ແປ້ນ, ປຸ່ມ ແລະ ອື່ນໆ</translation>
+<translation id="6002122790816966947">ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="6012623610530968780">ໜ້າທີ <ph name="SELECTED_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">ໄຮໄລ້ລາຍການຕໍ່ໄປຢູ່ຖ້ານ</translation>
 <translation id="6015573907265691211">ໝາຍວ່າສຳເລັດແລ້ວ</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">ຍ້າຍເມນູໄປແຈເທິງສຸດເບື້ອງຊ້າຍຂອງໜ້າຈໍ.</translation>
 <translation id="7189412385142492784">ດາວສຸກຢູ່ໄກເທົ່າໃດ</translation>
 <translation id="7198435252016571249">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາລຸ່ມແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
+<translation id="7219573373513695352">ບໍ່ມີອຸປະກອນເຊື່ອມຕໍ່</translation>
 <translation id="7229029500464092426">ໃຊ້ໜ່ວຍຄວາມຈຳແລ້ວ <ph name="AVAILABLE_MEMORY" /> | ຮວມທັງໝົດ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook ນີ້ຈຳເປັນຕ້ອງຣິສະຕາດຄືນໃໝ່ເພື່ອນຳໃຊ້ການອັບເດດ. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາເຖິງ 1 ນາທີ.</translation>
 <translation id="7256634071279256947">ໄມໂຄຣໂຟນຫຼັງ</translation>

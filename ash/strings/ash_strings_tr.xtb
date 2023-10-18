@@ -310,7 +310,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2276987123919776440">15 dk.</translation>
 <translation id="2277103315734023688">İleri Sar</translation>
 <translation id="2282073721614284166">Bağlantıyı sekmede aç</translation>
-<translation id="2284237890386182187">Açık, hiçbir cihaz bağlı değil</translation>
 <translation id="2292698582925480719">Görüntüyü ölçekle</translation>
 <translation id="229397294990920565">Mobil veriler kapanıyor...</translation>
 <translation id="2295777434187870477">Mikrofon açık, düğmeye basılırsa girişin sesi kapatılacak.</translation>
@@ -617,7 +616,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3563775809269155755">Hotspot'ı etkinleştir</translation>
 <translation id="3566240529365775567">Az önce açıldı</translation>
 <translation id="3571734092741541777">Kur</translation>
-<translation id="3572988532398145777">Bir panel açıkken bildirimi genişletemezsiniz. Önce aşağıdaki paneli kapatın.</translation>
 <translation id="3573179567135747900">Tekrar "<ph name="FROM_LOCALE" />" ayarına dön (yeniden başlatmak gerekir)</translation>
 <translation id="3576141592585647168">Saat dilimini değiştir</translation>
 <translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
@@ -700,7 +698,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="385300504083504382">Başlangıç</translation>
 <translation id="3859364108019690">Uygulama yayınlanamıyor</translation>
 <translation id="3861651314799684201">Tam ekran kaydı için enter tuşuna basın</translation>
-<translation id="3865912916886104060">Bağlı cihaz yok. Hotspot'u kullanmaya başlamak için kablosuz bağlantı kapatılacak.</translation>
 <translation id="3886872229787704059">Bugün açıldı</translation>
 <translation id="3891340733213178823">Oturumu kapatmak için Ctrl+ÜstKrktr+Q tuşlarına iki defa basın.</translation>
 <translation id="3893630138897523026">ChromeVox (sesli geri bildirim)</translation>
@@ -785,7 +782,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4197790712631116042">Kapalı</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> kullanılamıyor.</translation>
 <translation id="4201051445878709314">Önceki ayı göster</translation>
-<translation id="4202362334312791952">1 cihaz bağlı. Hotspot'u kullanmaya başlamak için kablosuz bağlantı kapatılacak.</translation>
 <translation id="4209973997261364186">Kablosuz özelliği açık</translation>
 <translation id="4212472694152630271">PIN'e geç</translation>
 <translation id="4215497585250573029">VPN Ayarları</translation>
@@ -1092,7 +1088,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5426063383988017631">Ayarlar menüsü kapatıldı</translation>
 <translation id="5428899915242071344">Seçmeye başla</translation>
 <translation id="5429993543155113935">Gizli pencereler şu anda desteklenmiyor</translation>
-<translation id="5430931332414098647">Hızlı Tethering</translation>
 <translation id="5431318178759467895">Renk</translation>
 <translation id="5433020815079095860">Ses girişi</translation>
 <translation id="544691375626129091">Mevcut tüm kullanıcılar zaten bu oturuma eklenmiş.</translation>
@@ -1121,6 +1116,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="554893713779400387">Dikte özelliğini aç/kapat</translation>
 <translation id="5551456515017410630">Takvimi açın/kapatın</translation>
 <translation id="5551974246223970793">Sayfa ararken aramayla ilgili bir sonraki eşleşmeye git</translation>
+<translation id="5555639311269196631">Hotspot'u kapat</translation>
 <translation id="5558091555391176027">Yakındakilerle Paylaş özelliğinin yüksek görünürlüğünü aç/kapat</translation>
 <translation id="556042886152191864">Düğme</translation>
 <translation id="5570122939431135380">Yeni sekmeyi yeni gizli pencerede aç</translation>
@@ -1166,7 +1162,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5707775774148071965">Cihazınız, kablonuzdan daha yüksek bir veri hızını destekliyor. Cihaz performansı sınırlı olabilir.</translation>
 <translation id="5710450975648804523">Rahatsız Etmeyin modu açık</translation>
 <translation id="571295407079589142">Mobil veri kapalı</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> cihaz bağlı. Hotspot'u kullanmaya başlamak için kablosuz bağlantı kapatılacak.</translation>
 <translation id="5727460725221669831">Şifrenizi unuttuysanız veya Google Hesabınızın şifresini yakın zamanda değiştirdiyseniz bu kullanıcıyı kurtarmayı deneyin.</translation>
 <translation id="573413375004481890">Bu cihaz tüm ekranlarınızı destekleyemediği için bir tanesinin bağlantısı kesildi</translation>
 <translation id="5740328398383587084">Yakındakilerle Paylaş</translation>
@@ -1216,7 +1211,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5920710855273935292">Mikrofonun sesi kapalı.</translation>
-<translation id="5924855612669061715">Hotspot açık</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> özelliği açık.</translation>
 <translation id="5947494881799873997">Geri döndür</translation>
 <translation id="595202126637698455">Performans izleme etkin</translation>
@@ -1232,6 +1226,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="598407983968395253">Şablonu kullan</translation>
 <translation id="598882571027504733">Güncellemeyi almak için Chromebook'unuzu klavye takılıyken yeniden başlatın.</translation>
 <translation id="6000279412553873020">Tuşlar, düğmeler ve daha fazlası</translation>
+<translation id="6002122790816966947">Cihazlarınız</translation>
 <translation id="6012623610530968780">Sayfa <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Rafta sonraki öğeyi vurgulayın</translation>
 <translation id="6015573907265691211">Tamamlandı olarak işaretle</translation>
@@ -1521,6 +1516,7 @@ Yeni yüklenmiş</translation>
 <translation id="7188494361780961876">Menü, ekranın sol üst köşesine taşındı.</translation>
 <translation id="7189412385142492784">Venüs ne kadar uzak</translation>
 <translation id="7198435252016571249">Kamera sağ alt köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>
+<translation id="7219573373513695352">Bağlı cihaz yok</translation>
 <translation id="7229029500464092426">Bellek <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> toplam</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Bir güncellemenin uygulanması için bu Chromebook'un yeniden başlatılması gerekiyor. Bu işlem bir dakika kadar sürebilir.</translation>
 <translation id="7256634071279256947">Arka mikrofon</translation>

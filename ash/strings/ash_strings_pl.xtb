@@ -310,7 +310,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Przewiń do przodu</translation>
 <translation id="2282073721614284166">Otwórz link na karcie</translation>
-<translation id="2284237890386182187">Włączony, brak połączonych urządzeń</translation>
 <translation id="2292698582925480719">Skala wyświetlania</translation>
 <translation id="229397294990920565">Wyłączam mobilną transmisję danych…</translation>
 <translation id="2295777434187870477">Mikrofon jest włączony. Przełączając go, wyciszysz odbierane dźwięki.</translation>
@@ -617,7 +616,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3563775809269155755">Włącz hotspot</translation>
 <translation id="3566240529365775567">Otwierane przed chwilą</translation>
 <translation id="3571734092741541777">Konfiguruj</translation>
-<translation id="3572988532398145777">Nie możesz rozwinąć powiadomienia, gdy otwarty jest panel. Najpierw zamknij panel poniżej.</translation>
 <translation id="3573179567135747900">Zmień z powrotem na „<ph name="FROM_LOCALE" />” (wymaga ponownego uruchomienia)</translation>
 <translation id="3576141592585647168">Zmień strefę czasową</translation>
 <translation id="3577473026931028326">Coś poszło nie tak. Spróbuj ponownie.</translation>
@@ -700,7 +698,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="385300504083504382">Początek</translation>
 <translation id="3859364108019690">Nie można przesyłać strumieniowo aplikacji</translation>
 <translation id="3861651314799684201">Aby nagrać pełny ekran, naciśnij Enter</translation>
-<translation id="3865912916886104060">Brak połączonych urządzeń. Aby można było zacząć korzystać z hotspota, zostanie wyłączone Wi-Fi.</translation>
 <translation id="3886872229787704059">Otwierane dzisiaj</translation>
 <translation id="3891340733213178823">Naciśnij dwukrotnie Ctrl+Shift+Q, by się wylogować.</translation>
 <translation id="3893630138897523026">ChromeVox (komunikaty głosowe)</translation>
@@ -785,7 +782,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4197790712631116042">Wyłączono</translation>
 <translation id="4201033867194214117">Funkcja <ph name="FEATURE_NAME" /> jest niedostępna.</translation>
 <translation id="4201051445878709314">Pokaż poprzedni miesiąc</translation>
-<translation id="4202362334312791952">Połączono 1 urządzenie. Aby można było zacząć korzystać z hotspota, zostanie wyłączone Wi-Fi.</translation>
 <translation id="4209973997261364186">Wi-Fi jest włączone</translation>
 <translation id="4212472694152630271">Zmień na PIN</translation>
 <translation id="4215497585250573029">Ustawienia sieci VPN</translation>
@@ -1092,7 +1088,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5426063383988017631">Zamknięto menu ustawień</translation>
 <translation id="5428899915242071344">Rozpocznij zaznaczanie</translation>
 <translation id="5429993543155113935">Okna incognito nie są obecnie obsługiwane</translation>
-<translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Kolor</translation>
 <translation id="5433020815079095860">Wejście audio</translation>
 <translation id="544691375626129091">Wszyscy dostępni użytkownicy zostali już dodani do tej sesji.</translation>
@@ -1121,6 +1116,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="554893713779400387">Włącz lub wyłącz dyktowanie</translation>
 <translation id="5551456515017410630">Otwórz/zamknij kalendarz</translation>
 <translation id="5551974246223970793">Podczas wyszukiwania na stronie przejdź do następnego elementu pasującego do zapytania</translation>
+<translation id="5555639311269196631">Wyłączanie hotspota</translation>
 <translation id="5558091555391176027">Przełącz dużą widoczność Udostępniania w pobliżu</translation>
 <translation id="556042886152191864">Przycisk</translation>
 <translation id="5570122939431135380">Otwórz nową kartę w nowym oknie incognito</translation>
@@ -1166,7 +1162,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5707775774148071965">Twoje urządzenie obsługuje większą szybkość transmisji danych niż kabel. Wydajność urządzenia może być ograniczona.</translation>
 <translation id="5710450975648804523">Tryb Nie przeszkadzać włączony</translation>
 <translation id="571295407079589142">Mobilna transmisja danych jest wyłączona</translation>
-<translation id="5716891621595980681">Podłączone urządzenia: <ph name="DEVICECOUNT" />. Aby można było zacząć korzystać z hotspota, zostanie wyłączone Wi-Fi.</translation>
 <translation id="5727460725221669831">Jeśli nie pamiętasz hasła lub od niedawna masz nowe hasło do konta Google, spróbuj przywrócić konto tego użytkownika.</translation>
 <translation id="573413375004481890">To urządzenie nie może obsługiwać wszystkich Twoich wyświetlaczy, dlatego jeden z nich został odłączony</translation>
 <translation id="5740328398383587084">Udostępnianie w pobliżu</translation>
@@ -1216,7 +1211,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5920710855273935292">Mikrofon jest wyciszony.</translation>
-<translation id="5924855612669061715">Hotspot jest włączony</translation>
 <translation id="5946788582095584774">Funkcja <ph name="FEATURE_NAME" /> jest włączona.</translation>
 <translation id="5947494881799873997">Przywróć</translation>
 <translation id="595202126637698455">Śledzenie wydajności jest włączone</translation>
@@ -1232,6 +1226,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="598407983968395253">Użyj szablonu</translation>
 <translation id="598882571027504733">Aby pobrać aktualizację, uruchom Chromebooka ponownie z podłączoną klawiaturą.</translation>
 <translation id="6000279412553873020">Klawisze, przyciski i inne elementy</translation>
+<translation id="6002122790816966947">Twoje urządzenia</translation>
 <translation id="6012623610530968780">Strona <ph name="SELECTED_PAGE" /> z <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Podświetl następny element na półce</translation>
 <translation id="6015573907265691211">Oznacz jako ukończone</translation>
@@ -1520,6 +1515,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7188494361780961876">Menu zostało przeniesione w lewy górny róg ekranu.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>
 <translation id="7198435252016571249">Podgląd z kamery został przyciągnięty do prawego dolnego rogu. Konflikt z obszarem systemowym.</translation>
+<translation id="7219573373513695352">Brak podłączonych urządzeń</translation>
 <translation id="7229029500464092426">Pamięć: <ph name="AVAILABLE_MEMORY" /> | Łącznie: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Konieczne jest ponowne uruchomienie tego Chromebooka, by zainstalować aktualizację. Może to potrwać około minuty.</translation>
 <translation id="7256634071279256947">Tylny mikrofon</translation>

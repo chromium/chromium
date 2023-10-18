@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">‏רוצה לעזור לנו לשפר את Chrome? אפשר לשתף אותנו בסיבה לשימוש בקובצי cookie של צד שלישי. <ph name="BEGIN_LINK" />שליחת משוב<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
+<translation id="1192844206376121885">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שאוחסנו על ידי <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1242008676835033345">מוטמע ב-<ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">הפסקה</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">אפילו שהרכיבו משקפיים ירוקות שהגנו על עיניהם, דורותי וחבריה נדהמו כשהגיעו לראשונה</translation>
 <translation id="2176704795966505152">הצגת האפשרות לשינוי מרחק התצוגה בתפריט הראשי</translation>
 <translation id="2182457891543959921">תוצג שאלה לפני מתן הרשאה לאתרים ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה (מומלץ)</translation>
+<translation id="2185965788978862351">‏הפעולה הזו תגרום למחיקת <ph name="DATASIZE" /> של נתונים וקובצי Cookie שאוחסנו על ידי אתרים ואפליקציות במסך הבית.</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
 <translation id="2212565012507486665">‏אישור קובצי cookie</translation>
 <translation id="2228071138934252756">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המצלמה, צריך להפעיל אותה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">ההורדה הושלמה <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">יכול להיות שתכונות באתרים מסוימים לא יפעלו במצב פרטי</translation>
 <translation id="2442870161001914531">תמיד תוצג בקשה לגרסת האתר למחשב</translation>
+<translation id="2469312991797799607">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie של <ph name="ORIGIN" /> ושל כל אתרי המשנה שלו</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2485422356828889247">הסרת התקנה</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">שימוש</translation>
 <translation id="5091013926750941408">אתר לנייד</translation>
 <translation id="509133520954049755">שליחת בקשה לתצוגה למחשב</translation>
+<translation id="5099358668261120049">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שנשמרו על ידי האתר <ph name="ORIGIN" /> או האפליקציה שלו במסך הבית.</translation>
 <translation id="5100237604440890931">מכווץ – יש ללחוץ כדי להרחיב.</translation>
 <translation id="5123685120097942451">כרטיסייה אנונימית</translation>
 <translation id="5186036860380548585">האפשרות זמינה בחלק העליון של המסך</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5922853908706496913">מתבצע שיתוף מסך</translation>
 <translation id="5922967540311291836">‏חסימת קובצי cookie של צד שלישי:</translation>
+<translation id="5923512600150154850">‏הפעולה הזו תגרום למחיקת <ph name="DATASIZE" /> של נתונים וקובצי Cookie שנשמרו על ידי אתרים.</translation>
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="5964247741333118902">תוכן מוטמע</translation>
 <translation id="5968921426641056619">צריך להזין כתובת אינטרנט</translation>
@@ -337,6 +342,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7188508872042490670">נתונים מאתרים ששמורים במכשיר</translation>
+<translation id="7201549776650881587">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שאוחסנו על ידי כל אתרי המשנה של <ph name="ORIGIN" /> או על ידי האפליקציה שלו במסך הבית</translation>
 <translation id="7203150201908454328">מורחב</translation>
 <translation id="7219254577985949841">למחוק את הנתונים מהאתר?</translation>
 <translation id="723171743924126238">בחירת תמונות</translation>

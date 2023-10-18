@@ -352,7 +352,6 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Pamahalaan ang mga paksa kung saan ka interesado</translation>
 <translation id="2912345083818861431">Gamitin ang lock ng screen para makita ang mga nakabukas na tab na Incognito</translation>
-<translation id="2922568440285376746">Hanapin sa larawan sa Google <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Di-wasto ang pangalan</translation>
 <translation id="2932150158123903946">Storage ng <ph name="APP_NAME" /> sa Google</translation>
 <translation id="2932222164150889403">Hindi magbabago ang iyong keyboard</translation>
@@ -687,7 +686,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4684427112815847243">I-sync lahat</translation>
 <translation id="4685741273709472646">Pumili mula sa dropdown na listahan</translation>
 <translation id="4687718960473379118">Mga ad na iminumungkahi ng site</translation>
-<translation id="4689792375321623175">Hanapin gamit ang Google <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> iba pa}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> iba pa}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> na iba pa}}</translation>
 <translation id="4699172675775169585">Mga naka-cache na larawan at file</translation>
 <translation id="4710167854527459075">Ayon sa pinakabago</translation>

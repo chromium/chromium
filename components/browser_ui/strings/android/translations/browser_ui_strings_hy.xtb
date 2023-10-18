@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Օգնեք մեզ բարելավել Chrome-ը։ Պատմեք մեզ, թե ինչու եք թույլատրել երրորդ կողմի քուքիները։ <ph name="BEGIN_LINK" />Կարծիք հայտնել<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
+<translation id="1192844206376121885">Կջնջվեն <ph name="ORIGIN" /> կայքի պահած բոլոր տվյալներն ու քուքիները։</translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
 <translation id="1242008676835033345">Զետեղված է <ph name="WEBSITE_URL" /> կայքում</translation>
 <translation id="1272079795634619415">Դադարեցնել</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">Նույնիսկ դնելով կանաչ ապակիներով ակնոցներ՝ Դորոթին և իր ընկերները շլացան այս</translation>
 <translation id="2176704795966505152">Ցույց տալ մասշտաբավորման ընտրանքը հիմնական ընտրացանկում</translation>
 <translation id="2182457891543959921">Կայքերի համար թույլտվություն խնդրել՝ ստեղծելու շրջակայքի եռաչափ քարտեզն ու հետագծելու ձեր տեսախցիկի դիրքը (խորհուրդ է տրվում)</translation>
+<translation id="2185965788978862351">Կջնջվեն բոլոր տվյալներն ու քուքիները (<ph name="DATASIZE" />), որոնք հիմնական էկրանին են պահվել կայքերի և հավելվածի կողմից։</translation>
 <translation id="2194856509914051091">Կարևոր տեղեկություններ</translation>
 <translation id="2212565012507486665">Թույլատրել քուքիները</translation>
 <translation id="2228071138934252756">Որպեսզի տեսախցիկը հասանելի դառնա <ph name="APP_NAME" />-ին, միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">Ներբեռնումն ավարտված է՝ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Ինկոգնիտո ռեժիմում որոշ կայքերի գործառույթները կարող են չաշխատել</translation>
 <translation id="2442870161001914531">Միշտ պահանջել կայքի ամբողջական տարբերակը</translation>
+<translation id="2469312991797799607">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք պահվել են <ph name="ORIGIN" /> կայքերի խմբում և դրա ենթակայքերում</translation>
 <translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2485422356828889247">Ապատեղադրել</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">Վիճակագրություն</translation>
 <translation id="5091013926750941408">Կայքի բջջային տարբերակ</translation>
 <translation id="509133520954049755">Համակարգչային տարբերակի հարցում</translation>
+<translation id="5099358668261120049">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք հիմնական էկրանին են պահվել <ph name="ORIGIN" /> կայքի և դրա հավելվածի կողմից։</translation>
 <translation id="5100237604440890931">Կոծկված - ընդլայնելու համար սեղմեք</translation>
 <translation id="5123685120097942451">Ինկոգնիտո ներդիր</translation>
 <translation id="5186036860380548585">Գործողությունը հասանելի է էկրանի վերին մասում</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5922853908706496913">Էկրանը ցուցադրվում է</translation>
 <translation id="5922967540311291836">Արգելափակել երրորդ կողմի քուքիները․</translation>
+<translation id="5923512600150154850">Կջնջվեն կայքերի կողմից պահված <ph name="DATASIZE" /> ծավալով տվյալներն ու քուքիները։</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="5964247741333118902">Զետեղված բովանդակություն</translation>
 <translation id="5968921426641056619">Մուտքագրեք վեբ հասցեն</translation>
@@ -337,6 +342,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ԿԲ</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7188508872042490670">Կայքերի տվյալները սարքում</translation>
+<translation id="7201549776650881587">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք հիմնական էկրանին են պահվել <ph name="ORIGIN" /> կայքերի խմբի կամ դրա հավելվածի կողմից</translation>
 <translation id="7203150201908454328">Ընդլայնված</translation>
 <translation id="7219254577985949841">Ջնջե՞լ կայքի տվյալները</translation>
 <translation id="723171743924126238">Ընտրեք պատկերներ</translation>

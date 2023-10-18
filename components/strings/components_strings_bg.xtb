@@ -966,6 +966,7 @@
 <translation id="2977665033722899841">Понастоящем сте избрали реда „<ph name="ROW_NAME" />“. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Опера</translation>
 <translation id="2979424420072875974">Ресурси за писатели</translation>
+<translation id="2980742331521553164">Кодът за проверка на тази карта ще бъде шифрован и запазен в профила ви в Google с цел по-бързо плащане</translation>
 <translation id="2983666748527428214">Отваряне на раздел в режим „инкогнито“</translation>
 <translation id="2985306909656435243">Ако настройката е активирана, Chromium ще съхранява на това устройство копие на картата ви с цел по-бързо попълване на формуляри.</translation>
 <translation id="2985398929374701810">Въведете валиден адрес</translation>
@@ -3397,6 +3398,7 @@
 <translation id="79338296614623784">Въведете валиден телефонен номер</translation>
 <translation id="7934414805353235750"><ph name="URL" /> иска да възпроизвежда защитено съдържание. Идентичността на устройството ви ще бъде удостоверена от Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">Кодът за проверка на тази карта ще бъде шифрован и запазен на устройството ви с цел по-бързо плащане</translation>
 <translation id="7937554595067888181">Изтича на <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сертификатът на сървъра още не е валиден.</translation>
 <translation id="7939713744218886332">Световна кухня</translation>

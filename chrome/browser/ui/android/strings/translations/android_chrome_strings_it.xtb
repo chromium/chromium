@@ -353,7 +353,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2909615210195135082">Piattaforma per le notifiche Google</translation>
 <translation id="2912296070571964914">Gestisci gli argomenti che ti interessano</translation>
 <translation id="2912345083818861431">Utilizza il blocco schermo per vedere le schede di navigazione in incognito aperte</translation>
-<translation id="2922568440285376746">Cerca in immagine con Google <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Nome non valido</translation>
 <translation id="2932150158123903946">Spazio di archiviazione di Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">La tua tastiera resterà invariata</translation>
@@ -688,7 +687,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4684427112815847243">Sincronizza tutto</translation>
 <translation id="4685741273709472646">Seleziona dall'elenco a discesa</translation>
 <translation id="4687718960473379118">Annunci suggeriti dai siti</translation>
-<translation id="4689792375321623175">Cerca immagine con Google <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e altre <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e altre <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Immagini e file memorizzati nella cache</translation>
 <translation id="4710167854527459075">Ordina per più recente</translation>

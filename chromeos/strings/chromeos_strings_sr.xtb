@@ -286,6 +286,7 @@
 <translation id="3226405216343213872">Траже се скенери</translation>
 <translation id="3226657629376379887">Мени са радњама за распоред</translation>
 <translation id="3246869037381808805">Задаци штампања старији од 1 дана се уклањају</translation>
+<translation id="324961752321393509">Администратор не дозвољава затварање ове апликације</translation>
 <translation id="3268178239013324452">Није успело – врата су отворена</translation>
 <translation id="3275729367986477355">Слика аватара</translation>
 <translation id="3283504360622356314">{0,plural, =1{Измени фајл}one{Измени фајлове}few{Измени фајлове}other{Измени фајлове}}</translation>

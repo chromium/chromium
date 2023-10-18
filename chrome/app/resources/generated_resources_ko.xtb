@@ -6168,7 +6168,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5901089233978050985">캡처 중인 탭으로 전환</translation>
 <translation id="5901494423252125310">프린터 덮개 열림</translation>
 <translation id="5901630391730855834">노란색</translation>
-<translation id="5902211418335330937">사이트가 제대로 작동하지 않는 경우, 검색 및 주소 표시줄에서 서드 파티 쿠키 차단을 선택하여 해당 사이트에 서드 파티 쿠키를 사용 설정할 수 있습니다.</translation>
 <translation id="5904614460720589786">구성 문제로 인해 <ph name="APP_NAME" /> 앱을 설정할 수 없습니다. 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="5906655207909574370">업데이트가 거의 완료되었습니다. 업데이트를 완료하려면 기기를 다시 시작하세요.</translation>
 <translation id="5906732635754427568">이 앱과 관련된 데이터가 이 기기에서 삭제됩니다.</translation>
@@ -6935,7 +6934,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6532663472409656417">기업 등록됨</translation>
 <translation id="6533315466883598769">Google 번역 사용</translation>
 <translation id="65334502113648172">화살표 키를 눌러 디스플레이 영역을 축소하거나 확대합니다. 디스플레이 영역에서 이동하려면 Shift 키와 +를 누른 다음 화살표 키를 사용하세요.</translation>
-<translation id="6533636340637966565">켜는 중…</translation>
 <translation id="6535331821390304775">항상 <ph name="ORIGIN" />에서 연결된 앱에 있는 이 유형의 링크를 열도록 허용</translation>
 <translation id="653659894138286600">문서 및 이미지 스캔</translation>
 <translation id="6537613839935722475">이름에는 문자, 숫자, 하이픈(-)을 사용할 수 있습니다.</translation>
@@ -9178,6 +9176,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8314835274931377415">스위치 제어 설정을 시작하시겠습니까?</translation>
 <translation id="8315018673856831477">메모리 절약 모드 옵션</translation>
 <translation id="8315044115695361734">iCloud 키체인에서</translation>
+<translation id="8315514906653279104">켜는 중...</translation>
 <translation id="8317671367883557781">네트워크 연결 추가</translation>
 <translation id="8317965619823678157">비밀번호 복사</translation>
 <translation id="8318266828739827371">화면 분할 뷰를 사용하여 화면의 확대 영역을 볼 수 있습니다. 고정 돋보기를 사용 설정하거나 중지하려면 검색 + Ctrl + D를 사용하세요.</translation>

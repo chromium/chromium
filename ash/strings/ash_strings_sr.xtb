@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15 мин</translation>
 <translation id="2277103315734023688">Премотај унапред</translation>
 <translation id="2282073721614284166">Отвори линк на картици</translation>
-<translation id="2284237890386182187">Укључено, ниједан уређај није повезан</translation>
 <translation id="2292698582925480719">Размера приказа</translation>
 <translation id="229397294990920565">Пренос података преко мобилног оператера се искључује...</translation>
 <translation id="2295777434187870477">Микрофон је укључен. Можете да га искључите померањем прекидача.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">Омогући хотспот</translation>
 <translation id="3566240529365775567">Отварано малопре</translation>
 <translation id="3571734092741541777">Подеси</translation>
-<translation id="3572988532398145777">Не можете да проширите обавештење док је окно отворено. Прво затворите окно у наставку.</translation>
 <translation id="3573179567135747900">Врати на „<ph name="FROM_LOCALE" />“ (потребно је поновно покретање)</translation>
 <translation id="3576141592585647168">Промените временску зону</translation>
 <translation id="3577473026931028326">Дошло је до грешке. Пробајте поново.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">Почетак</translation>
 <translation id="3859364108019690">Стримовање апликација није успело</translation>
 <translation id="3861651314799684201">Притисните Enter да бисте снимили цео екран</translation>
-<translation id="3865912916886104060">Ниједан уређај није повезан. WiFi ће бити искључен да бисте почели да користите хотспот.</translation>
 <translation id="3886872229787704059">Отварано данас</translation>
 <translation id="3891340733213178823">Двапут притисните Ctrl+Shift+Q да бисте се одјавили.</translation>
 <translation id="3893630138897523026">ChromeVox (говорне повратне информације)</translation>
@@ -786,7 +783,6 @@
 <translation id="4197790712631116042">Искључено</translation>
 <translation id="4201033867194214117">Функција <ph name="FEATURE_NAME" /> није доступна</translation>
 <translation id="4201051445878709314">Прикажи претходни месец</translation>
-<translation id="4202362334312791952">1 уређај је повезан. WiFi ће бити искључен да бисте почели да користите хотспот.</translation>
 <translation id="4209973997261364186">WiFi је укључен</translation>
 <translation id="4212472694152630271">Пређи на PIN</translation>
 <translation id="4215497585250573029">Подешавања VPN-а</translation>
@@ -1093,7 +1089,6 @@
 <translation id="5426063383988017631">Мени Подешавања је затворен</translation>
 <translation id="5428899915242071344">Покрени бирање</translation>
 <translation id="5429993543155113935">Прозори без архивирања тренутно нису подржани</translation>
-<translation id="5430931332414098647">Тренутно привезивање</translation>
 <translation id="5431318178759467895">У боји</translation>
 <translation id="5433020815079095860">Аудио улаз</translation>
 <translation id="544691375626129091">Сви доступни корисници су већ додати у ову сесију.</translation>
@@ -1122,6 +1117,7 @@
 <translation id="554893713779400387">Укључи/искључи диктирање</translation>
 <translation id="5551456515017410630">Отвори или затвори календар</translation>
 <translation id="5551974246223970793">При претраживању странице иди на следеће подударање за претрагу</translation>
+<translation id="5555639311269196631">Искључи хотспот</translation>
 <translation id="5558091555391176027">Укључите или искључите велику видљивост Дељења у близини</translation>
 <translation id="556042886152191864">Дугме</translation>
 <translation id="5570122939431135380">Отвори нову картицу у новом прозору без архивирања</translation>
@@ -1167,7 +1163,6 @@
 <translation id="5707775774148071965">Уређај подржава већи проток података у односу на кабл. Учинак уређаја ће можда бити ограничен.</translation>
 <translation id="5710450975648804523">Режим Не узнемиравај је укључен</translation>
 <translation id="571295407079589142">Подаци за мобилне уређаје су искључени</translation>
-<translation id="5716891621595980681">Повезаних уређаја: <ph name="DEVICECOUNT" />. WiFi ће бити искључен да бисте почели да користите хотспот.</translation>
 <translation id="5727460725221669831">Ако сте недавно заборавили лозинку или променили лозинку за Google налог, пробајте да вратите приступ свом корисничком налогу.</translation>
 <translation id="573413375004481890">Овај уређај не може да подржава све ваше екране, па је веза са једним од њих прекинута</translation>
 <translation id="5740328398383587084">Дељење у близини</translation>
@@ -1217,7 +1212,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5920710855273935292">Микрофон је искључен.</translation>
-<translation id="5924855612669061715">Хотспот је укључен</translation>
 <translation id="5946788582095584774">Функција <ph name="FEATURE_NAME" /> је укључена.</translation>
 <translation id="5947494881799873997">Врати</translation>
 <translation id="595202126637698455">Праћење учинка је омогућено</translation>
@@ -1233,6 +1227,7 @@
 <translation id="598407983968395253">Користи шаблон</translation>
 <translation id="598882571027504733">Да бисте преузели ажурирање, рестартујте Chromebook са прикљученом тастастуром.</translation>
 <translation id="6000279412553873020">Тастери, дугмад и друго</translation>
+<translation id="6002122790816966947">Уређаји</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. страница од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Истакните следећу ставку на полици</translation>
 <translation id="6015573907265691211">Означите као завршено</translation>
@@ -1522,6 +1517,7 @@
 <translation id="7188494361780961876">Мени је премештен у горњи леви угао екрана.</translation>
 <translation id="7189412385142492784">Колико далеко је Венера</translation>
 <translation id="7198435252016571249">Камера је уклопљена у доњи десни угао. Неусаглашеност са површином система.</translation>
+<translation id="7219573373513695352">Ниједан уређај није повезан</translation>
 <translation id="7229029500464092426">Искоришћена меморија <ph name="AVAILABLE_MEMORY" /> | Укупно <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Овај Chromebook мора да се растартује ради примене ажурирања. Ово може да потраје највише 1 минут.</translation>
 <translation id="7256634071279256947">Задњи микрофон</translation>

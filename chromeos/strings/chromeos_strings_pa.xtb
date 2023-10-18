@@ -168,7 +168,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ਫ਼ੋਟੋਆਂ</translation>
 <translation id="2157660087437850958">ਇਮੋਜੀ ਚੋਣਕਾਰ</translation>
 <translation id="2157959690810728433">ਕਤਾਰਬੱਧ</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" /> ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}=2{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" /> ਅਤੇ <ph name="APP_NAME_2" /> ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}=3{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ਅਤੇ <ph name="APP_NAME_3" /> ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}one{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ਅਤੇ # ਹੋਰ ਐਪ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}other{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ਅਤੇ # ਹੋਰ ਐਪਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
+<translation id="215916044711630446">'APN ਸ਼ਾਮਲ ਕਰੋ' ਬਟਨ ਹੁਣ ਬੰਦ ਹੈ</translation>
 <translation id="2161394479394250669">ਪ੍ਰਿੰਟ ਜੌਬ ਰੱਦ ਕਰੋ</translation>
 <translation id="2161656808144014275">ਲਿਖਤ</translation>
 <translation id="2163937499206714165">ਗੂੜ੍ਹਾ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
@@ -285,6 +287,7 @@
 <translation id="3226405216343213872">ਸਕੈਨਰ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="3226657629376379887">ਖਾਕਾ ਕਾਰਵਾਈ ਮੀਨੂ</translation>
 <translation id="3246869037381808805">1 ਦਿਨ ਤੋਂ ਜ਼ਿਆਦਾ ਪੁਰਾਣੀਆਂ ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
+<translation id="324961752321393509">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਐਪ ਨੂੰ ਬੰਦ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦਾ</translation>
 <translation id="3268178239013324452">ਅਸਫਲ ਰਹੀ - ਢੱਕਣ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
 <translation id="3275729367986477355">ਅਵਤਾਰ ਚਿੱਤਰ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ਫ਼ਾਈਲ ਦਾ ਸੰਪਾਦਨ ਕਰੋ}one{ਫ਼ਾਈਲ ਦਾ ਸੰਪਾਦਨ ਕਰੋ}other{ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ}}</translation>
@@ -397,6 +400,7 @@
 <translation id="4117637339509843559">ਗੂੜ੍ਹਾ ਮੋਡ</translation>
 <translation id="4130035430755296270">ਖਾਕੇ ਸੰਬੰਧੀ ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਕਰਸਰ ਘੁਮਾਉਂਦੇ ਰਹੋ</translation>
 <translation id="4131410914670010031">ਕਾਲਾ ਅਤੇ ਚਿੱਟਾ</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋ ਗਈ ਸੀ}one{# ਐਪ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋ ਗਈ ਸੀ}other{# ਐਪਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਹੋ ਗਈਆਂ ਸਨ}}</translation>
 <translation id="4145784616224233563">HTTP ਫ਼ਾਇਰਵਾਲ</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ਡਿਸਪਲੇ</translation>
@@ -442,6 +446,7 @@
 <translation id="445059817448385655">ਪੁਰਾਣਾ ਪਾਸਵਰਡ</translation>
 <translation id="4453205916657964690">ਸਬਨੈੱਟ ਮਾਸਕ</translation>
 <translation id="4454245904991689773">ਇਸ ਵਿੱਚ ਸਕੈਨ ਕਰੋ</translation>
+<translation id="4456812688969919973">'APN ਰੱਖਿਅਤ ਕਰੋ' ਬਟਨ ਹੁਣ ਬੰਦ ਹੈ</translation>
 <translation id="4469288414739283461">ਧਰਤੀ ਪ੍ਰਵਾਹ ਦਾ ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
 <translation id="4479639480957787382">ਈਥਰਨੈਟ</translation>
 <translation id="4483049906298469269">ਗੈਰ-ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
@@ -712,6 +717,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ਕਮਜ਼ੋਰ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ਖਾਤਾ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
+<translation id="6462978824459367242">'APN ਸ਼ਾਮਲ ਕਰੋ' ਬਟਨ ਹੁਣ ਚਾਲੂ ਹੈ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ਕੀ ਪੰਨਾ ਮੁੜ-ਸਕੈਨ ਕਰਨਾ ਹੈ?}=1{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਮੁੜ-ਸਕੈਨ ਕਰਨਾ ਹੈ?}other{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਮੁੜ-ਸਕੈਨ ਕਰਨਾ ਹੈ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਗਿਆ</translation>
@@ -1049,6 +1055,7 @@
 <translation id="902638246363752736">ਕੀ-ਬੋਰਡ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="9028832514430399253">ਸਕ੍ਰੀਨ ਸੇਵਰ ਵਿਕਲਪਾਂ ਨੂੰ ਚੁਣਨ ਲਈ ਟੌਗਲ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">'APN ਰੱਖਿਅਤ ਕਰੋ' ਬਟਨ ਹੁਣ ਚਾਲੂ ਹੈ</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਵਿੱਚ ਉੱਚ ਵਿਲੰਬਤਾ ਹੈ</translation>
 <translation id="9065203028668620118">ਸੰਪਾਦਿਤ ਕਰੋ</translation>

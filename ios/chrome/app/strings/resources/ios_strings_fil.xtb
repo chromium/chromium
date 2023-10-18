@@ -41,7 +41,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="1176932207622159128">Di Ma-save Larawan</translation>
 <translation id="1177414119866731261">Buksan ang Menu ng Chrome</translation>
 <translation id="1181037720776840403">Alisin</translation>
-<translation id="1200396280085622191">Gamitin ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe at iba pang app.</translation>
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1207113853726624428">Bagong Paghahanap</translation>
 <translation id="1207493287814084192">5:30 PM</translation>
@@ -194,7 +193,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1980417445547898121">{count,plural, =1{Kunin ang iyong {count} kamakailang aktibong tab mula sa iba mo pang device sa iPhone na ito}one{Kunin ang iyong {count} kamakailang aktibong tab mula sa iba mo pang device sa iPhone na ito}other{Kunin ang iyong {count} na kamakailang aktibong tab mula sa iba mo pang device sa iPhone na ito}}</translation>
 <translation id="1981118202195772574">Mobile</translation>
-<translation id="1987779152850321833">Kumpletuhin ang mga iminumungkahing pagkilos na ito sa ibaba para masulit ang Chrome.</translation>
 <translation id="1989112275319619282">Mag-browse</translation>
 <translation id="1990820278544963435">Maghanap</translation>
 <translation id="1991153180045413119">Na-share ang Password</translation>
@@ -233,7 +231,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="2220529011494928058">Mag-ulat ng isyu</translation>
 <translation id="2230173723195178503">Na-load na ang webpage</translation>
 <translation id="2239626343334228536">Kini-clear ang data sa pag-browse...</translation>
-<translation id="2242467532204595597">Gamitin ang Chrome sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="2251686759395008410">Menu → History</translation>
 <translation id="2252674110805316998">Paghahanap sa Web</translation>
 <translation id="2256933947031277845">Pinapayagan ka lang ng iyong organisasyon na mag-sign in gamit ang ilang partikular na account.</translation>
@@ -272,7 +269,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2411749908844615428">{count,plural, =1{{count} na-save na address ang available sa itaas ng iyong keyboard.}one{{count} na-save na address ang available sa itaas ng iyong keyboard.}other{{count} na na-save na address ang available sa itaas ng iyong keyboard.}}</translation>
 <translation id="2421004566762153674">Pag-block sa third-party na cookies</translation>
 <translation id="2421044535038393232">Magpatuloy sa Pag-edit</translation>
-<translation id="2423077901494354337">Masusulit mo na ngayon ang Chrome sa iyong device.</translation>
 <translation id="2434405374328098816">May na-save ka nang password para sa "<ph name="USERNAME" />" sa <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Ipakita ang password</translation>
 <translation id="2459155039684421202">Sa address bar, maglagay ng gawain tulad ng “i-clear ang aking history” o “i-edit ang mga password.”</translation>
@@ -318,7 +314,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
 <translation id="2671426118752779020">Puwede mong gamitin ang mga password na na-save mo sa Google Password Manager sa iba pang app sa iyong iPhone.</translation>
 <translation id="2690858294534178585">Ginagamit ang camera</translation>
-<translation id="26915454213703967">Maghanap sa Loob ng Larawan gamit ang Google</translation>
 <translation id="2691653761409724435">Hindi available offline</translation>
 <translation id="2695507686909505111">Naisalin na ang Page</translation>
 <translation id="2696180352517415858">Hindi ka masa-sign out sa iyong Google Account. Posibleng ma-save sa iyong Google Account ang <ph name="BEGIN_LINK" />iba pang anyo ng aktibidad<ph name="END_LINK" /> kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.
@@ -412,7 +407,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3080525922482950719">Puwede kang mag-save ng mga page para basahin sa ibang pagkakataon o nang offline</translation>
 <translation id="3081338492074632642">Tiyaking tumutugma ang password na sine-save mo sa iyong password para sa <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Sa ilalim</translation>
-<translation id="309672519329227863">I-access ang iyong mga password sa Chrome at higit pa sa iba pang app.</translation>
 <translation id="309710370695886264">Mayroon kang 1 password na ginamit ulit. Ayusin ito ngayon para manatiling ligtas.</translation>
 <translation id="3112556859945124369">Markahan…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Tingnan Kung Ano ang Puwede Mong I-sync<ph name="END_LINK" /></translation>
@@ -500,7 +494,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3551320343578183772">Isara ang Tab</translation>
 <translation id="3565207542107370586">I-clear ang Data ng Pag-browse…</translation>
 <translation id="3575234738189584619">Maghanap gamit ang Lens</translation>
-<translation id="3577555362230509265">Gamitin ang Chrome sa iba pang app.</translation>
 <translation id="3581564640715911333">Mag-alok na mag-translate ng mga page sa iba pang wika</translation>
 <translation id="3587885837929752825">Nililimitahan ng iyong organisasyon kung ano ang puwede mong i-save sa iyong Google Account.</translation>
 <translation id="3588820906588687999">Buksan ang Larawan sa Bagong Tab</translation>
@@ -950,7 +943,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6042308850641462728">Marami pang iba</translation>
 <translation id="6045460247888249350">Magdagdag ng pamagat</translation>
-<translation id="6054613632208573261">Gamitin ang Chrome bilang Default</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Kontrolin ang iyong mga kuwento at aktibidad dito</translation>
 <translation id="6064824697233747382">Hinihiling sa iyo ng organisasyon mo na i-off ang pag-sync.</translation>
@@ -1010,7 +1002,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6346549652287021269">Magsimula ng Bagong Download?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Made-delete ang address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}one{Made-delete ang mga address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}other{Made-delete ang mga address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}}</translation>
 <translation id="634878792104344809">I-sync ang iyong password, history, at higit pa sa lahat ng device mo</translation>
-<translation id="6348855835728304880">I-access ang iyong mga password sa Chrome at higit pa sa iba pang app sa device na ito.</translation>
 <translation id="63519665078626091">Para gamitin ang Web Inspector, kumonekta sa Safari sa iyong computer gamit ang isang cable at i-access ang iyong iPad mula sa menu ng Mag-develop. Puwede mong i-enable ang menu ng mag-develop sa seksyong Advanced ng mga setting ng Safari sa iyong computer.</translation>
 <translation id="6355820205320395730">Madaling hulaan ang mahihinang password. Tiyaking malalakas na password ang gagawin mo. <ph name="BEGIN_LINK" />Tumingin pa ng mga tip sa seguridad.<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">Tapos na</translation>
@@ -1195,7 +1186,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7221173315674413369">Mag-explore ng mga bagong feature at tip sa Ano’ng Bago</translation>
 <translation id="7223102419539744003">Isara ang Tab</translation>
 <translation id="722454870747268814">Bagong Tab na Incognito</translation>
-<translation id="723787869754590019">Gamitin ang Chrome para sa Autofill</translation>
 <translation id="7265758999917665941">Hindi Kailanman Para sa Site na Ito</translation>
 <translation id="7272437679830969316">Hindi ma-verify ang iyong pagkakakilanlan. Hindi nakopya ang password.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Bagong Package ang Sinubaybayan}one{Bagong Package ang Sinubaybayan}other{na Bagong Package ang Sinubaybayan}}</translation>
@@ -1468,7 +1458,6 @@ Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilag
 <translation id="8717864919010420084">Kopyahin ang Link</translation>
 <translation id="8721297211384281569">Menu ng Mga Tool</translation>
 <translation id="8725066075913043281">Muling subukan</translation>
-<translation id="8727043961453758442">Sulitin ang Chrome</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8731958888085671579">Itago ang Hanapin sa Page</translation>
 <translation id="87371078663613140">I-explore ang mga opsyon sa menu bar</translation>
@@ -1581,7 +1570,6 @@ Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilag
 <translation id="959066944189734975">Sinusubaybayan mo ang <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Ipakita ang Mga Suhestyon sa Tab mula sa Iba pang Device</translation>
 <translation id="972300586996227526">{COUNT,plural, =1{Puwede mong i-save ang iyong password para sa {DOMAIN_ONE} sa Google Account mo na {EMAIL}}=2{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE} at {DOMAIN_TWO} sa Google Account mo na {EMAIL}}=3{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pa sa Google Account mo na {EMAIL}}one{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pa sa Google Account mo na {EMAIL}}other{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pa sa Google Account mo na {EMAIL}}}</translation>
-<translation id="97300214378190234">Gamitin ang Chrome sa tuwing magta-tap ka ng mga link sa iba pang app.</translation>
 <translation id="973493300226275298">Subaybayan ang presyo ng produkto sa mga online store. Makakatanggap ka ng mga alerto kapag bumaba ang presyo.</translation>
 <translation id="981498610235328462">Pinapayagan ka lang ng iyong organisasyon na mag-sign in gamit ang ilang partikular na account. Nakatago ang mga account na hindi pinapayagan.</translation>
 <translation id="984509647832111802">Hindi Gumagana ang Pag-sync.</translation>

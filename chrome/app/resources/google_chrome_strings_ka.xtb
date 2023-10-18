@@ -67,6 +67,7 @@
 <translation id="2120620239521071941">ეს მოქმედება წაშლის <ph name="ITEMS_COUNT" /> ერთეულს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">ხელახლა გაშვება &amp;Chrome-ის გასაახლებლად</translation>
 <translation id="2123055963409958220">ხელი შეუწყვეთ Chrome-ის გაუმჯობესებას <ph name="BEGIN_LINK" />მიმდინარე პარამეტრების<ph name="END_LINK" /> გამოგზავნის მეშვეობით</translation>
+<translation id="2126108037660393668">ჩამოტვირთული ფაილის დადასტურება ვერ მოხერხდა.</translation>
 <translation id="2130870084309816036">ინტერნეტთან დაკავშირება ვერ ხერხდება. თუ ქსელის დაცვას იყენებთ, შეიტანეთ <ph name="PRODUCT_EXE_NAME" /> დაშვებულთა სიაში.</translation>
 <translation id="2131230230468101642">თქვენი კონფიდენციალურობის დაცვის მიზნით, ჩვენ ავტომატურად ვშლით თქვენს ინტერესებს, რომლებიც 4 კვირაზე ძველია. თქვენ მიერ ვების დათვალიერების პარალელურად, ესა თუ ეს ინტერესი შეიძლება ხელახლა გამოჩნდეს სიაში. სურვილისამებრ, შეგიძლიათ წაშალოთ ინტერესები, რომლებიც არ გსურთ, Chrome-მა რომ გაითვალისწინოს.</translation>
 <translation id="2139300032719313227">გადატვირთეთ ChromeOS</translation>
@@ -97,6 +98,7 @@
 <translation id="2580411288591421699">შეუძლებელია იმავე Google Chrome-ის ვერსიის დაყენება, რომელიც ამჟამად გაშვებულია. დახურეთ Google Chrome და ხელახლა სცადეთ.</translation>
 <translation id="2586406160782125153">ეს მოქმედება წაშლის თქვენს დათვალიერების მონაცემებს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">მიიღეთ Chrome ბრაუზერში შენახული თქვენი კონტენტი <ph name="ACCOUNT_EMAIL" />-დან</translation>
+<translation id="259935314519650377">ჩამოტვირთული ინსტალატორის ქეშირება ვერ მოხერხდა. შეცდომა: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome ვერ ახერხებს განახლებების შემოწმებას. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome რეგულარულად ამოწმებს, არის თუ არა თქვენს ბრაუზერში ყველაზე უსაფრთხო პარამეტრები. გაცნობებთ, თუ რაიმეს შემოწმება იქნება საჭირო.</translation>
@@ -327,6 +329,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6676384891291319759">წვდომა ინტერნეტზე</translation>
 <translation id="6679975945624592337">Google Chrome-ისთვის ფონურ რეჟიმში მუშაობის დაშვება</translation>
 <translation id="6696915334902295848">Chrome საჭიროებს მიკროფონზე წვდომის ნებართვას ამ საიტისთვის</translation>
+<translation id="6712881677154121168">შეცდომა ჩამოტვირთვისას: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">ააჩქარეთ Chrome-ის მუშაობა</translation>
 <translation id="6735387454586646204">ChromeOS Flex სისტემა</translation>
 <translation id="6739177684496155661">გსურთ ახალ Chrome პროფილში გაგრძელება?</translation>
@@ -341,6 +344,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6943584222992551122">ამ პიროვნების დათვალიერების მონაცემები წაიშლება ამ მოწყობილობიდან. მონაცემების აღსადგენად შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">შემომავალი წესი Google Chrome Beta-სთვის mDNS ტრაფიკის დასაშვებად.</translation>
 <translation id="6989339256997917931">Google Chrome განახლდა, მაგრამ თქვენ არ იყენებდით მას მინიმუმ 30 დღის განმავლობაში.</translation>
+<translation id="7024536598735240744">შეცდომა ამოღებისას: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">ინსტალაცია შეწყდა.</translation>
 <translation id="7025800014283535195">აქ შეგიძლიათ Chrome პროფილებს შორის გადართვა</translation>
 <translation id="7036251913954633326">თუ ამ ანგარიშის გამოყენება მხოლოდ ერთხელ გსურთ, ისარგებლეთ <ph name="GUEST_LINK_BEGIN" />სტუმრის რეჟიმით<ph name="GUEST_LINK_END" /> Chrome ბრაუზერში. თუ სხვისი ანგარიშის დამატება გსურთ, <ph name="LINK_BEGIN" />დაამატეთ ახალი პიროვნება<ph name="LINK_END" /> თქვენს <ph name="DEVICE_TYPE" />-ს.
@@ -434,6 +438,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8516431725144212809">Chrome-ის მიერ პროგნოზირებული თქვენი ინტერესები</translation>
 <translation id="8521348052903287641">შემომავალი წესი Google Chrome Dev-ისთვის mDNS ტრაფიკის დასაშვებად.</translation>
 <translation id="8550334526674375523">სამსახურის ეს პროფილი თქვენი პირადი პროფილისგან სრულიად დამოუკიდებლად ფუნქციონირებს.</translation>
+<translation id="8555465886620020932">სერვისის შეცდომა: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556340503434111824">ხელმისაწვდომია Google Chrome-ის უფრო ახალი ვერსია, რომელიც უფრო სწრაფია.</translation>
 <translation id="8571790202382503603">Chrome პროფილები Chrome-ში არსებული თქვენი კონტენტის განცალკევების საშუალებას გაძლევთ. მაგალითად, სამსახურებრივი და პირადი მონაცემების.</translation>
 <translation id="8614913330719544658">Google Chrome არ პასუხობს. გავუშვათ ხელახლა?</translation>

@@ -966,6 +966,7 @@
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ამჟამად არჩეულია. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ოპერა</translation>
 <translation id="2979424420072875974">სამწერლობო რესურსები</translation>
+<translation id="2980742331521553164">უფრო სწრაფი ანგარიშსწორების მიზნით, ამ ბარათის CVC დაიშიფრება და შეინახება თქვენს Google ანგარიშში</translation>
 <translation id="2983666748527428214">ინკოგნიტო ჩანართის გახსნა</translation>
 <translation id="2985306909656435243">ჩართვის შემთხვევაში, Chromium ფორმების უფრო სწრაფად შევსების მიზნით, თქვენი ბარათის ასლს ამ მოწყობილობაში შეინახავს.</translation>
 <translation id="2985398929374701810">შეიყვანეთ სწორი მისამართი</translation>
@@ -3397,6 +3398,7 @@
 <translation id="79338296614623784">შეიყვანეთ სწორი ტელეფონის ნომერი</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ითხოვს დაცული კონტენტის დაკვრას. თქვენი მოწყობილობის იდენტობა შემოწმდება Google-ის მიერ.</translation>
 <translation id="7935318582918952113">DOM დისტილერი</translation>
+<translation id="7937163678541954811">უფრო სწრაფი ანგარიშსწორების მიზნით, ამ ბარათის CVC დაიშიფრება და შეინახება თქვენს მოწყობილობაზე</translation>
 <translation id="7937554595067888181">ძალაშია <ph name="EXPIRATION_DATE_ABBR" />-მდე</translation>
 <translation id="7938958445268990899">სერვერის სერტიფიკატი ჯერ არ არის ძალაში.</translation>
 <translation id="7939713744218886332">მსოფლიო სამზარეულო</translation>

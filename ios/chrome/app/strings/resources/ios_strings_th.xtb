@@ -41,7 +41,6 @@
 <translation id="1176932207622159128">ไม่สามารถบันทึกภาพ</translation>
 <translation id="1177414119866731261">เปิดเมนู Chrome</translation>
 <translation id="1181037720776840403">นำออก</translation>
-<translation id="1200396280085622191">ใช้ Chrome ทุกครั้งที่คุณแตะลิงก์ในข้อความและแอปอื่นๆ</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1207113853726624428">ค้นหาใหม่</translation>
 <translation id="1207493287814084192">17:30 น.</translation>
@@ -194,7 +193,6 @@
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1980417445547898121">{count,plural, =1{รับแท็บที่เพิ่งใช้งาน {count} แท็บจากอุปกรณ์อื่นบน iPhone เครื่องนี้}other{รับแท็บที่เพิ่งใช้งาน {count} แท็บจากอุปกรณ์อื่นบน iPhone เครื่องนี้}}</translation>
 <translation id="1981118202195772574">อุปกรณ์เคลื่อนที่</translation>
-<translation id="1987779152850321833">โปรดดำเนินการตามที่แนะนําด้านล่างเพื่อได้รับประโยชน์สูงสุดจาก Chrome</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
 <translation id="1990820278544963435">ค้นหา</translation>
 <translation id="1991153180045413119">แชร์รหัสผ่านแล้ว</translation>
@@ -233,7 +231,6 @@
 <translation id="2220529011494928058">รายงานปัญหา</translation>
 <translation id="2230173723195178503">หน้าเว็บโหลดแล้ว</translation>
 <translation id="2239626343334228536">กำลังล้างข้อมูลการท่องเว็บ...</translation>
-<translation id="2242467532204595597">ใช้ Chrome ทุกครั้งที่คุณแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="2251686759395008410">เมนู → ประวัติการเข้าชม</translation>
 <translation id="2252674110805316998">ค้นเว็บ</translation>
 <translation id="2256933947031277845">องค์กรอนุญาตให้คุณลงชื่อเข้าใช้ด้วยบัญชีบางบัญชีเท่านั้น</translation>
@@ -272,7 +269,6 @@
 <translation id="2411749908844615428">{count,plural, =1{ที่อยู่ที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{ที่อยู่ที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="2421004566762153674">การบล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="2421044535038393232">แก้ไขต่อไป</translation>
-<translation id="2423077901494354337">ตอนนี้คุณจะได้รับประโยชน์สูงสุดจาก Chrome ในอุปกรณ์แล้ว</translation>
 <translation id="2434405374328098816">คุณบันทึกรหัสผ่านสำหรับ "<ph name="USERNAME" />" ที่ <ph name="WEBSITE" /> ไว้แล้ว</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="2459155039684421202">ในแถบที่อยู่ ให้ป้อนงาน เช่น "ล้างประวัติการเข้าชมของฉัน" หรือ "แก้ไขรหัสผ่าน"</translation>
@@ -318,7 +314,6 @@
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
 <translation id="2671426118752779020">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในแอปอื่นๆ บน iPhone ได้</translation>
 <translation id="2690858294534178585">ใช้กล้องถ่ายรูปอยู่</translation>
-<translation id="26915454213703967">ค้นหาในรูปภาพด้วย Google</translation>
 <translation id="2691653761409724435">ไม่สามารถใช้ออฟไลน์</translation>
 <translation id="2695507686909505111">แปลหน้าเว็บแล้ว</translation>
 <translation id="2696180352517415858">คุณจะไม่ออกจากระบบบัญชี Google ระบบอาจบันทึก<ph name="BEGIN_LINK" />กิจกรรมรูปแบบอื่น<ph name="END_LINK" />ในบัญชี Google เมื่อคุณลงชื่อเข้าใช้ คุณลบข้อมูลนี้ได้ทุกเมื่อ
@@ -412,7 +407,6 @@
 <translation id="3080525922482950719">คุณบันทึกหน้าเว็บไว้อ่านภายหลังหรืออ่านขณะออฟไลน์ได้</translation>
 <translation id="3081338492074632642">ตรวจสอบว่ารหัสผ่านที่คุณจะบันทึกตรงกับรหัสผ่านสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">ด้านล่าง</translation>
-<translation id="309672519329227863">เข้าถึงรหัสผ่าน Chrome และอีกมากมายจากแอปอื่นๆ</translation>
 <translation id="309710370695886264">คุณมีรหัสผ่านที่ใช้ซ้ำ 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
 <translation id="3112556859945124369">ทำเครื่องหมาย…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />ดูสิ่งที่คุณซิงค์ได้<ph name="END_LINK" /></translation>
@@ -500,7 +494,6 @@
 <translation id="3551320343578183772">ปิดแท็บ</translation>
 <translation id="3565207542107370586">ล้างข้อมูลการท่องเว็บ…</translation>
 <translation id="3575234738189584619">ค้นหาด้วย Lens</translation>
-<translation id="3577555362230509265">ใช้ Chrome ในแอปอื่นๆ</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
 <translation id="3587885837929752825">องค์กรของคุณจํากัดสิ่งที่คุณสามารถบันทึกในบัญชี Google</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
@@ -950,7 +943,6 @@
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
 <translation id="6045460247888249350">เพิ่มชื่อ</translation>
-<translation id="6054613632208573261">ใช้ Chrome โดยค่าเริ่มต้น</translation>
 <translation id="605721222689873409">ปป</translation>
 <translation id="6059830886158432458">ควบคุมเรื่องราวและกิจกรรมของคุณได้ที่นี่</translation>
 <translation id="6064824697233747382">องค์กรกำหนดให้คุณปิดการซิงค์</translation>
@@ -1010,7 +1002,6 @@
 <translation id="6346549652287021269">เริ่มดาวน์โหลดใหม่ใช่ไหม</translation>
 <translation id="6347953390226388422">{count,plural, =1{ระบบจะลบที่อยู่นี้ออกจากบัญชี Google (<ph name="USER_EMAIL" />) และจากอุปกรณ์เครื่องนี้}other{ระบบจะลบที่อยู่เหล่านี้ออกจากบัญชี Google (<ph name="USER_EMAIL" />) และจากอุปกรณ์เครื่องนี้}}</translation>
 <translation id="634878792104344809">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในทุกอุปกรณ์</translation>
-<translation id="6348855835728304880">เข้าถึงรหัสผ่านใน Chrome และอีกมากมายจากแอปอื่นๆ ในอุปกรณ์นี้</translation>
 <translation id="63519665078626091">หากต้องการใช้เครื่องมือตรวจสอบเว็บ ให้เชื่อมต่อ Safari ในคอมพิวเตอร์โดยใช้สายและเข้าถึง iPad จากเมนู "พัฒนา" คุณเปิดใช้เมนู "พัฒนา" ในส่วนขั้นสูงของการตั้งค่า Safari บนคอมพิวเตอร์ได้</translation>
 <translation id="6355820205320395730">รหัสผ่านที่ไม่รัดกุมนั้นคาดเดาได้ง่าย ตรวจสอบว่าคุณสร้างรหัสผ่านที่รัดกุม <ph name="BEGIN_LINK" />ดูเคล็ดลับความปลอดภัยเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">เสร็จสิ้น</translation>
@@ -1195,7 +1186,6 @@
 <translation id="7221173315674413369">สำรวจฟีเจอร์และเคล็ดลับใหม่ๆ ใน "มีอะไรใหม่"</translation>
 <translation id="7223102419539744003">ปิดแท็บ</translation>
 <translation id="722454870747268814">แท็บที่ไม่ระบุตัวตนใหม่</translation>
-<translation id="723787869754590019">ใช้ Chrome สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="7265758999917665941">ไม่จดจำสำหรับเว็บไซต์นี้</translation>
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{ติดตามพัสดุใหม่แล้ว}other{ติดตามพัสดุใหม่แล้ว}}</translation>
@@ -1468,7 +1458,6 @@
 <translation id="8717864919010420084">คัดลอกลิงก์</translation>
 <translation id="8721297211384281569">เมนูเครื่องมือ</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
-<translation id="8727043961453758442">ใช้ประโยชน์สูงสุดจาก Chrome</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8731958888085671579">ซ่อน "ค้นหาในหน้าเว็บ"</translation>
 <translation id="87371078663613140">สํารวจตัวเลือกในแถบเมนู</translation>
@@ -1581,7 +1570,6 @@
 <translation id="959066944189734975">คุณกำลังติดตาม <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">แสดงคำแนะนำแท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="972300586996227526">{COUNT,plural, =1{คุณบันทึกรหัสผ่านสำหรับ {DOMAIN_ONE} ไว้ในบัญชี Google {EMAIL} ได้}=2{คุณบันทึกรหัสผ่านสำหรับ {DOMAIN_ONE} และ {DOMAIN_TWO} ไว้ในบัญชี Google {EMAIL} ได้}=3{คุณบันทึกรหัสผ่านสำหรับ {DOMAIN_ONE}, {DOMAIN_TWO} และอีก {OTHER_DOMAINS_COUNT} โดเมนไว้ในบัญชี Google {EMAIL} ได้}other{คุณบันทึกรหัสผ่านสำหรับ {DOMAIN_ONE}, {DOMAIN_TWO} และอีก {OTHER_DOMAINS_COUNT} โดเมนไว้ในบัญชี Google {EMAIL} ได้}}</translation>
-<translation id="97300214378190234">ใช้ Chrome ทุกครั้งที่แตะลิงก์ในแอปอื่นๆ</translation>
 <translation id="973493300226275298">ติดตามราคาของผลิตภัณฑ์ในร้านค้าออนไลน์ต่างๆ คุณจะได้รับการแจ้งเตือนเมื่อราคาลดลง</translation>
 <translation id="981498610235328462">องค์กรอนุญาตให้คุณลงชื่อเข้าใช้ด้วยบัญชีบางบัญชีเท่านั้น ระบบซ่อนบัญชีที่ไม่ได้รับอนุญาตไว้</translation>
 <translation id="984509647832111802">การซิงค์ไม่ทำงาน</translation>

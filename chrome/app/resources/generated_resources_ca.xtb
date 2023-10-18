@@ -6130,7 +6130,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5901089233978050985">Canvia a la pestanya en procés de captura</translation>
 <translation id="5901494423252125310">La porta de la impressora és oberta</translation>
 <translation id="5901630391730855834">Groc</translation>
-<translation id="5902211418335330937">Si un lloc web no funciona de la manera prevista, pots activar-hi les galetes de tercers seleccionant el bloqueig de galetes de tercers a la barra de cerca i d'adreces.</translation>
 <translation id="5904614460720589786">No s'ha pogut configurar <ph name="APP_NAME" /> a causa d'un problema de configuració. Contacta amb l'administrador. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Gairebé has acabat amb l'actualització. Reinicia el dispositiu per completar-la.</translation>
 <translation id="5906732635754427568">Les dades associades a aquesta aplicació se suprimiran del dispositiu.</translation>
@@ -6895,7 +6894,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6532663472409656417">Inscrit en una empresa</translation>
 <translation id="6533315466883598769">Utilitza el Traductor de Google</translation>
 <translation id="65334502113648172">Prem les tecles de fletxa per reduir o ampliar l'àrea de visualització. Per moure l'àrea de visualització, prem Maj i +. Després, fes servir les tecles de fletxa.</translation>
-<translation id="6533636340637966565">S'està activant...</translation>
 <translation id="6535331821390304775">Permet sempre que <ph name="ORIGIN" /> obri els enllaços d'aquest tipus a l'aplicació associada</translation>
 <translation id="653659894138286600">Escaneja documents i imatges</translation>
 <translation id="6537613839935722475">El nom pot incloure lletres, números i guionets (-)</translation>
@@ -9133,6 +9131,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8314835274931377415">Vols iniciar la configuració d'Accés amb interruptors?</translation>
 <translation id="8315018673856831477">Opcions d'Estalvi de memòria</translation>
 <translation id="8315044115695361734">D'iCloud Keychain</translation>
+<translation id="8315514906653279104">S'està activant...</translation>
 <translation id="8317671367883557781">Afegeix una connexió a la xarxa</translation>
 <translation id="8317965619823678157">copiar les contrasenyes</translation>
 <translation id="8318266828739827371">Utilitza la visualització de pantalla dividida per veure l'àrea ampliada de la pantalla. Fes servir Cerca+Ctrl+D per activar i desactivar la lupa acoblada.</translation>

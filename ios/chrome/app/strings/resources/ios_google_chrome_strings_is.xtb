@@ -4,6 +4,7 @@
 <translation id="1105362920864247682">Hreinsa vefskoðunargögn í Chrome.</translation>
 <translation id="1143896152279775643">Aðgangsorðið verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Haltu áfram að nota Chrome-gögnin á Google-reikningnum þínum.</translation>
+<translation id="1200396280085622191">Notaðu Chrome þegar þú ýtir á tengla í skilaboðum og öðrum forritum.</translation>
 <translation id="1282031177488366470">Hjálpaðu okkur að bæta eiginleika og afköst Chrome</translation>
 <translation id="1333745675627230582">Spila Chrome Dino leikinn</translation>
 <translation id="1352919863522755794">Google-aðgangsorðastjórnun gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
@@ -33,16 +34,19 @@ Hafðu í huga:
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Notaðu Chrome sjálfkrafa þegar þú ýtir á tengla í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="1917964099031477364">Þessi reikningur og öll óvistuð gögn verða fjarlægð úr Chrome og öðrum Google forritum á þessu tæki.</translation>
+<translation id="1987779152850321833">Ljúktu ráðlögðu aðgerðunum hér að neðan til að nýta Chrome sem best.</translation>
 <translation id="2009224836393115614">Chrome gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
 <translation id="2056123005618757196">Komdu meiru í verk með einfaldari, öruggari og hraðari Google Chrome.</translation>
 <translation id="2120238739383482109">Opnar bókamerki Chrome.</translation>
 <translation id="2147651015520127414">Chrome staðfesti að <ph name="ISSUER" /> gaf út vottorð þessa vefsvæðis.</translation>
 <translation id="2199719347983604670">Gögn úr Chrome samstillingu</translation>
+<translation id="2242467532204595597">Notaðu Chrome þegar þú ýtir á tengla í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="2311240109311056604">Opnar Chrome Dino-leikinn.</translation>
 <translation id="2339201583852607431">Aðgangsorðið þitt verður vistað á Google reikningnum þínum (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome deilir staðsetningunni þinni með vefsvæðum sem þú veitir heimild.</translation>
 <translation id="2347208864470321755">Þegar kveikt er á þessum eiginleika mun Chrome bjóðast til að þýða síður á öðrum tungumálum með Google Translate. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="2414068465746584414">Í stillingum tækisins skaltu opna „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ og velja „Chrome“</translation>
+<translation id="2423077901494354337">Nú mun Chrome nýtast þér sem best í tækinu.</translation>
 <translation id="2427791862912929107">Chrome inniheldur eiginleika sem hjálpa þér að stjórna netgögnunum þínum og hleðsluhraða vefsíðna.
 <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Notaðu Chrome fyrir sjálfvirka útfyllingu til að fá aðgang að vistuðum aðgangsorðum í öðrum forritum á einfaldan hátt</translation>
@@ -61,6 +65,7 @@ Hafðu í huga:
 <translation id="2876628302275096482">Nánar um <ph name="BEGIN_LINK" />hvernig Chrome heldur gögnunum þínum leyndum<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Veldu <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Vegna þess að þú ert að skrá þig út af reikningi sem stýrt er af <ph name="SIGNOUT_MANAGED_DOMAIN" /> verður Chrome gögnum þínum eytt úr þessu tæki. Gögnin verða áfram geymd á Google reikningnum þínum.</translation>
+<translation id="309672519329227863">Nálgastu Chrome-aðgangsorðin þín og fleira í öðrum forritum.</translation>
 <translation id="3167189358072330585">Reikningurinn þinn virkar ekki í Google Chrome. Hafðu samband við stjórnanda lénsins eða notaðu venjulegan Google reikning til að skrá þig inn.</translation>
 <translation id="3173834708294760622">Google Chrome síða</translation>
 <translation id="3196546062792660320">Chrome sparar þér tíma með því að færa reikningana þína yfir á vefinn. Þú getur bætt við reikningum eða fjarlægt þá í stillingum.</translation>
@@ -71,6 +76,7 @@ Hafðu í huga:
 <translation id="3503014945441706099">Fáðu „Enn öruggari vefskoðun“ fyrir þennan Chrome-prófíl líka</translation>
 <translation id="3522659714780527202">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="3533694711092285624">Engin vistuð aðgangsorð. Chrome getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
+<translation id="3577555362230509265">Notaðu Chrome í öðrum forritum.</translation>
 <translation id="3594076341410558780">Fela „Nýttu þér Chrome til fulls“</translation>
 <translation id="3655656110921623717">Þetta þýðir að Chrome biður alltaf um snjalltækjaútgáfu vefsvæðis.</translation>
 <translation id="3720541637541300822">Læsa huliðsflipum um leið og þú lokar Chrome</translation>
@@ -139,6 +145,7 @@ Hafðu í huga:
 <translation id="6181930887571472871">Skipta yfir í Chrome</translation>
 <translation id="6238746320622508509">Leyfa Chrome að læsa huliðsflipunum þínum.</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
+<translation id="6348855835728304880">Nálgastu Chrome-aðgangsorðin þín og fleira í öðrum forritum í tækinu.</translation>
 <translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="6427126399757991875">Fyrirtækið þitt er að setja upp Chrome...</translation>
 <translation id="6545449117344801102">Chrome greinir heimilisföng og notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar.</translation>
@@ -167,6 +174,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="7187993566681480880">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>
 <translation id="7200524487407690471">Chrome keyrir öryggisathugun sjálfkrafa daglega til að verja þig gegn öryggisbrotum, ótraustum vefsvæðum og fleiru. Þú færð frekari upplýsingar um öryggisathugun í stillingunum.</translation>
 <translation id="72119412072970160">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun Google í öðrum forritum í iPad.</translation>
+<translation id="723787869754590019">Notaðu Chrome fyrir sjálfvirka útfyllingu</translation>
 <translation id="7254380941803999489">Stilla Chrome sem sjálfgefinn vafra</translation>
 <translation id="7261678641327190792">Chrome getur ekki athugað aðgangsorðin þín</translation>
 <translation id="7272930098487145294">Til að vista myndir og láta Chrome bæta við myndirnar þínar skaltu ýta á Stillingar</translation>
@@ -208,6 +216,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8587647598504233556">Ýttu á „Chrome“ og svo „Sjálfgefið vafraforrit.</translation>
 <translation id="8603022514504485810">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google-reikningnum þínum.<ph name="END_LINK" /></translation>
+<translation id="8727043961453758442">Fáðu sem mest út úr Chrome</translation>
 <translation id="8736550665979974340">Öryggi með Google Chrome</translation>
 <translation id="8760668027640688122">Opna nýjan flipa í Chrome</translation>
 <translation id="8765470054473112089">Þegar þú skrifar í veffangastiku eða leitarreit sendir Chrome það sem þú skrifar á sjálfgefna leitarvél til að fá betri tillögur. Slökkt er á þessu í huliðsstillingu.</translation>
@@ -231,4 +240,5 @@ Hafðu í huga:
 <translation id="9112744793181547300">Stilla Chrome sem sjálfgefið?</translation>
 <translation id="9122931302567044771">Þetta þýðir að Chrome biður alltaf um skjáborðsútgáfu vefsvæðis.</translation>
 <translation id="9181628561061032322">Opnar nýlega flipa Chrome.</translation>
+<translation id="97300214378190234">Notaðu Chrome þegar þú ýtir á tengla í öðrum forritum.</translation>
 </translationbundle>

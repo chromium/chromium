@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15 мин.</translation>
 <translation id="2277103315734023688">Премотај нанапред</translation>
 <translation id="2282073721614284166">Отвора линк во картичка</translation>
-<translation id="2284237890386182187">Вклучено, нема поврзани уреди</translation>
 <translation id="2292698582925480719">Приказ на скала</translation>
 <translation id="229397294990920565">Мобилниот интернет се исклучува...</translation>
 <translation id="2295777434187870477">Микрофонот е вклучен. Ако смените, ќе се исклучи звукот на влезот.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">Овозможи точка на пристап</translation>
 <translation id="3566240529365775567">Отворено пред малку</translation>
 <translation id="3571734092741541777">Постави</translation>
-<translation id="3572988532398145777">Не може да го проширите известувањето додека има отворена табла. Прво затворете ја таблата подолу.</translation>
 <translation id="3573179567135747900">Врати назад на „<ph name="FROM_LOCALE" />“ (потребно е рестартирање)</translation>
 <translation id="3576141592585647168">Сменете ја временската зона</translation>
 <translation id="3577473026931028326">Нешто тргна наопаку. Обидете се повторно.</translation>
@@ -701,7 +699,6 @@
 <translation id="385300504083504382">Почеток</translation>
 <translation id="3859364108019690">Не може да се стримуваат апликации</translation>
 <translation id="3861651314799684201">Притиснете Enter за да го снимите целиот екран</translation>
-<translation id="3865912916886104060">Нема поврзани уреди. Wi-Fi мрежата ќе се исклучи за да започнете да користите точка на пристап.</translation>
 <translation id="3886872229787704059">Отворено денес</translation>
 <translation id="3891340733213178823">Притиснете Ctrl+Shift+Q двапати за да се одјавите.</translation>
 <translation id="3893630138897523026">ChromeVox (говорни повратни информации)</translation>
@@ -786,7 +783,6 @@
 <translation id="4197790712631116042">Исклучено</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> не е достапна.</translation>
 <translation id="4201051445878709314">Прикажи го претходниот месец</translation>
-<translation id="4202362334312791952">Поврзан е 1 уред. Wi-Fi мрежата ќе се исклучи за да започнете да користите точка на пристап.</translation>
 <translation id="4209973997261364186">Wi-Fi мрежата е вклучена</translation>
 <translation id="4212472694152630271">Префрли на PIN</translation>
 <translation id="4215497585250573029">Поставки за VPN</translation>
@@ -1093,7 +1089,6 @@
 <translation id="5426063383988017631">Менито со поставки е затворено</translation>
 <translation id="5428899915242071344">Започнете со избирање</translation>
 <translation id="5429993543155113935">Прозорците „Инкогнито“ не се поддржани во моментов</translation>
-<translation id="5430931332414098647">Инстант врзување</translation>
 <translation id="5431318178759467895">Боја</translation>
 <translation id="5433020815079095860">Внесување со аудио</translation>
 <translation id="544691375626129091">Сите достапни корисници веќе се додадени на оваа сесија.</translation>
@@ -1122,6 +1117,7 @@
 <translation id="554893713779400387">Вклучи/исклучи диктат</translation>
 <translation id="5551456515017410630">Отворете/затворете календар</translation>
 <translation id="5551974246223970793">При пребарувањето страница, оди на следното совпаѓање за пребарување</translation>
+<translation id="5555639311269196631">Исклучување на точката на пристап</translation>
 <translation id="5558091555391176027">Вклучете/исклучете голема видливост за „Споделување во близина“</translation>
 <translation id="556042886152191864">Копче</translation>
 <translation id="5570122939431135380">Отвора нова картичка во нов прозорец „Инкогнито“</translation>
@@ -1167,7 +1163,6 @@
 <translation id="5707775774148071965">Вашиот уред поддржува поголем проток на податоци отколку кабелот. Изведбата на уредот може да биде ограничена.</translation>
 <translation id="5710450975648804523">Вклучено е „Не вознемирувај“</translation>
 <translation id="571295407079589142">Мобилниот интернет е исклучен</translation>
-<translation id="5716891621595980681">Поврзани се <ph name="DEVICECOUNT" /> уреди. Wi-Fi мрежата ќе се исклучи за да започнете да користите точка на пристап.</translation>
 <translation id="5727460725221669831">Ако сте ја заборавиле лозинката или неодамна сте ја промениле лозинката за сметката на Google, обидете се да го вратите корисников.</translation>
 <translation id="573413375004481890">Уредов не може да ги поддржува сите ваши екрани, па затоа исклучивме еден</translation>
 <translation id="5740328398383587084">Споделување во близина</translation>
@@ -1217,7 +1212,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5920710855273935292">Звукот на микрофонот е исклучен.</translation>
-<translation id="5924855612669061715">Точката на пристап е вклучена</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> е вклучено.</translation>
 <translation id="5947494881799873997">Врати</translation>
 <translation id="595202126637698455">Овозможено е следење на изведбата</translation>
@@ -1233,6 +1227,7 @@
 <translation id="598407983968395253">Употреби го шаблонот</translation>
 <translation id="598882571027504733">За да го добиете ажурирањето, рестартирајте го Chromebook додека тастатурата е прикачена.</translation>
 <translation id="6000279412553873020">Клучеви, копчиња и друго</translation>
+<translation id="6002122790816966947">Ваши уреди</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Нагласете ја следната ставка на полицата</translation>
 <translation id="6015573907265691211">Означи како завршено</translation>
@@ -1522,6 +1517,7 @@
 <translation id="7188494361780961876">Менито е преместено во горниот лев агол на екранот.</translation>
 <translation id="7189412385142492784">Колку е оддалечена Венера</translation>
 <translation id="7198435252016571249">Камерата е поставена во долниот десен агол. Конфликт со површината на системот.</translation>
+<translation id="7219573373513695352">Не се поврзани уреди</translation>
 <translation id="7229029500464092426">Меморија: <ph name="AVAILABLE_MEMORY" /> | вкупно: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Треба да го рестартирате овој Chromebook за да се примени ажурирањето. Ова може да потрае 1 минута.</translation>
 <translation id="7256634071279256947">Заден микрофон</translation>

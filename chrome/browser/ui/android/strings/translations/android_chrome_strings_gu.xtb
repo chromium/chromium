@@ -285,6 +285,7 @@
 <translation id="2571834852878229351">મારો પોતાનો પાસવર્ડ બનાવો</translation>
 <translation id="2573452357057307036">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવાની રીત જાણો</translation>
 <translation id="2574249610672786438">તમે જ્યાંથી Chromeનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, તમારા બધાં ડિવાઇસ પર સાઇન ઇન કરો</translation>
+<translation id="2578337197553672982">બાળકો માટે Googleનું કન્ટેન્ટ</translation>
 <translation id="2581165646603367611">આ કુકી, કૅશ અને Chromeને લાગતું હોય કે આ મહત્વનું નથી એવા સાઇટના બીજા ડેટાને સાફ કરશે.</translation>
 <translation id="2587052924345400782">નવું વર્ઝન ઉપલબ્ધ છે</translation>
 <translation id="2593272815202181319">મોનોસ્પેસ</translation>
@@ -352,7 +353,6 @@
 <translation id="2909615210195135082">Google નોટિફિકેશન પ્લૅટફૉર્મ</translation>
 <translation id="2912296070571964914">તમને જેમાં રુચિ હોય એવા વિષયો મેનેજ કરો</translation>
 <translation id="2912345083818861431">ખુલ્લી 'છૂપી ટૅબ' જોવા માટે, સ્ક્રીન લૉકનો ઉપયોગ કરો</translation>
-<translation id="2922568440285376746">Google વડે છબીમાં પણ શોધો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">નામ અમાન્ય છે</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> સ્ટોરેજ</translation>
 <translation id="2932222164150889403">તમારું કીબોર્ડ બદલાશે નહીં</translation>
@@ -687,7 +687,6 @@
 <translation id="4684427112815847243">દરેક વસ્તુ સમન્વયિત કરો</translation>
 <translation id="4685741273709472646">ડ્રૉપડાઉન સૂચિમાંથી પસંદ કરો</translation>
 <translation id="4687718960473379118">સાઇટ દ્વારા સૂચવેલી જાહેરાતો</translation>
-<translation id="4689792375321623175">Google વડે છબી શોધો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">કૅશ કરેલી છબીઓ અને ફાઇલો</translation>
 <translation id="4710167854527459075">નવું પહેલા મુજબ સૉર્ટ</translation>
@@ -701,6 +700,7 @@
 <translation id="4742970037960872810">હાઇલાઇટ કાઢી નાખો</translation>
 <translation id="4743664893327841597">તમે ઍડ્રેસ બાર અથવા શોધ બૉક્સમાં જે ટાઇપ કરો છો, તે તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલવામાં આવે છે</translation>
 <translation id="4749960740855309258">એક નવું ટૅબ ખોલો</translation>
+<translation id="4750356170202299988">બાળકો માટે કન્ટેન્ટ</translation>
 <translation id="4758061975920522644">માત્ર છબી શેર કરો</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4763480195061959176">વીડિયો</translation>
@@ -1182,6 +1182,7 @@
 <translation id="7187993566681480880">તમને Chrome પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં ઉપયોગમાં લેવાઈ શકે છે.</translation>
 <translation id="7191430249889272776">ટૅબ બૅકગ્રાઉન્ડમાં ખોલવામાં આવી છે.</translation>
 <translation id="7196215469483532480">પ્રાઇવસી સંબંધિત માર્ગદર્શિકાની સમજૂતી પૂરી ઊંચાઈ સુધી ખોલી છે</translation>
+<translation id="7205672015775254816">બાળકો માટે Googleનું કન્ટેન્ટ - બંધ છે</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ટૅબને નવી બૅકગ્રાઉન્ડ ટૅબ તરીકે રિસ્ટોર કરો.</translation>
 <translation id="7217781228893594884">જ્યારે તમે Chrome છોડશો, ત્યારે છૂપી ટૅબ લૉક થઈ જશે</translation>
 <translation id="7221869452894271364">આ પેજને ફરીથી લોડ કરો</translation>
@@ -1329,6 +1330,7 @@
 <translation id="7876243839304621966">બધું દૂર કરો</translation>
 <translation id="7886917304091689118">Chromeમાં ચાલી રહ્યું છે</translation>
 <translation id="7887174313503389866">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોની મુલાકાત લો. વધુ વિકલ્પો માટે, વ્યક્તિગત સેટિંગ પર જાઓ.</translation>
+<translation id="7896724475402191389">બાળકો માટે કન્ટેન્ટ - બંધ છે</translation>
 <translation id="7903184275147100332">આમાં એક મિનિટ લાગી શકે છે</translation>
 <translation id="7914399737746719723">ઍપ ઇન્સ્ટૉલ કરી</translation>
 <translation id="7919123827536834358">આ ભાષાઓનો ઑટોમૅટિક રીતે અનુવાદ કરો</translation>

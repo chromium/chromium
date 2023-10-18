@@ -68,6 +68,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2120620239521071941">Dit sal <ph name="ITEMS_COUNT" /> items op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chrome aan om jou data later op te haal.</translation>
 <translation id="2121284319307530122">Begin weer om &amp;Chrome op te dateer</translation>
 <translation id="2123055963409958220">Help om Chrome te verbeter deur die <ph name="BEGIN_LINK" />huidige instellings<ph name="END_LINK" /> aan te gee</translation>
+<translation id="2126108037660393668">Die afgelaaide lêer kon nie geverifieer word nie.</translation>
 <translation id="2130870084309816036">Kon nie aan die internet koppel nie. As jy ’n brandmuur gebruik, moet jy <ph name="PRODUCT_EXE_NAME" /> asseblief op die toelaatlys plaas.</translation>
 <translation id="2131230230468101642">Ons vee outomaties jou belangstellings uit wat ouer as 4 weke is om jou privaatheid te beskerm. Terwyl jy aanhou blaai, kan ’n belangstelling weer op die lys verskyn. Of jy kan belangstellings wat jy wil hê Chrome moenie oorweeg nie, verwyder.</translation>
 <translation id="2139300032719313227">Herbegin Chrome-bedryfstelsel</translation>
@@ -98,6 +99,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2580411288591421699">Kan nie dieselfde Google Chrome-weergawe installeer as wat tans gebruik word nie. Maak Google Chrome asseblief toe en probeer weer.</translation>
 <translation id="2586406160782125153">Dit sal jou blaaierdata op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chrome aan om jou data later op te haal.</translation>
 <translation id="2597976513418770460">Kry jou Chrome-blaaiergoed van <ph name="ACCOUNT_EMAIL" /> af</translation>
+<translation id="259935314519650377">Kon nie die afgelaaide installeerder kas nie. Fout: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome kan nie nagaan of daar opdaterings is nie. Probeer om jou internetverbinding na te gaan.</translation>
 <translation id="2645435784669275700">Chrome-bedryfstelsel</translation>
 <translation id="2649768380733403658">Chrome kontroleer gereeld om seker te maak jou blaaier het die veiligste instellings. Ons sal jou laat weet as jy enigiets moet nagaan.</translation>
@@ -328,6 +330,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6676384891291319759">Gaan by die internet in</translation>
 <translation id="6679975945624592337">Laat Google Chrome in die agtergrond loop</translation>
 <translation id="6696915334902295848">Chrome het mikrofoontoestemming vir hierdie werf nodig</translation>
+<translation id="6712881677154121168">Aflaaifout: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Maak Chrome vinniger</translation>
 <translation id="6735387454586646204">Chrome OS Flex-stelsel</translation>
 <translation id="6739177684496155661">Gaan voort in 'n nuwe Chrome-profiel?</translation>
@@ -342,6 +345,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6943584222992551122">Hierdie persoon se blaaierdata sal van hierdie toestel af uitgevee word. Meld as <ph name="USER_EMAIL" /> by Chrome aan om hierdie data te herwin.</translation>
 <translation id="6967962315388095737">Inkomende reël vir Google Chrome Beta om mDNS-verkeer toe te laat.</translation>
 <translation id="6989339256997917931">Google Chrome is opgedateer, maar jy het dit vir minstens 30 dae nie gebruik nie.</translation>
+<translation id="7024536598735240744">Uitpakfout: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installering is gestop.</translation>
 <translation id="7025800014283535195">Jy kan hier tussen Chrome-profiele wissel</translation>
 <translation id="7036251913954633326">Jy kan <ph name="GUEST_LINK_BEGIN" />gasmodus<ph name="GUEST_LINK_END" /> in Chrome-blaaier gebruik as jy hierdie rekening net een keer wil gebruik. <ph name="LINK_BEGIN" />Voeg ’n nuwe persoon<ph name="LINK_END" /> by jou <ph name="DEVICE_TYPE" /> as jy ’n rekening vir iemand anders wil byvoeg.
@@ -435,6 +439,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="8516431725144212809">Jou belangstellings soos geskat deur Chrome</translation>
 <translation id="8521348052903287641">Inkomende reël vir Google Chrome Dev om mDNS-verkeer toe te laat.</translation>
 <translation id="8550334526674375523">Hierdie werkprofiel is heeltemal apart van jou persoonlike profiel.</translation>
+<translation id="8555465886620020932">Diensfout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556340503434111824">Daar is 'n nuwe weergawe van Google Chrome beskikbaar en dit is vinniger as ooit.</translation>
 <translation id="8571790202382503603">Met Chrome-profiele kan jy al jou Chrome-goed skei. Dit maak dit makliker om tussen werk en pret te verdeel.</translation>
 <translation id="8614913330719544658">Google Chrome reageer nie. Herbegin nou?</translation>

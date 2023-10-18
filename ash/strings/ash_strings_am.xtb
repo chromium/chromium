@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15 ደቂቃ</translation>
 <translation id="2277103315734023688">ወደ ፊት ፈልግ</translation>
 <translation id="2282073721614284166">አገናኝን በትር ውስጥ ይክፈቱ</translation>
-<translation id="2284237890386182187">በርቷል፣ ምንም መሣሪያዎች አልተገኛኙም</translation>
 <translation id="2292698582925480719">ልኬትን አሳይ</translation>
 <translation id="229397294990920565">የተንቀሳቃሽ ስልክ ውሂብ እየጠፋ ነው...</translation>
 <translation id="2295777434187870477">ማይክሮፎን በርቷል፣ መቀያየር ግቤትን ድምጹን ይዘጋል</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">መገናኛ ነጥብን ያንቁ</translation>
 <translation id="3566240529365775567">አሁን ተከፍቷል</translation>
 <translation id="3571734092741541777">አዋቅር</translation>
-<translation id="3572988532398145777">ፓነል ክፍት ሆኖ ሳለ ማሳወቂያዎቹን መዘርጋት አይችሉም። መጀመሪያ ከስር ያለውን ፓነል ይዝጉ።</translation>
 <translation id="3573179567135747900">ወደ «<ph name="FROM_LOCALE" />» መልሰህ ቀይር (ዳግም ማስጀመር ይፈልጋል)</translation>
 <translation id="3576141592585647168">የጊዜ ሰቅ ይለውጡ</translation>
 <translation id="3577473026931028326">የሆነ ችግር ተፈጥሯል። እንደገና ይሞክሩ።</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">መጀመሪያ</translation>
 <translation id="3859364108019690">መተግበሪያዎችን በዥረት ለመልቀቅ አልተቻለም</translation>
 <translation id="3861651314799684201">ሙሉ ገፅ ዕይታ ለመቅዳት አስገባን ይጫኑ</translation>
-<translation id="3865912916886104060">ምንም መሣሪያዎች አልተገናኙም። መገናኛ ነጥብን መጠቀም ለማስጀመር Wi-Fi ይጠፋል።</translation>
 <translation id="3886872229787704059">ዛሬ የተከፈተ</translation>
 <translation id="3891340733213178823">ዘግተው ለመውጣት Ctrl+Shift+Qን ሁለቴ ይጫኑ።</translation>
 <translation id="3893630138897523026">ChromeVox (የሚነገር ግብረመልስ)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">ጠፍቷል</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> አይገኝም።</translation>
 <translation id="4201051445878709314">ቀዳሚውን ወር አሳይ</translation>
-<translation id="4202362334312791952">1 መሣሪያ ተገናኝቷል። መገናኛ ነጥብን መጠቀም ለማስጀመር Wi-Fi ይጠፋል።</translation>
 <translation id="4209973997261364186">Wi-Fi በርቷል</translation>
 <translation id="4212472694152630271">ወደ ፒን ቀይር</translation>
 <translation id="4215497585250573029">የቪፒኤን ቅንብሮች</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">የቅንብሮች ምናሌ ተዘግቷል</translation>
 <translation id="5428899915242071344">መምረጥ ይጀምሩ</translation>
 <translation id="5429993543155113935">ማንነት የማያሳውቁ መስኮቶች በአሁኑ ጊዜ አይደገፉም</translation>
-<translation id="5430931332414098647">ቅጽበታዊ እንደ ሞደም መሰካት</translation>
 <translation id="5431318178759467895">ቀለም</translation>
 <translation id="5433020815079095860">የኦዲዮ ግብዓት</translation>
 <translation id="544691375626129091">ሁሉም የሚገኙ ተጤቃሚዎች አስቀድመው ወደዚህ ክፍለ-ጊዜ ታክለዋል።</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">የቃል ጽሑፍን ቀያይር</translation>
 <translation id="5551456515017410630">ቀን መቁጠሪያን ክፈት/ዝጋ</translation>
 <translation id="5551974246223970793">አንድን ገፅ ሲፈልጉ ለፍለጋ ወደ ቀጣዩ ተዛማጅ ይሂዱ</translation>
+<translation id="5555639311269196631">መገናኛ ነጥብን አጥፋ</translation>
 <translation id="5558091555391176027">የአቅራቢያ አጋራ ከፍተኛ ታይነት ደረጃን ቀያይር</translation>
 <translation id="556042886152191864">አዘራር</translation>
 <translation id="5570122939431135380">አዲስ ትርን በማንነትን የማያሳውቅ መስኮት ውስጥ ይክፈቱት</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">የእርስዎ መሣሪያ ከገመድዎ የበለጠ የውሂብ መጠን ይደግፋል። የመሣሪያ አፈጻጸም የተገደበ ሊሆን ይችላል።</translation>
 <translation id="5710450975648804523">አትረብሽ በርቷል</translation>
 <translation id="571295407079589142">የተንቀሳቃሽ ስልክ ውሂብ ጠፍቷል</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> መሣሪያዎች ተገናኝተዋል። መገናኛ ነጥብን መጠቀም ለማስጀመር Wi-Fi ይጠፋል።</translation>
 <translation id="5727460725221669831">የይለፍ ቃልዎን ከረሱ ወይም የGoogle መለያ የይለፍ ቃልዎን በቅርቡ ከለወጡ ይህን ተጠቃሚ መልሰው ለማግኘት ይሞክሩ።</translation>
 <translation id="573413375004481890">ይህ መሣሪያ ሁሉንም የእርስዎ ማሳያዎች መደገፍ ስለማይችል አንዱ ግንኙነቱ እንዲቋረጥ ተደርጓል</translation>
 <translation id="5740328398383587084">አቅራቢያ አጋራ</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5920710855273935292">የማይክሮፎን ድምፅ ተዘግቷል።</translation>
-<translation id="5924855612669061715">መገናኛ ነጥብ በርቷል</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> በርቷል።</translation>
 <translation id="5947494881799873997">አድህር</translation>
 <translation id="595202126637698455">አፈጻጸም መከታተያ ነቅቷል</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">ቅንብር ደንብን ተጠቀም</translation>
 <translation id="598882571027504733">ዝማኔውን ለማግኘት፣ ከተያያዘው የቁልፍ ሰሌዳ ጋር የእርስዎን Chromebook ዳግም ያስጀምሩ።</translation>
 <translation id="6000279412553873020">ቁልፎች፣ አዝራሮች እና ሌሎች</translation>
+<translation id="6002122790816966947">የእርስዎ መሣሪያዎች</translation>
 <translation id="6012623610530968780">ገፅ <ph name="SELECTED_PAGE" /> ከ<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">ቀጣይ ንጥል በመደርደሪያ ላይ ያደምቃል</translation>
 <translation id="6015573907265691211">እንደተጠናቀቀ ምልክት አድርግ</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">ምናሌ ወደ የማያ ገጹ የላይኛው ግራ ጥግ ተወስዷል።</translation>
 <translation id="7189412385142492784">ቬኑስ ምን ያህል ይርቃል</translation>
 <translation id="7198435252016571249">ካሜራ ወደ ታችኛው ቀኝ ጥግ ገጥሟል። ከስርዓት ወለል ጋር ግጭት።</translation>
+<translation id="7219573373513695352">ምንም መሣሪያዎች አልተገናኙም</translation>
 <translation id="7229029500464092426">ማህደረ ትውስታ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ጠቅላላ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />። ይህ Chromebook አንድ ዝማኔን ለመተግበር ዳግም መነሳት አለበት። ይህ እስከ 1 ደቂቃ ድረስ ሊወስድ ይችላል</translation>
 <translation id="7256634071279256947">የኋላ ማይክሮፎን</translation>

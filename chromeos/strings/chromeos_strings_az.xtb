@@ -169,7 +169,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2157660087437850958">emoji seçicisi</translation>
 <translation id="2157959690810728433">NÖVBƏDƏDİR</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administrator <ph name="APP_NAME_1" /> tətbiqini hər girişdə avtomatik başlamağa ayarlayıb.}=2{Administrator <ph name="APP_NAME_1" /> və <ph name="APP_NAME_2" /> tətbiqini hər girişdə avtomatik başlamağa ayarlayıb.}=3{Administrator <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> və <ph name="APP_NAME_3" /> tətbiqini hər girişdə avtomatik başlamağa ayarlayıb.}other{Administrator <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> və digər # tətbiqi hər girişdə avtomatik başlamağa ayarlayıb.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yenidən cəhd edin</translation>
+<translation id="215916044711630446">"APN əlavə edin" düyməsi deaktivdir</translation>
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
 <translation id="2161656808144014275">Mətn</translation>
 <translation id="2163937499206714165">Qaranlıq rejimi aktiv edin</translation>
@@ -398,6 +400,7 @@
 <translation id="4117637339509843559">Qaranlıq rejim</translation>
 <translation id="4130035430755296270">Digər düzən seçimləri üçün mausla tuşlamağa davam edin</translation>
 <translation id="4131410914670010031">Ağ və qara</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> avtomatik başladıldı}other{# tətbiq avtomatik başladıldı}}</translation>
 <translation id="4145784616224233563">HTTP Qoruyucu divarı</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Ekran</translation>
@@ -443,6 +446,7 @@
 <translation id="445059817448385655">Köhnə parol</translation>
 <translation id="4453205916657964690">Alt şəbəkə maskası</translation>
 <translation id="4454245904991689773">Skanı burada saxlayın</translation>
+<translation id="4456812688969919973">"APN-i yadda saxlayın" düyməsi deaktivdir</translation>
 <translation id="4469288414739283461">"Torpaq axını" ekran qoruyucusu</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Qeyri-defolt şəbəkə girişini yoxlamaq alınmadı</translation>
@@ -713,6 +717,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Zəif (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Hesab ayarlarına keçin</translation>
+<translation id="6462978824459367242">"APN əlavə edin" düyməsi aktivləşdirilib</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Səhifə yenidən skanlansın?}=1{{PAGE_NUMBER} saylı səhifə yenidən skanlansın?}other{{PAGE_NUMBER} saylı səhifə yenidən skanlansın?}}</translation>
 <translation id="6472207088655375767">Birdəfəlik parol (OTP)</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tərəfindən idarə edilir</translation>
@@ -1051,6 +1056,7 @@
 <translation id="902638246363752736">Klaviatura ayarları</translation>
 <translation id="9028832514430399253">Ekran qoruyucu seçimlərini etmək üçün keçiricini aktiv edin</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">"APN-i yadda saxlayın" düyməsi aktivləşdirilib</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS ayırdetmə dəqiqliyində yüksək gecikmə var</translation>
 <translation id="9065203028668620118">Düzəliş edin</translation>

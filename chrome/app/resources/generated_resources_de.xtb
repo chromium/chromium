@@ -233,6 +233,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1175364870820465910">&amp;Drucken...</translation>
 <translation id="1175914831232945926">Ziffern</translation>
 <translation id="1176471985365269981">Dürfen keine Dateien oder Ordner auf meinem Gerät bearbeiten</translation>
+<translation id="1177440945615690056">Du kannst über die Einstellungen eine Verbindung zu einem verfügbaren Mobilfunknetz herstellen</translation>
 <translation id="1177863135347784049">Benutzerdefiniert</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1178601482396475810">Gerätesynchronisierung verwalten</translation>
@@ -2207,6 +2208,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2709516037105925701">Autofill</translation>
 <translation id="2710101514844343743">Nutzungsdaten &amp; Fehlerberichte</translation>
 <translation id="271033894570825754">Neu</translation>
+<translation id="2710507903599773521">Dein <ph name="DEVICE_TYPE" /> ist jetzt entsperrt</translation>
 <translation id="2711073837061989559">Tests</translation>
 <translation id="2713106313042589954">Kamera ausschalten</translation>
 <translation id="2713444072780614174">Weiß</translation>
@@ -3491,6 +3493,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3752253558646317685">Bitte dein Kind, den Finger zu heben und wieder abzulegen, um den Fingerabdruck zu speichern</translation>
 <translation id="3753033997400164841">Einmal speichern. Überall verwenden.</translation>
 <translation id="3753142252662437130">Farbfilter</translation>
+<translation id="3753412199586870466">Seitenleiste öffnen</translation>
 <translation id="3755411799582650620">Du kannst mit deinem <ph name="PHONE_NAME" /> jetzt dein <ph name="DEVICE_TYPE" /> entsperren.</translation>
 <translation id="375636864092143889">Die Website verwendet dein Mikrofon</translation>
 <translation id="3756485814916578707">Bildschirm wird gestreamt</translation>
@@ -6110,7 +6113,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5901089233978050985">Zum empfangenden Tab wechseln</translation>
 <translation id="5901494423252125310">Druckerklappe offen</translation>
 <translation id="5901630391730855834">Gelb</translation>
-<translation id="5902211418335330937">Wenn eine Website nicht wie erwartet funktioniert, kannst du Drittanbieter-Cookies für sie aktivieren, indem du in der Such- und Adressleiste die Option zum Blockieren von Drittanbieter-Cookies auswählst.</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> konnte aufgrund eines Konfigurationsproblems nicht eingerichtet werden. Bitte wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Fast fertig! Starte dein Gerät neu, um die Aktualisierung abzuschließen.</translation>
 <translation id="5906732635754427568">Daten, die dieser App zugewiesen sind, werden von diesem Gerät entfernt.</translation>
@@ -6873,7 +6875,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6532663472409656417">Unternehmenseigen</translation>
 <translation id="6533315466883598769">Google Übersetzer verwenden</translation>
 <translation id="65334502113648172">Mit den Pfeiltasten kannst du den Anzeigebereich verkleinern oder vergrößern. Um den Anzeigebereich zu verschieben, drücke die Umschalttaste und + und dann die Pfeiltasten.</translation>
-<translation id="6533636340637966565">Wird aktiviert…</translation>
 <translation id="6535331821390304775"><ph name="ORIGIN" /> immer erlauben, Links dieses Typs in der zugehörigen App zu öffnen</translation>
 <translation id="653659894138286600">Dokumente und Bilder scannen</translation>
 <translation id="6537613839935722475">Der Name darf aus Buchstaben, Ziffern und Bindestrichen (-) bestehen</translation>
@@ -7141,6 +7142,9 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6767566652486411142">Andere Sprache auswählen…</translation>
 <translation id="6767639283522617719">Beitritt zur Domain nicht möglich. Achte darauf, dass die Einstellungen für die Organisationseinheit richtig sind.</translation>
 <translation id="6768034047581882264">Unsichere Inhalte dürfen nicht angezeigt werden</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />Um eine optimale Nutzung zu ermöglichen, erhebt <ph name="DEVICE_OS" /> Hardwaredaten zu Geräten und teilt sie mit Google. So kann Google prüfen, welche Updates installiert werden sollten. Du kannst Google optional erlauben, diese Daten auch zu anderen Zwecken zu verwenden, zum Beispiel für den Support oder zur Verbesserung von <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Für einen Überblick über die für die Updatefilterung erhobenen Daten kannst du dich auf diesem Gerät anmelden und unter chrome://system die als „chromeosflex_“ aufgeführten Felder aufrufen. Dort siehst du auch, welche Daten du noch mit Google teilst.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Weitere Informationen zu den Daten, die <ph name="DEVICE_OS" /> möglicherweise an Google sendet, und deren Verwendung findest du unter g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Von dir besuchte Websites, über die deine Interessen definiert werden</translation>
 <translation id="6770602306803890733">Verbessert die Sicherheit für dich und alle im Internet</translation>
 <translation id="6771503742377376720">Ist eine Zertifizierungsstelle</translation>
@@ -9106,6 +9110,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8314835274931377415">Einrichtung des Schalterzugriffs starten?</translation>
 <translation id="8315018673856831477">Optionen des Arbeitsspeicher-Sparmodus</translation>
 <translation id="8315044115695361734">Vom iCloud-Schlüsselbund</translation>
+<translation id="8315514906653279104">Wird aktiviert…</translation>
 <translation id="8317671367883557781">Netzwerkverbindung hinzufügen</translation>
 <translation id="8317965619823678157">Passwörter kopieren</translation>
 <translation id="8318266828739827371">In der Splitscreen-Ansicht siehst du den vergrößerten Bereich des Bildschirms. Drücke die Suchtaste + Strg + D, um die angedockte Lupe zu aktivieren oder zu deaktivieren.</translation>

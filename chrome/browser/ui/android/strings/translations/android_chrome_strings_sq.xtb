@@ -352,7 +352,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2909615210195135082">Platforma e njoftimeve të Google</translation>
 <translation id="2912296070571964914">Menaxho temat që të interesojnë</translation>
 <translation id="2912345083818861431">Përdor kyçjen e ekranit për të parë skedat "e fshehta"</translation>
-<translation id="2922568440285376746">Kërko brenda imazhit me Google <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Emri është i pavlefshëm</translation>
 <translation id="2932150158123903946">Hapësira ruajtëse e Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tastiera jote nuk do të ndryshojë</translation>
@@ -687,7 +686,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4684427112815847243">Sinkronizo gjithçka</translation>
 <translation id="4685741273709472646">Zgjidh nga lista me lëshim poshtë</translation>
 <translation id="4687718960473379118">Reklamat e sugjeruara nga sajtet</translation>
-<translation id="4689792375321623175">Kërko për imazhin me Google <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tjetër}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> të tjera}}</translation>
 <translation id="4699172675775169585">Imazhet dhe skedarët në memorien specifike</translation>
 <translation id="4710167854527459075">Rendit nga më i riu</translation>

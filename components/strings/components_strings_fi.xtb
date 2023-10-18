@@ -966,6 +966,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, tällä hetkellä valittuna. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Ooppera</translation>
 <translation id="2979424420072875974">Kirjoittajan oppaat</translation>
+<translation id="2980742331521553164">Kortin CVC-koodi salataan ja tallennetaan Google-tilillesi nopeampaa maksamista varten</translation>
 <translation id="2983666748527428214">Avaa incognito-välilehti</translation>
 <translation id="2985306909656435243">Jos tämä on käytössä, Chromium tallentaa kortin kopion tälle laitteelle nopeuttaakseen lomakkeiden täyttöä.</translation>
 <translation id="2985398929374701810">Anna kelvollinen osoite.</translation>
@@ -3398,6 +3399,7 @@ Lisätietoja:
 <translation id="79338296614623784">Anna kelvollinen puhelinnumero.</translation>
 <translation id="7934414805353235750"><ph name="URL" /> yrittää toistaa suojattua sisältöä. Google vahvistaa laitteesi tunnistetiedot.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">Kortin CVC-koodi salataan ja tallennetaan laitteellesi nopeampaa maksamista varten</translation>
 <translation id="7937554595067888181">Vanhenee <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Palvelimen varmenne ei ole vielä voimassa.</translation>
 <translation id="7939713744218886332">Ruokalajeja maailmalta</translation>

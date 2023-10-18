@@ -4,6 +4,7 @@
 <translation id="1105362920864247682">Vymazanie dát prehliadania v Chrome.</translation>
 <translation id="1143896152279775643">Heslo bude uložené do správcu hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Naďalej používajte údaje Chromu vo svojom účte Google.</translation>
+<translation id="1200396280085622191">Chrome môžete kedykoľvek použiť klepnutím na odkazy v správach a ďalších aplikáciách.</translation>
 <translation id="1282031177488366470">Pomoc so zlepšovaním funkcií a výkonu Chromu</translation>
 <translation id="1333745675627230582">Hrať hru Chrome Dino</translation>
 <translation id="1352919863522755794">Správcovi hesiel Google sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
@@ -33,16 +34,19 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Automaticky používajte Chrome, keď klepnete na odkazy v správach, dokumentoch a aplikáciách.</translation>
 <translation id="1917964099031477364">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z Chromu a ďalších aplikácií Google v tomto zariadení.</translation>
+<translation id="1987779152850321833">Vykonajte tieto navrhované akcie nižšie a budete môcť Chrome využívať naplno.</translation>
 <translation id="2009224836393115614">Chromu sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
 <translation id="2056123005618757196">Zvýšte svoju výkonnosť pomocou jednoduchého a zabezpečeného prehliadača Google Chrome, ktorý je rýchlejší než kedykoľvek predtým.</translation>
 <translation id="2120238739383482109">Otvorí záložky v Chrome.</translation>
 <translation id="2147651015520127414">Chrome overil, že certifikát tohto webu vydal vydavateľ <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Údaje zo synchronizácie Chromu</translation>
+<translation id="2242467532204595597">Chrome môžete používať vždy, keď klepnete na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="2311240109311056604">Otvorí hru Chrome Dino.</translation>
 <translation id="2339201583852607431">Heslo bude uložené do vášho účtu Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome zdieľa vašu s webmi, pre ktoré to povolíte.</translation>
 <translation id="2347208864470321755">Po zapnutí tejto funkcie bude prehliadač Chrome ponúkať preloženie stránok napísaných v inom jazyku pomocou služby Prekladač Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="2414068465746584414">V Nastaveniach zariadenia otvorte <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> a vyberte Chrome.</translation>
+<translation id="2423077901494354337">Teraz budete môcť využívať Chrome vo svojom zariadení naplno.</translation>
 <translation id="2427791862912929107">Chrome má funkcie, ktoré vám pomôžu spravovať internetové dáta a rýchlosť načítania webových stránok.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Ak chcete ľahko získať svoje uložené heslá v iných aplikáciách, použite automatické dopĺňanie v Chrome</translation>
@@ -61,6 +65,7 @@
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Ako Chrome uchováva vaše údaje v súkromí<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Vyberte <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
+<translation id="309672519329227863">Majte prístup k heslám Chromu a ďalšiemu obsahu v iných aplikáciách.</translation>
 <translation id="3167189358072330585">Váš účet nefunguje v prehliadači Google Chrome. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
 <translation id="3173834708294760622">Stránka prehliadača Google Chrome</translation>
 <translation id="3196546062792660320">Vaše účty sú na webe, čím Chrome šetrí váš čas. Účty môžete pridávať alebo odstraňovať v nastaveniach.</translation>
@@ -71,6 +76,7 @@
 <translation id="3503014945441706099">Získajte Zlepšené bezpečné prehliadanie aj pre tento profil Chromu</translation>
 <translation id="3522659714780527202">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chrome, zapnite synchronizáciu</translation>
 <translation id="3533694711092285624">Žiadne uložené heslá. Chrome môže skontrolovať heslá, keď ich uložíte.</translation>
+<translation id="3577555362230509265">Používajte Chrome v iných aplikáciách.</translation>
 <translation id="3594076341410558780">Skryť text Využívajte Chrome naplno</translation>
 <translation id="3655656110921623717">Znamená to, že Chrome bude zakaždým žiadať o mobilný web.</translation>
 <translation id="3720541637541300822">Uzamknúť karty inkognito pri zavretí Chromu</translation>
@@ -140,6 +146,7 @@
 <translation id="6181930887571472871">Prejdite na Chrome</translation>
 <translation id="6238746320622508509">Umožnite Chromu uzamknúť vaše karty inkognito.</translation>
 <translation id="6247557882553405851">Správca hesiel Google</translation>
+<translation id="6348855835728304880">Získavajte prístup heslám a ďalším údajom Chromu v iných aplikáciách v tomto zariadení.</translation>
 <translation id="6412673304250309937">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v Chrome. Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže tiež odoslať webové adresy vrátane častí obsahu stránky Bezpečnému prehliadaniu.</translation>
 <translation id="6427126399757991875">Vaša organizácia nastavuje Chrome…</translation>
 <translation id="6545449117344801102">Chrome rozpoznáva adresy a pomocou Máp Google vám poskytuje trasy aj miestne informácie.</translation>
@@ -168,6 +175,7 @@
 <translation id="7187993566681480880">Chráni vás v Chrome a môže zlepšiť zabezpečenie v ďalších aplikáciách Google, keď sa prihlásite.</translation>
 <translation id="7200524487407690471">Chrome každý deň automaticky spúšťa kontrolu bezpečnosti, aby vás chránil pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami. Viac o kontrole bezpečnosti sa dozviete v Nastaveniach.</translation>
 <translation id="72119412072970160">Heslá, ktoré ste uložili do správcu hesiel Google, môžete v iPade použiť v iných aplikáciách.</translation>
+<translation id="723787869754590019">Používajte Chrome na automatické dopĺňanie</translation>
 <translation id="7254380941803999489">Nastaviť Chrome ako predvolený prehliadač</translation>
 <translation id="7261678641327190792">Chrome nemôže skontrolovať heslá</translation>
 <translation id="7272930098487145294">Ak chcete uložiť obrázky, klepnutím na Nastavenia povoľte Chromu pridávať do vašich fotiek</translation>
@@ -210,6 +218,7 @@
 <translation id="8577978202917232774">Návrhy sú založené na aktivite prehliadania vo vašich iných zariadeniach. Ak ich chcete dostávať, prihláste sa do Chromu v každom z nich.</translation>
 <translation id="8587647598504233556">Klepnite na Chrome a potom na Predvolený prehliadač.</translation>
 <translation id="8603022514504485810">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google.<ph name="END_LINK" /></translation>
+<translation id="8727043961453758442">Využivajte Chrome naplno</translation>
 <translation id="8736550665979974340">Zaistite svoju bezpečnosť s prehliadačom Google Chrome</translation>
 <translation id="8760668027640688122">Otvoriť novú kartu v Chrome</translation>
 <translation id="8765470054473112089">Keď zadávate v paneli s adresou alebo vyhľadávacom poli, Chrome odosiela zadaný text do vášho predvoleného vyhľadávača, aby dostal lepšie návrhy. Táto možnosť je v režime inkognito vypnutá.</translation>
@@ -234,4 +243,5 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="9112744793181547300">Chcete nastaviť Chrome ako predvolený prehliadač?</translation>
 <translation id="9122931302567044771">Znamená to, že Chrome bude zakaždým žiadať o verziu webu pre počítače.</translation>
 <translation id="9181628561061032322">Otvorí nedávne karty v Chrome.</translation>
+<translation id="97300214378190234">Chrome môžete kedykoľvek použiť klepnutím na odkazy v iných aplikáciách.</translation>
 </translationbundle>

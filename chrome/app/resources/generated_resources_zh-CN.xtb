@@ -2032,6 +2032,7 @@
 <translation id="2564520396658920462">通过 AppleScript 执行 JavaScript 的功能已关闭。要开启此功能，请在菜单栏中依次转到“查看”&gt;“开发者”&gt;“允许 Apple 事件中的 JavaScript”。如需更多信息，请访问 https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">增强的“拼写检查”功能</translation>
 <translation id="256481480019204378">Google 账号 ID</translation>
+<translation id="256517381556987641">“文件同步”功能目前已找到 <ph name="ITEMS_FOUND" /> 个文件，仍在检查存储空间。请过几分钟再尝试重新开启该功能。</translation>
 <translation id="2565214867520763227">开启屏幕阅读器</translation>
 <translation id="2568694057933302218">在无痕模式下，网站无法使用 Cookie 查看您在各个网站上的浏览活动。系统不会将您的浏览活动用于展示个性化广告等用途。某些网站上的功能可能会无法正常运行。</translation>
 <translation id="2568774940984945469">信息栏容器</translation>
@@ -4350,6 +4351,7 @@
 <translation id="4427365070557649936">正在验证确认码…</translation>
 <translation id="4429163740524851942">实体键盘布局</translation>
 <translation id="4430019312045809116">音量</translation>
+<translation id="4430204941092622397">这可能会导致您的移动网络连接断开几分钟。</translation>
 <translation id="443031431654216610">只能使用数字</translation>
 <translation id="4430369329743628066">已添加书签</translation>
 <translation id="4430422687972614133">启用虚拟卡</translation>
@@ -4561,6 +4563,7 @@
 <translation id="4610162781778310380">“<ph name="PLUGIN_NAME" />”遇到了错误</translation>
 <translation id="4610637590575890427">您是不是要访问 <ph name="SITE" />？</translation>
 <translation id="4611114513649582138">有可用的数据网络连接</translation>
+<translation id="4611759022973144129">您可以使用此密码登录您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="4612841084470706111">授权访问所请求的全部网站。</translation>
 <translation id="4613144866899789710">正在取消安装 Linux…</translation>
 <translation id="4613271546271159013">某个扩展程序更改了您打开新标签页时系统显示的页面。</translation>
@@ -5059,6 +5062,7 @@
 <translation id="5027550639139316293">电子邮件证书</translation>
 <translation id="5027562294707732951">添加扩展程序</translation>
 <translation id="5028445315206872221">已阻止在此网站上使用扩展程序</translation>
+<translation id="5029287942302939687">您的密码已设置完毕</translation>
 <translation id="5029873138381728058">未能检查虚拟机</translation>
 <translation id="503155457707535043">正在下载所选应用</translation>
 <translation id="5032430150487044192">无法创建二维码</translation>
@@ -5087,6 +5091,7 @@
 <translation id="5054374119096692193">在<ph name="BEGIN_LINK" />自定义 Chrome<ph name="END_LINK" /> 部分中查看所有卡片选项</translation>
 <translation id="5056950756634735043">正在连接到容器</translation>
 <translation id="5057110919553308744">当您点击此扩展程序时</translation>
+<translation id="5057127674016624293">扫描用时超出了预期</translation>
 <translation id="5059241099014281248">限制登录</translation>
 <translation id="5059429103770496207">显示样式</translation>
 <translation id="5059526285558225588">选择要分享什么</translation>
@@ -5975,6 +5980,7 @@
 <translation id="5797521893972859201">会清除所有历史记录，包括搜索框中的历史记录</translation>
 <translation id="5797934230382081317">了解如何开始在 &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; 和 &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; 设备上使用</translation>
 <translation id="5798079537501238810">网站可以安装付款处理程序</translation>
+<translation id="5798086737841799234">输入确认码</translation>
 <translation id="579915268381781820">您的安全密钥已被拔出。</translation>
 <translation id="5799478978078236781">接收与 <ph name="DEVICE_TYPE" />相关的提示、优惠和动态，并分享反馈。</translation>
 <translation id="5799508265798272974">Linux 虚拟机：<ph name="LINUX_VM_NAME" /></translation>
@@ -6114,7 +6120,6 @@
 <translation id="5901089233978050985">切换到执行录屏操作的标签页</translation>
 <translation id="5901494423252125310">打印机机盖未关</translation>
 <translation id="5901630391730855834">黄色</translation>
-<translation id="5902211418335330937">如果某个网站无法按预期运行，您可在搜索栏和地址栏中取消选择“第三方 Cookie 屏蔽”，为该网站启用第三方 Cookie。</translation>
 <translation id="5904614460720589786">无法设置 <ph name="APP_NAME" />，因为出现了配置问题。请与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="5906655207909574370">即将更新到最新版本！重新启动您的设备即可完成更新。</translation>
 <translation id="5906732635754427568">系统将会从此设备上移除与该应用相关的数据。</translation>
@@ -6879,7 +6884,6 @@
 <translation id="6532663472409656417">已向企业注册</translation>
 <translation id="6533315466883598769">使用“Google 翻译”</translation>
 <translation id="65334502113648172">按箭头键可收起或展开显示区域。若要将显示区域四处移动，请按 Shift 和 +，然后使用箭头键。</translation>
-<translation id="6533636340637966565">正在开启…</translation>
 <translation id="6535331821390304775">始终允许 <ph name="ORIGIN" /> 在关联的应用中打开此类链接</translation>
 <translation id="653659894138286600">扫描文件和图片</translation>
 <translation id="6537613839935722475">名称可以使用字母、数字和连字符 (-)</translation>
@@ -7230,6 +7234,7 @@
 <translation id="6815376457351236663">仍然打开</translation>
 <translation id="6815787852028615386">此文件具有欺骗性，可能会对您的设备做出您意想不到的更改</translation>
 <translation id="6816097980753839617">蓝/黄（蓝色弱视）</translation>
+<translation id="6816443526270499804">正在查找可用的 eSIM 卡配置文件</translation>
 <translation id="6818198425579322765">要翻译的网页语言</translation>
 <translation id="6818547713623251698">查看您手机上的照片、媒体内容、通知和应用</translation>
 <translation id="6818802132960437751">内置病毒防护功能</translation>
@@ -8040,6 +8045,7 @@
 <translation id="7475742997309661417">ChromeOS 中的屏幕阅读器 (ChromeVox) 主要供盲人或弱视用户使用，以便这些用户通过语音合成器或盲文显示屏获知屏幕上显示的文字。同时按住两个音量键 5 秒钟即可开启 ChromeVox。启用 ChromeVox 后，系统将带您快速了解相关功能。</translation>
 <translation id="7476454130948140105">电量太低 (<ph name="BATTERY_PERCENT" />%)，无法更新</translation>
 <translation id="7476989672001283112">已自动禁用“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
+<translation id="7477460499687558352">选择要下载的 eSIM 卡配置文件</translation>
 <translation id="7477599578899108080">内存用量高：<ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">为此页面创建二维码</translation>
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
@@ -9114,6 +9120,7 @@
 <translation id="8314835274931377415">开始进行开关控制设置？</translation>
 <translation id="8315018673856831477">省内存模式选项</translation>
 <translation id="8315044115695361734">来自 iCloud 钥匙串</translation>
+<translation id="8315514906653279104">正在开启…</translation>
 <translation id="8317671367883557781">添加网络连接</translation>
 <translation id="8317965619823678157">复制密码</translation>
 <translation id="8318266828739827371">使用分屏视图查看屏幕上放大的区域。使用搜索键 + Ctrl + D 可开启和关闭固定放大镜。</translation>

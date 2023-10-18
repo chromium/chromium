@@ -55,6 +55,7 @@
 <translation id="2086476982681781442">Chromium 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
 <translation id="2088953378266246249">与 Chromium 如何管理其根证书有关的信息</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{贵组织会在 Chromium 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{贵组织会在 Chromium 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
+<translation id="2126108037660393668">所下载的文件未能顺利通过验证。</translation>
 <translation id="215352261310130060">Chromium 阻止了此项下载操作，因为网站未使用安全连接，该文件可能已被篡改</translation>
 <translation id="2174178932569897599">自定义 Chromium</translation>
 <translation id="2174917724755363426">尚未完成安装，确定要取消吗？</translation>
@@ -79,6 +80,7 @@
 <translation id="2572494885440352020">Chromium 帮助程序</translation>
 <translation id="2583187216237139145">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chromium 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">继续使用 Chromium</translation>
+<translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2648074677641340862">安装过程中出现操作系统错误。请重新下载 Chromium。</translation>
 <translation id="2661879430930417727">如果您是与亲朋好友共用一部设备，他们将能够使用单独的账号进行浏览，并可随心所欲地设置 Chromium</translation>
 <translation id="268602741124540128">欢迎使用 Chromium，<ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -297,6 +299,7 @@
 <translation id="6676384891291319759">访问互联网</translation>
 <translation id="668175097507315160">由于登录时发生错误，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="6709350901466051922">Chromium 需要为此网站授予麦克风权限</translation>
+<translation id="6712881677154121168">下载时出错：<ph name="DOWNLOAD_ERROR" />。</translation>
 <translation id="6717134281241384636">您的个人资料来自更高版本的 Chromium，因此无法使用。
 
 某些功能可能会无法使用。请指定其他个人资料目录或使用更高版本的 Chromium。</translation>
@@ -319,6 +322,7 @@
 <translation id="6981396265751285733">开启此设置后，Chromium 会释放闲置标签页占用的内存。这可让使用中的标签页和其他应用获得更多计算机资源，并让 Chromium 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活动状态。</translation>
 <translation id="6985329841647292029">Chromium 操作系统条款</translation>
 <translation id="6990124437352146030">Chromium 需要获得相应权限，才能允许此网站使用您的麦克风</translation>
+<translation id="7024536598735240744">解压缩时出错：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安装。</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
 <translation id="7067091210845072982">如果图片缺少有用的说明，则 Chromium 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。</translation>
@@ -393,6 +397,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8493179195440786826">Chromium版本太旧</translation>
 <translation id="8522801943730206384">您需要先保存密码，然后才能使用 Chromium 的密码检查功能</translation>
 <translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
+<translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8568283329061645092">您需要先登录 Google 账号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：网站可以将您的兴趣信息存储在 Chromium 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>

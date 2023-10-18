@@ -310,7 +310,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2276987123919776440">15mun</translation>
 <translation id="2277103315734023688">Mynd ymlaen</translation>
 <translation id="2282073721614284166">Agor dolen mewn tab</translation>
-<translation id="2284237890386182187">Wedi'i droi ymlaen, dim dyfeisiau wedi'u cysylltu</translation>
 <translation id="2292698582925480719">Graddfa'r sgrîn</translation>
 <translation id="229397294990920565">Wrthi'n diffodd data symudol...</translation>
 <translation id="2295777434187870477">Mae'r meic ymlaen, bydd toglo'n distewi'r mewnbwn.</translation>
@@ -617,7 +616,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3563775809269155755">Galluogi poethfan</translation>
 <translation id="3566240529365775567">Newydd ei hagor</translation>
 <translation id="3571734092741541777">Gosod</translation>
-<translation id="3572988532398145777">Ni allwch ehangu'r hysbysiad tra bod panel ar agor. Caewch y panel isod yn gyntaf.</translation>
 <translation id="3573179567135747900">Newid yn ôl i "<ph name="FROM_LOCALE" />" (bydd angen ailgychwyn)</translation>
 <translation id="3576141592585647168">Newid cylchfa amser</translation>
 <translation id="3577473026931028326">Aeth rhywbeth o'i le. Rhowch gynnig arall arni.</translation>
@@ -700,7 +698,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="385300504083504382">Y dechrau</translation>
 <translation id="3859364108019690">Methu â ffrydio apiau</translation>
 <translation id="3861651314799684201">Pwyswch Enter i recordio'r sgrîn lawn</translation>
-<translation id="3865912916886104060">Dim dyfeisiau yn gysylltiedig. Bydd WiFi yn cael ei ddiffodd i ddechrau defnyddio Poethfan.</translation>
 <translation id="3886872229787704059">Agorwyd heddiw</translation>
 <translation id="3891340733213178823">Pwyswch Ctrl+Shift+Q ddwywaith i allgofnodi.</translation>
 <translation id="3893630138897523026">ChromeVox (adborth ar lafar)</translation>
@@ -785,7 +782,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4197790712631116042">Diffodd</translation>
 <translation id="4201033867194214117">Nid yw <ph name="FEATURE_NAME" /> ar gael.</translation>
 <translation id="4201051445878709314">Dangos y mis blaenorol</translation>
-<translation id="4202362334312791952">Mae 1 ddyfais yn gysylltiedig. Bydd WiFi yn cael ei ddiffodd i ddechrau defnyddio Poethfan.</translation>
 <translation id="4209973997261364186">Mae Wi-Fi wedi'i droi ymlaen</translation>
 <translation id="4212472694152630271">Newid i PIN</translation>
 <translation id="4215497585250573029">Gosodiadau VPN</translation>
@@ -1092,7 +1088,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5426063383988017631">Cafodd y ddewislen gosodiadau ei chau</translation>
 <translation id="5428899915242071344">Dechrau dewis</translation>
 <translation id="5429993543155113935">Ni chefnogir ffenestri anhysbys ar hyn o bryd</translation>
-<translation id="5430931332414098647">Rhannu Cysylltiad Sydyn</translation>
 <translation id="5431318178759467895">Lliw</translation>
 <translation id="5433020815079095860">Mewnbwn sain</translation>
 <translation id="544691375626129091">Mae'r holl ddefnyddwyr sydd ar gael eisoes wedi'u hychwanegu at y sesiwn hon.</translation>
@@ -1121,6 +1116,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="554893713779400387">Toglo arddweud</translation>
 <translation id="5551456515017410630">Agor/cau calendr</translation>
 <translation id="5551974246223970793">Wrth chwilio tudalen, mind i'r gyfatebiaeth nesaf i chwilio</translation>
+<translation id="5555639311269196631">Diffodd poethfan</translation>
 <translation id="5558091555391176027">Toglo gwelededd uchel Rhannu Gerllaw</translation>
 <translation id="556042886152191864">Botwm</translation>
 <translation id="5570122939431135380">Agor tab newydd mewn ffenestr Anhysbys newydd</translation>
@@ -1166,7 +1162,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5707775774148071965">Mae eich dyfais yn cefnogi cyfradd data uwch na'ch cebl. Mae'n bosib y bydd perfformiad y ddyfais yn gyfyngedig.</translation>
 <translation id="5710450975648804523">Mae Peidiwch ag Aflonyddu wedi'i droi ymlaen</translation>
 <translation id="571295407079589142">Mae data symudol wedi'u diffodd</translation>
-<translation id="5716891621595980681">Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig. Bydd WiFi yn cael ei ddiffodd i ddechrau defnyddio Poethfan.</translation>
 <translation id="5727460725221669831">Os wnaethoch anghofio'ch cyfrinair neu newid cyfrinair eich Cyfrif Google yn ddiweddar, rhowch gynnig ar adfer y defnyddiwr hwn.</translation>
 <translation id="573413375004481890">Ni allai'r ddyfais hon gefnogi'ch holl sgriniau, felly mae un wedi'i datgysylltu</translation>
 <translation id="5740328398383587084">Rhannu Gerllaw</translation>
@@ -1216,7 +1211,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5920710855273935292">Mae'r meic wedi'i ddistewi.</translation>
-<translation id="5924855612669061715">Mae'r Boethfan wedi'i throi ymlaen</translation>
 <translation id="5946788582095584774">Mae <ph name="FEATURE_NAME" /> wedi'i droi ymlaen.</translation>
 <translation id="5947494881799873997">Dychwelyd</translation>
 <translation id="595202126637698455">Mae olrhain perfformiad wedi'i alluogi</translation>
@@ -1232,6 +1226,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="598407983968395253">Defnyddio templed</translation>
 <translation id="598882571027504733">I gael y diweddariad, ailgychwynnwch eich Chromebook gyda'r bysellfwrdd wedi'i atodi.</translation>
 <translation id="6000279412553873020">Bysellau, botymau a rhagor</translation>
+<translation id="6002122790816966947">Eich dyfeisiau</translation>
 <translation id="6012623610530968780">Tudalen <ph name="SELECTED_PAGE" /> o <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Amlygu'r eitem nesaf ar y silff</translation>
 <translation id="6015573907265691211">Marcio fel wedi'i chwblhau</translation>
@@ -1521,6 +1516,7 @@ Gosodiad newydd</translation>
 <translation id="7188494361780961876">Cafodd y ddewislen ei symud i gornel chwith uchaf y sgrîn.</translation>
 <translation id="7189412385142492784">Pa mor bell yw'r blaned Gwener</translation>
 <translation id="7198435252016571249">Mae'r camera wedi'i snapio i'r gornel dde isaf. Gwrthdaro ag arwyneb y system.</translation>
+<translation id="7219573373513695352">Dim dyfeisiau wedi'u cysylltu</translation>
 <translation id="7229029500464092426">Cof <ph name="AVAILABLE_MEMORY" /> | Cyfanswm o <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Mae angen i'r Chromebook hwn ailgychwyn i gymhwyso diweddariad. Gall hyn gymryd hyd at 1 funud.</translation>
 <translation id="7256634071279256947">Meicroffon cefn</translation>

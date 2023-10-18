@@ -75,6 +75,7 @@
 <translation id="1499900233129743732">Mae <ph name="MANAGER" /> yn rheoli'r defnyddiwr hwn ac mae'n bosib y bydd yn rheoli gosodiadau o bell ac yn monitro gweithgarwch y defnyddiwr.</translation>
 <translation id="150962533380566081">PUK annilys.</translation>
 <translation id="1510238584712386396">Lansiwr</translation>
+<translation id="1515129336378114413">hafan y porwr</translation>
 <translation id="1526389707933164996">Animeiddiad arbedwr sgrîn</translation>
 <translation id="152892567002884378">Codi'r sain</translation>
 <translation id="1555130319947370107">Glas</translation>
@@ -746,6 +747,7 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6673898378497337661">disgleirdeb y bysellfwrdd i fyny</translation>
 <translation id="6692996468359469499">Cael gwybodaeth sy'n gysylltiedig â'ch dewis</translation>
+<translation id="6694534975463174713">clo</translation>
 <translation id="6704062477274546131">Cydraniad DNS</translation>
 <translation id="6723839937902243910">Pŵer</translation>
 <translation id="6723847290197874913">Ôl-olau bysellfwrdd</translation>
@@ -790,6 +792,7 @@
 <translation id="7103252855940681301">Dyfais <ph name="INDEX" /> o <ph name="COUNT" /> o'r enw <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Dewiswch waith celf unigryw <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">rhowch yr allwedd</translation>
+<translation id="7119389851461848805">pŵer</translation>
 <translation id="7130438335435247835">Enw Pwynt Mynediad (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Gweinydd enwau}zero{Gweinyddion enwau}two{Gweinyddion enwau}few{Gweinyddion enwau}many{Gweinyddion enwau}other{Gweinyddion enwau}}</translation>
 <translation id="7135814714616751706">Chwilio llwybrau byr</translation>

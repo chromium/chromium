@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">‏ہمیں یہ بتا کر Chrome کو بہتر بنانے میں ہماری مدد کریں کہ آپ نے فریق ثالث کوکیز کی اجازت کیوں دی۔ <ph name="BEGIN_LINK" />تاثرات بھیجیں<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
+<translation id="1192844206376121885">اس سے <ph name="ORIGIN" /> کے ذریعے اسٹور کردہ سبھی ڈیٹا اور کوکیز حذف ہو جائیں گی۔</translation>
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> پر سرایت کردہ</translation>
 <translation id="1272079795634619415">روکیں</translation>
@@ -58,6 +59,7 @@
 <translation id="216989819110952009">یہاں تک کہ سبز چشموں سے محفوظ آنکھوں کے ساتھ ڈوروتھی اور اس کے دوست شروعات میں اسے دیکھ کر حیران رہ گئے</translation>
 <translation id="2176704795966505152">اصل مینیو میں زوم کا اختیار دکھائیں</translation>
 <translation id="2182457891543959921">‏سائٹس کو اپنے اطراف کا 3D نقشہ تخلیق یا کیمرے کی پوزیشن ٹریک کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
+<translation id="2185965788978862351">اس سے آپ کی ہوم اسکرین پر موجود سائٹس یا ایپس کے ذریعے اسٹور کردہ <ph name="DATASIZE" /> ڈیٹا اور کوکیز حذف ہو جائیں گی۔</translation>
 <translation id="2194856509914051091">قابل غور چیزیں</translation>
 <translation id="2212565012507486665">کوکیز کی اجازت دیں</translation>
 <translation id="2228071138934252756">‏<ph name="APP_NAME" /> کو اپنے کیمرے تک رسائی دینے کے لیے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں بھی کیمرا آن کریں۔</translation>
@@ -80,6 +82,7 @@
 <translation id="2434158240863470628">ڈاؤن لوڈ مکمل ہو گیا <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات پوشیدگی وضع میں کام نہ کریں</translation>
 <translation id="2442870161001914531">ہمیشہ ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
+<translation id="2469312991797799607">اس کارروائی سے <ph name="ORIGIN" /> کے سبھی ڈیٹا اور کوکیز اور اس کے تحت سبھی سائٹس حذف ہو جائیں گی</translation>
 <translation id="2479148705183875116">ترتیبات پر جائیں</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="2485422356828889247">ان انسٹال کریں</translation>
@@ -223,6 +226,7 @@
 <translation id="5063480226653192405">استعمال</translation>
 <translation id="5091013926750941408">موبائل سائٹ</translation>
 <translation id="509133520954049755">ڈیسک ٹاپ منظر کی درخواست کریں</translation>
+<translation id="5099358668261120049">اس سے <ph name="ORIGIN" /> یا اس ایپ کے ذریعے آپ کی ہوم اسکرین پر اسٹور کردہ سبھی ڈیٹا اور کوکیز حذف ہو جائیں گی۔</translation>
 <translation id="5100237604440890931">سکیڑ دیا گیا - پھیلانے کیلئے کلک کریں۔</translation>
 <translation id="5123685120097942451">پوشیدگی ٹیب</translation>
 <translation id="5186036860380548585">اسکرین کے اوپری حصہ کے قریب اختیار دستیاب ہے</translation>
@@ -269,6 +273,7 @@
 <translation id="5916664084637901428">آن</translation>
 <translation id="5922853908706496913">آپ کی اسکرین کا اشتراک کیا جا رہا ہے</translation>
 <translation id="5922967540311291836">فریق ثالث کوکیز کو مسدود کریں:</translation>
+<translation id="5923512600150154850">اس سے سائٹس کے ذریعے اسٹور کردہ <ph name="DATASIZE" /> ڈیٹا اور کوکیز حذف ہو جائیں گی۔</translation>
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
 <translation id="5964247741333118902">سرایت کردہ مواد</translation>
 <translation id="5968921426641056619">ویب پتہ درج کریں</translation>
@@ -337,6 +342,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7188508872042490670">آلہ پر موجود سائٹ کا ڈیٹا</translation>
+<translation id="7201549776650881587">اس کارروائی سے آپ کی ہوم اسکرین پر موجود <ph name="ORIGIN" /> کے تحت یا اس کی ایپ کے ذریعے سبھی سائٹس کے ذریعے اسٹور کردہ سبھی ڈیٹا اور کوکیز حذف ہو جائیں گی</translation>
 <translation id="7203150201908454328">توسیع کردہ</translation>
 <translation id="7219254577985949841">سائٹ ڈیٹا کو حذف کریں؟</translation>
 <translation id="723171743924126238">تصاویر منتخب کریں</translation>

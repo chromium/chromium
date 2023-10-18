@@ -797,6 +797,34 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
       Als je het beleid niet instelt, is <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
+<translation id="173503685261877709">Dit beleid biedt een manier om de lijst met sets te overschrijven die de browser gebruikt voor functies van gehelen van gerelateerde websites.
+
+Dit beleid overschrijft het beleid <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
+
+Elke set in de lijst met gehelen van gerelateerde websites van de browser moet voldoen aan de vereisten van een geheel van gerelateerde websites.
+Een geheel van gerelateerde websites moet bestaan uit een primaire site en een of meer lidsites.
+Een set kan ook een lijst bevatten van servicesites waarvan de set de eigenaar is, evenals een routebeschrijving van een site naar alle ccTLD-varianten.
+Ga naar https://github.com/WICG/first-party-sets voor meer informatie over hoe <ph name="PRODUCT_NAME" /> gehelen van gerelateerde websites gebruikt.
+
+
+Alle sites in een geheel van gerelateerde websites moeten een registreerbaar domein zijn dat via HTTPS wordt gehost. Elke site in een geheel van gerelateerde websites moet ook uniek zijn. Dit betekent dat een site niet meer dan één keer in een geheel van gerelateerde websites kan voorkomen.
+
+Als dit beleid een leeg woordenboek krijgt, gebruikt de browser de openbare lijst met gehelen van gerelateerde websites.
+
+Voor alle sites in een geheel van gerelateerde websites uit de lijst <ph name="REPLACEMENTS" /> geldt dat als een site ook aanwezig is in een geheel van gerelateerde websites in de lijst van de browser, die site wordt verwijderd uit het geheel van gerelateerde websites van de browser.
+Daarna wordt het geheel van gerelateerde websites van het beleid toegevoegd aan de lijst met gehelen van gerelateerde websites van de browser.
+
+Voor alle sites in een geheel van gerelateerde websites uit de lijst <ph name="ADDITIONS" /> geldt dat als een site ook aanwezig is in een geheel van gerelateerde websites in de lijst van de browser, het geheel van gerelateerde websites van de browser wordt geüpdatet zodat het nieuwe geheel van gerelateerde websites aan de lijst van de browser kan worden toegevoegd. Nadat de lijst van de browser is geüpdatet, wordt het geheel van gerelateerde websites van het beleid toegevoegd aan de lijst met gehelen van gerelateerde websites van de browser.
+
+De lijst met gehelen van gerelateerde websites van de browser vereist dat geen van de sites op de lijst in meer dan één set voorkomt. Dit is ook vereist voor zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" />. Een site kan ook niet in zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" /> staan.
+
+Jokertekens (*) worden niet ondersteund als beleidswaarde of binnen een geheel van gerelateerde websites in deze lijsten.
+
+Alle sets die in het beleid worden vermeld, moeten geldige gehelen van gerelateerde websites zijn. Zo niet, dan krijg je de relevante foutmelding.
+
+In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1736269219679256369">Doorgaan vanaf de SSL-waarschuwingspagina toestaan</translation>
 <translation id="1736319469723030923">Als je het beleid aanzet of niet instelt, scant Chrome Cleanup het systeem periodiek op ongewenste software. Als er ongewenste software wordt aangetroffen, wordt de gebruiker gevraagd of deze software moet worden verwijderd. Het is in dit geval mogelijk Chrome Cleanup handmatig te starten via chrome://settings.
 
@@ -5810,6 +5838,9 @@ Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbe
 <translation id="6141402445226505817">Altijd minder nauwkeurige tijdzonedetectie gebruiken</translation>
 <translation id="6141944295566709543">Gebruikers toestaan media af te spelen als het apparaat is vergrendeld</translation>
 <translation id="6142501278956229253">DPI voor afdrukrastering van pdf's</translation>
+<translation id="6143167485225352920">Tenzij ARC op een andere manier is uitgezet, kunnen beheerde gebruikers ARC op niet-aangesloten apparaten gebruiken als je het beleid instelt op True of laat uitstaan. Als je het beleid instelt op False, kunnen beheerde gebruikers ARC niet op niet-aangesloten apparaten gebruiken.
+
+Andere beperkingen, zoals de beperkingen die worden opgelegd door de beleidsregels ArcEnabled en UnaffiliatedArcAllowed, worden nog steeds gerespecteerd. ARC wordt uitgezet als een van deze beperkingen dat aangeeft.</translation>
 <translation id="6144046700495610112">Als je het beleid toepast, worden de formuliergegevens voor automatisch invullen van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, worden formuliergegevens voor automatisch invullen niet geïmporteerd bij de eerste uitvoering.
 
       Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor formuliergegevens voor automatisch invullen aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>
@@ -6311,6 +6342,7 @@ OPMERKING: Dit beleid had de onjuist gedocumenteerde standaardwaarde 'true' in M
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner zijn dan de inactieve vertraging.</translation>
 <translation id="6497085755801788141">De ingebouwde certificaatverificatie gebruiken</translation>
+<translation id="6499579502664610993">Overschrijf gehelen van gerelateerde websites.</translation>
 <translation id="6504720469162323184">Als je het beleid instelt, geef je de hoeveelheid tijd in milliseconden zonder gebruikersactiviteit aan voordat er automatisch wordt ingelogd op het lokale account op het apparaat dat wordt gespecificeerd door het beleid <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
 Als je het beleid niet instelt, betekent dit dat 0 milliseconden wordt gebruikt voor de time-out.
@@ -6778,6 +6810,7 @@ Als het beleid is ingesteld op False of niet is ingesteld, is de indeling niet b
 <translation id="685769593149966548">Strenge 'Beperkte modus' voor YouTube afdwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 of later</translation>
 <translation id="6866755486434471318">Toestaan dat <ph name="PEPPER_NAME" /> gedeelde afbeeldingen gebruikt voor videodecodering.</translation>
+<translation id="6878757724611298427">Gebruikers toestaan Android-apps te gebruiken op niet-aangesloten apparaten</translation>
 <translation id="6881447940489194100">Hexadecimale gecodeerde SHA-256-hash van de gegevens.</translation>
 <translation id="68818134518270542">Als je het beleid instelt, geef je de apps op die gebruikers beschikbaar kunnen maken als notitie-app op het vergrendelscherm van <ph name="PRODUCT_OS_NAME" />.
 
@@ -7153,6 +7186,7 @@ Als je dit beleid niet instelt of instelt op False, wordt het genoemde netwerkbe
 Dit beleid wordt verwijderd als de functie EphemeralNetworkPolicies standaard aanstaat.</translation>
 <translation id="7157329428182136164">Ondersteuning voor API's voor 3D-afbeeldingen aanzetten</translation>
 <translation id="7158358621906236999">Standaardinstelling voor sensoren</translation>
+<translation id="7158731543031879810">Sta zakelijke gebruikers toe ARC op niet-aangesloten apparaten te gebruiken.</translation>
 <translation id="7161568070244869726">Afdwingen dat AppCache wordt aangezet</translation>
 <translation id="7165879643294314958">Als je het beleid toepast of niet instelt, wordt een lokaal account op het apparaat ingesteld voor automatisch inloggen zonder vertraging. <ph name="PRODUCT_OS_NAME" /> respecteert de sneltoets Ctrl+Alt+S waarmee het automatisch inloggen wordt omzeild en het inlogscherm wordt getoond.
 
@@ -7266,6 +7300,7 @@ Als je het beleid niet toepast, kunnen gebruikers automatisch inloggen zonder ve
       Als je deze optie uitzet of niet instelt, kan de gebruiker de Developer Tools en de JavaScript-console gebruiken.
 
       Als het beleid DeveloperToolsAvailability is ingesteld, wordt de waarde van het beleid DeveloperToolsDisabled genegeerd.</translation>
+<translation id="7265638080114610885">Gebruikers niet toestaan Android-apps op niet-aangesloten apparaten te gebruiken</translation>
 <translation id="7266471712301230894">Dit beleid is verwijderd vanaf <ph name="PRODUCT_NAME" /> 64.
 
       Er wordt geen ondersteuning meer geboden voor het automatisch zoeken en installeren van ontbrekende plug-ins.</translation>

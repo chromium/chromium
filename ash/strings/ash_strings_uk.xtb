@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15 хвилин</translation>
 <translation id="2277103315734023688">Перейти вперед</translation>
 <translation id="2282073721614284166">Відкрити посилання на вкладці</translation>
-<translation id="2284237890386182187">Увімкнено, пристрої не підключено</translation>
 <translation id="2292698582925480719">Масштаб дисплея</translation>
 <translation id="229397294990920565">Вимкнення мобільного Інтернету…</translation>
 <translation id="2295777434187870477">Мікрофон увімкнено. Його можна вимкнути за допомогою перемикача.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">Увімкнути точку доступу</translation>
 <translation id="3566240529365775567">Відкрито щойно</translation>
 <translation id="3571734092741541777">Налаштувати</translation>
-<translation id="3572988532398145777">Не можна розгорнути сповіщення, коли відкрито панель. Спершу закрийте панель нижче.</translation>
 <translation id="3573179567135747900">Повернутися до мови "<ph name="FROM_LOCALE" />" (потрібно перезавантажитися)</translation>
 <translation id="3576141592585647168">Змінення часового поясу</translation>
 <translation id="3577473026931028326">Сталася помилка. Повторіть спробу.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">На початок</translation>
 <translation id="3859364108019690">Не вдалося виконати потокове передавання додатків</translation>
 <translation id="3861651314799684201">Щоб записати весь екран, натисніть клавішу Enter</translation>
-<translation id="3865912916886104060">Немає підключених пристроїв. Щоб почати використовувати точку доступу, Wi-Fi буде вимкнено.</translation>
 <translation id="3886872229787704059">Відкрито сьогодні</translation>
 <translation id="3891340733213178823">Щоб вийти, двічі натисніть Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (голосові підказки)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">Вимкнено</translation>
 <translation id="4201033867194214117">Функція "<ph name="FEATURE_NAME" />" недоступна.</translation>
 <translation id="4201051445878709314">Показати попередній місяць</translation>
-<translation id="4202362334312791952">Підключено 1 пристрій. Щоб почати використовувати точку доступу, Wi-Fi буде вимкнено.</translation>
 <translation id="4209973997261364186">Wi-Fi увімкнено</translation>
 <translation id="4212472694152630271">Ввести PIN-код</translation>
 <translation id="4215497585250573029">Налаштування VPN</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">Меню налаштувань закрито</translation>
 <translation id="5428899915242071344">Почати вибір</translation>
 <translation id="5429993543155113935">Вікна в режимі анонімного перегляду наразі не підтримуються</translation>
-<translation id="5430931332414098647">Миттєва точка доступу</translation>
 <translation id="5431318178759467895">Колір</translation>
 <translation id="5433020815079095860">Аудіовхід</translation>
 <translation id="544691375626129091">Усіх доступних користувачів уже додано до цього сеансу.</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">Перемкнути диктування</translation>
 <translation id="5551456515017410630">Відкрити або закрити календар</translation>
 <translation id="5551974246223970793">Під час пошуку на сторінці перейти до наступного збігу</translation>
+<translation id="5555639311269196631">Вимкнути точку доступу</translation>
 <translation id="5558091555391176027">Перемикач режиму високої видимості для функції "Передавання поблизу"</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5570122939431135380">Відкрити нову вкладку в новому вікні в режимі анонімного перегляду</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">Швидкість передачі даних для пристрою вища, ніж для кабелю. Продуктивність пристрою може бути обмежено.</translation>
 <translation id="5710450975648804523">Режим "Не турбувати" ввімкнено</translation>
 <translation id="571295407079589142">Мобільний Інтернет вимкнено</translation>
-<translation id="5716891621595980681">Підключено пристроїв: <ph name="DEVICECOUNT" />. Щоб почати використовувати точку доступу, Wi-Fi буде вимкнено.</translation>
 <translation id="5727460725221669831">Якщо ви забули або нещодавно змінили пароль облікового запису Google, спробуйте відновити його.</translation>
 <translation id="573413375004481890">Цей пристрій не може підтримувати всі екрани, тому один із них відключено</translation>
 <translation id="5740328398383587084">Обмін поблизу</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5920710855273935292">Мікрофон вимкнено.</translation>
-<translation id="5924855612669061715">Точку доступу ввімкнено</translation>
 <translation id="5946788582095584774">Функцію "<ph name="FEATURE_NAME" />" увімкнено.</translation>
 <translation id="5947494881799873997">Повернути</translation>
 <translation id="595202126637698455">Відстеження ефективності ввімкнено</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">Використати шаблон</translation>
 <translation id="598882571027504733">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою.</translation>
 <translation id="6000279412553873020">Клавіші, кнопки тощо</translation>
+<translation id="6002122790816966947">Ваші пристрої</translation>
 <translation id="6012623610530968780">Сторінка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Виділити наступний елемент на панелі запуску</translation>
 <translation id="6015573907265691211">Позначити як виконане</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">Меню переміщено у верхній лівий кут екрана.</translation>
 <translation id="7189412385142492784">Яка відстань від Землі до Венери</translation>
 <translation id="7198435252016571249">Зображення з камери закріплено в нижньому правому куті, що конфліктує із системною платформою.</translation>
+<translation id="7219573373513695352">Немає підключених пристроїв</translation>
 <translation id="7229029500464092426">Обсяг використаної пам’яті: <ph name="AVAILABLE_MEMORY" /> | Усього: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Щоб оновлення почали діяти, Chromebook потрібно перезапустити. Це може зайняти до 1 хвилини.</translation>
 <translation id="7256634071279256947">Мікрофон на задній панелі</translation>

@@ -285,6 +285,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2571834852878229351">Zelf een maken</translation>
 <translation id="2573452357057307036">Meer informatie over hoe je Chrome instelt als standaardbrowser</translation>
 <translation id="2574249610672786438">Log in op al je apparaten om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
+<translation id="2578337197553672982">Content van Google voor jongeren</translation>
 <translation id="2581165646603367611">Hiermee worden cookies, het cachegeheugen en andere gegevens gewist van sites waarvan Chrome denkt dat deze niet belangrijk zijn.</translation>
 <translation id="2587052924345400782">Nieuwere versie beschikbaar</translation>
 <translation id="2593272815202181319">Monospace</translation>
@@ -352,7 +353,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2909615210195135082">Platform voor Google-meldingen</translation>
 <translation id="2912296070571964914">Beheer de onderwerpen waarin je geïnteresseerd bent</translation>
 <translation id="2912345083818861431">Gebruik schermvergrendeling om geopende incognitotabbladen te bekijken</translation>
-<translation id="2922568440285376746">Zoeken in afbeelding met Google <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Naam is ongeldig</translation>
 <translation id="2932150158123903946">Opslag van Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Je toetsenbord verandert niet</translation>
@@ -687,7 +687,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4684427112815847243">Alles synchroniseren</translation>
 <translation id="4685741273709472646">Selecteren in het dropdownmenu</translation>
 <translation id="4687718960473379118">Door sites voorgestelde advertenties</translation>
-<translation id="4689792375321623175">Afbeelding zoeken met Google <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> andere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> andere}}</translation>
 <translation id="4699172675775169585">Gecachete afbeeldingen en bestanden</translation>
 <translation id="4710167854527459075">Sorteren op nieuwste</translation>
@@ -701,6 +700,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4742970037960872810">Markering verwijderen</translation>
 <translation id="4743664893327841597">Wat je in de adresbalk of het zoekvak typt, wordt naar je standaard zoekmachine gestuurd</translation>
 <translation id="4749960740855309258">Een nieuw tabblad openen</translation>
+<translation id="4750356170202299988">Content voor jongeren</translation>
 <translation id="4758061975920522644">Alleen afbeelding delen</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1182,6 +1182,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7187993566681480880">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd.</translation>
 <translation id="7191430249889272776">Tabblad op de achtergrond geopend.</translation>
 <translation id="7196215469483532480">Uitleg over privacygids is op volledige hoogte geopend</translation>
+<translation id="7205672015775254816">Content van Google voor jongeren: uit</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> tabbladen herstellen als nieuwe tabbladen op de achtergrond.</translation>
 <translation id="7217781228893594884">Incognitotabbladen worden vergrendeld als je Chrome verlaat</translation>
 <translation id="7221869452894271364">Deze pagina opnieuw laden</translation>
@@ -1329,6 +1330,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7876243839304621966">Alles verwijderen</translation>
 <translation id="7886917304091689118">Actief in Chrome</translation>
 <translation id="7887174313503389866">Volg een rondleiding langs belangrijke privacy- en beveiligingsopties. Ga voor meer opties naar de afzonderlijke instellingen.</translation>
+<translation id="7896724475402191389">Content voor jongeren: uit</translation>
 <translation id="7903184275147100332">Dit kan even duren</translation>
 <translation id="7914399737746719723">App geïnstalleerd</translation>
 <translation id="7919123827536834358">Deze talen automatisch vertalen</translation>

@@ -966,6 +966,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2977665033722899841">Obecnie wybrany wiersz to <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Zasoby dla pisarzy</translation>
+<translation id="2980742331521553164">Kod CVC tej karty zostanie zaszyfrowany i zapisany na Twoim koncie Google – umożliwi to szybsze płatności</translation>
 <translation id="2983666748527428214">Otwórz kartę incognito</translation>
 <translation id="2985306909656435243">Jeśli włączysz tę opcję, Chromium zapisze kopię Twojej karty na tym urządzeniu, by umożliwić Ci szybsze wypełnianie formularzy.</translation>
 <translation id="2985398929374701810">Wpisz prawidłowy adres</translation>
@@ -3397,6 +3398,7 @@ Dodatkowe informacje:
 <translation id="79338296614623784">Wpisz prawidłowy numer telefonu</translation>
 <translation id="7934414805353235750"><ph name="URL" /> chce odtworzyć treści chronione. Tożsamość Twojego urządzenia zostanie zweryfikowana przez Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">Kod CVC tej karty zostanie zaszyfrowany i zapisany na Twoim urządzeniu – umożliwi to szybsze płatności</translation>
 <translation id="7937554595067888181">Ważna do <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Certyfikat serwera nie jest jeszcze ważny.</translation>
 <translation id="7939713744218886332">Kuchnia międzynarodowa</translation>

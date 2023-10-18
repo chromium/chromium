@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">මිනි15</translation>
 <translation id="2277103315734023688">ඉදිරියට සොයන්න</translation>
 <translation id="2282073721614284166">පටිත්ත තුළ සබැඳිය විවෘත කරන්න</translation>
-<translation id="2284237890386182187">සක්‍රීයයි, උපාංග සම්බන්ධ නැත</translation>
 <translation id="2292698582925480719">සංදර්ශන පරිමාණය</translation>
 <translation id="229397294990920565">ජංගම දත්ත අක්‍රිය කෙරේ...</translation>
 <translation id="2295777434187870477">මයිකය ක්‍රියාත්මකයි, ටොගල කිරීම ආදානය නිහඬ කරනු ඇත.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">හොට්ස්පොට් සබල කරන්න</translation>
 <translation id="3566240529365775567">මේ දැන් විවෘත කරන ලදි</translation>
 <translation id="3571734092741541777">පිහිටුවන්න</translation>
-<translation id="3572988532398145777">පැනලයක් විවෘතව තිබෙන අතරේ ඔබට දැනුම්දීම පුළුල් කළ නොහැක. පළමුව පහත පැනලය වසා දමන්න.</translation>
 <translation id="3573179567135747900">නැවතත් "<ph name="FROM_LOCALE" />" වෙත යන්න (නැවත පණ ගැන්වීම අවශ්‍යයි)</translation>
 <translation id="3576141592585647168">වේලා කලාපය මාරු කරන්න</translation>
 <translation id="3577473026931028326">යම් දෙයක් වැරදිණි. නැවත උත්සාහ කරන්න.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">ආරම්භය</translation>
 <translation id="3859364108019690">යෙදුම් ප්‍රවාහ කළ නොහැක</translation>
 <translation id="3861651314799684201">සම්පූර්ණ තිරය පටිගත කිරීමට Enter ඔබන්න</translation>
-<translation id="3865912916886104060">උපාංග කිසිවක් සම්බන්ධ කර නැත. හොට්ස්පොට් භාවිතා කිරීම ආරම්භ කිරීමට WiFi ක්‍රියාවිරහිත කරනු ඇත.</translation>
 <translation id="3886872229787704059">අද විවෘත කරන ලදි</translation>
 <translation id="3891340733213178823">වැරිමට Ctrl+Shift+Q දෙසැරයක් ඔබන්න.</translation>
 <translation id="3893630138897523026">ChromeVox (කථා කළ අදහස්)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">අක්‍රියයි</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> නොමැත.</translation>
 <translation id="4201051445878709314">පෙර මාසය පෙන්වන්න</translation>
-<translation id="4202362334312791952">1 උපාංගයක් සම්බන්ධ කර ඇත. හොට්ස්පොට් භාවිතා කිරීම ආරම්භ කිරීමට WiFi ක්‍රියාවිරහිත කරනු ඇත.</translation>
 <translation id="4209973997261364186">Wi-Fi ක්‍රියාත්මක කර ඇත</translation>
 <translation id="4212472694152630271">PIN වෙත මාරු වන්න</translation>
 <translation id="4215497585250573029">VPN සැකසුම්</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">සැකසීම් මෙනුව වසන ලදි</translation>
 <translation id="5428899915242071344">තේරීම අරඹන්න</translation>
 <translation id="5429993543155113935">අප්‍රසිද්ධ කවුළු දැනට සහාය නොදක්වයි</translation>
-<translation id="5430931332414098647">ක්ෂණික ටෙදරින්</translation>
 <translation id="5431318178759467895">වර්ණය</translation>
 <translation id="5433020815079095860">ශ්‍රව්‍ය ආදානය</translation>
 <translation id="544691375626129091">සියළු පවත්නා පරිශීලකයන් මෙම වාරයට එක් කර ඇත.</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">අනුලේඛනය ටොගල් කරන්න</translation>
 <translation id="5551456515017410630">දින දර්ශනය විවෘත කරන්න/වසන්න</translation>
 <translation id="5551974246223970793">පිටුවක් සොයන විට, සෙවීම සඳහා මීළඟ ගැළපීම වෙත යන්න</translation>
+<translation id="5555639311269196631">හොට්ස්පොට් ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="5558091555391176027">ළඟ බෙදා ගැනීමේ ඉහළ දෘශ්‍යතාව ටොගල් කරන්න</translation>
 <translation id="556042886152191864">බොත්තම</translation>
 <translation id="5570122939431135380">නව අප්‍රසිද්ධ කවුළුවක නව පටිත්ත විවෘත කරන්න</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">ඔබගේ උපාංගය ඔබගේ කේබලයට වඩා ඉහළ දත්ත අනුපාතයකට සහාය දක්වයි. උපාංග කාර්ය සාධනය සීමා විය හැකිය.</translation>
 <translation id="5710450975648804523">බාධා නොකරන්න ක්‍රියාත්මකයි</translation>
 <translation id="571295407079589142">ජංගම දත්ත ක්‍රියාවිරහිතයි</translation>
-<translation id="5716891621595980681">උපාංග <ph name="DEVICECOUNT" />ක් සම්බන්ධ කර ඇත. හොට්ස්පොට් භාවිතා කිරීම ආරම්භ කිරීමට WiFi ක්‍රියාවිරහිත කරනු ඇත.</translation>
 <translation id="5727460725221669831">ඔබට ඔබේ මුරපදය අමතක වූවා නම් හෝ මෑතක දී ඔබේ Google ගිණුමේ මුරපදය වෙනස් කර ඇත්නම්, මෙම පරිශීලකයා ප්‍රතිසාධනය කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="573413375004481890">මෙම උපාංගයට ඔබේ සංදර්ශක සියල්ලට සහය දැක්වීමට නොහැකි විය, එබැවින් එකක් විසන්ධි කර ඇත</translation>
 <translation id="5740328398383587084">ළඟ බෙදා ගැනීම</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> <ph name="MAIL" /></translation>
 <translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
 <translation id="5920710855273935292">මයිකය නිහඬයි.</translation>
-<translation id="5924855612669061715">හොට්ස්පොට් ක්‍රියාත්මකයි</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ක්‍රියාත්මකයි.</translation>
 <translation id="5947494881799873997">ප්‍රතිවර්තනය</translation>
 <translation id="595202126637698455">ක්‍රියාකරිත්ව හඹායෑම සබල කෙරිණි</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">අච්චුව භාවිත කරන්න</translation>
 <translation id="598882571027504733">යාවත්කාලීනය ලබා ගැනීමට, අමුණා ඇති යතුරුපුවරුව සමගින් ඔබගේ Chromebook නැවත ආරම්භ කරන්න.</translation>
 <translation id="6000279412553873020">යතුරු, බොත්තම්, සහ තවත් දේ</translation>
+<translation id="6002122790816966947">ඔබගේ උපාංග</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> න් <ph name="SELECTED_PAGE" /> වැනි පිටුව</translation>
 <translation id="601304062528754300">රාක්කයේ ඊළඟ අයිතමය උද්දීපන කරන්න</translation>
 <translation id="6015573907265691211">සම්පූර්ණ බව සලකුණු කරන්න</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">මෙනුව තිරයේ ඉහළ වම් කොණට ගෙන ගියා.</translation>
 <translation id="7189412385142492784">සිකුරු කොතරම් දුරද?</translation>
 <translation id="7198435252016571249">කැමරාව පහළ දකුණු කෙළවරට සවි කර ඇත. පද්ධති මතුපිට සමග ගැටුම.</translation>
+<translation id="7219573373513695352">උපාංග සම්බන්ධ නැත</translation>
 <translation id="7229029500464092426">මතකය <ph name="AVAILABLE_MEMORY" /> | එකතුව <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. යාවත්කාලීනයක් යෙදීමට මෙම Chromebook යළි ඇරඹීමට අවශ්‍යයි. මෙයට 1 විනාඩියක් ගත විය හැක.</translation>
 <translation id="7256634071279256947">පසුපස මයික්‍රෆෝනය</translation>

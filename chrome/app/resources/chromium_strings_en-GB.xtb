@@ -57,6 +57,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2086476982681781442">Chromium blocked this download because the file is deceptive and may make unexpected changes to your device</translation>
 <translation id="2088953378266246249">Information about how Chromium manages its root certificates</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chromium isn't used for one minute. This could include history, autofill and downloads. Your tabs will stay open.}other{Your organisation deletes browsing data automatically when Chromium isn't used for # minutes. This could include history, autofill and downloads. Your tabs will stay open.}}</translation>
+<translation id="2126108037660393668">The downloaded file failed verification.</translation>
 <translation id="2130870084309816036">Unable to connect to the Internet. If you use a firewall, please allowlist <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="215352261310130060">Chromium blocked this download because the site isn't using a secure connection and the file may have been tampered with</translation>
 <translation id="2174178932569897599">Customise Chromium</translation>
@@ -83,6 +84,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2583187216237139145">Any Chromium data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continue using Chromium</translation>
+<translation id="259935314519650377">Failed to cache the downloaded installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2648074677641340862">An operating system error occurred during installation. Please download Chromium again.</translation>
 <translation id="2661879430930417727">If you share a device, friends and family can browse separately and set up Chromium just the way they want</translation>
 <translation id="268602741124540128">Welcome to Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -306,6 +308,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6676384891291319759">Access the Internet</translation>
 <translation id="668175097507315160">Chromium OS could not sync your data due to an error signing in.</translation>
 <translation id="6709350901466051922">Chromium needs microphone permission for this site</translation>
+<translation id="6712881677154121168">Download error: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">Your profile can not be used because it is from a newer version of Chromium.
 
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chromium.</translation>
@@ -328,6 +331,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6981396265751285733">When on, Chromium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chromium fast. Your inactive tabs automatically become active again when you go back to them.</translation>
 <translation id="6985329841647292029">Chromium OS terms</translation>
 <translation id="6990124437352146030">Chromium needs permission to access your microphone for this site</translation>
+<translation id="7024536598735240744">Unpack error: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation stopped.</translation>
 <translation id="705851970750939768">Update Chromium</translation>
 <translation id="7067091210845072982">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google.</translation>
@@ -402,6 +406,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8493179195440786826">Chromium is Out of Date</translation>
 <translation id="8522801943730206384">Chromium can check your passwords when you save them</translation>
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
+<translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium can check your passwords when you sign in with your Google Account</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Sites can store information with Chromium about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>

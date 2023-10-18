@@ -2024,6 +2024,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2564520396658920462">Wykonywanie kodu JavaScript przy użyciu AppleScript jest wyłączone. Aby włączyć tę funkcję, na pasku menu kliknij Widok &gt; Deweloper &gt; Zezwól na kod JavaScript z Apple Events. Więcej informacji: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Ulepszone sprawdzanie pisowni</translation>
 <translation id="256481480019204378">Identyfikator konta Google</translation>
+<translation id="256517381556987641">Do tej pory funkcja synchronizacji plików znalazła <ph name="ITEMS_FOUND" /> pliki(-ów) i nadal sprawdza dostępne miejsce. Spróbuj włączyć ją ponownie za kilka minut.</translation>
 <translation id="2565214867520763227">Włącz czytnik ekranu</translation>
 <translation id="2568694057933302218">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem w różnych witrynach. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. Funkcje w niektórych witrynach mogą nie działać.</translation>
 <translation id="2568774940984945469">Kontener paska informacji</translation>
@@ -4343,6 +4344,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4427365070557649936">Sprawdzam kod potwierdzenia...</translation>
 <translation id="4429163740524851942">Układ klawiatury fizycznej</translation>
 <translation id="4430019312045809116">Głośność</translation>
+<translation id="4430204941092622397">Może to spowodować utratę połączenia z siecią komórkową na kilka minut.</translation>
 <translation id="443031431654216610">Używaj tylko cyfr</translation>
 <translation id="4430369329743628066">Dodano zakładkę</translation>
 <translation id="4430422687972614133">Włącz kartę wirtualną</translation>
@@ -4554,6 +4556,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4610162781778310380">We wtyczce <ph name="PLUGIN_NAME" /> wystąpił błąd</translation>
 <translation id="4610637590575890427">Czy chodziło o przejście do witryny <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Dostępne jest połączenie transmisji danych</translation>
+<translation id="4611759022973144129">Możesz użyć tego hasła, aby zalogować się na urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4612841084470706111">Przyznaj dostęp do wszystkich żądanych witryn.</translation>
 <translation id="4613144866899789710">Anulowanie instalacji Linuksa...</translation>
 <translation id="4613271546271159013">Rozszerzenie zmieniło stronę pokazywaną po otwarciu nowej karty.</translation>
@@ -5052,6 +5055,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5027550639139316293">Certyfikat poczty e-mail</translation>
 <translation id="5027562294707732951">Dodaj rozszerzenie</translation>
 <translation id="5028445315206872221">Rozszerzenia są zablokowane w tej witrynie</translation>
+<translation id="5029287942302939687">Hasło jest ustawione</translation>
 <translation id="5029873138381728058">Nie udało się sprawdzić maszyn wirtualnych</translation>
 <translation id="503155457707535043">Pobieram aplikacje</translation>
 <translation id="5032430150487044192">Nie udało się utworzyć kodu QR</translation>
@@ -5080,6 +5084,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5054374119096692193">Zobacz wszystkie opcje kart w sekcji <ph name="BEGIN_LINK" />dostosowania Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Łączę się z kontenerem</translation>
 <translation id="5057110919553308744">Gdy klikniesz rozszerzenie</translation>
+<translation id="5057127674016624293">Skanowanie trwa dłużej niż zwykle</translation>
 <translation id="5059241099014281248">Ograniczanie logowania się</translation>
 <translation id="5059429103770496207">Styl wyświetlania</translation>
 <translation id="5059526285558225588">Wybierz, co chcesz udostępnić</translation>
@@ -5969,6 +5974,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5797521893972859201">Usuwa historię, również z pola wyszukiwania</translation>
 <translation id="5797934230382081317">Dowiedz się, jak zacząć korzystać z tej usługi na &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Androidzie&lt;/a&gt; i &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Strony mogą instalować moduły do obsługi płatności</translation>
+<translation id="5798086737841799234">Wpisz kod potwierdzenia</translation>
 <translation id="579915268381781820">Klucz bezpieczeństwa został odłączony.</translation>
 <translation id="5799478978078236781">Otrzymuj wskazówki na temat urządzeń <ph name="DEVICE_TYPE" /> oraz najnowsze wiadomości i oferty. Dziel się swoją opinią.</translation>
 <translation id="5799508265798272974">Linuksowa maszyna wirtualna: <ph name="LINUX_VM_NAME" /></translation>
@@ -6108,7 +6114,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5901089233978050985">Przełącz na przechwytywanie karty</translation>
 <translation id="5901494423252125310">Otwarte drzwiczki drukarki</translation>
 <translation id="5901630391730855834">Żółty</translation>
-<translation id="5902211418335330937">Jeśli witryna nie działa zgodnie z oczekiwaniami, możesz włączyć dla niej pliki cookie innych firm, wybierając opcję ich blokowania na pasku wyszukiwania i adresu.</translation>
 <translation id="5904614460720589786">Z powodu błędu konfiguracji nie udało się skonfigurować <ph name="APP_NAME" />. Skontaktuj się z administratorem. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Już prawie gotowe. Uruchom ponownie urządzenie, by zakończyć aktualizację.</translation>
 <translation id="5906732635754427568">Dane powiązane z tą aplikacją zostaną usunięte z urządzenia.</translation>
@@ -6874,7 +6879,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6532663472409656417">Zarejestrowane w firmie</translation>
 <translation id="6533315466883598769">Używaj Tłumacza Google</translation>
 <translation id="65334502113648172">Naciskając klawisze strzałek, możesz zmniejszyć lub powiększyć obszar wyświetlania. Aby poruszać się po obszarze wyświetlania, naciśnij Shift i +, a następnie użyj klawiszy strzałek.</translation>
-<translation id="6533636340637966565">Włączam…</translation>
 <translation id="6535331821390304775">Zawsze zezwalaj stronie <ph name="ORIGIN" /> na otwieranie linków tego typu w powiązanej aplikacji</translation>
 <translation id="653659894138286600">Skanowanie dokumentów i zdjęć</translation>
 <translation id="6537613839935722475">Nazwa może zawierać litery, cyfry i łączniki (-)</translation>
@@ -7229,6 +7233,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6815376457351236663">Otwórz mimo to</translation>
 <translation id="6815787852028615386">Ten plik ma związek z oszustwem i może wprowadzić nieoczekiwane zmiany na urządzeniu</translation>
 <translation id="6816097980753839617">Niebiesko-żółty (tritanomalia)</translation>
+<translation id="6816443526270499804">Szukam dostępnych profili eSIM</translation>
 <translation id="6818198425579322765">Język strony do przetłumaczenia</translation>
 <translation id="6818547713623251698">Wyświetlaj zdjęcia, pliki multimedialne, powiadomienia i aplikacje z telefonu</translation>
 <translation id="6818802132960437751">Wbudowana ochrona antywirusowa</translation>
@@ -8036,6 +8041,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7475742997309661417">ChromeVox, czytnik ekranu w ChromeOS, służy przede wszystkim osobom niewidomym i niedowidzącym do czytania tekstu na ekranie za pomocą syntezatora mowy lub monitora brajlowskiego. Aby go włączyć, naciśnij i przytrzymaj przez 5 sekund oba przyciski głośności. Gdy ChromeVox zostanie aktywowany, włączy się krótka prezentacja.</translation>
 <translation id="7476454130948140105">Poziom naładowania baterii (<ph name="BATTERY_PERCENT" />%) jest za niski, by zainstalować aktualizację</translation>
 <translation id="7476989672001283112">Automatycznie zablokowano uprawnienia: <ph name="PERMISSION" /> i jeszcze <ph name="COUNT" /></translation>
+<translation id="7477460499687558352">Wybierz profil eSIM do pobrania</translation>
 <translation id="7477599578899108080">Duże wykorzystanie pamięci: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Utwórz kod QR powiązany z tą stroną</translation>
 <translation id="7477793887173910789">Steruj filmami, muzyką i innymi multimediami</translation>
@@ -9110,6 +9116,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8314835274931377415">Rozpocząć konfigurowanie funkcji Switch Access?</translation>
 <translation id="8315018673856831477">Opcje Oszczędzania pamięci</translation>
 <translation id="8315044115695361734">Z pęku kluczy iCloud</translation>
+<translation id="8315514906653279104">Włączam…</translation>
 <translation id="8317671367883557781">Dodaj połączenie sieciowe</translation>
 <translation id="8317965619823678157">skopiować hasła</translation>
 <translation id="8318266828739827371">Aby zobaczyć powiększony obszar ekranu, użyj widoku podzielonego ekranu. Aby włączyć lub wyłączyć lupę zadokowaną, użyj klawisza wyszukiwania + Ctrl + D.</translation>

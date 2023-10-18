@@ -310,7 +310,6 @@
 <translation id="2276987123919776440">15 мин</translation>
 <translation id="2277103315734023688">Алға</translation>
 <translation id="2282073721614284166">Сілтемені қойындыда ашу</translation>
-<translation id="2284237890386182187">Қосулы, ешбір құрылғы қосылмаған</translation>
 <translation id="2292698582925480719">Дисплей масштабы</translation>
 <translation id="229397294990920565">Мобильдік интернет өшірілуде...</translation>
 <translation id="2295777434187870477">Микрофон қосулы. Егер түймені бассаңыз, кіріс дыбыс өшеді.</translation>
@@ -617,7 +616,6 @@
 <translation id="3563775809269155755">Хотспотты қосу</translation>
 <translation id="3566240529365775567">Жаңа ғана ашылды.</translation>
 <translation id="3571734092741541777">Орнату</translation>
-<translation id="3572988532398145777">Панель ашық кезде, хабарландыруды жая алмайсыз. Алдымен төмендегі панельді жабыңыз.</translation>
 <translation id="3573179567135747900">Қайта "<ph name="FROM_LOCALE" />" етіп өзгерту (қайта іске қосуды қажет етеді)</translation>
 <translation id="3576141592585647168">Уақыт белдеуін өзгерту</translation>
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
@@ -700,7 +698,6 @@
 <translation id="385300504083504382">Басына өту</translation>
 <translation id="3859364108019690">Қолданбаларды трансляциялау мүмкін емес</translation>
 <translation id="3861651314799684201">Толық экранды жазу үшін "Enter" пернесін басыңыз</translation>
-<translation id="3865912916886104060">Ешқандай құрылғы жалғанбады. Хотспотты пайдалану үшін Wi-Fi өшіріледі.</translation>
 <translation id="3886872229787704059">Бүгін ашылды.</translation>
 <translation id="3891340733213178823">Шығу үшін Ctrl+Shift+Q тіркесімін екі рет басыңыз.</translation>
 <translation id="3893630138897523026">ChromeVox (дауыстық көмек)</translation>
@@ -785,7 +782,6 @@
 <translation id="4197790712631116042">Өшірулі</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> қолжетімді емес.</translation>
 <translation id="4201051445878709314">Алдыңғы айды көрсету</translation>
-<translation id="4202362334312791952">1 құрылғы жалғанды. Хотспотты пайдалану үшін Wi-Fi өшіріледі.</translation>
 <translation id="4209973997261364186">Wi-Fi қосылды.</translation>
 <translation id="4212472694152630271">PIN кодына ауысу</translation>
 <translation id="4215497585250573029">VPN параметрлері</translation>
@@ -1092,7 +1088,6 @@
 <translation id="5426063383988017631">Параметрлер мәзірі жабық</translation>
 <translation id="5428899915242071344">Таңдай бастау</translation>
 <translation id="5429993543155113935">Инкогнито терезелеріне қазір қолдау көрсетілмейді.</translation>
-<translation id="5430931332414098647">Жылдам тетеринг</translation>
 <translation id="5431318178759467895">Түс</translation>
 <translation id="5433020815079095860">Аудио кіріс</translation>
 <translation id="544691375626129091">Барлық қолжетімді пайдаланушылар әлдеқашан осы сеансқа қосылған.</translation>
@@ -1121,6 +1116,7 @@
 <translation id="554893713779400387">Дауыстап оқуды қосу/өшіру</translation>
 <translation id="5551456515017410630">Күнтізбені ашу/жабу</translation>
 <translation id="5551974246223970793">Беттегі іздеу сұрауына сай келетін келесі нәтижеге өту</translation>
+<translation id="5555639311269196631">Хотспотты өшіру</translation>
 <translation id="5558091555391176027">Nearby Share функциясының маңайдағыларға көріну режимін ауыстыру</translation>
 <translation id="556042886152191864">Түйме</translation>
 <translation id="5570122939431135380">Жаңа қойындыны жаңа инкогнито терезесінде ашу</translation>
@@ -1166,7 +1162,6 @@
 <translation id="5707775774148071965">Құрылғының деректерді өткізу жылдамдығы кабельге қарағанда жоғары. Құрылғының өнімділігі шектелуі мүмкін.</translation>
 <translation id="5710450975648804523">Мазаламау режимі қосулы</translation>
 <translation id="571295407079589142">Мобильдік интернет өшірілді.</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> құрылғы жалғанды. Хотспотты пайдалану үшін Wi-Fi өшіріледі.</translation>
 <translation id="5727460725221669831">Құпия сөзіңізді ұмытып қалсаңыз немесе Google аккаунты құпия сөзін жақында өзгертсеңіз, осы пайдаланушыны қалпына келтіріп көріңіз.</translation>
 <translation id="573413375004481890">Бұл құрылғы барлық дисплейлерді бірдей қолдамайтындықтан, бір дисплей ажыратылды.</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
@@ -1216,7 +1211,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="5920710855273935292">Микрофон дыбысы өшірулі.</translation>
-<translation id="5924855612669061715">Хотспот қосулы</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> қосулы.</translation>
 <translation id="5947494881799873997">Қайтару</translation>
 <translation id="595202126637698455">Өнімділікті бақылау қосылған</translation>
@@ -1232,6 +1226,7 @@
 <translation id="598407983968395253">Үлгіні қолдану</translation>
 <translation id="598882571027504733">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын қайта қосыңыз.</translation>
 <translation id="6000279412553873020">Пернелер, түймелер және т.б.</translation>
+<translation id="6002122790816966947">Құрылғыларыңыз</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /> бет</translation>
 <translation id="601304062528754300">Сөредегі келесі элементті ерекшелеу</translation>
 <translation id="6015573907265691211">Орындалған деп белгілеу</translation>
@@ -1521,6 +1516,7 @@
 <translation id="7188494361780961876">Мәзір экранның жоғарғы сол жақ бұрышына жылжытылды.</translation>
 <translation id="7189412385142492784">Шолпан қаншалықты алыс орналасқан?</translation>
 <translation id="7198435252016571249">Камера төменгі оң жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>
+<translation id="7219573373513695352">Ешқандай құрылғы қосылмаған.</translation>
 <translation id="7229029500464092426">Қолжетімді жад: <ph name="AVAILABLE_MEMORY" /> | Жалпы жад: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Жаңартылған нұсқаны қолдану үшін бұл Chromebook-ті қайта қосу қажет. Оған 1 минуттай кетуі мүмкін.</translation>
 <translation id="7256634071279256947">Артқы микрофон</translation>

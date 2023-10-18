@@ -55,6 +55,7 @@
 <translation id="2086476982681781442">這是詐騙檔案，可能會對裝置造成非預期的變更，因此 Chromium 已禁止下載</translation>
 <translation id="2088953378266246249">瞭解 Chromium 如何管理根憑證</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{貴機構會在 Chromium 閒置 1 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}other{貴機構會在 Chromium 閒置 # 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}}</translation>
+<translation id="2126108037660393668">下載的檔案驗證失敗。</translation>
 <translation id="215352261310130060">這個網站沒有使用安全連線，檔案可能已經遭人竄改，因此 Chromium 已禁止下載</translation>
 <translation id="2174178932569897599">自訂 Chromium</translation>
 <translation id="2174917724755363426">安裝作業尚未完成，確定要取消安裝嗎？</translation>
@@ -79,6 +80,7 @@
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2583187216237139145">凡是在使用這個資料夾期間產生的 Chromium 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，工作資料夾管理員皆可予以移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">繼續使用 Chromium</translation>
+<translation id="259935314519650377">無法快取下載的安裝程式，錯誤碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請重新下載 Chromium。</translation>
 <translation id="2661879430930417727">如果你與親朋好友共用裝置，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />，歡迎使用 Chromium</translation>
@@ -297,6 +299,7 @@
 <translation id="6676384891291319759">連線到網際網路</translation>
 <translation id="668175097507315160">登入時發生錯誤，因此 Chromium OS 無法同步處理你的資料。</translation>
 <translation id="6709350901466051922">Chromium 需要麥克風權限，才能執行這個網站要求的功能</translation>
+<translation id="6712881677154121168">下載錯誤：<ph name="DOWNLOAD_ERROR" />。</translation>
 <translation id="6717134281241384636">由於你的設定檔是來自較新版本的 Chromium，所以系統無法使用該檔案。
 
 這表示你可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Chromium。</translation>
@@ -319,6 +322,7 @@
 <translation id="6981396265751285733">這項設定開啟時，Chromium 會釋出閒置分頁占用的記憶體，為使用中的分頁和其他應用程式提供更多電腦資源，保持 Chromium 快速運作。當你切回閒置分頁時，這些分頁會自動恢復為「使用中」狀態。</translation>
 <translation id="6985329841647292029">Chromium OS 條款</translation>
 <translation id="6990124437352146030">Chromium 需要相關權限，才能讓這個網站使用你的麥克風</translation>
+<translation id="7024536598735240744">解壓縮錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安裝。</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
 <translation id="7067091210845072982">如果圖片缺少有用的說明，Chromium 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。</translation>
@@ -394,6 +398,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
 <translation id="8522801943730206384">Chromium 可以檢查你儲存的密碼</translation>
 <translation id="8550334526674375523">這個工作資料夾與個人資料夾各自獨立。</translation>
+<translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8568283329061645092">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Google 如何使用這些資料：<ph name="END_BOLD" />網站可以將你的興趣喜好相關資訊儲存在 Chromium 中。舉例來說，如果你造訪某個網站想購買適合馬拉松活動的慢跑鞋，網站可能會判斷你的興趣是跑馬拉松。在此之後，如果你造訪另一個網站報名參加比賽，該網站就可以根據你的興趣喜好向你顯示慢跑鞋的廣告。</translation>
