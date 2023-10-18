@@ -2915,6 +2915,12 @@ BASE_FEATURE(kPeripheralCustomization,
              "PeripheralCustomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable peripheral notification to notify users when a input device is
+// connected to the user's chromebook for the first time.
+BASE_FEATURE(kPeripheralNotification,
+             "PeripheralNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables whether to store UMA logs per-user and whether metrics
 // consent is per-user.
 BASE_FEATURE(kPerUserMetrics,
@@ -3867,6 +3873,11 @@ bool IsPcieBillboardNotificationEnabled() {
 
 bool IsPerDeskShelfEnabled() {
   return base::FeatureList::IsEnabled(kPerDeskShelf);
+}
+
+bool IsPeripheralNotificationEnabled() {
+  return base::FeatureList::IsEnabled(kPeripheralNotification) &&
+         IsPeripheralCustomizationEnabled();
 }
 
 bool IsPersonalizationJellyEnabled() {
