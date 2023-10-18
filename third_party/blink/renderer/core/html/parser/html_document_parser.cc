@@ -773,17 +773,13 @@ bool HTMLDocumentParser::PumpTokenizer() {
   if (is_stopped_or_parsing_fragment)
     return false;
 
-  if (IsPaused()) {
-    DCHECK_EQ(tokenizer_.GetState(), HTMLTokenizer::kDataState);
-
-    if (preloader_ && !background_scanner_) {
-      if (!preload_scanner_) {
-        preload_scanner_ = CreatePreloadScanner(
-            TokenPreloadScanner::ScannerType::kMainDocument);
-        preload_scanner_->AppendToEnd(input_.Current());
-      }
-      ScanAndPreload(preload_scanner_.get());
+  if (IsPaused() && preloader_ && !background_scanner_) {
+    if (!preload_scanner_) {
+      preload_scanner_ =
+          CreatePreloadScanner(TokenPreloadScanner::ScannerType::kMainDocument);
+      preload_scanner_->AppendToEnd(input_.Current());
     }
+    ScanAndPreload(preload_scanner_.get());
   }
 
   // should_run_until_completion implies that we should not yield
