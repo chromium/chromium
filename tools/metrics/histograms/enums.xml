@@ -56078,6 +56078,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="4" label="Fake Omnibox tap"/>
   <int value="5" label="Set Up List"/>
   <int value="6" label="Omnibox navigation"/>
+  <int value="7" label="Safety Check tile"/>
+  <int value="8" label="Parcel Tracking tile"/>
 </enum>
 
 <enum name="IOSInspectConsoleAction">

@@ -491,3 +491,14 @@ TEST_F(ContentSuggestionsMediatorTest, TestOnServiceStatusChanged) {
                                                SetUpListItemType::kSignInSync);
   EXPECT_EQ(item_state, SetUpListItemState::kCompleteInList);
 }
+
+// Tests that the -loadParcelTrackingPage ContentSuggestionsCommands
+// implementation logs the correct metric and loads the passed URL.
+TEST_F(ContentSuggestionsMediatorTest, TestParcelTracking) {
+  GURL parcelTrackingURL = GURL("http://chromium.org");
+  [mediator_ loadParcelTrackingPage:parcelTrackingURL];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.MagicStack.Module.Click",
+      ContentSuggestionsModuleType::kParcelTracking, 1);
+  EXPECT_EQ(parcelTrackingURL, url_loader_->last_params.web_params.url);
+}

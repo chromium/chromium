@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COMMANDS_H_
 
 @class CollectionViewItem;
+class GURL;
 @class QuerySuggestionConfig;
 
 // Commands protocol allowing the ContentSuggestions ViewControllers to interact
@@ -21,6 +22,9 @@
 
 // Opens the displayed tab resumption item.
 - (void)openTabResumptionItem;
+
+// Handles a user tap load the `parcelTrackingURL`.
+- (void)loadParcelTrackingPage:(GURL)parcelTrackingURL;
 
 @end
 

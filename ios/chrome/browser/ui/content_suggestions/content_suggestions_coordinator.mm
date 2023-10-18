@@ -536,6 +536,7 @@
 - (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type {
   CHECK(IsSafetyCheckMagicStackEnabled());
 
+  [self.NTPMetricsDelegate safetyCheckOpened];
   [self.contentSuggestionsMetricsRecorder
       recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
                                                   kSafetyCheck];

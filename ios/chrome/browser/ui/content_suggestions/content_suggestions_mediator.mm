@@ -708,6 +708,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [self hideTabResumption];
 }
 
+- (void)loadParcelTrackingPage:(GURL)parcelTrackingURL {
+  [self.NTPMetricsDelegate parcelTrackingOpened];
+  [self.contentSuggestionsMetricsRecorder
+      recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
+                                                  kParcelTracking];
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)
+      ->Load(UrlLoadParams::InCurrentTab(parcelTrackingURL));
+}
+
 #pragma mark - ContentSuggestionsGestureCommands
 
 - (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
