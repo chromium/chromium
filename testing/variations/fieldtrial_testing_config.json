@@ -6715,6 +6715,28 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_20231018_Dogfood",
+                    "params": {
+                        "pwa-companion-app-id": "ckdjfcfapbgminighllemapmpdlpihia",
+                        "pwa-companion-install-uri": "https://mypixelbuds.google.com/",
+                        "pwa-companion-play-store-uri": "https://play.google.com/store/apps/details?id=com.google.android.apps.wearables.maestro.companion"
+                    },
+                    "enable_features": [
+                        "FastPairPwaCompanion"
+                    ]
+                },
+                {
+                    "name": "Enabled_20231018",
+                    "params": {
+                        "pwa-companion-app-id": "ckdjfcfapbgminighllemapmpdlpihia",
+                        "pwa-companion-install-uri": "https://mypixelbuds.google.com/",
+                        "pwa-companion-play-store-uri": "https://play.google.com/store/apps/details?id=com.google.android.apps.wearables.maestro.companion"
+                    },
+                    "enable_features": [
+                        "FastPairPwaCompanion"
+                    ]
+                },
+                {
                     "name": "EnabledWithStagingLinks_Dogfood",
                     "params": {
                         "pwa-companion-app-id": "kncedjianpafagdchkiinagaaokkhpaa",
