@@ -109,11 +109,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1362182
   "feedback.AttachFile",
 
-  # b/271636906
-  "crostini.SecureCopyPaste.copy_wayland_bullseye_stable",
-  "crostini.SecureCopyPaste.copy_x11_bullseye_stable",
-  "crostini.SecureCopyPaste.paste_wayland_bullseye_stable",
-
   # https://crbug.com/1368859
   "arc.Drivefs",
   "arc.Drivefs.vm",
