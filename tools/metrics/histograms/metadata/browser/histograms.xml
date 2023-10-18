@@ -153,6 +153,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.ConfigFileSignatureVerificationError"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-06-01">
+  <owner>albertojuarez@google.com</owner>
+  <owner>src/components/reporting/OWNERS</owner>
+  <summary>
+    Recorded when ConfigurationFileController encounters an error while trying
+    to verify the signature and the signed message received from the reporting
+    server.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.EventEnqueueResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2024-03-24">
   <owner>lbaraz@chromium.org</owner>
