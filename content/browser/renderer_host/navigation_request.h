@@ -2356,6 +2356,10 @@ class CONTENT_EXPORT NavigationRequest
   // only valid in conjunction with it.
   const int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
 
+  // The initiator Document's token, if it is present when this
+  // NavigationRequest was created.
+  absl::optional<blink::DocumentToken> initiator_document_token_;
+
   // The sandbox flags of the navigation's initiator, if any.
   // WebSandboxFlags::kNone otherwise.
   const network::mojom::WebSandboxFlags sandbox_flags_initiator_;
@@ -2520,10 +2524,6 @@ class CONTENT_EXPORT NavigationRequest
   // Messages to be printed on the console in the target RenderFrameHost of this
   // NavigationRequest.
   std::vector<ConsoleMessage> console_messages_;
-
-  // The initiator Document's token, if it is present when this
-  // NavigationRequest was created.
-  absl::optional<blink::DocumentToken> initiator_document_token_;
 
   // Indicates that this navigation is for PDF content in a renderer.
   bool is_pdf_ = false;
