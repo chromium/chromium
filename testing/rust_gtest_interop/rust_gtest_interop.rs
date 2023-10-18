@@ -114,14 +114,6 @@ pub mod __private {
         let null_term_message = std::ffi::CString::new(message).unwrap();
 
         extern "C" {
-            #[cfg_attr(
-                windows,
-                link_name = "?rust_gtest_add_failure_at@rust_gtest_interop@@YAXPEBDH0@Z"
-            )]
-            #[cfg_attr(
-                not(windows),
-                link_name = "_ZN18rust_gtest_interop25rust_gtest_add_failure_atEPKciS1_"
-            )]
             fn rust_gtest_add_failure_at(
                 file: *const std::ffi::c_char,
                 line: i32,
@@ -183,14 +175,6 @@ pub mod __private {
     }
 
     extern "C" {
-        #[cfg_attr(
-            windows,
-            link_name = "?rust_gtest_default_factory@rust_gtest_interop@@YAPEAVTest@testing@@P6AXPEAV23@@Z@Z"
-        )]
-        #[cfg_attr(
-            not(windows),
-            link_name = "_ZN18rust_gtest_interop26rust_gtest_default_factoryEPFvPN7testing4TestEE"
-        )]
         /// extern for C++'s rust_gtest_default_factory().
         /// TODO(danakj): We do this by hand because cxx doesn't support passing
         /// raw function pointers: https://github.com/dtolnay/cxx/issues/1011.
@@ -200,14 +184,6 @@ pub mod __private {
     }
 
     extern "C" {
-        #[cfg_attr(
-            windows,
-            link_name = "?rust_gtest_add_test@rust_gtest_interop@@YAXP6APEAVTest@testing@@P6AXPEAV23@@Z@Z1PEBD33H@Z"
-        )]
-        #[cfg_attr(
-            not(windows),
-            link_name = "_ZN18rust_gtest_interop19rust_gtest_add_testEPFPN7testing4TestEPFvS2_EES4_PKcS8_S8_i"
-        )]
         /// extern for C++'s rust_gtest_add_test().
         ///
         /// Note that the `factory` parameter is actually a C++ function
