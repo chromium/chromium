@@ -2452,7 +2452,7 @@
     },
     {
       name: "MediaStreamTrackGetFrameStats",
-      status: "test",
+      status: "stable",
       base_feature: "none",
     },
     {
