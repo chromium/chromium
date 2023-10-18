@@ -9,7 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/extension_file_task_runner.h"
 
@@ -48,12 +48,9 @@ void FileReader::ReadFilesOnFileSequence() {
       // If `file_data` is non-empty, then the file length exceeded
       // `max_resources_length_`. Otherwise, another error was encountered when
       // attempting to read the file.
-      const char* const format_string =
-          file_data->empty()
-              ? "Could not load file: '%s'."
-              : "Could not load file: '%s'. Resource size exceeded.";
-      error = base::StringPrintf(
-          format_string, resource.relative_path().AsUTF8Unsafe().c_str());
+      error = base::StrCat(
+          {"Could not load file: '", resource.relative_path().AsUTF8Unsafe(),
+           "'.", file_data->empty() ? "" : " Resource size exceeded."});
 
       // Clear `data` to avoid passing a partial result.
       data.clear();
