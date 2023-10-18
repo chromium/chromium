@@ -22,6 +22,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/format_macros.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -1908,7 +1909,8 @@ void RunOfflineInstall(UpdaterScope scope,
       "      <manifest version=\"%s\">\n"
       "        <packages>\n"
       "          <package hash_sha256=\"sha256hash_foobar\"\n"
-      "            name=\"%s\" required=\"true\" size=\"%lld\"/>\n"
+      "            name=\"%s\" required=\"true\" size=\"%" PRId64
+      "\"/>\n"
       "        </packages>\n"
       "        <actions>\n"
       "          <action event=\"install\"\n"
@@ -1938,7 +1940,8 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
       "      <manifest version=\"%s\">\n"
       "        <packages>\n"
       "          <package hash_sha256=\"sha256hash_foobar\"\n"
-      "            name=\"%s\" required=\"true\" size=\"%lld\"/>\n"
+      "            name=\"%s\" required=\"true\" size=\"%" PRId64
+      "\"/>\n"
       "        </packages>\n"
       "        <actions>\n"
       "          <action event=\"install\"\n"

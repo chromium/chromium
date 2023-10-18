@@ -278,7 +278,7 @@ std::string GetPolicyOpcode(const PolicyOpcode* opcode, bool continuation) {
       if (args[3] & CASE_INSENSITIVE)
         condition += "_i";
       condition +=
-          base::StringPrintf("(p[%d], '%S')", param, match_string.c_str());
+          base::StringPrintf("(p[%d], '%ls')", param, match_string.c_str());
     } break;
     case OP_ACTION:
       opcode->GetArgument(0, &args[0]);
