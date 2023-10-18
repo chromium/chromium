@@ -113,6 +113,7 @@ public class TileView extends FrameLayout {
     }
 
     /** Retrieves the radius used to round the image content. */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     int getRoundingRadiusForTesting() {
         return mRoundingOutline.getRadiusForTesting();
     }
