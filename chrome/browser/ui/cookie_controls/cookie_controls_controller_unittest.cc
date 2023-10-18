@@ -109,7 +109,10 @@ class CookieControlsTest : public ChromeRenderViewHostTestHarness {
  public:
   CookieControlsTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kUserBypassUI);
+  }
 
  protected:
   void SetUp() override {
@@ -166,6 +169,7 @@ class CookieControlsTest : public ChromeRenderViewHostTestHarness {
 
  private:
   MockOldCookieControlsObserver mock_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content_settings::CookieControlsController> cookie_controls_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 };

@@ -41,6 +41,7 @@
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/page_info/core/features.h"
@@ -1135,7 +1136,8 @@ class PageInfoBubbleViewCookiesSubpageTest : public PageInfoBubbleViewTest {
  public:
   PageInfoBubbleViewCookiesSubpageTest() {
     feature_list.InitWithFeatures(
-        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
+        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+        {content_settings::features::kUserBypassUI});
   }
 
   void SetUp() override {
