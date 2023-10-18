@@ -4,6 +4,12 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 
+#import "components/favicon/core/favicon_service.h"
+#import "components/favicon/core/favicon_url.h"
+#import "components/favicon/ios/web_favicon_driver.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "ios/chrome/browser/favicon/favicon_service_factory.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -11,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -60,7 +67,15 @@
 class TabStripMediatorTest : public PlatformTest {
  public:
   TabStripMediatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    TestChromeBrowserState::Builder browser_state_builder;
+    browser_state_builder.AddTestingFactory(
+        ios::FaviconServiceFactory::GetInstance(),
+        ios::FaviconServiceFactory::GetDefaultFactory());
+    browser_state_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
+
+    browser_state_ = browser_state_builder.Build();
     browser_ = std::make_unique<TestBrowser>(
         browser_state_.get(), std::make_unique<FakeWebStateListDelegate>());
     web_state_list_ = browser_->GetWebStateList();
@@ -78,6 +93,12 @@ class TabStripMediatorTest : public PlatformTest {
 
   void AddWebState() {
     auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetBrowserState(browser_state_.get());
+    favicon::WebFaviconDriver::CreateForWebState(
+        web_state.get(),
+        ios::FaviconServiceFactory::GetForBrowserState(
+            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+
     web_state_list_->InsertWebState(0, std::move(web_state),
                                     WebStateList::INSERT_ACTIVATE,
                                     WebStateOpener());
@@ -202,6 +223,18 @@ TEST_F(TabStripMediatorTest, WebStateChange) {
   // Check loading state update.
   static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(1))
       ->SetLoading(false);
+  EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
+            consumer_.reloadedItem.identifier);
+
+  consumer_.reloadedItem = nil;
+
+  // Check favicon update.
+  favicon::WebFaviconDriver* driver = favicon::WebFaviconDriver::FromWebState(
+      web_state_list_->GetWebStateAt(1));
+  driver->OnFaviconUpdated(GURL(),
+                           favicon::FaviconDriverObserver::TOUCH_LARGEST,
+                           GURL(), false, gfx::Image());
+
   EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
             consumer_.reloadedItem.identifier);
 }
