@@ -208,11 +208,6 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   void PostTaskToIOThread(base::OnceClosure task);
 
   // IPC handlers.
-  void OnResponseWorker(int worker_thread_id,
-                        int request_id,
-                        bool succeeded,
-                        ExtensionMsg_ResponseWorkerData response,
-                        const std::string& error);
   void OnValidateMessagePort(int worker_thread_id, const PortId& id);
   void OnDispatchOnConnect(int worker_thread_id,
                            const ExtensionMsg_OnConnectData& connect_data);
@@ -226,6 +221,8 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   void DispatchEventHelper(mojom::DispatchEventParamsPtr params,
                            base::Value::List event_args);
+
+  void PostTaskToMainThread(base::OnceClosure task);
 #endif
 
   // IPC sender. Belongs to the render thread, but thread safe.
@@ -236,6 +233,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   base::Lock task_runner_map_lock_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
   mojo::AssociatedRemote<mojom::ServiceWorkerHost> service_worker_host_;
   mojo::AssociatedRemote<mojom::RendererAutomationRegistry>

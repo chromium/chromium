@@ -15,6 +15,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/service_worker_host.mojom.h"
 #include "ipc/ipc_sender.h"
 
 namespace content {
@@ -82,8 +83,10 @@ class ExtensionFunctionDispatcher {
   // Message handlers.
   // Dispatches a request for service woker and the response is sent to the
   // corresponding render process in an ExtensionMsg_ResponseWorker message.
-  void DispatchForServiceWorker(mojom::RequestParamsPtr params,
-                                int render_process_id);
+  void DispatchForServiceWorker(
+      mojom::RequestParamsPtr params,
+      int render_process_id,
+      mojom::ServiceWorkerHost::RequestWorkerCallback callback);
 
   // Called when an ExtensionFunction is done executing, after it has sent
   // a response (if any) to the extension.
@@ -114,13 +117,6 @@ class ExtensionFunctionDispatcher {
   }
 
  private:
-  // Same as ResponseCallbackWrapper above, but applies to an extension
-  // function from an extension Service Worker.
-  class WorkerResponseCallbackWrapper;
-
-  // Key used to store WorkerResponseCallbackWrapper in the map
-  // |response_callback_wrappers_for_worker_|.
-  struct WorkerResponseCallbackMapKey;
 
   // Helper to create an ExtensionFunction to handle the function given by
   // |params|. Can be called on any thread.
@@ -148,13 +144,6 @@ class ExtensionFunctionDispatcher {
       browser_context_;
 
   raw_ptr<Delegate, AcrossTasksDanglingUntriaged> delegate_;
-
-  using WorkerResponseCallbackWrapperMap =
-      std::map<WorkerResponseCallbackMapKey,
-               std::unique_ptr<WorkerResponseCallbackWrapper>>;
-  // TODO(lazyboy): The map entries are cleared upon RenderProcessHost shutown,
-  // we should really be clearing it on service worker shutdown.
-  WorkerResponseCallbackWrapperMap response_callback_wrappers_for_worker_;
 
   // The set of ExtensionFunction instances waiting for responses from
   // the renderer. These are removed once the response is processed.

@@ -72,7 +72,8 @@ class ServiceWorkerHost : public base::SupportsUserData::Data,
       const GURL& service_worker_scope,
       int64_t service_worker_version_id,
       int worker_thread_id) override;
-  void RequestWorker(mojom::RequestParamsPtr params) override;
+  void RequestWorker(mojom::RequestParamsPtr params,
+                     RequestWorkerCallback callback) override;
   void WorkerResponseAck(const base::Uuid& request_uuid) override;
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)

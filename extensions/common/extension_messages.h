@@ -176,15 +176,6 @@ IPC_STRUCT_TRAITS_BEGIN(extensions::PortId)
   IPC_STRUCT_TRAITS_MEMBER(serialization_format)
 IPC_STRUCT_TRAITS_END()
 
-// Struct to work around the maximum number of parameters in the
-// ExtensionMsg_ResponseWorker message.
-IPC_STRUCT_BEGIN(ExtensionMsg_ResponseWorkerData)
-  // Response wrapper, the response data (if any) is the first element in this
-  // list.
-  IPC_STRUCT_MEMBER(base::Value::List, results)
-  IPC_STRUCT_MEMBER(extensions::mojom::ExtraResponseDataPtr, extra_data)
-IPC_STRUCT_END()
-
 IPC_STRUCT_BEGIN(ExtensionMsg_OnConnectData)
   IPC_STRUCT_MEMBER(extensions::PortId, target_port_id)
   IPC_STRUCT_MEMBER(extensions::mojom::ChannelType, channel_type)
@@ -300,15 +291,6 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WakeEventPage,
 // Messages related to Extension Service Worker.
 #undef IPC_MESSAGE_START
 #define IPC_MESSAGE_START ExtensionWorkerMsgStart
-
-// The browser sends this message in response to all service worker extension
-// api calls.
-IPC_MESSAGE_CONTROL5(ExtensionMsg_ResponseWorker,
-                     int /* thread_id */,
-                     int /* request_id */,
-                     bool /* success */,
-                     ExtensionMsg_ResponseWorkerData /* response */,
-                     std::string /* error */)
 
 // Tells the browser that an event with |event_id| was successfully dispatched
 // to the worker with version |service_worker_version_id|.

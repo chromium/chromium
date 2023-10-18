@@ -351,9 +351,21 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
     dispatcher_->RequestWorker(std::move(params));
 #else
+    const int request_id = params->request_id;
     WorkerThreadDispatcher::GetServiceWorkerData()
         ->GetServiceWorkerHost()
-        ->RequestWorker(std::move(params));
+        ->RequestWorker(std::move(params),
+                        base::BindOnce(
+                            [](int request_id, bool success,
+                               base::Value::List args, const std::string& error,
+                               mojom::ExtraResponseDataPtr extra_data) {
+                              WorkerThreadDispatcher::GetServiceWorkerData()
+                                  ->bindings_system()
+                                  ->HandleResponse(request_id, success,
+                                                   std::move(args), error,
+                                                   std::move(extra_data));
+                            },
+                            request_id));
 #endif
   }
 

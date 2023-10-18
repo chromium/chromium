@@ -170,14 +170,17 @@ void ServiceWorkerHost::DidStopServiceWorkerContext(
           service_worker_scope, service_worker_version_id, worker_thread_id);
 }
 
-void ServiceWorkerHost::RequestWorker(mojom::RequestParamsPtr params) {
+void ServiceWorkerHost::RequestWorker(mojom::RequestParamsPtr params,
+                                      RequestWorkerCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!GetBrowserContext()) {
+    std::move(callback).Run(ExtensionFunction::FAILED, base::Value::List(),
+                            "No browser context", nullptr);
     return;
   }
 
-  dispatcher_->DispatchForServiceWorker(std::move(params),
-                                        render_process_host_->GetID());
+  dispatcher_->DispatchForServiceWorker(
+      std::move(params), render_process_host_->GetID(), std::move(callback));
 }
 
 void ServiceWorkerHost::WorkerResponseAck(const base::Uuid& request_uuid) {
