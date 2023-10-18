@@ -652,6 +652,15 @@ class PersonalDataManager : public KeyedService,
     return auto_accept_address_imports_for_testing_;
   }
 
+  void set_test_addresses(
+      std::vector<autofill::AutofillProfile> test_addresses) {
+    test_addresses_ = test_addresses;
+  }
+
+  const std::vector<autofill::AutofillProfile>& test_addresses() const {
+    return test_addresses_;
+  }
+
  protected:
   // Only PersonalDataManagerFactory and certain tests can create instances of
   // PersonalDataManager.
@@ -971,6 +980,9 @@ class PersonalDataManager : public KeyedService,
 
   // Whether sync should be considered on in a test.
   bool is_syncing_for_test_ = false;
+
+  // Test addresses used to allow developers to test their forms.
+  std::vector<autofill::AutofillProfile> test_addresses_;
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};

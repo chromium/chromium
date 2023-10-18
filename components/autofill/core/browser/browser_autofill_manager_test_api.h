@@ -38,10 +38,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   [[nodiscard]] testing::AssertionResult FlushPendingVotes(
       base::TimeDelta timeout = base::Seconds(10));
 
-  const std::vector<autofill::AutofillProfile>& test_addresses() {
-    return manager_->test_addresses_;
-  }
-
   void SetExternalDelegate(
       std::unique_ptr<AutofillExternalDelegate> external_delegate) {
     manager_->external_delegate_ = std::move(external_delegate);
