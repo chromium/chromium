@@ -55,9 +55,6 @@ const kArcImeLanguage = '_arc_ime_language_';
 export const ACCESSIBILITY_COMMON_IME_ID =
     '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
-// How often to poll language packs for pack updates.
-const LANGUAGE_PACKS_POLLING_RATE_MS = 1000;
-
 interface ModelArgs {
   // Unused.
   supportedLanguages: chrome.languageSettingsPrivate.Language[];
@@ -234,7 +231,6 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
       Map<string, chrome.languageSettingsPrivate.InputMethod[]>;
   private enabledInputMethodSet_: Set<string>;
   private originalProspectiveUILanguage_?: string;
-  private languagePackPollIntervalId?: number = undefined;
 
   // Bound methods.
   // Instances of SettingsLanguagesElement below should be replaced with
@@ -254,6 +250,8 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
   private boundOnInputMethodChanged_:
       OmitThisParameter<SettingsLanguagesElement['onInputMethodChanged_']>|
       null = null;
+  private boundOnLanguagePackStatusChanged_: OmitThisParameter<
+      SettingsLanguagesElement['onLanguagePackStatusChanged_']>|null = null;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -331,12 +329,15 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
           this.boundOnSpellcheckDictionariesChanged_);
 
       if (loadTimeData.getBoolean('languagePacksInSettingsEnabled')) {
-        // Poll language packs now to prevent test flakiness.
+        // Poll language packs once to get the initial state of language pack
+        // statuses.
         // Do so in the next microtask to prevent `connectedCallback()` from
         // failing and stalling tests.
         Promise.resolve().then(() => this.pollLanguagePacks_());
-        this.languagePackPollIntervalId = setInterval(
-            () => this.pollLanguagePacks_(), LANGUAGE_PACKS_POLLING_RATE_MS);
+        this.boundOnLanguagePackStatusChanged_ =
+            this.onLanguagePackStatusChanged_.bind(this);
+        this.inputMethodPrivate_.onLanguagePackStatusChanged.addListener(
+            this.boundOnLanguagePackStatusChanged_);
       }
 
       this.resolver_.resolve(undefined);
@@ -373,9 +374,10 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
           .removeListener(this.boundOnSpellcheckDictionariesChanged_);
       this.boundOnSpellcheckDictionariesChanged_ = null;
     }
-
-    if (this.languagePackPollIntervalId !== undefined) {
-      clearInterval(this.languagePackPollIntervalId);
+    if (this.boundOnLanguagePackStatusChanged_) {
+      this.inputMethodPrivate_.onLanguagePackStatusChanged.removeListener(
+          this.boundOnLanguagePackStatusChanged_);
+      this.boundOnLanguagePackStatusChanged_ = null;
     }
   }
 
@@ -1315,6 +1317,17 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
     return inputMethod.displayName;
   }
 
+  private setLanguagePackStatus_(
+      id: string, status: chrome.inputMethodPrivate.LanguagePackStatus): void {
+    this.set(
+        ['languages', 'inputMethods', 'imeLanguagePackStatus', id], status);
+  }
+
+  /**
+   * Manually poll language packs for the status of enabled input methods.
+   * Required to get the initial language pack status of input methods - further
+   * updates will be done via a listener to changes.
+   */
   private pollLanguagePacks_(): void {
     if (!this.languages) {
       return;
@@ -1323,15 +1336,15 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
     for (const inputMethod of this.languages.inputMethods!.enabled) {
       void this.inputMethodPrivate_.getLanguagePackStatus(inputMethod.id)
           .then((status) => {
-            this.set(
-                [
-                  'languages',
-                  'inputMethods',
-                  'imeLanguagePackStatus',
-                  inputMethod.id,
-                ],
-                status);
+            this.setLanguagePackStatus_(inputMethod.id, status);
           });
+    }
+  }
+
+  private onLanguagePackStatusChanged_(
+      change: chrome.inputMethodPrivate.LanguagePackStatusChange): void {
+    for (const engineId of change.engineIds) {
+      this.setLanguagePackStatus_(engineId, change.status);
     }
   }
 
