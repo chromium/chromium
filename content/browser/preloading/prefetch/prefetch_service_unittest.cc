@@ -5274,6 +5274,7 @@ class PrefetchServiceAlwaysBlockUntilHeadTest
       public ::testing::WithParamInterface<blink::mojom::SpeculationEagerness> {
  public:
   const int kPrefetchTimeout = 10000;
+  const int kBlockUntilHeadTimeout = 1000;
   void InitScopedFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPrefetchUseContentRefactor,
@@ -5952,11 +5953,11 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       GURL("https://example.com"),
       {.expected_priority = ExpectedPriorityForEagerness(GetParam())});
 
-  // Navigate to the URL before the head of the prefetch response is received
+  // The first navigation is started and then gone before the head of the
+  // prefetch response is received. The given callback shouldn't be called (and
+  // the metrics shouldn't be recorded) because the navigation is gone before
+  // the request is unblocked.
   Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
-  // Request the prefetch from the PrefetchService. The given callback shouldn't
-  // be called until after the head is received.
   base::RunLoop get_prefetch_run_loop;
   PrefetchContainer::Reader serveable_reader;
   PrefetchMatchResolver* prefetch_match_resolver =
@@ -5976,14 +5977,9 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       *prefetch_match_resolver);
   EXPECT_FALSE(serveable_reader);
 
-  // Navigate to the URL again before the head of the prefetch response is
-  // received
+  // The second navigation is started before the head of the prefetch response
+  // is received.
   Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
-
-  // If the prefetch times out while PrefetchService is blocking until head,
-  // then it should unblock without setting serveable_reader.
-  task_environment()->FastForwardBy(base::Milliseconds(kPrefetchTimeout));
-
   bool second_nav_callback_called = false;
   prefetch_match_resolver = GetPrefetchMatchResolverForMostRecentNavigation();
   prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(
@@ -5998,6 +5994,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   prefetch_service_->GetPrefetchToServe(
       PrefetchContainer::Key(MainDocumentToken(), GURL("https://example.com")),
       *prefetch_match_resolver);
+  EXPECT_FALSE(second_nav_callback_called);
+
+  // The prefetch times out while PrefetchService is blocking until head.
+  // This should unblock the request after `kBlockUntilHeadTimeout` msec without
+  // setting serveable_reader.
+  task_environment()->FastForwardBy(base::Milliseconds(kPrefetchTimeout));
 
   get_prefetch_run_loop.Run();
   EXPECT_FALSE(serveable_reader);
@@ -6038,9 +6040,61 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
                             PrefetchStatus::kPrefetchFailedNetError),
                         .eagerness = GetParam()});
 
+  // This metric is recorded for the second navigation, as the PrefetchContainer
+  // was initially considered as a candidate at the time of navigation start but
+  // decided not to be used later (after `kBlockUntilHeadTimeout` msec) due to
+  // timeout.
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
   histogram_tester.ExpectUniqueTimeSample(
+      base::StringPrintf(
+          "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.%s",
+          histogram_suffix.c_str()),
+      base::Milliseconds(kBlockUntilHeadTimeout), 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(
+          "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.%s",
+          histogram_suffix.c_str()),
+      true, 1);
+
+  // The third navigation is started after the PrefetchContainer became not
+  // servable.
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+  bool third_nav_callback_called = false;
+  base::RunLoop third_get_prefetch_run_loop;
+  prefetch_match_resolver = GetPrefetchMatchResolverForMostRecentNavigation();
+  prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(
+      base::BindLambdaForTesting(
+          [&serveable_reader, &third_get_prefetch_run_loop,
+           &third_nav_callback_called](
+              PrefetchContainer::Reader prefetch_to_serve) {
+            third_nav_callback_called = true;
+            serveable_reader = std::move(prefetch_to_serve);
+            third_get_prefetch_run_loop.Quit();
+          }));
+  prefetch_service_->GetPrefetchToServe(
+      PrefetchContainer::Key(MainDocumentToken(), GURL("https://example.com")),
+      *prefetch_match_resolver);
+  third_get_prefetch_run_loop.Run();
+  EXPECT_FALSE(serveable_reader);
+  EXPECT_TRUE(third_nav_callback_called);
+
+  // The metric should not be recorded for the third navigation, because the
+  // PrefetchContainer was not servable when the third navigation starts and
+  // thus shouldn't be considered as a candidate in the first place.
+  // TODO(crbug.com/1493192) Currently the metric is recorded (the
+  // `kPrefetchTimeout` bucket).
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(
+          "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.%s",
+          histogram_suffix.c_str()),
+      2);
+  histogram_tester.ExpectTimeBucketCount(
+      base::StringPrintf(
+          "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.%s",
+          histogram_suffix.c_str()),
+      base::Milliseconds(kBlockUntilHeadTimeout), 1);
+  histogram_tester.ExpectTimeBucketCount(
       base::StringPrintf(
           "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.%s",
           histogram_suffix.c_str()),
