@@ -4,13 +4,18 @@
 
 #include "chrome/browser/ash/login/screens/network_screen.h"
 
+#include <string>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/network_config_service.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/quickstart_controller.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -20,6 +25,10 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -28,8 +37,45 @@ namespace {
 constexpr base::TimeDelta kConnectionTimeout = base::Seconds(40);
 
 constexpr char kUserActionBackButtonClicked[] = "back";
+constexpr char kUserActionCancelButtonClicked[] = "cancel";
 constexpr char kUserActionContinueButtonClicked[] = "continue";
 constexpr char kUserActionQuickStartButtonClicked[] = "activateQuickStart";
+
+chromeos::network_config::mojom::SecurityType ConvertSecurityType(
+    quick_start::mojom::WifiSecurityType type) {
+  switch (type) {
+    case quick_start::mojom::WifiSecurityType::kPSK:
+      return chromeos::network_config::mojom::SecurityType::kWpaPsk;
+    case quick_start::mojom::WifiSecurityType::kWEP:
+      return chromeos::network_config::mojom::SecurityType::kWepPsk;
+    case quick_start::mojom::WifiSecurityType::kEAP:
+      return chromeos::network_config::mojom::SecurityType::kWpaEap;
+    case quick_start::mojom::WifiSecurityType::kOpen:
+    case quick_start::mojom::WifiSecurityType::kOWE:
+    case quick_start::mojom::WifiSecurityType::kSAE:
+      return chromeos::network_config::mojom::SecurityType::kNone;
+  }
+}
+
+chromeos::network_config::mojom::ConfigPropertiesPtr CreateNetworkConfig(
+    const quick_start::mojom::WifiCredentials& wifi_credentials) {
+  auto wifi = chromeos::network_config::mojom::WiFiConfigProperties::New();
+  wifi->ssid = wifi_credentials.ssid;
+  wifi->security = ConvertSecurityType(wifi_credentials.security_type);
+  wifi->passphrase = wifi_credentials.password;
+
+  auto config = chromeos::network_config::mojom::ConfigProperties::New();
+  config->type_config =
+      chromeos::network_config::mojom::NetworkTypeConfigProperties::NewWifi(
+          std::move(wifi));
+
+  // Since the details of the connection are coming from a connected phone,
+  // static IP addressing is not supported, only DHCP.
+  config->name_servers_config_type = onc::network_config::kIPConfigTypeDHCP;
+
+  // Proxy settings are not supported for now.
+  return config;
+}
 
 }  // namespace
 
@@ -90,7 +136,15 @@ void NetworkScreen::ShowImpl() {
             base::BindOnce(&NetworkScreen::SetQuickStartButtonVisibility,
                            weak_ptr_factory_.GetWeakPtr()));
   }
-  view_->Show();
+  if (context()->quick_start_wifi_credentials.has_value()) {
+    // QuickStart WiFi Transfer Screen Step
+    ConfigureWifiNetwork(context()->quick_start_wifi_credentials.value());
+    const auto ssid = context()->quick_start_wifi_credentials->ssid;
+    view_->ShowScreenWithData(base::Value::Dict().Set("ssid", ssid));
+    context()->quick_start_wifi_credentials.reset();
+  } else {
+    view_->ShowScreenWithData({});
+  }
 }
 
 void NetworkScreen::HideImpl() {
@@ -107,6 +161,9 @@ void NetworkScreen::OnUserAction(const base::Value::List& args) {
     OnContinueButtonClicked();
   } else if (action_id == kUserActionBackButtonClicked) {
     OnBackButtonClicked();
+  } else if (action_id == kUserActionCancelButtonClicked) {
+    CHECK(context()->quick_start_setup_ongoing);
+    ExitQuickStartFlow();
   } else {
     BaseScreen::OnUserAction(args);
   }
@@ -122,6 +179,16 @@ bool NetworkScreen::HandleAccelerator(LoginAcceleratorAction action) {
 }
 
 void NetworkScreen::NetworkConnectionStateChanged(const NetworkState* network) {
+  // If we are in quick start flow we need to either wait for a connection to
+  // the network that was shared by the source device or wait for the online
+  // state of any network.
+  if (context()->quick_start_setup_ongoing && !network->IsOnline()) {
+    if (base::UTF8ToUTF16(network->name()) == network_id_ &&
+        !network->GetError().empty()) {
+      ExitQuickStartFlow();
+      return;
+    }
+  }
   UpdateStatus();
 }
 
@@ -156,12 +223,16 @@ void NetworkScreen::UnsubscribeNetworkNotification() {
 }
 
 void NetworkScreen::NotifyOnConnection() {
+  UnsubscribeNetworkNotification();
   exit_callback_.Run(Result::CONNECTED);
 }
 
 void NetworkScreen::OnConnectionTimeout() {
+  if (context()->quick_start_setup_ongoing) {
+    ExitQuickStartFlow();
+    return;
+  }
   if (!network_state_helper_->IsConnected() && view_) {
-    // Show error bubble.
     view_->ShowError(l10n_util::GetStringFUTF16(
         IDS_NETWORK_SELECTION_ERROR,
         l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME), network_id_));
@@ -187,8 +258,11 @@ void NetworkScreen::UpdateStatus() {
 }
 
 void NetworkScreen::StopWaitingForConnection(const std::u16string& network_id) {
-  bool is_connected = network_state_helper_->IsConnected();
-  if (is_connected && continue_pressed_) {
+  const bool is_connected = network_state_helper_->IsConnected();
+  // `context()` might not exist in unit tests.
+  const bool quick_start_setup_ongoing =
+      context() && context()->quick_start_setup_ongoing;
+  if (is_connected && (continue_pressed_ || quick_start_setup_ongoing)) {
     NotifyOnConnection();
     return;
   }
@@ -251,6 +325,64 @@ void NetworkScreen::SetQuickStartButtonVisibility(bool visible) {
   if (visible && view_) {
     view_->SetQuickStartEnabled();
   }
+}
+
+void NetworkScreen::ConfigureWifiNetwork(
+    const quick_start::mojom::WifiCredentials& wifi_credentials) {
+  // TODO(b/300389592): Remove error logs.
+  LOG(ERROR) << __func__ << " configuring: " << wifi_credentials.ssid;
+  network_id_ = base::UTF8ToUTF16(wifi_credentials.ssid);
+  ash::GetNetworkConfigService(
+      remote_cros_network_config_.BindNewPipeAndPassReceiver());
+
+  auto config = CreateNetworkConfig(wifi_credentials);
+  remote_cros_network_config_->ConfigureNetwork(
+      std::move(config), /*shared=*/true,
+      base::BindOnce(&NetworkScreen::OnConfigureWifiNetworkResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NetworkScreen::OnConfigureWifiNetworkResult(
+    const absl::optional<std::string>& network_guid,
+    const std::string& error_message) {
+  if (!network_guid.has_value() || !error_message.empty()) {
+    LOG(ERROR) << "Configure network failed with  "
+               << " network_guid: " << network_guid.value_or("none")
+               << " and error_message: " << error_message;
+    ExitQuickStartFlow();
+    return;
+  }
+  remote_cros_network_config_->StartConnect(
+      network_guid.value(),
+      base::BindOnce(&NetworkScreen::OnStartConnectCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NetworkScreen::OnStartConnectCompleted(
+    chromeos::network_config::mojom::StartConnectResult result,
+    const std::string& message) {
+  if (result != chromeos::network_config::mojom::StartConnectResult::kSuccess) {
+    LOG(ERROR) << "Start connect failed with result " << result
+               << " and message " << message;
+    ExitQuickStartFlow();
+    return;
+  }
+  WaitForConnection(network_id_);
+}
+
+void NetworkScreen::ExitQuickStartFlow() {
+  CHECK(context()->quick_start_setup_ongoing);
+  auto* quick_start_controller = LoginDisplayHost::default_host()
+                                     ->GetWizardController()
+                                     ->quick_start_controller();
+  const auto entry_point = quick_start_controller->GetExitPoint();
+  quick_start_controller->HandleFlowCancellationRequest();
+  if (entry_point ==
+      quick_start::QuickStartController::EntryPoint::NETWORK_SCREEN) {
+    Show(context());
+    return;
+  }
+  exit_callback_.Run(Result::BACK);
 }
 
 bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {

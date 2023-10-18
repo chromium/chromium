@@ -40,7 +40,7 @@ class TargetDeviceBootstrapController
     PIN_VERIFICATION,
     CONNECTED,
     CONNECTING_TO_WIFI,
-    CONNECTED_TO_WIFI,
+    WIFI_CREDENTIALS_RECEIVED,
     TRANSFERRING_GOOGLE_ACCOUNT_DETAILS,
     TRANSFERRED_GOOGLE_ACCOUNT_DETAILS,
   };
@@ -59,15 +59,13 @@ class TargetDeviceBootstrapController
       variant<absl::monostate, ErrorCode, QRCode::PixelData, FidoAssertionInfo>;
 
   // TODO(b/288054370) - Consolidate fields.
-
   struct Status {
     Status();
     ~Status();
     Step step = Step::NONE;
     Payload payload;
-    std::string ssid;
+    mojom::WifiCredentials wifi_credentials;
     std::string pin;
-    absl::optional<std::string> password;
   };
 
   class AccessibilityManagerWrapper {

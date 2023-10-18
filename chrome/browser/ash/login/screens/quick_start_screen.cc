@@ -17,7 +17,6 @@ namespace ash {
 namespace {
 
 constexpr const char kUserActionCancelClicked[] = "cancel";
-constexpr const char kUserActionWifiConnected[] = "wifi_connected";
 
 base::Value::List ConvertQrCode(quick_start::QRCode::PixelData qr_code) {
   base::Value::List qr_code_list;
@@ -38,6 +37,8 @@ std::string QuickStartScreen::GetResultString(Result result) {
       return "CancelAndReturnToNetwork";
     case Result::CANCEL_AND_RETURN_TO_SIGNIN:
       return "CancelAndReturnToSignin";
+    case Result::WIFI_CREDENTIALS_RECEIVED:
+      return "WifiCredentialsReceived";
     case Result::WIFI_CONNECTED:
       return "WifiConnected";
   }
@@ -82,9 +83,8 @@ void QuickStartScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelClicked) {
     CancelAndExitScreen();
-  } else if (action_id == kUserActionWifiConnected) {
-    // TODO(b:283965994) - Remove this once WiFi transfer is implemented.
-    exit_callback_.Run(Result::WIFI_CONNECTED);
+  } else {
+    BaseScreen::OnUserAction(args);
   }
 }
 
@@ -110,8 +110,8 @@ void QuickStartScreen::OnUiUpdateRequested(
     case quick_start::QuickStartController::UiState::CONNECTING_TO_WIFI:
       view_->ShowConnectingToWifi();
       break;
-    case quick_start::QuickStartController::UiState::CONNECTED_TO_WIFI_DEBUG:
-      view_->ShowConnectedToWifi(controller_->GetWiFiName(), "**PWD**");
+    case quick_start::QuickStartController::UiState::WIFI_CREDENTIALS_RECEIVED:
+      exit_callback_.Run(Result::WIFI_CREDENTIALS_RECEIVED);
       break;
     case ash::quick_start::QuickStartController::UiState::
         TRANSFERRING_GAIA_CREDENTIALS:

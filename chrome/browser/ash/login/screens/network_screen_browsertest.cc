@@ -23,6 +23,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -39,6 +40,7 @@ using ::testing::ElementsAre;
 constexpr char kWifiNetworkName[] = "wifi-test-network";
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kLoadingDialog[] = "loadingDialog";
+constexpr char kConnectingDialog[] = "connectingDialog";
 constexpr char kQuickStartButton[] = "quick-start-network-button";
 constexpr char kNextButton[] = "nextButton";
 constexpr test::UIPath kCancelButtonLoadingDialog = {
@@ -50,6 +52,9 @@ constexpr test::UIPath kNextNetworkButtonPath = {
     NetworkScreenView::kScreenId.name /*"network-selection"*/, kNextButton};
 const test::UIPath kNetworkScreenErrorSubtitile = {
     NetworkScreenView::kScreenId.name /*"network-selection"*/, "subtitleText"};
+const test::UIPath kNetworkScreenConnectingDialog = {
+    NetworkScreenView::kScreenId.name /*"network-selection"*/,
+    kConnectingDialog};
 
 class NetworkScreenTest : public OobeBaseTest {
  public:
@@ -88,8 +93,13 @@ class NetworkScreenTest : public OobeBaseTest {
         shill::kStateIdle, true);
     network_helper_->service_test()->SetServiceProperty(
         "stub_wifi", shill::kConnectableProperty, base::Value(true));
+    network_helper_->service_test()->SetServiceProperty(
+        "stub_wifi", shill::kSecurityClassProperty,
+        base::Value(shill::kSecurityClassPsk));
+    network_helper_->service_test()->SetServiceProperty(
+        "stub_wifi", shill::kPassphraseProperty, base::Value("secret"));
     network_helper_->profile_test()->AddService(
-        ShillProfileClient::GetSharedProfilePath(), kWifiNetworkName);
+        ShillProfileClient::GetSharedProfilePath(), "stub_wifi");
 
     // Network modification notifications are posted asynchronously. Wait until
     // idle to ensure observers are notified.
@@ -248,6 +258,27 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,
       ->Wait();
   test::OobeJS().ClickOnPath(kCancelButtonLoadingDialog);
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,
+                       WifiCredentialsTransfered) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->quick_start_setup_ongoing = true;
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->quick_start_wifi_credentials = {
+      kWifiNetworkName, quick_start::mojom::WifiSecurityType::kPSK,
+      /*is_hidden=*/false, "secret"};
+  SetUpDisconnectedWifiNetwork();
+  ShowNetworkScreen();
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true,
+                              kNetworkScreenConnectingDialog)
+      ->Wait();
+  // Wait for connection to propagate.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(WaitForScreenExitResult(), NetworkScreen::Result::CONNECTED);
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkScreenTest, CanConnect) {

@@ -1831,6 +1831,7 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
       ShowWelcomeScreen();
       return;
     case QuickStartScreen::Result::WIFI_CONNECTED:
+    case QuickStartScreen::Result::WIFI_CREDENTIALS_RECEIVED:
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_NETWORK:
       ShowNetworkScreen();
       return;

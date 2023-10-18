@@ -54,8 +54,7 @@ class QuickStartController : public OobeUI::Observer,
       SHOWING_QR,
       SHOWING_PIN,
       CONNECTING_TO_WIFI,
-      // TODO(b:283965994) - Remove this state
-      CONNECTED_TO_WIFI_DEBUG,
+      WIFI_CREDENTIALS_RECEIVED,
       TRANSFERRING_GAIA_CREDENTIALS,
       SHOWING_FIDO,
     };

@@ -430,7 +430,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
           mojom::WifiCredentials("ssid", mojom::WifiSecurityType::kWEP,
                                  /*is_hidden=*/true, "password"));
 
-  EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTED_TO_WIFI);
+  EXPECT_EQ(fake_observer_->last_status.step, Step::WIFI_CREDENTIALS_RECEIVED);
   EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
       fake_observer_->last_status.payload));
   histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, true,

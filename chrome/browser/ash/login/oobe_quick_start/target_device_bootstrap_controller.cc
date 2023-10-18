@@ -138,7 +138,8 @@ void TargetDeviceBootstrapController::CloseOpenConnections() {
 }
 
 void TargetDeviceBootstrapController::PrepareForUpdate() {
-  if (status_.step != Step::CONNECTED_TO_WIFI || !authenticated_connection_) {
+  if (status_.step != Step::WIFI_CREDENTIALS_RECEIVED ||
+      !authenticated_connection_) {
     return;
   }
 
@@ -305,10 +306,9 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
     return;
   }
 
-  status_.step = Step::CONNECTED_TO_WIFI;
+  status_.step = Step::WIFI_CREDENTIALS_RECEIVED;
   status_.payload.emplace<absl::monostate>();
-  status_.ssid = credentials->ssid;
-  status_.password = credentials->password;
+  status_.wifi_credentials = credentials.value();
   NotifyObservers();
 
   // Record successful wifi credentials transfer. Failures will be

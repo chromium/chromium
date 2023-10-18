@@ -180,13 +180,14 @@ void QuickStartController::OnStatusChanged(
       quick_start::quick_start_metrics::RecordScreenOpened(
           quick_start_metrics::ScreenName::kConnectingToWifi);
       return;
-    case Step::CONNECTED_TO_WIFI:
-      wifi_name_ = status.ssid;
-      UpdateUiState(UiState::CONNECTED_TO_WIFI_DEBUG);
-      // TODO(b:283965994) - Replace with better logic.
+    case Step::WIFI_CREDENTIALS_RECEIVED:
       LoginDisplayHost::default_host()
           ->GetWizardContext()
           ->quick_start_setup_ongoing = true;
+      LoginDisplayHost::default_host()
+          ->GetWizardContext()
+          ->quick_start_wifi_credentials = status.wifi_credentials;
+      UpdateUiState(UiState::WIFI_CREDENTIALS_RECEIVED);
       return;
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
       // Intermediate state. Nothing to do.
@@ -305,6 +306,9 @@ void QuickStartController::ResetState() {
   wifi_name_.reset();
   controller_state_ = ControllerState::NOT_ACTIVE;
   ui_state_.reset();
+  auto* wizard_context = LoginDisplayHost::default_host()->GetWizardContext();
+  wizard_context->quick_start_setup_ongoing = false;
+  wizard_context->quick_start_wifi_credentials.reset();
 }
 
 }  // namespace ash::quick_start

@@ -22,7 +22,7 @@ class NetworkScreenView : public base::SupportsWeakPtr<NetworkScreenView> {
   virtual ~NetworkScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void ShowScreenWithData(base::Value::Dict data) = 0;
 
   // Shows error message in a bubble.
   virtual void ShowError(const std::u16string& message) = 0;
@@ -49,7 +49,7 @@ class NetworkScreenHandler : public NetworkScreenView,
 
  private:
   // NetworkScreenView:
-  void Show() override;
+  void ShowScreenWithData(base::Value::Dict data) override;
   void ShowError(const std::u16string& message) override;
   void ClearErrors() override;
   void SetQuickStartEnabled() override;

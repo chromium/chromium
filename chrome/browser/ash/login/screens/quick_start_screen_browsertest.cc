@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "content/public/test/browser_test.h"
 
@@ -29,7 +30,6 @@ constexpr char kWelcomeScreen[] = "welcomeScreen";
 constexpr char kQuickStartButton[] = "quick-start-welcome-button";
 constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kCancelButton[] = "cancelButton";
-constexpr char kWifiConnectedButton[] = "wifiConnected";
 constexpr char kPinCodeWrapper[] = "pinWrapper";
 constexpr char kScreenOpenedHistogram[] = "QuickStart.ScreenOpened";
 constexpr test::UIPath kQuickStartButtonPath = {
@@ -38,8 +38,6 @@ constexpr test::UIPath kCancelButtonLoadingDialog = {
     QuickStartView::kScreenId.name, kLoadingDialog, kCancelButton};
 constexpr test::UIPath kCancelButtonVerificationDialog = {
     QuickStartView::kScreenId.name, kCancelButton};
-constexpr test::UIPath kNextButtonWifiConnectedDialog = {
-    QuickStartView::kScreenId.name, kWifiConnectedButton};
 constexpr test::UIPath kQuickStartPinCode = {QuickStartView::kScreenId.name,
                                              kPinCodeWrapper};
 }  // namespace
@@ -47,9 +45,21 @@ constexpr test::UIPath kQuickStartPinCode = {QuickStartView::kScreenId.name,
 class QuickStartBrowserTest : public OobeBaseTest {
  public:
   QuickStartBrowserTest() {
+    needs_network_screen_skip_check_ = true;
     feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
   }
   ~QuickStartBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    network_helper_ = std::make_unique<NetworkStateTestHelper>(
+        /*use_default_devices_and_services=*/false);
+    OobeBaseTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    network_helper_.reset();
+    OobeBaseTest::TearDownOnMainThread();
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     OobeBaseTest::SetUpInProcessBrowserTestFixture();
@@ -91,6 +101,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
       connection_broker_factory_;
 
  private:
+  std::unique_ptr<NetworkStateTestHelper> network_helper_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -235,14 +246,6 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEnd) {
   connection->SendWifiCredentials(ash::quick_start::mojom::WifiCredentials(
       "TestSSID", security, /*is_hidden=*/false, "TestPassword"));
 
-  // 'Next' button on the WiFi connected step should be shown.
-  // Clicking on it moves the flow to the network screen.
-  // TODO(rrsilva) - Replace with final logic.
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true,
-                              kNextButtonWifiConnectedDialog)
-      ->Wait();
-  test::OobeJS().ClickOnPath(kNextButtonWifiConnectedDialog);
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 
   // Skip to the UserCreation screen where the flow will be picked up from.
