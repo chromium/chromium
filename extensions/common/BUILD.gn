@@ -320,7 +320,6 @@ static_library("common") {
     "install_warning.h",
     "manifest.cc",
     "manifest.h",
-    "manifest_constants.cc",
     "manifest_constants.h",
     "manifest_handler.cc",
     "manifest_handler.h",
