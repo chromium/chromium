@@ -89,7 +89,8 @@ void HotspotFeaturePodController::OnLabelPressed() {
     return;
   }
 
-  EnableHotspotIfAllowedAndDiveIn();
+  TrackDiveInUMA();
+  tray_controller_->ShowHotspotDetailedView();
 }
 
 void HotspotFeaturePodController::OnHotspotInfoChanged() {
