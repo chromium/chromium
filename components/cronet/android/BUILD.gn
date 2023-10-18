@@ -270,6 +270,21 @@ android_library("cronet_api_java") {
     "api/src/org/chromium/net/UploadDataSink.java",
     "api/src/org/chromium/net/UrlRequest.java",
     "api/src/org/chromium/net/UrlResponseInfo.java",
+    _generated_interface_api_version_java,
+  ]
+
+  deps = [
+    ":interface_api_version",
+    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+android_library("cronet_api_helpers_java") {
+  sources = [
+    # This API file is a special case because it depends on methods that exists
+    # within the ApiHelper package.
+    "api/src/org/chromium/net/UploadDataProviders.java",
     "api/src/org/chromium/net/apihelpers/ByteArrayCronetCallback.java",
     "api/src/org/chromium/net/apihelpers/ContentTypeParametersParser.java",
     "api/src/org/chromium/net/apihelpers/CronetRequestCompletionListener.java",
@@ -282,15 +297,9 @@ android_library("cronet_api_java") {
     "api/src/org/chromium/net/apihelpers/StringCronetCallback.java",
     "api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
     "api/src/org/chromium/net/apihelpers/UrlRequestCallbacks.java",
-    _generated_interface_api_version_java,
   ]
-
-  if (!is_cronet_for_aosp_build) {
-    sources += [ "api/src/org/chromium/net/UploadDataProviders.java" ]
-  }
   deps = [
-    ":interface_api_version",
-    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
+    ":cronet_api_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
@@ -828,7 +837,10 @@ template("repackage_jars") {
 
 repackage_jars("repackage_api") {
   output = "$_package_dir/cronet_api.jar"
-  deps = [ ":cronet_api_java" ]
+  deps = [
+    ":cronet_api_helpers_java",
+    ":cronet_api_java",
+  ]
 }
 
 repackage_jars("repackage_platform") {
@@ -1087,6 +1099,7 @@ android_library("cronet_fake_javatests") {
   ]
 
   deps = [
+           ":cronet_api_helpers_java",
            ":cronet_api_java",
            ":cronet_common_javatests",
            ":cronet_impl_common_base_java",
@@ -1183,6 +1196,7 @@ android_library("cronet_javatests") {
   # Adding deps here won't include those deps in the cronet_tests_java.jar.
   # Please add to cronet_javatests_deps_to_package instead.
   deps = [
+    ":cronet_api_helpers_java",
     ":cronet_api_java",
     ":cronet_impl_all_java",
     ":cronet_urlconnection_impl_java",
@@ -1774,10 +1788,10 @@ if (target_cpu == "arm" && arm_version == 7 && !arm_use_neon) {
 action("api_static_checks") {
   script = "//components/cronet/tools/api_static_checks.py"
   outputs = [ "$target_gen_dir/$target_name.stamp" ]
-  _api_jar = "$target_out_dir/cronet_api_java.processed.jar"
+  _api_jar = "$_package_dir/cronet_api.jar"
   _common_jar = "$target_out_dir/cronet_impl_common_base_java.processed.jar"
-  _platform_jar = "$target_out_dir/cronet_impl_platform_base_java.processed.jar"
-  _native_jar = "$target_out_dir/cronet_impl_native_base_java.processed.jar"
+  _platform_jar = "$_package_dir/cronet_impl_platform_java.jar"
+  _native_jar = "$_package_dir/cronet_impl_native_java.jar"
   args = [
     "--api_jar",
     rebase_path(_api_jar, root_build_dir),
@@ -1791,10 +1805,10 @@ action("api_static_checks") {
     rebase_path(outputs[0], root_build_dir),
   ]
   deps = [
-    ":cronet_api_java",
+    ":repackage_api",
     ":cronet_impl_common_base_java",
-    ":cronet_impl_native_base_java",
-    ":cronet_impl_platform_base_java",
+    ":repackage_native",
+    ":repackage_platform",
   ]
   inputs = [
     _api_jar,
