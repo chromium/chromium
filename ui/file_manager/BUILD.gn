@@ -93,7 +93,6 @@ preprocess_if_expr("preprocess_static") {
     "//ui/file_manager/file_manager/common/js:js_modules",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
     "//ui/file_manager/file_manager/foreground/js:deferred_elements",
-    "//ui/file_manager/file_manager/foreground/js:main",
   ]
 }
 

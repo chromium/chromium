@@ -26,6 +26,7 @@ interface FileManager {
  */
 declare global {
   interface Window {
+    appID: string;
     fileManager: FileManager;
     IN_TEST: boolean;
     store: Store;

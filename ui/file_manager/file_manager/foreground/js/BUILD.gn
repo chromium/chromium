@@ -52,7 +52,6 @@ group("js_modules") {
     ":holding_space_util",
     ":launch_param",
     ":list_thumbnail_loader",
-    ":main",
     ":main_window_component",
     ":metadata_update_controller",
     ":mock_actions_model",
@@ -86,6 +85,7 @@ js_type_check("closure_compile_jsmodules") {
                         rebase_path("//ui/file_manager/", root_build_dir),
                     "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                    "hide_warnings_for=gen/ui/file_manager/tsc/",
                   ]
 
   deps = [
@@ -118,7 +118,6 @@ js_type_check("closure_compile_jsmodules") {
     ":holding_space_util",
     ":launch_param",
     ":list_thumbnail_loader",
-    ":main",
     ":main_window_component",
     ":metadata_update_controller",
     ":mock_directory_model",
@@ -723,17 +722,6 @@ js_unittest("list_thumbnail_loader_unittest") {
   ]
 }
 
-js_library("main") {
-  visibility += [ "//ui/file_manager:*" ]
-  extra_deps =
-      [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
-  deps = [
-    ":file_manager",
-    "//ui/file_manager/file_manager/common/js:glitch",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
-}
-
 js_library("main_window_component") {
   deps = [
     ":app_state_controller",
@@ -1019,7 +1007,6 @@ optimize_webui("build") {
   ]
 
   deps = [
-    ":main",
     "//ui/file_manager:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
