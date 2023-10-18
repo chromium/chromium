@@ -999,12 +999,7 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   if (!vote_upload_task_runner_) {
     // If the priority is BEST_EFFORT, the task can be preempted, which is
     // thought to cause high memory usage (as memory is retained by the task
-    // while it is preempted).
-    //
-    // TODO(fdoray): Update when the hypothesis that setting the priority to
-    // USER_VISIBLE instead of BEST_EFFORT fixes memory usage. Consider
-    // keeping BEST_EFFORT priority, but manually enforcing a limit on the
-    // number of outstanding tasks. https://crbug.com/974249
+    // while it is preempted), https://crbug.com/974249
     vote_upload_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   }
