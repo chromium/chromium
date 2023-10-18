@@ -1649,4 +1649,167 @@ TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsFirstOperator) {
             std::vector<float>({2, 2, 2, 2}));
 }
 
+// Test building and computing a DML graph with single operator concat.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConcat) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id1 = builder.BuildInput(
+      "input_a", {1, 1, 2, 3}, mojom::Operand::DataType::kFloat32);
+  uint64_t input_operand_id2 = builder.BuildInput(
+      "input_b", {1, 1, 2, 3}, mojom::Operand::DataType::kFloat32);
+  uint64_t input_operand_id3 = builder.BuildInput(
+      "input_c", {1, 2, 2, 3}, mojom::Operand::DataType::kFloat32);
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 4, 2, 3}, mojom::Operand::DataType::kFloat32);
+  builder.BuildConcat({input_operand_id1, input_operand_id2, input_operand_id3},
+                      output_operand_id, 1);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  // [[[[-1 -2 -3]
+  //    [-4 -5 -6]]]] with shape (1, 1, 2, 3)
+  std::vector<float> input_data1 = {-1, -2, -3, -4, -5, -6};
+  // [[[[0 0 0]
+  //    [0 0 0]]]] with shape (1, 1, 2, 3)
+  std::vector<float> input_data2 = {0, 0, 0, 0, 0, 0};
+  // [[[[ 1  2  3]
+  //    [ 4  5  6]]
+  //   [[ 7  8  9]
+  //    [10 11 12]]]] with shape (1, 2, 2, 3)
+  std::vector<float> input_data3 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+
+  named_inputs.insert({"input_a", VectorToBigBuffer(input_data1)});
+  named_inputs.insert({"input_b", VectorToBigBuffer(input_data2)});
+  named_inputs.insert({"input_c", VectorToBigBuffer(input_data3)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  // [[[[-1 -2 -3]
+  //    [-4 -5 -6]]
+  //   [[ 0  0  0]
+  //    [ 0  0  0]]
+  //   [[ 1  2  3]
+  //    [ 4  5  6]]
+  //   [[ 7  8  9]
+  //    [10 11 12]]]] with shape (1, 4, 2, 3)
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({-1, -2, -3, -4, -5, -6, 0, 0, 0, 0,  0,  0,
+                                1,  2,  3,  4,  5,  6,  7, 8, 9, 10, 11, 12}));
+}
+
+// Test building and computing a DML graph with float 16 data type in the
+// following topology.
+//     [input_a]
+//         |
+//      reshape    [input_b]
+//          \         /
+//             concat
+//               |
+//             clamp
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeReshapeConcatAndClamp) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id1 =
+      builder.BuildInput("input_a", {4, 3}, mojom::Operand::DataType::kFloat16);
+  uint64_t input_operand_id2 = builder.BuildInput(
+      "input_b", {1, 1, 2, 3}, mojom::Operand::DataType::kFloat16);
+
+  uint64_t reshape_operand_id = builder.BuildIntermediateOperand(
+      {1, 2, 2, 3}, mojom::Operand::DataType::kFloat16);
+  builder.BuildOperator(mojom::Operator::Kind::kReshape, {input_operand_id1},
+                        {reshape_operand_id});
+
+  uint64_t concat_operand_id = builder.BuildIntermediateOperand(
+      {1, 3, 2, 3}, mojom::Operand::DataType::kFloat16);
+  builder.BuildConcat({reshape_operand_id, input_operand_id2},
+                      concat_operand_id, 1);
+
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 3, 2, 3}, mojom::Operand::DataType::kFloat16);
+  builder.BuildClamp(concat_operand_id, output_operand_id, 1.25, 8.75);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  // [[ 1  2  3]
+  //  [ 4  5  6]
+  //  [ 7  8  9]
+  //  [10 11 12]] with shape (4, 3)
+  std::vector<float16> input_data1 =
+      Float16FromFloat32({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
+  // [[[[-6 -5 -4]
+  //    [-3 -2 -1]]]] with shape (1, 1, 2, 3)
+  std::vector<float16> input_data2 =
+      Float16FromFloat32({-6, -5, -4, -3, -2, -1});
+
+  named_inputs.insert({"input_a", VectorToBigBuffer(input_data1)});
+  named_inputs.insert({"input_b", VectorToBigBuffer(input_data2)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+
+  // [[[[1.25 2.   3.  ]
+  //    [4.   5.   6.  ]]
+  //   [[7.   8.   8.75]
+  //    [8.75 8.75 8.75]]
+  //   [[1.25 1.25 1.25]
+  //    [1.25 1.25 1.25]]]] with shape (1, 3, 2, 3)
+  EXPECT_EQ(GetFloatOutputData(std::move(named_outputs["output"]),
+                               mojom::Operand::DataType::kFloat16),
+            std::vector<float>({1.25, 2, 3, 4, 5, 6, 7, 8, 8.75, 8.75, 8.75,
+                                8.75, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25}));
+}
+
+// Test building and computing a DML graph in the following topology.
+//      [input]   [constant_a]
+//          \          /
+//             concat   [constant_b]
+//               \           /
+//                   concat
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeConcatWithConstants) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {1, 1, 1, 3}, mojom::Operand::DataType::kFloat32);
+
+  // [[[[1 2 3]]]] with shape (1, 1, 1, 3)
+  std::vector<float> constant_data_a = {1, 2, 3};
+  uint64_t constant_a_operand_id =
+      builder.BuildConstant({1, 1, 1, 3}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data_a)));
+
+  // [[[[-1 -2 -3]
+  //    [-4 -5 -6]]]] with shape (1, 1, 2, 3)
+  std::vector<float> constant_data_b = {-1, -2, -3, -4, -5, -6};
+  uint64_t constant_b_operand_id =
+      builder.BuildConstant({1, 1, 2, 3}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data_b)));
+
+  uint64_t concat_operand_id = builder.BuildIntermediateOperand(
+      {1, 1, 2, 3}, mojom::Operand::DataType::kFloat32);
+  builder.BuildConcat({input_operand_id, constant_a_operand_id},
+                      concat_operand_id, 2);
+
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 2, 2, 3}, mojom::Operand::DataType::kFloat32);
+  builder.BuildConcat({concat_operand_id, constant_b_operand_id},
+                      output_operand_id, 1);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  // [[[[0 0 0]]]] with shape (1, 1, 1, 3)
+  std::vector<float> input_data = {0, 0, 0};
+
+  named_inputs.insert({"input", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+
+  // [[[[ 0  0  0]
+  //    [ 1  2  3]]
+  //   [[-1 -2 -3]
+  //    [-4 -5 -6]]]] with shape (1, 2, 2, 3)
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({0, 0, 0, 1, 2, 3, -1, -2, -3, -4, -5, -6}));
+}
+
 }  // namespace webnn::dml

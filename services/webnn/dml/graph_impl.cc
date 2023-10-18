@@ -311,6 +311,53 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForClamp(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConcat(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::ConcatPtr& concat,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const auto& input_operand_ids = concat->input_operand_ids;
+  size_t input_num = input_operand_ids.size();
+
+  std::vector<const NodeOutput*> input_node_outputs;
+  std::vector<DML_TENSOR_DESC> input_dml_tensor_descs;
+  input_node_outputs.reserve(input_num);
+  input_dml_tensor_descs.reserve(input_num);
+
+  for (const auto& input_operand_id : input_operand_ids) {
+    const NodeOutput* input_node_output =
+        GetNodeOutputForOperand(id_to_node_output_map, input_operand_id);
+    input_node_outputs.push_back(input_node_output);
+    input_dml_tensor_descs.push_back(
+        input_node_output->GetTensorDesc().GetDMLTensorDesc());
+  }
+
+  uint64_t output_id = concat->output_operand_id;
+  auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  DML_JOIN_OPERATOR_DESC concat_operator_desc{
+      .InputCount = base::checked_cast<uint32_t>(input_dml_tensor_descs.size()),
+      .InputTensors = input_dml_tensor_descs.data(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .Axis = concat->axis};
+
+  const OperatorNode* concat_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_JOIN, &concat_operator_desc, input_node_outputs);
+  if (!concat_node) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create concat operator."));
+  }
+
+  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+      concat_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+
+  return base::ok();
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     const IdToOperandMap& id_to_operand_map,
     const mojom::Conv2dPtr& conv2d,
@@ -1321,6 +1368,12 @@ void GraphImpl::CreateAndBuild(
       case Operation::Tag::kClamp: {
         create_operator_result = CreateOperatorNodeForClamp(
             id_to_operand_map, operation->get_clamp(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kConcat: {
+        create_operator_result = CreateOperatorNodeForConcat(
+            id_to_operand_map, operation->get_concat(), graph_builder,
             id_to_node_output_map);
         break;
       }
