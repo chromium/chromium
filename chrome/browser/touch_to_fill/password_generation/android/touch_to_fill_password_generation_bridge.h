@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_BRIDGE_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_BRIDGE_H_
 
-#include <jni.h>
 #include <string>
+
+#include <jni.h>
 
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"

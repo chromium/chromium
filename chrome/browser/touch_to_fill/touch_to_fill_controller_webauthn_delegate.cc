@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"

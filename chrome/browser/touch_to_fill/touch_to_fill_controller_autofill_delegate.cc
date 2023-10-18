@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_credential_filler.h"
@@ -24,8 +23,6 @@
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
-#include "ui/android/window_android.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 

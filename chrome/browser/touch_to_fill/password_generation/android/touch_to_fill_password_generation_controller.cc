@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
@@ -14,7 +15,6 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"

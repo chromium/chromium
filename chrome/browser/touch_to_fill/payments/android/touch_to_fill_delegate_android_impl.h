@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_PAYMENTS_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"

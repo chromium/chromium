@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PAYMENTS_ANDROID_TOUCH_TO_FILL_CREDIT_CARD_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PAYMENTS_ANDROID_TOUCH_TO_FILL_CREDIT_CARD_VIEW_CONTROLLER_H_
 
-namespace autofill {
+#include <jni.h>
 
+#include "base/android/scoped_java_ref.h"
+
+namespace autofill {
 // An interface for interaction between the view and the corresponding UI
 // controller on Android. Acts as the native counterpart for the Java
 // TouchToFillCreditCardComponent.Delegate.

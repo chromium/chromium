@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_DELEGATE_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_DELEGATE_H_
 
+#include <string>
+
 // The delegate, which handles the Password generation bottom sheet
 // (Touch-To-Fill) functionality. Implemented by
 // `TouchToFillPasswordGenerationController`.

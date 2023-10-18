@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_CONTROLLER_H_
 
 #include <string>
-#include "base/functional/callback_forward.h"
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_element_data.h"
@@ -16,7 +16,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace password_manager {
 class ContentPasswordManagerDriver;
