@@ -71,14 +71,7 @@ DefaultPlatformConfiguration::GetEnableRates(
   CHECK(*release_channel == version_info::Channel::CANARY ||
         *release_channel == version_info::Channel::DEV);
 
-#if BUILDFLAG(IS_ANDROID)
-  // This is temporary, in order to run the Java Name Hashing field trial.
-  //
-  // TODO(crbug.com/1475718): Remove this once the field trial is done.
-  return RelativePopulations{1, 99};
-#else
   return RelativePopulations{80, 20};
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
