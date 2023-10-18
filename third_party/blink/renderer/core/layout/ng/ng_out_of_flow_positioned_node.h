@@ -48,7 +48,7 @@ class NGContainingBlock {
     offset_.block_offset += block_offset;
   }
   OffsetType RelativeOffset() const { return relative_offset_; }
-  const NGPhysicalFragment* Fragment() const { return fragment_; }
+  const NGPhysicalFragment* Fragment() const { return fragment_.Get(); }
   absl::optional<LayoutUnit> ClippedContainerBlockOffset() const {
     if (clipped_container_block_offset_ == LayoutUnit::Min()) {
       return absl::nullopt;

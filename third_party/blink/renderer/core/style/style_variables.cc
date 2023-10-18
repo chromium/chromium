@@ -93,7 +93,7 @@ StyleVariables::OptionalValue StyleVariables::GetValue(
     const AtomicString& name) const {
   auto i = values_->find(name);
   if (i != values_->end()) {
-    return i->value;
+    return i->value.Get();
   }
   return absl::nullopt;
 }

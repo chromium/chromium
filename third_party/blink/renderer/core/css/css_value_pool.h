@@ -106,7 +106,8 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   }
   CSSIdentifierValue* SetIdentifierCacheValue(CSSValueID ident,
                                               CSSIdentifierValue* css_value) {
-    return identifier_value_cache_[static_cast<int>(ident)] = css_value;
+    identifier_value_cache_[static_cast<int>(ident)] = css_value;
+    return css_value;
   }
   CSSNumericLiteralValue* PixelCacheValue(int int_value) {
     return pixel_value_cache_[int_value].Get();
@@ -114,7 +115,8 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   CSSNumericLiteralValue* SetPixelCacheValue(
       int int_value,
       CSSNumericLiteralValue* css_value) {
-    return pixel_value_cache_[int_value] = css_value;
+    pixel_value_cache_[int_value] = css_value;
+    return css_value;
   }
   CSSNumericLiteralValue* PercentCacheValue(int int_value) {
     return percent_value_cache_[int_value].Get();
@@ -122,7 +124,8 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   CSSNumericLiteralValue* SetPercentCacheValue(
       int int_value,
       CSSNumericLiteralValue* css_value) {
-    return percent_value_cache_[int_value] = css_value;
+    percent_value_cache_[int_value] = css_value;
+    return css_value;
   }
   CSSNumericLiteralValue* NumberCacheValue(int int_value) {
     return number_value_cache_[int_value].Get();
@@ -130,7 +133,8 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   CSSNumericLiteralValue* SetNumberCacheValue(
       int int_value,
       CSSNumericLiteralValue* css_value) {
-    return number_value_cache_[int_value] = css_value;
+    number_value_cache_[int_value] = css_value;
+    return css_value;
   }
 
   // Hash map caches.
@@ -151,7 +155,7 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
 
     unsigned hash = color.GetHash();
     if (Member<CSSColor>* found = color_value_cache_.Find(color, hash); found) {
-      return *found;
+      return found->Get();
     }
     return color_value_cache_.Insert(
         color, MakeGarbageCollected<CSSColor>(color), hash);

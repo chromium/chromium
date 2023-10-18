@@ -200,7 +200,7 @@ class CORE_EXPORT NGLayoutResult final
   const NGColumnSpannerPath* ColumnSpannerPath() const {
     if (rare_data_) {
       if (const RareData::BlockData* data = rare_data_->GetBlockData())
-        return data->column_spanner_path;
+        return data->column_spanner_path.Get();
     }
     return nullptr;
   }
@@ -221,7 +221,7 @@ class CORE_EXPORT NGLayoutResult final
     if (!rare_data_) {
       return nullptr;
     }
-    return rare_data_->early_break;
+    return rare_data_->early_break.Get();
   }
 
   const ExclusionSpace& GetExclusionSpace() const {

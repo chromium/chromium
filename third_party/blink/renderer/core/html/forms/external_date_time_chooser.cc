@@ -101,7 +101,7 @@ void ExternalDateTimeChooser::ResponseHandler(bool success,
 }
 
 bool ExternalDateTimeChooser::IsShowingDateTimeChooserUI() const {
-  return client_;
+  return client_ != nullptr;
 }
 
 mojom::blink::DateTimeChooser& ExternalDateTimeChooser::GetDateTimeChooser(

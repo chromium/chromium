@@ -462,7 +462,7 @@ class CORE_EXPORT NGPhysicalFragment
   // Similar to |GetLayoutObject|, but returns the |LayoutObject| of its
   // container for |!IsCSSBox()| fragments instead of |nullptr|.
   const LayoutObject* GetSelfOrContainerLayoutObject() const {
-    return layout_object_;
+    return layout_object_.Get();
   }
 
   const FragmentData* GetFragmentData() const;
@@ -626,7 +626,7 @@ class CORE_EXPORT NGPhysicalFragment
     const NGLink* buffer_;
   };
 
-  const NGBreakToken* BreakToken() const { return break_token_; }
+  const NGBreakToken* BreakToken() const { return break_token_.Get(); }
 
   base::span<const NGLink> Children() const;
 

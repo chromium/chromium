@@ -19,7 +19,7 @@ IntersectionObservation* ElementIntersectionObserverData::GetObservationFor(
   auto i = observations_.find(&observer);
   if (i == observations_.end())
     return nullptr;
-  return i->value;
+  return i->value.Get();
 }
 
 void ElementIntersectionObserverData::AddObservation(

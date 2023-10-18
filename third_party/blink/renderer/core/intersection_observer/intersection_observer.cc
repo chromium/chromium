@@ -77,7 +77,9 @@ class IntersectionObserverDelegateImpl final
     callback_.Run(entries);
   }
 
-  ExecutionContext* GetExecutionContext() const override { return context_; }
+  ExecutionContext* GetExecutionContext() const override {
+    return context_.Get();
+  }
 
   void Trace(Visitor* visitor) const override {
     IntersectionObserverDelegate::Trace(visitor);

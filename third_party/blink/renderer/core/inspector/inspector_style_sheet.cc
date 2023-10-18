@@ -2754,7 +2754,7 @@ InspectorStyle* InspectorStyleSheetForInlineStyle::GetInspectorStyle(
         element_->style(), RuleSourceData(), this);
   }
 
-  return inspector_style_;
+  return inspector_style_.Get();
 }
 
 CSSRuleSourceData* InspectorStyleSheetForInlineStyle::RuleSourceData() {

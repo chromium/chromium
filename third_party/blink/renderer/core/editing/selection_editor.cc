@@ -521,7 +521,7 @@ void SelectionEditor::CacheRangeOfDocument(Range* range) {
 }
 
 Range* SelectionEditor::DocumentCachedRange() const {
-  return cached_range_;
+  return cached_range_.Get();
 }
 
 void SelectionEditor::ClearDocumentCachedRange() {

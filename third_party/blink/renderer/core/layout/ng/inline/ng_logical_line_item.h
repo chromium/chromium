@@ -163,7 +163,9 @@ struct NGLogicalLineItem {
   bool HasInFlowOrFloatingFragment() const {
     return inline_item || layout_result || layout_object;
   }
-  bool HasOutOfFlowFragment() const { return out_of_flow_positioned_box; }
+  bool HasOutOfFlowFragment() const {
+    return out_of_flow_positioned_box != nullptr;
+  }
   bool HasFragment() const {
     return HasInFlowOrFloatingFragment() || HasOutOfFlowFragment();
   }

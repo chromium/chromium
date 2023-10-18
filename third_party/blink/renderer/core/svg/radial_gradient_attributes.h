@@ -51,12 +51,12 @@ struct RadialGradientAttributes final : GradientAttributes {
   void SetFy(const SVGLength* value) { fy_ = value; }
   void SetFr(const SVGLength* value) { fr_ = value; }
 
-  bool HasCx() const { return cx_; }
-  bool HasCy() const { return cy_; }
-  bool HasR() const { return r_; }
-  bool HasFx() const { return fx_; }
-  bool HasFy() const { return fy_; }
-  bool HasFr() const { return fr_; }
+  bool HasCx() const { return cx_ != nullptr; }
+  bool HasCy() const { return cy_ != nullptr; }
+  bool HasR() const { return r_ != nullptr; }
+  bool HasFx() const { return fx_ != nullptr; }
+  bool HasFy() const { return fy_ != nullptr; }
+  bool HasFr() const { return fr_ != nullptr; }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(cx_);

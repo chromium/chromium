@@ -45,10 +45,12 @@ class DocumentPortals final : public GarbageCollected<DocumentPortals>,
   }
 
   // Returns true if any portal in the document is currently activating.
-  bool IsPortalInDocumentActivating() const { return activating_portal_; }
+  bool IsPortalInDocumentActivating() const {
+    return activating_portal_ != nullptr;
+  }
 
   PortalContents* GetActivatingPortalContents() const {
-    return activating_portal_;
+    return activating_portal_.Get();
   }
   void SetActivatingPortalContents(PortalContents* portal) {
     DCHECK(!activating_portal_);

@@ -190,7 +190,7 @@ void ColorInputType::ClosePopupView() {
 }
 
 bool ColorInputType::HasOpenedPopup() const {
-  return chooser_;
+  return chooser_ != nullptr;
 }
 
 bool ColorInputType::ShouldRespectListAttribute() {

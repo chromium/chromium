@@ -190,7 +190,7 @@ void Frame::DisconnectOwnerElement() {
 }
 
 Page* Frame::GetPage() const {
-  return page_;
+  return page_.Get();
 }
 
 bool Frame::IsMainFrame() const {
@@ -590,7 +590,7 @@ Frame* Frame::Parent() const {
   if (!parent_)
     return nullptr;
 
-  return parent_;
+  return parent_.Get();
 }
 
 Frame* Frame::Top() {

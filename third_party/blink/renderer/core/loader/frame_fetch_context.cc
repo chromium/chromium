@@ -602,7 +602,7 @@ void FrameFetchContext::DispatchDidBlockRequest(
 ContentSecurityPolicy* FrameFetchContext::GetContentSecurityPolicyForWorld(
     const DOMWrapperWorld* world) const {
   if (GetResourceFetcherProperties().IsDetached())
-    return frozen_state_->content_security_policy;
+    return frozen_state_->content_security_policy.Get();
 
   return document_->GetExecutionContext()->GetContentSecurityPolicyForWorld(
       world);
@@ -709,7 +709,7 @@ const KURL& FrameFetchContext::Url() const {
 
 ContentSecurityPolicy* FrameFetchContext::GetContentSecurityPolicy() const {
   if (GetResourceFetcherProperties().IsDetached())
-    return frozen_state_->content_security_policy;
+    return frozen_state_->content_security_policy.Get();
   return document_->domWindow()->GetContentSecurityPolicy();
 }
 

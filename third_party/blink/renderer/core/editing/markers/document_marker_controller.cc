@@ -509,7 +509,7 @@ DocumentMarkerList* DocumentMarkerController::FindMarkers(
   auto it = marker_map->find(key);
   if (it != marker_map->end()) {
     DCHECK(it->value);
-    return it->value;
+    return it->value.Get();
   }
   return nullptr;
 }
@@ -648,7 +648,7 @@ DocumentMarkerGroup* DocumentMarkerController::GetMarkerGroupForMarker(
   if (marker) {
     auto it = marker_groups_.find(marker);
     if (it != marker_groups_.end()) {
-      return it->value;
+      return it->value.Get();
     }
   }
   return nullptr;

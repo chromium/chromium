@@ -58,7 +58,7 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
   BodyConsumerBase(const BodyConsumerBase&) = delete;
   BodyConsumerBase& operator=(const BodyConsumerBase&) = delete;
 
-  ScriptPromiseResolver* Resolver() { return resolver_; }
+  ScriptPromiseResolver* Resolver() { return resolver_.Get(); }
   void DidFetchDataLoadFailed() override {
     ScriptState::Scope scope(Resolver()->GetScriptState());
     resolver_->Reject(V8ThrowException::CreateTypeError(

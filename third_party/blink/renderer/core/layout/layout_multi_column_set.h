@@ -133,7 +133,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
 
   LayoutFlowThread* FlowThread() const {
     NOT_DESTROYED();
-    return flow_thread_;
+    return flow_thread_.Get();
   }
 
   LayoutBlockFlow* MultiColumnBlockFlow() const {

@@ -513,7 +513,7 @@ String Response::statusText() const {
 
 Headers* Response::headers() const {
   // "The headers attribute's getter must return the associated Headers object."
-  return headers_;
+  return headers_.Get();
 }
 
 Response* Response::clone(ScriptState* script_state,

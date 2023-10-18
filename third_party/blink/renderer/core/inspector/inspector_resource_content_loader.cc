@@ -242,7 +242,7 @@ void InspectorResourceContentLoader::DidCommitLoadForLocalFrame(
 Resource* InspectorResourceContentLoader::ResourceForURL(const KURL& url) {
   for (const auto& resource : resources_) {
     if (resource->Url() == url)
-      return resource;
+      return resource.Get();
   }
   return nullptr;
 }

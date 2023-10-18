@@ -16,7 +16,7 @@ void LayoutSubtreeRootList::ClearAndMarkContainingBlocksForLayout() {
 
 LayoutObject* LayoutSubtreeRootList::RandomRoot() {
   DCHECK(!IsEmpty());
-  return *Unordered().begin();
+  return *Unordered().begin().Get();
 }
 
 void LayoutSubtreeRootList::CountObjectsNeedingLayoutInRoot(

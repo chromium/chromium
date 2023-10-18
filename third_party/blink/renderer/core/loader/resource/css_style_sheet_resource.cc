@@ -246,7 +246,7 @@ StyleSheetContents* CSSStyleSheetResource::CreateParsedStyleSheetFromCache(
   if (parsed_style_sheet_cache_->HasMediaQueries())
     return parsed_style_sheet_cache_->Copy();
 
-  return parsed_style_sheet_cache_;
+  return parsed_style_sheet_cache_.Get();
 }
 
 void CSSStyleSheetResource::SaveParsedStyleSheet(StyleSheetContents* sheet) {

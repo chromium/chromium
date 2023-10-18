@@ -340,7 +340,7 @@ class CORE_EXPORT FlexLayoutAlgorithm {
 
   wtf_size_t NumItems() const { return all_items_.size(); }
 
-  const ComputedStyle* Style() const { return style_; }
+  const ComputedStyle* Style() const { return style_.Get(); }
   const ComputedStyle& StyleRef() const { return *style_; }
 
   const Vector<FlexLine>& FlexLines() const { return flex_lines_; }

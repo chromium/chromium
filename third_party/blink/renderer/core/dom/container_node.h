@@ -531,7 +531,7 @@ struct DowncastTraits<ContainerNode> {
 };
 
 inline bool ContainerNode::HasChildCount(unsigned count) const {
-  Node* child = first_child_;
+  Node* child = first_child_.Get();
   while (count && child) {
     child = child->nextSibling();
     --count;

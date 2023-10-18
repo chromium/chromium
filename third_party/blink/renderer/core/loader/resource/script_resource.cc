@@ -211,7 +211,7 @@ String ScriptResource::TextForInspector() const {
 }
 
 CachedMetadataHandler* ScriptResource::CacheHandler() {
-  return cached_metadata_handler_;
+  return cached_metadata_handler_.Get();
 }
 
 void ScriptResource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {

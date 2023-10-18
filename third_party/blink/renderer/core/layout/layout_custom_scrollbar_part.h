@@ -89,7 +89,7 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   }
   ScrollableArea* GetScrollableArea() const {
     NOT_DESTROYED();
-    return scrollable_area_;
+    return scrollable_area_.Get();
   }
 
   LayoutCustomScrollbarPart(ScrollableArea*,

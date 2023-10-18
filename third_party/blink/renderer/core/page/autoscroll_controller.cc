@@ -107,7 +107,7 @@ bool AutoscrollController::SelectionAutoscrollInProgress() const {
 }
 
 bool AutoscrollController::AutoscrollInProgress() const {
-  return autoscroll_layout_object_;
+  return autoscroll_layout_object_ != nullptr;
 }
 
 bool AutoscrollController::AutoscrollInProgressFor(

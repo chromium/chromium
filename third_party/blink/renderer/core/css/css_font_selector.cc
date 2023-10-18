@@ -296,7 +296,7 @@ FontMatchingMetrics* CSSFontSelector::GetFontMatchingMetrics() const {
 }
 
 bool CSSFontSelector::IsAlive() const {
-  return tree_scope_;
+  return tree_scope_ != nullptr;
 }
 
 void CSSFontSelector::Trace(Visitor* visitor) const {

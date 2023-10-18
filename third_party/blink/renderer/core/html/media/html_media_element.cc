@@ -907,7 +907,7 @@ void HTMLMediaElement::LoadTimerFired(TimerBase*) {
 }
 
 MediaError* HTMLMediaElement::error() const {
-  return error_;
+  return error_.Get();
 }
 
 void HTMLMediaElement::SetSrc(const AtomicString& url) {

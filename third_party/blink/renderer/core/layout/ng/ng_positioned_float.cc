@@ -15,7 +15,7 @@ void NGPositionedFloat::Trace(Visitor* visitor) const {
 
 const NGBlockBreakToken* NGPositionedFloat::BreakToken() const {
   if (break_before_token) {
-    return break_before_token;
+    return break_before_token.Get();
   }
   return To<NGBlockBreakToken>(layout_result->PhysicalFragment().BreakToken());
 }

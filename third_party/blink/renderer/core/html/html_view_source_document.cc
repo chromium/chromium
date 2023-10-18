@@ -261,7 +261,7 @@ Element* HTMLViewSourceDocument::AddSpanWithClassName(
     const AtomicString& class_name) {
   if (current_ == tbody_) {
     AddLine(class_name);
-    return current_;
+    return current_.Get();
   }
 
   auto* span = MakeGarbageCollected<HTMLSpanElement>(*this);

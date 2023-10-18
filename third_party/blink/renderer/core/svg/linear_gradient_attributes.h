@@ -42,10 +42,10 @@ struct LinearGradientAttributes : GradientAttributes {
   void SetX2(const SVGLength* value) { x2_ = value; }
   void SetY2(const SVGLength* value) { y2_ = value; }
 
-  bool HasX1() const { return x1_; }
-  bool HasY1() const { return y1_; }
-  bool HasX2() const { return x2_; }
-  bool HasY2() const { return y2_; }
+  bool HasX1() const { return x1_ != nullptr; }
+  bool HasY1() const { return y1_ != nullptr; }
+  bool HasX2() const { return x2_ != nullptr; }
+  bool HasY2() const { return y2_ != nullptr; }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(x1_);

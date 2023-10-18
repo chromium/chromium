@@ -69,7 +69,7 @@ class StyleSheetCSSRuleList final : public CSSRuleList {
     return style_sheet_->item(index);
   }
 
-  CSSStyleSheet* GetStyleSheet() const override { return style_sheet_; }
+  CSSStyleSheet* GetStyleSheet() const override { return style_sheet_.Get(); }
 
   Member<CSSStyleSheet> style_sheet_;
 };

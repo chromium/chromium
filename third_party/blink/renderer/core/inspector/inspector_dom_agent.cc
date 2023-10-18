@@ -698,7 +698,7 @@ Node* InspectorDOMAgent::NodeForId(int id) const {
 
   const auto it = id_to_node_.find(id);
   if (it != id_to_node_.end())
-    return it->value;
+    return it->value.Get();
   return nullptr;
 }
 

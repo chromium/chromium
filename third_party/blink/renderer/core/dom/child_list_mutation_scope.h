@@ -58,7 +58,7 @@ class ChildListMutationAccumulator final
   void ChildAdded(Node&);
   void WillRemoveChild(Node&);
 
-  bool HasObservers() const { return observers_; }
+  bool HasObservers() const { return observers_ != nullptr; }
 
   // Register and unregister mutation scopes that are using this mutation
   // accumulator.

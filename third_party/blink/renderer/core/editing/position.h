@@ -174,7 +174,7 @@ class PositionTemplate {
   bool IsValidFor(const Document&) const;
 
   bool IsNull() const { return !anchor_node_; }
-  bool IsNotNull() const { return anchor_node_; }
+  bool IsNotNull() const { return anchor_node_ != nullptr; }
   bool IsOrphan() const { return anchor_node_ && !IsConnected(); }
 
   // Note: Comparison of positions require both parameters are non-null. You

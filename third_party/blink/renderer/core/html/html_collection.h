@@ -171,7 +171,7 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
   virtual void SupportedPropertyNames(Vector<String>& names);
 
   virtual void UpdateIdNameCache() const;
-  bool HasValidIdNameCache() const { return named_item_cache_; }
+  bool HasValidIdNameCache() const { return named_item_cache_ != nullptr; }
 
   void SetNamedItemCache(NamedItemCache* cache) const {
     DCHECK(!named_item_cache_);

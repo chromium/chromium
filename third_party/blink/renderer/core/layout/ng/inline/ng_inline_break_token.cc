@@ -24,7 +24,7 @@ ASSERT_SIZE(NGInlineBreakToken, SameSizeAsNGInlineBreakToken);
 const NGBlockBreakToken* NGInlineBreakToken::BlockBreakToken() const {
   if (!(flags_ & kHasSubBreakToken))
     return nullptr;
-  return sub_break_token_[0];
+  return sub_break_token_[0].Get();
 }
 
 // static

@@ -743,12 +743,12 @@ DateTimeChooser* ChromeClientImpl::OpenDateTimeChooser(
   external_date_time_chooser_ =
       MakeGarbageCollected<ExternalDateTimeChooser>(picker_client);
   external_date_time_chooser_->OpenDateTimeChooser(frame, parameters);
-  return external_date_time_chooser_;
+  return external_date_time_chooser_.Get();
 }
 
 ExternalDateTimeChooser*
 ChromeClientImpl::GetExternalDateTimeChooserForTesting() {
-  return external_date_time_chooser_;
+  return external_date_time_chooser_.Get();
 }
 
 void ChromeClientImpl::OpenFileChooser(

@@ -116,7 +116,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
     return *slot_assignment_;
   }
 
-  bool HasSlotAssignment() { return slot_assignment_; }
+  bool HasSlotAssignment() { return slot_assignment_ != nullptr; }
 
   HTMLSlotElement* AssignedSlotFor(const Node&);
   void DidAddSlot(HTMLSlotElement&);

@@ -453,7 +453,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     return slotted_pseudo_element_rules_;
   }
 
-  bool HasCascadeLayers() const { return implicit_outer_layer_; }
+  bool HasCascadeLayers() const { return implicit_outer_layer_ != nullptr; }
   const CascadeLayer& CascadeLayers() const {
     DCHECK(implicit_outer_layer_);
     return *implicit_outer_layer_;

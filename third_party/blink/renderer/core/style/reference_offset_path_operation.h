@@ -44,7 +44,7 @@ class ReferenceOffsetPathOperation final : public OffsetPathOperation {
     }
   }
 
-  SVGResource* Resource() const { return resource_; }
+  SVGResource* Resource() const { return resource_.Get(); }
   const AtomicString& Url() const { return url_; }
 
  private:

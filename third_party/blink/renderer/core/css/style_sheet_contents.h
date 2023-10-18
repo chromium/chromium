@@ -229,7 +229,9 @@ class CORE_EXPORT StyleSheetContents final
   bool IsUsedFromTextCache() const { return is_used_from_text_cache_; }
   void SetIsUsedFromTextCache() { is_used_from_text_cache_ = true; }
 
-  bool IsReferencedFromResource() const { return referenced_from_resource_; }
+  bool IsReferencedFromResource() const {
+    return referenced_from_resource_ != nullptr;
+  }
   void SetReferencedFromResource(CSSStyleSheetResource*);
   void ClearReferencedFromResource();
 

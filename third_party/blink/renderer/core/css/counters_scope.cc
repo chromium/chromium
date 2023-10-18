@@ -199,7 +199,7 @@ CounterNode* CountersScope::FindPreviousCounterWithinStyleScope(
     wtf_size_t pos =
         FindCounterIndexPrecedingCounter(counter, scope->Counters());
     if (pos != kNotFound) {
-      return scope->Counters().at(pos);
+      return scope->Counters().at(pos).Get();
     }
     if (search_scope == SearchScope::SelfSearch) {
       return nullptr;

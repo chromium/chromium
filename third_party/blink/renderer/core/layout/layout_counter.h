@@ -68,7 +68,7 @@ class LayoutCounter : public LayoutText {
   }
   CounterNode* GetCounterNode() const {
     NOT_DESTROYED();
-    return counter_node_;
+    return counter_node_.Get();
   }
 
   void UpdateCounter();

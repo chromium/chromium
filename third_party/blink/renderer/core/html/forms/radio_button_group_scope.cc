@@ -33,7 +33,7 @@ class RadioButtonGroup : public GarbageCollected<RadioButtonGroup> {
 
   bool IsEmpty() const { return members_.empty(); }
   bool IsRequired() const { return required_count_; }
-  HTMLInputElement* CheckedButton() const { return checked_button_; }
+  HTMLInputElement* CheckedButton() const { return checked_button_.Get(); }
   void Add(HTMLInputElement*);
   void UpdateCheckedState(HTMLInputElement*);
   void RequiredAttributeChanged(HTMLInputElement*);

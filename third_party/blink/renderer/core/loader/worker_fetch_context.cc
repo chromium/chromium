@@ -181,7 +181,7 @@ const KURL& WorkerFetchContext::Url() const {
 }
 
 ContentSecurityPolicy* WorkerFetchContext::GetContentSecurityPolicy() const {
-  return content_security_policy_;
+  return content_security_policy_.Get();
 }
 
 void WorkerFetchContext::PrepareRequest(
@@ -286,7 +286,7 @@ WorkerFetchContext::GetContentSecurityNotifier() {
 }
 
 ExecutionContext* WorkerFetchContext::GetExecutionContext() const {
-  return global_scope_;
+  return global_scope_.Get();
 }
 
 void WorkerFetchContext::Trace(Visitor* visitor) const {

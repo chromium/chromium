@@ -582,7 +582,7 @@ InputDeviceCapabilitiesConstants* DOMWindow::GetInputDeviceCapabilities() {
     input_capabilities_ =
         MakeGarbageCollected<InputDeviceCapabilitiesConstants>();
   }
-  return input_capabilities_;
+  return input_capabilities_.Get();
 }
 
 void DOMWindow::PostMessageForTesting(

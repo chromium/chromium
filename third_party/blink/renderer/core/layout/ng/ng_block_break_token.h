@@ -127,7 +127,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
     DCHECK(!is_repeated_actual_break_);
 #endif
     DCHECK(data_);
-    return data_;
+    return data_.Get();
   }
 
   // Return true if this is a break token that was produced without any

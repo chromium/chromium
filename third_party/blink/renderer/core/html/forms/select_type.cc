@@ -564,12 +564,12 @@ HTMLOptionElement* MenuListSelectType::OptionToBeShown() const {
           select_->OptionAtListIndex(select_->index_to_select_on_cancel_))
     return option;
   if (select_->suggested_option_)
-    return select_->suggested_option_;
+    return select_->suggested_option_.Get();
   // TODO(tkent): We should not call OptionToBeShown() in IsMultiple() case.
   if (select_->IsMultiple())
     return select_->SelectedOption();
   DCHECK_EQ(select_->SelectedOption(), select_->last_on_change_option_);
-  return select_->last_on_change_option_;
+  return select_->last_on_change_option_.Get();
 }
 
 void MenuListSelectType::MaximumOptionWidthMightBeChanged() const {

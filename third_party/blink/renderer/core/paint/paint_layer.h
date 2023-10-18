@@ -181,7 +181,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PaintLayer* PreviousSibling() const { return previous_.Get(); }
   PaintLayer* NextSibling() const { return next_.Get(); }
   PaintLayer* FirstChild() const { return first_.Get(); }
-  PaintLayer* LastChild() const { return last_; }
+  PaintLayer* LastChild() const { return last_.Get(); }
 
   // TODO(wangxianzhu): Find a better name for it. 'paintContainer' might be
   // good but we can't use it for now because it conflicts with
@@ -359,7 +359,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return has_filter_that_moves_pixels_;
   }
 
-  PaintLayerResourceInfo* ResourceInfo() const { return resource_info_; }
+  PaintLayerResourceInfo* ResourceInfo() const { return resource_info_.Get(); }
   PaintLayerResourceInfo& EnsureResourceInfo();
 
   // Filter reference box is the area over which the filter is computed, in the
@@ -668,7 +668,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // This is private because PaintLayerStackingNode is only for PaintLayer and
   // PaintLayerPaintOrderIterator.
-  PaintLayerStackingNode* StackingNode() const { return stacking_node_; }
+  PaintLayerStackingNode* StackingNode() const { return stacking_node_.Get(); }
 
   void SetNeedsReorderOverlayOverflowControls(bool);
 

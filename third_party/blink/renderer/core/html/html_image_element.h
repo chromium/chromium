@@ -231,7 +231,7 @@ class CORE_EXPORT HTMLImageElement final
       MutableCSSPropertyValueSet*) override;
   // For mapping attributes from the <source> element, if any.
   bool HasExtraStyleForPresentationAttribute() const override {
-    return source_;
+    return source_ != nullptr;
   }
   void CollectExtraStyleForPresentationAttribute(
       MutableCSSPropertyValueSet*) override;

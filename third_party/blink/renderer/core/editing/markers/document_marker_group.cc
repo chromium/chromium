@@ -35,7 +35,7 @@ const DocumentMarker* DocumentMarkerGroup::GetMarkerForText(
     const Text* text) const {
   for (const auto& marker_text : marker_text_map_) {
     if (marker_text.value == text) {
-      return marker_text.key;
+      return marker_text.key.Get();
     }
   }
   return nullptr;

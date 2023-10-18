@@ -1603,11 +1603,11 @@ class CORE_EXPORT Document : public ContainerNode,
   // https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md.
   DocumentPartRoot& getPartRoot();
   DocumentPartRoot& EnsureDocumentPartRoot();
-  bool DOMPartsInUse() const { return document_part_root_; }
+  bool DOMPartsInUse() const { return document_part_root_ != nullptr; }
 
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().
-  bool IsTemplateDocument() const { return template_document_host_; }
+  bool IsTemplateDocument() const { return template_document_host_ != nullptr; }
   Document& EnsureTemplateDocument();
   Document* TemplateDocumentHost() { return template_document_host_.Get(); }
 

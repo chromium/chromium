@@ -1166,7 +1166,7 @@ class FetchLaterManager::DeferredLoader final
     }
   }
 
-  FetchLaterResult* fetch_later_result() { return fetch_later_result_; }
+  FetchLaterResult* fetch_later_result() { return fetch_later_result_.Get(); }
 
   // FetchLoaderBase overrides:
   void Dispose() override {

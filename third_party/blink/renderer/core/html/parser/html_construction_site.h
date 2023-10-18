@@ -213,7 +213,7 @@ class HTMLConstructionSite final {
   Element* Head() const { return head_->GetElement(); }
   HTMLStackItem* HeadStackItem() const { return head_.Get(); }
 
-  bool IsFormElementPointerNonNull() const { return form_; }
+  bool IsFormElementPointerNonNull() const { return form_ != nullptr; }
   HTMLFormElement* TakeForm();
 
   ParserContentPolicy GetParserContentPolicy() {

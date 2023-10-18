@@ -279,7 +279,7 @@ HTMLDivElement* VTTRegion::GetDisplayTree(Document& document) {
     PrepareRegionDisplayTree();
   }
 
-  return region_display_tree_;
+  return region_display_tree_.Get();
 }
 
 void VTTRegion::WillRemoveVTTCueBox(VTTCueBox* box) {

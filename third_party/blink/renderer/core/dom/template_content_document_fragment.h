@@ -36,7 +36,7 @@ class TemplateContentDocumentFragment final : public DocumentFragment {
   TemplateContentDocumentFragment(Document& document, Element* host)
       : DocumentFragment(&document, kCreateDocumentFragment), host_(host) {}
 
-  Element* Host() const { return host_; }
+  Element* Host() const { return host_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(host_);

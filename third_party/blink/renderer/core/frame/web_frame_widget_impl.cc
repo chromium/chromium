@@ -398,7 +398,7 @@ void WebFrameWidgetImpl::Close() {
 }
 
 WebLocalFrame* WebFrameWidgetImpl::LocalRoot() const {
-  return local_root_;
+  return local_root_.Get();
 }
 
 bool WebFrameWidgetImpl::RequestedMainFramePending() {
@@ -4346,7 +4346,7 @@ cc::LayerTreeHost* WebFrameWidgetImpl::LayerTreeHostForTesting() const {
 }
 
 ScreenMetricsEmulator* WebFrameWidgetImpl::DeviceEmulator() {
-  return device_emulator_;
+  return device_emulator_.Get();
 }
 
 bool WebFrameWidgetImpl::AutoResizeMode() {

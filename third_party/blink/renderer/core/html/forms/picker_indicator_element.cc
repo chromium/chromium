@@ -143,7 +143,7 @@ void PickerIndicatorElement::ClosePopup() {
 }
 
 bool PickerIndicatorElement::HasOpenedPopup() const {
-  return chooser_;
+  return chooser_ != nullptr;
 }
 
 void PickerIndicatorElement::DetachLayoutTree(bool performing_reattach) {

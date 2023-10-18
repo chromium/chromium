@@ -197,7 +197,7 @@ ContentSecurityPolicy::ContentSecurityPolicy()
           mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone) {}
 
 bool ContentSecurityPolicy::IsBound() {
-  return delegate_;
+  return delegate_ != nullptr;
 }
 
 void ContentSecurityPolicy::BindToDelegate(

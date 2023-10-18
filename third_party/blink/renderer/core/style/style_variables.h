@@ -60,7 +60,7 @@ class CORE_EXPORT StyleVariables {
   }
 
   using OptionalData = absl::optional<CSSVariableData*>;
-  using OptionalValue = absl::optional<Member<const CSSValue>>;
+  using OptionalValue = absl::optional<const CSSValue*>;
 
   OptionalValue GetValue(const AtomicString&) const;
   OptionalData GetData(const AtomicString&) const;

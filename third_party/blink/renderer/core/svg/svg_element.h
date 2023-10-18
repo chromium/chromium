@@ -275,7 +275,7 @@ class CORE_EXPORT SVGElement : public Element {
   SVGElementSet* SetOfIncomingReferences() const;
 
   SVGElementRareData* EnsureSVGRareData();
-  inline bool HasSVGRareData() const { return svg_rare_data_; }
+  inline bool HasSVGRareData() const { return svg_rare_data_ != nullptr; }
   inline SVGElementRareData* SvgRareData() const {
     DCHECK(svg_rare_data_);
     return svg_rare_data_.Get();

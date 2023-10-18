@@ -1355,7 +1355,7 @@ InputEvent::InputType DeleteSelectionCommand::GetInputType() const {
 // typing.  The Bold typing style shouldn't stick around.  Deletion should
 // preserve a typing style that *it* sets, however.
 bool DeleteSelectionCommand::PreservesTypingStyle() const {
-  return typing_style_;
+  return typing_style_ != nullptr;
 }
 
 void DeleteSelectionCommand::Trace(Visitor* visitor) const {

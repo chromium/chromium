@@ -2424,7 +2424,7 @@ void InspectorNetworkAgent::getRequestPostData(
 
 ExecutionContext* InspectorNetworkAgent::GetTargetExecutionContext() const {
   if (worker_global_scope_)
-    return worker_global_scope_;
+    return worker_global_scope_.Get();
   DCHECK(inspected_frames_);
   return inspected_frames_->Root()->DomWindow();
 }
