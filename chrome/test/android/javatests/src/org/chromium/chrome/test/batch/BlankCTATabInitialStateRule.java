@@ -53,8 +53,12 @@ public class BlankCTATabInitialStateRule implements TestRule {
             public void evaluate() throws Throwable {
                 if (sActivity == null) {
                     TestThreadUtils.runOnUiThreadBlocking(
-                            () -> { FirstRunStatus.setFirstRunFlowComplete(true); });
-                    mActivityTestRule.startMainActivityOnBlankPage();
+                            () -> {
+                                FirstRunStatus.setFirstRunFlowComplete(true);
+                            });
+                    if (mActivityTestRule.getActivity() == null) {
+                        mActivityTestRule.startMainActivityOnBlankPage();
+                    }
                     sActivity = mActivityTestRule.getActivity();
 
                     // Previous tests may have left tabs open and finished the Activity.

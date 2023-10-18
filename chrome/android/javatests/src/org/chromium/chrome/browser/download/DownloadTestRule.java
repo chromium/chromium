@@ -173,17 +173,21 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     }
 
     private String mLastDownloadFilePath;
-    private final CallbackHelper mHttpDownloadFinished = new CallbackHelper();
+    private CallbackHelper mHttpDownloadFinished = new CallbackHelper();
     private TestDownloadManagerServiceObserver mDownloadManagerServiceObserver;
 
     public int getChromeDownloadCallCount() {
         return mHttpDownloadFinished.getCallCount();
     }
 
+    protected void resetCallbackHelper() {
+        mHttpDownloadFinished = new CallbackHelper();
+    }
+
     public boolean waitForChromeDownloadToFinish(int currentCallCount) {
         boolean eventReceived = true;
         try {
-            mHttpDownloadFinished.waitForCallback(currentCallCount, 1, 5, TimeUnit.SECONDS);
+            mHttpDownloadFinished.waitForCallback(currentCallCount, 1, 10, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             eventReceived = false;
         }
