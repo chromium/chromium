@@ -167,18 +167,9 @@ VideoToolboxH265Accelerator::SubmitFrameMetadata(
 
   ResetFrameData();
 
-  // Handle NoRaslOutputFlag.
-  if (slice_hdr->irap_pic) {
-    // H265Decoder computes this flag, we just need to store it for the rest of
-    // this RAP.
-    no_rasl_output_flag_ = pic->no_rasl_output_flag_;
-  } else if (no_rasl_output_flag_ &&
-             (slice_hdr->nal_unit_type == H265NALU::RASL_N ||
-              slice_hdr->nal_unit_type == H265NALU::RASL_R)) {
-    // H265Decoder attempts to compute this flag, but since it doesn't save the
-    // NoRaslOutputFlag it always thinks RASL frames should be output.
-    // TODO(crbug.com/1331597): Migrate this logic into H265Decoder.
-    pic->pic_output_flag_ = false;
+  if (pic->no_rasl_output_flag_ &&
+      (slice_hdr->nal_unit_type == H265NALU::RASL_N ||
+       slice_hdr->nal_unit_type == H265NALU::RASL_R)) {
     // Drop this RASL frame, otherwise VideoToolbox will fail to decode it.
     drop_frame_ = true;
     return Status::kOk;
@@ -379,7 +370,6 @@ bool VideoToolboxH265Accelerator::OutputPicture(
 void VideoToolboxH265Accelerator::Reset() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  no_rasl_output_flag_ = false;
   ResetFrameData();
 }
 
