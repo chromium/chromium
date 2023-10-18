@@ -3308,7 +3308,7 @@
       },
     },
   },
-  'lacros_chrome_browsertests_run_in_series': {
+  'lacros_chrome_browsertests': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
@@ -3317,7 +3317,7 @@
       },
     },
   },
-  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash beta': {
+  'lacros_chrome_browsertests Lacros version skew testing ash beta': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
@@ -3326,7 +3326,7 @@
       },
     },
   },
-  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash canary': {
+  'lacros_chrome_browsertests Lacros version skew testing ash canary': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
@@ -3335,7 +3335,7 @@
       },
     },
   },
-  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash dev': {
+  'lacros_chrome_browsertests Lacros version skew testing ash dev': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
@@ -3344,7 +3344,7 @@
       },
     },
   },
-  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash stable': {
+  'lacros_chrome_browsertests Lacros version skew testing ash stable': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {

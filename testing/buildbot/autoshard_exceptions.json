@@ -221,7 +221,7 @@
                 },
                 "shards": "5"
             },
-            "lacros_chrome_browsertests_run_in_series": {
+            "lacros_chrome_browsertests": {
                 "debug": {
                     "avg_num_builds_per_peak_hour": "76.0",
                     "estimated_bot_hour_delta": "1.79",
@@ -235,7 +235,7 @@
                 },
                 "shards": "5"
             },
-            "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash beta": {
+            "lacros_chrome_browsertests Lacros version skew testing ash beta": {
                 "debug": {
                     "avg_num_builds_per_peak_hour": "72.0",
                     "estimated_bot_hour_delta": "-1.93",
@@ -249,7 +249,7 @@
                 },
                 "shards": "4"
             },
-            "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash canary": {
+            "lacros_chrome_browsertests Lacros version skew testing ash canary": {
                 "debug": {
                     "avg_num_builds_per_peak_hour": "74.0",
                     "estimated_bot_hour_delta": "-1.98",
@@ -263,7 +263,7 @@
                 },
                 "shards": "4"
             },
-            "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash dev": {
+            "lacros_chrome_browsertests Lacros version skew testing ash dev": {
                 "debug": {
                     "avg_num_builds_per_peak_hour": "74.0",
                     "estimated_bot_hour_delta": "-1.99",
@@ -277,7 +277,7 @@
                 },
                 "shards": "4"
             },
-            "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash stable": {
+            "lacros_chrome_browsertests Lacros version skew testing ash stable": {
                 "debug": {
                     "avg_num_builds_per_peak_hour": "78.0",
                     "estimated_bot_hour_delta": "-2.16",

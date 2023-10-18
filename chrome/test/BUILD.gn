@@ -2808,7 +2808,7 @@ if (!is_android) {
         "../browser/accessibility/live_translate_controller_browsertest.cc",
 
         # These tests also run on Lacros, as part of
-        # lacros_chrome_browsertests_run_in_series below.
+        # lacros_chrome_browsertests below.
         "../browser/media/webrtc/capture_handle_browsertest.cc",
         "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
         "../browser/ui/autofill/autofill_context_menu_manager_browsertest.cc",
@@ -5333,7 +5333,7 @@ if (is_chromeos_lacros) {
 
   # This test target is intended for lacros chrome specific tests that depend
   # on crosapi.
-  test("lacros_chrome_browsertests_run_in_series") {
+  test("lacros_chrome_browsertests") {
     use_xvfb = use_xvfb_in_this_config
 
     configs += [ "//build/config:precompiled_headers" ]

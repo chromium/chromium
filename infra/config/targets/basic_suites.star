@@ -4980,8 +4980,8 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "linux_lacros_chrome_browsertests_non_version_skew",
     tests = {
-        "lacros_chrome_browsertests_run_in_series": targets.legacy_test_config(
-            test = "lacros_chrome_browsertests_run_in_series",
+        "lacros_chrome_browsertests": targets.legacy_test_config(
+            test = "lacros_chrome_browsertests",
             args = [
                 "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter",
             ],
@@ -4995,7 +4995,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "linux_lacros_chrome_browsertests_version_skew",
     tests = {
-        "lacros_chrome_browsertests_run_in_series": targets.legacy_test_config(
+        "lacros_chrome_browsertests": targets.legacy_test_config(
             args = [
                 "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
             ],

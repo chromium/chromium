@@ -1011,8 +1011,8 @@
       "--logs-dir=${ISOLATED_OUTDIR}",
     ],
   },
-  "lacros_chrome_browsertests_run_in_series": {
-    "label": "//chrome/test:lacros_chrome_browsertests_run_in_series",
+  "lacros_chrome_browsertests": {
+    "label": "//chrome/test:lacros_chrome_browsertests",
     "type": "windowed_test_launcher",
     "args": [
       "--test-launcher-jobs=1",
