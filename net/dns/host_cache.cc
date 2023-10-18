@@ -278,22 +278,14 @@ HostCache::Entry::Entry(
   std::unique_ptr<HostResolverInternalResult> error_result;
   std::vector<std::unique_ptr<HostResolverInternalResult>> alias_results;
 
-  absl::optional<base::TimeDelta> smallest_ttl;
+  absl::optional<base::TimeDelta> smallest_ttl =
+      TtlFromInternalResults(results, now, now_ticks);
   absl::optional<Source> source;
   for (auto it = results.cbegin(); it != results.cend();) {
     // Increment iterator now to allow extracting `result` (std::set::extract()
     // is guaranteed to not invalidate any iterators except those pointing to
     // the extracted value).
     const std::unique_ptr<HostResolverInternalResult>& result = *it++;
-
-    if (result->expiration().has_value()) {
-      smallest_ttl = std::min(smallest_ttl.value_or(base::TimeDelta::Max()),
-                              result->expiration().value() - now_ticks);
-    }
-    if (result->timed_expiration().has_value()) {
-      smallest_ttl = std::min(smallest_ttl.value_or(base::TimeDelta::Max()),
-                              result->timed_expiration().value() - now);
-    }
 
     Source result_source;
     switch (result->source()) {
@@ -666,6 +658,25 @@ base::Value::Dict HostCache::Entry::GetAsValue(bool include_staleness) const {
   }
 
   return entry_dict;
+}
+
+// static
+absl::optional<base::TimeDelta> HostCache::Entry::TtlFromInternalResults(
+    const std::set<std::unique_ptr<HostResolverInternalResult>>& results,
+    base::Time now,
+    base::TimeTicks now_ticks) {
+  absl::optional<base::TimeDelta> smallest_ttl;
+  for (const std::unique_ptr<HostResolverInternalResult>& result : results) {
+    if (result->expiration().has_value()) {
+      smallest_ttl = std::min(smallest_ttl.value_or(base::TimeDelta::Max()),
+                              result->expiration().value() - now_ticks);
+    }
+    if (result->timed_expiration().has_value()) {
+      smallest_ttl = std::min(smallest_ttl.value_or(base::TimeDelta::Max()),
+                              result->timed_expiration().value() - now);
+    }
+  }
+  return smallest_ttl;
 }
 
 // static
