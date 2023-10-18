@@ -559,9 +559,8 @@ void ServiceWorkerNewScriptLoader::OnNetworkDataAvailable(MojoResult) {
   CHECK_EQ(WriterState::kWriting, body_writer_state_);
   CHECK(network_consumer_.is_valid());
   scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer;
-  uint32_t bytes_available = 0;
   MojoResult result = network::MojoToNetPendingBuffer::BeginRead(
-      &network_consumer_, &pending_buffer, &bytes_available);
+      &network_consumer_, &pending_buffer);
   TRACE_EVENT_WITH_FLOW1("ServiceWorker",
                          "ServiceWorkerNewScriptLoader::OnNetworkDataAvailable",
                          TRACE_ID_WITH_SCOPE(kServiceWorkerNewScriptLoaderScope,
@@ -569,17 +568,21 @@ void ServiceWorkerNewScriptLoader::OnNetworkDataAvailable(MojoResult) {
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "begin_read_result", result);
   switch (result) {
-    case MOJO_RESULT_OK:
+    case MOJO_RESULT_OK: {
+      const uint32_t bytes_available = pending_buffer->size();
       WriteData(std::move(pending_buffer), bytes_available);
       return;
-    case MOJO_RESULT_FAILED_PRECONDITION:
+    }
+    case MOJO_RESULT_FAILED_PRECONDITION: {
       // Call WriteData() with null buffer to let the cache writer know that
       // body from the network reaches to the end.
       WriteData(/*pending_buffer=*/nullptr, /*bytes_available=*/0);
       return;
-    case MOJO_RESULT_SHOULD_WAIT:
+    }
+    case MOJO_RESULT_SHOULD_WAIT: {
       network_watcher_.ArmOrNotify();
       return;
+    }
   }
   CHECK(false) << static_cast<int>(result);  // NOTREACHED
 }

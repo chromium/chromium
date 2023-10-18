@@ -850,9 +850,9 @@ void ServiceWorkerUpdateCheckTestUtils::
     base::RunLoop().RunUntilIdle();
 
     // Read the data to make a pending buffer.
-    ASSERT_EQ(MOJO_RESULT_OK,
-              network::MojoToNetPendingBuffer::BeginRead(
-                  &network_consumer, &pending_buffer, &bytes_available));
+    ASSERT_EQ(MOJO_RESULT_OK, network::MojoToNetPendingBuffer::BeginRead(
+                                  &network_consumer, &pending_buffer));
+    bytes_available = pending_buffer->size();
     ASSERT_EQ(diff_data_block.size(), bytes_available);
   }
 

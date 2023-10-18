@@ -4,6 +4,9 @@
 
 #include "services/network/public/cpp/net_adapters.h"
 
+#include <limits>
+
+#include "base/check_op.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/features.h"
 
@@ -54,28 +57,34 @@ NetToMojoIOBuffer::~NetToMojoIOBuffer() {}
 
 MojoToNetPendingBuffer::MojoToNetPendingBuffer(
     mojo::ScopedDataPipeConsumerHandle handle,
-    const void* buffer)
-    : handle_(std::move(handle)), buffer_(buffer) {}
+    base::span<const char> buffer)
+    : handle_(std::move(handle)), buffer_(buffer) {
+  CHECK_LE(buffer_.size(), std::numeric_limits<uint32_t>::max());
+}
 
-MojoToNetPendingBuffer::~MojoToNetPendingBuffer() {}
+MojoToNetPendingBuffer::~MojoToNetPendingBuffer() = default;
 
 // static
 MojoResult MojoToNetPendingBuffer::BeginRead(
     mojo::ScopedDataPipeConsumerHandle* handle,
-    scoped_refptr<MojoToNetPendingBuffer>* pending,
-    uint32_t* num_bytes) {
+    scoped_refptr<MojoToNetPendingBuffer>* pending) {
   const void* buffer = nullptr;
-  *num_bytes = 0;
+  uint32_t num_bytes = 0;
   MojoResult result =
-      (*handle)->BeginReadData(&buffer, num_bytes, MOJO_READ_DATA_FLAG_NONE);
-  if (result == MOJO_RESULT_OK)
-    *pending = new MojoToNetPendingBuffer(std::move(*handle), buffer);
-  return result;
+      (*handle)->BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+  if (result != MOJO_RESULT_OK) {
+    *pending = nullptr;
+    return result;
+  }
+  *pending = new MojoToNetPendingBuffer(
+      std::move(*handle),
+      {static_cast<const char*>(buffer), static_cast<size_t>(num_bytes)});
+  return MOJO_RESULT_OK;
 }
 
 void MojoToNetPendingBuffer::CompleteRead(uint32_t num_bytes) {
   handle_->EndReadData(num_bytes);
-  buffer_ = nullptr;
+  buffer_ = base::span<const char>();
 }
 
 mojo::ScopedDataPipeConsumerHandle MojoToNetPendingBuffer::ReleaseHandle() {
@@ -84,7 +93,7 @@ mojo::ScopedDataPipeConsumerHandle MojoToNetPendingBuffer::ReleaseHandle() {
 }
 
 bool MojoToNetPendingBuffer::IsComplete() const {
-  return buffer_ == nullptr;
+  return buffer_.empty();
 }
 
 MojoToNetIOBuffer::MojoToNetIOBuffer(MojoToNetPendingBuffer* pending_buffer,
