@@ -4,11 +4,13 @@
 # found in the LICENSE file.
 
 import argparse
+import json
 import os
 import re
 import subprocess
 import sys
 import time
+import urllib.request
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_REPO = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))
@@ -45,13 +47,33 @@ def get_git_timestamp(repo, revision):
   return int(m.group(1))
 
 
+svn2git_dict = None
+
+
+def svn2git(svn_rev):
+  global svn2git_dict
+  if not svn2git_dict:
+    # The JSON was generated with:
+    # $ ( echo '{' && git rev-list 40c47680eb2a1cb9bb7f8598c319335731bd5204 | while read commit ; do SVNREV=$(git log --format=%B -n 1 $commit | grep '^llvm-svn: [0-9]*$' | awk '{print $2 }') ; [[ ! -z '$SVNREV' ]] && echo "\"$SVNREV\": \"$commit\"," ; done && echo '}' ) | tee /tmp/llvm_svn2git.json
+    # and manually removing the trailing comma of the last entry.
+    with urllib.request.urlopen(
+        'https://commondatastorage.googleapis.com/chromium-browser-clang/llvm_svn2git.json'
+    ) as url:
+      svn2git_dict = json.load(url)
+    # For branch commits, use the most recent commit to main instead.
+    svn2git_dict['324578'] = '93505707b6d3ec117e555c5a48adc2cc56470e38'
+    svn2git_dict['149886'] = '60fc2425457f43f38edf5b310551f996f4f42df8'
+    svn2git_dict['145240'] = '12330650f843cf7613444e345a4ecfcf06923761'
+  return svn2git_dict[svn_rev]
+
+
 def clang_rolls():
   '''Return a dict from timestamp to clang revision rolled in at that time.'''
-  # The first roll using a git revision for the clang package version:
-  FIRST_GIT_ROLL = '9549a986740e03ca362144559d7d8b69644f8c5e'
+  FIRST_ROLL = 'd78457ce2895e5b98102412983a979f1896eca90'
   log = subprocess.check_output([
       'git', '-C', CHROMIUM_REPO, 'log', '--date=unix', '--pretty=fuller', '-p',
-      f'{FIRST_GIT_ROLL}..origin/main', '--', 'tools/clang/scripts/update.py'
+      f'{FIRST_ROLL}..origin/main', '--', 'tools/clang/scripts/update.py',
+      'tools/clang/scripts/update.sh'
   ]).decode('utf-8')
 
   # AuthorDate is when a commit was first authored; CommitDate (part of
@@ -61,6 +83,8 @@ def clang_rolls():
   VERSION_RE = re.compile(
       r'^\+CLANG_REVISION = \'llvmorg-\d+-init-\d+-g([0-9a-f]+)\'$')
   VERSION_RE_OLD = re.compile(r'^\+CLANG_REVISION = \'([0-9a-f]{10,})\'$')
+  # +CLANG_REVISION=125186
+  VERSION_RE_SVN = re.compile(r'^\+CLANG_REVISION ?= ?\'?(\d{1,6})\'?$')
 
   rolls = {}
   date = None
@@ -68,13 +92,21 @@ def clang_rolls():
     m = DATE_RE.match(line)
     if m:
       date = int(m.group(1))
-    m = VERSION_RE.match(line)
-    if not m:
-      m = VERSION_RE_OLD.match(line)
-    if m:
+      next
+
+    rev = None
+    if m := VERSION_RE.match(line):
+      rev = m.group(1)
+    elif m := VERSION_RE_OLD.match(line):
+      rev = m.group(1)
+    elif m := VERSION_RE_SVN.match(line):
+      rev = svn2git(m.group(1))
+
+    if rev:
       assert (date)
-      rolls[date] = m.group(1)
+      rolls[date] = rev
       date = None
+
   return rolls
 
 
