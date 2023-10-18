@@ -41,6 +41,14 @@ bool MemoryMappedFile::Initialize(const FilePath& file_name, Access access) {
     case READ_ONLY:
       flags = File::FLAG_OPEN | File::FLAG_READ;
       break;
+    case READ_WRITE_COPY:
+      flags = File::FLAG_OPEN | File::FLAG_READ;
+#if BUILDFLAG(IS_FUCHSIA)
+      // Fuchsia's mmap() implementation does not allow us to create a
+      // copy-on-write mapping of a file opened as read-only.
+      flags |= File::FLAG_WRITE;
+#endif
+      break;
     case READ_WRITE:
       flags = File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE;
       break;
@@ -92,6 +100,7 @@ bool MemoryMappedFile::Initialize(File file,
       [[fallthrough]];
     case READ_ONLY:
     case READ_WRITE:
+    case READ_WRITE_COPY:
       // Ensure that the region values are valid.
       if (region.offset < 0) {
         DLOG(ERROR) << "Region bounds are not valid.";

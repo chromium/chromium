@@ -66,18 +66,24 @@ bool MemoryMappedFile::MapFileRegionToMemory(
     length_ = region.size;
   }
 
-  int flags = 0;
+  int prot = 0;
+  int flags = MAP_SHARED;
   switch (access) {
     case READ_ONLY:
-      flags |= PROT_READ;
+      prot |= PROT_READ;
       break;
 
     case READ_WRITE:
-      flags |= PROT_READ | PROT_WRITE;
+      prot |= PROT_READ | PROT_WRITE;
+      break;
+
+    case READ_WRITE_COPY:
+      prot |= PROT_READ | PROT_WRITE;
+      flags = MAP_PRIVATE;
       break;
 
     case READ_WRITE_EXTEND:
-      flags |= PROT_READ | PROT_WRITE;
+      prot |= PROT_READ | PROT_WRITE;
 
       if (!AllocateFileRegion(&file_, region.offset, region.size))
         return false;
@@ -85,8 +91,8 @@ bool MemoryMappedFile::MapFileRegionToMemory(
       break;
   }
 
-  data_ = static_cast<uint8_t*>(mmap(nullptr, map_size, flags, MAP_SHARED,
-                                     file_.GetPlatformFile(), map_start));
+  data_ = static_cast<uint8_t*>(
+      mmap(nullptr, map_size, prot, flags, file_.GetPlatformFile(), map_start));
   if (data_ == MAP_FAILED) {
     DPLOG(ERROR) << "mmap " << file_.GetPlatformFile();
     return false;
