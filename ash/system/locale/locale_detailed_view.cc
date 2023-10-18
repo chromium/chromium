@@ -4,7 +4,6 @@
 
 #include "ash/system/locale/locale_detailed_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -20,7 +19,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -61,12 +59,9 @@ class LocaleItemView : public views::Button {
     AddChildView(tri_view);
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
-    const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
     views::Label* iso_code_label = TrayPopupUtils::CreateDefaultLabel();
     iso_code_label->SetEnabledColorId(
-        is_jelly_enabled
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-            : kColorAshTextColorPrimary);
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface));
     iso_code_label->SetAutoColorReadabilityEnabled(false);
     iso_code_label->SetText(base::i18n::ToUpper(
         base::UTF8ToUTF16(l10n_util::GetLanguage(iso_code))));
@@ -78,15 +73,9 @@ class LocaleItemView : public views::Button {
 
     auto* display_name_view = TrayPopupUtils::CreateDefaultLabel();
     display_name_view->SetText(display_name);
-    if (is_jelly_enabled) {
-      display_name_view->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
-                                            *display_name_view);
-    } else {
-      display_name_view->SetEnabledColorId(kColorAshTextColorPrimary);
-      TrayPopupUtils::SetLabelFontList(
-          display_name_view, TrayPopupUtils::FontStyle::kDetailedViewLabel);
-    }
+    display_name_view->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *display_name_view);
     display_name_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     tri_view->AddView(TriView::Container::CENTER, display_name_view);
 
@@ -95,9 +84,7 @@ class LocaleItemView : public views::Button {
           /*use_wide_layout=*/false);
       checked_image->SetImage(ui::ImageModel::FromVectorIcon(
           kCheckCircleIcon,
-          is_jelly_enabled
-              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
-              : kColorAshIconColorProminent,
+          static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary),
           kMenuIconSize));
       tri_view->AddView(TriView::Container::END, checked_image);
     }
@@ -147,9 +134,7 @@ void LocaleDetailedView::CreateItems() {
 
   // Setup the container for the locale list views.
   views::View* container =
-      features::IsQsRevampEnabled()
-          ? scroll_content()->AddChildView(std::make_unique<RoundedContainer>())
-          : scroll_content();
+      scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
 
   const std::vector<LocaleInfo>& locales =
       Shell::Get()->system_tray_model()->locale()->locale_list();

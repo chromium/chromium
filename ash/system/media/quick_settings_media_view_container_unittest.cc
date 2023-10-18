@@ -4,7 +4,6 @@
 
 #include "ash/system/media/quick_settings_media_view_container.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -24,8 +23,8 @@ class QuickSettingsMediaViewContainerTest : public NoSessionAshTestBase {
   ~QuickSettingsMediaViewContainerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, media::kGlobalMediaControlsCrOSUpdatedUI}, {});
+    feature_list_.InitWithFeatures({media::kGlobalMediaControlsCrOSUpdatedUI},
+                                   {});
     NoSessionAshTestBase::SetUp();
 
     MediaTray::SetPinnedToShelf(false);
