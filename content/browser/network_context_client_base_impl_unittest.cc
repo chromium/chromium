@@ -132,7 +132,8 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidFile) {
 TEST_F(NetworkContextClientBaseTest,
        DISABLED_UploadOneValidFileWithContentUri) {
   base::FilePath image_path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &image_path));
+  EXPECT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &image_path));
   image_path = image_path.AppendASCII("content")
                    .AppendASCII("test")
                    .AppendASCII("data")

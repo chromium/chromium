@@ -776,7 +776,7 @@ void ShellContentBrowserClient::GetHyphenationDictionary(
     base::OnceCallback<void(const base::FilePath&)> callback) {
   // If we have the source tree, return the dictionary files in the tree.
   base::FilePath dir;
-  if (base::PathService::Get(base::DIR_SOURCE_ROOT, &dir)) {
+  if (base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir)) {
     dir = dir.AppendASCII("third_party")
               .AppendASCII("hyphenation-patterns")
               .AppendASCII("hyb");

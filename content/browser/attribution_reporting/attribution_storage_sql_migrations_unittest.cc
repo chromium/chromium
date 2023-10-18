@@ -92,7 +92,7 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
   // successfully, false otherwise.
   bool GetDatabaseData(const base::FilePath& file, std::string* contents) {
     base::FilePath source_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path);
     source_path = source_path.AppendASCII(
         "content/test/data/attribution_reporting/databases");
     source_path = source_path.Append(file);

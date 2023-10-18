@@ -3695,7 +3695,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // This test verifies a suppressed pop up that requires navigation from
   // browser side works with a delegate that delays navigations of pop ups.
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   base::FilePath simple_links_path =
       test_data_dir.Append(GetTestDataFilePath())
           .Append(FILE_PATH_LITERAL("simple_links.html"));
@@ -3735,7 +3735,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Create a file: scheme non-suppressed pop up from a file: scheme page will
   // be blocked and wait for the renderer to signal.
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   base::FilePath simple_links_path =
       test_data_dir.Append(GetTestDataFilePath())
           .Append(FILE_PATH_LITERAL("simple_links.html"));

@@ -536,7 +536,7 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
  protected:
   int64_t GetTestDataFileSize(const std::string& name) {
     base::FilePath file_path;
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));
     int64_t file_size = 0;
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -548,7 +548,7 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
   }
   std::string GetTestDataFile(const std::string& name) {
     base::FilePath file_path;
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));
     std::string contents;
     {
       base::ScopedAllowBlockingForTesting allow_blocking;

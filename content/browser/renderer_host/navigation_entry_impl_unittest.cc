@@ -365,7 +365,8 @@ TEST_F(NavigationEntryTest, SetPageStateWithDefaultSequenceNumbers) {
 // Test that content URIs correctly show the file display name as the title.
 TEST_F(NavigationEntryTest, DISABLED_NavigationEntryContentUri) {
   base::FilePath image_path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &image_path));
+  EXPECT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &image_path));
   image_path = image_path.Append(FILE_PATH_LITERAL("content"));
   image_path = image_path.Append(FILE_PATH_LITERAL("test"));
   image_path = image_path.Append(FILE_PATH_LITERAL("data"));

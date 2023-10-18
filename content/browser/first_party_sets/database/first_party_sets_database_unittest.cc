@@ -84,7 +84,7 @@ class FirstPartySetsDatabaseTest : public testing::Test {
 
   static base::FilePath GetSqlFilePath(const std::string sql_file_name) {
     base::FilePath path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
     path = path.AppendASCII("content/test/data/first_party_sets/");
     path = path.AppendASCII(sql_file_name);
     EXPECT_TRUE(base::PathExists(path));

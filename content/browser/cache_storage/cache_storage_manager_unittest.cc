@@ -3288,7 +3288,7 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
     // Determine the location of the old, frozen copy of the cache_storage
     // files in the test data.
     base::FilePath root_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
     base::FilePath test_data_path =
         root_path.AppendASCII(test_index_path).Append(storage_dir.BaseName());
 

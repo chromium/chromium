@@ -67,7 +67,7 @@ class ContentBrowserTest : public BrowserTestBase {
   // Returns the window for the test.
   Shell* shell() const { return shell_; }
 
-  // File path to test data, relative to DIR_SOURCE_ROOT.
+  // File path to test data, relative to DIR_SRC_TEST_DATA_ROOT.
   base::FilePath GetTestDataFilePath();
 
  private:

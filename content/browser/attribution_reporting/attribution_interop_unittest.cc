@@ -36,7 +36,7 @@ constexpr char kDefaultConfigFileName[] = "default_config.json";
 
 base::FilePath GetInputDir() {
   base::FilePath input_dir;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &input_dir);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &input_dir);
   return input_dir.AppendASCII(
       "content/test/data/attribution_reporting/interop");
 }

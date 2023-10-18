@@ -1793,7 +1793,7 @@ TEST_F(InterestGroupStorageTest, ExpirationDeletesMetadata) {
 TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
   // Create V6 database from dump
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
   file_path =
       file_path.AppendASCII("content/test/data/interest_group/schemaV6.sql");
   ASSERT_TRUE(base::PathExists(file_path));
@@ -2200,7 +2200,7 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
 TEST_F(InterestGroupStorageTest, UpgradeFromV6ThenAcceptNewData) {
   // Create V6 database from dump
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
   file_path =
       file_path.AppendASCII("content/test/data/interest_group/schemaV6.sql");
   ASSERT_TRUE(base::PathExists(file_path));
@@ -2225,7 +2225,7 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6ThenAcceptNewData) {
 TEST_F(InterestGroupStorageTest, UpgradeFromV16) {
   // Create V16 database from dump
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
   file_path =
       file_path.AppendASCII("content/test/data/interest_group/schemaV16.sql");
   ASSERT_TRUE(base::PathExists(file_path));

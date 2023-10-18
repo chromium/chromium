@@ -402,7 +402,7 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
 
 std::vector<base::FilePath> GetLegacyVersions() {
   base::FilePath input_dir;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &input_dir);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &input_dir);
   input_dir = input_dir.AppendASCII(
       "content/test/data/private_aggregation/aggregatable_report_goldens");
 

@@ -75,13 +75,13 @@ void OverrideChildProcessPath() {
 }
 
 void OverrideSourceRootPath() {
-  // The base implementation to get base::DIR_SOURCE_ROOT assumes the current
-  // process path is the top level app path, not a nested one.
+  // The base implementation to get base::DIR_SRC_TEST_DATA_ROOT assumes the
+  // current process path is the top level app path, not a nested one.
   //
   // Going up 5 levels is needed, since frameworks path looks something like
   // src/out/foo/Content Shell.app/Contents/Framework/
   base::PathService::Override(
-      base::DIR_SOURCE_ROOT,
+      base::DIR_SRC_TEST_DATA_ROOT,
       GetFrameworksPath().DirName().DirName().DirName().DirName().DirName());
 }
 
