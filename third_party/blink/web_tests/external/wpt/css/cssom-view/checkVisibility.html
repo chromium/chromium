@@ -16,6 +16,10 @@
 
 <div id=displaynone style="display:none">hello</div>
 
+<div id=displaycontents style="display:contents">
+  <div id=displaycontentschild>hello</div>
+</div>
+
 <div id=opacityzero style="opacity:0">hello</div>
 
 <div style="content-visibility:hidden">
@@ -65,6 +69,11 @@ test(() => {
 test(() => {
   assert_false(displaynone.checkVisibility());
 }, 'checkVisibility on display:none element.');
+
+test(() => {
+  assert_false(displaycontents.checkVisibility());
+  assert_true(displaycontentschild.checkVisibility());
+}, 'checkVisibility on display:contents element.');
 
 test(() => {
   assert_false(opacityzero.checkVisibility({
