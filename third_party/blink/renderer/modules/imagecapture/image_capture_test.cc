@@ -662,11 +662,11 @@ class ImageCaptureTest : public testing::Test {
     EXPECT_CALL(*component_, GetSourceType)
         .WillRepeatedly(Return(MediaStreamSource::kTypeVideo));
 
-    EXPECT_CALL(*component_, AddSink(_, _, _, _))
-        .WillOnce(Invoke([&](WebMediaStreamSink* sink,
-                             const VideoCaptureDeliverFrameCB& callback,
-                             MediaStreamVideoSink::IsSecure is_secure,
-                             MediaStreamVideoSink::UsesAlpha uses_alpha) {
+    ON_CALL(*component_, AddSink(_, _, _, _))
+        .WillByDefault(Invoke([&](WebMediaStreamSink* sink,
+                                  const VideoCaptureDeliverFrameCB& callback,
+                                  MediaStreamVideoSink::IsSecure is_secure,
+                                  MediaStreamVideoSink::UsesAlpha uses_alpha) {
           platform_track_->AddSink(sink, callback, is_secure, uses_alpha);
           callback.Run(VideoFrame::CreateBlackFrame(gfx::Size(1, 1)),
                        /*scaled_video_frames=*/{},
@@ -1578,7 +1578,7 @@ TEST_F(ImageCaptureTest, GrabFrameOfLiveTrackIsFulfilled) {
   EXPECT_TRUE(tester.IsFulfilled());
 }
 
-TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackIsFulfilled) {
+TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackRejects) {
   V8TestingScope scope;
   SetupTrackMocks(scope);
   track_->SetReadyState("live");
@@ -1589,7 +1589,7 @@ TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackIsFulfilled) {
 
   ScriptPromiseTester tester(scope.GetScriptState(), result);
   tester.WaitUntilSettled();
-  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_TRUE(tester.IsRejected());
 }
 
 TEST_F(ImageCaptureTest, GrabFrameOfEndedTrackRejects) {
