@@ -326,6 +326,13 @@ BASE_FEATURE(kInvalidateLocalSurfaceIdPreCommit,
              "InvalidateLocalSurfaceIdPreCommit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// On mac, when the RenderWidgetHostViewMac is hidden, also hide the
+// DelegatedFrameHost. Among other things, it unlocks the compositor frames,
+// which can saves hundreds of MiB of memory with bfcache entries.
+BASE_FEATURE(kHideDelegatedFrameHostMac,
+             "HideDelegatedFrameHostMac",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }

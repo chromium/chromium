@@ -487,6 +487,11 @@ void RenderWidgetHostViewMac::Hide() {
   ns_view_->SetVisible(is_visible_);
   browser_compositor_->SetViewVisible(is_visible_);
   WasOccluded();
+
+  if (base::FeatureList::IsEnabled(::features::kHideDelegatedFrameHostMac)) {
+    browser_compositor_->GetDelegatedFrameHost()->WasHidden(
+        DelegatedFrameHost::HiddenCause::kOther);
+  }
 }
 
 void RenderWidgetHostViewMac::WasUnOccluded() {
