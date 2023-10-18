@@ -165,6 +165,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/gn_args_verifier",
+)
+
+build_recipe(
     name = "recipe:chromium/targets_config_verifier",
 )
 
