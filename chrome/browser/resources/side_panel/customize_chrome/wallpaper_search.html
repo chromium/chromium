@@ -7,6 +7,19 @@
     margin: 16px 16px 8px;
   }
 
+  #descriptorMenuD cr-button {
+    background-color: var(--sys-color-neutral-container);
+    height: 40px;
+    min-width: 40px;
+    padding: 0px;
+  }
+
+  .descriptor-d {
+    border-radius: 50%;
+    height: 28px;
+    width: 28px;
+  }
+
   #btnContainer {
     display: flex;
     justify-content: flex-end;
@@ -114,6 +127,14 @@
         </button>
       </template>
     </cr-action-menu>
+    <div id="descriptorMenuD">
+      <template is="dom-repeat" items="[[descriptorD_]]">
+        <cr-button on-click="onDescriptorLabelClickD_">
+          <span class="descriptor-d" style$="background-color: [[item]];">
+          </span>
+        </cr-button>
+      </template>
+    </div>
     <div id="btnContainer">
       <cr-button
           id="submitButton"

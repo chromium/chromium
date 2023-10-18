@@ -476,6 +476,7 @@ void CustomizeChromePageHandler::GetWallpaperSearchResults(
     const std::string& descriptor_a,
     const absl::optional<std::string>& descriptor_b,
     const absl::optional<std::string>& descriptor_c,
+    const absl::optional<std::string>& descriptor_d,
     GetWallpaperSearchResultsCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
@@ -494,7 +495,8 @@ void CustomizeChromePageHandler::GetWallpaperSearchResults(
   chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
   request.set_query(base::StrCat(
       {descriptor_a, descriptor_b ? " " : "", descriptor_b.value_or(""),
-       descriptor_c ? " " : "", descriptor_c.value_or("")}));
+       descriptor_c ? " " : "", descriptor_c.value_or(""),
+       descriptor_d ? " " : "", descriptor_d.value_or("")}));
   optimization_guide_keyed_service->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,

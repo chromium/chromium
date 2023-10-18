@@ -6,7 +6,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.js';
 
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, Descriptors} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.js';
+import {DESCRIPTOR_C_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -100,6 +100,11 @@ suite('WallpaperSearchTest', () => {
           wallpaperSearchElement.shadowRoot!
               .querySelectorAll('#descriptorMenuC .dropdown-item')
               .length);
+      assertEquals(
+          5,
+          wallpaperSearchElement.shadowRoot!
+              .querySelectorAll('#descriptorMenuD cr-button')
+              .length);
     });
 
     test('descriptor menus open and close', async () => {
@@ -145,12 +150,17 @@ suite('WallpaperSearchTest', () => {
           wallpaperSearchElement, '#descriptorMenuB .dropdown-item')!.click();
       $$<HTMLElement>(
           wallpaperSearchElement, '#descriptorMenuC .dropdown-item')!.click();
+      $$<HTMLElement>(
+          wallpaperSearchElement, '#descriptorMenuD cr-button')!.click();
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
       assertEquals('bar', handler.getArgs('getWallpaperSearchResults')[0][0]);
       assertEquals('foo', handler.getArgs('getWallpaperSearchResults')[0][1]);
       assertEquals('baz', handler.getArgs('getWallpaperSearchResults')[0][2]);
+      assertEquals(
+          DESCRIPTOR_C_VALUE[0],
+          handler.getArgs('getWallpaperSearchResults')[0][3]);
     });
 
     test('selects random descriptor', async () => {
@@ -191,6 +201,8 @@ suite('WallpaperSearchTest', () => {
           undefined, handler.getArgs('getWallpaperSearchResults')[0][1]);
       assertEquals(
           undefined, handler.getArgs('getWallpaperSearchResults')[0][2]);
+      assertEquals(
+          undefined, handler.getArgs('getWallpaperSearchResults')[0][3]);
     });
 
     test('empty result shows no tiles', async () => {
