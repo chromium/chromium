@@ -534,6 +534,12 @@ void Job::StartURLRequest(URLRequestContext* context) {
       IsolationInfo::RequestType::kOther, origin /* top_frame_origin */,
       origin /* frame_origin */, SiteForCookies()));
 
+  // Ensure that we bypass HSTS for all requests sent through
+  // CertNetFetcherURLRequest, since AIA/CRL/OCSP requests must be in HTTP to
+  // avoid circular dependencies.
+  url_request_->SetLoadFlags(url_request_->load_flags() |
+                             net::LOAD_SHOULD_BYPASS_HSTS);
+
   url_request_->Start();
 
   // Start a timer to limit how long the job runs for.

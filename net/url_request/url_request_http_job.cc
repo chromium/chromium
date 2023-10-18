@@ -222,14 +222,25 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
   // Check for reasons not to return a URLRequestHttpJob. These don't apply to
   // https and wss requests.
   if (!url.SchemeIsCryptographic()) {
-    // Check for HSTS upgrade.
-    TransportSecurityState* hsts =
-        request->context()->transport_security_state();
-    if (hsts && hsts->ShouldUpgradeToSSL(url.host(), request->net_log())) {
-      return std::make_unique<URLRequestRedirectJob>(
-          request, UpgradeSchemeToCryptographic(url),
-          // Use status code 307 to preserve the method, so POST requests work.
-          RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT, "HSTS");
+    // If the request explicitly has been marked to bypass HSTS, ensure that
+    // the request is in no-credential mode so that the http site can't read
+    // or set cookies which are shared across http/https, then skip the
+    // upgrade.
+    if (((request->load_flags() & net::LOAD_SHOULD_BYPASS_HSTS) ==
+         net::LOAD_SHOULD_BYPASS_HSTS)) {
+      CHECK(request->allow_credentials() == false);
+    } else {
+      // Check for HSTS upgrade.
+      TransportSecurityState* hsts =
+          request->context()->transport_security_state();
+      if (hsts && hsts->ShouldUpgradeToSSL(url.host(), request->net_log())) {
+        return std::make_unique<URLRequestRedirectJob>(
+            request, UpgradeSchemeToCryptographic(url),
+            // Use status code 307 to preserve the method, so POST requests
+            // work.
+            RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT,
+            "HSTS");
+      }
     }
 
 #if BUILDFLAG(IS_ANDROID)

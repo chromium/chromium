@@ -110,3 +110,7 @@ LOAD_FLAG(CAN_USE_SHARED_DICTIONARY, 1 << 17)
 // Indicates that CAN_USE_SHARED_DICTIONARY must be disabled after a redirect to
 // another origin.
 LOAD_FLAG(DISABLE_SHARED_DICTIONARY_AFTER_CROSS_ORIGIN_REDIRECT, 1 << 18)
+
+// This flag is used to bypass HSTS upgrades. This flag must be set for AIA,
+// CRL, and OCSP requests in order to prevent circular dependencies.
+LOAD_FLAG(SHOULD_BYPASS_HSTS, 1 << 19)

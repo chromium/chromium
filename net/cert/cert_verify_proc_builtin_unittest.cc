@@ -24,6 +24,7 @@
 #include "net/cert/pki/trust_store_in_memory.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
+#include "net/http/transport_security_state.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/test/cert_builder.h"
@@ -218,6 +219,8 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     mock_system_trust_store_->SetMockIsKnownRoot(is_known_root);
   }
 
+  net::URLRequestContext* context() { return context_.get(); }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
@@ -233,6 +236,42 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   raw_ptr<MockSystemTrustStore> mock_system_trust_store_ = nullptr;
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
 };
+
+TEST_F(CertVerifyProcBuiltinTest, ShouldBypassHSTS) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
+  ASSERT_TRUE(test_server.InitializeAndListen());
+
+  // CRL that marks leaf as revoked.
+  leaf->SetCrlDistributionPointUrl(
+      CreateAndServeCrl(&test_server, root.get(), {leaf->GetSerialNumber()}));
+
+  test_server.StartAcceptingConnections();
+
+  {
+    scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+    ASSERT_TRUE(chain.get());
+
+    NetLogSource verify_net_log_source;
+    CertVerifyResult verify_result;
+    TestCompletionCallback verify_callback;
+    // Ensure HSTS upgrades for the domain which hosts the CRLs.
+    context()->transport_security_state()->AddHSTS(
+        test_server.base_url().host(), base::Time::Now() + base::Seconds(30),
+        /*include_subdomains=*/true);
+    ASSERT_TRUE(context()->transport_security_state()->ShouldUpgradeToSSL(
+        test_server.base_url().host()));
+    Verify(chain.get(), "www.example.com",
+           CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
+           /*additional_trust_anchors=*/{root->GetX509Certificate()},
+           &verify_result, &verify_net_log_source, verify_callback.callback());
+
+    int error = verify_callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+  }
+}
 
 TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
