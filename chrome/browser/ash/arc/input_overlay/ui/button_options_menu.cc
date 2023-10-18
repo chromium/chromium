@@ -34,72 +34,6 @@
 
 namespace arc::input_overlay {
 
-// `ActionLabelButton` is the entry point to `ButtonActionLabel`.
-// ------------------------------
-// ||"Button label"           > |
-// ||"Unassigned"               |
-//  -----------------------------
-class ButtonOptionsMenu::ActionLabelButton : public views::Button {
- public:
-  ActionLabelButton(DisplayOverlayController* controller, Action* action)
-      : Button(base::BindRepeating(
-            &ActionLabelButton::OnButtonLabelAssignmentPressed,
-            base::Unretained(this))),
-        controller_(controller),
-        action_(action) {
-    Init();
-  }
-
-  void SetSubtitle(std::u16string subtitle) {
-    label_name_tag_->SetSubtitle(subtitle);
-  }
-
-  void set_action(Action* action) { action_ = action; }
-
- private:
-  void Init() {
-    // TODO(b/279117180): Replace with proper accessible name.
-    SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-    SetUseDefaultFillLayout(true);
-    auto* container = AddChildView(std::make_unique<ash::RoundedContainer>());
-    container->SetBorderInsets(gfx::Insets::VH(14, 16));
-    container->SetBackground(
-        views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
-    container->SetLayoutManager(std::make_unique<views::TableLayout>())
-        ->AddColumn(/*h_align=*/views::LayoutAlignment::kStart,
-                    /*v_align=*/views::LayoutAlignment::kCenter,
-                    /*horizontal_resize=*/1.0f,
-                    /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
-                    /*fixed_width=*/0, /*min_width=*/0)
-        .AddColumn(/*h_align=*/views::LayoutAlignment::kEnd,
-                   /*v_align=*/views::LayoutAlignment::kCenter,
-                   /*horizontal_resize=*/1.0f,
-                   /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
-                   /*fixed_width=*/0, /*min_width=*/0)
-        .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
-
-    // TODO(b/274690042): Replace placeholder text with localized strings.
-    label_name_tag_ =
-        container->AddChildView(NameTag::CreateNameTag(u"Button label"));
-    label_name_tag_->SetSubtitle(GetActionNameAtIndex(
-        controller_->action_name_list(), action_->name_label_index()));
-    label_name_tag_->SetState(/*is_error=*/false, u"");
-    container->AddChildView(std::make_unique<views::ImageView>(
-        ui::ImageModel::FromVectorIcon(ash::kQuickSettingsRightArrowIcon,
-                                       cros_tokens::kCrosSysOnSurface)));
-  }
-
-  void OnButtonLabelAssignmentPressed() {
-    controller_->OnButtonOptionsMenuButtonLabelPressed(action_);
-  }
-
-  raw_ptr<DisplayOverlayController> controller_ = nullptr;
-  raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
-
-  raw_ptr<NameTag> label_name_tag_ = nullptr;
-};
-
 // ButtonOptionsActionEdit shows in ButtonOptions and is associated with each
 // of Action.
 // ----------------------------
@@ -155,10 +89,6 @@ void ButtonOptionsMenu::Init() {
   AddEditTitle();
   AddActionSelection();
   AddActionEdit();
-  action_label_button_ =
-      AddChildView(std::make_unique<ActionLabelButton>(controller_, action_));
-  action_label_button_->SetProperty(views::kMarginsKey,
-                                    gfx::Insets::TLBR(8, 0, 0, 0));
 }
 
 void ButtonOptionsMenu::AddHeader() {
@@ -255,10 +185,6 @@ void ButtonOptionsMenu::OnDoneButtonPressed() {
   controller_->RemoveButtonOptionsMenuWidget();
 }
 
-void ButtonOptionsMenu::OnButtonLabelAssignmentPressed() {
-  controller_->OnButtonOptionsMenuButtonLabelPressed(action_);
-}
-
 void ButtonOptionsMenu::OnActionRemoved(const Action& action) {
   if (action_ != &action) {
     return;
@@ -271,7 +197,6 @@ void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
   DCHECK_EQ(action_, action);
   action_ = new_action;
   button_group_->set_action(new_action);
-  action_label_button_->set_action(new_action);
   auto index = GetIndexOf(action_edit_);
   RemoveChildViewT(action_edit_);
   action_edit_ = AddChildViewAt(
@@ -286,10 +211,7 @@ void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {
 }
 
 void ButtonOptionsMenu::OnActionNameUpdated(const Action& action) {
-  if (action_ == &action) {
-    action_label_button_->SetSubtitle(GetActionNameAtIndex(
-        controller_->action_name_list(), action_->name_label_index()));
-  }
+  NOTIMPLEMENTED();
 }
 
 void ButtonOptionsMenu::OnActionNewStateRemoved(const Action& action) {

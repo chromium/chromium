@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/button_label_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
@@ -49,7 +48,6 @@ namespace {
 constexpr int kMenuEntrySideMargin = 24;
 constexpr int kNudgeVerticalAlign = 8;
 
-constexpr char kButtonLabelList[] = "GameControlsButtonLabelList";
 constexpr char kButtonOptionsMenu[] = "GameControlsButtonOptionsMenu";
 constexpr char kEditingList[] = "GameControlsEditingList";
 constexpr char kInputMapping[] = "GameControlsInputMapping";
@@ -714,16 +712,7 @@ void DisplayOverlayController::RemoveButtonOptionsMenuWidget() {
 
     button_options_widget_->Close();
     button_options_widget_.reset();
-
-    RemoveButtonLabelListWidget();
   }
-}
-
-void DisplayOverlayController::OnButtonOptionsMenuButtonLabelPressed(
-    Action* action) {
-  DCHECK(button_options_widget_);
-  button_options_widget_->Hide();
-  AddButtonLabelListWidget(action);
 }
 
 void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
@@ -740,41 +729,6 @@ void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
   } else {
     button_options_widget_->Hide();
   }
-}
-
-void DisplayOverlayController::AddButtonLabelListWidget(Action* action) {
-  if (button_label_list_widget_) {
-    return;
-  }
-
-  button_label_list_widget_ = CreateTransientWidget(
-      touch_injector_->window(), /*widget_name=*/kButtonLabelList,
-      /*accept_events=*/true, /*is_floating=*/true);
-  auto* view = button_label_list_widget_->SetContentsView(
-      std::make_unique<ButtonLabelList>(this, action));
-  auto* window = button_label_list_widget_->GetNativeWindow();
-  window->parent()->StackChildAtTop(window);
-  UpdateWidgetBoundsInRootWindow(
-      button_label_list_widget_.get(),
-      gfx::Rect(action->action_view()->CalculateAttachViewPositionInRootWindow(
-                    CalculateAvailableBounds(
-                        touch_injector_->window()->GetRootWindow()),
-                    touch_injector_->content_bounds().origin(), view),
-                view->GetPreferredSize()));
-  button_label_list_widget_->ShowInactive();
-}
-
-void DisplayOverlayController::RemoveButtonLabelListWidget() {
-  if (!button_label_list_widget_) {
-    return;
-  }
-  button_label_list_widget_->Close();
-  button_label_list_widget_.reset();
-}
-
-void DisplayOverlayController::OnButtonLabelListBackButtonPressed() {
-  RemoveButtonLabelListWidget();
-  button_options_widget_->ShowInactive();
 }
 
 void DisplayOverlayController::AddNudgeWidget(views::View* anchor_view,
@@ -1122,7 +1076,6 @@ void DisplayOverlayController::UpdateForBoundsChanged() {
     UpdateEditingListWidgetBounds();
 
     // Remove the floating window attached the ActionView.
-    RemoveButtonLabelListWidget();
     RemoveButtonOptionsMenuWidget();
     RemoveDeleteEditShortcutWidget();
   } else {

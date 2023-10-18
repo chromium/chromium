@@ -31,7 +31,6 @@ class Action;
 class ActionEditMenu;
 class ActionViewListItem;
 class ButtonOptionsMenu;
-class ButtonLabelList;
 class EditFinishView;
 class EditingList;
 class EducationalView;
@@ -108,12 +107,7 @@ class DisplayOverlayController : public ui::EventHandler,
 
   void AddButtonOptionsMenuWidget(Action* action);
   void RemoveButtonOptionsMenuWidget();
-  void OnButtonOptionsMenuButtonLabelPressed(Action* action);
   void SetButtonOptionsMenuWidgetVisibility(bool is_visible);
-
-  void AddButtonLabelListWidget(Action* action);
-  void RemoveButtonLabelListWidget();
-  void OnButtonLabelListBackButtonPressed();
 
   void AddNudgeWidget(views::View* anchor_view, const std::u16string& text);
   void RemoveNudgeWidget(views::Widget* widget);
@@ -146,14 +140,9 @@ class DisplayOverlayController : public ui::EventHandler,
 
   const TouchInjector* touch_injector() const { return touch_injector_; }
 
-  const std::vector<std::u16string> action_name_list() const {
-    return action_name_list_;
-  }
-
  private:
   friend class ActionView;
   friend class ArcInputOverlayManagerTest;
-  friend class ButtonLabelList;
   friend class ButtonOptionsMenu;
   friend class DisplayOverlayControllerTest;
   friend class DisplayOverlayControllerAlphaTest;
@@ -266,13 +255,6 @@ class DisplayOverlayController : public ui::EventHandler,
   InputMenuView* GetInputMenuView() { return input_menu_view_; }
   MenuEntryView* GetMenuEntryView() { return menu_entry_; }
 
-  // `action_name_list_` is a vector that holds the list of action name labels
-  // that can be selected.
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  const std::vector<std::u16string> action_name_list_ = {
-      u"Move",  u"Jump",  u"Attack", u"Special ability", u"Crouch", u"Run",
-      u"Shoot", u"Magic", u"Reload", u"Dodge", u"Menu", u"Other"};
-
   const raw_ptr<TouchInjector> touch_injector_;
 
   // References to UI elements owned by the overlay widget.
@@ -290,7 +272,6 @@ class DisplayOverlayController : public ui::EventHandler,
   std::unique_ptr<views::Widget> input_mapping_widget_;
   std::unique_ptr<views::Widget> editing_list_widget_;
   std::unique_ptr<views::Widget> button_options_widget_;
-  std::unique_ptr<views::Widget> button_label_list_widget_;
   std::unique_ptr<views::Widget> delete_edit_shortcut_widget_;
 
   // Each widget can associate with one education nudge widget.

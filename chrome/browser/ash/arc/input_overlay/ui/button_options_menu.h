@@ -57,8 +57,6 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   friend class EditLabelTest;
   friend class EditingListTest;
 
-  class ActionLabelButton;
-
   void Init();
 
   // Add UI components.
@@ -86,7 +84,6 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   raw_ptr<ash::IconButton> done_button_ = nullptr;
   raw_ptr<ActionTypeButtonGroup> button_group_ = nullptr;
   raw_ptr<ActionEditView, DisableDanglingPtrDetection> action_edit_ = nullptr;
-  raw_ptr<ActionLabelButton> action_label_button_ = nullptr;
 };
 
 }  // namespace arc::input_overlay

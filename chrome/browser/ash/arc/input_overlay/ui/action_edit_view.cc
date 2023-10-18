@@ -54,9 +54,8 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
                  /*fixed_width=*/0, /*min_width=*/0)
       .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
 
-  auto title_string = GetActionNameAtIndex(controller_->action_name_list(),
-                                           action_->name_label_index());
-  name_tag_ = AddChildView(NameTag::CreateNameTag(title_string));
+  // TODO(b/274690042): Replace placeholder text with localized strings.
+  name_tag_ = AddChildView(NameTag::CreateNameTag(u"Unassigned"));
   labels_view_ = AddChildView(EditLabels::CreateEditLabels(
       controller_, action_, name_tag_, /*should_update_title=*/true));
 }
