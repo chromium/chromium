@@ -108,13 +108,6 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest,
   EXPECT_THAT(eval_js_result.ExtractString(),
               testing::StartsWith("NotSupportedError"));
 
-  // Make sure that it is not logged as an abort.
-  for (int i = 0; i < static_cast<int>(JourneyLogger::ABORT_REASON_MAX); ++i) {
-    histogram_tester.ExpectBucketCount(
-        "PaymentRequest.CheckoutFunnel.Aborted",
-        static_cast<JourneyLogger::AbortReason>(i), 0);
-  }
-
   // Make sure that it was logged as a reason why the Payment Request was not
   // shown.
   histogram_tester.ExpectBucketCount(

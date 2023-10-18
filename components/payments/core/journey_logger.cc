@@ -281,11 +281,6 @@ void JourneyLogger::SetCompleted() {
 }
 
 void JourneyLogger::SetAborted(AbortReason reason) {
-  // Always record the first abort reason regardless of whether the
-  // PaymentRequest.show() was triggered or not.
-  base::UmaHistogramEnumeration("PaymentRequest.CheckoutFunnel.Aborted", reason,
-                                ABORT_REASON_MAX);
-
   if (reason == ABORT_REASON_ABORTED_BY_USER ||
       reason == ABORT_REASON_USER_NAVIGATION)
     RecordJourneyStatsHistograms(COMPLETION_STATUS_USER_ABORTED);

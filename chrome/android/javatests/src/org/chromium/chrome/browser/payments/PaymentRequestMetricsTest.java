@@ -26,7 +26,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.Event;
 import org.chromium.components.payments.NotShownReason;
 import org.chromium.components.payments.PaymentFeatureList;
@@ -157,8 +156,6 @@ public class PaymentRequestMetricsTest {
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"User closed the Payment Request UI."});
 
-        mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(AbortReason.ABORTED_BY_USER);
-
         // Make sure the events were logged correctly.
         int expectedSample =
                 Event.SHOWN
@@ -196,8 +193,6 @@ public class PaymentRequestMetricsTest {
                 R.id.close_button, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"User closed the Payment Request UI."});
-
-        mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(AbortReason.ABORTED_BY_USER);
 
         // Make sure the events were logged correctly.
         int expectedSample =
@@ -243,8 +238,6 @@ public class PaymentRequestMetricsTest {
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"User closed the Payment Request UI."});
 
-        mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(AbortReason.ABORTED_BY_USER);
-
         // Make sure the events were logged correctly.
         int expectedSample =
                 Event.SHOWN
@@ -280,10 +273,6 @@ public class PaymentRequestMetricsTest {
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(),
                 mPaymentRequestTestRule.getActivity());
-
-        // Closing the tab will show Chrome's Tab Overview / Switcher UI, which triggers the "closed
-        // by user" event with "Tab overview mode dismissed Payment Request UI" error message.
-        mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(AbortReason.ABORTED_BY_USER);
 
         // Make sure the events were logged correctly.
         int expectedSample =
@@ -321,9 +310,6 @@ public class PaymentRequestMetricsTest {
         mPaymentRequestTestRule.clickNodeAndWait("abort", mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(new String[] {"Abort"});
 
-        mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(
-                AbortReason.ABORTED_BY_MERCHANT);
-
         // Make sure the events were logged correctly.
         int expectedSample =
                 Event.SHOWN
@@ -358,8 +344,6 @@ public class PaymentRequestMetricsTest {
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"The payment method", "not supported"});
 
-        // Make sure that it is not logged as an abort.
-        mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(-1 /* none */);
         // Make sure that it was logged as a reason why the Payment Request was not shown.
         Assert.assertEquals(
                 1,

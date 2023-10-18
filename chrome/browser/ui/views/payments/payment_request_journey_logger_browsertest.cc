@@ -767,11 +767,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNotShownTest, OnlyNotShownMetricsLogged) {
   // Navigate away to abort the Payment Request and trigger the logs.
   NavigateTo("/payment_request_email_test.html");
 
-  // Abort should be logged.
-  histogram_tester.ExpectBucketCount(
-      "PaymentRequest.CheckoutFunnel.Aborted",
-      JourneyLogger::ABORT_REASON_USER_NAVIGATION, 1);
-
   // Some events should be logged.
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");

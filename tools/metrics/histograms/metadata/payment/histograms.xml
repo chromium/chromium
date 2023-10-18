@@ -35,13 +35,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.CheckoutFunnel.Aborted"
-    enum="PaymentRequestAbortReason" expires_after="2022-11-22">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>The reason that lead to an abort of the Payment Request.</summary>
-</histogram>
-
 <histogram name="PaymentRequest.CheckoutFunnel.NoShow"
     enum="PaymentRequestNoShowReason" expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>

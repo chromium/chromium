@@ -20,7 +20,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
@@ -39,7 +38,6 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSecti
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI.PaymentRequestObserverForTest;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.InputProtector;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentApp;
@@ -64,7 +62,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -941,21 +938,6 @@ import java.util.concurrent.atomic.AtomicReference;
                             isSelected,
                             Matchers.is(true));
                 });
-    }
-
-    /**
-     * Asserts that only the specified reason for abort is logged.
-     *
-     * @param abortReason The only bucket in the abort histogram that should have a record.
-     */
-    /* package */ void assertOnlySpecificAbortMetricLogged(int abortReason) {
-        for (int i = 0; i < AbortReason.MAX; ++i) {
-            Assert.assertEquals(
-                    String.format(Locale.getDefault(), "Found %d instead of %d", i, abortReason),
-                    (i == abortReason ? 1 : 0),
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            "PaymentRequest.CheckoutFunnel.Aborted", i));
-        }
     }
 
     /* package */ View getPaymentRequestView() {
