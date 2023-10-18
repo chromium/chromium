@@ -13,16 +13,16 @@
 # limitations under the License.
 #
 
-load("@bazel_skylib//lib:selects.bzl", "selects")
-load("//mediapipe/framework/port:build_config.bzl", "mediapipe_proto_library")
 load(
     "//mediapipe/framework/tool:mediapipe_graph.bzl",
     "mediapipe_binary_graph",
 )
-load("//mediapipe/framework:mediapipe_cc_test.bzl", "mediapipe_cc_test")
+load("@bazel_skylib//lib:selects.bzl", "selects")
 load("//mediapipe/framework:encode_binary_proto.bzl", "encode_binary_proto")
-load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
+load("//mediapipe/framework:mediapipe_cc_test.bzl", "mediapipe_cc_test")
 load("//mediapipe/framework:more_selects.bzl", "more_selects")
+load("//mediapipe/framework/port:build_config.bzl", "mediapipe_proto_library")
+load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
 
 licenses(["notice"])
 
@@ -254,7 +254,7 @@ cc_test(
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
-        "@com_google_sentencepiece//src:sentencepiece_processor",  # fixdeps: keep
+        "@com_google_sentencepiece//:sentencepiece_processor",  # fixdeps: keep
     ],
 )
 
@@ -303,7 +303,7 @@ cc_test(
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
-        "@com_google_sentencepiece//src:sentencepiece_processor",  # fixdeps: keep
+        "@com_google_sentencepiece//:sentencepiece_processor",  # fixdeps: keep
     ],
 )
 
@@ -1448,6 +1448,30 @@ cc_library(
         ],
     }),
     alwayslink = 1,
+)
+
+cc_test(
+    name = "tensors_to_segmentation_calculator_test",
+    srcs = ["tensors_to_segmentation_calculator_test.cc"],
+    deps = [
+        ":tensors_to_segmentation_calculator",
+        ":tensors_to_segmentation_calculator_cc_proto",
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework:calculator_runner",
+        "//mediapipe/framework:packet",
+        "//mediapipe/framework:timestamp",
+        "//mediapipe/framework/formats:image",
+        "//mediapipe/framework/formats:image_format_cc_proto",
+        "//mediapipe/framework/formats:image_opencv",
+        "//mediapipe/framework/formats:rect_cc_proto",
+        "//mediapipe/framework/formats:tensor",
+        "//mediapipe/framework/port:gtest_main",
+        "//mediapipe/framework/port:parse_text_proto",
+        "@com_google_absl//absl/log",
+        "@com_google_absl//absl/log:absl_log",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ],
 )
 
 cc_library(

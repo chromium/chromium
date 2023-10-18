@@ -19,6 +19,7 @@ limitations under the License.
 #include <utility>
 
 #include "absl/log/absl_log.h"
+#include "absl/status/status.h"
 #include "mediapipe/tasks/c/components/containers/classification_result_converter.h"
 #include "mediapipe/tasks/c/components/processors/classifier_options.h"
 #include "mediapipe/tasks/c/components/processors/classifier_options_converter.h"
@@ -30,15 +31,26 @@ namespace mediapipe::tasks::c::text::text_classifier {
 
 namespace {
 
-using ::mediapipe::tasks::c::components::containers::CppConvertToBaseOptions;
+using ::mediapipe::tasks::c::components::containers::
+    CppCloseClassificationResult;
 using ::mediapipe::tasks::c::components::containers::
     CppConvertToClassificationResult;
 using ::mediapipe::tasks::c::components::processors::
     CppConvertToClassifierOptions;
+using ::mediapipe::tasks::c::core::CppConvertToBaseOptions;
 using ::mediapipe::tasks::text::text_classifier::TextClassifier;
+
+int CppProcessError(absl::Status status, char** error_msg) {
+  if (error_msg) {
+    *error_msg = strdup(status.ToString().c_str());
+  }
+  return status.raw_code();
+}
+
 }  // namespace
 
-TextClassifier* CppTextClassifierCreate(const TextClassifierOptions& options) {
+TextClassifier* CppTextClassifierCreate(const TextClassifierOptions& options,
+                                        char** error_msg) {
   auto cpp_options = std::make_unique<
       ::mediapipe::tasks::text::text_classifier::TextClassifierOptions>();
 
@@ -50,50 +62,63 @@ TextClassifier* CppTextClassifierCreate(const TextClassifierOptions& options) {
   if (!classifier.ok()) {
     ABSL_LOG(ERROR) << "Failed to create TextClassifier: "
                     << classifier.status();
+    CppProcessError(classifier.status(), error_msg);
     return nullptr;
   }
   return classifier->release();
 }
 
-bool CppTextClassifierClassify(void* classifier, char* utf8_str,
-                               TextClassifierResult* result) {
+int CppTextClassifierClassify(void* classifier, const char* utf8_str,
+                              TextClassifierResult* result, char** error_msg) {
   auto cpp_classifier = static_cast<TextClassifier*>(classifier);
   auto cpp_result = cpp_classifier->Classify(utf8_str);
   if (!cpp_result.ok()) {
     ABSL_LOG(ERROR) << "Classification failed: " << cpp_result.status();
-    return false;
+    return CppProcessError(cpp_result.status(), error_msg);
   }
   CppConvertToClassificationResult(*cpp_result, result);
-  return true;
+  return 0;
 }
 
-void CppTextClassifierClose(void* classifier) {
+void CppTextClassifierCloseResult(TextClassifierResult* result) {
+  CppCloseClassificationResult(result);
+}
+
+int CppTextClassifierClose(void* classifier, char** error_msg) {
   auto cpp_classifier = static_cast<TextClassifier*>(classifier);
   auto result = cpp_classifier->Close();
   if (!result.ok()) {
     ABSL_LOG(ERROR) << "Failed to close TextClassifier: " << result;
+    return CppProcessError(result, error_msg);
   }
   delete cpp_classifier;
+  return 0;
 }
 
 }  // namespace mediapipe::tasks::c::text::text_classifier
 
 extern "C" {
 
-void* text_classifier_create(struct TextClassifierOptions* options) {
+void* text_classifier_create(struct TextClassifierOptions* options,
+                             char** error_msg) {
   return mediapipe::tasks::c::text::text_classifier::CppTextClassifierCreate(
-      *options);
+      *options, error_msg);
 }
 
-int text_classifier_classify(void* classifier, char* utf8_str,
-                             TextClassifierResult* result) {
+int text_classifier_classify(void* classifier, const char* utf8_str,
+                             TextClassifierResult* result, char** error_msg) {
   return mediapipe::tasks::c::text::text_classifier::CppTextClassifierClassify(
-      classifier, utf8_str, result);
+      classifier, utf8_str, result, error_msg);
 }
 
-void text_classifier_close(void* classifier) {
-  mediapipe::tasks::c::text::text_classifier::CppTextClassifierClose(
-      classifier);
+void text_classifier_close_result(TextClassifierResult* result) {
+  mediapipe::tasks::c::text::text_classifier::CppTextClassifierCloseResult(
+      result);
+}
+
+int text_classifier_close(void* classifier, char** error_ms) {
+  return mediapipe::tasks::c::text::text_classifier::CppTextClassifierClose(
+      classifier, error_ms);
 }
 
 }  // extern "C"

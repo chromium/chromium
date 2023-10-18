@@ -124,6 +124,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/framework/tool/field_data.proto",
     "src/mediapipe/framework/tool/packet_generator_wrapper_calculator.proto",
     "src/mediapipe/gpu/gl_context_options.proto",
+    "src/mediapipe/gpu/gpu_origin.proto",
     "src/mediapipe/tasks/cc/components/calculators/classification_aggregation_calculator.proto",
     "src/mediapipe/tasks/cc/components/calculators/score_calibration_calculator.proto",
     "src/mediapipe/tasks/cc/components/containers/proto/classifications.proto",
