@@ -69,18 +69,30 @@ class Metric {
     }
   }
 
+  // Metric should not be logged.
   void MakeInconsistentIfLogged() {
     if (logged()) {
       state = MetricState::kIncorrectlyLogged;
     }
   }
 
+  // Metric should be logged but not with a value in `values`.
+  void MakeInconsistentIfLoggedWith(const std::vector<MetricType>& values) {
+    if (!logged()) {
+      state = MetricState::kIncorrectlyNotLogged;
+    } else if (base::Contains(values, value)) {
+      state = MetricState::kWrongValueLogged;
+    }
+  }
+
+  // Metric should be logged.
   void MakeInconsistentIfNotLogged() {
     if (!logged()) {
       state = MetricState::kIncorrectlyNotLogged;
     }
   }
 
+  // Metric should be logged with a value in `values`.
   void MakeInconsistentIfNotLoggedWith(const std::vector<MetricType>& values) {
     if (!logged()) {
       state = MetricState::kIncorrectlyNotLogged;
@@ -173,6 +185,12 @@ class CloudOpenMetrics {
   // print debug information.
   template <typename MetricType>
   void ExpectNotLogged(Metric<MetricType>& metric);
+
+  // Expect that the `metric` is logged but not with a value in `values`.
+  // Otherwise update the state and print debug information.
+  template <typename MetricType>
+  void ExpectNotLoggedWith(Metric<MetricType>& metric,
+                           const std::vector<MetricType>& values);
 
   // Expect that the `metric` metric is logged with a value. Otherwise update
   // the state and print debug information.
