@@ -132,8 +132,7 @@ base::Value::Dict SearchEnginesHandler::GetSearchEnginesList() {
     defaults.Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
-  // Build the second list (active search engines). This will not have any
-  // entries if the new Search Engines page is not enabled.
+  // Build the second list (active search engines).
   base::Value::List actives;
   size_t last_active_engine_index =
       list_controller_.table_model()->last_active_engine_index();
@@ -145,7 +144,7 @@ base::Value::Dict SearchEnginesHandler::GetSearchEnginesList() {
     actives.Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
-  // Build the second list (other search engines).
+  // Build the third list (other search engines).
   base::Value::List others;
   size_t last_other_engine_index =
       list_controller_.table_model()->last_other_engine_index();
