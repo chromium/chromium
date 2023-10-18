@@ -4,6 +4,7 @@
 
 #include "chrome/updater/update_service_impl.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
@@ -89,6 +90,92 @@ UpdateService::Result ToResult(update_client::Error error) {
       return UpdateService::Result::kInvalidArgument;
   }
 }
+
+void GetComponents(
+    scoped_refptr<Configurator> config,
+    scoped_refptr<PersistedData> persisted_data,
+    const AppClientInstallData& app_client_install_data,
+    const AppInstallDataIndex& app_install_data_index,
+    UpdateService::Priority priority,
+    bool update_blocked,
+    UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    const std::vector<std::string>& ids,
+    base::OnceCallback<
+        void(const std::vector<absl::optional<update_client::CrxComponent>>&)>
+        callback) {
+  VLOG(1) << __func__
+          << ". Same version update: " << policy_same_version_update;
+  const bool is_foreground = priority == UpdateService::Priority::kForeground;
+  auto barrier_callback =
+      base::BarrierCallback<absl::optional<update_client::CrxComponent>>(
+          ids.size(),
+          base::BindOnce(
+              [](const std::vector<std::string>& ids,
+                 const std::vector<absl::optional<update_client::CrxComponent>>&
+                     unordered) {
+                // Re-order the vector to match the order of `ids`.
+                std::vector<absl::optional<update_client::CrxComponent>>
+                    ordered;
+                for (const auto& id : ids) {
+                  auto it = std::find_if(
+                      unordered.begin(), unordered.end(),
+                      [&id](absl::optional<update_client::CrxComponent> v) {
+                        return v && v->app_id == id;
+                      });
+                  ordered.push_back(it != unordered.end() ? *it
+                                                          : absl::nullopt);
+                }
+                return ordered;
+              },
+              ids)
+              .Then(std::move(callback)));
+  for (const auto& id : ids) {
+    base::MakeRefCounted<Installer>(
+        id,
+        [&app_client_install_data, &id]() {
+          auto it = app_client_install_data.find(id);
+          return it != app_client_install_data.end() ? it->second : "";
+        }(),
+        [&app_install_data_index, &id]() {
+          auto it = app_install_data_index.find(id);
+          return it != app_install_data_index.end() ? it->second : "";
+        }(),
+        [&config, &id]() {
+          return config->GetPolicyService()->GetTargetChannel(id).policy_or(
+              std::string());
+        }(),
+        [&config, &id]() {
+          return config->GetPolicyService()
+              ->GetTargetVersionPrefix(id)
+              .policy_or(std::string());
+        }(),
+        [&config, &id]() {
+          return config->GetPolicyService()
+              ->IsRollbackToTargetVersionAllowed(id)
+              .policy_or(false);
+        }(),
+        [&config, &id, &is_foreground, update_blocked]() {
+          if (update_blocked) {
+            return true;
+          }
+          PolicyStatus<int> app_updates =
+              config->GetPolicyService()->GetPolicyForAppUpdates(id);
+          return app_updates &&
+                 (app_updates.policy() == kPolicyDisabled ||
+                  (!is_foreground &&
+                   app_updates.policy() == kPolicyManualUpdatesOnly) ||
+                  (is_foreground &&
+                   app_updates.policy() == kPolicyAutomaticUpdatesOnly));
+        }(),
+        policy_same_version_update, persisted_data,
+        config->GetCrxVerifierFormat())
+        ->MakeCrxComponent(
+            base::BindOnce([](update_client::CrxComponent component) {
+              return component;
+            }).Then(barrier_callback));
+  }
+}
+
 }  // namespace internal
 
 namespace {
@@ -215,71 +302,6 @@ MakeUpdateClientCrxStateChangeCallback(
         callback.Run(update_state);
       },
       config, persisted_data, new_install, callback);
-}
-
-void GetComponents(
-    scoped_refptr<Configurator> config,
-    scoped_refptr<PersistedData> persisted_data,
-    const AppClientInstallData& app_client_install_data,
-    const AppInstallDataIndex& app_install_data_index,
-    UpdateService::Priority priority,
-    bool update_blocked,
-    UpdateService::PolicySameVersionUpdate policy_same_version_update,
-    const std::vector<std::string>& ids,
-    base::OnceCallback<
-        void(const std::vector<absl::optional<update_client::CrxComponent>>&)>
-        callback) {
-  VLOG(1) << __func__
-          << ". Same version update: " << policy_same_version_update;
-  const bool is_foreground = priority == UpdateService::Priority::kForeground;
-  auto barrier_callback =
-      base::BarrierCallback<absl::optional<update_client::CrxComponent>>(
-          ids.size(), std::move(callback));
-  for (const auto& id : ids) {
-    base::MakeRefCounted<Installer>(
-        id,
-        [&app_client_install_data, &id]() {
-          auto it = app_client_install_data.find(id);
-          return it != app_client_install_data.end() ? it->second : "";
-        }(),
-        [&app_install_data_index, &id]() {
-          auto it = app_install_data_index.find(id);
-          return it != app_install_data_index.end() ? it->second : "";
-        }(),
-        [&config, &id]() {
-          return config->GetPolicyService()->GetTargetChannel(id).policy_or(
-              std::string());
-        }(),
-        [&config, &id]() {
-          return config->GetPolicyService()
-              ->GetTargetVersionPrefix(id)
-              .policy_or(std::string());
-        }(),
-        [&config, &id]() {
-          return config->GetPolicyService()
-              ->IsRollbackToTargetVersionAllowed(id)
-              .policy_or(false);
-        }(),
-        [&config, &id, &is_foreground, update_blocked]() {
-          if (update_blocked) {
-            return true;
-          }
-          PolicyStatus<int> app_updates =
-              config->GetPolicyService()->GetPolicyForAppUpdates(id);
-          return app_updates &&
-                 (app_updates.policy() == kPolicyDisabled ||
-                  (!is_foreground &&
-                   app_updates.policy() == kPolicyManualUpdatesOnly) ||
-                  (is_foreground &&
-                   app_updates.policy() == kPolicyAutomaticUpdatesOnly));
-        }(),
-        policy_same_version_update, persisted_data,
-        config->GetCrxVerifierFormat())
-        ->MakeCrxComponent(
-            base::BindOnce([](update_client::CrxComponent component) {
-              return component;
-            }).Then(barrier_callback));
-  }
 }
 
 }  // namespace
@@ -595,7 +617,7 @@ void UpdateServiceImpl::Install(const RegistrationRequest& registration,
   pos->second = update_client_->Install(
       registration.app_id,
       base::BindOnce(
-          &GetComponents, config_, persisted_data_,
+          &internal::GetComponents, config_, persisted_data_,
           AppClientInstallData(
               {std::make_pair(registration.app_id, client_install_data)}),
           AppInstallDataIndex(
@@ -826,7 +848,7 @@ void UpdateServiceImpl::OnShouldBlockCheckForUpdateForMeteredNetwork(
       FROM_HERE,
       base::BindOnce(
           &update_client::UpdateClient::CheckForUpdate, update_client_, app_id,
-          base::BindOnce(&GetComponents, config_, persisted_data_,
+          base::BindOnce(&internal::GetComponents, config_, persisted_data_,
                          AppClientInstallData(), AppInstallDataIndex(),
                          priority, update_blocked, policy_same_version_update),
           MakeUpdateClientCrxStateChangeCallback(config_, persisted_data_,
@@ -850,7 +872,7 @@ void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
       FROM_HERE,
       base::BindOnce(
           &update_client::UpdateClient::Update, update_client_, app_ids,
-          base::BindOnce(&GetComponents, config_, persisted_data_,
+          base::BindOnce(&internal::GetComponents, config_, persisted_data_,
                          app_client_install_data, app_install_data_index,
                          priority, update_blocked, policy_same_version_update),
           MakeUpdateClientCrxStateChangeCallback(config_, persisted_data_,
@@ -886,7 +908,7 @@ void UpdateServiceImpl::OnShouldBlockForceInstallForMeteredNetwork(
         base::BindOnce(
             base::IgnoreResult(&update_client::UpdateClient::Install),
             update_client_, id,
-            base::BindOnce(&GetComponents, config_, persisted_data_,
+            base::BindOnce(&internal::GetComponents, config_, persisted_data_,
                            app_client_install_data, app_install_data_index,
                            Priority::kBackground, update_blocked,
                            policy_same_version_update),
