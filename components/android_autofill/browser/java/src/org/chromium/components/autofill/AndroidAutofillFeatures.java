@@ -4,9 +4,10 @@
 
 package org.chromium.components.autofill;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Features;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Java accessor for base/feature_list.h state.

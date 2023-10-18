@@ -4,7 +4,7 @@
 
 package org.chromium.components.payments;
 
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.JNINamespace;
 
 /**
  * Exposes payment specific features to java since files in org.chromium.components.payments

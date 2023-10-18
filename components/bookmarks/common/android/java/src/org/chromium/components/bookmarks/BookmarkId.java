@@ -7,7 +7,7 @@ package org.chromium.components.bookmarks;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /** Simple object representing the bookmark id. */
 public class BookmarkId {

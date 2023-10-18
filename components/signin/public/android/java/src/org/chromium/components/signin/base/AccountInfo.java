@@ -10,7 +10,8 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.components.signin.AccountEmailDomainDisplayability;
 import org.chromium.components.signin.Tribool;
 

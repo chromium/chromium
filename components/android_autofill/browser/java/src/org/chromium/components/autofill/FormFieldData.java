@@ -10,8 +10,8 @@ import android.view.autofill.AutofillId;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

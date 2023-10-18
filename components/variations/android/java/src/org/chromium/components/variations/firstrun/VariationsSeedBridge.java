@@ -6,8 +6,9 @@ package org.chromium.components.variations.firstrun;
 
 import android.util.Base64;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
 
 /**
  * VariationsSeedBridge is a class which is used to pass variations first run seed that was fetched

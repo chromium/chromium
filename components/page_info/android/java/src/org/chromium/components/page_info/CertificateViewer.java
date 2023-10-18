@@ -22,9 +22,10 @@ import android.widget.TextView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.view.ViewCompat;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.io.ByteArrayInputStream;
 import java.security.MessageDigest;

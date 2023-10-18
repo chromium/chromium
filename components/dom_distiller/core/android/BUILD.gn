@@ -16,10 +16,10 @@ generate_jni("jni_headers") {
 android_library("dom_distiller_core_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/dom_distiller/core/mojom:mojom_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
 

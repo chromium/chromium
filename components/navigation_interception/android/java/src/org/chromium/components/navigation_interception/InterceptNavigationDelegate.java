@@ -4,7 +4,8 @@
 
 package org.chromium.components.navigation_interception;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;

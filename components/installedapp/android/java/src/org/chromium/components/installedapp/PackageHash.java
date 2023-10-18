@@ -8,9 +8,10 @@ import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.security.InvalidKeyException;

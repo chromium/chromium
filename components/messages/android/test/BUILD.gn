@@ -20,11 +20,11 @@ android_library("test_support_java") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//components/messages/android:java",
     "//components/messages/android:manager_java",
     "//components/messages/android/internal:java",
     "//content/public/android:content_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

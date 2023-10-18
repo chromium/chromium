@@ -4,9 +4,10 @@
 
 package org.chromium.components.crash.browser;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
 
 /**
  * A Java-side bridge for notifying an observer when a child process has crashed.

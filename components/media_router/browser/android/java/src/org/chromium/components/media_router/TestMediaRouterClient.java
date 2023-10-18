@@ -9,9 +9,10 @@ import android.content.Intent;
 
 import androidx.fragment.app.FragmentManager;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.content_public.browser.WebContents;
 

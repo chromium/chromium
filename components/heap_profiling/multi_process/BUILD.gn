@@ -38,8 +38,8 @@ if (is_android) {
     srcjar_deps = [ ":jni_headers" ]
     sources = [ "javatests/src/org/chromium/components/heap_profiling/multi_process/HeapProfilingTestShim.java" ]
     deps = [
-      "//base:jni_java",
       "//build/android:build_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }

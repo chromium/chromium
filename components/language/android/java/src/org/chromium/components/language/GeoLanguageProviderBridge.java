@@ -4,7 +4,7 @@
 
 package org.chromium.components.language;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
