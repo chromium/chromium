@@ -1,5 +1,5 @@
 Name: bspatch
-URL: http://lxr.mozilla.org/mozilla/source/toolkit/mozapps/update/src/updater/
+URL: https://github.com/mozilla-services/services-central-legacy/tree/master/toolkit/mozapps/update/updater
 Version: unknown
 License: BSD 2-Clause License
 License File: LICENSE
