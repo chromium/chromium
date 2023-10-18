@@ -1450,13 +1450,25 @@ class LocalDeviceInstrumentationTestRun(
   def _ProcessRenderTestResults(self, device, results):
     if not self._render_tests_device_output_dir:
       return
+    # TODO(b/295350872): Remove this and other timestamp logging in Gold-related
+    # code once the source of flaky slowness is tracked down.
+    logging.info('Starting render test result processing')
+    start_time = time.time()
     self._ProcessSkiaGoldRenderTestResults(device, results)
+    logging.info('Render test result processing took %fs',
+                 time.time() - start_time)
 
   def _ProcessSkiaGoldRenderTestResults(self, device, results):
     gold_dir = posixpath.join(self._render_tests_device_output_dir.name,
                               _DEVICE_GOLD_DIR)
-    if not device.FileExists(gold_dir):
-      return
+    logging.info('Starting Gold directory existence check')
+    start_time = time.time()
+    try:
+      if not device.FileExists(gold_dir):
+        return
+    finally:
+      logging.info('Gold directory existence check took %fs',
+                   time.time() - start_time)
 
     gold_properties = self._test_instance.skia_gold_properties
     with tempfile_ext.NamedTemporaryDirectory() as host_dir:
@@ -1467,7 +1479,12 @@ class LocalDeviceInstrumentationTestRun(
       # slightly faster since each command over adb has some overhead compared
       # to doing the same thing locally.
       host_dir = os.path.join(host_dir, _DEVICE_GOLD_DIR)
+
+      logging.info('Starting Gold directory pull')
+      start_time = time.time()
       device.PullFile(gold_dir, host_dir)
+      logging.info('Gold directory pull took %fs', time.time() - start_time)
+
       for image_name in os.listdir(host_dir):
         if not image_name.endswith('.png'):
           continue
@@ -1529,6 +1546,8 @@ class LocalDeviceInstrumentationTestRun(
         gold_session = self._skia_gold_session_manager.GetSkiaGoldSession(
             keys_input=json_path)
 
+        logging.info('Starting Gold comparison')
+        start_time = time.time()
         try:
           status, error = gold_session.RunComparison(
               name=render_name,
@@ -1541,6 +1560,8 @@ class LocalDeviceInstrumentationTestRun(
           _AppendToLog(results, full_test_name,
                        'Skia Gold comparison raised exception: %s' % e)
           continue
+        finally:
+          logging.info('Gold comparison took %fs', time.time() - start_time)
 
         if not status:
           continue
