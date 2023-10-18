@@ -206,6 +206,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   float EffectiveZoom() const;
   bool ContainerIsRightToLeft() const;
+  bool ContainerIsFormControl() const;
 
   // scrollbar-width CSS property
   EScrollbarWidth CSSScrollbarWidth() const;

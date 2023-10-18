@@ -191,7 +191,10 @@ class WebThemeEngine {
   };
 
   struct ScrollbarButtonExtraParams {
+    // TODO(crbug.com/1493088): We should probably pass the border-radius
+    // instead.
     float zoom = 0;
+    bool needs_rounded_corner = false;
     bool right_to_left = false;
     absl::optional<SkColor> thumb_color;
     absl::optional<SkColor> track_color;

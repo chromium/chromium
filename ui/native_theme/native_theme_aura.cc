@@ -38,6 +38,7 @@
 namespace ui {
 
 namespace {
+
 // Constants for painting overlay scrollbars. Other properties needed outside
 // this painting code are defined in overlay_scrollbar_constants_aura.h.
 constexpr int kOverlayScrollbarMinimumLength = 32;
@@ -46,8 +47,17 @@ constexpr int kOverlayScrollbarMinimumLength = 32;
 // color. This prevents color interpolation between the patches.
 constexpr int kOverlayScrollbarBorderPatchWidth = 2;
 constexpr int kOverlayScrollbarCenterPatchSize = 1;
-const SkScalar kScrollRadius =
-    1;  // select[multiple] radius+width are set in css
+
+// This radius let scrollbar arrows fit in the default rounded border of some
+// form controls. TODO(crbug.com/1493088): We should probably let blink pass
+// the actual border radii.
+const SkScalar kScrollbarArrowRadius = 1;
+// Killswitch for the changed behavior (only drawing rounded corner for form
+// controls). Should remove after M120 ships.
+BASE_FEATURE(kNewScrollbarArrowRadius,
+             "NewScrollbarArrowRadius",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -219,26 +229,33 @@ void NativeThemeAura::PaintArrowButton(
   cc::PaintFlags flags;
   flags.setColor(bg_color);
 
-  SkScalar upper_left_radius = 0;
-  SkScalar lower_left_radius = 0;
-  SkScalar upper_right_radius = 0;
-  SkScalar lower_right_radius = 0;
-  float zoom = arrow.zoom ? arrow.zoom : 1.0;
-  if (direction == kScrollbarUpArrow) {
-    if (arrow.right_to_left) {
-      upper_left_radius = kScrollRadius * zoom;
-    } else {
-      upper_right_radius = kScrollRadius * zoom;
+  if (base::FeatureList::IsEnabled(kNewScrollbarArrowRadius) &&
+      !arrow.needs_rounded_corner) {
+    canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
+  } else {
+    // TODO(crbug.com/1493088): Also draw rounded corner for left and right
+    // buttons when needed.
+    SkScalar upper_left_radius = 0;
+    SkScalar lower_left_radius = 0;
+    SkScalar upper_right_radius = 0;
+    SkScalar lower_right_radius = 0;
+    float zoom = arrow.zoom ? arrow.zoom : 1.0;
+    if (direction == kScrollbarUpArrow) {
+      if (arrow.right_to_left) {
+        upper_left_radius = kScrollbarArrowRadius * zoom;
+      } else {
+        upper_right_radius = kScrollbarArrowRadius * zoom;
+      }
+    } else if (direction == kScrollbarDownArrow) {
+      if (arrow.right_to_left) {
+        lower_left_radius = kScrollbarArrowRadius * zoom;
+      } else {
+        lower_right_radius = kScrollbarArrowRadius * zoom;
+      }
     }
-  } else if (direction == kScrollbarDownArrow) {
-    if (arrow.right_to_left) {
-      lower_left_radius = kScrollRadius * zoom;
-    } else {
-      lower_right_radius = kScrollRadius * zoom;
-    }
+    DrawPartiallyRoundRect(canvas, rect, upper_left_radius, upper_right_radius,
+                           lower_right_radius, lower_left_radius, flags);
   }
-  DrawPartiallyRoundRect(canvas, rect, upper_left_radius, upper_right_radius,
-                         lower_right_radius, lower_left_radius, flags);
 
   PaintArrow(canvas, rect, direction, arrow_color);
 }

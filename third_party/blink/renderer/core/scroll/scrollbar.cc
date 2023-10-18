@@ -889,6 +889,16 @@ bool Scrollbar::ContainerIsRightToLeft() const {
   return false;
 }
 
+bool Scrollbar::ContainerIsFormControl() const {
+  if (!style_source_) {
+    return false;
+  }
+  if (const auto* element = DynamicTo<Element>(style_source_->GetNode())) {
+    return element->IsFormControlElement();
+  }
+  return false;
+}
+
 EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
   if (style_source_) {
     return style_source_->StyleRef().ScrollbarWidth();

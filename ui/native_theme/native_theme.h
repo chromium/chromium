@@ -261,6 +261,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   struct ScrollbarArrowExtraParams {
     bool is_hovering = false;
     float zoom = 0;
+    bool needs_rounded_corner = false;
     bool right_to_left = false;
     // These allow clients to directly override the color values to support
     // element-specific web platform CSS.

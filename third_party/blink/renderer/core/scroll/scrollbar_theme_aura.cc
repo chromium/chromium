@@ -283,6 +283,9 @@ void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
 
   WebThemeEngine::ScrollbarButtonExtraParams scrollbar_button;
   scrollbar_button.zoom = scrollbar.EffectiveZoom();
+  // TODO(crbug.com/1493088): Should not draw rounded corner for a button
+  // adjacent to the scroll corner.
+  scrollbar_button.needs_rounded_corner = scrollbar.ContainerIsFormControl();
   scrollbar_button.right_to_left = scrollbar.ContainerIsRightToLeft();
   if (scrollbar.ScrollbarThumbColor().has_value()) {
     scrollbar_button.thumb_color =
