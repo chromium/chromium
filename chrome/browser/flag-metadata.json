@@ -8015,7 +8015,7 @@
     "expiry_milestone": 122
   },
   {
-    "name": "web-identity-mdocs",
+    "name": "web-identity-digital-credentials",
     "owners": ["goto", "web-identity-eng@google.com"],
     "expiry_milestone": 120
   },

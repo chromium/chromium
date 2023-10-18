@@ -52,8 +52,8 @@ bool IsFedCmWithoutWellKnownEnforcementEnabled() {
       features::kFedCmWithoutWellKnownEnforcement);
 }
 
-bool IsWebIdentityMDocsEnabled() {
-  return base::FeatureList::IsEnabled(features::kWebIdentityMDocs);
+bool IsWebIdentityDigitalCredentialsEnabled() {
+  return base::FeatureList::IsEnabled(features::kWebIdentityDigitalCredentials);
 }
 
 bool IsFedCmIdentityCredentialAutoSelectedFlagEnabled() {

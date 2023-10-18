@@ -414,9 +414,9 @@ BASE_FEATURE(kFencedFramesEnforceFocus,
              "FencedFramesEnforceFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the MDocs API in the IdentityCredential.
-BASE_FEATURE(kWebIdentityMDocs,
-             "WebIdentityMDocs",
+// Enables the Digital Credential API.
+BASE_FEATURE(kWebIdentityDigitalCredentials,
+             "WebIdentityDigitalCredentials",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables usage of First Party Sets to determine cookie availability.

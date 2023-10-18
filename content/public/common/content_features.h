@@ -103,7 +103,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmSelectiveDisclosure);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmIdpSigninStatusEnabled);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmWithoutWellKnownEnforcement);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFencedFramesEnforceFocus);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebIdentityMDocs);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebIdentityDigitalCredentials);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFirstPartySets);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kFirstPartySetsClearSiteDataOnChangedSets;

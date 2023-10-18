@@ -4278,7 +4278,7 @@
       public: true,
     },
     {
-      name: "WebIdentityMDocs",
+      name: "WebIdentityDigitalCredentials",
       depends_on: ["FedCm"],
       public: true,
       status: "test",

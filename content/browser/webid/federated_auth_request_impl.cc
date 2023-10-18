@@ -645,10 +645,11 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   if (idp_get_params_ptrs[0]->providers[0]->is_holder()) {
-    if (!IsWebIdentityMDocsEnabled() ||
+    if (!IsWebIdentityDigitalCredentialsEnabled() ||
         IsFedCmMultipleIdentityProvidersEnabled()) {
-      // TODO(https://crbug.com/1416939): Support calling the MDocs API with the
-      // Multi IdP API support.
+      // TODO(https://crbug.com/1416939): Support calling the Digital
+      // Credentials
+      //  API with the Multi IdP API support.
       std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
                               /*error=*/nullptr,
                               /*is_identity_credential_auto_selected=*/false);

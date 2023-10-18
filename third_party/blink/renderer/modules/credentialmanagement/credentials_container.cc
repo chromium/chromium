@@ -1460,10 +1460,10 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
         UseCounter::Count(resolver->GetExecutionContext(),
                           WebFeature::kFedCmLoginHint);
       }
-      if (RuntimeEnabledFeatures::WebIdentityMDocsEnabled() &&
+      if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled() &&
           !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
-        // TODO(https://crbug.com/1416939): make sure the MDocs API
-        // works well with the Multiple IdP API.
+        // TODO(https://crbug.com/1416939): make sure the Digital Credentials
+        //  API works well with the Multiple IdP API.
         if (provider->hasHolder()) {
           auto identity_provider =
               blink::mojom::blink::IdentityProvider::From(*provider);

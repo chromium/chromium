@@ -48,5 +48,5 @@ public class ContentFeatureList {
 
     public static final String WEB_NFC = "WebNFC";
 
-    public static final String WEB_IDENTITY_MDOCS = "WebIdentityMDocs";
+    public static final String WEB_IDENTITY_DIGITAL_CREDENTIALS = "WebIdentityDigitalCredentials";
 }

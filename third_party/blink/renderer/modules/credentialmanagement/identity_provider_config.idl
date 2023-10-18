@@ -18,7 +18,7 @@ dictionary IdentityProviderConfig {
 
 // extends the IdentityProviderConfig with Wallet-specific attributes
 partial dictionary IdentityProviderConfig  {
-  [RuntimeEnabled=WebIdentityMDocs] WalletProvider holder;
+  [RuntimeEnabled=WebIdentityDigitalCredentials] WalletProvider holder;
 };
 
 dictionary WalletProvider  {

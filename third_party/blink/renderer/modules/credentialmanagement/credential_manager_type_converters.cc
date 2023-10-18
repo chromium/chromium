@@ -864,8 +864,8 @@ IdentityProviderPtr
 TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
     const blink::IdentityProviderConfig& provider) {
   if (provider.hasHolder() &&
-      blink::RuntimeEnabledFeatures::WebIdentityMDocsEnabled() &&
-      // TODO(https://crbug.com/1416939): make sure the MDocs API
+      blink::RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled() &&
+      // TODO(https://crbug.com/1416939): make sure the Digital Credentials API
       // works well with the Multiple IdP API.
       !blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
     auto mojo_provider = WalletProvider::New();

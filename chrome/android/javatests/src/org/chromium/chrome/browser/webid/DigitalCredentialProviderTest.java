@@ -67,7 +67,7 @@ public class DigitalCredentialProviderTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ContentFeatureList.WEB_IDENTITY_MDOCS)
+    @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS)
     public void testRequestMDoc() throws TimeoutException {
         when(mDelegate.get(any(), any(), any()))
                 .thenAnswer(input -> Promise.fulfilled(EXPECTED_MDOC.getBytes()));

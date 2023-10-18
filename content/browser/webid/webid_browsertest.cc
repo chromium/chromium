@@ -646,7 +646,7 @@ class WebIdDigitalCredentialsBrowserTest : public WebIdBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     std::vector<base::test::FeatureRef> features;
     features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
-    features.push_back(features::kWebIdentityMDocs);
+    features.push_back(features::kWebIdentityDigitalCredentials);
     scoped_feature_list_.InitWithFeatures(features, {});
 
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);

@@ -936,8 +936,8 @@ extern const char kFedCmWithoutThirdPartyCookiesDescription[];
 extern const char kFedCmWithoutWellKnownEnforcementName[];
 extern const char kFedCmWithoutWellKnownEnforcementDescription[];
 
-extern const char kWebIdentityMDocsName[];
-extern const char kWebIdentityMDocsDescription[];
+extern const char kWebIdentityDigitalCredentialsName[];
+extern const char kWebIdentityDigitalCredentialsDescription[];
 
 extern const char kFileHandlingIconsName[];
 extern const char kFileHandlingIconsDescription[];

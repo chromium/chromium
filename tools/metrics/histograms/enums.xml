@@ -62258,6 +62258,7 @@ from previous Chrome versions.
       label="ResamplingScrollEventsExperimentalPrediction:disabled"/>
   <int value="-1493620195"
       label="kFileSystemAccessPersistentPermissions:enabled"/>
+  <int value="-1493308731" label="WebIdentityDigitalCredentials:disabled"/>
   <int value="-1492934655" label="TabSwitcherOnReturn:enabled"/>
   <int value="-1492609320"
       label="TurnOffStreamingMediaCachingOnBattery:disabled"/>
@@ -69129,6 +69130,7 @@ from previous Chrome versions.
   <int value="1841993231"
       label="AutofillRemoveCardExpirationAndTypeTitles:enabled"/>
   <int value="1842219851" label="enable-incognito-window-counter"/>
+  <int value="1842518765" label="WebIdentityDigitalCredentials:enabled"/>
   <int value="1843088575" label="OutOfBlinkCors:enabled"/>
   <int value="1843847665" label="SyncPromoAfterSigninIntercept:disabled"/>
   <int value="1844110073" label="enable-app-view"/>

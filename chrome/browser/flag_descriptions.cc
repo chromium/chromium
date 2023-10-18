@@ -1640,9 +1640,9 @@ const char kFedCmIdpSigninStatusDescription[] =
     "Enables the FedCM IDP sign-in status API that allows IDPs to notify the "
     "browser about the user's sign-in status.";
 
-const char kWebIdentityMDocsName[] = "MDocs";
-const char kWebIdentityMDocsDescription[] =
-    "Allows relying parties to request the presentation of ISO mdocs.";
+const char kWebIdentityDigitalCredentialsName[] = "DigitalCredentials";
+const char kWebIdentityDigitalCredentialsDescription[] =
+    "Enables the three-party verifier/holder/issuer identity model.";
 
 const char kFileHandlingIconsName[] = "File Handling Icons";
 const char kFileHandlingIconsDescription[] =
