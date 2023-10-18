@@ -7,19 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// multiple UMA metrics and the local state pref service rely on this enum.
-// Please do not reorder or delete its entries.
-namespace push_notification {
-enum class PushNotificationSettingsAuthorizationStatus : int {
-  NOTDETERMINED,
-  DENIED,
-  AUTHORIZED,
-  PROVISIONAL,
-  EPHEMERAL,
-  kMaxValue = EPHEMERAL
-};
-}
-
 @class UIApplication;
 @class UNNotificationCategory;
 @class UNNotificationSettings;

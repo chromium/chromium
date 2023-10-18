@@ -8,9 +8,6 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/metrics/histogram_functions.h"
-#import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 namespace {
 
@@ -27,6 +24,15 @@ enum class PermissionPromptAction {
   kMaxValue = ERROR
 };
 
+enum class PushNotificationSettingsAuthorizationStatus {
+  NOTDETERMINED,
+  DENIED,
+  AUTHORIZED,
+  PROVISIONAL,
+  EPHEMERAL,
+  kMaxValue = EPHEMERAL
+};
+
 // The histogram used to record the outcome of the permission prompt.
 const char kEnabledPermissionsHistogram[] =
     "IOS.PushNotification.EnabledPermisisons";
@@ -35,16 +41,6 @@ const char kEnabledPermissionsHistogram[] =
 // status.
 const char kAuthorizationStatusHistogram[] =
     "IOS.PushNotification.NotificationSettingsAuthorizationStatus";
-
-// The histogram used to record users changes to an authorized push notification
-// permission status.
-const char kNotificationAutorizationStatusChangedToAuthorized[] =
-    "IOS.PushNotification.NotificationAutorizationStatusChangedToAuthorized";
-
-// The histogram used to record users changes to a denied push notification
-// permission status.
-const char kNotificationAutorizationStatusChangedToDenied[] =
-    "IOS.PushNotification.NotificationAutorizationStatusChangedToDenied";
 }  // namespace
 
 @implementation PushNotificationUtil
@@ -52,12 +48,10 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
 + (void)registerDeviceWithAPNS {
   [PushNotificationUtil
       getPermissionSettings:^(UNNotificationSettings* settings) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          // Logs the users iOS settings' push notification permission status
-          // over time.
-          [PushNotificationUtil
-              logPermissionSettingsMetrics:settings.authorizationStatus];
-        });
+        // Logs the users iOS settings' push notification permission status over
+        // time.
+        [PushNotificationUtil
+            logPermissionSettingsMetrics:settings.authorizationStatus];
 
         if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
           // iOS instructs that registering the device with APNS must be done on
@@ -145,70 +139,51 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
 // whether Chrome can receive push notifications on the device to UMA.
 + (void)logPermissionSettingsMetrics:
     (UNAuthorizationStatus)authorizationStatus {
-  push_notification::PushNotificationSettingsAuthorizationStatus status;
   switch (authorizationStatus) {
     case UNAuthorizationStatusNotDetermined:
       // The authorization status is this case when the user has not yet
       // decided to give Chrome push notification permissions.
-      status = push_notification::PushNotificationSettingsAuthorizationStatus::
-          NOTDETERMINED;
+      base::UmaHistogramEnumeration(
+          kAuthorizationStatusHistogram,
+          PushNotificationSettingsAuthorizationStatus::NOTDETERMINED);
       break;
     case UNAuthorizationStatusDenied:
       // The authorization status is this case when the user has denied to
       // give Chrome push notification permissions via the push
       // notification iOS system permission prompt or by navigating to the iOS
       // settings and manually enabling it.
-      status = push_notification::PushNotificationSettingsAuthorizationStatus::
-          DENIED;
+      base::UmaHistogramEnumeration(
+          kAuthorizationStatusHistogram,
+          PushNotificationSettingsAuthorizationStatus::DENIED);
       break;
     case UNAuthorizationStatusAuthorized:
       // The authorization status is this case when the user has
       // authorized to give Chrome push notification permissions via the
       // push notification iOS system permission prompt or by navigating to the
       // iOS settings and manually enabling it.
-      status = push_notification::PushNotificationSettingsAuthorizationStatus::
-          AUTHORIZED;
+      base::UmaHistogramEnumeration(
+          kAuthorizationStatusHistogram,
+          PushNotificationSettingsAuthorizationStatus::AUTHORIZED);
       break;
     case UNAuthorizationStatusProvisional:
       // The authorization status is this case when Chrome has the ability
       // to send provisional push notifications.
-      status = push_notification::PushNotificationSettingsAuthorizationStatus::
-          PROVISIONAL;
+      base::UmaHistogramEnumeration(
+          kAuthorizationStatusHistogram,
+          PushNotificationSettingsAuthorizationStatus::PROVISIONAL);
       break;
     case UNAuthorizationStatusEphemeral:
       // The authorization status is this case Chrome can receive
       // notifications for a limited amount of time.
-      status = push_notification::PushNotificationSettingsAuthorizationStatus::
-          EPHEMERAL;
+      base::UmaHistogramEnumeration(
+          kAuthorizationStatusHistogram,
+          PushNotificationSettingsAuthorizationStatus::EPHEMERAL);
       break;
   }
-  base::UmaHistogramEnumeration(kAuthorizationStatusHistogram, status);
 
-  ApplicationContext* context = GetApplicationContext();
-  PrefService* prefService = context->GetLocalState();
-  int previousAuthorizationStatus =
-      prefService->GetInteger(prefs::kPushNotificationAuthorizationStatus);
-  if (previousAuthorizationStatus != static_cast<int>(status)) {
-    if (status == push_notification::
-                      PushNotificationSettingsAuthorizationStatus::AUTHORIZED) {
-      base::UmaHistogramEnumeration(
-          kNotificationAutorizationStatusChangedToAuthorized,
-          static_cast<
-              push_notification::PushNotificationSettingsAuthorizationStatus>(
-              previousAuthorizationStatus));
-    } else if (status ==
-               push_notification::PushNotificationSettingsAuthorizationStatus::
-                   DENIED) {
-      base::UmaHistogramEnumeration(
-          kNotificationAutorizationStatusChangedToDenied,
-          static_cast<
-              push_notification::PushNotificationSettingsAuthorizationStatus>(
-              previousAuthorizationStatus));
-    }
-
-    prefService->SetInteger(prefs::kPushNotificationAuthorizationStatus,
-                            static_cast<int>(status));
-  }
+  // TODO(crbug.com/1487295): Add metric that tracks when users changes
+  // their push notification permission authorization status to
+  // Authorized/Denied.
 }
 
 @end

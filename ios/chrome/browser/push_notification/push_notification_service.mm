@@ -8,11 +8,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/pref_registry/pref_registry_syncable.h"
-#import "components/prefs/pref_registry_simple.h"
 #import "ios/chrome/browser/push_notification/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
-#import "ios/chrome/browser/push_notification/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
@@ -77,15 +75,6 @@ void PushNotificationService::UnregisterAccount(
 void PushNotificationService::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kFeaturePushNotificationPermissions);
-}
-
-void PushNotificationService::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      prefs::kPushNotificationAuthorizationStatus,
-      static_cast<int>(
-          push_notification::PushNotificationSettingsAuthorizationStatus::
-              NOTDETERMINED));
 }
 
 void PushNotificationService::SetPreferences(
