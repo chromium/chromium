@@ -44,7 +44,9 @@ import java.util.Collections;
  * capture and animations it may transiently host a {@link StaticTabSceneLayer}.
  */
 public class HubLayout extends Layout {
-    private static final long TIMEOUT_MS = 300L;
+    // Copied from TabSwitcherLayout.
+    private static final long FADE_DURATION_MS = 325L;
+    private static final long TIMEOUT_MS = 250L;
 
     private SceneLayer mCurrentSceneLayer;
     /** Scene layer to facilitate thumbnail capture prior to starting a transition animation. */
@@ -169,6 +171,8 @@ public class HubLayout extends Layout {
 
         mHubController.onHubLayoutShow();
 
+        HubContainerView containerView = mHubController.getContainerView();
+
         // TODO(crbug/1487209): Get the animations from a Pane or HubManager and forward some events
         // along so visibility and animation timing are synced.
         HubLayoutAnimatorProvider animatorProvider;
@@ -176,7 +180,9 @@ public class HubLayout extends Layout {
             animatorProvider =
                     new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.TRANSLATE_UP);
         } else if (mPreviousLayoutType == LayoutType.START_SURFACE) {
-            animatorProvider = new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.FADE_IN);
+            animatorProvider =
+                    FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
+                            containerView, FADE_DURATION_MS);
         } else {
             animatorProvider =
                     new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.SHRINK_TAB);
@@ -193,7 +199,6 @@ public class HubLayout extends Layout {
                     }
                 });
 
-        HubContainerView containerView = mHubController.getContainerView();
         containerView.setVisibility(View.INVISIBLE);
         mRootView.addView(
                 containerView,
@@ -229,6 +234,8 @@ public class HubLayout extends Layout {
         @LayoutType
         int nextLayoutType = mLayoutStateProvider.getNextLayoutType();
 
+        HubContainerView containerView = mHubController.getContainerView();
+
         // TODO(crbug/1487209): Get the animations from a Pane or HubManager and forward some events
         // along so visibility and animation timing are synced.
         HubLayoutAnimatorProvider animatorProvider;
@@ -236,7 +243,9 @@ public class HubLayout extends Layout {
             animatorProvider =
                     new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.TRANSLATE_DOWN);
         } else if (nextLayoutType == LayoutType.START_SURFACE) {
-            animatorProvider = new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.FADE_OUT);
+            animatorProvider =
+                    FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
+                            containerView, FADE_DURATION_MS);
         } else {
             animatorProvider =
                     new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.EXPAND_TAB);

@@ -157,6 +157,9 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
                         for (HubLayoutAnimationListener listener : getListenersIterable()) {
                             listener.onEnd(mWasForcedToFinish);
                         }
+                        for (HubLayoutAnimationListener listener : getListenersIterable()) {
+                            listener.afterEnd();
+                        }
                         mListeners = null;
                     }
                 });

@@ -25,6 +25,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilder.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManager.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneOrderController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PresetHubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayout.java",
     "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegate.java",
   ]
@@ -42,6 +43,7 @@ android_library_factory("factory_java") {
   deps = [ ":java" ]
 
   sources = [
+    "internal/android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
     "internal/android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerFactory.java",
     "internal/android/java/src/org/chromium/chrome/browser/hub/HubManagerFactory.java",
   ]

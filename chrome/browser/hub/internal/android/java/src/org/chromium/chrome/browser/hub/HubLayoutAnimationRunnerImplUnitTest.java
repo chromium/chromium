@@ -96,6 +96,8 @@ public class HubLayoutAnimationRunnerImplUnitTest {
         assertEquals(HubLayoutAnimationType.FADE_IN, mRunner.getAnimationType());
         verify(mAnimatorListener, never()).onEnd(eq(false));
         verify(mListener, never()).onEnd(eq(false));
+        verify(mAnimatorListener, never()).afterEnd();
+        verify(mListener, never()).afterEnd();
     }
 
     @Test
@@ -119,6 +121,8 @@ public class HubLayoutAnimationRunnerImplUnitTest {
         assertEquals(AnimationState.FINISHED, mRunner.getAnimationState());
         verify(mAnimatorListener).onEnd(eq(false));
         verify(mListener, never()).onEnd(eq(false));
+        verify(mAnimatorListener).afterEnd();
+        verify(mListener, never()).afterEnd();
     }
 
     @Test
@@ -150,6 +154,8 @@ public class HubLayoutAnimationRunnerImplUnitTest {
         assertEquals(AnimationState.FINISHED, mRunner.getAnimationState());
         verify(mAnimatorListener).onEnd(eq(false));
         verify(mListener).onEnd(eq(false));
+        verify(mAnimatorListener).afterEnd();
+        verify(mListener).afterEnd();
     }
 
     @Test
@@ -175,6 +181,8 @@ public class HubLayoutAnimationRunnerImplUnitTest {
         assertEquals(AnimationState.FINISHED, mRunner.getAnimationState());
         verify(mAnimatorListener).onEnd(eq(true));
         verify(mListener).onEnd(eq(true));
+        verify(mAnimatorListener).afterEnd();
+        verify(mListener).afterEnd();
     }
 
     @Test
@@ -202,5 +210,7 @@ public class HubLayoutAnimationRunnerImplUnitTest {
 
         verify(mAnimatorListener).onEnd(eq(true));
         verify(mListener).onEnd(eq(true));
+        verify(mAnimatorListener).afterEnd();
+        verify(mListener).afterEnd();
     }
 }

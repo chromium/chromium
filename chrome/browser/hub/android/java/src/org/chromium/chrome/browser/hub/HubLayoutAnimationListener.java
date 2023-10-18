@@ -18,4 +18,12 @@ public interface HubLayoutAnimationListener {
      * @param wasForcedToFinish Whether the animation was forced to finish early.
      */
     default void onEnd(boolean wasForcedToFinish) {}
+
+    /**
+     * Called after all {@link #onEnd(boolean)} calls are finished. If the animation hid the {@link
+     * HubLayout} it is now {@link View#INVISIBLE}. If the animation showed the {@link HubLayout} it
+     * is now {@link View#VISIBLE}. This is a good place to cleanup any state that a hide animation
+     * may leave behind.
+     */
+    default void afterEnd() {}
 }
