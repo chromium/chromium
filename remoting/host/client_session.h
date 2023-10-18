@@ -285,9 +285,6 @@ class ClientSession : public protocol::HostStub,
   // The DesktopEnvironment instance for this session.
   std::unique_ptr<DesktopEnvironment> desktop_environment_;
 
-  // Filter used as the final element in the input pipeline.
-  protocol::InputFilter host_input_filter_;
-
   // Tracker used to release pressed keys and buttons when disconnecting.
   protocol::InputEventTracker input_tracker_;
 
