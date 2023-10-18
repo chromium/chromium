@@ -63,6 +63,38 @@ ui::ColorTransform IncreaseLightness(ui::ColorTransform input_transform,
   return base::BindRepeating(generator, std::move(input_transform), percent);
 }
 
+ui::ColorTransform SelectBasedOnNtpBackground(
+    ui::ColorTransform output_transform_for_white_input,
+    ui::ColorTransform output_transform_for_black_input,
+    ui::ColorTransform default_output_transform_for_input) {
+  const auto generator =
+      [](ui::ColorTransform output_transform_for_white_input,
+         ui::ColorTransform output_transform_for_black_input,
+         ui::ColorTransform default_output_transform_for_input,
+         SkColor input_color, const ui::ColorMixer& mixer) {
+        const ui::ColorTransform input_transform = {kColorNewTabPageBackground};
+        const SkColor color = input_transform.Run(input_color, mixer);
+        const auto& output_transform =
+            (color == SK_ColorWHITE)
+                ? output_transform_for_white_input
+                : ((color == SK_ColorBLACK)
+                       ? output_transform_for_black_input
+                       : default_output_transform_for_input);
+        const SkColor result_color = output_transform.Run(input_color, mixer);
+        DVLOG(2) << "ColorTransform SelectBasedOnNtpBackground:"
+                 << " Input Color: " << ui::SkColorName(input_color)
+                 << " Input Transform: " << ui::SkColorName(color)
+                 << " IsWhite: " << (color == SK_ColorWHITE ? "true" : "false")
+                 << " IsBlack: " << (color == SK_ColorBLACK ? "true" : "false")
+                 << " Result Color: " << ui::SkColorName(result_color);
+        return result_color;
+      };
+  return base::BindRepeating(generator,
+                             std::move(output_transform_for_white_input),
+                             std::move(output_transform_for_black_input),
+                             std::move(default_output_transform_for_input));
+}
+
 ui::ColorTransform SelectBasedOnWhiteInput(
     const ui::ColorTransform input_transform,
     ui::ColorTransform output_transform_for_white_input,
@@ -103,9 +135,15 @@ ui::ColorTransform SelectBasedOnWhiteNtpBackground(
 // compute appropriate contrasting background and foreground element colors and
 // use these to style elements.
 void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
-  ui::ColorTransform element_background_color = SelectBasedOnWhiteNtpBackground(
-      kColorNewTabPageBackground,
-      GetContrastingColorTransform(kColorNewTabPageBackground));
+  ui::ColorTransform element_background_color =
+      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)
+          ? SelectBasedOnNtpBackground(
+                kColorNewTabPageBackground, {gfx::kGoogleGrey900},
+                GetContrastingColorTransform(kColorNewTabPageBackground))
+          : SelectBasedOnWhiteNtpBackground(
+                kColorNewTabPageBackground,
+                GetContrastingColorTransform(kColorNewTabPageBackground));
+
   ui::ColorTransform primary_foreground_color =
       ui::GetColorWithMaxContrast(element_background_color);
   ui::ColorTransform themed_foreground_color = SelectBasedOnWhiteNtpBackground(
@@ -154,9 +192,9 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
       select_topmost_element_foreground_color;
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
-    mixer[kColorNewTabPageModuleBackground] = SelectBasedOnWhiteInput(
-        {kColorNewTabPageBackground}, gfx::kGoogleGrey100,
-        element_background_color);
+    mixer[kColorNewTabPageModuleBackground] =
+        SelectBasedOnWhiteInput({kColorNewTabPageBackground},
+                                gfx::kGoogleGrey100, element_background_color);
   } else {
     mixer[kColorNewTabPageModuleBackground] = element_background_color;
   }
