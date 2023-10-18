@@ -32,6 +32,20 @@
 
 namespace crosapi {
 
+namespace {
+
+webapps::WebappInstallSource GetInstallSourceForPreload(
+    mojom::PreloadWebAppInstallSource source) {
+  switch (source) {
+    case mojom::PreloadWebAppInstallSource::kOemPreload:
+      return webapps::WebappInstallSource::PRELOADED_OEM;
+    case mojom::PreloadWebAppInstallSource::kDefaultPreload:
+      return webapps::WebappInstallSource::PRELOADED_DEFAULT;
+  }
+}
+
+}  // namespace
+
 WebAppProviderBridgeLacros::WebAppProviderBridgeLacros() {
   auto* service = chromeos::LacrosService::Get();
   if (service->IsAvailable<mojom::WebAppService>()) {
@@ -216,13 +230,14 @@ void WebAppProviderBridgeLacros::GetSubAppToParentMapImpl(
 // static
 void WebAppProviderBridgeLacros::InstallPreloadWebAppImpl(
     mojom::PreloadWebAppInstallInfoPtr preload_install_info,
-    InstallPreloadWebAppCallback callback, Profile * profile) {
+    InstallPreloadWebAppCallback callback,
+    Profile* profile) {
   CHECK(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
 
   provider->command_manager().ScheduleCommand(
       std::make_unique<web_app::InstallPreloadedVerifiedAppCommand>(
-          webapps::WebappInstallSource::PRELOADED_OEM,
+          GetInstallSourceForPreload(preload_install_info->install_source),
           preload_install_info->document_url,
           preload_install_info->manifest_url, preload_install_info->manifest,
           preload_install_info->expected_app_id, std::move(callback)));

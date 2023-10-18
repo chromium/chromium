@@ -140,4 +140,45 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerLacrosBrowserTest, InstallOemApp) {
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerLacrosBrowserTest,
+                       InstallDefaultApp) {
+  ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
+
+  proto::AppPreloadListResponse_App app;
+  app.set_name("Example App");
+  app.set_package_id("web:https://www.example.com/index.html");
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_DEFAULT);
+
+  auto* web_extras = app.mutable_web_extras();
+  web_extras->set_original_manifest_url(
+      "https://www.example.com/manifest.json");
+  web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
+
+  constexpr char kManifestTemplate[] = R"({
+    "name": "Example App",
+    "start_url": "/index.html",
+    "scope": "/",
+    "icons": $1
+  })";
+
+  SetManifestResponse(AddIconToManifest(kManifestTemplate));
+
+  // Install the app.
+  base::test::TestFuture<bool> result;
+  WebAppPreloadInstaller installer(GetAshProfile());
+  installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
+  ASSERT_TRUE(result.Get());
+
+  // Wait for update to be registered with the app registry cache.
+  auto app_id = web_app::GenerateAppId(
+      absl::nullopt, GURL("https://www.example.com/index.html"));
+  AppReadinessWaiter(GetAshProfile(), app_id).Await();
+  bool found =
+      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {
+        EXPECT_EQ(update.Name(), "Example App");
+        EXPECT_EQ(update.InstallReason(), InstallReason::kDefault);
+      });
+  ASSERT_TRUE(found);
+}
+
 }  // namespace apps

@@ -65,6 +65,14 @@ struct ArcWebAppInstallInfo {
   [MinVersion=1] array<string>? additional_policy_ids@5;
 };
 
+[Stable, Extensible]
+enum PreloadWebAppInstallSource {
+  // The app is preloaded by the device OEM.
+  [Default] kOemPreload,
+  // The app is preloaded by Google by default.
+  kDefaultPreload,
+};
+
 // The set of information necessary to install a preloaded web app in Lacros.
 [Stable]
 struct PreloadWebAppInstallInfo {
@@ -79,4 +87,7 @@ struct PreloadWebAppInstallInfo {
 
   // The standard web app manifest, encoded as a JSON string.
   string manifest@3;
+
+  // The source of this app installation.
+  [MinVersion=1] PreloadWebAppInstallSource install_source@4;
 };
