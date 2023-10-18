@@ -49,30 +49,20 @@ webapps::AppId GenerateAppId(
     const absl::optional<webapps::ManifestId>& parent_manifest_id =
         absl::nullopt);
 
-// Returns a resolved manifest id given the relative `manifest_id_path`,
-// as per the spec algorithm at https://www.w3.org/TR/appmanifest/#id-member.
-// The `manifest_id_path` can include query arguments and/or fragments, although
-// the fragment will be removed. If there is no `manifest_id_path`, then
-// GenerateManifestIdFromStartUrlOnly can be used.
-//
-// This should only be used if a `Manifest` object is not available.
-webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
-                                       const GURL& start_url);
-
-// Generates the chrome-specific `webapps::AppId` from the spec-defined manifest
-// id. See the `webapps::AppId` type for more information.
-webapps::AppId GenerateAppIdFromManifestId(
-
-    const webapps::ManifestId& manifest_id,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id =
-        absl::nullopt);
-
 // Generates the chrome-specific `webapps::AppId` from the spec-defined
 // manifest. See the `webapps::AppId` type for more information. This will
 // CHECK-fail if the `id` field is not present on the manifest.
 webapps::AppId GenerateAppIdFromManifest(
 
     const blink::mojom::Manifest& manifest,
+    const absl::optional<webapps::ManifestId>& parent_manifest_id =
+        absl::nullopt);
+
+// Generates the chrome-specific `webapps::AppId` from the spec-defined manifest
+// id. See the `webapps::AppId` type for more information.
+webapps::AppId GenerateAppIdFromManifestId(
+
+    const webapps::ManifestId& manifest_id,
     const absl::optional<webapps::ManifestId>& parent_manifest_id =
         absl::nullopt);
 
@@ -83,6 +73,16 @@ webapps::AppId GenerateAppIdFromManifest(
 //
 // This should only be used if a `Manifest` object is not available.
 webapps::ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url);
+
+// Returns a resolved manifest id given the relative `manifest_id_path`,
+// as per the spec algorithm at https://www.w3.org/TR/appmanifest/#id-member.
+// The `manifest_id_path` can include query arguments and/or fragments, although
+// the fragment will be removed. If there is no `manifest_id_path`, then
+// GenerateManifestIdFromStartUrlOnly can be used.
+//
+// This should only be used if a `Manifest` object is not available.
+webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
+                                       const GURL& start_url);
 
 // Returns whether the given |app_url| is a valid web app url.
 bool IsValidWebAppUrl(const GURL& app_url);

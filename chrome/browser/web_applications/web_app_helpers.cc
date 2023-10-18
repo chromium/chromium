@@ -4,23 +4,15 @@
 
 #include "chrome/browser/web_applications/web_app_helpers.h"
 
-#include "base/base64.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
-#include "components/prefs/pref_service.h"
-#include "content/public/common/content_features.h"
 #include "crypto/sha2.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -28,14 +20,7 @@
 
 namespace web_app {
 
-// The following string is used to build the directory name for
-// shortcuts to chrome applications (the kind which are installed
-// from a CRX).  Application shortcuts to URLs use the {host}_{path}
-// for the name of this directory.  Hosts can't include an underscore.
-// By starting this string with an underscore, we ensure that there
-// are no naming conflicts.
-const char kCrxAppPrefix[] = "_crx_";
-
+namespace {
 // The following string is used to concatenate the id of a sub-app with the id
 // of the respective parent app, to produce a new id that is assured to not
 // conflict with the id of the same app when installed as a standalone app.
@@ -55,6 +40,15 @@ std::string MaybeConcatenateParentAppManifestId(
     return manifest_id.GetWithoutRef().spec();
   }
 }
+}  // namespace
+
+// The following string is used to build the directory name for
+// shortcuts to chrome applications (the kind which are installed
+// from a CRX).  Application shortcuts to URLs use the {host}_{path}
+// for the name of this directory.  Hosts can't include an underscore.
+// By starting this string with an underscore, we ensure that there
+// are no naming conflicts.
+const char kCrxAppPrefix[] = "_crx_";
 
 std::string GenerateApplicationNameFromURL(const GURL& url) {
   return base::StrCat({url.host_piece(), "_", url.path_piece()});
@@ -73,22 +67,6 @@ webapps::AppId GetAppIdFromApplicationName(const std::string& app_name) {
   return app_name.substr(prefix.length());
 }
 
-// TODO(crbug.com/1467863): Rearrange the order of Id functions
-
-webapps::AppId GenerateAppIdFromManifestId(
-
-    const webapps::ManifestId& manifest_id,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
-  // The app ID is hashed twice: here and in GenerateId.
-  // The double-hashing is for historical reasons and it needs to stay
-  // this way for backwards compatibility. (Back then, a web app's input to the
-  // hash needed to be formatted like an extension public key.)
-  auto concatenated_manifest_id =
-      MaybeConcatenateParentAppManifestId(manifest_id, parent_manifest_id);
-  return crx_file::id_util::GenerateId(
-      crypto::SHA256HashString(concatenated_manifest_id));
-}
-
 webapps::AppId GenerateAppId(
     const absl::optional<std::string>& manifest_id_path,
     const GURL& start_url,
@@ -102,6 +80,31 @@ webapps::AppId GenerateAppId(
       parent_manifest_id);
 }
 
+webapps::AppId GenerateAppIdFromManifest(
+    const blink::mojom::Manifest& manifest,
+    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
+  CHECK(manifest.id.is_valid());
+  return GenerateAppIdFromManifestId(manifest.id, parent_manifest_id);
+}
+
+webapps::AppId GenerateAppIdFromManifestId(
+    const webapps::ManifestId& manifest_id,
+    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
+  // The app ID is hashed twice: here and in GenerateId.
+  // The double-hashing is for historical reasons and it needs to stay
+  // this way for backwards compatibility. (Back then, a web app's input to the
+  // hash needed to be formatted like an extension public key.)
+  auto concatenated_manifest_id =
+      MaybeConcatenateParentAppManifestId(manifest_id, parent_manifest_id);
+  return crx_file::id_util::GenerateId(
+      crypto::SHA256HashString(concatenated_manifest_id));
+}
+
+webapps::ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url) {
+  CHECK(start_url.is_valid()) << start_url.spec();
+  return start_url.GetWithoutRef();
+}
+
 webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
                                        const GURL& start_url) {
   // When manifest_id is specified, the app id is generated from
@@ -112,19 +115,6 @@ webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
   CHECK(app_id.is_valid()) << "start_url: " << start_url
                            << ", manifest_id = " << manifest_id_path;
   return app_id.GetWithoutRef();
-}
-
-webapps::AppId GenerateAppIdFromManifest(
-
-    const blink::mojom::Manifest& manifest,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
-  CHECK(manifest.id.is_valid());
-  return GenerateAppIdFromManifestId(manifest.id, parent_manifest_id);
-}
-
-webapps::ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url) {
-  CHECK(start_url.is_valid()) << start_url.spec();
-  return start_url.GetWithoutRef();
 }
 
 bool IsValidWebAppUrl(const GURL& app_url) {
