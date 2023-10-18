@@ -281,7 +281,8 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
     // Collect training data on demand.
     training_data_collector_->OnDecisionTime(
         current_segment_id, input_context,
-        proto::TrainingOutputs::TriggerConfig::ONDEMAND);
+        proto::TrainingOutputs::TriggerConfig::ONDEMAND,
+        std::move(result->model_inputs));
   }
 
   GetRankForNextSegment(std::move(ranks), input_context, std::move(callback));
@@ -357,8 +358,8 @@ void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
 
   for (const auto& segment : config_->segments) {
     training_data_collector_->OnDecisionTime(
-        segment.first, nullptr,
-        proto::TrainingOutputs::TriggerConfig::PERIODIC);
+        segment.first, nullptr, proto::TrainingOutputs::TriggerConfig::PERIODIC,
+        absl::nullopt);
   }
 }
 

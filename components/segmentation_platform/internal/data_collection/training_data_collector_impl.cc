@@ -456,7 +456,8 @@ void TrainingDataCollectorImpl::ReportCollectedContinuousTrainingData() {
   if (clock_->Now() >= next_collection_time) {
     for (auto id : continuous_collection_segments_) {
       OnDecisionTime(id, /*input_context=*/nullptr,
-                     proto::TrainingOutputs::TriggerConfig::PERIODIC);
+                     proto::TrainingOutputs::TriggerConfig::PERIODIC,
+                     absl::nullopt);
     }
   }
 }
@@ -493,19 +494,21 @@ void TrainingDataCollectorImpl::CollectTrainingData(
 }
 
 TrainingRequestId TrainingDataCollectorImpl::OnDecisionTime(
-    proto::SegmentId id,
+    proto::SegmentId segment_id,
     scoped_refptr<InputContext> input_context,
-    DecisionType type) {
-  if (all_segments_for_training_.count(id) == 0) {
+    DecisionType type,
+    absl::optional<ModelProvider::Request> inputs) {
+  if (all_segments_for_training_.count(segment_id) == 0) {
     return TrainingRequestId();
   }
 
   const TrainingRequestId request_id = training_cache_->GenerateNextId();
 
-  auto available_segments =
-      segment_info_database_->GetSegmentInfoForBothModels({id});
-  OnGetSegmentInfoAtDecisionTime(id, request_id, type, input_context,
-                                 std::move(available_segments));
+  auto segment_list =
+      segment_info_database_->GetSegmentInfoForBothModels({segment_id});
+
+  OnGetSegmentInfoAtDecisionTime(segment_id, request_id, type, input_context,
+                                 std::move(segment_list), std::move(inputs));
   return request_id;
 }
 
@@ -514,7 +517,8 @@ void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
     TrainingRequestId request_id,
     DecisionType type,
     scoped_refptr<InputContext> input_context,
-    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_list) {
+    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_list,
+    absl::optional<ModelProvider::Request> inputs) {
   auto preferred_segment_info =
       GetPreferredSegmentInfo(std::move(segment_list));
   auto it = preferred_segment_info.find(segment_id);
@@ -552,6 +556,13 @@ void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
       IsPeriodic(segment_info)
           ? stats::TrainingDataCollectionEvent::kContinousCollectionStart
           : stats::TrainingDataCollectionEvent::kImmediateCollectionStart);
+
+  if (inputs) {
+    OnGetTrainingTensorsAtDecisionTime(request_id, training_request,
+                                       segment_info, /*has_error=*/false,
+                                       *inputs, {});
+    return;
+  }
 
   // Start training data collection and generate training data inputs.
   base::Time unused;

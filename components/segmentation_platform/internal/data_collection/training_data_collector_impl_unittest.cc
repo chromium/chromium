@@ -301,15 +301,18 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
 
   void SetupFeatureProcessorResult(proto::SegmentId segment_id,
                                    base::Time prediction,
-                                   absl::optional<base::Time> observation) {
-    EXPECT_CALL(
-        *feature_list_processor(),
-        ProcessFeatureList(
-            _, _, segment_id, prediction, base::Time(),
-            processing::FeatureListQueryProcessor::ProcessOption::kInputsOnly,
-            _))
-        .WillOnce(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
-                                     ModelProvider::Response{2.f, 3.f}));
+                                   absl::optional<base::Time> observation,
+                                   bool skip_input_processing = false) {
+    if (!skip_input_processing) {
+      EXPECT_CALL(
+          *feature_list_processor(),
+          ProcessFeatureList(
+              _, _, segment_id, prediction, base::Time(),
+              processing::FeatureListQueryProcessor::ProcessOption::kInputsOnly,
+              _))
+          .WillOnce(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
+                                       ModelProvider::Response{2.f, 3.f}));
+    }
     if (observation) {
       EXPECT_CALL(*feature_list_processor(),
                   ProcessFeatureList(_, _, segment_id, prediction, *observation,
@@ -506,7 +509,7 @@ TEST_F(TrainingDataCollectorImplTest,
 
   clock()->Advance(base::Days(1));
   collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
-                              kPeriodicDecisionType);
+                              kPeriodicDecisionType, absl::nullopt);
   Init();
   task_environment()->RunUntilIdle();
   ExpectUkmCount(0u);
@@ -589,7 +592,7 @@ TEST_F(TrainingDataCollectorImplTest, ContinuousWithExactPrediction) {
 
   Init();
   collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
-                              kPeriodicDecisionType);
+                              kPeriodicDecisionType, absl::nullopt);
   task_environment()->RunUntilIdle();
   clock()->Advance(kNextUserSession);
   WaitForContinuousCollection();
@@ -616,7 +619,7 @@ TEST_F(TrainingDataCollectorImplTest, ContinuousWithFlexibleObservation) {
 
   Init();
   collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
-                              kPeriodicDecisionType);
+                              kPeriodicDecisionType, absl::nullopt);
   task_environment()->RunUntilIdle();
   clock()->Advance(kNextUserSession);
   WaitForContinuousCollection();
@@ -704,7 +707,7 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithEnumHistogramTrigger) {
   // Wait for input collection to be done and cached in memory.
   auto input_context = base::MakeRefCounted<InputContext>();
   collector()->OnDecisionTime(kTestOptimizationTarget0, input_context,
-                              kOnDemandDecisionType);
+                              kOnDemandDecisionType, absl::nullopt);
   task_environment()->RunUntilIdle();
   clock()->Advance(kTriggerDuration);
   ExpectUkmCount(0u);
@@ -725,7 +728,8 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithUserActionTrigger) {
   constexpr base::TimeDelta kTriggerDuration = base::Seconds(10);
   base::Time current = clock()->Now();
   SetupFeatureProcessorResult(kTestOptimizationTarget0, current,
-                              current + kTriggerDuration);
+                              current + kTriggerDuration,
+                              /*skip_input_processing=*/true);
 
   // Create a segment that contain a uma trigger.
   AddUserActionTrigger(
@@ -736,7 +740,8 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithUserActionTrigger) {
   // Wait for input collection to be done and cached in memory.
   auto input_context = base::MakeRefCounted<InputContext>();
   collector()->OnDecisionTime(kTestOptimizationTarget0, input_context,
-                              kOnDemandDecisionType);
+                              kOnDemandDecisionType,
+                              ModelProvider::Request{1.f});
   task_environment()->RunUntilIdle();
   clock()->Advance(kTriggerDuration);
   ExpectUkmCount(0u);
@@ -776,9 +781,9 @@ TEST_F(TrainingDataCollectorImplTest,
   Init();
   auto input_context = base::MakeRefCounted<InputContext>();
   collector()->OnDecisionTime(kTestOptimizationTarget0, input_context,
-                              kOnDemandDecisionType);
+                              kOnDemandDecisionType, absl::nullopt);
   collector()->OnDecisionTime(kTestOptimizationTarget1, input_context,
-                              kOnDemandDecisionType);
+                              kOnDemandDecisionType, absl::nullopt);
   task_environment()->RunUntilIdle();
   ExpectUkmCount(0u);
 
@@ -807,7 +812,7 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithTimeTrigger) {
   test_recorder()->SetOnAddEntryCallback(
       Segmentation_ModelExecution::kEntryName, run_loop.QuitClosure());
   collector()->OnDecisionTime(kTestOptimizationTarget0, input_context,
-                              kOnDemandDecisionType);
+                              kOnDemandDecisionType, absl::nullopt);
   task_environment()->RunUntilIdle();
   ExpectUkmCount(0u);
 
@@ -835,7 +840,7 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithStoreToDisk) {
   // the training data.
   Init();
   collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
-                              kPeriodicDecisionType);
+                              kPeriodicDecisionType, absl::nullopt);
   task_environment()->RunUntilIdle();
   ExpectUkmCount(0);
   clock()->Advance(kNextUserSession);
@@ -864,8 +869,9 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithTriggerAPI) {
   base::RunLoop run_loop;
   test_recorder()->SetOnAddEntryCallback(
       Segmentation_ModelExecution::kEntryName, run_loop.QuitClosure());
-  auto request_id = collector()->OnDecisionTime(
-      kTestOptimizationTarget0, input_context, kOnDemandDecisionType);
+  auto request_id =
+      collector()->OnDecisionTime(kTestOptimizationTarget0, input_context,
+                                  kOnDemandDecisionType, absl::nullopt);
   task_environment()->RunUntilIdle();
   ExpectUkmCount(0u);
 
@@ -898,8 +904,9 @@ TEST_F(TrainingDataCollectorImplTest,
   Init();
 
   auto input_context = base::MakeRefCounted<InputContext>();
-  auto request_id = collector()->OnDecisionTime(
-      kTestOptimizationTarget0, input_context, kOnDemandDecisionType);
+  auto request_id =
+      collector()->OnDecisionTime(kTestOptimizationTarget0, input_context,
+                                  kOnDemandDecisionType, absl::nullopt);
   task_environment()->RunUntilIdle();
   ExpectUkmCount(0u);
 

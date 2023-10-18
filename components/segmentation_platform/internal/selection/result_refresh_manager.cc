@@ -48,7 +48,7 @@ void CollectTrainingDataIfNeeded(
     for (const auto& segment : config->segments) {
       execution_service->training_data_collector()->OnDecisionTime(
           segment.first, nullptr,
-          proto::TrainingOutputs::TriggerConfig::PERIODIC);
+          proto::TrainingOutputs::TriggerConfig::PERIODIC, absl::nullopt);
     }
   }
 }

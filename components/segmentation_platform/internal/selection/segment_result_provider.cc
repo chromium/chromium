@@ -352,6 +352,7 @@ void SegmentResultProviderImpl::OnModelExecuted(
         prediction_result.result(0), segment_info->model_metadata());
     segment_result =
         std::make_unique<SegmentResult>(state, prediction_result, rank);
+    segment_result->model_inputs = std::move(result->inputs);
     VLOG(1) << __func__ << ": " << (is_default_model ? "Default" : "Server")
             << " model executed successfully. Result: "
             << segmentation_platform::PredictionResultToDebugString(

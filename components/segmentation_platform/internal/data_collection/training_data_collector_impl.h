@@ -56,9 +56,11 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   void OnModelMetadataUpdated() override;
   void OnServiceInitialized() override;
   void ReportCollectedContinuousTrainingData() override;
-  TrainingRequestId OnDecisionTime(proto::SegmentId id,
-                                   scoped_refptr<InputContext> input_context,
-                                   DecisionType type) override;
+  TrainingRequestId OnDecisionTime(
+      proto::SegmentId id,
+      scoped_refptr<InputContext> input_context,
+      DecisionType type,
+      absl::optional<ModelProvider::Request> inputs) override;
   void CollectTrainingData(SegmentId segment_id,
                            TrainingRequestId request_id,
                            const TrainingLabels& param,
@@ -103,7 +105,8 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       TrainingRequestId request_id,
       DecisionType type,
       scoped_refptr<InputContext> input_context,
-      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_list);
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_list,
+      absl::optional<ModelProvider::Request> inputs);
 
   void OnGetTrainingTensorsAtDecisionTime(
       TrainingRequestId request_id,

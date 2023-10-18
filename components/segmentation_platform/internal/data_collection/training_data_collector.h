@@ -13,6 +13,7 @@
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -82,7 +83,8 @@ class TrainingDataCollector {
   virtual TrainingRequestId OnDecisionTime(
       proto::SegmentId id,
       scoped_refptr<InputContext> input_context,
-      DecisionType type) = 0;
+      DecisionType type,
+      absl::optional<ModelProvider::Request> inputs) = 0;
 
   // Called by Segmentation Platform when manually triggering data collection on
   // the client.

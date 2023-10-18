@@ -7,7 +7,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/clock.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/selection/selection_utils.h"
@@ -15,7 +14,6 @@
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
-#include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/trigger.h"
 
@@ -49,7 +47,8 @@ class RequestHandlerImpl : public RequestHandler {
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   TrainingRequestId CollectTrainingData(
-      scoped_refptr<InputContext> input_context);
+      scoped_refptr<InputContext> input_context,
+      ModelProvider::Request inputs);
 
   // The config for providing client config params.
   const raw_ref<const Config> config_;
@@ -111,7 +110,13 @@ void RequestHandlerImpl::OnGetPredictionResult(
     auto status =
         selection_utils::ResultStateToPredictionStatus(segment_result->state);
     result = PostProcessor().GetRawResult(segment_result->result, status);
-    result.request_id = CollectTrainingData(input_context);
+    if (status == PredictionStatus::kSucceeded) {
+      CHECK(segment_result->model_inputs)
+          << "Handler should be used only for on demand execution: "
+          << config_->segmentation_key;
+      result.request_id = CollectTrainingData(
+          input_context, std::move(*segment_result->model_inputs));
+    }
 
     stats::RecordSegmentSelectionFailure(
         *config_, stats::GetSuccessOrFailureReason(segment_result->state));
@@ -126,7 +131,8 @@ void RequestHandlerImpl::OnGetPredictionResult(
 }
 
 TrainingRequestId RequestHandlerImpl::CollectTrainingData(
-    scoped_refptr<InputContext> input_context) {
+    scoped_refptr<InputContext> input_context,
+    ModelProvider::Request inputs) {
   // The training data collector might be null in testing.
   if (!execution_service_->training_data_collector()) {
     return TrainingRequestId();
@@ -134,7 +140,7 @@ TrainingRequestId RequestHandlerImpl::CollectTrainingData(
 
   return execution_service_->training_data_collector()->OnDecisionTime(
       config_->segments.begin()->first, input_context,
-      proto::TrainingOutputs::TriggerConfig::ONDEMAND);
+      proto::TrainingOutputs::TriggerConfig::ONDEMAND, std::move(inputs));
 }
 
 }  // namespace
