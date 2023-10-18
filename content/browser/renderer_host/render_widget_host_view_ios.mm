@@ -548,6 +548,10 @@ void RenderWidgetHostViewIOS::Hide() {
 }
 
 bool RenderWidgetHostViewIOS::IsShowing() {
+  // In testing, `view_` is not attached to the window.
+  if (IsTesting()) {
+    return is_visible_;
+  }
   return is_visible_ && [ui_view_->view_ window];
 }
 
