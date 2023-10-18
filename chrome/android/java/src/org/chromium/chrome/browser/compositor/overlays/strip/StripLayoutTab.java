@@ -175,12 +175,14 @@ public class StripLayoutTab implements VirtualView {
     // Close Button Constants
     // Close button padding value comes from the built-in padding in the source png.
     private static final int CLOSE_BUTTON_PADDING_DP = 7;
+    private static final int CLOSE_BUTTON_OFFSET_X = 12;
     private static final int CLOSE_BUTTON_WIDTH_DP = 48;
 
     // Strip Tab Offset Constants
     private static final float TOP_MARGIN_DP = 2.f;
     private static final float FOLIO_CONTENT_OFFSET_Y = 8.f;
     private static final float DETACHED_CONTENT_OFFSET_Y = 10.f;
+    private static final float TOUCH_TARGET_INSET = 16.f;
 
     // Divider Constants
     private static final int DIVIDER_OFFSET_X = 13;
@@ -205,6 +207,8 @@ public class StripLayoutTab implements VirtualView {
     private final boolean mIncognito;
     private float mBottomMargin;
     private float mContainerOpacity;
+    private float mLeftInset;
+    private float mRightInset;
     private String mAccessibilityDescription;
 
     // Ideal intermediate parameters
@@ -271,6 +275,15 @@ public class StripLayoutTab implements VirtualView {
         mCloseButton.setIncognito(mIncognito);
         mCloseButton.setBounds(getCloseRect());
         mCloseButton.setClickSlop(0.f);
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            if (LocalizationUtils.isLayoutRtl()) {
+                mLeftInset = getCloseButtonOffsetX();
+                mRightInset = TOUCH_TARGET_INSET;
+            } else {
+                mLeftInset = TOUCH_TARGET_INSET;
+                mRightInset = getCloseButtonOffsetX();
+            }
+        }
     }
 
     /** @param observer The observer to add. */
@@ -694,8 +707,8 @@ public class StripLayoutTab implements VirtualView {
     public void setDrawX(float x) {
         mCloseButton.setX(mCloseButton.getX() + (x - mDrawX));
         mDrawX = x;
-        mTouchTarget.left = mDrawX;
-        mTouchTarget.right = mDrawX + mWidth;
+        mTouchTarget.left = mDrawX + mLeftInset;
+        mTouchTarget.right = mDrawX + mWidth - mRightInset;
     }
 
     /**
@@ -728,7 +741,7 @@ public class StripLayoutTab implements VirtualView {
     public void setWidth(float width) {
         mWidth = width;
         resetCloseRect();
-        mTouchTarget.right = mDrawX + mWidth;
+        mTouchTarget.right = mDrawX + mWidth - mRightInset;
     }
 
     /**
@@ -881,6 +894,20 @@ public class StripLayoutTab implements VirtualView {
         return mIsPlaceholder;
     }
 
+    /**
+     * @return The left-side of the tab's touch target.
+     */
+    public float getTouchTargetLeft() {
+        return mTouchTarget.left;
+    }
+
+    /**
+     * @return The right-side of the tab's touch target.
+     */
+    public float getTouchTargetRight() {
+        return mTouchTarget.right;
+    }
+
     private void resetCloseRect() {
         RectF closeRect = getCloseRect();
         mCloseButton.setWidth(closeRect.width());
@@ -891,12 +918,13 @@ public class StripLayoutTab implements VirtualView {
 
     private RectF getCloseRect() {
         int closeButtonWidth = CLOSE_BUTTON_WIDTH_DP;
+        int closeButtonOffsetX = getCloseButtonOffsetX();
         if (!LocalizationUtils.isLayoutRtl()) {
-            mClosePlacement.left = getWidth() - closeButtonWidth;
+            mClosePlacement.left = getWidth() - closeButtonWidth - closeButtonOffsetX;
             mClosePlacement.right = mClosePlacement.left + closeButtonWidth;
         } else {
-            mClosePlacement.left = 0;
-            mClosePlacement.right = closeButtonWidth;
+            mClosePlacement.left = closeButtonOffsetX;
+            mClosePlacement.right = closeButtonWidth + closeButtonOffsetX;
         }
 
         mClosePlacement.top = 0;
@@ -908,6 +936,10 @@ public class StripLayoutTab implements VirtualView {
 
     public int getCloseButtonPadding() {
         return ChromeFeatureList.sTabStripRedesign.isEnabled() ? CLOSE_BUTTON_PADDING_DP : 0;
+    }
+
+    public int getCloseButtonOffsetX() {
+        return ChromeFeatureList.sTabStripRedesign.isEnabled() ? CLOSE_BUTTON_OFFSET_X : 0;
     }
 
     // TODO(dtrainor): Don't animate this if we're selecting or deselecting this tab.
