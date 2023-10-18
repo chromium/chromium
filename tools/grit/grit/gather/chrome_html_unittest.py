@@ -31,10 +31,6 @@ def StandardizeHtml(text):
 class ChromeHtmlUnittest(unittest.TestCase):
   '''Unit tests for ChromeHtml.'''
 
-  @classmethod
-  def setUpClass(cls):
-    os.environ["root_gen_dir"] = "gen"
-
   def testFileResources(self):
     '''Tests inlined image file resources with available high DPI assets.'''
 
