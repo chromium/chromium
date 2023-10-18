@@ -189,8 +189,7 @@ class BrowserManagerTest : public testing::Test {
 
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     shelf_controller_ = std::make_unique<ChromeShelfController>(
-        testing_profile, shelf_model_.get(),
-        /*shelf_item_factory=*/nullptr);
+        testing_profile, shelf_model_.get());
     shelf_controller_->Init();
 
     // We need to avoid a DCHECK which happens when the policies have not yet

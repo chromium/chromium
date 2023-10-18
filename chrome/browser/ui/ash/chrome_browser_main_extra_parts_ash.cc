@@ -67,7 +67,6 @@
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/tab_cluster_ui_client.h"
 #include "chrome/browser/ui/ash/vpn_list_forwarder.h"
@@ -120,8 +119,6 @@ class ChromeShelfControllerInitializer
   ~ChromeShelfControllerInitializer() override {
     if (!chrome_shelf_controller_)
       session_manager::SessionManager::Get()->RemoveObserver(this);
-    if (chrome_shelf_item_factory_)
-      ash::ShelfModel::Get()->SetShelfItemFactory(nullptr);
   }
 
   // session_manager::SessionManagerObserver:
@@ -133,11 +130,8 @@ class ChromeShelfControllerInitializer
 
     if (session_manager::SessionManager::Get()->session_state() ==
         session_manager::SessionState::ACTIVE) {
-      chrome_shelf_item_factory_ = std::make_unique<ChromeShelfItemFactory>();
-      ash::ShelfModel::Get()->SetShelfItemFactory(
-          chrome_shelf_item_factory_.get());
       chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
-          nullptr, ash::ShelfModel::Get(), chrome_shelf_item_factory_.get());
+          nullptr, ash::ShelfModel::Get());
       chrome_shelf_controller_->Init();
 
       session_manager::SessionManager::Get()->RemoveObserver(this);
@@ -145,7 +139,6 @@ class ChromeShelfControllerInitializer
   }
 
  private:
-  std::unique_ptr<ChromeShelfItemFactory> chrome_shelf_item_factory_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
 };
 

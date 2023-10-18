@@ -85,9 +85,7 @@ class ChromeShelfController
   // Returns the single ChromeShelfController instance.
   static ChromeShelfController* instance();
 
-  ChromeShelfController(Profile* profile,
-                        ash::ShelfModel* model,
-                        ChromeShelfItemFactory* shelf_item_factory);
+  ChromeShelfController(Profile* profile, ash::ShelfModel* model);
 
   ChromeShelfController(const ChromeShelfController&) = delete;
   ChromeShelfController& operator=(const ChromeShelfController&) = delete;
@@ -108,6 +106,7 @@ class ChromeShelfController
   ash::ShelfID CreateAppItem(
       std::unique_ptr<ash::ShelfItemDelegate> item_delegate,
       ash::ShelfItemStatus status,
+      bool pinned,
       const std::u16string& title = std::u16string());
 
   // Returns the shelf item with the given id, or null if |id| isn't found.
@@ -290,15 +289,12 @@ class ChromeShelfController
   void OnAppImageUpdated(const std::string& app_id,
                          const gfx::ImageSkia& image) override;
 
-  // Creates an app item to insert at |index|. Note that |index| may be
+  // Inserts a shelf item for an app at |index|. Note that |index| may be
   // adjusted by the model to meet ordering constraints.
-  // The |shelf_item_type| will be set into the ShelfModel.
   ash::ShelfID InsertAppItem(
+      std::unique_ptr<ash::ShelfItem> item,
       std::unique_ptr<ash::ShelfItemDelegate> item_delegate,
-      ash::ShelfItemStatus status,
-      int index,
-      ash::ShelfItemType shelf_item_type,
-      const std::u16string& title = std::u16string());
+      int index);
 
  private:
   friend class ChromeShelfControllerTestBase;
@@ -434,9 +430,8 @@ class ChromeShelfController
   // The ShelfModel instance owned by ash::Shell's ShelfController.
   const raw_ptr<ash::ShelfModel, ExperimentalAsh> model_;
 
-  // Guaranteed to outlive this class. The central authority for creating
-  // ShelfItems from app_ids.
-  const raw_ptr<ChromeShelfItemFactory, ExperimentalAsh> shelf_item_factory_;
+  // The central authority to create ShelfItems from app_ids.
+  std::unique_ptr<ChromeShelfItemFactory> shelf_item_factory_;
 
   // The AppService app window shelf controller.
   raw_ptr<AppServiceAppWindowShelfController, ExperimentalAsh>

@@ -36,6 +36,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -248,10 +249,10 @@ void ExtendHotseat(Browser* browser) {
 
 ash::ShelfID CreateAppShortcutItem(const ash::ShelfID& shelf_id) {
   auto* controller = ChromeShelfController::instance();
-  return controller->InsertAppItem(
+
+  return controller->CreateAppItem(
       std::make_unique<AppShortcutShelfItemController>(shelf_id),
-      ash::STATUS_CLOSED, controller->shelf_model()->item_count(),
-      ash::TYPE_PINNED_APP, /*title=*/u"");
+      ash::STATUS_CLOSED, /*pinned=*/true, /*title=*/base::EmptyString16());
 }
 
 // A class that waits for the child removal to occur on a parent view.

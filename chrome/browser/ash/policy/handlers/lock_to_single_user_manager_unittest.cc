@@ -147,8 +147,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
     // Set up ChromeShelfController to avoid a crash in LaunchPluginVm().
     shelf_model_ = std::make_unique<ash::ShelfModel>();
-    chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
-        profile(), shelf_model_.get(), /*shelf_item_factory=*/nullptr);
+    chrome_shelf_controller_ =
+        std::make_unique<ChromeShelfController>(profile(), shelf_model_.get());
     chrome_shelf_controller_->SetProfileForTest(profile());
     chrome_shelf_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(profile()));

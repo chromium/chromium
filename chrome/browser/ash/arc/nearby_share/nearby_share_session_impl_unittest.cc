@@ -42,8 +42,8 @@ class NearbyShareSessionImplTest : public testing::Test {
   // not commence until an ARC window is visible.
   NearbyShareSessionImpl* MakeSession(mojom::ShareIntentInfoPtr share_info) {
     shelf_model_ = std::make_unique<ash::ShelfModel>();
-    shelf_controller_ = std::make_unique<ChromeShelfController>(
-        &profile_, shelf_model_.get(), nullptr);
+    shelf_controller_ =
+        std::make_unique<ChromeShelfController>(&profile_, shelf_model_.get());
     shelf_controller_->Init();
 
     session_ = std::make_unique<NearbyShareSessionImpl>(

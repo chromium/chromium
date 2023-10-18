@@ -206,7 +206,8 @@ void PluginVmTestHelper::OpenShelfItem() {
         shelf_id, std::move(delegate));
     shelf_controller->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
   } else {
-    shelf_controller->CreateAppItem(std::move(delegate), ash::STATUS_RUNNING);
+    shelf_controller->CreateAppItem(std::move(delegate), ash::STATUS_RUNNING,
+                                    /*pinned=*/false);
   }
 }
 
