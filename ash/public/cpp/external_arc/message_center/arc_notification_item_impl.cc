@@ -105,7 +105,14 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
         base::UTF8ToUTF16(data->accessible_name.value());
   }
 
-  if (manager_->IsOpeningSettingsSupported() && !is_setting_shown) {
+  const bool render_on_chrome =
+      features::IsRenderArcNotificationsByChromeEnabled() &&
+      data->render_on_chrome;
+
+  if (render_on_chrome) {
+    rich_data.settings_button_handler =
+        message_center::SettingsButtonHandler::INLINE;
+  } else if (manager_->IsOpeningSettingsSupported() && !is_setting_shown) {
     rich_data.settings_button_handler =
         message_center::SettingsButtonHandler::DELEGATE;
   } else {
@@ -127,10 +134,6 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
   if (data->group_key) {
     notifier_id.group_key = data->group_key;
   }
-
-  const bool render_on_chrome =
-      features::IsRenderArcNotificationsByChromeEnabled() &&
-      data->render_on_chrome;
 
   const auto notification_type =
       render_on_chrome
