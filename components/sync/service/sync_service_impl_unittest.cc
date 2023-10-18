@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -679,8 +680,10 @@ TEST_F(
   // kPayments should be disabled when kAutofill is disabled.
   // TODO(crbug.com/1435431): It shouldn't be disabled once kPayments is
   // decoupled from kAutofill.
-  EXPECT_FALSE(service()->GetUserSettings()->GetSelectedTypes().Has(
-      UserSelectableType::kPayments));
+  if (!base::FeatureList::IsEnabled(kSyncDecoupleAddressPaymentSettings)) {
+    EXPECT_FALSE(service()->GetUserSettings()->GetSelectedTypes().Has(
+        UserSelectableType::kPayments));
+  }
 
   // The user enables addresses sync.
   service()->GetUserSettings()->SetSelectedType(

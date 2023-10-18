@@ -1258,7 +1258,9 @@ void SyncServiceImpl::PassphraseTypeChanged(PassphraseType passphrase_type) {
     // too. Payments should not be enabled when auto fill data type disabled.
     // TODO(crbug.com/1435431): This can be removed once kPayments is decoupled
     // from kAutofill.
-    GetUserSettings()->SetSelectedType(UserSelectableType::kPayments, false);
+    if (!base::FeatureList::IsEnabled(kSyncDecoupleAddressPaymentSettings)) {
+      GetUserSettings()->SetSelectedType(UserSelectableType::kPayments, false);
+    }
   }
   sync_prefs_.SetCachedPassphraseType(passphrase_type);
 }
