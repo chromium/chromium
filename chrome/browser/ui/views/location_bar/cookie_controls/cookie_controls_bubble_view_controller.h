@@ -72,6 +72,10 @@ class CookieControlsBubbleViewController
   // The most recent status provided by the CookieControlsController. Cached
   // so that updates to site counts can use the appropriate label.
   CookieControlsStatus latest_status_ = CookieControlsStatus::kUninitialized;
+  // The most recent status provided by the CookieControlsController, used to
+  // determine the user's 3PCD status.
+  CookieBlocking3pcdStatus latest_blocking_status_ =
+      CookieBlocking3pcdStatus::kNotIn3pcd;
 
   raw_ptr<CookieControlsBubbleView> bubble_view_ = nullptr;
 

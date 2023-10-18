@@ -3900,6 +3900,9 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are blocked.">
         Third-party cookies blocked
       </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_TITLE" desc="Title shown for the Tracking Protection bubble.">
+        Tracking Protection
+      </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are allowed.">
         Third-party cookies allowed
       </message>
@@ -3912,20 +3915,44 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" desc="Descriptive text in the cookie controls bubble explaining the trade-off of allowing third-party cookies for this site, a change that will not automatically expire in the future.">
         Try allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" desc="Descriptive text in the trackings protection bubble mentioning the option to enable third-party cookies and mentions the trade off of doing so.">
+        Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
+      </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE" desc="Subtitle shown on the cookie controls bubble when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
         {COUNT, plural,
               =0 {Chrome will block cookies again today}
               =1 {Chrome will block cookies again tomorrow}
               other {# days until Chrome blocks cookies again}}
       </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_LIMITING_RESTART_TITLE" desc="Subtitle shown on the tracking protection bubble indicating how long until cookies will be limited again.">
+        {COUNT, plural,
+              =0 {Chrome will limit cookies again today}
+              =1 {Chrome will limit cookies again tomorrow}
+              other {# days until Chrome limits cookies again}}
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE" desc="Subtitle shown on the tracking protection bubble indicating how long until cookies will be blocked again.">
+        {COUNT, plural,
+              =0 {Chrome will block cookies again today}
+              =1 {Chrome will block cookies again tomorrow}
+              other {# days until cookies are blocked again}}
+      </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY" desc="Descriptive text in the cookie controls bubble after the user has allowed third-party cookies on a site explaining the trade-off of their decision.">
         You allowed this site to use third-party cookies. This means that most site features should work, but you have less protection.
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION" desc="Descriptive text in the tracking protection bubble detailing the trade offs of temporarily allowing third-party cookies.">
+        You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected.
       </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the cookie controls bubble if cookies were allowed by the user and they won't be automatically blocked again the future.">
         You allowed third-party cookies for this site
       </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the tracking protection bubble stating that third-party cookies are allowed due to a permanent exception.">
+        You allowed third-party cookies on this site
+      </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION" desc="A description in the cookie controls bubble of the impact of current user settings for this site if cookies are allowed and they won't be automatically blocked again in the future.">
         This means that most site features should work, but you have less protection
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the tracking protection bubble for permanent exceptions informing the user about having less browsing protection.">
+        This means site features should work as expected, but you may have less browsing protection.
       </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE" desc="A subtitle for a portion of the cookie controls bubble soliciting feedback from users.">
         Send feedback
@@ -3951,6 +3978,15 @@ are declared in tools/grit/grit_rule.gni.
         {COUNT, plural,
               =1 {1 site allowed}
               other {# sites allowed}}
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are allowed.">
+        Allowed
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are blocked.">
+        Blocked
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_LIMITED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are limited.">
+        Limited
       </message>
       <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that cookies are allowed on the current site.">
         Third-party cookies allowed
