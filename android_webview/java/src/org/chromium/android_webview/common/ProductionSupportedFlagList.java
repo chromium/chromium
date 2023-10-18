@@ -644,6 +644,7 @@ public final class ProductionSupportedFlagList {
                 "Enables converting trackpad click gestures to mouse events"
                         + " in order for them to be interpreted similar to a desktop"
                         + " experience (i.e. double-click to select word.)"),
+        Flag.baseFeature(UiAndroidFeatures.ANDROID_HDR, "Enables HDR support"),
         Flag.baseFeature(
                 NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB,
                 "Enable attribution reporting to cross the app/web barrier by letting "
