@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.settings;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -34,17 +33,17 @@ public class PaddedItemDecorationWithDivider extends RecyclerView.ItemDecoration
     private boolean mAllowDividerAfterLastItem;
     private @NonNull Supplier<Integer> mDividerPaddingStartSupplier;
     private @NonNull Supplier<Integer> mDividerPaddingEndSupplier;
-    private @NonNull Pair<Integer, Integer> mItemOffsets;
+    private @NonNull Supplier<Integer> mItemOffsetSupplier;
 
     /**
      * Create the item decoration with padding.
      *
-     * @param itemOffsets Offsets to apply to start and end of each item.
+     * @param itemOffsetSupplier Supplier for offset to apply to start and end of each item.
      */
-    public PaddedItemDecorationWithDivider(@NonNull Pair<Integer, Integer> itemOffsets) {
+    public PaddedItemDecorationWithDivider(Supplier<Integer> itemOffsetSupplier) {
         mDividerPaddingStartSupplier = () -> 0;
         mDividerPaddingEndSupplier = () -> 0;
-        setItemOffsets(itemOffsets);
+        mItemOffsetSupplier = itemOffsetSupplier;
     }
 
     /** Set whether drawing divider after the last item is allowed. */
@@ -75,14 +74,15 @@ public class PaddedItemDecorationWithDivider extends RecyclerView.ItemDecoration
         final int width = parent.getWidth();
         int dividerStartPadding = getDividerPaddingStart();
         int dividerEndPadding = getDividerPaddingEnd();
+        int itemOffset = mItemOffsetSupplier.get();
         for (int childViewIndex = 0; childViewIndex < childCount; childViewIndex++) {
             final View view = parent.getChildAt(childViewIndex);
             if (shouldDrawDividerBelow(view, parent)) {
                 int top = (int) view.getY() + view.getHeight();
                 mDividerDrawable.setBounds(
-                        mItemOffsets.first + dividerStartPadding,
+                        itemOffset + dividerStartPadding,
                         top,
-                        width - (mItemOffsets.second + dividerEndPadding),
+                        width - (itemOffset + dividerEndPadding),
                         top + mDividerHeight);
                 mDividerDrawable.draw(c);
             }
@@ -95,8 +95,9 @@ public class PaddedItemDecorationWithDivider extends RecyclerView.ItemDecoration
             @NonNull View view,
             @NonNull RecyclerView parent,
             @NonNull State state) {
-        outRect.left = mItemOffsets.first;
-        outRect.right = mItemOffsets.second;
+        int itemOffset = mItemOffsetSupplier.get();
+        outRect.left = itemOffset;
+        outRect.right = itemOffset;
         if (shouldDrawDividerBelow(view, parent)) {
             outRect.bottom = mDividerHeight;
         }
@@ -133,11 +134,7 @@ public class PaddedItemDecorationWithDivider extends RecyclerView.ItemDecoration
         return mDividerPaddingEndSupplier.get() != null ? mDividerPaddingEndSupplier.get() : 0;
     }
 
-    public void setItemOffsets(@NonNull Pair<Integer, Integer> itemOffsets) {
-        mItemOffsets = itemOffsets;
-    }
-
-    public Pair<Integer, Integer> getItemOffsetsForTesting() {
-        return mItemOffsets;
+    public int getItemOffsetForTesting() {
+        return mItemOffsetSupplier.get();
     }
 }

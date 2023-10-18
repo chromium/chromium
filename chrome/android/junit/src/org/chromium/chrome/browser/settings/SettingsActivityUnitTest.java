@@ -9,10 +9,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.util.Pair;
 import android.view.View;
 
 import androidx.lifecycle.Lifecycle.State;
@@ -132,9 +130,8 @@ public class SettingsActivityUnitTest {
         assertNotNull("PaddedItemDecorationWithDivider should exists.", decoration);
         int parentPadding =
                 60; // (720 - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2 = (720 - 600) / 2
-        Pair<Integer, Integer> itemOffsets = decoration.getItemOffsetsForTesting();
-        assertEquals("Item offset start is wrong.", parentPadding, itemOffsets.first.intValue());
-        assertEquals("Item offset end is wrong.", parentPadding, itemOffsets.second.intValue());
+        int itemOffset = decoration.getItemOffsetForTesting();
+        assertEquals("Item offset is wrong.", parentPadding, itemOffset);
         assertEquals("Divider start padding is wrong.", 0, decoration.getDividerPaddingStart());
         assertEquals("Divider end padding is wrong.", 0, decoration.getDividerPaddingEnd());
     }
@@ -150,23 +147,8 @@ public class SettingsActivityUnitTest {
         RecyclerView recyclerView = mSettingsActivity.findViewById(R.id.recycler_view);
         PaddedItemDecorationWithDivider decoration = getPaddedDecoration(recyclerView);
         assertNotNull("PaddedItemDecorationWithDivider should exists.", decoration);
-        TypedArray paddingArray =
-                mSettingsActivity
-                        .getTheme()
-                        .obtainStyledAttributes(
-                                new int[] {
-                                    R.attr.listPreferredItemPaddingStart,
-                                    R.attr.listPreferredItemPaddingEnd
-                                });
-        Pair<Integer, Integer> itemOffsets = decoration.getItemOffsetsForTesting();
-        assertEquals(
-                "Item offset start is wrong.",
-                (int) paddingArray.getDimension(0, 0f),
-                itemOffsets.first.intValue());
-        assertEquals(
-                "Item offset end is wrong.",
-                (int) paddingArray.getDimension(1, 0f),
-                itemOffsets.second.intValue());
+        int itemOffset = decoration.getItemOffsetForTesting();
+        assertEquals("Item offset is wrong.", 0, itemOffset);
         assertEquals("Divider start padding is wrong.", 0, decoration.getDividerPaddingStart());
         assertEquals("Divider end padding is wrong.", 0, decoration.getDividerPaddingEnd());
     }
@@ -186,9 +168,8 @@ public class SettingsActivityUnitTest {
         int parentPadding =
                 60; // (720 - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2 = (720 - 600) / 2
 
-        Pair<Integer, Integer> itemOffsets = decoration.getItemOffsetsForTesting();
-        assertEquals("Item offset start is wrong.", parentPadding, itemOffsets.first.intValue());
-        assertEquals("Item offset end is wrong.", parentPadding, itemOffsets.second.intValue());
+        int itemOffset = decoration.getItemOffsetForTesting();
+        assertEquals("Item offset is wrong.", parentPadding, itemOffset);
         assertEquals(
                 "Divider start padding should not be set.", 0, decoration.getDividerPaddingStart());
         assertEquals(
@@ -211,9 +192,8 @@ public class SettingsActivityUnitTest {
         assertNotNull("PaddedItemDecorationWithDivider should exists.", decoration);
         int parentPadding =
                 60; // (720 - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2 = (720 - 600) / 2
-        Pair<Integer, Integer> itemOffsets = decoration.getItemOffsetsForTesting();
-        assertEquals("Item offset start is wrong.", parentPadding, itemOffsets.first.intValue());
-        assertEquals("Item offset end is wrong.", parentPadding, itemOffsets.second.intValue());
+        int itemOffset = decoration.getItemOffsetForTesting();
+        assertEquals("Item offset is wrong.", parentPadding, itemOffset);
         assertEquals(
                 "Divider start padding is wrong.",
                 CustomDividerTestSettingsFragment.DIVIDER_START_PADDING,
