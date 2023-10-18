@@ -542,25 +542,25 @@ __gCrWeb.fill.inferLabelForElement = function(element) {
   let inferredLabel;
   if (__gCrWeb.fill.isCheckableElement(element)) {
     inferredLabel = __gCrWeb.fill.inferLabelFromNext(element);
-    if (inferenceUtil.IsLabelValid(inferredLabel)) {
+    if (inferenceUtil.isLabelValid(inferredLabel)) {
       return inferredLabel;
     }
   }
 
   inferredLabel = __gCrWeb.fill.inferLabelFromPrevious(element);
-  if (inferenceUtil.IsLabelValid(inferredLabel)) {
+  if (inferenceUtil.isLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 
   // If we didn't find a label, check for the placeholder case.
   inferredLabel = __gCrWeb.fill.inferLabelFromPlaceholder(element);
-  if (inferenceUtil.IsLabelValid(inferredLabel)) {
+  if (inferenceUtil.isLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 
   // If we didn't find a placeholder, check for the aria-label case.
   inferredLabel = __gCrWeb.fill.getAriaLabel(element);
-  if (inferenceUtil.IsLabelValid(inferredLabel)) {
+  if (inferenceUtil.isLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 
@@ -581,7 +581,7 @@ __gCrWeb.fill.inferLabelForElement = function(element) {
       inferredLabel = __gCrWeb.fill.inferLabelFromDivTable(element);
     } else if (tagName === 'TD') {
       inferredLabel = __gCrWeb.fill.inferLabelFromTableColumn(element);
-      if (!inferenceUtil.IsLabelValid(inferredLabel)) {
+      if (!inferenceUtil.isLabelValid(inferredLabel)) {
         inferredLabel = __gCrWeb.fill.inferLabelFromTableRow(element);
       }
     } else if (tagName === 'DD') {
@@ -592,13 +592,13 @@ __gCrWeb.fill.inferLabelForElement = function(element) {
       break;
     }
 
-    if (inferenceUtil.IsLabelValid(inferredLabel)) {
+    if (inferenceUtil.isLabelValid(inferredLabel)) {
       return inferredLabel;
     }
   }
   // If we didn't find a label, check for the value attribute case.
   inferredLabel = __gCrWeb.fill.InferLabelFromValueAttr(element);
-  if (inferenceUtil.IsLabelValid(inferredLabel)) {
+  if (inferenceUtil.isLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 
