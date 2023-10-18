@@ -496,7 +496,9 @@ void RecordHandlerImpl::ReportUploader::LogNumRecordsInUpload(
     base::UmaHistogramCounts1000(
         "Browser.ERP.RecordsPerUploadFromUnmanagedDevice", num_records);
   }
-// TODO(b/304623373): Add separate UMA for non-ChromeOS devices.
+#else
+  base::UmaHistogramCounts1000(
+      "Browser.ERP.RecordsPerUploadFromNonChromeosDevice", num_records);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
