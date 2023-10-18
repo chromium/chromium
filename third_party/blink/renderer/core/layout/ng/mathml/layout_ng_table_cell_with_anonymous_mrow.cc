@@ -6,14 +6,14 @@
 
 namespace blink {
 
-LayoutNGTableCellWithAnonymousMrow::LayoutNGTableCellWithAnonymousMrow(
+LayoutTableCellWithAnonymousMrow::LayoutTableCellWithAnonymousMrow(
     Element* element)
     : LayoutNGTableCell(element) {
   DCHECK(element);
 }
 
-void LayoutNGTableCellWithAnonymousMrow::AddChild(LayoutObject* new_child,
-                                                  LayoutObject* before_child) {
+void LayoutTableCellWithAnonymousMrow::AddChild(LayoutObject* new_child,
+                                                LayoutObject* before_child) {
   LayoutBlock* anonymous_mrow = To<LayoutBlock>(FirstChild());
   if (!anonymous_mrow) {
     anonymous_mrow = LayoutBlock::CreateAnonymousWithParentAndDisplay(

@@ -10,12 +10,12 @@
 
 namespace blink {
 
-class CORE_EXPORT NGMathFractionLayoutAlgorithm
+class CORE_EXPORT MathFractionLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  explicit NGMathFractionLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit MathFractionLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
  private:
   const NGLayoutResult* Layout() final;

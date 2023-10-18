@@ -11,13 +11,13 @@ namespace blink {
 
 class Element;
 
-class LayoutNGMathMLBlockFlow final : public LayoutNGBlockFlow {
+class LayoutMathMLBlockFlow final : public LayoutNGBlockFlow {
  public:
-  explicit LayoutNGMathMLBlockFlow(Element*);
+  explicit LayoutMathMLBlockFlow(Element*);
 
   const char* GetName() const final {
     NOT_DESTROYED();
-    return "LayoutNGMathMLBlockFlow";
+    return "LayoutMathMLBlockFlow";
   }
 
  private:

@@ -137,15 +137,15 @@ bool HasAccent(const NGBlockNode& node, bool accent_under) {
 
 }  // namespace
 
-NGMathUnderOverLayoutAlgorithm::NGMathUnderOverLayoutAlgorithm(
+MathUnderOverLayoutAlgorithm::MathUnderOverLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 
-void NGMathUnderOverLayoutAlgorithm::GatherChildren(NGBlockNode* base,
-                                                    NGBlockNode* over,
-                                                    NGBlockNode* under) {
+void MathUnderOverLayoutAlgorithm::GatherChildren(NGBlockNode* base,
+                                                  NGBlockNode* over,
+                                                  NGBlockNode* under) {
   auto script_type = Node().ScriptType();
   for (NGLayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
@@ -182,7 +182,7 @@ void NGMathUnderOverLayoutAlgorithm::GatherChildren(NGBlockNode* base,
   }
 }
 
-const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
+const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
   DCHECK(IsValidMathMLScript(Node()));
 
@@ -396,7 +396,7 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGMathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult MathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   DCHECK(IsValidMathMLScript(Node()));
 

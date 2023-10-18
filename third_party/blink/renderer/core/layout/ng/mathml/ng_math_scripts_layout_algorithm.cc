@@ -87,13 +87,13 @@ ScriptsVerticalParameters GetScriptsVerticalParameters(
 
 }  // namespace
 
-NGMathScriptsLayoutAlgorithm::NGMathScriptsLayoutAlgorithm(
+MathScriptsLayoutAlgorithm::MathScriptsLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 
-void NGMathScriptsLayoutAlgorithm::GatherChildren(
+void MathScriptsLayoutAlgorithm::GatherChildren(
     NGBlockNode* base,
     HeapVector<SubSupPair>* sub_sup_pairs,
     NGBlockNode* prescripts,
@@ -176,8 +176,8 @@ void NGMathScriptsLayoutAlgorithm::GatherChildren(
 }
 
 // Determines ascent/descent and shift metrics depending on script type.
-NGMathScriptsLayoutAlgorithm::VerticalMetrics
-NGMathScriptsLayoutAlgorithm::GetVerticalMetrics(
+MathScriptsLayoutAlgorithm::VerticalMetrics
+MathScriptsLayoutAlgorithm::GetVerticalMetrics(
     const ChildAndMetrics& base_metrics,
     const ChildrenAndMetrics& sub_metrics,
     const ChildrenAndMetrics& sup_metrics) const {
@@ -266,8 +266,8 @@ NGMathScriptsLayoutAlgorithm::GetVerticalMetrics(
   return metrics;
 }
 
-NGMathScriptsLayoutAlgorithm::ChildAndMetrics
-NGMathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
+MathScriptsLayoutAlgorithm::ChildAndMetrics
+MathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
   ChildAndMetrics child_and_metrics;
   auto constraint_space = CreateConstraintSpaceForMathChild(
       Node(), ChildAvailableSize(), ConstraintSpace(), child);
@@ -288,7 +288,7 @@ NGMathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
   return child_and_metrics;
 }
 
-const NGLayoutResult* NGMathScriptsLayoutAlgorithm::Layout() {
+const NGLayoutResult* MathScriptsLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   NGBlockNode base = nullptr;
@@ -415,7 +415,7 @@ const NGLayoutResult* NGMathScriptsLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult MathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))

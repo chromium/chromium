@@ -124,24 +124,24 @@ NOINLINE void DetermineMathMLAlgorithmAndRun(
   auto* element = box.GetNode();
   if (element) {
     if (IsA<MathMLSpaceElement>(element)) {
-      CreateAlgorithmAndRun<NGMathSpaceLayoutAlgorithm>(params, callback);
+      CreateAlgorithmAndRun<MathSpaceLayoutAlgorithm>(params, callback);
       return;
     } else if (IsA<MathMLFractionElement>(element) &&
                IsValidMathMLFraction(params.node)) {
-      CreateAlgorithmAndRun<NGMathFractionLayoutAlgorithm>(params, callback);
+      CreateAlgorithmAndRun<MathFractionLayoutAlgorithm>(params, callback);
       return;
     } else if (IsA<MathMLRadicalElement>(element) &&
                IsValidMathMLRadical(params.node)) {
-      CreateAlgorithmAndRun<NGMathRadicalLayoutAlgorithm>(params, callback);
+      CreateAlgorithmAndRun<MathRadicalLayoutAlgorithm>(params, callback);
       return;
     } else if (IsA<MathMLPaddedElement>(element)) {
-      CreateAlgorithmAndRun<NGMathPaddedLayoutAlgorithm>(params, callback);
+      CreateAlgorithmAndRun<MathPaddedLayoutAlgorithm>(params, callback);
       return;
     } else if (IsA<MathMLTokenElement>(element)) {
       if (IsOperatorWithSpecialShaping(params.node))
-        CreateAlgorithmAndRun<NGMathOperatorLayoutAlgorithm>(params, callback);
+        CreateAlgorithmAndRun<MathOperatorLayoutAlgorithm>(params, callback);
       else if (IsTextOnlyToken(params.node))
-        CreateAlgorithmAndRun<NGMathTokenLayoutAlgorithm>(params, callback);
+        CreateAlgorithmAndRun<MathTokenLayoutAlgorithm>(params, callback);
       else
         CreateAlgorithmAndRun<NGBlockLayoutAlgorithm>(params, callback);
       return;
@@ -149,14 +149,14 @@ NOINLINE void DetermineMathMLAlgorithmAndRun(
                IsValidMathMLScript(params.node)) {
       if (IsA<MathMLUnderOverElement>(element) &&
           !IsUnderOverLaidOutAsSubSup(params.node)) {
-        CreateAlgorithmAndRun<NGMathUnderOverLayoutAlgorithm>(params, callback);
+        CreateAlgorithmAndRun<MathUnderOverLayoutAlgorithm>(params, callback);
       } else {
-        CreateAlgorithmAndRun<NGMathScriptsLayoutAlgorithm>(params, callback);
+        CreateAlgorithmAndRun<MathScriptsLayoutAlgorithm>(params, callback);
       }
       return;
     }
   }
-  CreateAlgorithmAndRun<NGMathRowLayoutAlgorithm>(params, callback);
+  CreateAlgorithmAndRun<MathRowLayoutAlgorithm>(params, callback);
 }
 
 template <typename Callback>

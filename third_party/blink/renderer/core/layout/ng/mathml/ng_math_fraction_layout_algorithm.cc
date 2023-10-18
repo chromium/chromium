@@ -118,15 +118,15 @@ FractionStackParameters GetFractionStackParameters(const ComputedStyle& style) {
 
 }  // namespace
 
-NGMathFractionLayoutAlgorithm::NGMathFractionLayoutAlgorithm(
+MathFractionLayoutAlgorithm::MathFractionLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
   container_builder_.SetIsMathMLFraction();
 }
 
-void NGMathFractionLayoutAlgorithm::GatherChildren(NGBlockNode* numerator,
-                                                   NGBlockNode* denominator) {
+void MathFractionLayoutAlgorithm::GatherChildren(NGBlockNode* numerator,
+                                                 NGBlockNode* denominator) {
   for (NGLayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     NGBlockNode block_child = To<NGBlockNode>(child);
@@ -151,7 +151,7 @@ void NGMathFractionLayoutAlgorithm::GatherChildren(NGBlockNode* numerator,
   DCHECK(*denominator);
 }
 
-const NGLayoutResult* NGMathFractionLayoutAlgorithm::Layout() {
+const NGLayoutResult* MathFractionLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   NGBlockNode numerator = nullptr;
@@ -270,7 +270,7 @@ const NGLayoutResult* NGMathFractionLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGMathFractionLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult MathFractionLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))

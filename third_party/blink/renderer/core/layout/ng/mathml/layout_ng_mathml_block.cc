@@ -10,29 +10,28 @@
 
 namespace blink {
 
-LayoutNGMathMLBlock::LayoutNGMathMLBlock(Element* element)
-    : LayoutBlock(element) {}
+LayoutMathMLBlock::LayoutMathMLBlock(Element* element) : LayoutBlock(element) {}
 
-bool LayoutNGMathMLBlock::IsOfType(LayoutObjectType type) const {
+bool LayoutMathMLBlock::IsOfType(LayoutObjectType type) const {
   return type == kLayoutObjectMathML ||
          (type == kLayoutObjectMathMLRoot && GetNode() &&
           GetNode()->HasTagName(mathml_names::kMathTag)) ||
          LayoutBlock::IsOfType(type);
 }
 
-bool LayoutNGMathMLBlock::IsChildAllowed(LayoutObject* child,
-                                         const ComputedStyle&) const {
+bool LayoutMathMLBlock::IsChildAllowed(LayoutObject* child,
+                                       const ComputedStyle&) const {
   return child->GetNode() && IsA<MathMLElement>(child->GetNode());
 }
 
-bool LayoutNGMathMLBlock::CanHaveChildren() const {
+bool LayoutMathMLBlock::CanHaveChildren() const {
   if (GetNode() && GetNode()->HasTagName(mathml_names::kMspaceTag))
     return false;
   return LayoutBlock::CanHaveChildren();
 }
 
-void LayoutNGMathMLBlock::StyleDidChange(StyleDifference diff,
-                                         const ComputedStyle* old_style) {
+void LayoutMathMLBlock::StyleDidChange(StyleDifference diff,
+                                       const ComputedStyle* old_style) {
   LayoutBlock::StyleDidChange(diff, old_style);
   if (!old_style)
     return;

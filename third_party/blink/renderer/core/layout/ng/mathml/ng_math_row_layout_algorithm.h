@@ -15,12 +15,12 @@ namespace blink {
 
 class LayoutUnit;
 
-class CORE_EXPORT NGMathRowLayoutAlgorithm
+class CORE_EXPORT MathRowLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  explicit NGMathRowLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit MathRowLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
   struct ChildWithOffsetAndMargins {
     DISALLOW_NEW();
@@ -58,6 +58,6 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGMathRowLayoutAlgorithm::ChildWithOffsetAndMargins)
+    blink::MathRowLayoutAlgorithm::ChildWithOffsetAndMargins)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_ROW_LAYOUT_ALGORITHM_H_

@@ -11,12 +11,12 @@
 
 namespace blink {
 
-class CORE_EXPORT NGMathPaddedLayoutAlgorithm
+class CORE_EXPORT MathPaddedLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  explicit NGMathPaddedLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit MathPaddedLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
   const NGLayoutResult* Layout() final;
 

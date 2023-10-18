@@ -9,13 +9,13 @@
 
 namespace blink {
 
-class LayoutNGMathMLBlock : public LayoutBlock {
+class LayoutMathMLBlock : public LayoutBlock {
  public:
-  explicit LayoutNGMathMLBlock(Element*);
+  explicit LayoutMathMLBlock(Element*);
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGMathMLBlock";
+    return "LayoutMathMLBlock";
   }
 
  private:

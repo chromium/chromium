@@ -6,20 +6,19 @@
 
 namespace blink {
 
-LayoutNGMathMLBlockWithAnonymousMrow::LayoutNGMathMLBlockWithAnonymousMrow(
+LayoutMathMLBlockWithAnonymousMrow::LayoutMathMLBlockWithAnonymousMrow(
     Element* element)
-    : LayoutNGMathMLBlock(element) {
+    : LayoutMathMLBlock(element) {
   DCHECK(element);
 }
 
-void LayoutNGMathMLBlockWithAnonymousMrow::AddChild(
-    LayoutObject* new_child,
-    LayoutObject* before_child) {
+void LayoutMathMLBlockWithAnonymousMrow::AddChild(LayoutObject* new_child,
+                                                  LayoutObject* before_child) {
   LayoutBlock* anonymous_mrow = To<LayoutBlock>(FirstChild());
   if (!anonymous_mrow) {
     anonymous_mrow = LayoutBlock::CreateAnonymousWithParentAndDisplay(
         this, EDisplay::kBlockMath);
-    LayoutNGMathMLBlock::AddChild(anonymous_mrow);
+    LayoutMathMLBlock::AddChild(anonymous_mrow);
   }
   anonymous_mrow->AddChild(new_child, before_child);
 }

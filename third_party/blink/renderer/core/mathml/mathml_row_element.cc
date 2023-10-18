@@ -24,7 +24,7 @@ LayoutObject* MathMLRowElement::CreateLayoutObject(const ComputedStyle& style) {
   if (!style.IsDisplayMathType()) {
     return MathMLElement::CreateLayoutObject(style);
   }
-  return MakeGarbageCollected<LayoutNGMathMLBlock>(this);
+  return MakeGarbageCollected<LayoutMathMLBlock>(this);
 }
 
 void MathMLRowElement::ChildrenChanged(const ChildrenChange& change) {

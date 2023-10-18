@@ -16,7 +16,7 @@ namespace blink {
 class NGBoxFragmentBuilder;
 class NGTableBorders;
 struct FrameSetLayoutData;
-struct NGMathMLPaintInfo;
+struct MathMLPaintInfo;
 
 // This class manages rare data of NGPhysicalBoxFragment.
 // Only NGPhysicalBoxFragment should use this class.
@@ -84,7 +84,7 @@ class PhysicalFragmentRareData
       PhysicalBoxStrut padding;
       PhysicalRect inflow_bounds;
       std::unique_ptr<const FrameSetLayoutData> frame_set_layout_data;
-      std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
+      std::unique_ptr<const MathMLPaintInfo> mathml_paint_info;
       LogicalRect table_grid_rect;
       scoped_refptr<const NGTableBorders> table_collapsed_borders;
       std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>

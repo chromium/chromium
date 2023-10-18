@@ -40,17 +40,16 @@ static void DetermineOperatorSpacing(const NGBlockNode& node,
 
 }  // namespace
 
-NGMathRowLayoutAlgorithm::NGMathRowLayoutAlgorithm(
+MathRowLayoutAlgorithm::MathRowLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
   DCHECK(!ConstraintSpace().HasBlockFragmentation());
 }
 
-void NGMathRowLayoutAlgorithm::LayoutRowItems(
-    ChildrenVector* children,
-    LayoutUnit* max_row_block_baseline,
-    LogicalSize* row_total_size) {
+void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
+                                            LayoutUnit* max_row_block_baseline,
+                                            LogicalSize* row_total_size) {
   const bool should_add_space =
       Node().IsMathRoot() || !GetMathMLEmbellishedOperatorProperties(Node());
   const auto baseline_type = Style().GetFontBaseline();
@@ -187,7 +186,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
   row_total_size->block_size = max_row_ascent + max_row_descent;
 }
 
-const NGLayoutResult* NGMathRowLayoutAlgorithm::Layout() {
+const NGLayoutResult* MathRowLayoutAlgorithm::Layout() {
   DCHECK(!IsBreakInside(BreakToken()));
 
   bool is_display_block_math =
@@ -230,7 +229,7 @@ const NGLayoutResult* NGMathRowLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGMathRowLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult MathRowLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))

@@ -24,7 +24,7 @@ inline LayoutUnit DisplayOperatorMinHeight(const ComputedStyle& style) {
 
 }  // namespace
 
-NGMathOperatorLayoutAlgorithm::NGMathOperatorLayoutAlgorithm(
+MathOperatorLayoutAlgorithm::MathOperatorLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
@@ -32,7 +32,7 @@ NGMathOperatorLayoutAlgorithm::NGMathOperatorLayoutAlgorithm(
       Node().IsInlineFormattingContextRoot());
 }
 
-const NGLayoutResult* NGMathOperatorLayoutAlgorithm::Layout() {
+const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   // This algorithm can only be used for operators with a single text node,
   // which itself must contain only one glyph. We ensure that the subtree is
   // properly laid out but the glyph will actually be used to determine a
@@ -177,7 +177,7 @@ const NGLayoutResult* NGMathOperatorLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGMathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult MathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   MinMaxSizes sizes;
   // https://w3c.github.io/mathml-core/#layout-of-operators
@@ -214,7 +214,7 @@ MinMaxSizesResult NGMathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
   return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
 }
 
-UChar32 NGMathOperatorLayoutAlgorithm::GetBaseCodePoint() const {
+UChar32 MathOperatorLayoutAlgorithm::GetBaseCodePoint() const {
   return DynamicTo<MathMLOperatorElement>(Node().GetDOMNode())
       ->GetTokenContent()
       .code_point;

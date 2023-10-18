@@ -9,13 +9,13 @@
 
 namespace blink {
 
-NGMathSpaceLayoutAlgorithm::NGMathSpaceLayoutAlgorithm(
+MathSpaceLayoutAlgorithm::MathSpaceLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 
-const NGLayoutResult* NGMathSpaceLayoutAlgorithm::Layout() {
+const NGLayoutResult* MathSpaceLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   LayoutUnit intrinsic_block_size = BorderScrollbarPadding().BlockSum();
@@ -32,7 +32,7 @@ const NGLayoutResult* NGMathSpaceLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGMathSpaceLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult MathSpaceLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   auto result =
       CalculateMinMaxSizesIgnoringChildren(Node(), BorderScrollbarPadding());

@@ -23,13 +23,13 @@ bool HasBaseGlyphForRadical(const ComputedStyle& style) {
 
 }  // namespace
 
-NGMathRadicalLayoutAlgorithm::NGMathRadicalLayoutAlgorithm(
+MathRadicalLayoutAlgorithm::MathRadicalLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 
-void NGMathRadicalLayoutAlgorithm::GatherChildren(
+void MathRadicalLayoutAlgorithm::GatherChildren(
     NGBlockNode* base,
     NGBlockNode* index,
     NGBoxFragmentBuilder* container_builder) const {
@@ -61,7 +61,7 @@ void NGMathRadicalLayoutAlgorithm::GatherChildren(
   }
 }
 
-const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
+const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
   DCHECK(IsValidMathMLRadical(Node()));
 
@@ -195,7 +195,7 @@ const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult MathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   DCHECK(IsValidMathMLRadical(Node()));
 

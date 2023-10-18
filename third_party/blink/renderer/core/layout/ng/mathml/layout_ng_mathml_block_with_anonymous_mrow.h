@@ -9,9 +9,9 @@
 
 namespace blink {
 
-class LayoutNGMathMLBlockWithAnonymousMrow : public LayoutNGMathMLBlock {
+class LayoutMathMLBlockWithAnonymousMrow : public LayoutMathMLBlock {
  public:
-  explicit LayoutNGMathMLBlockWithAnonymousMrow(Element*);
+  explicit LayoutMathMLBlockWithAnonymousMrow(Element*);
 
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;

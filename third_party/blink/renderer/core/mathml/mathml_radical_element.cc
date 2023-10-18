@@ -22,8 +22,8 @@ LayoutObject* MathMLRadicalElement::CreateLayoutObject(
     return MathMLElement::CreateLayoutObject(style);
   }
   if (HasTagName(mathml_names::kMsqrtTag))
-    return MakeGarbageCollected<LayoutNGMathMLBlockWithAnonymousMrow>(this);
-  return MakeGarbageCollected<LayoutNGMathMLBlock>(this);
+    return MakeGarbageCollected<LayoutMathMLBlockWithAnonymousMrow>(this);
+  return MakeGarbageCollected<LayoutMathMLBlock>(this);
 }
 
 }  // namespace blink

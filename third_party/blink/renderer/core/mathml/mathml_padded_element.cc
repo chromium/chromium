@@ -90,7 +90,7 @@ LayoutObject* MathMLPaddedElement::CreateLayoutObject(
   if (!style.IsDisplayMathType()) {
     return MathMLElement::CreateLayoutObject(style);
   }
-  return MakeGarbageCollected<LayoutNGMathMLBlockWithAnonymousMrow>(this);
+  return MakeGarbageCollected<LayoutMathMLBlockWithAnonymousMrow>(this);
 }
 
 }  // namespace blink

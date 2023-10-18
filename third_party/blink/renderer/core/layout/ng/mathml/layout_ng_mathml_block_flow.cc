@@ -6,12 +6,12 @@
 
 namespace blink {
 
-LayoutNGMathMLBlockFlow::LayoutNGMathMLBlockFlow(Element* element)
+LayoutMathMLBlockFlow::LayoutMathMLBlockFlow(Element* element)
     : LayoutNGBlockFlow(element) {
   DCHECK(element);
 }
 
-bool LayoutNGMathMLBlockFlow::IsOfType(LayoutObjectType type) const {
+bool LayoutMathMLBlockFlow::IsOfType(LayoutObjectType type) const {
   return type == kLayoutObjectMathML || LayoutNGBlockFlow::IsOfType(type);
 }
 

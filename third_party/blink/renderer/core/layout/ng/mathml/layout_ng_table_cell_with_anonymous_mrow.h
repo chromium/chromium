@@ -9,9 +9,9 @@
 
 namespace blink {
 
-class LayoutNGTableCellWithAnonymousMrow : public LayoutNGTableCell {
+class LayoutTableCellWithAnonymousMrow : public LayoutNGTableCell {
  public:
-  explicit LayoutNGTableCellWithAnonymousMrow(Element*);
+  explicit LayoutTableCellWithAnonymousMrow(Element*);
 
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;

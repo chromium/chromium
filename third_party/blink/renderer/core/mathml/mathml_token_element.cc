@@ -94,7 +94,7 @@ LayoutObject* MathMLTokenElement::CreateLayoutObject(
   if (!style.IsDisplayMathType()) {
     return MathMLElement::CreateLayoutObject(style);
   }
-  return MakeGarbageCollected<LayoutNGMathMLBlockFlow>(this);
+  return MakeGarbageCollected<LayoutMathMLBlockFlow>(this);
 }
 
 }  // namespace blink

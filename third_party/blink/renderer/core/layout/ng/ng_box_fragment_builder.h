@@ -464,7 +464,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
       LayoutUnit operator_ascent,
       LayoutUnit operator_descent) {
     if (!mathml_paint_info_)
-      mathml_paint_info_ = std::make_unique<NGMathMLPaintInfo>();
+      mathml_paint_info_ = std::make_unique<MathMLPaintInfo>();
 
     mathml_paint_info_->operator_character = operator_character;
     mathml_paint_info_->operator_shape_result_view =
@@ -482,7 +482,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
       LayoutUnit radical_operator_inline_offset,
       const BoxStrut& radical_base_margins) {
     if (!mathml_paint_info_)
-      mathml_paint_info_ = std::make_unique<NGMathMLPaintInfo>();
+      mathml_paint_info_ = std::make_unique<MathMLPaintInfo>();
 
     mathml_paint_info_->operator_character = kSquareRootCharacter;
     mathml_paint_info_->operator_shape_result_view =
@@ -710,7 +710,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
 
   scoped_refptr<SerializedScriptValue> custom_layout_data_;
 
-  std::unique_ptr<NGMathMLPaintInfo> mathml_paint_info_;
+  std::unique_ptr<MathMLPaintInfo> mathml_paint_info_;
 
 #if DCHECK_IS_ON()
   // Describes what size_.block_size represents; either the size of a single

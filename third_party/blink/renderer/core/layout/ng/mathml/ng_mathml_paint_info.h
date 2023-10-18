@@ -15,8 +15,8 @@ namespace blink {
 
 class ShapeResultView;
 
-struct CORE_EXPORT NGMathMLPaintInfo {
-  USING_FAST_MALLOC(NGMathMLPaintInfo);
+struct CORE_EXPORT MathMLPaintInfo {
+  USING_FAST_MALLOC(MathMLPaintInfo);
 
  public:
   bool IsRadicalOperator() const {

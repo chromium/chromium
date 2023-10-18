@@ -12,7 +12,7 @@
 
 namespace blink {
 
-NGMathTokenLayoutAlgorithm::NGMathTokenLayoutAlgorithm(
+MathTokenLayoutAlgorithm::MathTokenLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
@@ -20,7 +20,7 @@ NGMathTokenLayoutAlgorithm::NGMathTokenLayoutAlgorithm(
       Node().IsInlineFormattingContextRoot());
 }
 
-const NGLayoutResult* NGMathTokenLayoutAlgorithm::Layout() {
+const NGLayoutResult* MathTokenLayoutAlgorithm::Layout() {
   DCHECK(!IsBreakInside(BreakToken()));
 
   NGLayoutInputNode child = Node().FirstChild();
@@ -62,7 +62,7 @@ const NGLayoutResult* NGMathTokenLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGMathTokenLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult MathTokenLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput& input) {
   NGLayoutInputNode child = Node().FirstChild();
   DCHECK(child && child.IsInline());

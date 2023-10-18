@@ -795,7 +795,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
     layout_block = MakeGarbageCollected<LayoutNGGrid>(/* element */ nullptr);
   } else if (new_display == EDisplay::kBlockMath) {
     layout_block =
-        MakeGarbageCollected<LayoutNGMathMLBlock>(/* element */ nullptr);
+        MakeGarbageCollected<LayoutMathMLBlock>(/* element */ nullptr);
   } else {
     DCHECK(new_display == EDisplay::kBlock ||
            new_display == EDisplay::kFlowRoot);

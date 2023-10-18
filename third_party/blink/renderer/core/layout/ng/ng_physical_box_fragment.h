@@ -428,7 +428,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
     return GetRareField(FieldId::kMathMLPaintInfo);
   }
-  const NGMathMLPaintInfo& GetMathMLPaintInfo() const {
+  const MathMLPaintInfo& GetMathMLPaintInfo() const {
     return *rare_data_->GetField(FieldId::kMathMLPaintInfo)
                 ->mathml_paint_info.get();
   }

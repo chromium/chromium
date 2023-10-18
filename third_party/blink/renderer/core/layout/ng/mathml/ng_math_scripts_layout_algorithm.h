@@ -15,12 +15,12 @@ namespace blink {
 class NGBlockNode;
 
 // This algorithm handles msub, msup and msubsup elements.
-class CORE_EXPORT NGMathScriptsLayoutAlgorithm
+class CORE_EXPORT MathScriptsLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  explicit NGMathScriptsLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit MathScriptsLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
   struct ChildAndMetrics {
     DISALLOW_NEW();
@@ -87,8 +87,8 @@ class CORE_EXPORT NGMathScriptsLayoutAlgorithm
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGMathScriptsLayoutAlgorithm::ChildAndMetrics)
+    blink::MathScriptsLayoutAlgorithm::ChildAndMetrics)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGMathScriptsLayoutAlgorithm::SubSupPair)
+    blink::MathScriptsLayoutAlgorithm::SubSupPair)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_SCRIPTS_LAYOUT_ALGORITHM_H_

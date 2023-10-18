@@ -14,20 +14,20 @@
 
 namespace blink {
 
-NGMathPaddedLayoutAlgorithm::NGMathPaddedLayoutAlgorithm(
+MathPaddedLayoutAlgorithm::MathPaddedLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {}
 
-LayoutUnit NGMathPaddedLayoutAlgorithm::RequestedLSpace() const {
+LayoutUnit MathPaddedLayoutAlgorithm::RequestedLSpace() const {
   return std::max(LayoutUnit(),
                   ValueForLength(Style().GetMathLSpace(), LayoutUnit()));
 }
 
-LayoutUnit NGMathPaddedLayoutAlgorithm::RequestedVOffset() const {
+LayoutUnit MathPaddedLayoutAlgorithm::RequestedVOffset() const {
   return ValueForLength(Style().GetMathPaddedVOffset(), LayoutUnit());
 }
 
-absl::optional<LayoutUnit> NGMathPaddedLayoutAlgorithm::RequestedAscent(
+absl::optional<LayoutUnit> MathPaddedLayoutAlgorithm::RequestedAscent(
     LayoutUnit content_ascent) const {
   if (Style().GetMathBaseline().IsAuto())
     return absl::nullopt;
@@ -35,7 +35,7 @@ absl::optional<LayoutUnit> NGMathPaddedLayoutAlgorithm::RequestedAscent(
                   ValueForLength(Style().GetMathBaseline(), content_ascent));
 }
 
-absl::optional<LayoutUnit> NGMathPaddedLayoutAlgorithm::RequestedDescent(
+absl::optional<LayoutUnit> MathPaddedLayoutAlgorithm::RequestedDescent(
     LayoutUnit content_descent) const {
   if (Style().GetMathPaddedDepth().IsAuto())
     return absl::nullopt;
@@ -43,7 +43,7 @@ absl::optional<LayoutUnit> NGMathPaddedLayoutAlgorithm::RequestedDescent(
                                                content_descent));
 }
 
-void NGMathPaddedLayoutAlgorithm::GetContentAsAnonymousMrow(
+void MathPaddedLayoutAlgorithm::GetContentAsAnonymousMrow(
     NGBlockNode* content) const {
   // Node() is a LayoutNGMathMLBlockWithAnonymousMrow node, which is either
   // empty or contains a single anonymous mrow child.
@@ -54,7 +54,7 @@ void NGMathPaddedLayoutAlgorithm::GetContentAsAnonymousMrow(
   }
 }
 
-const NGLayoutResult* NGMathPaddedLayoutAlgorithm::Layout() {
+const NGLayoutResult* MathPaddedLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   NGBlockNode content = nullptr;
@@ -106,7 +106,7 @@ const NGLayoutResult* NGMathPaddedLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult NGMathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult MathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
