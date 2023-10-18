@@ -14,7 +14,7 @@
 - (void)tabPickupSettingsTableViewController:
             (TabPickupSettingsTableViewController*)
                 tabPickupSettingsTableViewController
-                          didEnableTabPickup:(bool)enabled;
+                          didEnableTabPickup:(BOOL)enabled;
 
 @end
 

@@ -112,7 +112,7 @@ enum ItemType {
 
 #pragma mark - TabPickupSettingsConsumer
 
-- (void)setTabPickupEnabled:(bool)enabled {
+- (void)setTabPickupEnabled:(BOOL)enabled {
   _tabPickupEnabled = enabled;
   TableViewSwitchItem* tabPickupSwitchItem = self.tabPickupSwitchItem;
   if (tabPickupSwitchItem.on == enabled) {
@@ -121,7 +121,7 @@ enum ItemType {
   [self reloadSwitchItem];
 }
 
-- (void)setTabSyncEnabled:(bool)enabled {
+- (void)setTabSyncEnabled:(BOOL)enabled {
   if (_tabSyncEnabled == enabled) {
     return;
   }

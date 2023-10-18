@@ -76,14 +76,14 @@
 - (void)tabPickupSettingsTableViewController:
             (TabPickupSettingsTableViewController*)
                 tabPickupSettingsTableViewController
-                          didEnableTabPickup:(bool)enabled {
+                          didEnableTabPickup:(BOOL)enabled {
   _prefs->SetBoolean(prefs::kTabPickupEnabled, enabled);
 }
 
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  const bool tabSyncEnabled =
+  const BOOL tabSyncEnabled =
       _syncService->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kTabs);
   [_consumer setTabSyncEnabled:tabSyncEnabled];

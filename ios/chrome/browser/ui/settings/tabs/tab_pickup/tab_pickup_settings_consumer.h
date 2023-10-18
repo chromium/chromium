@@ -9,10 +9,10 @@
 @protocol TabPickupSettingsConsumer
 
 // Called when the value of prefs::kTabPickupEnabled changed.
-- (void)setTabPickupEnabled:(bool)enabled;
+- (void)setTabPickupEnabled:(BOOL)enabled;
 
 // Called when the tab-sync state changed.
-- (void)setTabSyncEnabled:(bool)enabled;
+- (void)setTabSyncEnabled:(BOOL)enabled;
 
 @end
 
