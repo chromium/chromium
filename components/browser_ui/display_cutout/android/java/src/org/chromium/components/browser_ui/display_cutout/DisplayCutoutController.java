@@ -35,6 +35,8 @@ import org.chromium.ui.base.WindowAndroid;
  * Activity's window only in P+, and only when the associated WebContents is fullscreen.
  */
 public class DisplayCutoutController implements InsetObserverView.WindowInsetObserver, UserData {
+    private static final String TAG = "E2E_DCController";
+
     private static final Class<DisplayCutoutController> USER_DATA_KEY =
             DisplayCutoutController.class;
 
@@ -123,6 +125,9 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
 
         /** Whether the activity is in browser (not-HTML) fullscreen. */
         boolean isInBrowserFullscreen();
+
+        /** Whether the basic Feature for drawing Edge To Edge is enabled. */
+        boolean isDrawEdgeToEdgeEnabled();
     }
 
     private final Delegate mDelegate;
@@ -228,7 +233,8 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
 
         // TODO(crbug.com/1480477): Investigate whether if() can be turned into assert.
         if (!mDelegate.getWebContents().isFullscreenForCurrentTab()
-                && !mDelegate.isInBrowserFullscreen()) {
+                && !mDelegate.isInBrowserFullscreen()
+                && !mDelegate.isDrawEdgeToEdgeEnabled()) {
             value = ViewportFit.AUTO;
         }
 

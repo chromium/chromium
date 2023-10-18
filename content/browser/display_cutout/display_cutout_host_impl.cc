@@ -97,8 +97,15 @@ void DisplayCutoutHostImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
 }
 
 void DisplayCutoutHostImpl::SetCurrentRenderFrameHost(RenderFrameHost* rfh) {
-  if (current_rfh_.get() == rfh)
+  if (current_rfh_.get() == rfh) {
+    if (rfh) {
+      // Send an update even when navigating to the same page or doing a reload.
+      // When we finish navigation we need to push the Safe Area back to the
+      // client to set env() variables for that frame so it can draw correctly.
+      SendSafeAreaToFrame(rfh, insets_);
+    }
     return;
+  }
 
   // If we had a previous frame then we should clear the insets on that frame.
   if (current_rfh_)
