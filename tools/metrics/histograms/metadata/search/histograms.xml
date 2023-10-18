@@ -428,13 +428,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.ResolveReceived" enum="Boolean"
-    expires_after="M94">
+    expires_after="2024-10-01">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Records that a resolve response was received from the server, and whether
     that was due to a Tap gesture or not (vs longpress). Recorded when the user
     triggers the feature and the server responds. Implemented for Android.
+    (Expired in M94. Revived in M120.)
   </summary>
 </histogram>
 
@@ -478,25 +479,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.Tap.ResultsSeen" enum="Boolean"
-    expires_after="M77">
+    expires_after="2024-10-01">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Records whether the user opened the panel when it was shown in response to a
     tap gesture, for all users. Recorded when the UX is hidden. Implemented for
-    Android.
+    Android. (Expired in M77. Revived in M120.)
   </summary>
 </histogram>
 
 <histogram name="Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen"
-    enum="Boolean" expires_after="M76">
+    enum="Boolean" expires_after="2024-10-01">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Records whether the user opened the panel when it was shown for sync-enabled
     users only (this is an approximation for the population that logs to UKM).
     Recorded for all gestures for users with sync enabled when the UX is hidden.
-    Implemented for Android.
+    Implemented for Android. (Expired in M76. Revived in M120.)
   </summary>
 </histogram>
 
@@ -545,19 +546,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.UnifiedConsent.PreviouslyUndecided"
-    enum="Boolean" expires_after="2019-01-30">
+    enum="Boolean" expires_after="2024-10-01">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Records the previous state of the user's enabled preference to indicate
     whether they were decided or undecided about fully enabling this feature.
     Recorded during the rollout of Unified Consent when the Contextual Search
-    preference is changed. Implemented for Android.
+    preference is changed. Implemented for Android. (Expired after 2019-01-30.
+    Revived in M120.)
   </summary>
 </histogram>
 
 <histogram name="Search.ContextualSearch.UnifiedConsent.ThrottledRequests"
-    enum="Boolean" expires_after="2019-01-30">
+    enum="Boolean" expires_after="2024-10-01">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -565,12 +567,13 @@ chromium-metrics-reviews@google.com.
     Recorded when the user taps on text and the system would like the server to
     suggest what to search for using page context, regardless of feature-enabled
     state. Recorded multiple times for each request. Supports the rollout of
-    Unified Consent for Contextual Search. Implemented for Android.
+    Unified Consent for Contextual Search. Implemented for Android. (Expired
+    after 2019-01-30. Revived in M120.)
   </summary>
 </histogram>
 
 <histogram name="Search.ContextualSearch.UnifiedConsent.ThrottleEligible"
-    enum="Boolean" expires_after="2019-01-30">
+    enum="Boolean" expires_after="2024-10-01">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -578,7 +581,8 @@ chromium-metrics-reviews@google.com.
     Recorded when the user taps on text and the system would like the server to
     suggest what to search for using page context, and throttling is in effect
     for this user. Supports the rollout of Unified Consent for Contextual
-    Search. Implemented for Android.
+    Search. Implemented for Android. (Expired after 2019-01-30. Revived in
+    M120.)
   </summary>
 </histogram>
 
@@ -1037,24 +1041,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchQuickActions.IntentResolution"
-    enum="ContextualSearchQuickActionIntentResolution" expires_after="M81">
+    enum="ContextualSearchQuickActionIntentResolution"
+    expires_after="2024-10-01">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Whether a Contextual Search quick action intent resolved to zero, one, or
     many apps. Recorded when the quick action intent URI is resolved.
-    Implemented for Android.
+    Implemented for Android. (Expired in M81. Revived in M120.)
   </summary>
 </histogram>
 
 <histogram name="Search.ContextualSearchQuickActions.ResultsSeen"
-    enum="ContextualSearchResultsSeen" expires_after="M81">
+    enum="ContextualSearchResultsSeen" expires_after="2024-10-01">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Whether search results were seen as part of a Contextual Search when a quick
     action was shown. Recorded when Contextual Search is dismissed. Implemented
-    for Android.
+    for Android. (Expired in M81. Revived in M120.)
   </summary>
 </histogram>
 
