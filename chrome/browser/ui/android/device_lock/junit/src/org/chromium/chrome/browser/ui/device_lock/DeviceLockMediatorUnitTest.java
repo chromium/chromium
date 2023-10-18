@@ -574,7 +574,10 @@ public class DeviceLockMediatorUnitTest {
                     ContextUtils.getAppSharedPreferences()
                             .getBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
         }
-        if (onClick.equals(ON_DISMISS_CLICKED)) {
+        // The UI should only be disabled if the user chose to continue and passed all the
+        // necessary steps - the UI should be enabled if the user chooses to dismiss or fails the
+        // challenges.
+        if (onClick.equals(ON_DISMISS_CLICKED) || (onDeviceLockReadyCalls < 1)) {
             assertTrue(
                     "The UI should still be in an enabled state.",
                     deviceLockMediator.getModel().get(UI_ENABLED));

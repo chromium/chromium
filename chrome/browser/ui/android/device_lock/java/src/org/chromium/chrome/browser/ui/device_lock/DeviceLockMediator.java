@@ -126,11 +126,16 @@ public class DeviceLockMediator {
             onSuccess.run();
             return;
         }
-        mWindowAndroid.showIntent(intent, (resultCode, data) -> {
-            if (isDeviceLockPresent()) {
-                onSuccess.run();
-            }
-        }, null);
+        mWindowAndroid.showIntent(
+                intent,
+                (resultCode, data) -> {
+                    if (isDeviceLockPresent()) {
+                        onSuccess.run();
+                    } else {
+                        mModel.set(UI_ENABLED, true);
+                    }
+                },
+                null);
     }
 
     private void triggerDeviceLockChallenge(Runnable onSuccess) {
@@ -139,11 +144,14 @@ public class DeviceLockMediator {
             onSuccess.run();
             return;
         }
-        mDeviceLockAuthenticatorBridge.reauthenticate((authSucceeded) -> {
-            if (authSucceeded) {
-                onSuccess.run();
-            }
-        });
+        mDeviceLockAuthenticatorBridge.reauthenticate(
+                (authSucceeded) -> {
+                    if (authSucceeded) {
+                        onSuccess.run();
+                    } else {
+                        mModel.set(UI_ENABLED, true);
+                    }
+                });
     }
 
     private void maybeTriggerAccountReauthenticationChallenge(Runnable onSuccess) {
@@ -157,11 +165,17 @@ public class DeviceLockMediator {
                         ChromeFeatureList.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW,
                         ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM, 10);
         mAccountReauthenticationUtils.confirmCredentialsOrRecentAuthentication(
-                getAccountManager(), mAccount, mActivity, (confirmationResult) -> {
+                getAccountManager(),
+                mAccount,
+                mActivity,
+                (confirmationResult) -> {
                     if (confirmationResult
                             == AccountReauthenticationUtils.ConfirmationResult.SUCCESS) {
                         onSuccess.run();
+                    } else {
+                        mModel.set(UI_ENABLED, true);
                     }
-                }, TimeUnit.MINUTES.toMillis(accountReauthenticationRecentTimeWindowMinutes));
+                },
+                TimeUnit.MINUTES.toMillis(accountReauthenticationRecentTimeWindowMinutes));
     }
 }
