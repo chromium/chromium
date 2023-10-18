@@ -98,6 +98,7 @@ suite('<apn-detail-dialog>', () => {
     assertEquals(
         apnDetailDialog.i18n('apnDetailAddApnDialogTitle'),
         apnDetailDialogTitle.innerText);
+    assertEquals('polite', apnDetailDialogTitle.ariaLive);
     assertTrue(!!apnDetailDialog.shadowRoot!.querySelector('#apnInput'));
     assertTrue(!!apnDetailDialog.shadowRoot!.querySelector('#usernameInput'));
     assertTrue(!!apnDetailDialog.shadowRoot!.querySelector('#passwordInput'));
