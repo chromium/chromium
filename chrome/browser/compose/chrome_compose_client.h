@@ -91,6 +91,9 @@ class ChromeComposeClient
   base::flat_map<autofill::FieldGlobalId, std::unique_ptr<ComposeSession>>
       sessions_;
 
+  // Used to test Compose in a tab at |chrome://compose|.
+  std::unique_ptr<ComposeSession> debug_session_;
+
   bool skip_show_dialog_for_test_ = false;
 
   base::WeakPtrFactory<ChromeComposeClient> weak_ptr_factory_{this};

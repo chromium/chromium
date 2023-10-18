@@ -55,6 +55,15 @@ ChromeComposeClient::~ChromeComposeClient() = default;
 void ChromeComposeClient::BindComposeDialog(
     mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
     mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) {
+  url::Origin origin =
+      GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  if (origin == url::Origin::Create(GURL("chrome://compose"))) {
+    debug_session_ =
+        std::make_unique<ComposeSession>(&GetWebContents(), GetModelExecutor());
+    debug_session_->Bind(std::move(handler), std::move(dialog));
+    return;
+  }
+
   sessions_.at(last_compose_field_id_)
       ->Bind(std::move(handler), std::move(dialog));
 }

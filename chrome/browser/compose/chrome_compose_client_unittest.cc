@@ -114,6 +114,10 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
         autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
         autofill::FormFieldData(), std::nullopt, base::NullCallback());
 
+    BindMojo();
+  }
+
+  void BindMojo() {
     // Setup Dialog Page Handler.
     mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler>
         page_handler_pending_receiver =
@@ -130,10 +134,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     // Bind mojo to client.
     client_->BindComposeDialog(std::move(page_handler_pending_receiver),
                                std::move(callback_router_pending_remote));
-
-    client_->ShowComposeDialog(
-        autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-        autofill::FormFieldData(), std::nullopt, base::NullCallback());
   }
 
   ChromeComposeClient& client() { return *client_; }
@@ -521,3 +521,43 @@ TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceNoComposeMetadataTest) {
   // Verify response from CanApplyOptimization is as we expect.
   EXPECT_EQ(compose::ComposeNudgeDecision::UNKNOWN, decision);
 }
+
+TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {
+  NavigateAndCommitActiveTab(GURL("chrome://compose"));
+  // We skip the dialog showing here, as there is no dialog required at this
+  // URL.
+  BindMojo();
+
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+      .WillOnce(testing::WithArg<2>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true)));
+          })));
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillOnce(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
+
+  auto style_modifiers = compose::mojom::StyleModifiers::New();
+  page_handler()->Compose(std::move(style_modifiers), "a user typed this");
+
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Cucumbers", result->result);
+}
+
+#if defined(GTEST_HAS_DEATH_TEST)
+// Tests that the Compose client crashes the browser if a webcontents
+// tries to bind mojo without opening the dialog at a non Compose URL.
+TEST_F(ChromeComposeClientTest, NoStateCrashesAtOtherUrls) {
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  // We skip the dialog showing here, to validate that non special URLs check.
+  EXPECT_DEATH(BindMojo(), "");
+}
+#endif  // GTEST_HAS_DEATH_TEST
