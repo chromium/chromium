@@ -22,7 +22,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -82,7 +82,8 @@ WebUIInfoSingleton* WebUIInfoSingleton::GetInstance() {
             .empty())
       << "chrome://safe-browsing WebUI is only available in the browser "
          "process";
-  return base::Singleton<WebUIInfoSingleton>::get();
+  static base::NoDestructor<WebUIInfoSingleton> instance;
+  return instance.get();
 }
 
 // static

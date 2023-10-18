@@ -33,11 +33,6 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #endif
 
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}  // namespace base
-
 namespace safe_browsing {
 class WebUIInfoSingleton;
 class ReferrerChainProvider;
@@ -641,8 +636,6 @@ class WebUIInfoSingleton : public UrlRealTimeMechanism::WebUIDelegate,
 
  private:
   void MaybeClearData();
-
-  friend struct base::DefaultSingletonTraits<WebUIInfoSingleton>;
 
   // List of download URLs checked since the oldest currently open
   // chrome://safe-browsing tab was opened.
