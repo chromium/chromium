@@ -78,6 +78,7 @@ class LockDebugView : public views::View {
   void ToggleWarningBannerButtonPressed();
 
   void ToggleManagedSessionDisclosureButtonPressed();
+  void ShowSecurityCurtainScreenButtonPressed();
 
   // Updates the last used detachable base.
   void UseDetachableBaseButtonPressed(int index);

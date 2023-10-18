@@ -10,6 +10,8 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/curtain/remote_maintenance_curtain_view.h"
+#include "ash/curtain/security_curtain_controller.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
@@ -172,6 +174,10 @@ LoginUserInfo PopulateUserData(const LoginUserInfo& user,
   }
 
   return result;
+}
+
+std::unique_ptr<views::View> CreateCurtainOverlay() {
+  return std::make_unique<ash::curtain::RemoteMaintenanceCurtainView>();
 }
 
 }  // namespace
@@ -891,6 +897,12 @@ LockDebugView::LockDebugView(mojom::TrayActionState initial_note_action_state,
                 base::Unretained(this)),
             managed_sessions_container);
 
+  AddButton("Show security curtain screen",
+            base::BindRepeating(
+                &LockDebugView::ShowSecurityCurtainScreenButtonPressed,
+                base::Unretained(this)),
+            kiosk_container);
+
   global_action_detachable_base_group_ = add_horizontal_container();
   UpdateDetachableBaseColumn();
 
@@ -1053,6 +1065,19 @@ void LockDebugView::ToggleManagedSessionDisclosureButtonPressed() {
   is_managed_session_disclosure_shown_ = !is_managed_session_disclosure_shown_;
   debug_data_dispatcher_->OnPublicSessionShowFullManagementDisclosureChanged(
       is_managed_session_disclosure_shown_);
+}
+
+void LockDebugView::ShowSecurityCurtainScreenButtonPressed() {
+  auto& controller = ash::Shell::Get()->security_curtain_controller();
+
+  // We don't support toggling this on and off, since once you are in the
+  // curtain screen there is no way to leave it (by design).
+  ash::curtain::SecurityCurtainController::InitParams params{
+      /*event_filter=*/base::BindRepeating([](const ui::Event& event) {
+        return curtain::FilterResult::kKeepEvent;
+      }),
+      /*curtain_factory=*/base::BindRepeating(CreateCurtainOverlay)};
+  controller.Enable(params);
 }
 
 void LockDebugView::UseDetachableBaseButtonPressed(int index) {
