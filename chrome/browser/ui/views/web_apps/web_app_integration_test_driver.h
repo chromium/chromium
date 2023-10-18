@@ -31,7 +31,6 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
@@ -495,9 +494,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   Browser* app_browser() { return app_browser_; }
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
   PageActionIconView* pwa_install_view();
-  testing::AssertionResult AwaitIntentPickerIconInit();
-  testing::AssertionResult WaitForIntentPickerIconToBeVisible();
-  views::Button* intent_picker_view();
+  PageActionIconView* intent_picker_view();
 
   const net::EmbeddedTestServer& GetTestServerForSiteMode(Site site_mode) const;
 

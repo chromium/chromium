@@ -63,13 +63,12 @@ class IntentPickerTabHelper
 
   const ui::ImageModel& app_icon() const { return current_app_icon_; }
 
-  // Sets a OnceCallback which is called with the result of whether the intent
-  // chip button is shown or not. If include_latest_navigation is true, and the
-  // latest navigation was finished, the callback is called immediately with the
-  // current value of should_show_icon_.
-  void SetIconUpdateCallbackForTesting(
-      base::OnceCallback<void(bool)> icon_update_callback,
-      bool include_latest_navigation = false);
+
+  // Sets a OnceClosure callback which will be called next time the icon is
+  // updated. If include_latest_navigation is true, and the latest navigation
+  // was finished, the callback is called immediately.
+  void SetIconUpdateCallbackForTesting(base::OnceClosure callback,
+                                       bool include_latest_navigation = false);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
@@ -146,7 +145,7 @@ class IntentPickerTabHelper
   bool current_app_is_preferred_ = false;
   ui::ImageModel current_app_icon_;
 
-  base::OnceCallback<void(bool)> icon_update_callback_for_testing_;
+  base::OnceClosure icon_update_closure_for_testing_;
 
   std::unique_ptr<apps::AppsIntentPickerDelegate> intent_picker_delegate_;
 

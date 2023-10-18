@@ -11,7 +11,6 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
@@ -72,11 +71,11 @@ class IntentChipButtonBrowserTest
   void DoAndWaitForIntentPickerIconUpdate(Action action) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    base::test::TestFuture<bool> test_future;
+    base::RunLoop run_loop;
     auto* tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
-    tab_helper->SetIconUpdateCallbackForTesting(test_future.GetCallback());
+    tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
     action();
-    EXPECT_TRUE(test_future.Wait());
+    run_loop.Run();
   }
 
   void OpenNewTab(const GURL& url) {
@@ -116,10 +115,10 @@ class IntentChipButtonBrowserTest
                                      const GURL& link_url) {
     auto* tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
 
-    base::test::TestFuture<bool> test_future;
-    tab_helper->SetIconUpdateCallbackForTesting(test_future.GetCallback());
+    base::RunLoop run_loop;
+    tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
     ClickLinkAndWait(web_contents, link_url, LinkTarget::SELF, "");
-    EXPECT_TRUE(test_future.Wait());
+    run_loop.Run();
   }
 
   // Installs a web app on the same host as InstallTestWebApp(), but with "/" as
@@ -318,11 +317,11 @@ void IntentChipButtonBrowserUiTest::ShowUi(const std::string& name) {
   auto* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto* const tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
-  base::test::TestFuture<bool> test_future;
-  tab_helper->SetIconUpdateCallbackForTesting(test_future.GetCallback());
+  base::RunLoop run_loop;
+  tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
   tab_helper->MaybeShowIconForApps(
       {{apps::PickerEntryType::kWeb, ui::ImageModel(), "app_id", "Test app"}});
-  EXPECT_TRUE(test_future.Wait());
+  run_loop.Run();
 }
 
 bool IntentChipButtonBrowserUiTest::VerifyUi() {

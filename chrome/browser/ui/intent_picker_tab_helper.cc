@@ -329,8 +329,8 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
   browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
 
   icon_resolved_after_last_navigation_ = true;
-  if (icon_update_callback_for_testing_) {
-    std::move(icon_update_callback_for_testing_).Run(should_show_icon);
+  if (icon_update_closure_for_testing_) {
+    std::move(icon_update_closure_for_testing_).Run();
   }
 }
 
@@ -410,13 +410,13 @@ void IntentPickerTabHelper::OnIntentPickerClosedMaybeLaunch(
 }
 
 void IntentPickerTabHelper::SetIconUpdateCallbackForTesting(
-    base::OnceCallback<void(bool)> icon_update_callback,
+    base::OnceClosure callback,
     bool include_latest_navigation) {
   if (icon_resolved_after_last_navigation_ && include_latest_navigation) {
-    std::move(icon_update_callback).Run(should_show_icon_);
+    std::move(callback).Run();
     return;
   }
-  icon_update_callback_for_testing_ = std::move(icon_update_callback);
+  icon_update_closure_for_testing_ = std::move(callback);
 }
 
 void IntentPickerTabHelper::DidStartNavigation(
