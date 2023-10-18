@@ -55,7 +55,6 @@ class CookieControlsIconView : public PageActionIconView,
  protected:
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  void UpdateTooltipForFocus() override;
 
  private:
   friend class CookieControlsIconViewUnitTest;

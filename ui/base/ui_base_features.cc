@@ -349,10 +349,7 @@ bool IsUseCommonSelectPopupEnabled() {
   return base::FeatureList::IsEnabled(features::kUseCommonSelectPopup);
 }
 
-// Used to enable keyboard accessible tooltips in in-page content
-// (i.e., inside Blink). See
-// ::views::features::kKeyboardAccessibleTooltipInViews for
-// keyboard-accessible tooltips in Views UI.
+// Enables keyboard accessible tooltip.
 BASE_FEATURE(kKeyboardAccessibleTooltip,
              "KeyboardAccessibleTooltip",
              base::FEATURE_DISABLED_BY_DEFAULT);

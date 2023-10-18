@@ -35,9 +35,6 @@ class FeatureTilePixelTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    // We don't want tooltips to get in the way of the images we're testing.
-    ::views::View::DisableKeyboardTooltipsForTesting();
-
     widget_ = CreateFramelessTestWidget();
     // Ensure the widget is large enough for the tile's focus ring (which is
     // drawn outside the tile's bounds).
@@ -56,7 +53,6 @@ class FeatureTilePixelTest : public AshTestBase {
 
   void TearDown() override {
     widget_.reset();
-    ::views::View::EnableKeyboardTooltipsForTesting();
     AshTestBase::TearDown();
   }
 

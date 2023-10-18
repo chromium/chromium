@@ -165,10 +165,17 @@ void TooltipController::UpdateTooltip(aura::Window* target) {
   // The |tooltip_parent_window_| is only set when the tooltip is visible or
   // its |will_show_tooltip_timer_| is running.
   if (target && observed_window_ == target) {
-    if (state_manager_->tooltip_parent_window() ||
-        IsTooltipTextUpdateNeeded()) {
+    // This is either an update on an already (or about to be) visible tooltip
+    // or a call to UpdateIfRequired that will potentially trigger a tooltip
+    // caused by a tooltip text update.
+    //
+    // If there's no active tooltip, it's appropriate to assume that the trigger
+    // is kCursor because a tooltip text update triggered from the keyboard
+    // would always happen in UpdateTooltipFromKeyboard, not from here.
+    if (state_manager_->tooltip_parent_window())
+      UpdateIfRequired(state_manager_->tooltip_trigger());
+    else if (IsTooltipTextUpdateNeeded())
       UpdateIfRequired(TooltipTrigger::kCursor);
-    }
   }
 
   ResetWindowAtMousePressedIfNeeded(target, /* force_reset */ false);
@@ -182,16 +189,17 @@ void TooltipController::UpdateTooltipFromKeyboard(const gfx::Rect& bounds,
 void TooltipController::UpdateTooltipFromKeyboardWithAnchorPoint(
     const gfx::Point& anchor_point,
     aura::Window* target) {
-  last_focus_loc_ = anchor_point;
+  anchor_point_ = anchor_point;
   SetObservedWindow(target);
 
   // Update the position of the active but not yet visible keyboard triggered
   // tooltip, if any.
   if (state_manager_->tooltip_parent_window()) {
-    state_manager_->UpdatePositionIfNeeded(last_focus_loc_,
+    state_manager_->UpdatePositionIfNeeded(anchor_point_,
                                            TooltipTrigger::kKeyboard);
   }
 
+  // This function is always only called for keyboard-triggered tooltips.
   UpdateIfRequired(TooltipTrigger::kKeyboard);
 
   ResetWindowAtMousePressedIfNeeded(target, /* force_reset */ true);
@@ -224,9 +232,6 @@ void TooltipController::OnKeyEvent(ui::KeyEvent* event) {
   HideAndReset();
 }
 
-// TODO(crbug.com/1492222): Figure out why we have code both here and
-// in DesktopNativeWidgetAura to handle mouse (and key?) events. Seems like we
-// should only need one set of them.
 void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
   // Ignore mouse events that coincide with the last touch event.
   if (event->location() == last_touch_loc_) {
@@ -257,17 +262,6 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
       // https://crbug.com/1146981.
       if (event->IsSynthesized())
         break;
-
-#if BUILDFLAG(IS_WIN)
-      // Showing a tooltip causes Windows to generate a MOUSE_MOVED
-      // event to the same location it was already at; when that happens,
-      // we need to throw the event away rather than acting as if someone
-      // moved the mouse and showing a new tooltip.
-      if (event->location() == last_mouse_loc_) {
-        break;
-      }
-#endif
-
       last_mouse_loc_ = event->location();
       aura::Window* target = nullptr;
       // Avoid a call to display::Screen::GetWindowAtScreenPoint() since it can
@@ -437,11 +431,8 @@ void TooltipController::UpdateIfRequired(TooltipTrigger trigger) {
   // one, we should force tooltip update
   if (!state_manager_->IsVisible() || IsTooltipTextUpdateNeeded() ||
       IsTooltipIdUpdateNeeded()) {
-    gfx::Point tooltip_point =
-        ((trigger == TooltipTrigger::kCursor) ? anchor_point_
-                                              : last_focus_loc_);
     state_manager_->Show(observed_window_, wm::GetTooltipText(observed_window_),
-                         tooltip_point, trigger, GetShowTooltipDelay(),
+                         anchor_point_, trigger, GetShowTooltipDelay(),
                          GetHideTooltipDelay());
   }
 }
