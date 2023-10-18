@@ -205,6 +205,7 @@ struct ChildWindowOrderingCommand {
   BOOL _isShufflingForOrdering;
   BOOL _miniaturizationInProgress;
   BOOL _isOrderingOut;
+  BOOL _isInFullscreenTransition;
 }
 @synthesize bridgedNativeWidgetId = _bridgedNativeWidgetId;
 @synthesize bridge = _bridge;
@@ -226,6 +227,24 @@ struct ChildWindowOrderingCommand {
                                    defer:deferCreation])) {
     _commandDispatcher = [[CommandDispatcher alloc] initWithOwner:self];
     self.releasedWhenClosed = NO;
+    NSNotificationCenter* notificationCenter =
+        [NSNotificationCenter defaultCenter];
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionStarted:)
+                               name:NSWindowWillEnterFullScreenNotification
+                             object:self];
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionComplete:)
+                               name:NSWindowDidEnterFullScreenNotification
+                             object:self];
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionStarted:)
+                               name:NSWindowWillExitFullScreenNotification
+                             object:self];
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionComplete:)
+                               name:NSWindowDidExitFullScreenNotification
+                             object:self];
   }
   return self;
 }
@@ -248,6 +267,20 @@ struct ChildWindowOrderingCommand {
 // inserting a symbol on NativeWidgetMacNSWindow and should be kept even if it
 // does nothing.
 - (void)dealloc {
+  NSNotificationCenter* notificationCenter =
+      [NSNotificationCenter defaultCenter];
+  [notificationCenter removeObserver:self
+                                name:NSWindowWillEnterFullScreenNotification
+                              object:self];
+  [notificationCenter removeObserver:self
+                                name:NSWindowDidEnterFullScreenNotification
+                              object:self];
+  [notificationCenter removeObserver:self
+                                name:NSWindowWillExitFullScreenNotification
+                              object:self];
+  [notificationCenter removeObserver:self
+                                name:NSWindowDidExitFullScreenNotification
+                              object:self];
   if (_isEnforcingNeverMadeVisible) {
     [self removeObserver:self forKeyPath:@"visible"];
   }
@@ -277,7 +310,8 @@ struct ChildWindowOrderingCommand {
   // remove as usual. Also continue as usual if we're on the active space,
   // or we happen to be a child of another window.
   if (![childWindow isKindOfClass:[NativeWidgetMacNSWindow class]] ||
-      [self isOnActiveSpace] || [self parentWindow] != nil) {
+      [self isOnActiveSpace] || [self parentWindow] != nil ||
+      _isInFullscreenTransition) {
     [super removeChildWindow:childWindow];
   } else {
     // Defer removal to avoid triggering a space change.
@@ -510,6 +544,14 @@ struct ChildWindowOrderingCommand {
   }
 
   [super sendEvent:event];
+}
+
+- (void)fullscreenTransitionStarted:(NSNotification*)notification {
+  _isInFullscreenTransition = YES;
+}
+
+- (void)fullscreenTransitionComplete:(NSNotification*)notification {
+  _isInFullscreenTransition = NO;
 }
 
 - (void)orderWindowByShuffling:(NSWindowOrderingMode)orderingMode
