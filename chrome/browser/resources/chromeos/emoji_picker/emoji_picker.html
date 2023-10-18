@@ -171,7 +171,10 @@
 
   .divider {
     border-top: 1px solid var(--cros-separator-color);
-    margin-inline: var(--emoji-picker-subcategory-bar-inline-margin);
+    /**
+     * TODO(b/297297441): Remove this line once jelly is enabled by default.
+     */
+    margin-inline: var(--emoji-picker-divider-inline-margin, var(--emoji-picker-subcategory-bar-inline-margin));
   }
 
   .sr-only {

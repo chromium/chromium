@@ -313,6 +313,8 @@ export class EmojiPicker extends PolymerElement {
             constants.JELLY_EMOJI_PICKER_TOP_PADDING_PX,
         '--emoji-picker-search-side-padding':
             constants.JELLY_EMOJI_PICKER_SEARCH_SIDE_PADDING_PX,
+        // The keyline should expand all the way with jelly flag on.
+        '--emoji-picker-divider-inline-margin': 0,
       });
     }
 
