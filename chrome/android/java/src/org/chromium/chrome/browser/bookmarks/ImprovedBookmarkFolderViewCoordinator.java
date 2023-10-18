@@ -23,7 +23,7 @@ public class ImprovedBookmarkFolderViewCoordinator {
     private final BookmarkImageFetcher mBookmarkImageFetcher;
     private final BookmarkModel mBookmarkModel;
 
-    private View mView;
+    private ImprovedBookmarkFolderView mView;
     private BookmarkItem mBookmarkItem;
     private PropertyModelChangeProcessor mChangeProcessor;
 

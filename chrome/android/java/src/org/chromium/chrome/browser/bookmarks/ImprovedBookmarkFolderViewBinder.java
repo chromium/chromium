@@ -4,15 +4,13 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Binds model properties to view methods for {@link ImprovedBookmarkFolderView}. */
 class ImprovedBookmarkFolderViewBinder {
-    static void bind(PropertyModel model, View view, PropertyKey key) {
-        ImprovedBookmarkFolderView folderView = (ImprovedBookmarkFolderView) view;
+    static void bind(PropertyModel model, ImprovedBookmarkFolderView folderView, PropertyKey key) {
         if (key == ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR) {
             folderView.setStartAreaBackgroundColor(
                     model.get(ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR));
