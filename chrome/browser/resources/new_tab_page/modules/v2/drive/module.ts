@@ -59,14 +59,12 @@ export class DriveModuleElement extends I18nMixin
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
-          text: this.i18nRecursive(
-              '', 'modulesDismissButtonText', 'modulesDriveFilesLower'),
+          text: this.i18n('modulesDriveDismissButtonText'),
         },
         {
           action: 'disable',
           icon: 'modules:block',
-          text: this.i18nRecursive(
-              '', 'modulesDisableButtonTextV2', 'modulesDriveSentenceV2'),
+          text: this.i18n('modulesDriveDisableButtonTextV2'),
         },
         {
           action: 'info',

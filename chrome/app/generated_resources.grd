@@ -7769,6 +7769,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DISMISS_BUTTON_TEXT" desc="Text shown on the disable button of an NTP module.">
         Hide <ph name="MODULE_TITLE">$1<ex>Office Chairs</ex></ph>
       </message>
+      <message name="IDS_NTP_MODULES_DRIVE_MORE_ACTIONS_BUTTON_TEXT" desc="The tooltip and accessibility label for the 3 dot menu on a module.">
+        More actions for Google Drive Files
+      </message>
       <message name="IDS_NTP_MODULES_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of an NTP module.">
         Never show <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
       </message>
@@ -7871,20 +7874,23 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CART_ITEM_COUNT_MULTIPLE" desc="Item count displayed on chrome cart module when there are multiple items in a cart.">
         <ph name="ITEM_COUNT_MULTIPLE">$1<ex>2</ex></ph> items
       </message>
+      <message name="IDS_NTP_MODULES_DRIVE_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Drive module v2.">
+       Never show Drive files
+      </message>
+      <message name="IDS_NTP_MODULES_DRIVE_DISABLE_BUTTON_TEXT_V2" desc="Text shown on the disable button of a NTP Drive module v2.">
+       Don't show Drive
+      </message>
+      <message name="IDS_NTP_MODULES_DRIVE_DISMISS_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Drive module v2.">
+       Hide these files
+      </message>
       <message name="IDS_NTP_MODULES_DRIVE_SENTENCE" desc="Name of the Drive module in sentence case shown in various UIs.">
         Google Drive files
-      </message>
-      <message name="IDS_NTP_MODULES_DRIVE_SENTENCE_V2" desc="Name of the Drive module v2 in sentence case shown in various UIs.">
-        Drive
       </message>
       <message name="IDS_NTP_MODULES_DRIVE_SENTENCE2" desc="Variant of the name of the Drive module in sentence case shown in various UIs.">
         Drive files
       </message>
       <message name="IDS_NTP_MODULES_DRIVE_FILES_SENTENCE" desc="Name of the files in the Drive module in sentence case shown in various UIs.">
         Files
-      </message>
-      <message name="IDS_NTP_MODULES_DRIVE_FILES_LOWER" desc="Name of the files in the Drive module in lowercase shown in various UIs.">
-        these files
       </message>
       <message name="IDS_NTP_MODULES_DUMMY_LOWER" translateable="false" desc="Name of the dummy module in lowercase shown in various UIs.">
         this module
