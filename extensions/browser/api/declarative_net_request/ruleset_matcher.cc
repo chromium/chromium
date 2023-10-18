@@ -30,11 +30,7 @@ using ExtensionMetadataList =
 size_t ComputeUnsafeRuleCount(const ExtensionMetadataList* metadata_list) {
   size_t unsafe_rule_count = 0;
   for (const auto* url_rule_metadata : *metadata_list) {
-    flat::ActionType rule_action_type = url_rule_metadata->action();
-    if (rule_action_type != flat::ActionType_block &&
-        rule_action_type != flat::ActionType_allow &&
-        rule_action_type != flat::ActionType_allow_all_requests &&
-        rule_action_type != flat::ActionType_upgrade_scheme) {
+    if (!IsRuleSafe(*url_rule_metadata)) {
       unsafe_rule_count++;
     }
   }

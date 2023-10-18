@@ -758,13 +758,22 @@ namespace declarativeNetRequest {
     // the <a href="#global-static-rule-limit">global static rule limit</a>.
     [value=30000] static long GUARANTEED_MINIMUM_STATIC_RULES();
 
-    // The maximum number of dynamic rules that an extension can add.
-    [nodoc, deprecated="Use $(ref:MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES) instead", value=5000]
-    static long MAX_NUMBER_OF_DYNAMIC_RULES();
-
     // The maximum number of combined dynamic and session scoped rules an
     // extension can add.
     [value=5000] static long MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES();
+
+    // The maximum number of dynamic rules that an extension can add.
+    [nodoc, value=30000] static long MAX_NUMBER_OF_DYNAMIC_RULES();
+
+    // The maximum number of "unsafe" dynamic rules that an extension can add.
+    [nodoc, value=5000] static long MAX_NUMBER_OF_UNSAFE_DYNAMIC_RULES();
+
+    // The maximum number of session scoped rules that an extension can add.
+    [nodoc, value=5000] static long MAX_NUMBER_OF_SESSION_RULES();
+
+    // The maximum number of "unsafe" session scoped rules that an extension can
+    // add.
+    [nodoc, value=5000] static long MAX_NUMBER_OF_UNSAFE_SESSION_RULES();
 
     // Time interval within which <code>MAX_GETMATCHEDRULES_CALLS_PER_INTERVAL
     // getMatchedRules</code> calls can be made, specified in minutes.

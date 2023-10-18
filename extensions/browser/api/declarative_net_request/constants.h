@@ -9,11 +9,11 @@
 #include <cstdint>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 // The result of parsing JSON rules provided by an extension. Corresponds to a
 // single rule.
@@ -100,10 +100,11 @@ enum class UpdateDynamicRulesStatus {
   kErrorSerializeToJson = 16,
   kErrorWriteJson = 17,
   kErrorWriteFlatbuffer = 18,
+  kErrorUnsafeRuleCountExceeded = 19,
 
   // Magic constant used by histograms code. Should be equal to the largest enum
   // value.
-  kMaxValue = kErrorWriteFlatbuffer,
+  kMaxValue = kErrorUnsafeRuleCountExceeded,
 };
 
 // Describes the result of loading a single JSON Ruleset.
@@ -197,10 +198,12 @@ extern const char kIndexingRuleLimitExceeded[];
 extern const char kInternalErrorUpdatingDynamicRules[];
 extern const char kInternalErrorGettingDynamicRules[];
 extern const char kDynamicRuleCountExceeded[];
+extern const char kDynamicUnsafeRuleCountExceeded[];
 extern const char kDynamicRegexRuleCountExceeded[];
 
 // Session-scoped rules API errors.
 extern const char kSessionRuleCountExceeded[];
+extern const char kSessionUnsafeRuleCountExceeded[];
 extern const char kSessionRegexRuleCountExceeded[];
 
 // Static ruleset toggling API errors.
@@ -278,7 +281,6 @@ inline constexpr auto kDNRRequestHeaderAppendAllowList =
          {"want-digest", ", "},
          {"x-forwarded-for", ", "}});
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_CONSTANTS_H_

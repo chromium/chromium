@@ -47,6 +47,7 @@
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "tools/json_schema_compiler/util.h"
@@ -111,8 +112,8 @@ std::unique_ptr<RulesetMatcher> CreateSessionScopedMatcher(
     std::vector<api::declarative_net_request::Rule> rules,
     std::string* error) {
   DCHECK(error);
-  RulesetSource source(kSessionRulesetID, GetDynamicAndSessionRuleLimit(),
-                       extension_id, true /* enabled */);
+  RulesetSource source(kSessionRulesetID, GetSessionRuleLimit(), extension_id,
+                       /*enabled=*/true);
 
   auto parse_flags = RulesetSource::kRaiseErrorOnInvalidRules |
                      RulesetSource::kRaiseErrorOnLargeRegexRules;
@@ -631,12 +632,11 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
   // another simultaneous api call since we ensure that for a given extension,
   // only up to 1 updateDynamicRules/updateSessionRules call is in progress. See
   // the usage of `ApiCallQueue`.
-  RuleCounts shared_rules_limit(GetDynamicAndSessionRuleLimit(),
-                                GetDynamicAndSessionRuleLimit(),
-                                GetRegexRuleLimit());
   RuleCounts session_rules_count =
       GetRuleCounts(extension_id, kSessionRulesetID);
-  RuleCounts available_limit = shared_rules_limit - session_rules_count;
+  RuleCounts available_limit(
+      GetDynamicRuleLimit(), GetUnsafeDynamicRuleLimit(),
+      GetRegexRuleLimit() - session_rules_count.regex_rule_count);
 
   // We are updating the indexed ruleset. Don't set the expected checksum since
   // it'll change.
@@ -683,14 +683,26 @@ void RulesMonitorService::UpdateSessionRulesInternal(
   {
     RuleCounts dynamic_rule_count =
         GetRuleCounts(extension_id, kDynamicRulesetID);
-    RuleCounts shared_rule_limit(GetDynamicAndSessionRuleLimit(),
-                                 GetDynamicAndSessionRuleLimit(),
-                                 GetRegexRuleLimit());
-    RuleCounts available_limit = shared_rule_limit - dynamic_rule_count;
+    RuleCounts available_limit(
+        GetSessionRuleLimit(), GetUnsafeSessionRuleLimit(),
+        GetRegexRuleLimit() - dynamic_rule_count.regex_rule_count);
+
     if (new_rules.size() > available_limit.rule_count) {
       std::move(callback).Run(kSessionRuleCountExceeded);
       return;
     }
+
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kDeclarativeNetRequestSafeRuleLimits)) {
+      size_t unsafe_rule_count = base::ranges::count_if(
+          new_rules,
+          [](const dnr_api::Rule& rule) { return !IsRuleSafe(rule); });
+      if (unsafe_rule_count > available_limit.unsafe_rule_count) {
+        std::move(callback).Run(kSessionUnsafeRuleCountExceeded);
+        return;
+      }
+    }
+
     size_t regex_rule_count =
         base::ranges::count_if(new_rules, [](const dnr_api::Rule& rule) {
           return !!rule.condition.regex_filter;

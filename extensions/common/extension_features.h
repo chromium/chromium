@@ -106,6 +106,8 @@ BASE_DECLARE_FEATURE(kExtensionsServiceWorkerOptimizedEventDispatch);
 
 BASE_DECLARE_FEATURE(kNewWebstoreURL);
 
+BASE_DECLARE_FEATURE(kDeclarativeNetRequestSafeRuleLimits);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

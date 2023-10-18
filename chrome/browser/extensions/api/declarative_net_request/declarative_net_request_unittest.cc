@@ -51,6 +51,7 @@
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
@@ -584,8 +585,14 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
       CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
   base::AutoReset<int> regex_rule_limit_override_ =
       CreateScopedRegexRuleLimitOverrideForTesting(100);
-  base::AutoReset<int> dynamic_and_session_rule_limit_override_ =
-      CreateScopedDynamicAndSessionRuleLimitOverrideForTesting(200);
+  base::AutoReset<int> dynamic_rule_limit_override_ =
+      CreateScopedDynamicRuleLimitOverrideForTesting(200);
+  base::AutoReset<int> unsafe_dynamic_rule_limit_override_ =
+      CreateScopedUnsafeDynamicRuleLimitOverrideForTesting(100);
+  base::AutoReset<int> session_rule_limit_override_ =
+      CreateScopedSessionRuleLimitOverrideForTesting(200);
+  base::AutoReset<int> unsafe_session_rule_limit_override_ =
+      CreateScopedUnsafeSessionRuleLimitOverrideForTesting(100);
 };
 
 // Fixture testing that declarative rules corresponding to the Declarative Net
@@ -1482,54 +1489,193 @@ TEST_P(SingleRulesetTest, RuleCountLimitExceeded) {
   CheckExtensionAllocationInPrefs(extension()->id(), absl::nullopt);
 }
 
-// Tests that the rule limit is correctly shared between dynamic and session
-// rulesets of an extension.
-TEST_P(SingleRulesetTest, SharedDynamicAndSessionRuleLimits) {
-  ASSERT_EQ(200, GetDynamicAndSessionRuleLimit());
+// TODO(crbug.com/1485747): This is just a sanity check that rule counts work as
+// intended when the safe rules feature flag is turned off. Remove this test
+// once feature is enabled.
+TEST_P(SingleRulesetTest, DynamicAndSessionRuleLimits) {
+  // With `kDeclarativeNetRequestSafeRuleLimits` disabled, the dynamic/session
+  // rule limits are equal to their unsafe rule limit versions.
+  ASSERT_EQ(100, GetDynamicRuleLimit());
+  ASSERT_EQ(100, GetUnsafeDynamicRuleLimit());
+  ASSERT_EQ(100, GetSessionRuleLimit());
+  ASSERT_EQ(100, GetUnsafeSessionRuleLimit());
 
   RulesetManagerObserver ruleset_waiter(manager());
   LoadAndExpectSuccess();
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
-  // Add 100 dynamic rules, it should succeed.
-  std::vector<TestRule> dynamic_rules;
+  std::vector<TestRule> rules;
   int rule_id = kMinValidID;
-  for (size_t i = 0; i < 100; ++i)
-    dynamic_rules.push_back(CreateGenericRule(rule_id++));
+  for (size_t i = 0; i < 100; ++i) {
+    // Redirect rules are considered "unsafe" in this context.
+    TestRule rule = CreateGenericRule(rule_id++);
+    rule.action->type = std::string("redirect");
+    rule.action->redirect.emplace();
+    rule.action->redirect->url = std::string("https://google.com");
+    rules.push_back(rule);
+  }
 
-  ASSERT_NO_FATAL_FAILURE(
-      RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
-                             dynamic_rules, RulesetScope::kDynamic));
-
-  // Add 101 more session rules, it should fail since the 200 rule limit is
-  // shared between dynamic and session-scoped rules.
-  std::vector<TestRule> session_rules = dynamic_rules;
-  session_rules.push_back(CreateGenericRule(rule_id++));
-  std::string expected_error = kSessionRuleCountExceeded;
-  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
-      *extension(), {} /* rule_ids_to_remove */, session_rules,
-      RulesetScope::kSession, &expected_error));
-
-  // Adding 100 session rules should succeed.
-  session_rules.pop_back();
-  ASSERT_NO_FATAL_FAILURE(
-      RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
-                             session_rules, RulesetScope::kSession));
+  // Run the same test for both dynamic and session rulesets. Note that rule
+  // counts are separately tracked for each ruleset.
+  struct {
+    RulesetScope ruleset_type;
+    std::string rule_count_exceeded_error;
+    std::string unsafe_rule_count_exceeded_error;
+  } test_cases[] = {
+      {RulesetScope::kDynamic, kDynamicRuleCountExceeded},
+      {RulesetScope::kSession, kSessionRuleCountExceeded},
+  };
 
   const RulesMonitorService* service =
       RulesMonitorService::Get(browser_context());
-  RuleCounts expected_count(/*rule_count=*/100, /*unsafe_rule_count=*/0,
-                            /*regex_rule_count=*/0);
-  EXPECT_EQ(expected_count,
-            service->GetRuleCounts(extension()->id(), kDynamicRulesetID));
-  EXPECT_EQ(expected_count,
-            service->GetRuleCounts(extension()->id(), kSessionRulesetID));
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf(
+        "Testing %s ruleset:", test_case.ruleset_type == RulesetScope::kDynamic
+                                   ? "dynamic"
+                                   : "session"));
+    RulesetID ruleset_id = test_case.ruleset_type == RulesetScope::kDynamic
+                               ? kDynamicRulesetID
+                               : kSessionRulesetID;
 
-  // Adding any more dynamic rules will fail.
-  expected_error = kDynamicRuleCountExceeded;
-  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
-      *extension(), {} /* rule_ids_to_remove */, {CreateGenericRule(rule_id++)},
-      RulesetScope::kDynamic, &expected_error));
+    // Add rules up to the rule limit.
+    ASSERT_NO_FATAL_FAILURE(
+        RunUpdateRulesFunction(*extension(), /*rule_ids_to_remove=*/{}, rules,
+                               test_case.ruleset_type));
+    RuleCounts expected_rule_counts(/*rule_count=*/100,
+                                    /*unsafe_rule_count=*/100,
+                                    /*regex_rule_count=*/0);
+    EXPECT_EQ(expected_rule_counts,
+              service->GetRuleCounts(extension()->id(), ruleset_id));
+
+    // Adding any more rules should result in an error. Note that since the
+    // `kDeclarativeNetRequestSafeRuleLimits` feature is disabled for this test,
+    // the error returned should only mention that the rule count has been
+    // exceeded (see `test_cases`).
+    std::string expected_error = test_case.rule_count_exceeded_error;
+    ASSERT_NO_FATAL_FAILURE(
+        RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
+                               {CreateGenericRule(rule_id++)},
+                               test_case.ruleset_type, &expected_error));
+  }
+}
+
+class SingleRulesetSafeRulesTest : public SingleRulesetTest {
+ public:
+  SingleRulesetSafeRulesTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kDeclarativeNetRequestSafeRuleLimits);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that rule limits for both rule count and unsafe rule count are enforced
+// for the dynamic and session rulesets of an extension.
+TEST_P(SingleRulesetSafeRulesTest, DynamicAndSessionRuleLimits) {
+  ASSERT_EQ(200, GetDynamicRuleLimit());
+  ASSERT_EQ(100, GetUnsafeDynamicRuleLimit());
+  ASSERT_EQ(200, GetSessionRuleLimit());
+  ASSERT_EQ(100, GetUnsafeSessionRuleLimit());
+
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess();
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  // `rules_1` and `rules_2` contain 50 rules each. They are kept in two lists
+  // since they'll be added at different times and all rules between the two
+  // lists have unique IDs.
+  std::vector<TestRule> rules_1;
+  std::vector<TestRule> rules_2;
+  int rule_id = kMinValidID;
+  for (size_t i = 0; i < 50; ++i) {
+    rules_1.push_back(CreateGenericRule(rule_id++));
+    rules_2.push_back(CreateGenericRule(rule_id++));
+  }
+
+  auto create_unsafe_rule = [](int rule_id) {
+    TestRule unsafe_rule = CreateGenericRule(rule_id);
+
+    // Redirect rules are considered "unsafe" in this context.
+    unsafe_rule.action->type = std::string("redirect");
+    unsafe_rule.action->redirect.emplace();
+    unsafe_rule.action->redirect->url = std::string("https://google.com");
+    return unsafe_rule;
+  };
+
+  std::vector<TestRule> unsafe_rules;
+  for (size_t i = 0; i < 100; ++i) {
+    unsafe_rules.push_back(create_unsafe_rule(rule_id++));
+  }
+
+  // Run the same test for both dynamic and session rulesets. Note that rule
+  // counts for ordinary and "unsafe" rules are separately tracked for each
+  // ruleset.
+  struct {
+    RulesetScope ruleset_type;
+    std::string rule_count_exceeded_error;
+    std::string unsafe_rule_count_exceeded_error;
+  } test_cases[] = {
+      {RulesetScope::kDynamic, kDynamicRuleCountExceeded,
+       kDynamicUnsafeRuleCountExceeded},
+      {RulesetScope::kSession, kSessionRuleCountExceeded,
+       kSessionUnsafeRuleCountExceeded},
+  };
+
+  const RulesMonitorService* service =
+      RulesMonitorService::Get(browser_context());
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf(
+        "Testing %s ruleset:", test_case.ruleset_type == RulesetScope::kDynamic
+                                   ? "dynamic"
+                                   : "session"));
+    RulesetID ruleset_id = test_case.ruleset_type == RulesetScope::kDynamic
+                               ? kDynamicRulesetID
+                               : kSessionRulesetID;
+
+    // Add some ordinary rules first; this should succeed.
+    ASSERT_NO_FATAL_FAILURE(
+        RunUpdateRulesFunction(*extension(), /*rule_ids_to_remove=*/{}, rules_1,
+                               test_case.ruleset_type));
+    RuleCounts expected_rule_counts(/*rule_count=*/50, /*unsafe_rule_count=*/0,
+                                    /*regex_rule_count=*/0);
+    EXPECT_EQ(expected_rule_counts,
+              service->GetRuleCounts(extension()->id(), ruleset_id));
+
+    // Now add "unsafe" rules up to the unsafe rule limit; this should succeed.
+    ASSERT_NO_FATAL_FAILURE(
+        RunUpdateRulesFunction(*extension(), /*rule_ids_to_remove=*/{},
+                               unsafe_rules, test_case.ruleset_type));
+    expected_rule_counts =
+        RuleCounts(/*rule_count=*/150, /*unsafe_rule_count=*/100,
+                   /*regex_rule_count=*/0);
+    EXPECT_EQ(expected_rule_counts,
+              service->GetRuleCounts(extension()->id(), ruleset_id));
+
+    // Adding any more "unsafe" rules should result in an error.
+    std::string expected_error = test_case.unsafe_rule_count_exceeded_error;
+    ASSERT_NO_FATAL_FAILURE(
+        RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
+                               {create_unsafe_rule(rule_id++)},
+                               test_case.ruleset_type, &expected_error));
+
+    // Add ordinary rules up to the safe rule limit; this should succeed.
+    ASSERT_NO_FATAL_FAILURE(
+        RunUpdateRulesFunction(*extension(), /*rule_ids_to_remove=*/{}, rules_2,
+                               test_case.ruleset_type));
+    expected_rule_counts =
+        RuleCounts(/*rule_count=*/200, /*unsafe_rule_count=*/100,
+                   /*regex_rule_count=*/0);
+    EXPECT_EQ(expected_rule_counts,
+              service->GetRuleCounts(extension()->id(), ruleset_id));
+
+    // Adding any more ordinary rules should result in an error.
+    expected_error = test_case.rule_count_exceeded_error;
+    ASSERT_NO_FATAL_FAILURE(
+        RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
+                               {CreateGenericRule(rule_id++)},
+                               test_case.ruleset_type, &expected_error));
+  }
 }
 
 // Tests that the regex rule limit is correctly shared between dynamic and
@@ -2936,6 +3082,11 @@ TEST_P(MultipleRulesetsTest_Unpacked, UpdateAllocationOnReload) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SingleRulesetTest,
+                         ::testing::Values(ExtensionLoadType::PACKED,
+                                           ExtensionLoadType::UNPACKED));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SingleRulesetSafeRulesTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
 

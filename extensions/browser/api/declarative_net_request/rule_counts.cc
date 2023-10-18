@@ -25,27 +25,9 @@ RuleCounts& RuleCounts::operator+=(const RuleCounts& that) {
   return *this;
 }
 
-RuleCounts& RuleCounts::operator-=(const RuleCounts& that) {
-  CHECK_GE(rule_count, that.rule_count);
-  if (unsafe_rule_count.has_value()) {
-    CHECK_GE(*unsafe_rule_count, that.unsafe_rule_count.value_or(0));
-    *unsafe_rule_count -= that.unsafe_rule_count.value_or(0);
-  }
-
-  CHECK_GE(regex_rule_count, that.regex_rule_count);
-  rule_count -= that.rule_count;
-  regex_rule_count -= that.regex_rule_count;
-  return *this;
-}
-
 RuleCounts operator+(const RuleCounts& lhs, const RuleCounts& rhs) {
   RuleCounts result = lhs;
   return result += rhs;
-}
-
-RuleCounts operator-(const RuleCounts& lhs, const RuleCounts& rhs) {
-  RuleCounts result = lhs;
-  return result -= rhs;
 }
 
 bool operator==(const RuleCounts& lhs, const RuleCounts& rhs) {

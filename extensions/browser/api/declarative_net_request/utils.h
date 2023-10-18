@@ -114,8 +114,23 @@ int GetGlobalStaticRuleLimit();
 // also the maximum number of static rules an extension can enable at any point.
 int GetMaximumRulesPerRuleset();
 
-// Returns the shared rule limit for dynamic and session-scoped rules.
-int GetDynamicAndSessionRuleLimit();
+// Returns the rule limit for dynamic rules. If the
+// `kDeclarativeNetRequestSafeRuleLimits` is disabled, the dynamic rule limit
+// will be the "unsafe" dynamic rule limit which is lower in value.
+int GetDynamicRuleLimit();
+
+// Returns the rule limit for "unsafe" dynamic rules. See the implementation for
+// `IsRuleSafe` for how a rule's safety is determined.
+int GetUnsafeDynamicRuleLimit();
+
+// Returns the rule limit for session-scoped rules. If the
+// `kDeclarativeNetRequestSafeRuleLimits` is disabled, the session-scoped rule
+// limit will be the "unsafe" session-scoped rule limit which is lower in value.
+int GetSessionRuleLimit();
+
+// Returns the rule limit for "unsafe" session-scoped rules. See the
+// implementation for `IsRuleSafe` for how a rule's safety is determined.
+int GetUnsafeSessionRuleLimit();
 
 // Returns the per-extension regex rules limit. This is enforced separately for
 // static and dynamic rulesets.
@@ -132,8 +147,14 @@ ScopedRuleLimitOverride CreateScopedStaticGuaranteedMinimumOverrideForTesting(
 ScopedRuleLimitOverride CreateScopedGlobalStaticRuleLimitOverrideForTesting(
     int limit);
 ScopedRuleLimitOverride CreateScopedRegexRuleLimitOverrideForTesting(int limit);
-ScopedRuleLimitOverride
-CreateScopedDynamicAndSessionRuleLimitOverrideForTesting(int limit);
+ScopedRuleLimitOverride CreateScopedDynamicRuleLimitOverrideForTesting(
+    int limit);
+ScopedRuleLimitOverride CreateScopedUnsafeDynamicRuleLimitOverrideForTesting(
+    int limit);
+ScopedRuleLimitOverride CreateScopedSessionRuleLimitOverrideForTesting(
+    int limit);
+ScopedRuleLimitOverride CreateScopedUnsafeSessionRuleLimitOverrideForTesting(
+    int limit);
 ScopedRuleLimitOverride CreateScopedDisabledStaticRuleLimitOverrideForTesting(
     int limit);
 
@@ -172,6 +193,9 @@ url_pattern_index::flat::RequestMethod GetRequestMethod(
 url_pattern_index::flat::RequestMethod GetRequestMethod(
     bool http_or_https,
     api::declarative_net_request::RequestMethod request_method);
+
+bool IsRuleSafe(const api::declarative_net_request::Rule& rule);
+bool IsRuleSafe(const flat::UrlRuleMetadata& rule);
 
 }  // namespace declarative_net_request
 }  // namespace extensions

@@ -31,6 +31,7 @@
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
@@ -67,7 +68,10 @@ constexpr int kInvalidRuleLimit = -1;
 int g_static_guaranteed_minimum_for_testing = kInvalidRuleLimit;
 int g_global_static_rule_limit_for_testing = kInvalidRuleLimit;
 int g_regex_rule_limit_for_testing = kInvalidRuleLimit;
-int g_dynamic_and_session_rule_limit_for_testing = kInvalidRuleLimit;
+int g_dynamic_rule_limit_for_testing = kInvalidRuleLimit;
+int g_unsafe_dynamic_rule_limit_for_testing = kInvalidRuleLimit;
+int g_session_rule_limit_for_testing = kInvalidRuleLimit;
+int g_unsafe_session_rule_limit_for_testing = kInvalidRuleLimit;
 int g_disabled_static_rule_limit_for_testing = kInvalidRuleLimit;
 
 int GetIndexedRulesetFormatVersion() {
@@ -378,10 +382,38 @@ int GetMaximumRulesPerRuleset() {
   return GetStaticGuaranteedMinimumRuleCount() + GetGlobalStaticRuleLimit();
 }
 
-int GetDynamicAndSessionRuleLimit() {
-  return g_dynamic_and_session_rule_limit_for_testing == kInvalidRuleLimit
-             ? dnr_api::MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES
-             : g_dynamic_and_session_rule_limit_for_testing;
+int GetDynamicRuleLimit() {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kDeclarativeNetRequestSafeRuleLimits)) {
+    return GetUnsafeDynamicRuleLimit();
+  }
+
+  return g_dynamic_rule_limit_for_testing == kInvalidRuleLimit
+             ? dnr_api::MAX_NUMBER_OF_DYNAMIC_RULES
+             : g_dynamic_rule_limit_for_testing;
+}
+
+int GetUnsafeDynamicRuleLimit() {
+  return g_unsafe_dynamic_rule_limit_for_testing == kInvalidRuleLimit
+             ? dnr_api::MAX_NUMBER_OF_UNSAFE_DYNAMIC_RULES
+             : g_unsafe_dynamic_rule_limit_for_testing;
+}
+
+int GetSessionRuleLimit() {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kDeclarativeNetRequestSafeRuleLimits)) {
+    return GetUnsafeSessionRuleLimit();
+  }
+
+  return g_session_rule_limit_for_testing == kInvalidRuleLimit
+             ? dnr_api::MAX_NUMBER_OF_SESSION_RULES
+             : g_session_rule_limit_for_testing;
+}
+
+int GetUnsafeSessionRuleLimit() {
+  return g_unsafe_session_rule_limit_for_testing == kInvalidRuleLimit
+             ? dnr_api::MAX_NUMBER_OF_UNSAFE_SESSION_RULES
+             : g_unsafe_session_rule_limit_for_testing;
 }
 
 int GetRegexRuleLimit() {
@@ -413,9 +445,27 @@ ScopedRuleLimitOverride CreateScopedRegexRuleLimitOverrideForTesting(
 }
 
 ScopedRuleLimitOverride
-CreateScopedDynamicAndSessionRuleLimitOverrideForTesting(int limit) {
-  return base::AutoReset<int>(&g_dynamic_and_session_rule_limit_for_testing,
-                              limit);
+CreateScopedDynamicRuleLimitOverrideForTesting(  // IN-TEST
+    int limit) {
+  return base::AutoReset<int>(&g_dynamic_rule_limit_for_testing, limit);
+}
+
+ScopedRuleLimitOverride
+CreateScopedUnsafeDynamicRuleLimitOverrideForTesting(  // IN-TEST
+    int limit) {
+  return base::AutoReset<int>(&g_unsafe_dynamic_rule_limit_for_testing, limit);
+}
+
+ScopedRuleLimitOverride
+CreateScopedSessionRuleLimitOverrideForTesting(  // IN-TEST
+    int limit) {
+  return base::AutoReset<int>(&g_session_rule_limit_for_testing, limit);
+}
+
+ScopedRuleLimitOverride
+CreateScopedUnsafeSessionRuleLimitOverrideForTesting(  // IN-TEST
+    int limit) {
+  return base::AutoReset<int>(&g_unsafe_session_rule_limit_for_testing, limit);
 }
 
 ScopedRuleLimitOverride CreateScopedDisabledStaticRuleLimitOverrideForTesting(
@@ -782,6 +832,26 @@ flat_rule::RequestMethod GetRequestMethod(
     return flat_rule::RequestMethod_NON_HTTP;
 
   return GetRequestMethod(request_method);
+}
+
+bool IsRuleSafe(const api::declarative_net_request::Rule& rule) {
+  // Each `dnr_api::RuleActionType` maps 1:1 to a corresponding
+  // `flat::ActionType` so both versions of IsRuleSafe must be kept in sync.
+  dnr_api::RuleActionType action_type = rule.action.type;
+  return action_type == dnr_api::RuleActionType::kBlock ||
+         action_type == dnr_api::RuleActionType::kAllow ||
+         action_type == dnr_api::RuleActionType::kAllowAllRequests ||
+         action_type == dnr_api::RuleActionType::kUpgradeScheme;
+}
+
+bool IsRuleSafe(const flat::UrlRuleMetadata& url_rule_metadata) {
+  // Each `flat::RuleActionType` maps 1:1 to a corresponding
+  // `dnr_api::ActionType` so both versions of IsRuleSafe must be kept in sync.
+  flat::ActionType action_type = url_rule_metadata.action();
+  return action_type == flat::ActionType_block ||
+         action_type == flat::ActionType_allow ||
+         action_type == flat::ActionType_allow_all_requests ||
+         action_type == flat::ActionType_upgrade_scheme;
 }
 
 }  // namespace declarative_net_request

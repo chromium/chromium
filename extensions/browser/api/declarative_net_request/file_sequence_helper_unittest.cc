@@ -109,8 +109,8 @@ class FileSequenceHelperTest : public ExtensionsTest {
         &FileSequenceHelper::UpdateDynamicRules,
         base::Unretained(helper_.get()), std::move(data),
         /* rule_ids_to_remove */ std::vector<int>(), std::move(rules_to_add),
-        RuleCounts(GetDynamicAndSessionRuleLimit(),
-                   GetDynamicAndSessionRuleLimit(), GetRegexRuleLimit()),
+        RuleCounts(GetDynamicRuleLimit(), GetUnsafeDynamicRuleLimit(),
+                   GetRegexRuleLimit()),
         std::move(add_rules_callback));
 
     base::HistogramTester tester;

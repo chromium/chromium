@@ -218,4 +218,12 @@ BASE_FEATURE(kNewWebstoreURL,
              "NewWebstoreURL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a relaxed rule count for "safe" dynqmic or session scoped rules above
+// the current limit. If disabled, all dynamic and session scoped rules are
+// treated as "safe" but the rule limit's value will be the stricter "unsafe"
+// limit.
+BASE_FEATURE(kDeclarativeNetRequestSafeRuleLimits,
+             "DeclarativeNetRequestSafeDynamicRules",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

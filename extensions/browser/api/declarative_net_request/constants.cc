@@ -7,8 +7,7 @@
 #include "extensions/common/constants.h"
 #include "url/url_constants.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 const char* const kAllowedTransformSchemes[4] = {
     url::kHttpScheme, url::kHttpsScheme, url::kFtpScheme,
@@ -104,10 +103,20 @@ const char kInternalErrorUpdatingDynamicRules[] =
 const char kInternalErrorGettingDynamicRules[] =
     "Internal error while getting dynamic rules.";
 const char kDynamicRuleCountExceeded[] = "Dynamic rule count exceeded.";
+
+// TODO(crbug.com/1485747): Once the documentation is updated, add a link to the
+// page detailing what safe/unsafe rules are.
+const char kDynamicUnsafeRuleCountExceeded[] =
+    "Dynamic unsafe rule count exceeded.";
 const char kDynamicRegexRuleCountExceeded[] =
     "Dynamic rule count for regex rules exceeded.";
 
 const char kSessionRuleCountExceeded[] = "Session rule count exceeded.";
+
+// TODO(crbug.com/1485747): Once the documentation is updated, add a link to the
+// page detailing what safe/unsafe rules are.
+const char kSessionUnsafeRuleCountExceeded[] =
+    "Session unsafe rule count exceeded.";
 const char kSessionRegexRuleCountExceeded[] =
     "Session rule count for regex rules exceeded.";
 
@@ -160,5 +169,4 @@ const char kErrorGetMatchedRulesMissingPermissions[] =
 
 const char kEmbedderConditionsBufferIdentifier[] = "EMBR";
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
