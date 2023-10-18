@@ -19,6 +19,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -175,6 +177,8 @@ class FileSystemEntryURLLoader
   std::unique_ptr<mojo::DataPipeProducer> data_producer_;
   net::HttpByteRange byte_range_;
   FileSystemURL url_;
+  file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+      file_access_ = base::NullCallback();
 
  private:
   void StartOnIOThread(
@@ -187,6 +191,15 @@ class FileSystemEntryURLLoader
         &FileSystemEntryURLLoader::OnMojoDisconnect, base::Unretained(this)));
 
     client_.Bind(std::move(client_remote));
+
+    if (request.request_initiator &&
+        file_access::ScopedFileAccessDelegate::HasInstance()) {
+      file_access_ =
+          file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback(
+              file_access::ScopedFileAccessDelegate::Get()
+                  ->CreateFileAccessCallback(
+                      request.request_initiator->GetURL()));
+    }
 
     // If checks which were performed on the UI thread failed, don't proceed
     // any further and error out.
@@ -496,8 +509,8 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
 
     DCHECK(!reader_.get());
     reader_ = params_.file_system_context->CreateFileStreamReader(
-        url_, byte_range_.first_byte_position(), remaining_bytes_,
-        base::Time());
+        url_, byte_range_.first_byte_position(), remaining_bytes_, base::Time(),
+        std::move(file_access_));
 
     MojoCreateDataPipeOptions options;
     options.struct_size = sizeof(MojoCreateDataPipeOptions);
