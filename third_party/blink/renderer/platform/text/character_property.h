@@ -16,7 +16,17 @@ enum class CharacterProperty : CharacterPropertyType {
   kIsPotentialCustomElementNameChar = 1 << 1,
   kIsBidiControl = 1 << 2,
   kIsHangul = 1 << 3,
+
+  // Bits to store `HanKerningCharType`.
+  kHanKerningShift = 4,
+  kHanKerningSize = 3,
+  kHanKerningMask = ((1 << kHanKerningSize) - 1),
+  kHanKerningShiftedMask = kHanKerningMask << kHanKerningShift,
+
+  kNumBits = kHanKerningShift + kHanKerningSize,
 };
+static_assert(static_cast<unsigned>(CharacterProperty::kNumBits) <=
+              sizeof(CharacterPropertyType) * 8);
 
 inline CharacterProperty operator|(CharacterProperty a, CharacterProperty b) {
   return static_cast<CharacterProperty>(static_cast<CharacterPropertyType>(a) |

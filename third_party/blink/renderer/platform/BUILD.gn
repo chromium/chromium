@@ -126,6 +126,9 @@ executable("character_data_generator") {
     "text/character_property.h",
     "text/character_property_data.h",
     "text/character_property_data_generator.cc",
+    "text/han_kerning_char_type.h",
+    "wtf/text/character_names.h",
+    "wtf/text/wtf_uchar.h",
   ]
   configs += [ "//third_party/blink/renderer:config" ]
   deps = [
@@ -1401,6 +1404,7 @@ component("platform") {
     "text/date_time_format.cc",
     "text/date_time_format.h",
     "text/decode_escape_sequences.h",
+    "text/han_kerning_char_type.h",
     "text/hyphenation.cc",
     "text/hyphenation.h",
     "text/icu_error.cc",

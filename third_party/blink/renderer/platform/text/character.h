@@ -36,6 +36,7 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
+#include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -122,6 +123,8 @@ class PLATFORM_EXPORT Character {
 
   // http://unicode.org/reports/tr9/#Directional_Formatting_Characters
   static bool IsBidiControl(UChar32 character);
+
+  static HanKerningCharType GetHanKerningCharType(UChar32 character);
 
   // Collapsible white space characters defined in CSS:
   // https://drafts.csswg.org/css-text-3/#collapsible-white-space

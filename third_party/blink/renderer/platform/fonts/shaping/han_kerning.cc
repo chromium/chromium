@@ -89,53 +89,21 @@ void HanKerning::ResetFeatures() {
 // https://drafts.csswg.org/css-text-4/#text-spacing-classes
 HanKerning::CharType HanKerning::GetCharType(UChar ch,
                                              const FontData& font_data) {
-  if (ch < kLeftSingleQuotationMarkCharacter) {
-    return CharType::kOther;
+  const CharType type = Character::GetHanKerningCharType(ch);
+  switch (type) {
+    case CharType::kOther:
+    case CharType::kOpen:
+    case CharType::kClose:
+    case CharType::kMiddle:
+      return type;
+    case CharType::kDot:
+      return font_data.type_for_dot;
+    case CharType::kColon:
+      return font_data.type_for_colon;
+    case CharType::kSemicolon:
+      return font_data.type_for_semicolon;
   }
-  if (ch <= kRightDoubleQuotationMarkCharacter) {
-    switch (ch) {
-      case kLeftSingleQuotationMarkCharacter:  // U+2018
-      case kLeftDoubleQuotationMarkCharacter:  // U+201C
-        return CharType::kOpen;
-      case kRightSingleQuotationMarkCharacter:  // U+2019
-      case kRightDoubleQuotationMarkCharacter:  // U+201D
-        return CharType::kClose;
-    }
-    return CharType::kOther;
-  }
-  if (ch < kIdeographicSpaceCharacter) {
-    return CharType::kOther;
-  }
-  if (Character::IsBlockCjkSymbolsAndPunctuation(ch) ||
-      Character::IsEastAsianWidthFullwidth(ch)) {
-    switch (ch) {
-      case kIdeographicSpaceCharacter:  // U+3000
-        return CharType::kMiddle;
-      case kIdeographicCommaCharacter:     // U+3001
-      case kIdeographicFullStopCharacter:  // U+3002
-      case kFullwidthComma:                // U+FF0C
-      case kFullwidthFullStop:             // U+FF0E
-        return font_data.type_for_dot;
-      case kFullwidthColon:  // U+FF1A
-        return font_data.type_for_colon;
-      case kFullwidthSemicolon:  // U+FF1B
-        return font_data.type_for_semicolon;
-    }
-    const auto gc = static_cast<UCharCategory>(u_charType(ch));
-    switch (gc) {
-      case UCharCategory::U_START_PUNCTUATION:
-        return CharType::kOpen;
-      case UCharCategory::U_END_PUNCTUATION:
-        return CharType::kClose;
-      default:
-        return CharType::kOther;
-    }
-  }
-  switch (ch) {
-    case kKatakanaMiddleDot:  // U+30FB
-      return CharType::kMiddle;
-  }
-  return CharType::kOther;
+  NOTREACHED_NORETURN();
 }
 
 bool HanKerning::IsOpen(UChar ch) {

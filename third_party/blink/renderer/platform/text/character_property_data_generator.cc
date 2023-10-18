@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <unicode/ucptrie.h>
 #include <unicode/umutablecptrie.h>
+#include <unicode/uniset.h>
+#include <unicode/unistr.h>
 
 #include <cassert>
 #include <cstring>
@@ -15,6 +17,8 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
+#include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 namespace {
@@ -34,21 +38,75 @@ class CharacterPropertyValues {
   void Initialize() {
     memset(values_.get(), 0, sizeof(CharacterProperty) * kSize);
 
-#define SET(name)                                                            \
-  SetRanges(name##Ranges, std::size(name##Ranges), CharacterProperty::name); \
-  SetValues(name##Array, std::size(name##Array), CharacterProperty::name);
+#define SET(name)                                     \
+  SetForRanges(name##Ranges, std::size(name##Ranges), \
+               CharacterProperty::name);              \
+  SetForValues(name##Array, std::size(name##Array), CharacterProperty::name);
 
     SET(kIsCJKIdeographOrSymbol);
     SET(kIsPotentialCustomElementNameChar);
     SET(kIsBidiControl);
 #undef SET
-    SetRanges(kIsHangulRanges, std::size(kIsHangulRanges),
-              CharacterProperty::kIsHangul);
+    SetForRanges(kIsHangulRanges, std::size(kIsHangulRanges),
+                 CharacterProperty::kIsHangul);
+    SetHanKerning();
   }
 
-  void SetRanges(const UChar32* ranges,
-                 size_t length,
-                 CharacterProperty value) {
+  void SetHanKerning() {
+    // https://drafts.csswg.org/css-text-4/#text-spacing-classes
+    Set(kLeftSingleQuotationMarkCharacter, HanKerningCharType::kOpen);
+    Set(kLeftDoubleQuotationMarkCharacter, HanKerningCharType::kOpen);
+    Set(kRightSingleQuotationMarkCharacter, HanKerningCharType::kClose);
+    Set(kRightDoubleQuotationMarkCharacter, HanKerningCharType::kClose);
+    Set(kIdeographicSpaceCharacter, HanKerningCharType::kMiddle);
+    Set(kIdeographicCommaCharacter, HanKerningCharType::kDot);
+    Set(kIdeographicFullStopCharacter, HanKerningCharType::kDot);
+    Set(kFullwidthComma, HanKerningCharType::kDot);
+    Set(kFullwidthFullStop, HanKerningCharType::kDot);
+    Set(kFullwidthColon, HanKerningCharType::kColon);
+    Set(kFullwidthSemicolon, HanKerningCharType::kSemicolon);
+    Set(kKatakanaMiddleDot, HanKerningCharType::kMiddle);
+    SetForUnicodeSet("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Ps:]]",
+                     HanKerningCharType::kOpen);
+    SetForUnicodeSet("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Pe:]]",
+                     HanKerningCharType::kClose);
+  }
+
+  static CharacterProperty ToCharacterProperty(HanKerningCharType value) {
+    CHECK_EQ((static_cast<unsigned>(value) &
+              ~static_cast<unsigned>(CharacterProperty::kHanKerningMask)),
+             0u);
+    return static_cast<CharacterProperty>(
+        static_cast<unsigned>(value)
+        << static_cast<unsigned>(CharacterProperty::kHanKerningShift));
+  }
+
+  void SetForUnicodeSet(const char* pattern, HanKerningCharType type) {
+    SetForUnicodeSet(pattern, ToCharacterProperty(type),
+                     CharacterProperty::kHanKerningShiftedMask);
+  }
+
+  // For `patterns`, see:
+  // https://unicode-org.github.io/icu/userguide/strings/unicodeset.html#unicodeset-patterns
+  void SetForUnicodeSet(const char* pattern,
+                        CharacterProperty value,
+                        CharacterProperty mask) {
+    UErrorCode error = U_ZERO_ERROR;
+    icu::UnicodeSet set(icu::UnicodeString(pattern), error);
+    CHECK_EQ(error, U_ZERO_ERROR);
+    const int32_t range_count = set.getRangeCount();
+    for (int32_t i = 0; i < range_count; ++i) {
+      const UChar32 end = set.getRangeEnd(i);
+      for (UChar32 ch = set.getRangeStart(i); ch <= end; ++ch) {
+        CHECK_EQ(static_cast<unsigned>(values_[ch] & mask), 0u);
+        values_[ch] |= value;
+      }
+    }
+  }
+
+  void SetForRanges(const UChar32* ranges,
+                    size_t length,
+                    CharacterProperty value) {
     CHECK_EQ(length % 2, 0u);
     const UChar32* end = ranges + length;
     for (; ranges != end; ranges += 2) {
@@ -60,12 +118,22 @@ class CharacterPropertyValues {
     }
   }
 
-  void SetValues(const UChar32* begin, size_t length, CharacterProperty value) {
+  void SetForValues(const UChar32* begin,
+                    size_t length,
+                    CharacterProperty value) {
     const UChar32* end = begin + length;
     for (; begin != end; begin++) {
       CHECK_LE(*begin, kMaxCodepoint);
       values_[*begin] |= value;
     }
+  }
+
+  void Set(UChar32 ch, HanKerningCharType type) {
+    const CharacterProperty value = ToCharacterProperty(type);
+    CHECK_EQ(static_cast<unsigned>(values_[ch] &
+                                   CharacterProperty::kHanKerningShiftedMask),
+             0u);
+    values_[ch] |= value;
   }
 
   std::unique_ptr<CharacterProperty[]> values_;
