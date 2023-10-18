@@ -264,6 +264,22 @@ AX_BASE_EXPORT bool IsAccessibilityServiceEnabled();
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+// Enables the NSAccessibilityRemoteUIElement's RemoteUIApp. We need to set
+// NSAccessibilityRemoteUIElement's RemoteUIApp to YES, which is to fix some
+// a11y bugs in PWA Mac.
+// It is a temporary feature flag, and will be removed once browser with this
+// feature enabled can run stably. The reason we're so careful is because a
+// previous CL that enabling NSAccessibilityRemoteUIElement's RemoteUIApp caused
+// chromium to hang. With the feature flag, once chromium encounters a bug due
+// to this we can urgently disable it. See https://crbug.com/1491329
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityRemoteUIApp);
+
+// Returns true if the NSAccessibilityRemoteUIElement's RemoteUIApp is enabled.
+AX_BASE_EXPORT bool IsAccessibilityRemoteUIAppEnabled();
+
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace features
 
 #endif  // UI_ACCESSIBILITY_ACCESSIBILITY_FEATURES_H_

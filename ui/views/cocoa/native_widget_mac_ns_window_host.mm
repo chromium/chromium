@@ -23,6 +23,7 @@
 #include "components/remote_cocoa/browser/window.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/cocoa/nswindow_test_util.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
@@ -1394,6 +1395,11 @@ void NativeWidgetMacNSWindowHost::SetRemoteAccessibilityTokens(
       ui::RemoteAccessibility::GetRemoteElementFromToken(view_token);
   [remote_view_accessible_ setWindowUIElement:remote_window_accessible_];
   [remote_view_accessible_ setTopLevelUIElement:remote_window_accessible_];
+
+  if (features::IsAccessibilityRemoteUIAppEnabled() &&
+      ![NSAccessibilityRemoteUIElement isRemoteUIApp]) {
+    [NSAccessibilityRemoteUIElement setRemoteUIApp:YES];
+  }
 }
 
 bool NativeWidgetMacNSWindowHost::GetRootViewAccessibilityToken(
@@ -1401,6 +1407,15 @@ bool NativeWidgetMacNSWindowHost::GetRootViewAccessibilityToken(
     std::vector<uint8_t>* token) {
   *pid = getpid();
   id element_id = GetNativeViewAccessible();
+
+  if (features::IsAccessibilityRemoteUIAppEnabled()) {
+    pid_t client_pid = [remote_view_accessible_ processIdentifier];
+    if ([element_id respondsToSelector:@selector
+                    (accessibilitySetPresenterProcessIdentifier:)]) {
+      [element_id accessibilitySetPresenterProcessIdentifier:client_pid];
+    }
+  }
+
   *token = ui::RemoteAccessibility::GetTokenForLocalElement(element_id);
   return true;
 }

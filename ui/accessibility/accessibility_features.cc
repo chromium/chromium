@@ -346,4 +346,16 @@ bool IsAccessibilityServiceEnabled() {
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+
+BASE_FEATURE(kAccessibilityRemoteUIApp,
+             "AccessibilityRemoteUIApp",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsAccessibilityRemoteUIAppEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityRemoteUIApp);
+}
+
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace features
