@@ -302,6 +302,10 @@ constexpr DeviceId kStylusButtonDevices[] = {
     {0x413c, 0x81d5},  // Dell Active Pen PN579X
 };
 
+constexpr DeviceId kHeatmapSupportedDevices[] = {
+    {0x04f3, 0x4222},  // Rex
+};
+
 // Certain devices need to be forced to use libinput in place of
 // evdev/libgestures
 constexpr DeviceId kForceLibinputlist[] = {
@@ -642,6 +646,16 @@ bool EventDeviceInfo::HasProp(unsigned int code) const {
   if (code > INPUT_PROP_MAX)
     return false;
   return EvdevBitIsSet(prop_bits_.data(), code);
+}
+
+bool EventDeviceInfo::SupportsHeatmap() const {
+  for (const auto& device_id : kHeatmapSupportedDevices) {
+    if (input_id_.vendor == device_id.vendor &&
+        input_id_.product == device_id.product_id) {
+      return true;
+    }
+  }
+  return false;
 }
 
 int32_t EventDeviceInfo::GetAbsMinimum(unsigned int code) const {

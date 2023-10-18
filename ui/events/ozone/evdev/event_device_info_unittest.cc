@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "event_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/evdev/event_device_test_util.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
@@ -559,6 +560,23 @@ TEST(EventDeviceInfoTest, KeyboardTypeDescriptions) {
             fmt(ui::KeyboardType::VALID_KEYBOARD));
   EXPECT_EQ("ui::KeyboardType::unknown_value(2345)",
             fmt(static_cast<ui::KeyboardType>(2345)));
+}
+
+TEST(EventDeviceInfoTest, RexHeatmapTouchScreen) {
+  EventDeviceInfo devinfo;
+  EXPECT_TRUE(CapabilitiesToDeviceInfo(kRexHeatmapTouchScreen, &devinfo));
+
+  EXPECT_FALSE(devinfo.HasKeyboard());
+  EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
+  EXPECT_FALSE(devinfo.HasTouchpad());
+  EXPECT_FALSE(devinfo.HasHapticTouchpad());
+  EXPECT_TRUE(devinfo.HasTouchscreen());
+  EXPECT_FALSE(devinfo.HasTablet());
+  EXPECT_FALSE(devinfo.HasGamepad());
+  EXPECT_FALSE(devinfo.IsStylusButtonDevice());
+  EXPECT_FALSE(devinfo.HasStylusSwitch());
+  EXPECT_TRUE(devinfo.SupportsHeatmap());
 }
 
 }  // namespace ui

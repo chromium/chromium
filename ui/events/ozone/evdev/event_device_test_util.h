@@ -120,6 +120,7 @@ extern const DeviceCapabilities kDellLatitudeE6510Touchpad;
 extern const DeviceCapabilities kHPProBook6560bTouchpad;
 extern const DeviceCapabilities kJinlonKeyboard;
 extern const DeviceCapabilities kSymbolTechBarcodeScanner;
+extern const DeviceCapabilities kRexHeatmapTouchScreen;
 }  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_TEST_UTIL_H_
