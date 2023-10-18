@@ -35,6 +35,7 @@ build_webui("build") {
       "cr_icon_button/cr_icon_button.ts",
       "cr_input/cr_input.ts",
       "cr_link_row/cr_link_row.ts",
+      "cr_loading_gradient/cr_loading_gradient.ts",
       "cr_lottie/cr_lottie.ts",
       "cr_textarea/cr_textarea.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",

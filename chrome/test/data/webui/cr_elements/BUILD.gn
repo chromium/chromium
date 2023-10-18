@@ -26,6 +26,7 @@ build_webui_tests("build") {
     "cr_input_test.ts",
     "cr_lazy_render_test.ts",
     "cr_link_row_test.ts",
+    "cr_loading_gradient_test.ts",
     "cr_lottie_test.ts",
     "cr_menu_selector_focus_test.ts",
     "cr_policy_indicator_mixin_test.ts",

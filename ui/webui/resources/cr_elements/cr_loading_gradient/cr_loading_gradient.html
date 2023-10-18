@@ -1,0 +1,41 @@
+<style>
+  :host {
+    --cr-loading-gradient-color1: transparent;
+    --cr-loading-gradient-color2: var(--cr-fallback-color-primary-container);
+    --cr-loading-gradient-color3: rgb(231, 248, 237);
+
+    display: flex;
+    width: 100%;
+    height: fit-content;
+    position: relative;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --cr-loading-gradient-color3: rgb(15, 82, 35);
+    }
+  }
+
+  #gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        130deg,
+        var(--cr-loading-gradient-color1) 0%,
+        var(--cr-loading-gradient-color2) 20%,
+        var(--cr-loading-gradient-color3) 40%,
+        var(--cr-loading-gradient-color1) 60%,
+        var(--cr-loading-gradient-color2) 80%,
+        var(--cr-loading-gradient-color3) 100%);
+    background-position: 0% 0%;
+    background-size: 250% 250%;
+    animation: gradient 5s infinite linear;
+  }
+
+  @keyframes gradient {
+    0% { background-position: 0 0; }
+    100% { background-position: 100% 100%; }
+  }
+</style>
+<div id="gradient"></div>
+<slot on-slotchange="onSlotchange_"></slot>
