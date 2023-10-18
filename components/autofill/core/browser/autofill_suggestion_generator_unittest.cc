@@ -119,11 +119,6 @@ class TestAutofillSuggestionGenerator : public AutofillSuggestionGenerator {
 // browser_autofill_manager_unittest.cc.
 class AutofillSuggestionGeneratorTest : public testing::Test {
  public:
-  AutofillSuggestionGeneratorTest() {
-    scoped_feature_list_async_parse_form_.InitWithFeatureState(
-        features::kAutofillParseAsync, true);
-  }
-
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     personal_data()->Init(/*profile_database=*/database_,
@@ -214,7 +209,8 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   TestAutofillClient* autofill_client() { return &autofill_client_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
+  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_{
+      features::kAutofillParseAsync};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -1069,19 +1065,45 @@ TEST_F(AutofillSuggestionGeneratorTest,
 }
 #endif  // if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+class AutofillChildrenSuggestionsGenenarationTest
+    : public AutofillSuggestionGeneratorTest {
+ public:
+  std::vector<Suggestion> CreateSuggestionWithChildrenFromProfile(
+      const AutofillProfile& profile,
+      absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      ServerFieldType trigger_field_type,
+      const ServerFieldTypeSet& field_types) {
+    return suggestion_generator()->CreateSuggestionsFromProfiles(
+        {&profile}, field_types, last_targeted_fields, trigger_field_type,
+        /*trigger_field_max_length=*/0);
+  }
+  std::vector<Suggestion> CreateSuggestionWithChildrenFromProfile(
+      const AutofillProfile& profile,
+      absl::optional<ServerFieldTypeSet> last_targeted_fields,
+      ServerFieldType trigger_field_type) {
+    return CreateSuggestionWithChildrenFromProfile(
+        profile, last_targeted_fields, trigger_field_type,
+        {trigger_field_type});
+  }
+
+  const AutofillProfile& profile() const { return profile_; }
+  const std::string& app_locale() { return personal_data()->app_locale(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillGranularFillingAvailable};
+  // The default profile used to generate suggestions.
+  const AutofillProfile profile_ = test::GetFullProfile();
+};
+
 TEST_F(
-    AutofillSuggestionGeneratorTest,
+    AutofillChildrenSuggestionsGenenarationTest,
     CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillAddressAndDifferentiatingLabel) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{NAME_FIRST},
-          /*last_targeted_fields=*/
-          GetServerFieldTypesOfGroup(FieldTypeGroup::kName),
-          ADDRESS_HOME_ADDRESS,
-          /*trigger_field_max_length=*/0);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      /*last_targeted_fields=*/
+      GetServerFieldTypesOfGroup(FieldTypeGroup::kName), ADDRESS_HOME_ADDRESS,
+      /*field_types=*/{NAME_FIRST});
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
@@ -1092,17 +1114,12 @@ TEST_F(
 
 // When there is no differentiating label, we add only the granular filling
 // label, either "Fill full name" or "Fill address".
-TEST_F(AutofillSuggestionGeneratorTest,
+TEST_F(AutofillChildrenSuggestionsGenenarationTest,
        CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillName) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{NAME_FIRST},
-          /*last_targeted_fields=*/
-          GetServerFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST,
-          /*trigger_field_max_length=*/0);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      /*last_targeted_fields=*/
+      GetServerFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST);
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
@@ -1111,17 +1128,13 @@ TEST_F(AutofillSuggestionGeneratorTest,
 }
 
 TEST_F(
-    AutofillSuggestionGeneratorTest,
+    AutofillChildrenSuggestionsGenenarationTest,
     CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillNameAndDifferentiatingLabel) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{ADDRESS_HOME_CITY},
-          /*last_targeted_fields=*/
-          GetServerFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST,
-          /*trigger_field_max_length=*/0);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      /*last_targeted_fields=*/
+      GetServerFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST,
+      /*field_types=*/{ADDRESS_HOME_CITY});
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
@@ -1130,27 +1143,19 @@ TEST_F(
                   Suggestion::Text(u"Elysium")}}));
 }
 
-// TODO(crbug.com/1459990): Consider having a test fixture for granular filling
-// related tests. In general these tests are quite lengthy and finding a way to
-// make them more concise is desirable.
-TEST_F(AutofillSuggestionGeneratorTest,
+TEST_F(AutofillChildrenSuggestionsGenenarationTest,
        CreateSuggestionsFromProfiles_FirstLevelChildrenSuggestions) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{NAME_FIRST},
-          /*last_targeted_fields=*/kAllServerFieldTypes, NAME_FIRST,
-          /*trigger_field_max_length=*/0);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      /*last_targeted_fields=*/kAllServerFieldTypes, NAME_FIRST);
 
   ASSERT_EQ(1U, suggestions.size());
   // Test root suggestion
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(Field(&Suggestion::main_text,
-                        Suggestion::Text(profile.GetRawInfo(NAME_FIRST),
-                                         Suggestion::Text::IsPrimary(true)))));
+  EXPECT_THAT(suggestions,
+              ElementsAre(Field(
+                  &Suggestion::main_text,
+                  Suggestion::Text(profile().GetInfo(NAME_FIRST, app_locale()),
+                                   Suggestion::Text::IsPrimary(true)))));
 
   // The children suggestions should be.
   //
@@ -1169,59 +1174,53 @@ TEST_F(AutofillSuggestionGeneratorTest,
   // 13. edit profile
   // 14. delete address
   ASSERT_EQ(14U, suggestions[0].children.size());
-  std::string app_locale = personal_data()->app_locale();
   EXPECT_THAT(
       suggestions[0].children,
       ElementsAre(
           EqualsSuggestion(PopupItemId::kFillFullName),
           EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(NAME_FIRST, app_locale)),
+                           profile().GetInfo(NAME_FIRST, app_locale())),
           EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(NAME_MIDDLE, app_locale)),
+                           profile().GetInfo(NAME_MIDDLE, app_locale())),
           EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(NAME_LAST, app_locale)),
+                           profile().GetInfo(NAME_LAST, app_locale())),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(ADDRESS_HOME_LINE1, app_locale)),
+                           profile().GetInfo(ADDRESS_HOME_LINE1, app_locale())),
           EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(ADDRESS_HOME_LINE2, app_locale)),
+                           profile().GetInfo(ADDRESS_HOME_LINE2, app_locale())),
           EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(ADDRESS_HOME_ZIP, app_locale)),
+                           profile().GetInfo(ADDRESS_HOME_ZIP, app_locale())),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(
               PopupItemId::kFieldByFieldFilling,
-              profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale)),
+              profile().GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale())),
           EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(EMAIL_ADDRESS, app_locale)),
+                           profile().GetInfo(EMAIL_ADDRESS, app_locale())),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(PopupItemId::kEditAddressProfile),
           EqualsSuggestion(PopupItemId::kDeleteAddressProfile)));
 }
 
-TEST_F(AutofillSuggestionGeneratorTest,
+TEST_F(AutofillChildrenSuggestionsGenenarationTest,
        CreateSuggestionsFromProfiles_SecondLevelChildrenSuggestions) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{NAME_FIRST},
-          /*last_targeted_fields=*/absl::nullopt, NAME_FIRST,
-          /*trigger_field_max_length=*/0);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      /*last_targeted_fields=*/absl::nullopt, NAME_FIRST);
 
+  ASSERT_EQ(1U, suggestions.size());
   // Suggestions should have two levels of children, The address line 1 (sixth
   // child) suggestion should have the following children: house number street
   // name.
   ASSERT_EQ(2U, suggestions[0].children[5].children.size());
-  std::string app_locale = personal_data()->app_locale();
   EXPECT_THAT(
       suggestions[0].children[5].children,
-      ElementsAre(EqualsSuggestion(
-                      PopupItemId::kFieldByFieldFilling,
-                      profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale)),
-                  EqualsSuggestion(
-                      PopupItemId::kFieldByFieldFilling,
-                      profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale))));
+      ElementsAre(EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
+                                   profile().GetInfo(ADDRESS_HOME_HOUSE_NUMBER,
+                                                     app_locale())),
+                  EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
+                                   profile().GetInfo(ADDRESS_HOME_STREET_NAME,
+                                                     app_locale()))));
   // House number and street name suggestions should have labels.
   EXPECT_EQ(suggestions[0].children[5].children[0].labels,
             std::vector<std::vector<Suggestion::Text>>(
@@ -1232,68 +1231,42 @@ TEST_F(AutofillSuggestionGeneratorTest,
 }
 
 TEST_F(
-    AutofillSuggestionGeneratorTest,
+    AutofillChildrenSuggestionsGenenarationTest,
     CreateSuggestionsFromProfiles_LastTargetedFieldsIsSingleField_FieldByFieldFilling) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{NAME_LAST},
-          absl::optional<ServerFieldTypeSet>({NAME_LAST}), NAME_FIRST,
-          /*trigger_field_max_length=*/0);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), absl::optional<ServerFieldTypeSet>({NAME_LAST}), NAME_FIRST);
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kFieldByFieldFilling);
 }
 
-TEST_F(AutofillSuggestionGeneratorTest,
+TEST_F(AutofillChildrenSuggestionsGenenarationTest,
        CreateSuggestionsFromProfiles_LastTargetedFieldsIsGroup_GroupFilling) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{NAME_FIRST},
-          absl::optional<ServerFieldTypeSet>(GetAddressFieldsForGroupFilling()),
-          NAME_FIRST,
-          /*trigger_field_max_length=*/0);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      absl::optional<ServerFieldTypeSet>(GetAddressFieldsForGroupFilling()),
+      NAME_FIRST);
 
+  ASSERT_EQ(1U, suggestions.size());
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kFillFullName);
 }
 
 TEST_F(
-    AutofillSuggestionGeneratorTest,
+    AutofillChildrenSuggestionsGenenarationTest,
     CreateSuggestionsFromProfiles_LastTargetedFieldsAreAllServerFields_FullForm) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{NAME_FIRST},
-          absl::optional<ServerFieldTypeSet>(kAllServerFieldTypes), NAME_FIRST,
-          /*trigger_field_max_length=*/0);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), kAllServerFieldTypes, NAME_FIRST);
 
-  ASSERT_EQ(suggestions.size(), 1u);
+  ASSERT_EQ(1U, suggestions.size());
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kAddressEntry);
 }
 
 // Fallback to full form (PopupItemId::kAddressEntry) when the last targeted
 // fields are a group but the triggering field does not match any group.
-TEST_F(AutofillSuggestionGeneratorTest,
+TEST_F(AutofillChildrenSuggestionsGenenarationTest,
        CreateSuggestionsFromProfiles_LastTargetedFieldsAreGroup_Fallback) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{CREDIT_CARD_TYPE},
-          absl::optional<ServerFieldTypeSet>(kAllServerFieldTypes),
-          CREDIT_CARD_TYPE,
-          /*trigger_field_max_length=*/0);
-
-  ASSERT_EQ(suggestions.size(), 1u);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), kAllServerFieldTypes, CREDIT_CARD_TYPE);
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kAddressEntry);
 }
 
@@ -1302,18 +1275,12 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // scenarios, phone number is of type `PopupItemId::kFieldByFieldFilling` as the
 // user expressed intent to use their phone number their phone number on a
 // "random" field.
-TEST_F(AutofillSuggestionGeneratorTest,
+TEST_F(AutofillChildrenSuggestionsGenenarationTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, {PHONE_HOME_WHOLE_NUMBER},
-          /*last_targeted_fields=*/kAllServerFieldTypes,
-          PHONE_HOME_WHOLE_NUMBER,
-          /*trigger_field_max_length=*/0);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), kAllServerFieldTypes, PHONE_HOME_WHOLE_NUMBER);
 
+  ASSERT_EQ(1U, suggestions.size());
   // The child suggestions should be:
   //
   // 1. first name
@@ -1335,16 +1302,10 @@ TEST_F(AutofillSuggestionGeneratorTest,
       Field(&Suggestion::popup_item_id, PopupItemId::kFillFullPhoneNumber));
 }
 
-TEST_F(AutofillSuggestionGeneratorTest,
+TEST_F(AutofillChildrenSuggestionsGenenarationTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsAddressField) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{ADDRESS_HOME_LINE1},
-          /*last_targeted_fields=*/kAllServerFieldTypes, ADDRESS_HOME_LINE1,
-          /*trigger_field_max_length=*/0);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), kAllServerFieldTypes, ADDRESS_HOME_LINE1);
 
   // The child suggestions should be:
   //
@@ -1369,38 +1330,46 @@ TEST_F(AutofillSuggestionGeneratorTest,
 }
 
 TEST_F(
-    AutofillSuggestionGeneratorTest,
+    AutofillChildrenSuggestionsGenenarationTest,
     CreateSuggestionsFromProfiles_ChildrenSuggestions_HouseNumberAndStreetNameCanBeNestedUnderDifferentAddressLines) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
   AutofillProfile profile;
   // Update the profile to have house number and street name information in
   // different address lines.
-  std::string app_locale = personal_data()->app_locale();
-  // profile.SetRawInfo(NAME_FULL, u"First Middle Last");
   profile.SetRawInfo(ADDRESS_HOME_LINE1, u"Amphitheatre Parkway, Brookling");
   profile.SetRawInfo(ADDRESS_HOME_LINE2, u"1600 Apartment 1");
   profile.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"Amphitheatre Parkway");
   profile.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"1600");
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile, /*last_targeted_fields=*/absl::nullopt, ADDRESS_HOME_LINE1);
 
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{ADDRESS_HOME_LINE1},
-          /*last_targeted_fields=*/absl::nullopt, ADDRESS_HOME_LINE1,
-          /*trigger_field_max_length=*/0);
   ASSERT_EQ(1u, suggestions.size());
   ASSERT_LE(3u, suggestions[0].children.size());
-
   // The address line 1 (sixth child) should have the street name as child.
   EXPECT_THAT(suggestions[0].children[1].children,
               ElementsAre(EqualsSuggestion(
                   PopupItemId::kFieldByFieldFilling,
-                  profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale))));
+                  profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()))));
   // The address line 2 (seventh child) should have the house number as child.
   EXPECT_THAT(suggestions[0].children[2].children,
               ElementsAre(EqualsSuggestion(
                   PopupItemId::kFieldByFieldFilling,
-                  profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale))));
+                  profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()))));
+}
+
+TEST_F(
+    AutofillChildrenSuggestionsGenenarationTest,
+    CreateSuggestionsFromProfiles_GranularityNotFullForm_FillEverythingChildSuggestion) {
+  // We set only a name field as `last_targeted_fields` to denote that the user
+  // chose field by field filling.
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), absl::optional<ServerFieldTypeSet>({NAME_FIRST}),
+      ADDRESS_HOME_LINE1);
+
+  ASSERT_EQ(1U, suggestions.size());
+  EXPECT_TRUE(base::ranges::any_of(suggestions[0].children, [](auto child) {
+    return child.popup_item_id ==
+           PopupItemId::kFillEverythingFromAddressProfile;
+  }));
 }
 
 // TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
@@ -1504,29 +1473,6 @@ TEST_F(AutofillSuggestionGeneratorTest,
                                          Suggestion::Text::IsPrimary(true))),
                   Field(&Suggestion::labels,
                         std::vector<std::vector<Suggestion::Text>>{}))));
-}
-
-TEST_F(
-    AutofillSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_GranularityNotFullForm_FillEverythingChildSuggestion) {
-  base::test::ScopedFeatureList scoped_features_list(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-
-  // We set only a name field as `last_targeted_fields` to denote that the user
-  // chose field by field filling.
-  std::vector<Suggestion> suggestions =
-      suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile}, /*field_types=*/{ADDRESS_HOME_LINE1},
-          /*last_targeted_fields=*/
-          absl::optional<ServerFieldTypeSet>({NAME_FIRST}), ADDRESS_HOME_LINE1,
-          /*trigger_field_max_length=*/0);
-
-  ASSERT_EQ(suggestions.size(), 1u);
-  EXPECT_TRUE(base::ranges::any_of(suggestions[0].children, [](auto child) {
-    return child.popup_item_id ==
-           PopupItemId::kFillEverythingFromAddressProfile;
-  }));
 }
 
 // Tests that regular suggestions are filtered by the triggering field's value,
