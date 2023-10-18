@@ -212,6 +212,11 @@ void AutocompleteController::ExtendMatchSubtypes(
         subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES);
       }
     } else if (match.provider->type() ==
+               AutocompleteProvider::TYPE_QUERY_TILE) {
+      DCHECK(is_android);
+      // QueryTiles are now shown in zero-prefix context on Android.
+      subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_QUERY_TILE);
+    } else if (match.provider->type() ==
                AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
       // This subtype indicates a match from an on-device head provider.
       subtypes->emplace(omnibox::SUBTYPE_SUGGEST_2G_LITE);
@@ -1303,7 +1308,8 @@ void AutocompleteController::UpdateAssistedQueryStats(
         subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS) ||
         subtypes.contains(
             omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES) ||
-        subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX)) {
+        subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX) ||
+        subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_QUERY_TILE)) {
       num_zero_prefix_suggestions_shown++;
     }
 
