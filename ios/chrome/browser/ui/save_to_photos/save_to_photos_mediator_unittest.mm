@@ -358,9 +358,6 @@ TEST_F(SaveToPhotosMediatorTest,
   SetUpPhotosServiceQuitClosure();
   [mediator accountPickerWasHidden];
 
-  // Verify the first snackbar has been shown.
-  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
-
   // Test that the PhotosService is now unavailable and has been given an image
   // to upload.
   EXPECT_FALSE(GetTestPhotosService()->IsAvailable());

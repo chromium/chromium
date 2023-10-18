@@ -69,6 +69,9 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
   id<SystemIdentity> _identity;
   BOOL _userTappedSuccessSnackbarButton;
   base::TimeTicks _uploadStart;
+  BOOL _successSnackbarAppeared;
+  BOOL _successSnackbarDisappeared;
+  BOOL _uploadCompletedSuccessfully;
 }
 
 #pragma mark - Initialization
@@ -243,6 +246,12 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
 - (void)tryUploadImage {
   __weak __typeof(self) weakSelf = self;
 
+  // Reset part of the state in case this is not the first attempt.
+  _userTappedSuccessSnackbarButton = NO;
+  _successSnackbarAppeared = NO;
+  _successSnackbarDisappeared = NO;
+  _uploadCompletedSuccessfully = NO;
+
   // If the Photos service is unavailable (maybe busy in a separate window),
   // present an alert.
   if (!_photosService->IsAvailable()) {
@@ -258,25 +267,59 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
         [weakSelf photosServiceFinishedUploadWithResult:result];
       });
   _uploadStart = base::TimeTicks::Now();
+  auto uploadProgressCallback =
+      base::BindRepeating(^(const PhotosService::UploadProgress& progress) {
+        [weakSelf photosServiceReportedUploadProgress:progress];
+      });
   _photosService->UploadImage(_imageName, _imageData, _identity,
-                              base::DoNothing(),
+                              std::move(uploadProgressCallback),
                               std::move(uploadCompletionCallback));
 }
 
 // Called when the Photos service reports upload completion.
 - (void)photosServiceFinishedUploadWithResult:
     (const PhotosService::UploadResult&)result {
-  if (result.successful) {
-    base::UmaHistogramTimes("IOS.SaveToPhotos.UploadSuccessLatency",
-                            base::TimeTicks::Now() - _uploadStart);
-    [self showSnackbarWithSuccessMessageAndOpenButton];
-  } else {
+  if (!result.successful) {
     base::UmaHistogramTimes("IOS.SaveToPhotos.UploadFailureLatency",
                             base::TimeTicks::Now() - _uploadStart);
     __weak __typeof(self) weakSelf = self;
     [self showTryAgainOrCancelAlertWithTryAgainBlock:^{
       [weakSelf tryUploadImage];
     }];
+    return;
+  }
+
+  base::UmaHistogramTimes("IOS.SaveToPhotos.UploadSuccessLatency",
+                          base::TimeTicks::Now() - _uploadStart);
+  _uploadCompletedSuccessfully = YES;
+
+  if (!_successSnackbarAppeared) {
+    // If the success snackbar did not appear for some reason (no progress has
+    // been reported), show it now.
+    [self showSnackbarWithSuccessMessageAndOpenButton];
+    return;
+  }
+
+  if (!_successSnackbarDisappeared) {
+    // If the success snackbar has not disappeared, wait until it does to
+    // maybe open the photo and then finish.
+    return;
+  }
+
+  if (_userTappedSuccessSnackbarButton) {
+    [self openPhotosAppOrShowInStoreKit];
+    return;
+  }
+
+  base::UmaHistogramEnumeration(kSaveToPhotosActionsHistogram,
+                                SaveToPhotosActions::kSuccess);
+  [self.delegate hideSaveToPhotos];
+}
+
+- (void)photosServiceReportedUploadProgress:
+    (const PhotosService::UploadProgress&)progress {
+  if (progress.total_bytes_sent == progress.total_bytes_expected_to_send) {
+    [self showSnackbarWithSuccessMessageAndOpenButton];
   }
 }
 
@@ -313,6 +356,7 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
 // the image with a button to either open the Photos app if it is installed or
 // show the Photos app in the AppStore otherwise.
 - (void)showSnackbarWithSuccessMessageAndOpenButton {
+  _successSnackbarAppeared = YES;
   NSString* message = l10n_util::GetNSStringF(
       IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_IMAGE_SAVED_MESSAGE,
       base::SysNSStringToUTF16(_identity.userEmail));
@@ -336,6 +380,13 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
 // Called when the snackbar shown upon completion disappears. `userTriggered` is
 // YES if the snackbar has been dismissed by the user.
 - (void)successSnackbarDisappearedUserTriggered:(BOOL)userTriggered {
+  _successSnackbarDisappeared = YES;
+  if (!_uploadCompletedSuccessfully) {
+    // If the upload has not completed, wait until it does to finish.
+    return;
+  }
+
+  // If the upload completed, maybe open the photo and finish.
   if (_userTappedSuccessSnackbarButton) {
     [self openPhotosAppOrShowInStoreKit];
     return;
