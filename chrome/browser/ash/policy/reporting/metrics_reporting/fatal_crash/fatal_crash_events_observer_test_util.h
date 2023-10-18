@@ -16,6 +16,9 @@ namespace reporting {
 
 class FatalCrashEventsObserver::TestEnvironment {
  public:
+  using ShouldReportResult =
+      FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReportResult;
+
   static constexpr size_t kMaxNumOfLocalIds{
       ReportedLocalIdManager::kMaxNumOfLocalIds};
   static constexpr size_t kMaxSizeOfLocalIdEntryQueue{

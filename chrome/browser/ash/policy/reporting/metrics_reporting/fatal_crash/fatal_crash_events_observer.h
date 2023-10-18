@@ -46,6 +46,11 @@ class FatalCrashEventsObserver
                                    base::Time /* creation_time */,
                                    uint64_t /* offset */)>;
 
+  // UMA name for recording the reason that an unuploaded crash should not be
+  // reported.
+  static constexpr char kUmaUnuploadedCrashShouldNotReportReason[] =
+      "Browser.ERP.UnuploadedCrashShouldNotReportReason";
+
   // Create a `FatalCrashEventsObserver` instance.
   static std::unique_ptr<FatalCrashEventsObserver> Create();
 
@@ -79,7 +84,8 @@ class FatalCrashEventsObserver
       kYes = 0u,
       kNegativeTimestamp,
       kHasBeenReported,
-      kCrashTooOldAndMaxNumOfSavedLocalIdsReached
+      kCrashTooOldAndMaxNumOfSavedLocalIdsReached,
+      kMaxValue = kCrashTooOldAndMaxNumOfSavedLocalIdsReached
     };
 
     static std::unique_ptr<ReportedLocalIdManager> Create(

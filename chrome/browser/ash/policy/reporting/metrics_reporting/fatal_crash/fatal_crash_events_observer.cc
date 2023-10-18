@@ -21,6 +21,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -150,10 +151,15 @@ void FatalCrashEventsObserver::OnEvent(
   if (crash_event_info->upload_info.is_null()) {
     // Unuploaded crash. Need to look up whether the crash has been reported or
     // not.
-    if (auto capture_timestamp_us =
-            ConvertTimeToMicroseconds(crash_event_info->capture_time);
-        reported_local_id_manager_->ShouldReport(crash_event_info->local_id,
-                                                 capture_timestamp_us) !=
+    const auto capture_timestamp_us =
+        ConvertTimeToMicroseconds(crash_event_info->capture_time);
+    const auto should_report_result = reported_local_id_manager_->ShouldReport(
+        crash_event_info->local_id, capture_timestamp_us);
+    // Currently impossible to reach `ShouldReportResult::kNegativeTimestamp`,
+    // as it can only happen when loading a save file.
+    base::UmaHistogramEnumeration(kUmaUnuploadedCrashShouldNotReportReason,
+                                  should_report_result);
+    if (should_report_result !=
         ReportedLocalIdManager::ShouldReportResult::kYes) {
       skipped_unuploaded_callback_.Run(
           {.local_id = std::move(crash_event_info->local_id),

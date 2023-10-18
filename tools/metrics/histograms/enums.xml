@@ -34245,6 +34245,19 @@ Called by update_document_policy_enum.py.-->
   <int value="7" label="Unknown PSR log state"/>
 </enum>
 
+<enum name="EnterpriseReportingUnuploadedCrashShouldNotReportReason">
+  <summary>
+    Defined as ShouldReportResult in
+    chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h
+  </summary>
+  <int value="0" label="Should report"/>
+  <int value="1" label="Negative timestamp"/>
+  <int value="2" label="Has been reported"/>
+  <int value="3"
+      label="Crash is too old and the number of saved local IDs has reached
+             maximum"/>
+</enum>
+
 <enum name="EnterpriseRetrievePolicyResponseType">
   <obsolete>
     Removed in M91 since the data is no longer monitored.
