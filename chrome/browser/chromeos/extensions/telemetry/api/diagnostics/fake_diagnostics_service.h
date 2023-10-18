@@ -106,6 +106,7 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
   void RunPowerButtonRoutine(uint32_t timeout_seconds,
                              RunPowerButtonRoutineCallback callback) override;
   void RunAudioDriverRoutine(RunAudioDriverRoutineCallback callback) override;
+  void RunFanRoutine(RunFanRoutineCallback callback) override;
 
   // Sets the return value for |Run*Routine|.
   void SetRunRoutineResponse(

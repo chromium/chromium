@@ -47,6 +47,7 @@ extension-event based interface in M119. The interface is described in
 | bluetooth_discovery |
 | bluetooth_scanning |
 | bluetooth_pairing |
+| fan |
 
 ### Enum RoutineStatus
 | Property Name |
@@ -200,6 +201,7 @@ extension-event based interface in M119. The interface is described in
 | runDnsResolutionRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
 | runDnsResolverPresentRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
 | runEmmcLifetimeRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
+| runFanRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M120 |
 | runFingerprintAliveRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
 | runGatewayCanBePingedRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
 | runLanConnectivityRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M102 |

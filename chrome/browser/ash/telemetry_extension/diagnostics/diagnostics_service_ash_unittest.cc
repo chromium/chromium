@@ -475,6 +475,19 @@ TEST_F(DiagnosticsServiceAshTest, RunEmmcLifetimeRoutineSuccess) {
                    cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime);
 }
 
+TEST_F(DiagnosticsServiceAshTest, RunFanRoutineSuccess) {
+  // Configure FakeCrosHealthd.
+  SetSuccessfulRoutineResponse();
+
+  base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
+      future;
+  diagnostics_service()->RunFanRoutine(future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ValidateResponse(result, cros_healthd::mojom::DiagnosticRoutineEnum::kFan);
+}
+
 TEST_F(DiagnosticsServiceAshTest, RunFingerprintAliveRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();

@@ -44,7 +44,8 @@ namespace os.diagnostics {
     audio_driver,
     bluetooth_discovery,
     bluetooth_scanning,
-    bluetooth_pairing
+    bluetooth_pairing,
+    fan
   };
 
   enum RoutineStatus {
@@ -397,6 +398,8 @@ namespace os.diagnostics {
     [supportsPromises] static void runPowerButtonRoutine(RunPowerButtonRequest request, RunRoutineCallback callback);
 
     [supportsPromises] static void runAudioDriverRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runFanRoutine(RunRoutineCallback callback);
 
     // ----------------- DIAGNOSTICS API V2 -----------------
 

@@ -423,6 +423,17 @@ class OsDiagnosticsRunAudioDriverRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunFanRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runFanRoutine",
+                             OS_DIAGNOSTICS_RUNFANROUTINE)
+ private:
+  ~OsDiagnosticsRunFanRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 /****************** DIAGNOSTICS API V2 ******************/
 
 class OsDiagnosticsCreateMemoryRoutineFunction

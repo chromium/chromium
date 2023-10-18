@@ -111,6 +111,9 @@ bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
     case crosapi::DiagnosticsRoutineEnum::kBluetoothPairing:
       *out = cx_diag::RoutineType::kBluetoothPairing;
       return true;
+    case crosapi::DiagnosticsRoutineEnum::kFan:
+      *out = cx_diag::RoutineType::kFan;
+      return true;
     case crosapi::DiagnosticsRoutineEnum::kUnknown:
       return false;
   }

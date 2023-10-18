@@ -122,6 +122,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery,
         crosapi::DiagnosticsRoutineEnum::kBluetoothScanning,
         crosapi::DiagnosticsRoutineEnum::kBluetoothPairing,
+        crosapi::DiagnosticsRoutineEnum::kFan,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -164,7 +165,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "audio_driver",
               "bluetooth_discovery",
               "bluetooth_scanning",
-              "bluetooth_pairing"
+              "bluetooth_pairing",
+              "fan"
             ]
           }, response);
         chrome.test.succeed();
@@ -1399,6 +1401,66 @@ IN_PROC_BROWSER_TEST_F(
           'chrome.os.diagnostics.runBluetoothPairingRoutine. Extension ' +
           'doesn\'t have the permission.'
         );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunFanRoutineWithoutFeatureFlagFail) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function runFanRoutineNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.runFanRoutine();
+        }, [],
+          'chrome.os.diagnostics.runFanRoutine is not a function'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+class PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest
+    : public TelemetryExtensionDiagnosticsApiBrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest,
+    RunFanRoutineSuccess) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunFanRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    // Set the expected called routine.
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::DiagnosticsRoutineEnum::kFan);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runFanRoutine() {
+        const response =
+          await chrome.os.diagnostics.runFanRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }
     ]);

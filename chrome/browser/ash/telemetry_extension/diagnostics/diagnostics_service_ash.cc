@@ -319,6 +319,16 @@ void DiagnosticsServiceAsh::RunEmmcLifetimeRoutine(
       std::move(callback)));
 }
 
+void DiagnosticsServiceAsh::RunFanRoutine(RunFanRoutineCallback callback) {
+  GetService()->RunFanRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunFanRoutineCallback callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 void DiagnosticsServiceAsh::RunFingerprintAliveRoutine(
     RunFingerprintAliveRoutineCallback callback) {
   GetService()->RunFingerprintAliveRoutine(base::BindOnce(

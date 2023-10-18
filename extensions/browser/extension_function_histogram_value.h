@@ -1892,6 +1892,7 @@ enum HistogramValue {
   ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC = 1830,
   USERSCRIPTS_UPDATE = 1831,
   INPUTMETHODPRIVATE_GETLANGUAGEPACKSTATUS = 1832,
+  OS_DIAGNOSTICS_RUNFANROUTINE = 1833,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

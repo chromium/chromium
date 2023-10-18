@@ -37842,6 +37842,7 @@ Called by update_extension_histograms.py.-->
       label="ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC"/>
   <int value="1831" label="USERSCRIPTS_UPDATE"/>
   <int value="1832" label="INPUTMETHODPRIVATE_GETLANGUAGEPACKSTATUS"/>
+  <int value="1833" label="OS_DIAGNOSTICS_RUNFANROUTINE"/>
 </enum>
 
 <enum name="ExtensionIconState">

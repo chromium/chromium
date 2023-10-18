@@ -498,6 +498,12 @@ void OsDiagnosticsRunAudioDriverRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunAudioDriverRoutine(GetOnResult());
 }
 
+// OsDiagnosticsRunFanRoutineFunction -------------------------------
+
+void OsDiagnosticsRunFanRoutineFunction::RunIfAllowed() {
+  GetRemoteService()->RunFanRoutine(GetOnResult());
+}
+
 // OsDiagnosticsCreateMemoryRoutineFunction ------------------------------------
 
 void OsDiagnosticsCreateMemoryRoutineFunction::RunIfAllowed() {
