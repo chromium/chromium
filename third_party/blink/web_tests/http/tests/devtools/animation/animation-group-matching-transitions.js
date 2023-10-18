@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
-import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Animation from 'devtools/panels/animation/animation.js';
 
 (async function() {
   TestRunner.addResult(
       `Tests the matching performed in AnimationModel of groups composed of transitions, which are applied through a variety of selectors.\n`);
-  await TestRunner.loadLegacyModule('animation');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
