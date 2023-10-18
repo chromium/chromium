@@ -594,6 +594,23 @@ TEST_F(MediaSessionControllerTest,
   EXPECT_FALSE(media_session()->IsActive());
 }
 
+TEST_F(MediaSessionControllerTest,
+       AddPlayerWhenStartingRemotePlaybackWithNoAudio) {
+  controller_->SetMetadata(
+      /* has_audio */ false, /* has_video */ true,
+      media::MediaContentType::kPersistent);
+  ASSERT_TRUE(controller_->OnPlaybackStarted());
+  ASSERT_FALSE(media_session()->IsActive());
+
+  controller_->OnRemotePlaybackMetadataChanged(
+      media_session::mojom::RemotePlaybackMetadata::New(
+          "video_codec", "audio_codec",
+          /* is_remote_playback_disabled */ false,
+          /* is_remote_rendering */ true, "device_friendly_name",
+          /* is_encrypted_media */ false));
+  EXPECT_TRUE(media_session()->IsActive());
+}
+
 TEST_F(MediaSessionControllerTest, EndOfPlaybackWithInPictureInPicture) {
   contents()->SetHasPictureInPictureVideo(true);
   controller_->PictureInPictureStateChanged(true);

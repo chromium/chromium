@@ -756,8 +756,9 @@ TEST_F(MediaSessionImplTest, SessionInfoRemotePlaybackMetadata) {
 
   int player2 = player_observer_->StartNewPlayer();
   GetMediaSession()->AddPlayer(player_observer_.get(), player2);
-  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
-                   ->remote_playback_metadata);
+
+  EXPECT_TRUE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                  ->remote_playback_metadata->remote_playback_disabled);
 }
 
 TEST_F(MediaSessionImplTest, RaiseActivatesWebContents) {

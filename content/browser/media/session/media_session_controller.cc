@@ -228,6 +228,7 @@ void MediaSessionController::OnAudioOutputSinkChangingDisabled() {
 void MediaSessionController::OnRemotePlaybackMetadataChanged(
     media_session::mojom::RemotePlaybackMetadataPtr metadata) {
   media_session_->SetRemotePlaybackMetadata(std::move(metadata));
+  AddOrRemovePlayer();
 }
 
 bool MediaSessionController::IsMediaSessionNeeded() const {
@@ -236,6 +237,15 @@ bool MediaSessionController::IsMediaSessionNeeded() const {
 
   if (!is_playback_in_progress_)
     return false;
+
+  // If the media content has an associated Remote Playback session started, we
+  // should request audio focus regardless of whether the tab is muted.
+  media_session::mojom::MediaSessionInfoPtr session_info =
+      media_session_->GetMediaSessionInfoSync();
+  if (session_info && session_info->remote_playback_metadata &&
+      session_info->remote_playback_metadata->remote_playback_started) {
+    return true;
+  }
 
   // We want to make sure we do not request audio focus on a muted tab as it
   // would break user expectations by pausing/ducking other playbacks.
