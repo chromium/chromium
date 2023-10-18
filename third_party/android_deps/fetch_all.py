@@ -497,6 +497,9 @@ def main():
     parser.add_argument('--override-artifact',
                         action='append',
                         help='lib_subpath:url of .aar / .jar to override.')
+    parser.add_argument('--no-subprojects',
+                        action='store_true',
+                        help='Ignore subprojects.txt for faster runs.')
     parser.add_argument('-v',
                         '--verbose',
                         dest='verbose_count',
@@ -530,8 +533,11 @@ def main():
              _CUSTOM_ANDROID_DEPS_FILES,
              src_path_must_exist=is_primary_android_deps)
 
-        subprojects = _ParseSubprojects(
-            os.path.join(args.android_deps_dir, 'subprojects.txt'))
+        if args.no_subprojects:
+            subprojects = None
+        else:
+            subprojects = _ParseSubprojects(
+                os.path.join(args.android_deps_dir, 'subprojects.txt'))
         subproject_dirs = []
         if subprojects:
             for (index, subproject) in enumerate(subprojects):

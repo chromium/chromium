@@ -378,11 +378,11 @@ class BuildConfigGenerator extends DefaultTask {
         Path fetchTemplatePath = Paths.get(sourceUri).resolveSibling('3ppFetch.template')
         Template fetchTemplate = new SimpleTemplateEngine().createTemplate(fetchTemplatePath.toFile())
 
-        Set<Project> subprojects = [] as Set
-        subprojects.add(project)
-        subprojects.addAll(project.subprojects)
+        Set<Project> allProjects = [] as Set
+        allProjects.add(project)
+        allProjects.addAll(project.subprojects)
         ChromiumDepGraph graph = new ChromiumDepGraph(
-                projects: subprojects, logger: project.logger, skipLicenses: skipLicenses)
+                projects: allProjects, logger: project.logger, skipLicenses: skipLicenses)
         String normalisedRepoPath = normalisePath(repositoryPath)
 
         // 1. Parse the dependency data
@@ -453,7 +453,10 @@ class BuildConfigGenerator extends DefaultTask {
             mergeLicenses(dependency, normalisedRepoPath)
         }
 
-        validateDependencies(graph.dependencies.values())
+        // Skip when --no-subprojects is passed.
+        if (project.subprojects) {
+            validateAndroidX(graph.dependencies.values())
+        }
 
         // 3. Generate the root level build files
         updateBuildTargetDeclaration(graph, normalisedRepoPath)
@@ -890,7 +893,7 @@ class BuildConfigGenerator extends DefaultTask {
         buildFile.write(matcher.replaceFirst(Matcher.quoteReplacement(out)))
     }
 
-    private void validateDependencies(
+    private void validateAndroidX(
             Collection<ChromiumDepGraph.DependencyDescription> dependencies) {
         dependencies.each { dependency ->
             if (dependency.id.contains('androidx') &&
@@ -899,7 +902,7 @@ class BuildConfigGenerator extends DefaultTask {
                     allowedPrefix -> dependency.id.startsWith(allowedPrefix)
                 }
                 if (!hasAllowedDep) {
-                    String errorMsg = ("${dependency.fileName} uses non-SNAPSHOT version."
+                    String errorMsg = ("${dependency.fileName} uses non-SNAPSHOT version. "
                           + "If this is expected, add ${dependency.id} to "
                           + '|ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES| list.')
                     throw new IllegalStateException(errorMsg)
