@@ -7,6 +7,8 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests asynchronous network initiator for image loaded from JS.\n`);
   await TestRunner.loadLegacyModule('components');

@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 
 import * as ProtocolClient from 'devtools/core/protocol_client/protocol_client.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Test that if a profiler is working all the agents are disabled.\n`);
@@ -14,11 +15,11 @@ import * as ProtocolClient from 'devtools/core/protocol_client/protocol_client.j
     messages.push(message);
   }
   ProtocolClient.InspectorBackend.test.dumpProtocol = collectMessages;
-  messages.push('--> SDK.targetManager.suspendAllTargets();');
-  await SDK.targetManager.suspendAllTargets();
+  messages.push('--> SDK.TargetManager.TargetManager.instance().suspendAllTargets();');
+  await SDK.TargetManager.TargetManager.instance().suspendAllTargets();
   messages.push('');
-  messages.push('--> SDK.targetManager.resumeAllTargets();');
-  await SDK.targetManager.resumeAllTargets();
+  messages.push('--> SDK.TargetManager.TargetManager.instance().resumeAllTargets();');
+  await SDK.TargetManager.TargetManager.instance().resumeAllTargets();
   messages.push('');
   messages.push('--> done');
   ProtocolClient.InspectorBackend.test.dumpProtocol = null;

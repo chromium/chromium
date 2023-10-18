@@ -8,6 +8,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import * as SourceMapScopesModule from 'devtools/models/source_map_scopes/source_map_scopes.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests evaluation in webpack bundled scripts with 'line-by'line' source maps.\n`);

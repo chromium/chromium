@@ -5,8 +5,8 @@
 import {TestRunner} from 'test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Network from 'devtools/panels/network/network.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   await TestRunner.showPanel('network');

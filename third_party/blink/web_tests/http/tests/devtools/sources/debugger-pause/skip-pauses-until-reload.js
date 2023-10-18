@@ -7,6 +7,8 @@ import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that 'skip all pauses' mode blocks breakpoint and gets cancelled right at page reload.`);

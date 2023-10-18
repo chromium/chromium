@@ -5,8 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as ElementsModule from 'devtools/panels/elements/elements.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {

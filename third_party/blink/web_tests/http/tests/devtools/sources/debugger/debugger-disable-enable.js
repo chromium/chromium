@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that breakpoints are successfully restored after debugger disabling.\n`);
   await TestRunner.showPanel('sources');

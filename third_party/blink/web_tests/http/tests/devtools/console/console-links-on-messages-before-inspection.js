@@ -5,9 +5,9 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Console from 'devtools/panels/console/console.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(

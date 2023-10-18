@@ -4,7 +4,7 @@ Tests framework black-boxing on DOM, XHR and Event breakpoints.
 Running: testDOMBreakpoint
 Call stack:
   * 0) Framework.appendChild (framework.js:72)
-    1) appendElement (frameworks-dom-xhr-event-breakpoints-1.js:26)
+    1) appendElement (frameworks-dom-xhr-event-breakpoints-1.js:27)
     2)  (:1)
     [setTimeout]
     0)  (:1)
@@ -13,7 +13,7 @@ Paused on subtree modificationsdiv#rootElementChild div#rootElement added
 Running: testXHRBreakpoint
 Call stack:
   * 0) Framework.sendXHR (framework.js:79)
-    1) sendXHR (frameworks-dom-xhr-event-breakpoints-1.js:31)
+    1) sendXHR (frameworks-dom-xhr-event-breakpoints-1.js:32)
     2)  (:1)
     [setTimeout]
     0)  (:1)
@@ -21,20 +21,20 @@ Paused on XHR or fetchhttp://127.0.0.1:8000/devtools/sources/debugger-frameworks
 
 Running: testEventListenerBreakpoint
 Call stack:
-    0) testElementClicked (frameworks-dom-xhr-event-breakpoints-1.js:38)
+    0) testElementClicked (frameworks-dom-xhr-event-breakpoints-1.js:39)
   * 1) Framework_bound (framework.js:105)
   * 2) Framework_eventListener (framework.js:86)
-    3) addListenerAndClick (frameworks-dom-xhr-event-breakpoints-1.js:49)
+    3) addListenerAndClick (frameworks-dom-xhr-event-breakpoints-1.js:50)
     4)  (:1)
     [setTimeout]
     0)  (:1)
 
 Executing Resume...
 Call stack:
-    0) testElementClicked (frameworks-dom-xhr-event-breakpoints-1.js:38)
+    0) testElementClicked (frameworks-dom-xhr-event-breakpoints-1.js:39)
   * 1) Framework_bound (framework.js:105)
   * 2) Framework_eventListener (framework.js:86)
-    3) addListenerAndClick (frameworks-dom-xhr-event-breakpoints-1.js:55)
+    3) addListenerAndClick (frameworks-dom-xhr-event-breakpoints-1.js:56)
     4)  (:1)
     [setTimeout]
     0)  (:1)

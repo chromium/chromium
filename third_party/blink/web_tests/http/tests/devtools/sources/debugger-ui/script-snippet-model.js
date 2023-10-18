@@ -9,6 +9,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import * as Console from 'devtools/panels/console/console.js';
 import * as Snippets from 'devtools/panels/snippets/snippets.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
@@ -168,7 +169,7 @@ doesNothing;
 
     async function testEvaluateWithWorker(next) {
       TestRunner.addSniffer(
-          SDK.RuntimeModel.prototype, 'executionContextCreated',
+          SDK.RuntimeModel.RuntimeModel.prototype, 'executionContextCreated',
           contextCreated);
       TestRunner.evaluateInPagePromise(`
           var workerScript = "postMessage('Done.');";
@@ -178,7 +179,7 @@ doesNothing;
 
       async function contextCreated() {
         // Take the only execution context from the worker's RuntimeModel.
-        UIModule.Context.Context.instance().setFlavor(SDK.ExecutionContext, this.executionContexts()[0]);
+        UIModule.Context.Context.instance().setFlavor(SDK.RuntimeModel.ExecutionContext, this.executionContexts()[0]);
 
         const uiSourceCode1 = await snippetsProject.createFile('', null, '');
         await uiSourceCode1.rename('Snippet1');
@@ -187,7 +188,7 @@ doesNothing;
         TestRunner.addResult('Run Snippet1..');
         Snippets.ScriptSnippetFileSystem.evaluateScriptSnippet(uiSourceCode1);
         await new Promise(fulfill => {
-          SDK.targetManager.addModelListener(SDK.ConsoleModel, SDK.ConsoleModel.Events.MessageAdded, fulfill);
+          SDK.TargetManager.TargetManager.instance().addModelListener(SDK.ConsoleModel.ConsoleModel, SDK.ConsoleModel.Events.MessageAdded, fulfill);
         });
         await ConsoleTestRunner.dumpConsoleMessages();
 

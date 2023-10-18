@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests resource priorities.\n`);
   await TestRunner.showPanel('network');

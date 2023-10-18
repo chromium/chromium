@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that WebSocketFrames are being sent and received by Web Inspector.\n`);
   await TestRunner.evaluateInPagePromise(`

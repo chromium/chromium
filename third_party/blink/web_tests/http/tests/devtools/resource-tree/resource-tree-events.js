@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests top frame navigation events.\n`);
   await TestRunner.showPanel('resources');

@@ -9,6 +9,7 @@ import * as Console from 'devtools/panels/console/console.js';
 import * as ObjectUI from 'devtools/ui/legacy/components/object_ui/object_ui.js';
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that "Show Function Definition" jumps to the correct location.\n`);
@@ -26,7 +27,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   TestRunner.runTestSuite([
     function testRevealFunctionDefinition(next) {
       TestRunner.addSniffer(panel, 'showUISourceCode', showUISourceCodeHook);
-      UI.Context.Context.instance().flavor(SDK.ExecutionContext).evaluate({expression: 'jumpToMe', silent: true}).then(didGetFunction);
+      UI.Context.Context.instance().flavor(SDK.RuntimeModel.ExecutionContext).evaluate({expression: 'jumpToMe', silent: true}).then(didGetFunction);
 
       function didGetFunction(result) {
         var error = !result.object || !!result.exceptionDetails;

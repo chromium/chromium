@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ExtensionsTestRunner} from 'extensions_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that webInspector.inspectedWindow.eval() only evaluates in the correct execution context\n`);
@@ -13,7 +15,7 @@ import {ExtensionsTestRunner} from 'extensions_test_runner';
 
   let pendingInterceptionPromiseCallback;
   TestRunner.startNavigation = async function(callback) {
-    await SDK.multitargetNetworkManager.setInterceptionHandlerForPatterns([{
+    await SDK.NetworkManager.MultitargetNetworkManager.instance().setInterceptionHandlerForPatterns([{
       urlPattern: '*'}], interceptionHandler);
 
     TestRunner.navigatePromise('http://devtools.b.test:8000/devtools/resources/empty.html');

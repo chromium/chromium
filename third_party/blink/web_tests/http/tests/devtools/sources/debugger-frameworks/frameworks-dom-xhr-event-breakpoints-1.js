@@ -7,6 +7,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(
@@ -102,13 +103,13 @@ import * as Common from 'devtools/core/common/common.js';
     },
 
     function testXHRBreakpoint(next) {
-      SDK.domDebuggerManager.addXHRBreakpoint('foo', true);
+      SDK.DOMDebuggerModel.DOMDebuggerManager.instance().addXHRBreakpoint('foo', true);
       TestRunner.evaluateInPageWithTimeout('sendXHR(\'resources/foo?xhr\')');
       SourcesTestRunner.waitUntilPausedAndDumpStackAndResume(next);
     },
 
     function testEventListenerBreakpoint(next) {
-      SDK.domDebuggerManager
+      SDK.DOMDebuggerModel.DOMDebuggerManager.instance()
           .resolveEventListenerBreakpoint({eventName: 'listener:click'})
           .setEnabled(true);
       TestRunner.evaluateInPageWithTimeout('addListenerAndClick(false)');

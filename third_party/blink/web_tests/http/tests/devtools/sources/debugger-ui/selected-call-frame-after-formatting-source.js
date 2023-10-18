@@ -9,6 +9,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 import * as Root from 'devtools/core/root/root.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Sources from 'devtools/panels/sources/sources.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests selected call frame does not change when pretty-print is toggled.\n`);

@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(
@@ -50,7 +51,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   `);
 
   function performStandardTestCase(pageExpression, next) {
-    UIModule.Context.Context.instance().flavor(SDK.ExecutionContext)
+    UIModule.Context.Context.instance().flavor(SDK.RuntimeModel.ExecutionContext)
         .evaluate({expression: pageExpression})
         .then(didEvaluate);
 

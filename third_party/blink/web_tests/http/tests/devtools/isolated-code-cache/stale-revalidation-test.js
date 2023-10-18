@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
 import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 function waitUntilIdle() {
   return new Promise(resolve=>{
@@ -22,7 +23,7 @@ function waitUntilIdle() {
 
   // Clear browser cache to avoid any existing entries for the fetched scripts
   // in the cache.
-  SDK.multitargetNetworkManager.clearBrowserCache();
+  SDK.NetworkManager.MultitargetNetworkManager.instance().clearBrowserCache();
 
   // The script is executed as a parser-inserted script, to keep the
   // ScriptResource in blink::MemoryCache and reduce flake. ScriptResource for

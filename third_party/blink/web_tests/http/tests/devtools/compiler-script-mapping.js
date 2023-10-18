@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {

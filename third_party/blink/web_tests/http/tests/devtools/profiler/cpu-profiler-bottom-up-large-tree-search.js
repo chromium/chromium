@@ -5,9 +5,9 @@
 import {TestRunner} from 'test_runner';
 import {CPUProfilerTestRunner} from 'cpu_profiler_test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that search works for large bottom-up view of CPU profile.\n`);

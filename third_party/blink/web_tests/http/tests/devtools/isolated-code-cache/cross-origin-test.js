@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
 import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests V8 code cache for javascript resources\n`);
@@ -13,7 +14,7 @@ import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js
 
   // Clear browser cache to avoid any existing entries for the fetched
   // scripts in the cache.
-  SDK.multitargetNetworkManager.clearBrowserCache();
+  SDK.NetworkManager.MultitargetNetworkManager.instance().clearBrowserCache();
 
   await TestRunner.navigatePromise(
       'http://127.0.0.1:8000/devtools/resources/test-page-v8-code-cache.html');

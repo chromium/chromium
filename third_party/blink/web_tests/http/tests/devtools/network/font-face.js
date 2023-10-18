@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that a used font-face is reported and an unused font-face is not reported.\n`);
   await TestRunner.showPanel('network');

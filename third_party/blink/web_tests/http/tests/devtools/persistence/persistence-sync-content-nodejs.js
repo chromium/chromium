@@ -6,8 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Persistence from 'devtools/models/persistence/persistence.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Verify that syncing Node.js contents works fine.\n`);

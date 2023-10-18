@@ -8,9 +8,9 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Common from 'devtools/core/common/common.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests framework event listeners output in Sources panel when service worker is present.\n`);
