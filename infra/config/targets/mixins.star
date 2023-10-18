@@ -1071,7 +1071,7 @@ targets.mixin(
             targets.cipd_package(
                 package = "infra/tools/mac_toolchain/${platform}",
                 location = ".",
-                revision = "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb",
+                revision = "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce",
             ),
         ],
     ),
