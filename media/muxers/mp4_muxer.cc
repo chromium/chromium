@@ -59,12 +59,21 @@ bool Mp4Muxer::OnEncodedVideo(
 
   DCHECK(!is_key_frame || codec_description.has_value());
 
+  // The `trun` box, which holds information for each sample such as duration
+  // and size, cannot be split because the `count` property needs to have the
+  // exact number of sample entries. The unit of the `trun` box is per
+  // fragment, which is based on the video key frame. So, it checks flush
+  // only when the next key frame arrives.
+  if (is_key_frame) {
+    MaybeForceFlush();
+  }
+
   base::TimeTicks adjusted_timestamp =
       AdjustTimestamp(timestamp, /*audio=*/false);
 
   mp4_muxer_delegate_->AddVideoFrame(params, encoded_data, codec_description,
                                      adjusted_timestamp, is_key_frame);
-  MaybeForceFlush();
+
   return true;
 }
 
@@ -89,7 +98,6 @@ bool Mp4Muxer::OnEncodedAudio(
 
   mp4_muxer_delegate_->AddAudioFrame(params, encoded_data, codec_description,
                                      adjusted_timestamp);
-  MaybeForceFlush();
   return true;
 }
 
@@ -103,7 +111,8 @@ void Mp4Muxer::MaybeForceFlush() {
 
   // It follows pattern of webm muxer where it does not respect
   // interval flush time unless video stream exists.
-  if (!has_video_ || max_data_output_interval_.is_zero()) {
+  DCHECK(has_video_);
+  if (max_data_output_interval_.is_zero()) {
     return;
   }
 

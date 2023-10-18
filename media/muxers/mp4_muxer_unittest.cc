@@ -566,14 +566,18 @@ TEST_F(Mp4MuxerTest, MaximumDurationWithInterval) {
   AddAudioSamples(mp4_muxer.get(), 100, 1);
   AddVideoSamples(mp4_muxer.get(), 100, 1);
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  // Will call Flush as the time is over maximum interval.
   AddVideoSamplesForNonKeyFrame(mp4_muxer.get(), 200, 1);
+
+  // Will call Flush as the time is over maximum interval and before new
+  // fragment.
+  AddVideoSamples(mp4_muxer.get(), 300, 1);
   run_loop_->Run();
+
   ParseWithMp4StreamParser(written_data_);
   ValidateMovieHeaderDuration(133u);
 
   AddAudioSamples(mp4_muxer.get(), 200, 1);
-  AddVideoSamples(mp4_muxer.get(), 100, 1);
+  AddVideoSamplesForNonKeyFrame(mp4_muxer.get(), 400, 1);
   AddAudioSamples(mp4_muxer.get(), 400, 1);
 
   InitCallbackVariables();
