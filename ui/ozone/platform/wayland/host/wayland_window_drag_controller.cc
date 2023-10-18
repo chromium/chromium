@@ -139,7 +139,7 @@ bool WaylandWindowDragController::StartDragSession(
   origin_window_ = origin;
   drag_source_ = drag_source;
 
-  DCHECK(!data_source_);
+  CHECK(!data_source_);
   data_source_ = data_device_manager_->CreateSource(this);
   data_source_->Offer({kMimeTypeChromiumWindow});
   data_source_->SetDndActions(kDndActionWindowDrag);
@@ -203,7 +203,7 @@ void WaylandWindowDragController::StopDragging() {
 }
 
 bool WaylandWindowDragController::IsDragSource() const {
-  DCHECK(data_source_);
+  CHECK(data_source_);
   return true;
 }
 
@@ -229,10 +229,10 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
     return;
   }
 
-  DCHECK_GE(state_, State::kAttached);
-  DCHECK(window);
-  DCHECK(data_source_);
-  DCHECK(data_offer_);
+  CHECK_GE(state_, State::kAttached);
+  CHECK(window);
+  CHECK(data_source_);
+  CHECK(data_offer_);
 
   drag_target_window_ = window;
 
@@ -396,9 +396,10 @@ const WaylandWindow* WaylandWindowDragController::GetDragTarget() const {
 // events is received during a window dragging session. It is used to detect
 // when drop happens, since it is the only event sent by the server regardless
 // where it happens, inside or outside toplevel surfaces.
-void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
-  DCHECK_GE(state_, State::kAttached);
-  DCHECK(data_source_);
+void WaylandWindowDragController::OnDataSourceFinish(WaylandDataSource* source,
+                                                     bool completed) {
+  CHECK_GE(state_, State::kAttached);
+  CHECK_EQ(data_source_.get(), source);
 
   VLOG(1) << "DataSourceFinish received. completed=" << completed
           << ", state=" << state_;
@@ -445,7 +446,8 @@ void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
   window_manager_->RemoveObserver(this);
 }
 
-void WaylandWindowDragController::OnDataSourceSend(const std::string& mime_type,
+void WaylandWindowDragController::OnDataSourceSend(WaylandDataSource* source,
+                                                   const std::string& mime_type,
                                                    std::string* contents) {
   // There is no actual data exchange in DnD window dragging sessions. Window
   // snapping, for example, is supposed to be handled at higher level UI layers.
@@ -524,7 +526,7 @@ void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {
 
   if (should_cancel_drag) {
     LOG(ERROR) << "OnDataSourceFinish";
-    OnDataSourceFinish(/*completed=*/false);
+    OnDataSourceFinish(data_source_.get(), /*completed=*/false);
   }
 }
 

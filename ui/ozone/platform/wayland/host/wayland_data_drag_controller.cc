@@ -453,8 +453,9 @@ void WaylandDataDragController::OnDragDrop() {
   data_offer_.reset();
 }
 
-void WaylandDataDragController::OnDataSourceFinish(bool completed) {
-  DCHECK(data_source_);
+void WaylandDataDragController::OnDataSourceFinish(WaylandDataSource* source,
+                                                   bool completed) {
+  CHECK_EQ(data_source_.get(), source);
   VLOG(1) << __FUNCTION__ << " window=" << !!window_
           << " origin=" << !!origin_window_
           << " nested_dispatcher=" << !!nested_dispatcher_;
@@ -499,10 +500,11 @@ const WaylandWindow* WaylandDataDragController::GetDragTarget() const {
   return window_;
 }
 
-void WaylandDataDragController::OnDataSourceSend(const std::string& mime_type,
+void WaylandDataDragController::OnDataSourceSend(WaylandDataSource* source,
+                                                 const std::string& mime_type,
                                                  std::string* buffer) {
-  DCHECK(data_source_);
-  DCHECK(buffer);
+  CHECK_EQ(data_source_.get(), source);
+  CHECK(buffer);
   VLOG(1) << __FUNCTION__ << " mime=" << mime_type;
   if (!GetOfferedExchangeDataProvider()->ExtractData(mime_type, buffer)) {
     LOG(WARNING) << "Cannot deliver data of type " << mime_type
@@ -726,7 +728,7 @@ uint32_t WaylandDataDragController::DispatchEvent(const PlatformEvent& event) {
   // that, for now, is to monitor wl_pointer events here and abort the session
   // if it comes in.
   if (event->type() == ET_MOUSE_RELEASED) {
-    OnDataSourceFinish(/*completed=*/false);
+    OnDataSourceFinish(data_source_.get(), /*completed=*/false);
   }
 
   return POST_DISPATCH_PERFORM_DEFAULT;

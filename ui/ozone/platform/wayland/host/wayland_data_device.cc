@@ -44,7 +44,7 @@ void WaylandDataDevice::StartDrag(const WaylandDataSource& data_source,
                                   wl_surface* icon_surface,
                                   DragDelegate* delegate) {
   DCHECK(delegate);
-  DCHECK(!drag_delegate_);
+  CHECK(!drag_delegate_);
   drag_delegate_ = delegate;
 
   wl_data_device_start_drag(data_device_.get(), data_source.data_source(),
