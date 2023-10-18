@@ -103,12 +103,12 @@
           </template>
         </select>
       </div>
-      <div class="cr-form-field-label">
+      <div id="apnDetailApnTypesLabel" class="cr-form-field-label">
         [[i18n('apnDetailApnTypes')]]
       </div>
       <div id="checkboxContainer" class="checkbox-section">
         <cr-checkbox id="apnDefaultTypeCheckbox"
-            aria-labelledby="apnDefaultTypelabel"
+            aria-describedby="apnDetailApnTypesLabel"
             disabled="[[isUiElementDisabled_(UiElement.INPUT, mode)]]"
             checked="{{isDefaultApnType_}}">
           <div id="apnDefaultTypelabel" class="checkbox-text-area">
@@ -117,7 +117,7 @@
         </cr-checkbox>
         <cr-checkbox id="apnAttachTypeCheckbox"
             disabled="[[isUiElementDisabled_(UiElement.INPUT, mode)]]"
-            aria-labelledby="apnAttachTypeLabel"
+            aria-describedby="apnDetailApnTypesLabel"
             checked="{{isAttachApnType_}}">
           <div id="apnAttachTypeLabel" class="checkbox-text-area">
             [[i18n('apnDetailApnTypeAttach')]]

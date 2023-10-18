@@ -442,10 +442,18 @@ suite('<apn-detail-dialog>', () => {
           assertTrue(!!apnDefaultTypeCheckbox);
           apnDefaultTypeCheckbox.checked = defaultType;
 
+          assertEquals(
+              'apnDetailApnTypesLabel',
+              apnDefaultTypeCheckbox.getAttribute('aria-describedby'));
+
           const apnAttachTypeCheckbox =
               apnDetailDialog.shadowRoot!.querySelector<CrCheckboxElement>(
                   '#apnAttachTypeCheckbox');
           assertTrue(!!apnAttachTypeCheckbox);
+          assertEquals(
+              'apnDetailApnTypesLabel',
+              apnAttachTypeCheckbox.getAttribute('aria-describedby'));
+
           apnAttachTypeCheckbox.checked = attachType;
         };
 
