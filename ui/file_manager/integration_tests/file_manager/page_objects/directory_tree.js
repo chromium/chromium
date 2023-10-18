@@ -1324,6 +1324,14 @@ class DirectoryTreeSelectors_ {
    */
   itemItselfByType(type, isPlaceholder) {
     if (this.useNewTree) {
+      // volume type for "My files" is "downloads", but in the code when we
+      // query item by "downloads" type, what we want is the actual Downloads
+      // folder, hence the special handling here.
+      if (type === 'downloads') {
+        return `${this.item}[data-navigation-key^="${
+            REAL_ENTRY_PATH_PREFIX}"][icon="downloads"]`;
+      }
+
       return isPlaceholder ?
           `${this.item}[data-navigation-key^="${
               FAKE_ENTRY_PATH_PREFIX}"][icon="${type}"]` :

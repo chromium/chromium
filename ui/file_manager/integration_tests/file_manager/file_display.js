@@ -547,7 +547,7 @@ testcase.fileDisplayWithoutVolumesThenMountDownloads = async () => {
 
   // Downloads should appear in My files in the directory tree.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.waitForItemByType('downloads');
+  await directoryTree.waitForItemByLabel('My files');
   const expectedRows =
       [['Downloads', '--', 'Folder'], ['Linux files', '--', 'Folder']];
   await remoteCall.waitForFiles(

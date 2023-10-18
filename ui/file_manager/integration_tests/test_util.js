@@ -219,6 +219,10 @@ export async function getBrowserWindows(expectedInitialCount = 0) {
 
 /**
  * Adds the given entries to the target volume(s).
+ *
+ * Note: passing 'local' as volume name will add entries to the "My
+ * Files/Downloads", instead of "My files".
+ *
  * @param {Array<string>} volumeNames Names of target volumes.
  * @param {Array<TestEntryInfo>} entries List of entries to be added.
  * @param {function(boolean)=} opt_callback Callback function to be passed the

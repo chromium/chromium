@@ -1112,6 +1112,41 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DLP, /* dlp.js */
     DlpFilesAppBrowserTest,
     ::testing::Values(
+        file_manager::test::TestCase("transferShowDlpToast")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsDlpRestrictedAndroid")
+            .EnableArcVm()
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsDlpRestrictedCrostini")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsDlpRestrictedVm")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsDlpRestrictedUsb")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsDlpRestrictedDrive")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("blockShowsPanelItem")
+            .EnableDlp()
+            .EnableFilesPolicyNewUX()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("warnShowsPanelItem")
+            .EnableDlp()
+            .EnableFilesPolicyNewUX()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("warnTimeoutShowsPanelItem")
+            .EnableDlp()
+            .EnableFilesPolicyNewUX()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("mixedSummaryDisplayPanel")
+            .EnableDlp()
+            .EnableFilesPolicyNewUX()
+            .NewDirectoryTree(),
         file_manager::test::TestCase("transferShowDlpToast").EnableDlp(),
         file_manager::test::TestCase("dlpShowManagedIcon").EnableDlp(),
         file_manager::test::TestCase("dlpContextMenuRestrictionDetails")
