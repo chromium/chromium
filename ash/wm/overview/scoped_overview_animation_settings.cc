@@ -186,7 +186,7 @@ ScopedOverviewAnimationSettings::ScopedOverviewAnimationSettings(
   if (animation_type == OVERVIEW_ANIMATION_CLOSING_OVERVIEW_ITEM ||
       animation_type == OVERVIEW_ANIMATION_CLOSE_OVERVIEW_ITEM) {
     close_reporter_.emplace(animation_settings_->GetAnimator(),
-                            metrics_util::ForSmoothness(
+                            metrics_util::ForSmoothnessV3(
                                 base::BindRepeating(&ReportCloseSmoothness)));
   }
 }

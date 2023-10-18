@@ -182,7 +182,7 @@ class OverviewMetricsTracker : public OverviewGrid::MetricsTracker {
                          bool single_animation_in_clamshell,
                          bool minimized_in_tablet)
       : tracker_(compositor->RequestNewThroughputTracker()) {
-    tracker_.Start(metrics_util::ForSmoothness(base::BindRepeating(
+    tracker_.Start(metrics_util::ForSmoothnessV3(base::BindRepeating(
         &OverviewMetricsTracker::ReportOverviewSmoothness, in_split_view,
         single_animation_in_clamshell, minimized_in_tablet)));
   }

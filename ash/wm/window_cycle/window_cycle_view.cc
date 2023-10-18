@@ -399,7 +399,7 @@ void WindowCycleView::FadeInLayer() {
   settings.CacheRenderSurface();
   ui::AnimationThroughputReporter reporter(
       settings.GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(kShowAnimationSmoothness, smoothness);
       })));
 
@@ -694,7 +694,7 @@ void WindowCycleView::Layout() {
     settings->SetTransitionDuration(kContainerSlideDuration);
     reporter.emplace(
         settings->GetAnimator(),
-        metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
           // Reports animation metrics when the mirror container, which holds
           // all the preview views slides along the x-axis. This can happen
           // while tabbing through windows, if the window cycle ui spans the
