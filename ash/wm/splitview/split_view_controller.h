@@ -14,7 +14,9 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
+#include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ash/wm/overview/overview_types.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state_observer.h"
@@ -24,6 +26,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -734,6 +737,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // Stores the reason which cause splitview to end.
   EndReason end_reason_ = EndReason::kNormal;
+
+  // Stores the overview start and enter/exit type.
+  absl::optional<OverviewStartAction> overview_start_action_;
+  absl::optional<OverviewEnterExitType> enter_exit_overview_type_;
 
   // The split view type. See SplitViewType for the differences between tablet
   // split view and clamshell split view.

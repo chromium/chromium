@@ -1264,15 +1264,12 @@ void SplitViewController::OnOverviewButtonTrayLongPressed(
     return;
   }
 
+  // Save the overview enter/exit types to be used if the window is snapped.
+  overview_start_action_ = OverviewStartAction::kOverviewButtonLongPress;
+  enter_exit_overview_type_ = OverviewEnterExitType::kImmediateEnter;
   SnapWindow(target_window, SnapPosition::kPrimary,
              WindowSnapActionSource::kLongPressOverviewButtonToSnap,
              /*activate_window=*/true);
-
-  // Start overview mode if we aren't already in it.
-  RootWindowController::ForWindow(target_window)
-      ->StartSplitViewOverviewSession(
-          target_window, OverviewStartAction::kOverviewButtonLongPress,
-          OverviewEnterExitType::kImmediateEnter);
 
   base::RecordAction(
       base::UserMetricsAction("Tablet_LongPressOverviewButtonEnterSplitView"));
@@ -2330,8 +2327,9 @@ void SplitViewController::OnWindowSnapped(
   // `OverviewController`.
   if (WillStartOverview()) {
     RootWindowController::ForWindow(window)->StartSplitViewOverviewSession(
-        window, OverviewStartAction::kSplitView,
-        OverviewEnterExitType::kNormal);
+        window, overview_start_action_, enter_exit_overview_type_);
+    overview_start_action_.reset();
+    enter_exit_overview_type_.reset();
     return;
   }
 

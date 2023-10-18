@@ -50,9 +50,7 @@ SplitViewOverviewSession::SplitViewOverviewSession(aura::Window* window)
     : window_(window) {
   CHECK(window);
   window_observation_.Observe(window);
-  auto* window_state = WindowState::Get(window);
-  CHECK(window_state && window_state->IsSnapped());
-  window_state->AddObserver(this);
+  WindowState::Get(window)->AddObserver(this);
 
   if (IsSnapGroupEnabledInClamshellMode()) {
     auto_snap_controller_ =
