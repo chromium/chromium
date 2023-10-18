@@ -5,9 +5,14 @@
 #include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -36,7 +41,8 @@ TabOrganizationButton::TabOrganizationButton(
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
           flat_edge),
-      pressed_callback_(std::move(pressed_callback)) {
+      pressed_callback_(std::move(pressed_callback)),
+      browser_(tab_strip_controller->GetBrowser()) {
   auto* const layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->set_main_axis_alignment(
@@ -88,6 +94,18 @@ void TabOrganizationButton::ButtonPressed(const ui::Event& event) {
   if (session_->request()->state() ==
       TabOrganizationRequest::State::NOT_STARTED) {
     session_->StartRequest();
+
+    // TODO(emshack/dpenning): Move the rest of the body of this if into the
+    // method that executes when StartRequest() is called on a session, once
+    // such a method exists.
+    if (browser_) {
+      browser_->profile()->GetPrefs()->SetInteger(
+          tab_search_prefs::kTabSearchTabIndex, 1);
+      BrowserView* const browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser_);
+      auto* tab_search_host = browser_view->GetTabSearchBubbleHost();
+      tab_search_host->ShowTabSearchBubble(false);
+    }
   }
   pressed_callback_.Run(event);
 }

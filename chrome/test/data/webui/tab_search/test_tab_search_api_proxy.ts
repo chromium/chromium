@@ -23,6 +23,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'requestTabOrganization',
       'switchToTab',
       'saveRecentlyClosedExpandedPref',
+      'setTabIndex',
       'showUi',
     ]);
 
@@ -73,6 +74,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   saveRecentlyClosedExpandedPref(expanded: boolean) {
     this.methodCalled('saveRecentlyClosedExpandedPref', [expanded]);
+  }
+
+  setTabIndex(index: number) {
+    this.methodCalled('setTabIndex', [index]);
   }
 
   showUi() {

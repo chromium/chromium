@@ -276,6 +276,11 @@ void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
                : TabSearchRecentlyClosedToggleAction::kCollapse);
 }
 
+void TabSearchPageHandler::SetTabIndex(int32_t index) {
+  Profile::FromWebUI(web_ui_)->GetPrefs()->SetInteger(
+      tab_search_prefs::kTabSearchTabIndex, index);
+}
+
 void TabSearchPageHandler::ShowUI() {
   auto embedder = webui_controller_->embedder();
   if (embedder)

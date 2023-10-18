@@ -37,6 +37,8 @@ export interface TabSearchApiProxy {
 
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
 
+  setTabIndex(index: number): void;
+
   showUi(): void;
 }
 
@@ -102,6 +104,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   saveRecentlyClosedExpandedPref(expanded: boolean) {
     this.handler.saveRecentlyClosedExpandedPref(expanded);
+  }
+
+  setTabIndex(index: number) {
+    this.handler.setTabIndex(index);
   }
 
   showUi() {

@@ -12,6 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 export class TabSearchAppElement extends PolymerElement {
   static get is() {
@@ -22,7 +23,7 @@ export class TabSearchAppElement extends PolymerElement {
     return {
       selectedTabIndex_: {
         type: Number,
-        value: 0,
+        value: loadTimeData.getInteger('tabIndex'),
       },
 
       tabNames_: {
@@ -47,6 +48,7 @@ export class TabSearchAppElement extends PolymerElement {
     };
   }
 
+  private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private selectedTabIndex_: number;
   private tabNames_: string[];
   private tabIcons_: string[];
@@ -54,6 +56,10 @@ export class TabSearchAppElement extends PolymerElement {
 
   static get template() {
     return getTemplate();
+  }
+
+  private onSelectedTabChanged_(event: CustomEvent<{value: number}>) {
+    this.apiProxy_.setTabIndex(event.detail.value);
   }
 }
 

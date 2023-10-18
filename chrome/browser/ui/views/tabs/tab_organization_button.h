@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+class Browser;
 class TabOrganizationSession;
 class TabStripController;
 
@@ -46,6 +47,7 @@ class TabOrganizationButton : public TabStripControlButton {
   raw_ptr<TabOrganizationSession, DanglingUntriaged> session_ = nullptr;
   PressedCallback pressed_callback_;
   raw_ptr<views::LabelButton> close_button_;
+  raw_ptr<const Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ORGANIZATION_BUTTON_H_

@@ -13,8 +13,13 @@ namespace tab_search_prefs {
 const char kTabSearchRecentlyClosedSectionExpanded[] =
     "tab_search.recently_closed_expanded";
 
+// Integer pref indicating which tab the Tab Search bubble should open to
+// when shown.
+const char kTabSearchTabIndex[] = "tab_search.tab_index";
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kTabSearchRecentlyClosedSectionExpanded, true);
+  registry->RegisterIntegerPref(kTabSearchTabIndex, 0);
 }
 
 }  // namespace tab_search_prefs

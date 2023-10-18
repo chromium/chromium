@@ -222,6 +222,10 @@ interface PageHandler {
   // list section.
   SaveRecentlyClosedExpandedPref(bool expanded);
 
+  // Set the user preference for which tab the tab search UI should display
+  // when next shown.
+  SetTabIndex(int32 index);
+
   // Notify the backend that the UI is ready to be shown.
   ShowUI();
 };
