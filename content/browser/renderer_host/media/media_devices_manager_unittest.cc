@@ -40,10 +40,11 @@
 
 using base::HistogramTester;
 using blink::mojom::MediaDeviceType;
+using blink::mojom::SubCaptureTargetType;
 using media::mojom::DeviceEnumerationResult;
-using testing::_;
-using testing::Invoke;
-using testing::SaveArg;
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::SaveArg;
 
 namespace content {
 
@@ -270,7 +271,10 @@ class MockMediaDevicesDispatcherHost
               (::blink::mojom::CaptureHandleConfigPtr config));
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, CloseFocusWindowOfOpportunity, (const std::string& label));
-  MOCK_METHOD(void, ProduceCropId, (ProduceCropIdCallback callback));
+  MOCK_METHOD(void,
+              ProduceSubCaptureTargetId,
+              (SubCaptureTargetType type,
+               ProduceSubCaptureTargetIdCallback callback));
 #endif
 };
 

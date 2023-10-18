@@ -53,11 +53,6 @@ enum class EnumerateDevicesResult {
   kMaxValue = kTimedOut
 };
 
-enum class SubCaptureTargetType {
-  kCropTarget,
-  kRestrictionTarget,
-};
-
 class MODULES_EXPORT MediaDevices final
     : public EventTarget,
       public ActiveScriptWrappable<MediaDevices>,
@@ -67,6 +62,8 @@ class MODULES_EXPORT MediaDevices final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  using SubCaptureTargetType = mojom::blink::SubCaptureTargetType;
+
   static const char kSupplementName[];
   static MediaDevices* mediaDevices(Navigator&);
   explicit MediaDevices(Navigator&);

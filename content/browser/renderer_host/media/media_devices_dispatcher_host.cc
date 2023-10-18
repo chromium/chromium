@@ -33,6 +33,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -319,13 +320,16 @@ void MediaDevicesDispatcherHost::CloseFocusWindowOfOpportunity(
       /*is_from_timer=*/false);
 }
 
-void MediaDevicesDispatcherHost::ProduceCropId(ProduceCropIdCallback callback) {
+void MediaDevicesDispatcherHost::ProduceSubCaptureTargetId(
+    blink::mojom::SubCaptureTargetType type,
+    ProduceSubCaptureTargetIdCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          [](int render_process_id, int render_frame_id) {
+          [](int render_process_id, int render_frame_id,
+             blink::mojom::SubCaptureTargetType type) {
             RenderFrameHostImpl* const rfh =
                 RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
             if (!rfh || !rfh->IsActive()) {
@@ -341,11 +345,9 @@ void MediaDevicesDispatcherHost::ProduceCropId(ProduceCropIdCallback callback) {
 
             SubCaptureTargetIdWebContentsHelper* const helper =
                 SubCaptureTargetIdWebContentsHelper::FromWebContents(wc);
-            // TODO(crbug.com/1418194): Extend to support other types.
-            return helper->ProduceId(
-                SubCaptureTargetIdWebContentsHelper::Type::kCropTarget);
+            return helper->ProduceId(type);
           },
-          render_process_id_, render_frame_id_),
+          render_process_id_, render_frame_id_, type),
       std::move(callback));
 }
 #endif

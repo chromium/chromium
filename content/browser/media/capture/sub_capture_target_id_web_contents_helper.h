@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error Region Capture not supported on Android.
@@ -30,12 +31,7 @@ class CONTENT_EXPORT SubCaptureTargetIdWebContentsHelper final
     : public WebContentsObserver,
       public WebContentsUserData<SubCaptureTargetIdWebContentsHelper> {
  public:
-  // Multiplex between different SubCaptureTarget types, all backed by
-  // the same ID type behind the scenes.
-  enum class Type {
-    kCropTarget,
-    kRestrictionTarget,
-  };
+  using Type = blink::mojom::SubCaptureTargetType;
 
   // Limits the number of SubCaptureTargetIds a given Web-application can
   // produce of a given type, so as to limit the potential for abuse.

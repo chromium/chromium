@@ -55,8 +55,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/display/screen_info.h"
 
-using testing::_;
-using testing::Mock;
+using blink::mojom::SubCaptureTargetType;
+using ::testing::_;
+using ::testing::Mock;
 
 namespace blink {
 
@@ -221,7 +222,11 @@ class MediaDevicesDispatcherHostMock
     NOTREACHED();
   }
 
-  void ProduceCropId(ProduceCropIdCallback callback) override { NOTREACHED(); }
+  void ProduceSubCaptureTargetId(
+      SubCaptureTargetType type,
+      ProduceSubCaptureTargetIdCallback callback) override {
+    NOTREACHED();
+  }
 #endif
 
   void GetAllVideoInputDeviceFormats(
@@ -336,7 +341,9 @@ class MockMediaDevicesDispatcherHost
     NOTREACHED();
   }
 
-  void ProduceCropId(ProduceCropIdCallback callback) override {
+  void ProduceSubCaptureTargetId(
+      SubCaptureTargetType type,
+      ProduceSubCaptureTargetIdCallback callback) override {
     std::move(callback).Run("");
   }
 #endif
