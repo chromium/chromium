@@ -30,11 +30,16 @@ class CORE_EXPORT ViewTransitionSupplement
 
   // Creates and starts a same-document ViewTransition initiated using the
   // script API.
+  // With callback:
   static DOMViewTransition* startViewTransition(
       ScriptState*,
       Document&,
       V8ViewTransitionCallback* callback,
       ExceptionState&);
+  // Without callback:
+  static DOMViewTransition* startViewTransition(ScriptState*,
+                                                Document&,
+                                                ExceptionState&);
 
   // Creates a ViewTransition to cache the state of a Document before a
   // navigation. The cached state is provided to the caller using the

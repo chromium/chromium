@@ -5,5 +5,5 @@
 [
     ImplementedAs=ViewTransitionSupplement
 ] partial interface Document {
-    [MeasureAs=ViewTransition, CallWith=ScriptState, RaisesException] ViewTransition startViewTransition(optional ViewTransitionCallback? callback = null);
+    [MeasureAs=ViewTransition, CallWith=ScriptState, RaisesException] ViewTransition startViewTransition(optional ViewTransitionCallback callback);
 };

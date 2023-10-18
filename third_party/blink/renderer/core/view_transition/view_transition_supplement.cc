@@ -101,6 +101,13 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
   return supplement->StartTransition(document, callback, exception_state);
 }
 
+DOMViewTransition* ViewTransitionSupplement::startViewTransition(
+    ScriptState* script_state,
+    Document& document,
+    ExceptionState& exception_state) {
+  return startViewTransition(script_state, document, nullptr, exception_state);
+}
+
 DOMViewTransition* ViewTransitionSupplement::StartTransition(
     Document& document,
     V8ViewTransitionCallback* callback,
