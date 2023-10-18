@@ -216,6 +216,16 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     EXPECT_FALSE(prefs()->HasPrefPath(kBoundSessionParamsPref));
   }
 
+  bound_session_credentials::Credential CreateCookieCredential() {
+    bound_session_credentials::Credential credential;
+    bound_session_credentials::CookieCredential* cookie_credential =
+        credential.mutable_cookie_credential();
+    cookie_credential->set_name("auth_cookie");
+    cookie_credential->set_domain(".google.com");
+    cookie_credential->set_path("/");
+    return credential;
+  }
+
   bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams() {
     bound_session_credentials::BoundSessionParams params;
     params.set_site(kTestGaiaURL.spec());
@@ -223,6 +233,7 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     params.set_wrapped_key(kWrappedKey);
     *params.mutable_creation_time() =
         bound_session_credentials::TimeToTimestamp(base::Time::Now());
+    *params.add_credentials() = CreateCookieCredential();
     return params;
   }
 
