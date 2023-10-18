@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_EXCLUSIONS_NG_LAYOUT_OPPORTUNITY_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_EXCLUSIONS_NG_LAYOUT_OPPORTUNITY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_EXCLUSIONS_LAYOUT_OPPORTUNITY_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_EXCLUSIONS_LAYOUT_OPPORTUNITY_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/bfc_rect.h"
-#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_line_layout_opportunity.h"
-#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_shape_exclusions.h"
+#include "third_party/blink/renderer/core/layout/exclusions/line_layout_opportunity.h"
+#include "third_party/blink/renderer/core/layout/exclusions/shape_exclusions.h"
 
 namespace blink {
 
@@ -82,4 +82,4 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& os,
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::LayoutOpportunity)
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_EXCLUSIONS_NG_LAYOUT_OPPORTUNITY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_EXCLUSIONS_LAYOUT_OPPORTUNITY_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_EXCLUSIONS_NG_EXCLUSION_SPACE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_EXCLUSIONS_NG_EXCLUSION_SPACE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_EXCLUSIONS_EXCLUSION_SPACE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_EXCLUSIONS_EXCLUSION_SPACE_H_
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/bfc_rect.h"
-#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion.h"
-#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_layout_opportunity.h"
+#include "third_party/blink/renderer/core/layout/exclusions/exclusion_area.h"
+#include "third_party/blink/renderer/core/layout/exclusions/layout_opportunity.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -785,4 +785,4 @@ WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::ExclusionSpaceInternal::ClosedArea)
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_EXCLUSIONS_NG_EXCLUSION_SPACE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_EXCLUSIONS_EXCLUSION_SPACE_H_

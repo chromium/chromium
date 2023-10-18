@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_initial_letter_utils.h"
 
+#include "third_party/blink/renderer/core/layout/exclusions/exclusion_area.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
-#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_utils.h"
