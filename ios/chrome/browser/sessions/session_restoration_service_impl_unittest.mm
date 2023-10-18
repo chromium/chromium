@@ -15,6 +15,7 @@
 #import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/scoped_multi_source_observation.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
@@ -760,6 +761,50 @@ TEST_F(SessionRestorationServiceImplTest, DeleteObsoleteFilesOnLoadSession) {
   // session files have been deleted.
   WaitForBackgroundTaskComplete();
   EXPECT_EQ(DeletedFiles(), expected_deleted_files);
+
+  // Disconnect the Browser before destroying it.
+  service()->Disconnect(&browser);
+}
+
+// Tests that histograms are correctly recorded.
+TEST_F(SessionRestorationServiceImplTest, RecordHistograms) {
+  {
+    // Create a Browser and add a few WebStates to it and wait for all
+    // pending scheduled tasks to complete.
+    TestBrowser browser = TestBrowser(browser_state());
+    service()->SetSessionID(&browser, kIdentifier0);
+    InsertTabsWithUrls(browser, base::make_span(kURLs));
+    WaitForBackgroundTaskComplete();
+
+    // Check that session is saved and histogram is recorded when making
+    // some changes to the Browser's WebStateList (changing the active
+    // index).
+    base::HistogramTester histogram_tester;
+    ASSERT_NE(browser.GetWebStateList()->active_index(), 0);
+    browser.GetWebStateList()->ActivateWebStateAt(0);
+    WaitForBackgroundTaskComplete();
+
+    // Check that the time spent to record the session was logged.
+    histogram_tester.ExpectTotalCount(
+        "Session.WebStates.SavingTimeOnMainThread", 1);
+
+    // Disconnect the Browser before destroying it.
+    service()->Disconnect(&browser);
+  }
+
+  // Create a Browser.
+  TestBrowser browser = TestBrowser(browser_state());
+  service()->SetSessionID(&browser, kIdentifier0);
+
+  // Load the session and check that the time spent loading was logged.
+  base::HistogramTester histogram_tester;
+  service()->LoadSession(&browser);
+
+  // Check that the expected content was loaded.
+  EXPECT_EQ(browser.GetWebStateList()->count(),
+            static_cast<int>(std::size(kURLs)));
+  histogram_tester.ExpectTotalCount("Session.WebStates.LoadingTimeOnMainThread",
+                                    1);
 
   // Disconnect the Browser before destroying it.
   service()->Disconnect(&browser);

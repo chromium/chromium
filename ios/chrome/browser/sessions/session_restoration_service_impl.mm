@@ -9,6 +9,7 @@
 #import "base/files/file_enumerator.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_internal_util.h"
@@ -216,6 +217,8 @@ void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
   DCHECK(base::Contains(infos_, browser->GetWebStateList()));
   WebStateListInfo& info = *infos_[browser->GetWebStateList()];
 
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+
   // Check that LoadSession is only called once, and before any asynchronous
   // operation where started on that Browser. Then mark the Browser as no
   // longer safe for synchrounous operations.
@@ -269,6 +272,10 @@ void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
   for (auto& observer : observers_) {
     observer.SessionRestorationFinished(browser, restored_web_states);
   }
+
+  // Record the time spent blocking the main thread to load the session.
+  base::UmaHistogramTimes("Session.WebStates.LoadingTimeOnMainThread",
+                          base::TimeTicks::Now() - start_time);
 }
 
 void SessionRestorationServiceImpl::Disconnect(Browser* browser) {
@@ -306,6 +313,8 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
   if (dirty_web_state_lists_.empty()) {
     return;
   }
+
+  const base::TimeTicks start_time = base::TimeTicks::Now();
 
   ios::sessions::IORequestList requests;
 
@@ -416,4 +425,8 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
       base::BindOnce(&ios::sessions::ExecuteIORequests, std::move(requests)));
 
   dirty_web_state_lists_.clear();
+
+  // Record the time spent blocking the main thread to save the session.
+  base::UmaHistogramTimes("Session.WebStates.SavingTimeOnMainThread",
+                          base::TimeTicks::Now() - start_time);
 }
