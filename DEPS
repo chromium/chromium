@@ -1974,7 +1974,7 @@ deps = {
   },
 
   'src/third_party/xdg-utils': {
-      'url': Var('chromium_git') + '/chromium/deps/xdg-utils.git' + '@' + 'd80274d5869b17b8c9067a1022e4416ee7ed5e0d',
+      'url': Var('chromium_git') + '/chromium/deps/xdg-utils.git' + '@' + 'cb54d9db2e535ee4ef13cc91b65a1e2741a94a44',
       'condition': 'checkout_linux',
   },
 
