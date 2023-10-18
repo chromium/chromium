@@ -1535,8 +1535,12 @@ export class Viewport implements ViewportInterface {
     // Compute the space on the left of the document if the document fits
     // completely in the screen.
     const zoom = this.getZoom();
-    let spaceOnLeft =
-        (this.size.width - this.documentDimensions_.width * zoom) / 2;
+    const scrollbarWidth = this.documentHasScrollbars().vertical ?
+        this.scrollContent_.scrollbarWidth :
+        0;
+    let spaceOnLeft = (this.size.width - scrollbarWidth -
+                       this.documentDimensions_.width * zoom) /
+        2;
     spaceOnLeft = Math.max(spaceOnLeft, 0);
 
     return {
