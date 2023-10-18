@@ -31,7 +31,6 @@ Need tests for (likely not a complete list):
 * adAuctionConfig passed to reportResult().
 * Component auctions.
   * Including cross-origin sellers.
-* clearOriginJoinedInterestGroups.
 * browserSignals fields in scoring/bidding methods.
 * In reporting methods, browserSignals fields: dataVersion, topLevelSeller,
     componentSeller, modifiedBid, adCost, madeHighestScoringOtherBid
@@ -57,10 +56,17 @@ Need tests for (likely not a complete list):
   * etc.
 * Test that await is not needed for same-origin interest groups
   * Verify that's still in the spec/explainer first.
+* executionMode
+  * Including cross-origin join/leave behavior with "group-by-origin" mode.
+* Make sure state is not shared.
+  * Across scoreAd() / generateBid() calls, and with report calls.
+  * In "group-by-origin" execution mode across IGs joined from different
+      origins, and between generateBid() and reportWin().
 
 If possible:
 * Aggregate reporting.
-* Join/leave permission delegation via .well-known files.
+* Join/leave permission delegation via .well-known files
+  * Including tests for clearOriginJoinedInterestGroups().
 * k-anonymity.
 * Signals request batching. This is an optional feature, so can't require it,
     but maybe a test where batching could be used, and make sure things work,

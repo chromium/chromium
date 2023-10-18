@@ -40,6 +40,13 @@ function createTrackerURL(origin, uuid, dispatch, id = null) {
   return url.toString();
 }
 
+// Create a URL that when fetches clears tracked URLs. Note that the origin
+// doesn't matter - it will clean up all tracked URLs with the provided uuid,
+// regardless of origin they were fetched from.
+function createCleanupURL(uuid) {
+  return createTrackerURL(window.location.origin, uuid, 'clean_up');
+}
+
 // Create tracked bidder/seller URLs. The only difference is the prefix added
 // to the `id` passed to createTrackerURL. The optional `id` field allows
 // multiple bidder/seller report URLs to be distinguishable from each other.
@@ -65,8 +72,8 @@ function createSellerBeaconURL(uuid, id = '1', origin = window.location.origin) 
 function generateUuid(test) {
   let uuid = token();
   test.add_cleanup(async () => {
-    let cleanupURL = createTrackerURL(window.location.origin, uuid, 'clean_up');
-    let response = await fetch(cleanupURL, {credentials: 'omit', mode: 'cors'});
+    let response = await fetch(createCleanupURL(uuid),
+                               {credentials: 'omit', mode: 'cors'});
     assert_equals(await response.text(), 'cleanup complete',
                   `Sever state cleanup failed`);
   });
@@ -479,8 +486,13 @@ async function createFrame(test, origin, is_iframe = true, permissions = null) {
 
 // Wrapper around createFrame() that creates an iframe and optionally sets
 // permissions.
-async function createIframe(test, origin, permissions) {
-  return createFrame(test, origin, /*is_iframe=*/ true, permissions);
+async function createIframe(test, origin, permissions = null) {
+  return await createFrame(test, origin, /*is_iframe=*/true, permissions);
+}
+
+// Wrapper around createFrame() that creates a top-level window.
+async function createTopLevelWindow(test, origin) {
+  return await createFrame(test, origin, /*is_iframe=*/false);
 }
 
 // Joins a cross-origin interest group. Currently does this by joining the
@@ -493,5 +505,17 @@ async function joinCrossOriginInterestGroup(test, uuid, origin, interestGroupOve
 
   let iframe = await createIframe(test, origin, 'join-ad-interest-group');
   await runInFrame(test, iframe,
+                   `await joinInterestGroup(test_instance, "${uuid}", ${interestGroup})`);
+}
+
+// Joins an interest group in a top-level window, which has the same origin
+// as the joined interest group.
+async function joinInterestGroupInTopLevelWindow(
+    test, uuid, origin, interestGroupOverrides = {}) {
+  let interestGroup = JSON.stringify(
+      createInterestGroupForOrigin(uuid, origin, interestGroupOverrides));
+
+  let topLeveWindow = await createTopLevelWindow(test, origin);
+  await runInFrame(test, topLeveWindow,
                    `await joinInterestGroup(test_instance, "${uuid}", ${interestGroup})`);
 }
