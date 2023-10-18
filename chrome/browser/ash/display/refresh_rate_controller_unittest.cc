@@ -192,6 +192,17 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleWithBatterySaverMode) {
     ASSERT_NE(snapshot->current_mode(), nullptr);
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
   }
+
+  // Set the game mode to indicate the user is gaming.
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS);
+
+  // Expect the new state to still be 60Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
+  }
 }
 
 TEST_F(RefreshRateControllerTest, ShouldThrottleOnBattery) {
@@ -221,6 +232,47 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleOnBattery) {
     ASSERT_NE(snapshot, nullptr);
     ASSERT_NE(snapshot->current_mode(), nullptr);
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
+  }
+}
+
+TEST_F(RefreshRateControllerTest, ShouldNotThrottleForBorealis) {
+  constexpr int64_t kDisplayId = 12345;
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+  SetUpDisplays(snapshots);
+  ScopedSetInternalDisplayIds set_internal(kDisplayId);
+
+  // Expect the initial state to be 120 Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
+  }
+
+  // Set power state to indicate the device is on battery.
+  PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
+      PowerSupplyProperties::DISCONNECTED, 80.0f));
+  controller_->OnPowerStatusChanged();
+
+  // Expect the new state to be 60 Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
+  }
+
+  // Set the game mode to indicate the user is gaming.
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS);
+
+  // Expect the new state to be 120 Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
   }
 }
 

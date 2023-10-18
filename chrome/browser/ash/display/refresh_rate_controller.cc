@@ -13,9 +13,14 @@ namespace ash {
 namespace {
 
 display::RefreshRateThrottleState GetDesiredThrottleState(
-    const PowerStatus* status) {
+    const PowerStatus* status,
+    GameMode game_mode) {
   if (status->IsBatterySaverActive()) {
     return display::kRefreshRateThrottleEnabled;
+  }
+  // Do not throttle when Borealis is active.
+  if (game_mode == GameMode::BOREALIS) {
+    return display::kRefreshRateThrottleDisabled;
   }
   if (!status->IsMainsChargerConnected()) {
     return display::kRefreshRateThrottleEnabled;
@@ -55,7 +60,7 @@ void RefreshRateController::RefreshState() {
   if (base::FeatureList::IsEnabled(
           ash::features::kSeamlessRefreshRateSwitching)) {
     display::RefreshRateThrottleState state =
-        GetDesiredThrottleState(power_status_);
+        GetDesiredThrottleState(power_status_, game_mode_);
     if (display::HasInternalDisplay()) {
       display_configurator_->MaybeSetRefreshRateThrottleState(
           display::Display::InternalDisplayId(), state);
