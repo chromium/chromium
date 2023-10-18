@@ -462,11 +462,11 @@ class PasswordCounterDelegateBridge
   _currentProvider.formInputNavigator = self.formNavigationHandler;
 }
 
-- (void)setPrefService:(PrefService*)prefService {
-  _prefService = prefService;
-  if (IsBottomOmniboxSteadyStateEnabled() && _prefService) {
+- (void)setOriginalPrefService:(PrefService*)originalPrefService {
+  _originalPrefService = originalPrefService;
+  if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService) {
     _bottomOmniboxEnabled =
-        [[PrefBackedBoolean alloc] initWithPrefService:_prefService
+        [[PrefBackedBoolean alloc] initWithPrefService:_originalPrefService
                                               prefName:prefs::kBottomOmnibox];
     [_bottomOmniboxEnabled setObserver:self];
     // Initialize to the current value.

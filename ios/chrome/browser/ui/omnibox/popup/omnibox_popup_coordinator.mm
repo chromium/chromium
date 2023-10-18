@@ -163,7 +163,9 @@
                  popupViewController:self.popupViewController
                    layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)
                            incognito:isIncognito];
-  self.mediator.prefService = self.browser->GetBrowserState()->GetPrefs();
+  self.mediator.originalPrefService = self.browser->GetBrowserState()
+                                          ->GetOriginalChromeBrowserState()
+                                          ->GetPrefs();
 
   _popupView->SetMediator(self.mediator);
 

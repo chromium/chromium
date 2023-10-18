@@ -207,15 +207,19 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   _debugInfoConsumer = debugInfoConsumer;
 }
 
-- (void)setPrefService:(PrefService*)prefService {
-  _prefService = prefService;
-  if (IsBottomOmniboxSteadyStateEnabled() && _prefService) {
+- (void)setPrefService:(PrefService*)originalPrefService {
+  _originalPrefService = originalPrefService;
+  if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService) {
     _bottomOmniboxEnabled =
-        [[PrefBackedBoolean alloc] initWithPrefService:_prefService
+        [[PrefBackedBoolean alloc] initWithPrefService:_originalPrefService
                                               prefName:prefs::kBottomOmnibox];
     [_bottomOmniboxEnabled setObserver:self];
     // Initialize to the correct value.
     [self booleanDidChange:_bottomOmniboxEnabled];
+  } else {
+    [_bottomOmniboxEnabled stop];
+    [_bottomOmniboxEnabled setObserver:nil];
+    _bottomOmniboxEnabled = nil;
   }
 }
 

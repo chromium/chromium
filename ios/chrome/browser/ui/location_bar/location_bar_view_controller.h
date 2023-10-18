@@ -56,8 +56,9 @@
 
 @property(nonatomic, assign) BOOL incognito;
 
-// Get and set preferred omnibox position.
-@property(nonatomic, assign) PrefService* prefService;
+// Pref service from the original browser state, used to get and set the
+// preferred omnibox position.
+@property(nonatomic, assign) PrefService* originalPrefService;
 
 // The dispatcher for the share button, voice search, and long press actions.
 @property(nonatomic, weak) id<ActivityServiceCommands,

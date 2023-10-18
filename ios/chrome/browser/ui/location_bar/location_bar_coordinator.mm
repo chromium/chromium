@@ -164,9 +164,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   BOOL isIncognito = self.browserState->IsOffTheRecord();
 
-  PrefService* prefs =
-      ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
-          ->GetPrefs();
+  PrefService* originalPrefs = self.browser->GetBrowserState()
+                                   ->GetOriginalChromeBrowserState()
+                                   ->GetPrefs();
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
   self.viewController.delegate = self;
@@ -180,7 +180,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       ios::provider::IsVoiceSearchEnabled();
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  self.viewController.prefService = prefs;
+  self.viewController.originalPrefService = originalPrefs;
 
   _locationBar = std::make_unique<WebLocationBarImpl>(self, self.delegate);
   _locationBar->SetURLLoader(self);

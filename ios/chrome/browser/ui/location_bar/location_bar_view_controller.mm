@@ -605,12 +605,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 
   // Show Top or Bottom Address Bar action.
-  if (IsBottomOmniboxSteadyStateEnabled() && _prefService &&
+  if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService &&
       IsSplitToolbarMode(self)) {
     NSString* title = nil;
     UIImage* image = nil;
     ToolbarType targetToolbarType;
-    if (_prefService->GetBoolean(prefs::kBottomOmnibox)) {
+    if (_originalPrefService->GetBoolean(prefs::kBottomOmnibox)) {
       title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX);
       if (@available(iOS 15.1, *)) {
         image = DefaultSymbolWithPointSize(kMovePlatterToTopPhoneSymbol,
@@ -648,9 +648,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 
   // Reverse the array manually when preferredMenuElementOrder is not available.
-  if (IsBottomOmniboxSteadyStateEnabled() && _prefService) {
+  if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService) {
     if (!base::ios::IsRunningOnIOS16OrLater()) {
-      if (_prefService->GetBoolean(prefs::kBottomOmnibox)) {
+      if (_originalPrefService->GetBoolean(prefs::kBottomOmnibox)) {
         menuElements =
             [[[menuElements reverseObjectEnumerator] allObjects] mutableCopy];
       }
@@ -754,9 +754,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 /// Set the preferred omnibox position to `toolbarType`.
 - (void)moveOmniboxToToolbarType:(ToolbarType)toolbarType {
-  if (_prefService) {
-    _prefService->SetBoolean(prefs::kBottomOmnibox,
-                             toolbarType == ToolbarType::kSecondary);
+  if (_originalPrefService) {
+    _originalPrefService->SetBoolean(prefs::kBottomOmnibox,
+                                     toolbarType == ToolbarType::kSecondary);
 
     if (toolbarType == ToolbarType::kPrimary) {
       RecordAction(

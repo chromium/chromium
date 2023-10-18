@@ -204,8 +204,9 @@ const CGFloat kIPHVerticalOffset = -5;
       [layoutGuideCenter makeLayoutGuideNamed:kAutofillFirstSuggestionGuide];
   [self.baseViewController.view addLayoutGuide:self.layoutGuide];
 
-  self.formInputAccessoryMediator.prefService =
-      ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
+  self.formInputAccessoryMediator.originalPrefService =
+      self.browser->GetBrowserState()
+          ->GetOriginalChromeBrowserState()
           ->GetPrefs();
 }
 
