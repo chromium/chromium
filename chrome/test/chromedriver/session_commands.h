@@ -111,6 +111,19 @@ Status ExecuteIsLoading(Session* session,
                         const base::Value::Dict& params,
                         std::unique_ptr<base::Value>* value);
 
+Status ExecuteCreateVirtualSensor(Session* session,
+                                  const base::Value::Dict& params,
+                                  std::unique_ptr<base::Value>* value);
+Status ExecuteUpdateVirtualSensor(Session* session,
+                                  const base::Value::Dict& params,
+                                  std::unique_ptr<base::Value>* value);
+Status ExecuteRemoveVirtualSensor(Session* session,
+                                  const base::Value::Dict& params,
+                                  std::unique_ptr<base::Value>* value);
+Status ExecuteGetVirtualSensorInformation(Session* session,
+                                          const base::Value::Dict& params,
+                                          std::unique_ptr<base::Value>* value);
+
 Status ExecuteGetLocation(Session* session,
                           const base::Value::Dict& params,
                           std::unique_ptr<base::Value>* value);

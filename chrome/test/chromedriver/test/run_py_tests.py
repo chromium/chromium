@@ -4177,6 +4177,196 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     result = self._driver.ExecuteAsyncScript(register_uv_script)
     self.assertEqual("OK", result['status'])
 
+  def testCreateVirtualSensorWithInvalidSensorName(self):
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: 'type' must be a string",
+                           self._driver.CreateVirtualSensor, 42)
+
+  def testUpdateVirtualSensorWithInvalidSensorName(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: Unexpected type invalid_sensor in 'type' field",
+        self._driver.UpdateVirtualSensor, 'invalid_sensor', {
+            'x': 1.0,
+            'y': 2.0,
+            'z': 3.0
+        })
+
+  def testUpdateVirtualSensorWithoutIlluminanceValue(self):
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse illuminance",
+                           self._driver.UpdateVirtualSensor, 'ambient-light',
+                           {'invalid_value_key': 1.0})
+
+  def testUpdateVirtualSensorWithoutXYZValues(self):
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse XYZ fields",
+                           self._driver.UpdateVirtualSensor, 'accelerometer', {
+                               'y': 2.0,
+                               'z': 3.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse XYZ fields",
+                           self._driver.UpdateVirtualSensor, 'accelerometer', {
+                               'x': 1.0,
+                               'z': 3.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse XYZ fields",
+                           self._driver.UpdateVirtualSensor, 'accelerometer', {
+                               'x': 1.0,
+                               'y': 2.0
+                           })
+
+  def testUpdateVirtualSensorWithoutXYZWValues(self):
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse quaternion",
+                           self._driver.UpdateVirtualSensor,
+                           'absolute-orientation', {
+                               'y': 2.0,
+                               'z': 3.0,
+                               'w': 4.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse quaternion",
+                           self._driver.UpdateVirtualSensor,
+                           'absolute-orientation', {
+                               'x': 1.0,
+                               'z': 3.0,
+                               'w': 4.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse quaternion",
+                           self._driver.UpdateVirtualSensor,
+                           'absolute-orientation', {
+                               'x': 1.0,
+                               'y': 2.0,
+                               'w': 4.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse quaternion",
+                           self._driver.UpdateVirtualSensor,
+                           'absolute-orientation', {
+                               'x': 1.0,
+                               'y': 2.0,
+                               'z': 3.0
+                           })
+
+  def testRemoveVirtualSensorWithInvalidSensorName(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: Invalid sensor type: invalid_sensor",
+        self._driver.RemoveVirtualSensor, 'invalid_sensor')
+
+  def testGetVirtualSensorInformationWithInvalidSensorName(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: Invalid sensor type: invalid_sensor",
+        self._driver.GetVirtualSensorInformation, 'invalid_sensor')
+
+  def testGetVirtualSensorInformationWithNotOverriddenType(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "This sensor type is not being overridden with a virtual sensor",
+        self._driver.GetVirtualSensorInformation, 'accelerometer')
+
+  def testCreateAlreadyOverriddenVirtualSensor(self):
+    self._driver.CreateVirtualSensor('accelerometer')
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           'The specified sensor type is already overridden',
+                           self._driver.CreateVirtualSensor, 'accelerometer')
+
+  def testCreateVirtualSensorNotConnected(self):
+    self._driver.CreateVirtualSensor('accelerometer', {'connected': False})
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    self._driver.ExecuteScript('startSensor()')
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return sensorErrorEvent !== undefined')))
+
+    error_name = self._driver.ExecuteScript(
+        'return sensorErrorEvent.error.name')
+    self.assertEqual('NotReadableError', error_name)
+
+  def testCreateVirtualSensorWithMinimumFrequency(self):
+    self._driver.CreateVirtualSensor('accelerometer',
+                                     {'minSamplingFrequency': 6})
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    self._driver.ExecuteScript('startSensor()')
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: self._driver.ExecuteScript('return sensor.activated')))
+
+    info = self._driver.GetVirtualSensorInformation('accelerometer')
+    self.assertEqual(6.0, info['requestedSamplingFrequency'])
+
+  def testCreateVirtualSensorWithMaximumFrequency(self):
+    self._driver.CreateVirtualSensor('accelerometer',
+                                     {'maxSamplingFrequency': 3})
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    self._driver.ExecuteScript('startSensor()')
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: self._driver.ExecuteScript('return sensor.activated')))
+
+    info = self._driver.GetVirtualSensorInformation('accelerometer')
+    self.assertEqual(3.0, info['requestedSamplingFrequency'])
+
+  def testGetVirtualSensorInformation(self):
+    self._driver.CreateVirtualSensor('accelerometer')
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    info = self._driver.GetVirtualSensorInformation('accelerometer')
+    self.assertEqual(0.0, info['requestedSamplingFrequency'])
+
+    self._driver.ExecuteScript('startSensor()')
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: self._driver.ExecuteScript('return sensor.activated')))
+
+    info = self._driver.GetVirtualSensorInformation('accelerometer')
+    self.assertLess(0.0, info['requestedSamplingFrequency'])
+
+  def testUpdateVirtualSensor(self):
+    testedSensor = 'accelerometer'
+
+    self._driver.CreateVirtualSensor(testedSensor)
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    self._driver.ExecuteScript('startSensor()')
+
+    reading = {'x': 1.0, 'y': 2.0, 'z': 3.0}
+
+    self._driver.UpdateVirtualSensor(testedSensor, reading)
+
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: self._driver.ExecuteScript('return sensor.hasReading')))
+
+    sensor = self._driver.ExecuteScript('return sensor')
+    self.assertEqual(reading['x'], sensor['x'])
+    self.assertEqual(reading['y'], sensor['y'])
+    self.assertEqual(reading['z'], sensor['z'])
+
+    self._driver.RemoveVirtualSensor(testedSensor)
+
+  def testUpdateVirtualSensorWitNotOverriddenType(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "This sensor type is not being overridden with a virtual sensor",
+        self._driver.UpdateVirtualSensor, 'ambient-light', {'illuminance': 42})
+
+
 # Tests in the following class are expected to be moved to ChromeDriverTest
 # class when we no longer support the legacy mode.
 class ChromeDriverW3cTest(ChromeDriverBaseTestWithWebServer):

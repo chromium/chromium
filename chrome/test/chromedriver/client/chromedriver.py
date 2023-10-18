@@ -393,6 +393,24 @@ class ChromeDriver(object):
     return self.ExecuteCommand(
         Command.EXECUTE_SCRIPT, {'script': script, 'args': converted_args})
 
+  def CreateVirtualSensor(self, sensor_type, sensor_params=None):
+    params = {'type': sensor_type}
+    if sensor_params is not None:
+      params.update(sensor_params)
+    return self.ExecuteCommand(Command.CREATE_VIRTUAL_SENSOR, params)
+
+  def UpdateVirtualSensor(self, sensor_type, reading):
+    params = {'type': sensor_type, 'reading': reading}
+    return self.ExecuteCommand(Command.UPDATE_VIRTUAL_SENSOR, params)
+
+  def RemoveVirtualSensor(self, sensor_type):
+    params = {'type': sensor_type}
+    return self.ExecuteCommand(Command.REMOVE_VIRTUAL_SENSOR, params)
+
+  def GetVirtualSensorInformation(self, sensor_type):
+    params = {'type': sensor_type}
+    return self.ExecuteCommand(Command.GET_VIRTUAL_SENSOR_INFORMATION, params)
+
   def SetPermission(self, parameters):
     return self.ExecuteCommand(Command.SET_PERMISSION, parameters)
 

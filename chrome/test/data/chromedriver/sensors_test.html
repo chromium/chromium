@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script>
+let sensor;
+let readingEventCounter = 0;
+let sensorErrorEvent;
+
+function startSensor() {
+    sensor = new Accelerometer({frequency: 5});
+    sensor.onreading = () => {
+        readingEventCounter++;
+    };
+    sensor.onerror = e => {
+        sensorErrorEvent = e;
+    }
+    sensor.start();
+}
+</script>

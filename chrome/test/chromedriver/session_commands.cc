@@ -21,6 +21,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/basic_types.h"
 #include "chrome/test/chromedriver/bidimapper/bidimapper.h"
@@ -1054,6 +1055,234 @@ Status ExecuteIsLoading(Session* session,
     return status;
   *value = std::make_unique<base::Value>(is_pending);
   return Status(kOk);
+}
+
+Status ExecuteCreateVirtualSensor(Session* session,
+                                  const base::Value::Dict& params,
+                                  std::unique_ptr<base::Value>* value) {
+  WebView* web_view = nullptr;
+  Status status = session->GetTargetWindow(&web_view);
+  if (status.IsError()) {
+    return status;
+  }
+
+  const std::string* type = params.FindString("type");
+  if (!type) {
+    return Status(kInvalidArgument, "'type' must be a string");
+  }
+
+  base::Value::Dict args;
+  args.Set("enabled", true);
+  args.Set("type", *type);
+
+  base::Value::Dict metadata;
+  metadata.Set("available", params.FindBool("connected").value_or(true));
+  if (auto minimum_sampling_frequency =
+          params.FindDouble("minSamplingFrequency");
+      minimum_sampling_frequency) {
+    metadata.Set("minimumFrequency", minimum_sampling_frequency.value());
+  }
+  if (auto maximum_sampling_frequency =
+          params.FindDouble("maxSamplingFrequency");
+      maximum_sampling_frequency) {
+    metadata.Set("maximumFrequency", maximum_sampling_frequency.value());
+  }
+  args.Set("metadata", std::move(metadata));
+
+  return web_view->SendCommand("Emulation.setSensorOverrideEnabled", args);
+}
+
+namespace {
+
+bool ParseSingleValue(const std::string& key_name,
+                      const base::Value::Dict& params,
+                      base::Value::Dict* out_params) {
+  absl::optional<double> value = params.FindDouble(key_name);
+  if (!value.has_value()) {
+    return false;
+  }
+  // Construct a dict that looks like this:
+  // {
+  //   single: {
+  //     value: VAL
+  //   }
+  // }
+  out_params->Set("single", base::Value::Dict().Set("value", *value));
+  return true;
+}
+
+bool ParseXYZValue(const base::Value::Dict& params,
+                   base::Value::Dict* out_params) {
+  absl::optional<double> x = params.FindDouble("x");
+  if (!x.has_value()) {
+    return false;
+  }
+  absl::optional<double> y = params.FindDouble("y");
+  if (!y.has_value()) {
+    return false;
+  }
+  absl::optional<double> z = params.FindDouble("z");
+  if (!z.has_value()) {
+    return false;
+  }
+  // Construct a dict that looks like this:
+  // {
+  //   xyz: {
+  //     x: VAL1,
+  //     y: VAL2,
+  //     z: VAL3
+  //   }
+  // }
+  out_params->Set("xyz",
+                  base::Value::Dict().Set("x", *x).Set("y", *y).Set("z", *z));
+  return true;
+}
+
+bool ParseOrientationQuaternion(const base::Value::Dict& params,
+                                base::Value::Dict* out_params) {
+  constexpr size_t kQuaternionListSize = 4;  // x, y, z, w
+
+  const base::Value::List* value_list = params.FindList("quaternion");
+  if (!value_list || value_list->size() != kQuaternionListSize) {
+    return false;
+  }
+  absl::optional<double> x = (*value_list)[0].GetIfDouble();
+  if (!x.has_value()) {
+    return false;
+  }
+  absl::optional<double> y = (*value_list)[1].GetIfDouble();
+  if (!y.has_value()) {
+    return false;
+  }
+  absl::optional<double> z = (*value_list)[2].GetIfDouble();
+  if (!z.has_value()) {
+    return false;
+  }
+  absl::optional<double> w = (*value_list)[3].GetIfDouble();
+  if (!w.has_value()) {
+    return false;
+  }
+  // Construct a dict that looks like this:
+  // {
+  //   quaternion: {
+  //     x: VAL1,
+  //     y: VAL2,
+  //     z: VAL3,
+  //     w: VAL4
+  //   }
+  // }
+  out_params->Set(
+      "quaternion",
+      base::Value::Dict().Set("x", *x).Set("y", *y).Set("z", *z).Set("w", *w));
+  return true;
+}
+
+base::expected<base::Value::Dict, Status> ParseSensorUpdateParams(
+    const base::Value::Dict& params) {
+  base::Value::Dict cdp_params;
+
+  const std::string* type = params.FindString("type");
+  if (!type) {
+    return base::unexpected(
+        Status(kInvalidArgument, "'type' must be a string"));
+  }
+  cdp_params.Set("type", *type);
+
+  const base::Value::Dict* reading_dict = params.FindDict("reading");
+  if (!reading_dict) {
+    return base::unexpected(
+        Status(kInvalidArgument, "Missing 'reading' field"));
+  }
+
+  base::Value::Dict reading;
+  if (*type == "ambient-light") {
+    if (!ParseSingleValue("illuminance", *reading_dict, &reading)) {
+      return base::unexpected(
+          Status(kInvalidArgument, "Could not parse illuminance"));
+    }
+  } else if (*type == "accelerometer" || *type == "gravity" ||
+             *type == "gyroscope" || *type == "linear-acceleration" ||
+             *type == "magnetometer") {
+    if (!ParseXYZValue(*reading_dict, &reading)) {
+      return base::unexpected(
+          Status(kInvalidArgument, "Could not parse XYZ fields"));
+    }
+  } else if (*type == "absolute-orientation" ||
+             *type == "relative-orientation") {
+    if (!ParseOrientationQuaternion(*reading_dict, &reading)) {
+      return base::unexpected(
+          Status(kInvalidArgument, "Could not parse quaternion"));
+    }
+  } else {
+    return base::unexpected(Status(
+        kInvalidArgument, "Unexpected type " + *type + " in 'type' field"));
+  }
+  cdp_params.Set("reading", std::move(reading));
+
+  return cdp_params;
+}
+
+}  // namespace
+
+Status ExecuteUpdateVirtualSensor(Session* session,
+                                  const base::Value::Dict& params,
+                                  std::unique_ptr<base::Value>* value) {
+  WebView* web_view = nullptr;
+  Status status = session->GetTargetWindow(&web_view);
+  if (status.IsError()) {
+    return status;
+  }
+
+  auto cdp_params = ParseSensorUpdateParams(params);
+  if (!cdp_params.has_value()) {
+    return cdp_params.error();
+  }
+
+  return web_view->SendCommandAndGetResult(
+      "Emulation.setSensorOverrideReadings", cdp_params.value(), value);
+}
+
+Status ExecuteRemoveVirtualSensor(Session* session,
+                                  const base::Value::Dict& params,
+                                  std::unique_ptr<base::Value>* value) {
+  WebView* web_view = nullptr;
+  Status status = session->GetTargetWindow(&web_view);
+  if (status.IsError()) {
+    return status;
+  }
+
+  const std::string* type = params.FindString("type");
+
+  if (!type) {
+    return Status(kInvalidArgument, "'type' must be a string");
+  }
+
+  base::Value::Dict args;
+  args.Set("enabled", false);
+  args.Set("type", *type);
+
+  return web_view->SendCommand("Emulation.setSensorOverrideEnabled", args);
+}
+
+Status ExecuteGetVirtualSensorInformation(Session* session,
+                                          const base::Value::Dict& params,
+                                          std::unique_ptr<base::Value>* value) {
+  WebView* web_view = nullptr;
+  Status status = session->GetTargetWindow(&web_view);
+  if (status.IsError()) {
+    return status;
+  }
+
+  const std::string* type = params.FindString("type");
+  if (!type) {
+    return Status(kInvalidArgument, "'type' must be a string");
+  }
+
+  base::Value::Dict args;
+  args.Set("type", *type);
+
+  return web_view->SendCommandAndGetResult(
+      "Emulation.getOverriddenSensorInformation", args, value);
 }
 
 Status ExecuteGetLocation(Session* session,

@@ -993,6 +993,24 @@ HttpHandler::HttpHandler(
           WrapToCommand("SetRPHRegistrationMode",
                         base::BindRepeating(&ExecuteSetRPHRegistrationMode))),
 
+      // https://w3c.github.io/sensors/#automation
+      CommandMapping(
+          kPost, "session/:sessionId/sensor",
+          WrapToCommand("CreateVirtualSensor",
+                        base::BindRepeating(&ExecuteCreateVirtualSensor))),
+      CommandMapping(
+          kPost, "session/:sessionId/sensor/:type",
+          WrapToCommand("UpdateVirtualSensor",
+                        base::BindRepeating(&ExecuteUpdateVirtualSensor))),
+      CommandMapping(
+          kDelete, "session/:sessionId/sensor/:type",
+          WrapToCommand("RemoveVirtualSensor",
+                        base::BindRepeating(&ExecuteRemoveVirtualSensor))),
+      CommandMapping(kGet, "session/:sessionId/sensor/:type",
+                     WrapToCommand("GetVirtualSensorInformation",
+                                   base::BindRepeating(
+                                       &ExecuteGetVirtualSensorInformation))),
+
       // Extension for Permissions Standard Automation "set permission" command:
       // https://w3c.github.io/permissions/#set-permission-command
       CommandMapping(kPost, "session/:sessionId/permissions",
