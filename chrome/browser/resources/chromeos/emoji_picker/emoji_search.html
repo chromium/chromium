@@ -143,6 +143,11 @@
     margin-inline-end: var(--emoji-picker-side-padding);
     overflow-y: scroll;
     padding: 13px 2px 2px 2px;
+    /**
+     * We need this to remove the non-transparent gap of topbar's box-shadow.
+     */
+    margin-top: -6px;
+    padding-top: 6px;
   }
 
   #no-emoji-image {
