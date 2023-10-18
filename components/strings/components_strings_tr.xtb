@@ -3019,7 +3019,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7201591969684833065">Yöneticiniz şunları görebilir:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, yeni bir gizli sekme açıp gizli olarak göz atmak için Sekme tuşuna, sonra Enter'a basın</translation>
 <translation id="7203375778433816396">Chrome'u sistemin varsayılan tarayıcısı olarak ayarlayın</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Yok}=1{1 şifre anahtarı}other{# şifre anahtarı}}</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Yok}=1{1 geçiş anahtarı}other{# geçiş anahtarı}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> güvenlik standartlarına uymuyor.</translation>
 <translation id="7210993021468939304">Yönetici kapsayıcı içindeki Linux etkinliğini görebilir ve kapsayıcı içindeki Linux uygulamalarını yükleyip çalıştırabilir</translation>
 <translation id="721197778055552897">Bu sorun hakkında <ph name="BEGIN_LINK" />daha fazla<ph name="END_LINK" /> bilgi edinin.</translation>

@@ -45,7 +45,7 @@
 <translation id="2590893390871230428">Sincronizar seus dados do Chromium</translation>
 <translation id="2618596336309823556">Nas configurações do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{O Chromium ajudará a rastrear o pacote na página "Nova guia".}one{O Chromium ajudará a rastrear o pacote na página "Nova guia".}other{O Chromium ajudará a rastrear os pacotes na página "Nova guia".}}</translation>
-<translation id="2650312721222849884">Para ver suas guias em qualquer lugar onde você usar o Chromium, ative a sincronização</translation>
+<translation id="2650312721222849884">Para acessar suas guias em qualquer lugar onde você usar o Chromium, ative a sincronização</translation>
 <translation id="2684230048001240293">Defina o Chromium como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="2730884209570016437">O Chromium não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="2784449251446768092">Gerenciar configurações do Chromium</translation>
@@ -113,7 +113,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromi
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>
 <translation id="5396916991083608703">Definir o Chromium como padrão?</translation>
 <translation id="5453478652154926037">O Chromium não pode verificar suas senhas.</translation>
-<translation id="5521125884468363740">Para ver suas guias em qualquer lugar onde você usar o Chromium, faça login e ative a sincronização</translation>
+<translation id="5521125884468363740">Para acessar suas guias em qualquer lugar onde você usar o Chromium, faça login e ative a sincronização</translation>
 <translation id="5522297504975449419">Você vai perder o acesso a alguns recursos do Chromium.</translation>
 <translation id="5571094606370987472">Abre as guias recentes do Chromium.</translation>
 <translation id="5623083843656850677">Bloqueie o modo de navegação anônima ao sair do Chromium ou mudar para outro app.</translation>
@@ -188,7 +188,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7931842119211730154">Bloquear guias anônimas ao fechar o Chromium</translation>
 <translation id="7934404985878918282">Verificar Lista de leitura do Chromium</translation>
 <translation id="7980860476903281594">O Chromium compartilha sua localização com os sites aos quais você concede permissão.</translation>
-<translation id="8013573822802650211">Para ver suas guias em qualquer lugar onde você usar o Chromium, faça login em todos os seus dispositivos</translation>
+<translation id="8013573822802650211">Para acessar suas guias em qualquer lugar onde você usar o Chromium, faça login em todos os seus dispositivos</translation>
 <translation id="8071041515667087705">Acesse as Configurações do Chromium.</translation>
 <translation id="8073677936375100957">Limpar seus dados do Chromium deste dispositivo?</translation>
 <translation id="8115308261377517697">Definir o Chromium como seu navegador padrão</translation>

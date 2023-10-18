@@ -347,6 +347,7 @@
 <translation id="2856503607207334158">ログインできませんでした</translation>
 <translation id="2860954141821109167">このデバイスで通話アプリが有効になっていることを確認してください</translation>
 <translation id="2861923151411510142">Chrome の一部の機能は使用できなくなります</translation>
+<translation id="2869430948265924908">車内で機密性の高いコンテンツを保護するには、車のプロフィールのロックを作成する必要があります。ロックには PIN、コード、パスワードを使用できます。</translation>
 <translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2871733351037274014">ページをプリロードする</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> さんが次のウェブサイトの承認を求めています。</translation>
@@ -468,6 +469,7 @@
 <translation id="3421726884497337397">サードパーティの Cookie をどのようなときにブロックするかを選択する</translation>
 <translation id="3428747202529429621">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります</translation>
 <translation id="3429160811076349561">試用版機能はオフになっています</translation>
+<translation id="3430670036890315772">プロフィールのロックをオフにすると、保存した情報が削除されます</translation>
 <translation id="3435465986463792564">ウィンドウの数が多くてお困りの場合も、ここで管理できます</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="3439276997620616816">最近使ったタブがここに表示されます</translation>
@@ -647,6 +649,7 @@
 <translation id="4378154925671717803">電話</translation>
 <translation id="438319986296050901">カードのみ共有</translation>
 <translation id="4384468725000734951">検索に Sogou を使用します</translation>
+<translation id="4387647248986092471">車のプロフィールのロックを作成</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ダウンロードしています…</translation>
 <translation id="4404568932422911380">ブックマークがありません</translation>
 <translation id="4405224443901389797">移動…</translation>
@@ -818,6 +821,7 @@
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5171045022955879922">検索または URL を入力</translation>
 <translation id="5174700554036517242">タブが最初の高さに戻りました</translation>
+<translation id="5180063720319462041">ページが<ph name="TARGET_LANGUAGE" />に翻訳されました</translation>
 <translation id="5186634140793586141">関心のあるトピックと検索内容を管理する</translation>
 <translation id="5191251636205085390">サードパーティの Cookie に代わる新しい技術の詳細と管理方法について</translation>
 <translation id="5193988420012215838">クリップボードにコピーされました</translation>
@@ -826,6 +830,7 @@
 <translation id="5210286577605176222">前のタブに移動する</translation>
 <translation id="5210365745912300556">タブを閉じる</translation>
 <translation id="5222676887888702881">ログアウト</translation>
+<translation id="5226378907213531272">車を使うたびに画面ロックが解除されます</translation>
 <translation id="5227554086496586518">タップして検索結果を見る</translation>
 <translation id="5233638681132016545">新しいタブ</translation>
 <translation id="5234971936051226002">「このページを読み上げ」プレーヤーが最小化されました。</translation>
@@ -1321,6 +1326,7 @@
 <translation id="7691043218961417207">フォローするコンテンツを探しましょう</translation>
 <translation id="7697383401610880082">ドラッグ ハンドル</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> でメールを作成</translation>
+<translation id="7702388902581909985">閲覧データを削除しても、Google アカウントからはログアウトされません。ログアウトするには、<ph name="BEGIN_LINK1" />Chrome からログアウト<ph name="END_LINK1" />する手順を行います。</translation>
 <translation id="7707922173985738739">モバイルデータを使用します</translation>
 <translation id="7709094866268987903">削除した興味 / 関心がここに表示されます</translation>
 <translation id="7709918231054955894">使用したすべてのタブを表示</translation>

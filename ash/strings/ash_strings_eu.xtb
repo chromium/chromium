@@ -705,6 +705,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="385300504083504382">Hasiera</translation>
 <translation id="3859364108019690">Ezin da igorri zuzenean aplikaziorik</translation>
 <translation id="3861651314799684201">Pantaila osoa grabatzeko, sakatu Sartu</translation>
+<translation id="3865912916886104060">Ez dago gailurik konektatuta. Wifi-gune bat erabiltzen hasteko, wifia desaktibatuko da.</translation>
 <translation id="3886872229787704059">Gaur ireki da</translation>
 <translation id="3891340733213178823">Saioa amaitzeko, sakatu Ktrl + Maius + Q bi aldiz.</translation>
 <translation id="3893630138897523026">ChromeVox (ahozko argibideak)</translation>
@@ -789,6 +790,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="4197790712631116042">Desaktibatuta</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ez dago erabilgarri.</translation>
 <translation id="4201051445878709314">Erakutsi aurreko hilabetea</translation>
+<translation id="4202362334312791952">1 gailu dago konektatuta. Wifi-gune bat erabiltzen hasteko, wifia desaktibatuko da.</translation>
 <translation id="4209973997261364186">Aktibatuta dago wifia</translation>
 <translation id="4212472694152630271">Aldatu PIN kodera</translation>
 <translation id="4215497585250573029">VPN ezarpenak</translation>
@@ -1052,6 +1054,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="5258528442992323769">Ez dago lan-eremurik gordeta</translation>
 <translation id="5260676007519551770">4. lan-eremua</translation>
 <translation id="5268819379131021772">Google Zereginak zerbitzuko zerrenda</translation>
+<translation id="5275923704957843041">Lan-eremuaren aurrebista</translation>
 <translation id="5278086053818066789">Aktibatu/Desaktibatu ChromeVox (ahozko argibideak)</translation>
 <translation id="5283099933536931082">Zure arreta behar du <ph name="APP_ITEM_TITLE" /> aplikazioak.</translation>
 <translation id="5283198616748585639">Gehitu 1 minutu</translation>
@@ -1168,6 +1171,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="5707775774148071965">Gailuak kableak baino bizkorrago transferi ditzake datuak. Baliteke gailuaren errendimendua mugatuta egotea.</translation>
 <translation id="5710450975648804523">Aktibatuta dago ez molestatzeko modua</translation>
 <translation id="571295407079589142">Desaktibatuta dago datu-konexioa</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> gailu daude konektatuta. Wifi-gune bat erabiltzen hasteko, wifia desaktibatuko da.</translation>
 <translation id="5727460725221669831">Pasahitza ahaztu bazaizu edo duela gutxi Google-ko kontuko pasahitza aldatu baduzu, berreskuratu erabiltzaile hau.</translation>
 <translation id="573413375004481890">Ezin dira zure pantaila guztiak konektatu gailu honetara; beraz, haietako bat deskonektatu da</translation>
 <translation id="5740328398383587084">Nearby Share</translation>

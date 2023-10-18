@@ -13,6 +13,7 @@
 <translation id="1024913885641459127">商品レビュー、価格比較</translation>
 <translation id="1028781062521375153">詳細を表示</translation>
 <translation id="1030706264415084469"><ph name="URL" /> から、デバイスに大きなデータを永続的に保存する許可を求められています</translation>
+<translation id="1030949145805074938">{COUNT,plural, =0{なし}=1{1 件のサイトが対象。ほとんどのサイトからログアウトします。}other{# 件のサイトが対象。ほとんどのサイトからログアウトします。}}</translation>
 <translation id="1033329911862281889">シークレット モードを使用しても、オンライン上にまったく記録が残らないわけではありません。
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />利用したサイトやサービスにはアクセスしたことが知られる場合があります<ph name="END_LIST_ITEM" />
@@ -484,6 +485,7 @@
 <translation id="1939059826036755332">ピクチャー イン ピクチャーの自動開始</translation>
 <translation id="1939175642807587452">通知の送信を要求できる</translation>
 <translation id="1940441167050915935">保存したセキュリティ コードを削除</translation>
+<translation id="194174710521904357">このサイトにサードパーティ Cookie の使用を一時的に許可しました。これによりブラウジングの保護の強度は低下しますが、サイトが適切に機能する可能性が高くなります。</translation>
 <translation id="1943994668912612445">設計、デザイン</translation>
 <translation id="1945968466830820669">組織のアカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
 <translation id="1946849748901605102">12x15 インチ</translation>
@@ -661,6 +663,7 @@
 <translation id="2300306941146563769">アップロードされていません</translation>
 <translation id="230286397113210245">[シークレット ウィンドウを開く] ボタンです。実行すると、新しいシークレット ウィンドウを開いてシークレット モードでブラウジングできます</translation>
 <translation id="2312234273148520048">調味料、ドレッシング</translation>
+<translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> 未満。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="2316159751672436664">Chrome OS の設定でユーザー補助ツールをカスタマイズします</translation>
 <translation id="2316887270356262533">最大で 1 MB を解放します。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> にはユーザー名とパスワードが必要です。</translation>
@@ -1105,6 +1108,7 @@
 <translation id="3271648667212143903"><ph name="ORIGIN" /> が接続を要求しています</translation>
 <translation id="3272091146646336650">スーパー B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> 桁の確認コードを入力してください</translation>
+<translation id="3272643614306383237">1 MB 未満。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理者のポリシー設定では、このファイルを <ph name="DESTINATION_NAME" /> で開くことは推奨されていません}other{管理者のポリシー設定では、これらのファイルを <ph name="DESTINATION_NAME" /> で開くことは推奨されていません}}</translation>
 <translation id="3282085321714087552">あなたの組織（<ph name="ENROLLMENT_DOMAIN" />）は次のウェブサイトに設定やポリシーなどの情報を送信するよう設定しています。</translation>
 <translation id="3286372614333682499">縦向き</translation>
@@ -2869,6 +2873,7 @@
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />デフォルトの検索エンジンではウェブ検索ができるだけでなく、Chrome の機能を活用<ph name="END_BOLD" />してアドレスバーからの検索、ウェブページの画像からの検索なども行うことができます。ただし検索エンジンでサポートされていない機能は利用できない場合があります。</translation>
 <translation id="6934672428414710184">Google アカウントで設定されている名前です</translation>
 <translation id="6935082727755903526">会計、財務系の求人情報</translation>
+<translation id="6935179587384421592"><ph name="SIZE" />。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="6936976777388162184">これはバンドルされたデバイスです。Kiosk &amp; Signage Upgrade に登録することはできません。</translation>
 <translation id="6939469646605424232">テレビドラマ</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
@@ -3134,6 +3139,7 @@
 <translation id="7441864845853794192">グルメ、名物料理</translation>
 <translation id="7442725080345379071">ライトオレンジ</translation>
 <translation id="7444046173054089907">このサイトはブロックされています</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{今日、Cookie を再びブロックします}=1{明日、Cookie を再びブロックします}other{Cookie を再びブロックするまであと # 日です}}</translation>
 <translation id="7445762425076701745">接続してるサーバーの身元について、十分な検証ができません。接続しているサーバーは、そのネットワーク内でのみ有効な名前を使用しており、外部認証局がその所有権を検証する方法はありません。こうした名前で証明書を発行する認証局もあるので、接続先が意図したウェブサイトか、悪意のあるユーザーのサイトかは確認できません。</translation>
 <translation id="7447234474237738389">服飾サービス</translation>
 <translation id="7447625772313191651"><ph name="NAME" />（<ph name="WIDTH" />x<ph name="HEIGHT" /> mm）</translation>
@@ -3501,6 +3507,7 @@
 <translation id="81563721597823545">ホッケー用品</translation>
 <translation id="8161095570253161196">ブラウジングを再開</translation>
 <translation id="8163866351304776260">4 穴パンチ（左）</translation>
+<translation id="8164078261547504572">値下げがあったときにメールで通知を受け取りますか？</translation>
 <translation id="8175796834047840627">ログインしている場合は、その Google アカウントにカードを保存できます。この動作は設定で変更できます。</translation>
 <translation id="8176440868214972690">このデバイスの管理者は、次のウェブサイトに設定やポリシーなどの情報を送信するよう設定しています。</translation>
 <translation id="817820454357658398">女性向け衛生用品</translation>
@@ -3942,6 +3949,7 @@
 <translation id="9078912659001679888">ミキサー、ジューサー</translation>
 <translation id="9078964945751709336">その他の情報が必要です</translation>
 <translation id="9080712759204168376">ご注文の概要</translation>
+<translation id="9084304544887760521">追跡しているアイテムを値下げしたサイトがあったときに、<ph name="EMAIL" /> にメールでお知らせします。</translation>
 <translation id="908796725011587895">大学スポーツ</translation>
 <translation id="9089260154716455634">管理時間外のポリシー:</translation>
 <translation id="9090243919347147717">添付ファイル</translation>
@@ -4026,6 +4034,7 @@
 <translation id="944540589955480312">Google アカウントに保存したパスワードとパスキーを使用</translation>
 <translation id="945855313015696284">下記の情報を確認し、無効なカードがあれば削除してください</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google サイトで新しいサイトをすばやく作成します</translation>
+<translation id="947974362755924771">{COUNT,plural, =0{今日、Chrome で Cookie を再び制限します}=1{明日、Chrome で Cookie を再び制限します}other{Chrome で Cookie を再び制限するまであと # 日です}}</translation>
 <translation id="949314938206378263">このサイトを開いてもよいかの問い合わせを送信しました。保護者の方は、ファミリー リンクで返信できます。</translation>
 <translation id="950736567201356821">3 穴パンチ（上）</translation>
 <translation id="961663415146723894">製本（下綴じ）</translation>

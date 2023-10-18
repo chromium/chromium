@@ -108,6 +108,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> のスペルチェック辞書をダウンロードできませんでした。もう一度お試しください。</translation>
 <translation id="1078037449555275327">ChromeVox の設定</translation>
+<translation id="1079285777677001938">一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="1079766198702302550">カメラへのアクセスを常にブロックする</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個のタブ}other{<ph name="GROUP_TITLE" /> - # 個のタブ}}</translation>
 <translation id="1082214733466244292">このデバイスの一部の機能は、管理者によってブロックされています</translation>
@@ -300,6 +301,7 @@
 <translation id="1227660082540388410">パスキーの編集</translation>
 <translation id="1227993798763400520">キャストできませんでした。もう一度お試しください。</translation>
 <translation id="1230417814058465809">標準保護機能がオンになっています。セキュリティをさらに強化するには、保護強化機能を使用してください。</translation>
+<translation id="1231426483209637778">次回 <ph name="DEVICE_TYPE" /> を使用するときにご利用のネットワークが表示されます。</translation>
 <translation id="1232569758102978740">無題</translation>
 <translation id="1233497634904001272">リクエストを完了するには、セキュリティ キーをもう一度タップしてください。</translation>
 <translation id="1233721473400465416">言語/地域</translation>
@@ -540,6 +542,7 @@
 <translation id="1431188203598586230">最後のソフトウェア アップデート</translation>
 <translation id="1432581352905426595">検索エンジンを管理</translation>
 <translation id="1433478348197382180">リーディング モード</translation>
+<translation id="1433980411933182122">起動</translation>
 <translation id="1434696352799406980">起動ページ、新しいタブページ、検索エンジン、固定タブをリセットします。また、すべての拡張機能を無効にし、Cookie などの一時データを削除します。ただし、ブックマーク、履歴、保存したパスワードはそのまま残ります。</translation>
 <translation id="1434886155212424586">ホームページは新しいタブのページです</translation>
 <translation id="1435940442311036198">別のデバイスのパスキーを使用する</translation>
@@ -670,6 +673,7 @@
 <translation id="1536754031901697553">切断しています...</translation>
 <translation id="1537254971476575106">全画面拡大鏡</translation>
 <translation id="15373452373711364">大きいマウスカーソル</translation>
+<translation id="1540265419569299117">ChromeOS アプリサービス</translation>
 <translation id="1540605929960647700">デモモードの有効化</translation>
 <translation id="1541346352678737112">ネットワークが見つかりません</translation>
 <translation id="154198613844929213">{0,plural, =0{削除しています。}=1{1 秒後に削除します}other{# 秒後に削除します}}</translation>
@@ -1495,6 +1499,7 @@
 <translation id="2157474325782140681">すべての機能を利用できるようにするには、この Chromebook に対応した Dell のドッキング ステーションを使用してください。</translation>
 <translation id="215753907730220065">全画面表示を終了</translation>
 <translation id="2157875535253991059">現在このページは全画面表示です。</translation>
+<translation id="2158249272743343757">入力履歴を削除...</translation>
 <translation id="2158475082070321257">選択箇所へのリンクをコピー</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> の <ph name="SHORTCUT" /> のスコープ</translation>
@@ -3352,6 +3357,7 @@
 <translation id="3660234220361471169">信頼されていない</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 件の既存のパスワードが見つかりました}other{{NUM_PASSWORDS} 件の既存のパスワードが見つかりました}}</translation>
 <translation id="3664511988987167893">拡張機能アイコン</translation>
+<translation id="3665100783276035932">ほとんどのサイトは適切に機能します</translation>
 <translation id="3665301845536101715">サイドパネルで開く</translation>
 <translation id="3665589677786828986">設定の一部が別のプログラムによって変更されていたため、元のデフォルト設定に戻しました。</translation>
 <translation id="3665919494326051362">現在のバージョンは <ph name="CURRENT_VERSION" /> です</translation>
@@ -3802,11 +3808,13 @@
 <translation id="398477389655464998">選択箇所へのリンクをコピー</translation>
 <translation id="3984862166739904574">クイック アンサーの定義</translation>
 <translation id="3985022125189960801">あなたの興味 / 関心を推測することを許可するには、サイトをプールに戻します</translation>
+<translation id="3986813315215454677">ChromeOS Bluetooth</translation>
 <translation id="3987544746655539083">このサイトによる位置情報へのアクセスを引き続きブロックする</translation>
 <translation id="3987938432087324095">聞き取れませんでした。</translation>
 <translation id="3987993985790029246">リンクのコピー</translation>
 <translation id="3988124842897276887">このタブは USB デバイスに接続されています</translation>
 <translation id="3988996860813292272">タイムゾーンの選択</translation>
+<translation id="3991055816270226534">サードパーティ Cookie とトラッキング防止機能を管理します</translation>
 <translation id="399179161741278232">インポートしたブックマーク</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> をダウンロードしています、<ph name="STATUS" /></translation>
 <translation id="3993259701827857030">データをバックアップ</translation>
@@ -4463,6 +4471,7 @@
 <translation id="4546692474302123343">Google アシスタントの音声入力</translation>
 <translation id="4547659257713117923">他のデバイスからのタブはありません</translation>
 <translation id="4547672827276975204">自動的に設定する</translation>
+<translation id="4548858987594081919">Google パスワード マネージャーでログイン情報を保存するには、このサイトのユーザー名を追加してください</translation>
 <translation id="4549791035683739768">セキュリティ キーにフィンガープリントは保存されていません</translation>
 <translation id="4550926046134589611">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" /> で開かれます。</translation>
 <translation id="4551763574344810652">元に戻すには <ph name="MODIFIER_KEY_DESCRIPTION" /> を押します</translation>
@@ -4881,6 +4890,7 @@
 <translation id="4887424188275796356">システム ビューアで開く</translation>
 <translation id="488785315393301722">詳細を表示</translation>
 <translation id="488862352499217187">新規フォルダを作成</translation>
+<translation id="4890292359366636311">自動的にピクチャー イン ピクチャーで表示します。そのため、他のタブやウィンドウでも画面を利用できます。</translation>
 <translation id="4890773143211625964">プリンタの詳細オプションを表示</translation>
 <translation id="4891089016822695758">ベータ版フォーラム</translation>
 <translation id="4892229439761351791">サイトに Bluetooth の使用が許可されています</translation>
@@ -5054,6 +5064,7 @@
 <translation id="5051461727068120271">未確認のファイルをダウンロード</translation>
 <translation id="5051836348807686060">選択した言語ではスペルチェックを使用できません</translation>
 <translation id="5052499409147950210">サイトの編集</translation>
+<translation id="5053233576223592551">ユーザー名を追加</translation>
 <translation id="505347685865235222">名前のないグループ - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054374119096692193">[<ph name="BEGIN_LINK" />このページをカスタマイズ<ph name="END_LINK" />] ですべてのカード オプションを確認できます</translation>
 <translation id="5056950756634735043">コンテナに接続しています</translation>
@@ -5814,6 +5825,7 @@
 <translation id="5684661240348539843">アセット ID</translation>
 <translation id="5684950556880280580">パスワードが更新されました</translation>
 <translation id="5687326903064479980">タイムゾーン</translation>
+<translation id="5687340364605915800">このリクエストへの対応はサイトが自らの裁量で決定します</translation>
 <translation id="5687606994963670306">Chrome では、30 日以上経過したウェブサイトは自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。広告の提案を行わないようウェブサイトをブロックすることもできます。詳しくは、<ph name="BEGIN_LINK" />Chrome で広告のプライバシーを管理する<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="5687935527303996204">デバイスが電源に接続されていることを確認してください。電源をオフにしないでください。インストールには 20 分ほどかかる場合があります。インストールが完了するとデバイスは自動的にシャットダウンします。</translation>
 <translation id="5689233503102158537">Alt+Backspace</translation>
@@ -6047,6 +6059,7 @@
 <translation id="5869522115854928033">保存したパスワード</translation>
 <translation id="5870086504539785141">ユーザー補助メニューを閉じる</translation>
 <translation id="5870155679953074650">ハードの障害数</translation>
+<translation id="5872318519182427835">ここに表示されるサイトとそのサブドメインに影響します。たとえば、「google.com」を追加すると、google.com の一部である mail.google.com でもサードパーティ Cookie が有効になります。</translation>
 <translation id="5875534259258494936">画面共有を終了しました</translation>
 <translation id="5876576639916258720">実行中...</translation>
 <translation id="5876851302954717356">右隣に新しいタブを開く</translation>
@@ -6429,6 +6442,7 @@
 <translation id="6180550893222597997"><ph name="APP_NAME" /> に使用するパスキーを指定してください</translation>
 <translation id="6181431612547969857">ダウンロードがブロックされました</translation>
 <translation id="6184099524311454384">タブを検索</translation>
+<translation id="6184868291074982484">Chrome でサードパーティ Cookie を自動的に制限します</translation>
 <translation id="6185132558746749656">デバイスの位置情報</translation>
 <translation id="6190953336330058278">スマートフォン ハブ アプリ</translation>
 <translation id="6192333916571137726">ファイルをダウンロード</translation>
@@ -7278,12 +7292,14 @@
 <translation id="6876469544038980967">役に立たなかった</translation>
 <translation id="6878422606530379992">センサーが許可されました</translation>
 <translation id="6880587130513028875">このページの画像はブロックされました。</translation>
+<translation id="6882210908253838664">サイトが機能しない場合は、サードパーティ Cookie の使用を一時的に許可してみてください。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">デバイスの設定を保存できませんでした。</translation>
 <translation id="6884474387073389421">選択したログインデータを削除してもよろしいですか？</translation>
 <translation id="6885122019363983153">すべてのデバイスで同じデスクトップの背景を使用します</translation>
 <translation id="6885771755599377173">システム情報のプレビュー</translation>
 <translation id="6886380424988777998">Linux をアップグレードできませんでした</translation>
 <translation id="6886871292305414135">新しいタブで開く(&amp;T)</translation>
+<translation id="6888831646723563669">接続して、新しい <ph name="DEVICE_TYPE" /> のあらゆる機能をご活用ください</translation>
 <translation id="6889957081990109136">スイッチがまだ割り当てられていません</translation>
 <translation id="689007770043972343">別の開いたタブをグループにドラッグしてみてください</translation>
 <translation id="6892812721183419409"><ph name="USER" /> としてリンクを開く</translation>
@@ -7599,6 +7615,7 @@
 <translation id="7145413760160421938">前のセッションを再開できません</translation>
 <translation id="7146882055510146554">Microsoft 365 では、Word、Excel、PowerPoint ファイルを開いて編集する際に OneDrive を使用します。これらのファイルは、ファイルアプリのサイド ナビゲーションの「Microsoft OneDrive」で確認できます。Microsoft アカウントにログインする必要があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">サイトが想定どおりに機能しない可能性があります。アクセスしたサイトに関する情報をデバイスに残したくない場合は、このオプションを選択します。</translation>
+<translation id="7148954254185728510">ほとんどのサイトは、サードパーティ Cookie を使用してブラウジング中のユーザーをトラッキングできません。またシークレット モードでは、サイトはサードパーティ Cookie を使用できません。</translation>
 <translation id="7149839598364933473">このデバイスを <ph name="DEVICE_OS" /> デバイスに変換します。</translation>
 <translation id="7149893636342594995">過去 24 時間</translation>
 <translation id="7152478047064750137">この拡張機能に特別な権限は必要ありません</translation>
@@ -8183,6 +8200,7 @@
 <translation id="7634566076839829401">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="7635048370253485243">管理者によって固定されています</translation>
 <translation id="7635711411613274199">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、<ph name="BEGIN_LINK1" />広告のトピック<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie の設定状況<ph name="LINK_END2" />、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
+<translation id="7636346903338549690">サードパーティ Cookie の使用が許可されているサイト</translation>
 <translation id="7636919061354591437">このデバイスにインストール</translation>
 <translation id="7637253234491814483">キーボードの右上にある電源ボタンの横の指紋認証センサーに触れてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="7637272932128132922">このタブがアクティブでないときに、メモリセーバーがメモリを他のタスクに解放しました。これは <ph name="SETTINGS_LINK" /> でいつでも変更できます。</translation>
@@ -9514,6 +9532,7 @@
 <translation id="8678378565142776698">再起動して自動的に更新</translation>
 <translation id="8678538439778360739"><ph name="TIME" /> にデータを同期パスフレーズで暗号化しました。なお、Google Pay のお支払い方法と住所はこれには含まれません。</translation>
 <translation id="8678582529642151449">タブを縮小しない</translation>
+<translation id="867882552362231068">Chrome で、サイトがブラウジング中のユーザーのトラッキングに使用できる情報タイプを制限します。設定を変更して、ご自身で保護レベルを選択することもできます。</translation>
 <translation id="8678933587484842200">このアプリケーションの起動方法を選択してください。</translation>
 <translation id="8679054765393461130">ネットワーク選択リストのレンダリングでは、Wi-Fi のスキャンが頻繁に行われるため、Wi-Fi ネットワークのパフォーマンスに影響が生じる場合があります。</translation>
 <translation id="8680251145628383637">ブックマーク、履歴、パスワードなどの設定をすべてのデバイスで使用するにはログインしてください。ログインすると、利用している Google サービスにも自動的にログインすることになります。</translation>

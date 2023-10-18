@@ -350,7 +350,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="126387934568812801">Incluir esta captura de tela e os títulos das guias abertas</translation>
 <translation id="1264083566674525434">Editar permissões do site</translation>
 <translation id="1264337193001759725">Os registros de interface de rede podem ser vistos em: <ph name="DEVICE_LOG_LINK" /></translation>
-<translation id="1265279736024499987">Seus apps e configurações serão sincronizados em todos os dispositivos ChromeOS Flex conectados à sua Conta do Google. Para ver as opções de sincronização do navegador, acesse as <ph name="LINK_BEGIN" />configurações do Chrome<ph name="LINK_END" />.</translation>
+<translation id="1265279736024499987">Seus apps e configurações serão sincronizados em todos os dispositivos ChromeOS Flex conectados à sua Conta do Google. Para acessar as opções de sincronização do navegador, acesse as <ph name="LINK_BEGIN" />configurações do Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Idioma de tradução:</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Parar</translation>
@@ -886,7 +886,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1682696837763999627">Cursor grande do mouse</translation>
 <translation id="1682867089915960590">Ativar Caret Browsing?</translation>
 <translation id="1686550358074589746">Ativar a digitação por gesto</translation>
-<translation id="168715261339224929">Para ver seus favoritos em todos os seus dispositivos, ative a sincronização.</translation>
+<translation id="168715261339224929">Para acessar seus favoritos em todos os seus dispositivos, ative a sincronização.</translation>
 <translation id="1688935057616748272">Digite uma letra</translation>
 <translation id="1689333818294560261">Apelido</translation>
 <translation id="168991973552362966">Adicionar uma impressora próxima</translation>
@@ -1718,7 +1718,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
     <ph name="BR" />
     O Google Assistente usa clipes da voz da criança para criar um modelo exclusivo que fica armazenado somente nos dispositivos dela. Esse modelo pode ser enviado temporariamente ao Google para identificar melhor a voz da criança.
     <ph name="BR" />
-    Se você decidir que não quer mais usar o Voice Match com a criança, basta removê-lo nas configurações do Google Assistente. Para ver ou excluir os clipes de áudio gravados durante a configuração do Voice Match, acesse <ph name="VOICE_MATCH_SETTINGS_URL" /> pela conta da criança.
+    Se você decidir que não quer mais usar o Voice Match com a criança, basta removê-lo nas configurações do Google Assistente. Para acessar ou excluir os clipes de áudio gravados durante a configuração do Voice Match, acesse <ph name="VOICE_MATCH_SETTINGS_URL" /> pela conta da criança.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Não há suporte para estas teclas: Tab, Shift, Control, Escape, Caps lock e Volume</translation>
@@ -2047,7 +2047,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2558569818338050235">Seu histórico de navegação afeta os anúncios mostrados a você</translation>
 <translation id="2559889124253841528">Salvar no dispositivo</translation>
 <translation id="2561211427862644160">Encontre todos os favoritos aqui</translation>
-<translation id="2564520396658920462">A execução do JavaScript por AppleScript está desativada. Para ativá-la, na barra de menu, acesse Ver &gt; Desenvolvedor &gt; Permitir o JavaScript do Eventos da Apple. Para ver mais informações: https://support.google.com/chrome/?p=applescript</translation>
+<translation id="2564520396658920462">A execução do JavaScript por AppleScript está desativada. Para ativá-la, na barra de menu, acesse Ver &gt; Desenvolvedor &gt; Permitir o JavaScript do Eventos da Apple. Para acessar mais informações: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Verificação ortográfica aprimorada</translation>
 <translation id="256481480019204378">ID da Conta do Google</translation>
 <translation id="2565214867520763227">Ativar o leitor de tela</translation>
@@ -3728,7 +3728,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3916445069167113093">Este tipo de arquivo pode danificar seu computador. Quer manter o arquivo <ph name="FILE_NAME" /> mesmo assim?</translation>
 <translation id="3917184139185490151">Seu computador possui um módulo de segurança, que é usado para implementar muitos recursos de proteção importantes no ChromeOS. Acesse a Central de Ajuda do Chromebook para saber mais: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">Não há armazenamento suficiente para sincronizar seus arquivos. Tente liberar espaço.</translation>
-<translation id="3919145445993746351">Para ver suas extensões em todos os seus computadores, ative a sincronização</translation>
+<translation id="3919145445993746351">Para acessar suas extensões em todos os seus computadores, ative a sincronização</translation>
 <translation id="3919229493046408863">Desativar notificação quando os dispositivos estiverem por perto</translation>
 <translation id="3919262972282962508">Depois de dezembro de 2022, não vai mais ser possível abrir as versões antigas dos apps do Chrome em dispositivos Mac. Entre em contato com seu administrador para instalar uma nova versão ou remover esse app.</translation>
 <translation id="3919376399641777316">Usa o armazenamento do Google Drive</translation>
@@ -3855,7 +3855,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4005817994523282006">Método de detecção de fuso horário</translation>
 <translation id="4007856537951125667">Ocultar atalhos</translation>
 <translation id="4008291085758151621">As informações do site não estão disponíveis em RV</translation>
-<translation id="4010917659463429001">Para ver seus favoritos no dispositivo móvel, <ph name="GET_IOS_APP_LINK" />.</translation>
+<translation id="4010917659463429001">Para acessar seus favoritos no dispositivo móvel, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Instalou extensões? <ph name="BEGIN_LINK" />Gerencie suas extensões<ph name="END_LINK" /> em um só lugar.</translation>
 <translation id="4016762287427926315">As permissões concedidas para <ph name="APP_NAME" /> também serão dadas para este app. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
@@ -4249,7 +4249,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4350782034419308508">Oi Google</translation>
 <translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Para oferecer a melhor experiência possível, o <ph name="DEVICE_OS" /> coleta dados de hardware sobre dispositivos e os compartilha com o Google para determinar o que será atualizado. Você pode permitir que o Google use esses dados para outros fins, como suporte e melhorias da experiência e do serviço do <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Faça login neste dispositivo e vá para a sessão CHROMEOSFLEX_HARDWARE_INFO em chrome://system para ver os dados enviados ao Google para filtragem de atualizações, assim como qualquer outra instância em que você escolheu compartilhar dados com o Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Para ver mais detalhes sobre os dados que o <ph name="DEVICE_OS" /> pode compartilhar com o Google e como eles são usados, acesse g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH3" />Para acessar mais detalhes sobre os dados que o <ph name="DEVICE_OS" /> pode compartilhar com o Google e como eles são usados, acesse g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="435185728237714178">Acessar o app "<ph name="APP_NAME" />" para gerenciar apps instalados e transmitidos</translation>
 <translation id="4354073718307267720">Perguntar quando um site quiser criar um mapa 3D do ambiente a sua volta ou acompanhar a posição da câmera</translation>
 <translation id="4354344420232759511">Os sites que você visitar serão exibidos aqui</translation>
@@ -6065,7 +6065,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5860494867054883682">Atualizando seu dispositivo para o canal <ph name="CHANNEL_NAME" /> (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">Mostrar ferramentas da stylus na estante</translation>
 <translation id="5862319196656206789">Configurar dispositivos conectados</translation>
-<translation id="5862731021271217234">Para ver as guias dos seus outros dispositivos, ative a sincronização</translation>
+<translation id="5862731021271217234">Para acessar as guias dos seus outros dispositivos, ative a sincronização</translation>
 <translation id="5863195274347579748">Os acessórios externos podem acessar ou compartilhar dados pessoais.</translation>
 <translation id="5863445608433396414">Ativar recursos de depuração</translation>
 <translation id="5863515189965725638">Editar IBAN</translation>
@@ -6371,7 +6371,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6102043788063419338">Este arquivo foi bloqueado pelo Proteção Avançada.</translation>
 <translation id="6103681770816982672">Aviso: você está mudando para o canal do desenvolvedor</translation>
 <translation id="6104068876731806426">Contas do Google</translation>
-<translation id="6104311680260824317">Não é possível vincular o dispositivo ao domínio. O servidor não é compatível com os tipos de criptografia especificados do Kerberos. Para ver as configurações de criptografia, acesse "Mais opções".</translation>
+<translation id="6104311680260824317">Não é possível vincular o dispositivo ao domínio. O servidor não é compatível com os tipos de criptografia especificados do Kerberos. Para acessar as configurações de criptografia, acesse "Mais opções".</translation>
 <translation id="6104796831253957966">A fila da impressora está cheia</translation>
 <translation id="6104929924898022309">Usar a tecla de pesquisa para mudar o comportamento das teclas de função</translation>
 <translation id="6106167152849320869">Se você também escolheu enviar dados de uso e diagnóstico na etapa anterior, esses dados serão coletados para os apps instalados.</translation>
@@ -6902,7 +6902,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6542521951477560771">Transmitindo para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6545665334409411530">Taxa de repetição</translation>
 <translation id="6545867563032584178">O microfone está desativado nas preferências do sistema do Mac</translation>
-<translation id="6546856949879953071">Para ver informações detalhadas sobre o upgrade, acesse os registros salvos em Arquivos &gt; Meus arquivos &gt; <ph name="LOG_FILE" /></translation>
+<translation id="6546856949879953071">Para acessar informações detalhadas sobre o upgrade, acesse os registros salvos em Arquivos &gt; Meus arquivos &gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">Libere pelo menos 512 MB de espaço. Caso contrário, seu dispositivo deixará de responder. Para liberar espaço, exclua arquivos do armazenamento do dispositivo.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Os Serviços de localização do Google usam fontes como Wi-Fi, redes móveis e sensores para estimar o local do dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Você pode desativar a localização do Android no dispositivo a qualquer momento em "Configurações" &gt; "Apps" &gt; "Google Play Store" &gt; "Gerenciar preferências do Android" &gt; "Localização". Você também pode desativar o uso do Wi-Fi, redes móveis e sensores de localização do Android desativando a configuração "Precisão de local do Google" no mesmo menu.<ph name="END_PARAGRAPH2" /></translation>
@@ -7015,7 +7015,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6636623428211296678">Veja mais configurações abaixo ou conclua a revisão</translation>
 <translation id="6639554308659482635">Memória SQLite</translation>
 <translation id="6640268266988685324">Abrir guia</translation>
-<translation id="6642720633335369752">Para ver todas as janelas de apps abertos, deslize de baixo para cima e mantenha a tela pressionada.</translation>
+<translation id="6642720633335369752">Para acessar todas as janelas de apps abertos, deslize de baixo para cima e mantenha a tela pressionada.</translation>
 <translation id="664290675870910564">Seleção de rede</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6644512095122093795">Oferecer para salvar senhas</translation>
@@ -7222,7 +7222,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
     <ph name="BR" />
     Com o Voice Match, o Google Assistente identifica e diferencia sua voz. Ele usa clipes da sua voz para criar um modelo de voz exclusivo que fica armazenado somente nos seus dispositivos. Seu modelo de voz pode ser enviado ao Google temporariamente para melhorar a identificação.
     <ph name="BR" />
-    Se você decidir que não quer mais usar o Voice Match, basta removê-lo nas configurações do Google Assistente. Para ver ou excluir os clipes de áudio gravados durante a configuração do Voice Match, acesse <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    Se você decidir que não quer mais usar o Voice Match, basta removê-lo nas configurações do Google Assistente. Para acessar ou excluir os clipes de áudio gravados durante a configuração do Voice Match, acesse <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Faça login automaticamente nos websites que usam credenciais armazenadas. Quando o recurso estiver desativado, será necessário fornecer uma confirmação todas as vezes antes de fazer login em um website.</translation>
@@ -7253,7 +7253,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6826872289184051766">Verificar por USB</translation>
 <translation id="6827121912381363404">Permitir que todas as extensões leiam e mudem o site <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827422464708099620">Selecione para conferir mais opções</translation>
-<translation id="6827517233063803343">Seus apps e suas configurações serão sincronizados em todos os dispositivos ChromeOS conectados à sua Conta do Google. Para ver as opções de sincronização do navegador, acesse as <ph name="LINK_BEGIN" />configurações do Chrome<ph name="LINK_END" />.</translation>
+<translation id="6827517233063803343">Seus apps e suas configurações serão sincronizados em todos os dispositivos ChromeOS conectados à sua Conta do Google. Para acessar as opções de sincronização do navegador, acesse as <ph name="LINK_BEGIN" />configurações do Chrome<ph name="LINK_END" />.</translation>
 <translation id="6827767090350758381">Depois de dezembro de 2022, não vai mais ser possível abrir as versões antigas dos apps do Chrome em dispositivos Windows. Entre em contato com seu administrador para instalar uma nova versão ou remover esse app.</translation>
 <translation id="6828153365543658583">Restringir o login para os seguintes usuários:</translation>
 <translation id="6828182567531805778">Insira a senha longa para sincronizar seus dados</translation>
@@ -7316,7 +7316,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6867400383614725881">Nova guia anônima</translation>
 <translation id="686831807558000905">Não fazer login</translation>
 <translation id="686839242150793617">Permitido entrar no modo picture-in-picture automaticamente</translation>
-<translation id="6868934826811377550">Ver detalhes</translation>
+<translation id="6868934826811377550">Mais detalhes</translation>
 <translation id="6871644448911473373">Respondente OCSP: <ph name="LOCATION" /></translation>
 <translation id="6872781471649843364">A senha inserida foi recusada pelo servidor.</translation>
 <translation id="6873571253135628430">Mudar permissões do site</translation>
@@ -8572,7 +8572,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="788453346724465748">Carregando informações da conta…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{um item}one{# item}other{# itens}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
-<translation id="7887174313503389866">Faça um tour guiado sobre os principais controles de privacidade e segurança. Para ver mais opções, acesse as configurações individuais.</translation>
+<translation id="7887174313503389866">Faça um tour guiado sobre os principais controles de privacidade e segurança. Para acessar mais opções, acesse as configurações individuais.</translation>
 <translation id="7887334752153342268">Duplicar</translation>
 <translation id="7887864092952184874">Mouse Bluetooth pareado</translation>
 <translation id="7889371445710865055">Mudar idioma do Ditado</translation>
@@ -8685,7 +8685,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7968072247663421402">Opções do provedor</translation>
 <translation id="7968742106503422125">Ler e modificar os dados que você copia e cola</translation>
 <translation id="7968833647796919681">Ativar coleta de dados de desempenho</translation>
-<translation id="7968982339740310781">Ver detalhes</translation>
+<translation id="7968982339740310781">Mais detalhes</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Detalhes da Ethernet</translation>
 <translation id="7970882136539140748">Não é possível salvar o cartão no momento</translation>

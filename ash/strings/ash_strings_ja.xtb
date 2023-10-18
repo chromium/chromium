@@ -704,6 +704,7 @@
 <translation id="385300504083504382">先頭</translation>
 <translation id="3859364108019690">アプリをストリーミングできません</translation>
 <translation id="3861651314799684201">全画面を録画するには Enter キーを押してください</translation>
+<translation id="3865912916886104060">デバイスは接続されていません。アクセス ポイントを使用するため、Wi-Fi をオフにします。</translation>
 <translation id="3886872229787704059">今日開いたファイル</translation>
 <translation id="3891340733213178823">ログアウトするには、Ctrl+Shift+Q を 2 回押します。</translation>
 <translation id="3893630138897523026">ChromeVox（音声フィードバック）</translation>
@@ -788,6 +789,7 @@
 <translation id="4197790712631116042">オフ</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> は使用できません。</translation>
 <translation id="4201051445878709314">前の月を表示</translation>
+<translation id="4202362334312791952">1 台のデバイスが接続されています。アクセス ポイントを使用するため、Wi-Fi をオフにします。</translation>
 <translation id="4209973997261364186">Wi-Fi はオンです</translation>
 <translation id="4212472694152630271">PIN に切り替え</translation>
 <translation id="4215497585250573029">VPN 設定</translation>
@@ -1051,6 +1053,7 @@
 <translation id="5258528442992323769">保存したデスクはありません</translation>
 <translation id="5260676007519551770">デスク 4</translation>
 <translation id="5268819379131021772">Google ToDo リストのタスク一覧</translation>
+<translation id="5275923704957843041">デスクのプレビュー</translation>
 <translation id="5278086053818066789">ChromeVox（音声フィードバック）をオンまたはオフにします</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> から通知が届いています。</translation>
 <translation id="5283198616748585639">1 分追加</translation>
@@ -1167,6 +1170,7 @@
 <translation id="5707775774148071965">ケーブルの対応データレートがデバイスより低くなっています。デバイスのパフォーマンスが制限される可能性があります。</translation>
 <translation id="5710450975648804523">サイレント モードがオンになっています</translation>
 <translation id="571295407079589142">モバイルデータ通信はオフです</translation>
+<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> 台のデバイスが接続されていますアクセス ポイントを使用するため、Wi-Fi をオフにします。</translation>
 <translation id="5727460725221669831">パスワードを忘れた場合や Google アカウントのパスワードを最近変更した場合は、このユーザーを復元してみてください。</translation>
 <translation id="573413375004481890">このデバイスでサポートできるディスプレイの上限数を超えたため、ディスプレイが 1 台切断されました</translation>
 <translation id="5740328398383587084">ニアバイシェア</translation>
