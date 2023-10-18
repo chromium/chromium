@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Workspace from 'devtools/models/workspace/workspace.js';
+
 (async function() {
   TestRunner.addResult(`Tests SourceMap and CompilerScriptMapping.\n`);
   await TestRunner.evaluateInPagePromise(`
@@ -52,9 +54,9 @@ import {SourcesTestRunner} from 'sources_test_runner';
       async function secondUISourceCodeAdded(uiSourceCode) {
         TestRunner.addResult('source2.js UISourceCode arrived');
         var uiSourceCode1 =
-            Workspace.workspace.uiSourceCodeForURL('http://127.0.0.1:8000/devtools/resources/source1.js');
+            Workspace.Workspace.WorkspaceImpl.instance().uiSourceCodeForURL('http://127.0.0.1:8000/devtools/resources/source1.js');
         var uiSourceCode2 =
-            Workspace.workspace.uiSourceCodeForURL('http://127.0.0.1:8000/devtools/resources/source2.js');
+            Workspace.Workspace.WorkspaceImpl.instance().uiSourceCodeForURL('http://127.0.0.1:8000/devtools/resources/source2.js');
 
         SourcesTestRunner.checkUILocation(uiSourceCode1, 4, 4, await uiLocation(script, 0, 81));
         SourcesTestRunner.checkUILocation(uiSourceCode1, 5, 4, await uiLocation(script, 0, 93));

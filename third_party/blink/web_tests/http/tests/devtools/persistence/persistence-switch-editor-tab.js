@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   'use strict';
@@ -18,7 +19,7 @@ import * as Sources from 'devtools/panels/sources/sources.js';
   var testMapping = BindingsTestRunner.initializeTestMapping();
   TestRunner.runTestSuite([
     function openNetworkTab(next) {
-      TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.Network)
+      TestRunner.waitForUISourceCode('foo.js', Workspace.Workspace.projectTypes.Network)
           .then(sourceCode => SourcesTestRunner.showUISourceCodePromise(sourceCode))
           .then(onSourceFrame);
 

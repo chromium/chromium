@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Workspace from 'devtools/models/workspace/workspace.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that DiscardedAnonymousScriptSource event is fired and workspace is cleared.\n`);
@@ -35,8 +37,8 @@ import {SourcesTestRunner} from 'sources_test_runner';
   function step2() {
     TestRunner.addResult('Discarded: ' + discardedScripts);
     var codes =
-        Workspace.workspace
-            .uiSourceCodesForProjectType(Workspace.projectTypes.Debugger)
+        Workspace.Workspace.WorkspaceImpl.instance()
+            .uiSourceCodesForProjectType(Workspace.Workspace.projectTypes.Debugger)
             .filter(code => !code.url().match(/VM\d+\s/));
     TestRunner.addResult('Remaining UISourceCodes: ' + codes.length);
     SourcesTestRunner.completeDebuggerTest();

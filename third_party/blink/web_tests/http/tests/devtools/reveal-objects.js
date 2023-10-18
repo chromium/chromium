@@ -11,6 +11,7 @@ import * as Network from 'devtools/panels/network/network.js';
 import * as ElementsModule from 'devtools/panels/elements/elements.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as Application from 'devtools/panels/application/application.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Tests object revelation in the UI.\n`);
@@ -55,7 +56,7 @@ import * as Application from 'devtools/panels/application/application.js';
           return true;
         }
       });
-      uiLocation = Workspace.workspace.uiSourceCodeForURL(resource.url).uiLocation(2, 1);
+      uiLocation = Workspace.Workspace.WorkspaceImpl.instance().uiSourceCodeForURL(resource.url).uiLocation(2, 1);
 
       divNode = await ElementsTestRunner.nodeWithIdPromise('targetnode');
       spanNode = await ElementsTestRunner.nodeWithIdPromise('toremove');

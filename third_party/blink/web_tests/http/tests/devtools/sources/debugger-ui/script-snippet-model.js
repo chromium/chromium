@@ -9,6 +9,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import * as Console from 'devtools/panels/console/console.js';
 import * as Snippets from 'devtools/panels/snippets/snippets.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Tests script snippet model.\n`);
@@ -16,7 +17,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML('<p></p>');
 
-  const workspace = Workspace.workspace;
+  const workspace = Workspace.Workspace.WorkspaceImpl.instance();
   const snippetsProject = Snippets.ScriptSnippetFileSystem.findSnippetsProject();
   SourcesTestRunner.runDebuggerTestSuite([
     async function testCreateEditRenameRemove(next) {

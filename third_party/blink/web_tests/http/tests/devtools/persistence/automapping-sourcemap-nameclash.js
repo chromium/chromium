@@ -7,6 +7,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(
@@ -35,7 +36,7 @@ import * as Common from 'devtools/core/common/common.js';
   }
 
   function onFileSystemCreated() {
-    var automappingTest = new BindingsTestRunner.AutomappingTest(Workspace.workspace);
+    var automappingTest = new BindingsTestRunner.AutomappingTest(Workspace.Workspace.WorkspaceImpl.instance());
     automappingTest.waitUntilMappingIsStabilized().then(TestRunner.completeTest.bind(TestRunner));
   }
 

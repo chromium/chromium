@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as BindingsModule from 'devtools/models/bindings/bindings.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Tests SourceMap and StyleSheetMapping.\n`);
@@ -64,8 +65,8 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 
   function scssUISourceCodeAdded(uiSourceCode) {
     TestRunner.addResult('Added SCSS uiSourceCode: ' + uiSourceCode.url());
-    var cssUISourceCode = Workspace.workspace.uiSourceCodeForURL(styleSheetURL);
-    var scssUISourceCode = Workspace.workspace.uiSourceCodeForURL(sourceURL);
+    var cssUISourceCode = Workspace.Workspace.WorkspaceImpl.instance().uiSourceCodeForURL(styleSheetURL);
+    var scssUISourceCode = Workspace.Workspace.WorkspaceImpl.instance().uiSourceCodeForURL(sourceURL);
 
     testAndDumpLocation(cssUISourceCode, 0, 3, 0, 3);
     testAndDumpLocation(scssUISourceCode, 1, 0, 1, 0);

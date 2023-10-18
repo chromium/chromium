@@ -9,6 +9,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as Persistence from 'devtools/models/persistence/persistence.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(
@@ -21,7 +22,7 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
   const sourceCode = `'hello';`;
 
   const projects =
-      Workspace.workspace.projectsForType(Workspace.projectTypes.FileSystem);
+      Workspace.Workspace.WorkspaceImpl.instance().projectsForType(Workspace.Workspace.projectTypes.FileSystem);
   const snippetsProject = projects.find(
       project => Persistence.FileSystemWorkspaceBinding.FileSystemWorkspaceBinding.fileSystemType(
                      project) === 'snippets');

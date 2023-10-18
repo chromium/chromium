@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(
@@ -37,9 +38,9 @@ import * as Sources from 'devtools/panels/sources/sources.js';
 
     async function openNetworkFiles(next) {
       var uiSourceCodes = await Promise.all([
-        TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.Network),
-        TestRunner.waitForUISourceCode('bar.js', Workspace.projectTypes.Network),
-        TestRunner.waitForUISourceCode('baz.js', Workspace.projectTypes.Network)
+        TestRunner.waitForUISourceCode('foo.js', Workspace.Workspace.projectTypes.Network),
+        TestRunner.waitForUISourceCode('bar.js', Workspace.Workspace.projectTypes.Network),
+        TestRunner.waitForUISourceCode('baz.js', Workspace.Workspace.projectTypes.Network)
       ]);
 
       for (var uiSourceCode of uiSourceCodes)

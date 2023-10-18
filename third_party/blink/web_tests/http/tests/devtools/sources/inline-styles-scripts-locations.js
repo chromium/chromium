@@ -7,13 +7,14 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Bindings should only generate locations for an inline script (style) if the location is inside of the inline script (style).\n`);
   await TestRunner.showPanel('sources');
 
   await TestRunner.navigatePromise('../bindings/resources/inline-style.html');
-  const source = await TestRunner.waitForUISourceCode('inline-style.html', Workspace.projectTypes.Network);
+  const source = await TestRunner.waitForUISourceCode('inline-style.html', Workspace.Workspace.projectTypes.Network);
   const { content } = await source.requestContent();
   TestRunner.addResult(`Content:\n${content}`);
   const sourceText = new TextUtils.Text.Text(content);
