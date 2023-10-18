@@ -8,8 +8,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.job.JobParameters;
 import android.content.Context;
@@ -185,6 +187,13 @@ public class BackgroundTaskJobServiceTest {
         verify(mBackgroundTaskSchedulerUma, times(0)).reportTaskStarted(eq(TaskIds.TEST));
     }
 
+    private static JobParameters newJobParameters(int jobId, PersistableBundle extras) {
+        JobParameters ret = mock(JobParameters.class);
+        when(ret.getJobId()).thenReturn(jobId);
+        when(ret.getExtras()).thenReturn(extras);
+        return ret;
+    }
+
     private static JobParameters buildOneOffJobParameters(
             int taskId, Long schedulingTimeMs, Long windowEndTimeForDeadlineMs) {
         PersistableBundle extras = new PersistableBundle();
@@ -202,18 +211,7 @@ public class BackgroundTaskJobServiceTest {
         extras.putPersistableBundle(
                 BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_EXTRAS_KEY, taskExtras);
 
-        return new JobParameters(
-                null /* callback */,
-                taskId,
-                extras,
-                null /* transientExtras */,
-                null /* clipData */,
-                0 /* clipGrantFlags */,
-                false /* overrideDeadlineExpired */,
-                false /* isExpedited */,
-                null /* triggeredContentUris */,
-                null /* triggeredContentAuthorities */,
-                null /* network */);
+        return newJobParameters(taskId, extras);
     }
 
     private static JobParameters buildPeriodicJobParameters(
@@ -236,18 +234,7 @@ public class BackgroundTaskJobServiceTest {
         extras.putPersistableBundle(
                 BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_EXTRAS_KEY, taskExtras);
 
-        return new JobParameters(
-                null /* callback */,
-                taskId,
-                extras,
-                null /* transientExtras */,
-                null /* clipData */,
-                0 /* clipGrantFlags */,
-                false /* overrideDeadlineExpired */,
-                false /* isExpedited */,
-                null /* triggeredContentUris */,
-                null /* triggeredContentAuthorities */,
-                null /* network */);
+        return newJobParameters(taskId, extras);
     }
 
     @Test

@@ -29,7 +29,6 @@ import android.nfc.NfcAdapter.ReaderCallback;
 import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.nfc.TagLostException;
-import android.nfc.tech.TagTechnology;
 import android.os.Bundle;
 
 import org.junit.Before;
@@ -1451,8 +1450,7 @@ public class NFCTest {
 
         // Mocks blocked 'NFC tag found' event.
         NfcBlocklist.getInstance().setIsTagBlockedForTesting(true);
-        Tag tag = Tag.createMockTag(
-                new byte[] {0x00}, new int[] {TagTechnology.NDEF}, new Bundle[] {});
+        Tag tag = mock(Tag.class);
         NfcTagHandler nfcTagHandler = NfcTagHandler.create(tag);
         nfc.processPendingOperationsForTesting(nfcTagHandler);
 
