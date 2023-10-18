@@ -1173,7 +1173,7 @@ ContextResult WebGPUDecoderImpl::Initialize(
 bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
   switch (feature) {
     case wgpu::FeatureName::TimestampQuery:
-    case wgpu::FeatureName::TimestampQueryInsidePasses:
+    case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
     case wgpu::FeatureName::PipelineStatisticsQuery:
     case wgpu::FeatureName::ChromiumExperimentalDp4a:
     case wgpu::FeatureName::ChromiumExperimentalReadWriteStorageTexture:

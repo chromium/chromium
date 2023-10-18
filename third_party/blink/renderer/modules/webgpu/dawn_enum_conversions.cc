@@ -682,8 +682,9 @@ WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return WGPUFeatureName_TextureCompressionASTC;
     case V8GPUFeatureName::Enum::kTimestampQuery:
       return WGPUFeatureName_TimestampQuery;
-    case V8GPUFeatureName::Enum::kTimestampQueryInsidePasses:
-      return WGPUFeatureName_TimestampQueryInsidePasses;
+    case V8GPUFeatureName::Enum::
+        kChromiumExperimentalTimestampQueryInsidePasses:
+      return WGPUFeatureName_ChromiumExperimentalTimestampQueryInsidePasses;
     case V8GPUFeatureName::Enum::kDepthClipControl:
       return WGPUFeatureName_DepthClipControl;
     case V8GPUFeatureName::Enum::kDepth32FloatStencil8:

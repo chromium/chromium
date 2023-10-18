@@ -31,8 +31,9 @@ absl::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(WGPUFeatureName f) {
       return V8GPUFeatureName::Enum::kDepth32FloatStencil8;
     case WGPUFeatureName_TimestampQuery:
       return V8GPUFeatureName::Enum::kTimestampQuery;
-    case WGPUFeatureName_TimestampQueryInsidePasses:
-      return V8GPUFeatureName::Enum::kTimestampQueryInsidePasses;
+    case WGPUFeatureName_ChromiumExperimentalTimestampQueryInsidePasses:
+      return V8GPUFeatureName::Enum::
+          kChromiumExperimentalTimestampQueryInsidePasses;
     case WGPUFeatureName_PipelineStatisticsQuery:
       return V8GPUFeatureName::Enum::kPipelineStatisticsQuery;
     case WGPUFeatureName_TextureCompressionBC:
