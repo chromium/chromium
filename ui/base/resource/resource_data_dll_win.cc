@@ -10,6 +10,8 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/win/resource_util.h"
 
+#include "base/record_replay.h"
+
 namespace ui {
 
 ResourceDataDLL::ResourceDataDLL(HINSTANCE module) : module_(module) {
@@ -33,6 +35,11 @@ bool ResourceDataDLL::GetStringPiece(uint16_t resource_id,
   DCHECK(data);
   void* data_ptr;
   size_t data_size;
+
+  // RUN-2620
+  if (recordreplay::IsInReplayCode("ResourceDataDLL::GetStringPiece"))
+    return false;
+
   if (base::win::GetDataResourceFromModule(module_,
                                            resource_id,
                                            &data_ptr,

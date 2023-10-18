@@ -40,7 +40,8 @@ namespace recordreplay {
   Macro(V8RecordReplayHasDisabledFeatures, (), (), bool, false)         \
   Macro(V8RecordReplayAreAssertsDisabled, (), (), bool, false)          \
   Macro(V8IsMainThread, (), (), bool, false)                            \
-  Macro(V8RecordReplayIsInReplayCode, (), (), bool, false)              \
+  Macro(V8RecordReplayIsInReplayCode,                                   \
+        (const char* why), (why), bool, false)                          \
   Macro(V8RecordReplayHadMismatch, (), (), bool, false)
 
 #define ForEachV8APIVoid(Macro)                                         \
@@ -528,8 +529,8 @@ int NewIdAnyThread(const char* name) {
   return (int)RecordReplayValue("NewId", (uintptr_t)gNextAnyThreadId++);
 }
 
-bool IsInReplayCode() {
-  return V8RecordReplayIsInReplayCode();
+bool IsInReplayCode(const char* why) {
+  return V8RecordReplayIsInReplayCode(why);
 }
 
 AutoMarkReplayCode::AutoMarkReplayCode() {

@@ -115,7 +115,7 @@ int NewIdMainThread(const char* name);
 int NewIdAnyThread(const char* name);
 
 // Return whether record/replay specific scripts are executing.
-bool IsInReplayCode();
+bool IsInReplayCode(const char* why = nullptr);
 
 // Mark a region where record/replay specific scripts are executing.
 struct AutoMarkReplayCode {
