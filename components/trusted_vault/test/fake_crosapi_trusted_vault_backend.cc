@@ -14,10 +14,8 @@
 namespace trusted_vault {
 
 FakeCrosapiTrustedVaultBackend::FakeCrosapiTrustedVaultBackend(
-    const CoreAccountInfo& primary_account_info,
     TrustedVaultClient* client)
-    : primary_account_info_(primary_account_info),
-      trusted_vault_client_(client) {
+    : trusted_vault_client_(client) {
   CHECK(trusted_vault_client_);
   trusted_vault_client_->AddObserver(this);
 }
@@ -32,9 +30,19 @@ void FakeCrosapiTrustedVaultBackend::BindReceiver(
   receiver_.Bind(std::move(pending_receiver));
 }
 
+mojo::PendingRemote<crosapi::mojom::TrustedVaultBackend>
+FakeCrosapiTrustedVaultBackend::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
+}
+
 void FakeCrosapiTrustedVaultBackend::FlushMojo() {
   receiver_.FlushForTesting();
   observer_.FlushForTesting();
+}
+
+void FakeCrosapiTrustedVaultBackend::SetPrimaryAccountInfo(
+    const CoreAccountInfo& primary_account_info) {
+  primary_account_info_ = primary_account_info;
 }
 
 void FakeCrosapiTrustedVaultBackend::OnTrustedVaultKeysChanged() {

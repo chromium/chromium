@@ -36,7 +36,8 @@ class CrosapiTrustedVaultClientTest : public testing::Test {
     primary_account_info_.gaia = "user";
     crosapi_backend_ =
         std::make_unique<trusted_vault::FakeCrosapiTrustedVaultBackend>(
-            primary_account_info_, &trusted_vault_client_ash_);
+            &trusted_vault_client_ash_);
+    crosapi_backend_->SetPrimaryAccountInfo(primary_account_info_);
 
     crosapi_backend_->BindReceiver(
         backend_remote_.BindNewPipeAndPassReceiver());

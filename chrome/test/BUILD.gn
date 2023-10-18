@@ -5416,6 +5416,7 @@ if (is_chromeos_lacros) {
       "../browser/speech/extension_api/tts_extension_api_lacros_browsertest.cc",
       "../browser/sync/test/lacros/sync_apps_toggle_sharing_lacros_browsertest.cc",
       "../browser/sync/test/lacros/sync_custom_passphrase_sharing_lacros_browsertest.cc",
+      "../browser/sync/test/lacros/trusted_vault_keys_sharing_lacros_browsertest.cc",
       "../browser/ui/autofill/autofill_context_menu_manager_lacros_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.h",
