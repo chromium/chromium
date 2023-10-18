@@ -157,6 +157,24 @@ std::string NotificationCenterTestApi::AddProgressNotification() {
   return id;
 }
 
+std::string NotificationCenterTestApi::AddNotificationWithSettingsButton() {
+  const auto id = GenerateNotificationId();
+  auto notification = std::make_unique<message_center::Notification>(
+      message_center::NOTIFICATION_TYPE_SIMPLE, id, u"test_title",
+      u"test_message", /*icon=*/ui::ImageModel(),
+      /*display_source=*/base::EmptyString16(), GURL(),
+      message_center::NotifierId(), message_center::RichNotificationData(),
+      new message_center::NotificationDelegate());
+  // Setting this to a value other than the default
+  // `message_center::SettingsButtonHandler::NONE` makes the settings control
+  // button visible.
+  notification->set_settings_button_handler(
+      message_center::SettingsButtonHandler::DELEGATE);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+  return id;
+}
+
 void NotificationCenterTestApi::RemoveNotification(const std::string& id) {
   message_center::MessageCenter::Get()->RemoveNotification(id,
                                                            /*by_user=*/true);

@@ -150,7 +150,7 @@ TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
   EXPECT_TRUE(close_button->HasFocus());
   EXPECT_EQ(control_buttons_layer->opacity(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "close_button_focused", /*revision_number=*/1, notification_view));
+      "close_button_focused", /*revision_number=*/2, notification_view));
 }
 
 // Regression test for http://b/267195370. Tests that a notification with no
@@ -195,6 +195,51 @@ TEST_P(AshNotificationViewPixelTest, ProgressCollapsed) {
   // centered.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "progress_collapsed", /*revision_number=*/0, notification_view));
+}
+
+// Tests the control buttons UI for the case of a notification with just the
+// close button.
+TEST_P(AshNotificationViewPixelTest, CloseControlButton) {
+  // Generate a notification that should show just the close control button.
+  // Also toggle the notification bubble so that the notification doesn't
+  // disappear during the test.
+  const std::string id = test_api()->AddNotification();
+  test_api()->ToggleBubble();
+
+  // Hover the mouse over the notification so that the close control button is
+  // visible when taking a screenshot.
+  auto* notification_view = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForId(id));
+  GetEventGenerator()->MoveMouseTo(
+      notification_view->GetBoundsInScreen().CenterPoint(), /*count=*/10);
+
+  // Verify with a pixel test that the close control button is visible and has
+  // the proper placement.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "close_control_button", /*revision_number=*/0, notification_view));
+}
+
+// Tests the control buttons UI for the case of a notification with both the
+// settings and close buttons.
+TEST_P(AshNotificationViewPixelTest, SettingsAndCloseControlButtons) {
+  // Generate a notification that should show both the settings and close
+  // control buttons. Also toggle the notification bubble so that the
+  // notification doesn't disappear during the test.
+  const std::string id = test_api()->AddNotificationWithSettingsButton();
+  test_api()->ToggleBubble();
+
+  // Hover the mouse over the notification so that the control buttons are
+  // visible when taking a screenshot.
+  auto* notification_view = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForId(id));
+  GetEventGenerator()->MoveMouseTo(
+      notification_view->GetBoundsInScreen().CenterPoint(), /*count=*/10);
+
+  // Verify with a pixel test that the control buttons are visible and have
+  // proper spacing between them.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "settings_and_close_control_buttons", /*revision_number=*/0,
+      notification_view));
 }
 
 class AshNotificationViewTitlePixelTest

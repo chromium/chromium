@@ -5,17 +5,17 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -152,6 +152,72 @@ TEST_F(NotificationControlButtonsTest, IconColor_ContrastEnforcement) {
   buttons_view()->SetButtonIconColors(SK_ColorBLACK);
   ExpectIconColor(
       color_utils::BlendForMinContrast(SK_ColorBLACK, SK_ColorBLACK).color);
+}
+
+// Tests default and custom control button icons.
+TEST_F(NotificationControlButtonsTest, SetIcons) {
+  // Show the default control buttons.
+  buttons_view()->ShowCloseButton(true);
+  buttons_view()->ShowSettingsButton(true);
+  buttons_view()->ShowSnoozeButton(true);
+
+  // Verify that the default control buttons are using their default icons.
+  const SkColor default_icon_color =
+      buttons_view()->GetColorProvider()->GetColor(ui::kColorIcon);
+  EXPECT_TRUE(MatchesIcon(buttons_view()->close_button(),
+                          NotificationControlButtonsView::kDefaultCloseIcon,
+                          default_icon_color));
+  EXPECT_TRUE(MatchesIcon(buttons_view()->settings_button(),
+                          NotificationControlButtonsView::kDefaultSettingsIcon,
+                          default_icon_color));
+  EXPECT_TRUE(MatchesIcon(buttons_view()->snooze_button(),
+                          NotificationControlButtonsView::kDefaultSnoozeIcon,
+                          default_icon_color));
+
+  // Set the control buttons to have custom, non-default icons.
+  buttons_view()->ShowCloseButton(false);
+  buttons_view()->ShowSettingsButton(false);
+  buttons_view()->ShowSnoozeButton(false);
+  const gfx::VectorIcon& test_icon = kProductIcon;
+  buttons_view()->SetCloseButtonIcon(test_icon);
+  buttons_view()->SetSettingsButtonIcon(test_icon);
+  buttons_view()->SetSnoozeButtonIcon(test_icon);
+  buttons_view()->ShowCloseButton(true);
+  buttons_view()->ShowSettingsButton(true);
+  buttons_view()->ShowSnoozeButton(true);
+
+  // Verify that the control buttons are now using the custom icons.
+  EXPECT_TRUE(MatchesIcon(buttons_view()->close_button(), test_icon,
+                          default_icon_color));
+  EXPECT_TRUE(MatchesIcon(buttons_view()->settings_button(), test_icon,
+                          default_icon_color));
+  EXPECT_TRUE(MatchesIcon(buttons_view()->snooze_button(), test_icon,
+                          default_icon_color));
+}
+
+// Tests spacing between control buttons.
+TEST_F(NotificationControlButtonsTest, BetweenButtonsSpacing) {
+  // Show all the control buttons with default horizontal spacing.
+  buttons_view()->ShowCloseButton(true);
+  buttons_view()->ShowSettingsButton(true);
+  buttons_view()->ShowSnoozeButton(true);
+
+  // Verify that the control buttons use the default horizontal spacing.
+  EXPECT_EQ(static_cast<views::BoxLayout*>(buttons_view()->GetLayoutManager())
+                ->between_child_spacing(),
+            NotificationControlButtonsView::kDefaultBetweenButtonSpacing);
+
+  // Use a non-default amount of horizontal spacing.
+  const int new_spacing =
+      NotificationControlButtonsView::kDefaultBetweenButtonSpacing + 1;
+  buttons_view()->SetBetweenButtonSpacing(new_spacing);
+
+  // Verify that the control buttons use the new horizontal spacing, and that
+  // the layout has been invalidated.
+  EXPECT_EQ(static_cast<views::BoxLayout*>(buttons_view()->GetLayoutManager())
+                ->between_child_spacing(),
+            new_spacing);
+  EXPECT_TRUE(buttons_view()->needs_layout());
 }
 
 }  // namespace message_center

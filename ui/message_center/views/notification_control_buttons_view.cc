@@ -11,11 +11,9 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
-#include "ui/events/event.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_control_button_factory.h"
@@ -28,11 +26,7 @@ namespace message_center {
 NotificationControlButtonsView::NotificationControlButtonsView(
     MessageView* message_view)
     : message_view_(message_view) {
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal));
-  // Do not stretch buttons as that would stretch their focus indicator.
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
+  UpdateLayoutManager();
 
   // Use layer to change the opacity.
   SetPaintToLayer();
@@ -59,7 +53,7 @@ void NotificationControlButtonsView::ShowCloseButton(bool show) {
     if (GetWidget()) {
       close_button_->SetImageModel(
           views::Button::STATE_NORMAL,
-          ui::ImageModel::FromVectorIcon(kNotificationCloseButtonIcon,
+          ui::ImageModel::FromVectorIcon(GetCloseButtonIcon(),
                                          DetermineButtonIconColor()));
     }
     close_button_->SetAccessibleName(l10n_util::GetStringUTF16(
@@ -88,7 +82,7 @@ void NotificationControlButtonsView::ShowSettingsButton(bool show) {
     if (GetWidget()) {
       settings_button_->SetImageModel(
           views::Button::STATE_NORMAL,
-          ui::ImageModel::FromVectorIcon(kNotificationSettingsButtonIcon,
+          ui::ImageModel::FromVectorIcon(GetSettingsButtonIcon(),
                                          DetermineButtonIconColor()));
     }
     settings_button_->SetAccessibleName(l10n_util::GetStringUTF16(
@@ -116,7 +110,7 @@ void NotificationControlButtonsView::ShowSnoozeButton(bool show) {
     if (GetWidget()) {
       snooze_button_->SetImageModel(
           views::Button::STATE_NORMAL,
-          ui::ImageModel::FromVectorIcon(kNotificationSnoozeButtonIcon,
+          ui::ImageModel::FromVectorIcon(GetSnoozeButtonIcon(),
                                          DetermineButtonIconColor()));
     }
     snooze_button_->SetAccessibleName(l10n_util::GetStringUTF16(
@@ -147,6 +141,21 @@ bool NotificationControlButtonsView::IsAnyButtonFocused() const {
          (snooze_button_ && snooze_button_->HasFocus());
 }
 
+void NotificationControlButtonsView::SetCloseButtonIcon(
+    const gfx::VectorIcon& icon) {
+  close_button_icon_ = &icon;
+}
+
+void NotificationControlButtonsView::SetSettingsButtonIcon(
+    const gfx::VectorIcon& icon) {
+  settings_button_icon_ = &icon;
+}
+
+void NotificationControlButtonsView::SetSnoozeButtonIcon(
+    const gfx::VectorIcon& icon) {
+  snooze_button_icon_ = &icon;
+}
+
 void NotificationControlButtonsView::SetButtonIconColors(SkColor color) {
   if (color == icon_color_)
     return;
@@ -162,6 +171,11 @@ void NotificationControlButtonsView::SetBackgroundColor(SkColor color) {
   UpdateButtonIconColors();
 }
 
+void NotificationControlButtonsView::SetBetweenButtonSpacing(int spacing) {
+  between_button_spacing_ = spacing;
+  UpdateLayoutManager();
+}
+
 void NotificationControlButtonsView::SetMessageView(MessageView* message_view) {
   message_view_ = message_view;
 }
@@ -173,24 +187,33 @@ void NotificationControlButtonsView::SetNotificationControlButtonFactory(
       std::move(notification_control_button_factory);
 }
 
+void NotificationControlButtonsView::UpdateLayoutManager() {
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+  layout->set_between_child_spacing(between_button_spacing_);
+
+  // Do not stretch buttons as that would stretch their focus indicator.
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  InvalidateLayout();
+}
+
 void NotificationControlButtonsView::UpdateButtonIconColors() {
   SkColor icon_color = DetermineButtonIconColor();
   if (close_button_) {
-    close_button_->SetImageModel(views::Button::STATE_NORMAL,
-                                 ui::ImageModel::FromVectorIcon(
-                                     kNotificationCloseButtonIcon, icon_color));
+    close_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(GetCloseButtonIcon(), icon_color));
   }
   if (settings_button_) {
     settings_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kNotificationSettingsButtonIcon,
-                                       icon_color));
+        ui::ImageModel::FromVectorIcon(GetSettingsButtonIcon(), icon_color));
   }
   if (snooze_button_) {
     snooze_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kNotificationSnoozeButtonIcon,
-                                       icon_color));
+        ui::ImageModel::FromVectorIcon(GetSnoozeButtonIcon(), icon_color));
   }
 }
 
@@ -201,6 +224,21 @@ SkColor NotificationControlButtonsView::DetermineButtonIconColor() const {
     return icon_color;
 
   return color_utils::BlendForMinContrast(icon_color, background_color_).color;
+}
+
+const gfx::VectorIcon& NotificationControlButtonsView::GetCloseButtonIcon()
+    const {
+  return close_button_icon_ ? *close_button_icon_ : kDefaultCloseIcon;
+}
+
+const gfx::VectorIcon& NotificationControlButtonsView::GetSettingsButtonIcon()
+    const {
+  return settings_button_icon_ ? *settings_button_icon_ : kDefaultSettingsIcon;
+}
+
+const gfx::VectorIcon& NotificationControlButtonsView::GetSnoozeButtonIcon()
+    const {
+  return snooze_button_icon_ ? *snooze_button_icon_ : kDefaultSnoozeIcon;
 }
 
 BEGIN_METADATA(NotificationControlButtonsView, views::View)

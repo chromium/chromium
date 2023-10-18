@@ -43,6 +43,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -170,6 +171,9 @@ constexpr float kDarkModeMinContrastRatio = 6.0;
 // If the image displayed in `icon_view()` is smaller in either width or height
 // than this value, we draw a background around the image.
 constexpr int kSmallImageBackgroundThreshold = 6;
+
+// The horizontal spacing between control button icons.
+constexpr int kControlButtonsHorizontalSpacing = 6;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -542,6 +546,7 @@ AshNotificationView::AshNotificationView(
                   .AddChild(
                       views::Builder<views::FlexLayoutView>()
                           .SetOrientation(views::LayoutOrientation::kVertical)
+                          .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
                           .AddChild(
                               views::Builder<views::BoxLayoutView>()
                                   .SetMainAxisAlignment(MainAxisAlignment::kEnd)
@@ -550,9 +555,14 @@ AshNotificationView::AshNotificationView(
                                   .AddChild(
                                       CreateControlButtonsBuilder()
                                           .CopyAddressTo(&control_buttons_view_)
-                                          .SetProperty(
-                                              views::kCrossAxisAlignmentKey,
-                                              views::LayoutAlignment::kEnd)
+                                          .SetBetweenButtonSpacing(
+                                              kControlButtonsHorizontalSpacing)
+                                          .SetCloseButtonIcon(
+                                              vector_icons::
+                                                  kCloseChromeRefreshIcon)
+                                          .SetSettingsButtonIcon(
+                                              vector_icons::
+                                                  kSettingsOutlineIcon)
                                           .SetButtonIconColors(
                                               AshColorProvider::Get()
                                                   ->GetContentLayerColor(
@@ -567,9 +577,7 @@ AshNotificationView::AshNotificationView(
                                   .CopyAddressTo(&expand_button_)
                                   .SetCallback(base::BindRepeating(
                                       &AshNotificationView::ToggleExpand,
-                                      base::Unretained(this)))
-                                  .SetProperty(views::kCrossAxisAlignmentKey,
-                                               views::LayoutAlignment::kEnd))));
+                                      base::Unretained(this))))));
 
   // Main right view contains all the views besides control buttons, app icon,
   // grouped container and action buttons.
@@ -1023,12 +1031,12 @@ void AshNotificationView::PopulateGroupNotifications(
 
   for (auto* notification : notifications) {
     auto notification_view =
-            MessageViewFactory::Create(*notification, /*shown_in_popup=*/false);
+        MessageViewFactory::Create(*notification, /*shown_in_popup=*/false);
     // The child can either be an AshNotificationView or a custom notification
     // view.
     if (notification->type() != message_center::NOTIFICATION_TYPE_CUSTOM) {
       auto* ash_notification_view =
-              static_cast<AshNotificationView*>(notification_view.get());
+          static_cast<AshNotificationView*>(notification_view.get());
       ash_notification_view->SetGroupedChildExpanded(IsExpanded());
     }
 

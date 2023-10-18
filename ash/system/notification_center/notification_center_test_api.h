@@ -105,6 +105,10 @@ class NotificationCenterTestApi {
   // Adds a progress notification and returns the associated id.
   std::string AddProgressNotification();
 
+  // Adds a notification that should have the settings control button visible
+  // and returns its id.
+  std::string AddNotificationWithSettingsButton();
+
   // Removes the notification associated with the provided id.
   void RemoveNotification(const std::string& id);
 
