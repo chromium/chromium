@@ -62,11 +62,11 @@ android_library("audio_track_java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chromecast/base:base_java",
     "//chromecast/public:volume_control_enums_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
