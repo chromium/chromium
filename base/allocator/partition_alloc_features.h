@@ -200,9 +200,8 @@ inline constexpr base::StringPiece kRendererLiveBRPSyntheticTrialName =
     "BackupRefPtrRendererLive";
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnableConfigurableThreadCacheMultiplier);
-extern const BASE_EXPORT base::FeatureParam<double> kThreadCacheMultiplier;
-extern const BASE_EXPORT base::FeatureParam<double>
-    kThreadCacheMultiplierForAndroid;
+BASE_EXPORT double GetThreadCacheMultiplier();
+BASE_EXPORT double GetThreadCacheMultiplierForAndroid();
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnableConfigurableThreadCachePurgeInterval);
 extern const partition_alloc::internal::base::TimeDelta

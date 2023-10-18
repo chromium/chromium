@@ -347,12 +347,15 @@ BASE_FEATURE(kEnableConfigurableThreadCacheMultiplier,
              "EnableConfigurableThreadCacheMultiplier",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<double> kThreadCacheMultiplier{
-    &kEnableConfigurableThreadCacheMultiplier, "ThreadCacheMultiplier", 2.};
+MIRACLE_PARAMETER_FOR_DOUBLE(GetThreadCacheMultiplier,
+                             kEnableConfigurableThreadCacheMultiplier,
+                             "ThreadCacheMultiplier",
+                             2.)
 
-const base::FeatureParam<double> kThreadCacheMultiplierForAndroid{
-    &kEnableConfigurableThreadCacheMultiplier,
-    "ThreadCacheMultiplierForAndroid", 1.};
+MIRACLE_PARAMETER_FOR_DOUBLE(GetThreadCacheMultiplierForAndroid,
+                             kEnableConfigurableThreadCacheMultiplier,
+                             "ThreadCacheMultiplierForAndroid",
+                             1.)
 
 constexpr partition_alloc::internal::base::TimeDelta ToPartitionAllocTimeDelta(
     base::TimeDelta time_delta) {

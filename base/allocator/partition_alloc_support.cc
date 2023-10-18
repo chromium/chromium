@@ -1297,10 +1297,10 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     // multiplier value with the corresponding feature param.
 #if BUILDFLAG(IS_ANDROID)
     ::partition_alloc::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
-        base::features::kThreadCacheMultiplierForAndroid.Get());
+        base::features::GetThreadCacheMultiplierForAndroid());
 #else   // BUILDFLAG(IS_ANDROID)
     ::partition_alloc::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
-        base::features::kThreadCacheMultiplier.Get());
+        base::features::GetThreadCacheMultiplier());
 #endif  // BUILDFLAG(IS_ANDROID)
   } else {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
