@@ -84,15 +84,6 @@ std::unique_ptr<ENHMETAHEADER> GetEmfHeader(const std::string& emf_data) {
   return meta_header;
 }
 
-bool IsWithinExpectedRange(double baseline, double computed) {
-  double ratio = computed / baseline;
-  // Tweaking zlib compression algorithm implementation will impact
-  // compression ratios. Testing for a range makes more sense than a
-  // fixed value and future proofs this test.
-  // The range used is +/- 3%.
-  return ((ratio < 1.04) && (ratio > 0.96));
-}
-
 void CompareEmfHeaders(const ENHMETAHEADER& expected_header,
                        const ENHMETAHEADER& actual_header) {
   // TODO(crbug.com/781403): once the EMF generation is fixed, also compare:
@@ -101,11 +92,8 @@ void CompareEmfHeaders(const ENHMETAHEADER& expected_header,
   EXPECT_EQ(expected_header.nSize, actual_header.nSize);
   EXPECT_EQ(expected_header.dSignature, actual_header.dSignature);
   EXPECT_EQ(expected_header.nVersion, actual_header.nVersion);
-  EXPECT_EQ(IsWithinExpectedRange(expected_header.nBytes, actual_header.nBytes),
-            true);
-  EXPECT_EQ(
-      IsWithinExpectedRange(expected_header.nRecords, actual_header.nRecords),
-      true);
+  EXPECT_EQ(expected_header.nBytes, actual_header.nBytes);
+  EXPECT_EQ(expected_header.nRecords, actual_header.nRecords);
   EXPECT_EQ(expected_header.nHandles, actual_header.nHandles);
   EXPECT_EQ(expected_header.sReserved, actual_header.sReserved);
   EXPECT_EQ(expected_header.nDescription, actual_header.nDescription);
@@ -116,11 +104,10 @@ void CompareEmfHeaders(const ENHMETAHEADER& expected_header,
   EXPECT_EQ(expected_header.bOpenGL, actual_header.bOpenGL);
 }
 
-// FIXME(cavalcantii): see comment further down.
-// std::string HashData(const char* data, size_t len) {
-//   auto span = base::make_span(reinterpret_cast<const uint8_t*>(data), len);
-//   return base::HexEncode(base::SHA1HashSpan(span));
-// }
+std::string HashData(const char* data, size_t len) {
+  auto span = base::make_span(reinterpret_cast<const uint8_t*>(data), len);
+  return base::HexEncode(base::SHA1HashSpan(span));
+}
 
 class PdfToEmfConverterBrowserTest
     : public InProcessBrowserTest,
@@ -204,8 +191,8 @@ class PdfToEmfConverterBrowserTest
   void ComparePageEmfHeader() {
     // TODO(crbug.com/781403): the generated data can differ visually. Until
     // this is fixed only checking the output size and parts of the EMF header.
-    ASSERT_TRUE(IsWithinExpectedRange(expected_current_emf_data_.size(),
-                                      actual_current_emf_data_.size()));
+    ASSERT_EQ(expected_current_emf_data_.size(),
+              actual_current_emf_data_.size());
 
     std::unique_ptr<ENHMETAHEADER> expected_header =
         GetEmfHeader(expected_current_emf_data_);
@@ -217,16 +204,12 @@ class PdfToEmfConverterBrowserTest
   }
 
   void ComparePageEmfPayload() {
-    ASSERT_TRUE(IsWithinExpectedRange(expected_current_emf_data_.size(),
-                                      actual_current_emf_data_.size()));
+    ASSERT_EQ(expected_current_emf_data_.size(),
+              actual_current_emf_data_.size());
     ASSERT_GT(expected_current_emf_data_.size(), kHeaderSize);
-    // FIXME(cavalcantii): Cannot compare compressed data, there are no
-    // warranties of 'stability' of compressed output between zlib releases.
-    // Comparisons should be done on *decompressed* content.
-    // size_t size = expected_current_emf_data_.size() - kHeaderSize;
-    // EXPECT_EQ(HashData(expected_current_emf_data_.data() + kHeaderSize,
-    // size),
-    //           HashData(actual_current_emf_data_.data() + kHeaderSize, size));
+    size_t size = expected_current_emf_data_.size() - kHeaderSize;
+    EXPECT_EQ(HashData(expected_current_emf_data_.data() + kHeaderSize, size),
+              HashData(actual_current_emf_data_.data() + kHeaderSize, size));
   }
 
  private:
