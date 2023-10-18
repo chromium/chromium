@@ -439,7 +439,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
 }
 
 bool HTMLCanvasElement::IsPageVisible() {
-  return GetPage()->IsPageVisible();
+  return GetPage() && GetPage()->IsPageVisible();
 }
 
 CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
@@ -521,7 +521,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
         CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, Size());
     // We don't actually need the begin frame signal when in low latency mode,
     // but we need to subscribe to it or else dispatching frames will not work.
-    frame_dispatcher_->SetNeedsBeginFrame(GetPage()->IsPageVisible());
+    frame_dispatcher_->SetNeedsBeginFrame(IsPageVisible());
 
     UseCounter::Count(GetDocument(), WebFeature::kHTMLCanvasElementLowLatency);
   }
@@ -1682,16 +1682,13 @@ bool HTMLCanvasElement::IsOpaque() const {
   return context_ && !context_->CreationAttributes().alpha;
 }
 
-bool HTMLCanvasElement::IsVisible() const {
-  return GetPage() && GetPage()->IsPageVisible();
-}
-
 bool HTMLCanvasElement::CreateLayer() {
   DCHECK(!surface_layer_bridge_);
   LocalFrame* frame = GetDocument().GetFrame();
   // We do not design transferControlToOffscreen() for frame-less HTML canvas.
-  if (!frame)
+  if (!frame || !frame->GetPage()) {
     return false;
+  }
 
   surface_layer_bridge_ = std::make_unique<::blink::SurfaceLayerBridge>(
       frame->GetPage()->GetChromeClient().GetFrameSinkId(frame),
