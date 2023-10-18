@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
-#import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
+#import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/lens_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("itunes_urls") {
+source_set("model") {
   sources = [
     "itunes_urls_handler_tab_helper.h",
     "itunes_urls_handler_tab_helper.mm",
@@ -23,7 +23,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "itunes_urls_handler_tab_helper_unittest.mm" ]
   deps = [
-    ":itunes_urls",
+    ":model",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

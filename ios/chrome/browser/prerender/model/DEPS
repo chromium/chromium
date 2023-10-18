@@ -4,7 +4,7 @@ include_rules = [
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/download",
   "+ios/chrome/browser/history",
-  "+ios/chrome/browser/itunes_urls",
+  "+ios/chrome/browser/itunes_urls/model",
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/tabs",

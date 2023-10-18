@@ -53,7 +53,7 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_tab_helper.h"
 #import "ios/chrome/browser/infobars/overlays/translate_overlay_tab_helper.h"
-#import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
+#import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/lens_tab_helper.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_tab_helper.h"
 #import "ios/chrome/browser/metrics/pageload_foreground_duration_tab_helper.h"

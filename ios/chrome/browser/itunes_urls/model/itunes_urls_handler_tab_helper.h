@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_ITUNES_URLS_ITUNES_URLS_HANDLER_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_ITUNES_URLS_ITUNES_URLS_HANDLER_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_ITUNES_URLS_MODEL_ITUNES_URLS_HANDLER_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_ITUNES_URLS_MODEL_ITUNES_URLS_HANDLER_TAB_HELPER_H_
 
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -68,4 +68,4 @@ class ITunesUrlsHandlerTabHelper
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_ITUNES_URLS_ITUNES_URLS_HANDLER_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_ITUNES_URLS_MODEL_ITUNES_URLS_HANDLER_TAB_HELPER_H_
