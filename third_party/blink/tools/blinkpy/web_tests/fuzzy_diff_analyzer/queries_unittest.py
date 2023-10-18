@@ -29,6 +29,16 @@ QUERY_DATA = [{
     'image_diff_total_pixels': 10,
 }]
 
+QUERY_DATA_2 = [{
+    'bug_id': 'chromium/1',
+    'create_time': '2023-10-16 21:55:00.474-07:00',
+    'test_ids': ['testA', 'testB'],
+}, {
+    'bug_id': 'chromium/2',
+    'create_time': '2023-10-15 21:55:00.474-07:00',
+    'test_ids': ['testC', 'testD', 'testE'],
+}]
+
 
 class FuzzyDiffAnalyzerQueriesUnittest(unittest.TestCase):
     def setUp(self) -> None:
@@ -52,4 +62,18 @@ class FuzzyDiffAnalyzerQueriesUnittest(unittest.TestCase):
         result_query = \
             self._querier_instance.get_failed_image_comparison_ci_tests()
         self.assertEqual(result_query, QUERY_DATA)
+        self.assertEqual(self._subprocess_mock.call_count, 1)
+
+    def testGetWebTestFlakyBugs(self) -> None:
+        """Tests that Fuzzy Diff Analyzer queries is sending the sql."""
+        def side_effect(*_, **kwargs) -> uu.FakeProcess:
+            query = kwargs['input']
+            self.assertEqual(query, queries.WEB_TEST_FLAKY_BUGS_QUERY)
+            query_result = QUERY_DATA_2
+            return uu.FakeProcess(stdout=json.dumps(query_result))
+
+        self._subprocess_mock.side_effect = side_effect
+        result_query = \
+            self._querier_instance.get_web_test_flaky_bugs()
+        self.assertEqual(result_query, QUERY_DATA_2)
         self.assertEqual(self._subprocess_mock.call_count, 1)
