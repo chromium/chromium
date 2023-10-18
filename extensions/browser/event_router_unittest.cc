@@ -814,8 +814,11 @@ TEST_F(EventRouterDispatchTest, DISABLED_TestDispatchCallback) {
   const int sw_thread_id = 100;
   MockEventDispatcher sw_event_dispatcher;
   event_router()->AddServiceWorkerEventListener(
-      event_name, process4.get(), ext3,
-      mojom::ServiceWorkerContext::New(GURL(), sw_version_id, sw_thread_id));
+      mojom::EventListener::New(
+          mojom::EventListenerOwner::NewExtensionId(ext3), event_name,
+          mojom::ServiceWorkerContext::New(GURL(), sw_version_id, sw_thread_id),
+          /*event_filter=*/absl::nullopt),
+      process4.get());
   event_router()->BindServiceWorkerEventDispatcher(
       process4->GetID(), sw_thread_id, sw_event_dispatcher.BindAndPassRemote());
 

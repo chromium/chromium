@@ -166,9 +166,7 @@ class EventRouter : public KeyedService,
       mojom::EventListenerPtr event_listener) override;
 
   void AddListenerForServiceWorker(
-      const std::string& extension_id,
-      const std::string& name,
-      mojom::ServiceWorkerContextPtr service_worker_context) override;
+      mojom::EventListenerPtr event_listener) override;
 
   void AddLazyListenerForMainThread(const std::string& extension_id,
                                     const std::string& name) override;
@@ -194,9 +192,7 @@ class EventRouter : public KeyedService,
       mojom::EventListenerPtr event_listener) override;
 
   void RemoveListenerForServiceWorker(
-      const std::string& extension_id,
-      const std::string& event_name,
-      mojom::ServiceWorkerContextPtr service_worker_context) override;
+      mojom::EventListenerPtr event_listener) override;
 
   void RemoveLazyListenerForMainThread(const std::string& extension_id,
                                        const std::string& name) override;
@@ -226,11 +222,8 @@ class EventRouter : public KeyedService,
   void RemoveEventListener(const std::string& event_name,
                            content::RenderProcessHost* process,
                            const ExtensionId& extension_id);
-  void RemoveServiceWorkerEventListener(
-      const std::string& event_name,
-      content::RenderProcessHost* process,
-      const ExtensionId& extension_id,
-      mojom::ServiceWorkerContextPtr service_worker_context);
+  void RemoveServiceWorkerEventListener(mojom::EventListenerPtr event_listener,
+                                        content::RenderProcessHost* process);
 
   // Add or remove a URL as an event listener for |event_name|.
   void AddEventListenerForURL(const std::string& event_name,
@@ -416,11 +409,8 @@ class EventRouter : public KeyedService,
   void AddEventListener(const std::string& event_name,
                         content::RenderProcessHost* process,
                         const ExtensionId& extension_id);
-  void AddServiceWorkerEventListener(
-      const std::string& event_name,
-      content::RenderProcessHost* process,
-      const ExtensionId& extension_id,
-      mojom::ServiceWorkerContextPtr service_worker_context);
+  void AddServiceWorkerEventListener(mojom::EventListenerPtr event_listener,
+                                     content::RenderProcessHost* process);
 
   // Returns or sets the list of events for which the given extension has
   // registered.

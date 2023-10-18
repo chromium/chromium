@@ -53,30 +53,18 @@ void BindAutomationOnIO(
 
 // Calls mojom::EventRouter::AddListenerForServiceWorker(). It should be called
 // on the IO thread.
-void AddEventListenerOnIO(const std::string& extension_id,
-                          const GURL& scope,
-                          const std::string& event_name,
-                          int64_t service_worker_version_id,
-                          int worker_thread_id) {
+void AddEventListenerOnIO(mojom::EventListenerPtr event_listener) {
   auto* dispatcher = WorkerThreadDispatcher::Get();
   dispatcher->GetEventRouterOnIO()->AddListenerForServiceWorker(
-      extension_id, event_name,
-      mojom::ServiceWorkerContext::New(scope, service_worker_version_id,
-                                       worker_thread_id));
+      std::move(event_listener));
 }
 
 // Calls mojom::EventRouter::RemoveListenerForServiceWorker(). It should be
 // called on the IO thread.
-void RemoveEventListenerOnIO(const std::string& extension_id,
-                             const GURL& scope,
-                             const std::string& event_name,
-                             int64_t service_worker_version_id,
-                             int worker_thread_id) {
+void RemoveEventListenerOnIO(mojom::EventListenerPtr event_listener) {
   auto* dispatcher = WorkerThreadDispatcher::Get();
   dispatcher->GetEventRouterOnIO()->RemoveListenerForServiceWorker(
-      extension_id, event_name,
-      mojom::ServiceWorkerContext::New(scope, service_worker_version_id,
-                                       worker_thread_id));
+      std::move(event_listener));
 }
 
 // Calls mojom::EventRouter::AddLazyListenerForServiceWorker(). It should be
@@ -275,15 +263,10 @@ bool WorkerThreadDispatcher::UpdateBindingsForWorkers(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void WorkerThreadDispatcher::SendAddEventListener(
-    const std::string& extension_id,
-    const GURL& scope,
-    const std::string& event_name,
-    int64_t service_worker_version_id,
-    int worker_thread_id) {
+    mojom::EventListenerPtr event_listener) {
   io_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&AddEventListenerOnIO, extension_id, scope, event_name,
-                     service_worker_version_id, worker_thread_id));
+      base::BindOnce(&AddEventListenerOnIO, std::move(event_listener)));
 }
 
 void WorkerThreadDispatcher::SendAddEventLazyListener(
@@ -318,15 +301,10 @@ void WorkerThreadDispatcher::SendBindAutomation(
 }
 
 void WorkerThreadDispatcher::SendRemoveEventListener(
-    const std::string& extension_id,
-    const GURL& scope,
-    const std::string& event_name,
-    int64_t service_worker_version_id,
-    int worker_thread_id) {
+    mojom::EventListenerPtr event_listener) {
   io_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&RemoveEventListenerOnIO, extension_id, scope, event_name,
-                     service_worker_version_id, worker_thread_id));
+      base::BindOnce(&RemoveEventListenerOnIO, std::move(event_listener)));
 }
 
 void WorkerThreadDispatcher::SendRemoveEventLazyListener(

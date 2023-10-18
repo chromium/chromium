@@ -120,11 +120,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   // Posts mojom::EventRouter::AddListenerForServiceWorker to the IO thread to
   // call it with GetEventRouterOnIO().
-  void SendAddEventListener(const std::string& extension_id,
-                            const GURL& scope,
-                            const std::string& event_name,
-                            int64_t service_worker_version_id,
-                            int worker_thread_id);
+  void SendAddEventListener(mojom::EventListenerPtr event_listener);
 
   // Posts mojom::EventRouter::AddLazyListenerForServiceWorker to the IO thread
   // to call it with GetEventRouterOnIO().
@@ -149,11 +145,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 
   // Posts mojom::EventRouter::RemoveListenerForServiceWorker to the IO thread
   // to call it with GetEventRouterOnIO().
-  void SendRemoveEventListener(const std::string& extension_id,
-                               const GURL& scope,
-                               const std::string& event_name,
-                               int64_t service_worker_version_id,
-                               int worker_thread_id);
+  void SendRemoveEventListener(mojom::EventListenerPtr event_listener);
 
   // Posts mojom::EventRouter::RemoveLazyListenerForServiceWorker to the IO
   // thread to call it with GetEventRouterOnIO().

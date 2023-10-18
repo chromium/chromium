@@ -392,20 +392,19 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
               context->service_worker_version_id());
 
+    auto event_listener = mojom::EventListener::New(
+        mojom::EventListenerOwner::NewExtensionId(context->GetExtensionID()),
+        event_name,
+        mojom::ServiceWorkerContext::New(context->service_worker_scope(),
+                                         context->service_worker_version_id(),
+                                         content::WorkerThread::GetCurrentId()),
+        /*event_filter=*/absl::nullopt);
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-    dispatcher_->SendAddEventListener(
-        context->GetExtensionID(), context->service_worker_scope(), event_name,
-        context->service_worker_version_id(),
-        content::WorkerThread::GetCurrentId());
+    dispatcher_->SendAddEventListener(std::move(event_listener));
 #else
     WorkerThreadDispatcher::GetServiceWorkerData()
         ->GetEventRouter()
-        ->AddListenerForServiceWorker(
-            context->GetExtensionID(), event_name,
-            mojom::ServiceWorkerContext::New(
-                context->service_worker_scope(),
-                context->service_worker_version_id(),
-                content::WorkerThread::GetCurrentId()));
+        ->AddListenerForServiceWorker(std::move(event_listener))
 #endif
   }
 
@@ -417,20 +416,20 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
               context->service_worker_version_id());
 
+    auto event_listener = mojom::EventListener::New(
+        mojom::EventListenerOwner::NewExtensionId(context->GetExtensionID()),
+        event_name,
+        mojom::ServiceWorkerContext::New(context->service_worker_scope(),
+                                         context->service_worker_version_id(),
+                                         content::WorkerThread::GetCurrentId()),
+        /*event_filter=*/absl::nullopt);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-    dispatcher_->SendRemoveEventListener(
-        context->GetExtensionID(), context->service_worker_scope(), event_name,
-        context->service_worker_version_id(),
-        content::WorkerThread::GetCurrentId());
+    dispatcher_->SendRemoveEventListener(std::move(event_listener));
 #else
     WorkerThreadDispatcher::GetServiceWorkerData()
         ->GetEventRouter()
-        ->RemoveListenerForServiceWorker(
-            context->GetExtensionID(), event_name,
-            mojom::ServiceWorkerContext::New(
-                context->service_worker_scope(),
-                context->service_worker_version_id(),
-                content::WorkerThread::GetCurrentId()));
+        ->RemoveListenerForServiceWorker(std::move(event_listener));
 #endif
   }
 

@@ -47,9 +47,7 @@ interface EventRouter {
 
   // Notifies the browser that the given extension added a listener to an event
   // in a service worker.
-  AddListenerForServiceWorker(string extension_id,
-                              string event_name,
-                              ServiceWorkerContext service_worker_context);
+  AddListenerForServiceWorker(EventListener event_listener);
 
   // Notifies the browser that the given extension added a listener to an event
   // from a lazy background page.
@@ -87,9 +85,7 @@ interface EventRouter {
 
   // Notifies the browser that the given extension removed a listener from an
   // event in a service worker.
-  RemoveListenerForServiceWorker(string extension_id,
-                                 string event_name,
-                                 ServiceWorkerContext service_worker_context);
+  RemoveListenerForServiceWorker(EventListener event_listener);
 
   // Notifies the browser that the given extension is no longer interested in
   // receiving the given event from a lazy background page.
