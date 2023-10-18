@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="rtl">
+<title>Tests scrollbar arrow button position calculations.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/blink-coordinates-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<style>
+  .ltr {
+    direction: ltr;
+  }
+
+  .rtl {
+    direction: rtl;
+  }
+
+  .container {
+    overflow: scroll;
+    border: 1px solid black;
+    width: 100px;
+    height: 100px;
+  }
+  .space {
+    width: 200vw;
+    height: 200vh;
+  }
+</style>
+
+<div class="container ltr" id="ltr">
+  <div class="space">Text</div>
+</div>
+<div class="container rtl" id="rtl">
+  <div class="space">Text</div>
+</div>
+<div class="space">Text</div>
+
+<script>
+window.onload = () => {
+  const TRACK_WIDTH = calculateScrollbarThickness();
+  const BUTTON_WIDTH = TRACK_WIDTH;
+  const SCROLL_CORNER = BUTTON_WIDTH;
+
+  function assert_point_in_rect(pt, rect, button) {
+    const message = `${button} positioned correctly`;
+    assert_true(pt.x >= rect.x, message);
+    assert_true(pt.x <= rect.x + rect.width, message);
+    assert_true(pt.y >= rect.y, message);
+    assert_true(pt.y <= rect.y + rect.height, message);
+  }
+
+  // Maps top left corner of an arrow button to the bounds of the button.
+  function cornerToRect(top_left) {
+    return {
+      x: top_left.x,
+      y: top_left.y,
+      width: BUTTON_WIDTH,
+      height: BUTTON_WIDTH
+    };
+  }
+
+  test(() => {
+    if (!hasScrollbarArrows()) {
+      // This test simulates clicking on an arrow button on the scrollbar.
+      // Mac scrollbars do not have arrow buttons. Also skip if testing in
+      // an environment with overlay scrollbars.
+      return;
+    }
+
+    const bounds = ltr.getBoundingClientRect();
+    assert_point_in_rect(
+        leftArrow(ltr),
+        cornerToRect({
+          x: bounds.left,
+          y: bounds.bottom - BUTTON_WIDTH
+        }), 'left arrow');
+    assert_point_in_rect(
+        rightArrow(ltr),
+        cornerToRect({
+          x: bounds.right - SCROLL_CORNER - BUTTON_WIDTH,
+          y: bounds.bottom - BUTTON_WIDTH
+        }), 'right arrow');
+    assert_point_in_rect(
+        upArrow(ltr),
+        cornerToRect({
+          x: bounds.right - BUTTON_WIDTH,
+          y: bounds.top
+        }), 'up arrow');
+    assert_point_in_rect(
+        downArrow(ltr),
+        cornerToRect({
+          x: bounds.right - BUTTON_WIDTH,
+          y: bounds.bottom - SCROLL_CORNER - BUTTON_WIDTH
+        }), 'down arrow');
+  }, 'Verify calculated button positions in LTR scroll container');
+
+  test(() => {
+    if (!hasScrollbarArrows()) {
+      // This test simulates clicking on an arrow button on the scrollbar.
+      // Mac scrollbars do not have arrow buttons. Also skip if testing in
+      // an environment with overlay scrollbars.
+      return;
+    }
+
+    const bounds = rtl.getBoundingClientRect();
+    assert_point_in_rect(
+        leftArrow(rtl),
+        cornerToRect({
+          x: bounds.left + SCROLL_CORNER,
+          y: bounds.bottom - BUTTON_WIDTH
+        }), 'left arrow');
+    assert_point_in_rect(
+        rightArrow(rtl),
+        cornerToRect({
+          x: bounds.right - BUTTON_WIDTH,
+          y: bounds.bottom - BUTTON_WIDTH
+        }), 'right arrow');
+    assert_point_in_rect(
+        upArrow(rtl),
+        cornerToRect({
+          x: bounds.left,
+          y: bounds.top
+        }), 'up arrow');
+    assert_point_in_rect(
+        downArrow(rtl),
+        cornerToRect({
+          x: bounds.left,
+          y: bounds.bottom - SCROLL_CORNER - BUTTON_WIDTH
+        }), 'down arrow');
+  }, 'Verify calculated button positions in RTL scroll container');
+
+  test(() => {
+    if (!hasScrollbarArrows()) {
+      // This test simulates clicking on an arrow button on the scrollbar.
+      // Mac scrollbars do not have arrow buttons. Also skip if testing in
+      // an environment with overlay scrollbars.
+      return;
+    }
+
+    placeRTLScrollbarsOnLeftSideInMainFrame(false);
+
+    assert_point_in_rect(
+        leftArrow(document.scrollingElement),
+        cornerToRect({
+          x: 0,
+          y: window.innerHeight - BUTTON_WIDTH
+        }), 'left arrow');
+    assert_point_in_rect(
+        rightArrow(document.scrollingElement),
+        cornerToRect({
+          x: window.innerWidth - SCROLL_CORNER - BUTTON_WIDTH,
+          y: window.innerHeight - BUTTON_WIDTH
+        }), 'right arrow');
+    assert_point_in_rect(
+        upArrow(document.scrollingElement),
+        cornerToRect({
+          x: window.innerWidth - BUTTON_WIDTH,
+          y: 0
+        }), 'up arrow');
+    assert_point_in_rect(
+        downArrow(document.scrollingElement),
+        cornerToRect({
+          x: window.innerWidth - BUTTON_WIDTH,
+          y: window.innerHeight - SCROLL_CORNER - BUTTON_WIDTH
+        }), 'down arrow');
+  }, 'Verify calculated button positions on root scroller');
+
+
+  test(() => {
+    if (!hasScrollbarArrows()) {
+      // This test simulates clicking on an arrow button on the scrollbar.
+      // Mac scrollbars do not have arrow buttons. Also skip if testing in
+      // an environment with overlay scrollbars.
+      return;
+    }
+
+    placeRTLScrollbarsOnLeftSideInMainFrame(true);
+
+    assert_point_in_rect(
+        leftArrow(document.scrollingElement),
+        cornerToRect({
+          x: SCROLL_CORNER,
+          y: window.innerHeight - BUTTON_WIDTH
+        }), 'left arrow');
+    assert_point_in_rect(
+        rightArrow(document.scrollingElement),
+        cornerToRect({
+          x: window.innerWidth - BUTTON_WIDTH,
+          y: window.innerHeight - BUTTON_WIDTH
+        }), 'right arrow');
+    assert_point_in_rect(
+        upArrow(document.scrollingElement),
+        cornerToRect({
+          x: 0,
+          y: 0
+        }), 'up arrow');
+    assert_point_in_rect(
+        downArrow(document.scrollingElement),
+        cornerToRect({
+          x: 0,
+          y: window.innerHeight - SCROLL_CORNER - BUTTON_WIDTH
+        }), 'down arrow');
+  }, 'Verify calculated button positions on root scroller with RTL setting');
+}
+</script>
+</html>
