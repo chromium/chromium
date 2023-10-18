@@ -57,6 +57,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/data_element.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 using captured_sites_test_utils::CapturedSiteParams;
 using captured_sites_test_utils::GetCapturedSites;
@@ -333,7 +334,11 @@ class AutofillCapturedSitesInteractiveTest
     // prediction. Test will check this attribute on all the relevant input
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::test::kAutofillServerCommunication,
+        /*enabled_features=*/{{blink::features::
+                                   kAutofillUseDomNodeIdForRendererId,
+                               {}},
+                              {features::kAutofillContentEditables, {}},
+                              {features::test::kAutofillServerCommunication,
                                {}},
                               {features::test::kAutofillShowTypePredictions,
                                {}},
