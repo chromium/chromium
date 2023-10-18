@@ -29,7 +29,7 @@ const char kPrivateSetQueryUrl[] = kPrivateSetBaseUrl "/v1/membership:query";
 
 const char kManufacturer[] = "Google";
 const char kModel[] = "Pixel 20";
-const char kSerial[] = "5CD203JBP8";
+const char kSerial[] = "5CD3152701";
 }  // namespace
 
 class PsmClaimVerifierTest : public testing::Test {

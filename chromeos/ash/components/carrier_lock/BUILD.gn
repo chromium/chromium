@@ -13,14 +13,13 @@ component("carrier_lock") {
 
   deps = [
     ":carrier_lock_proto",
+    "//ash/constants:constants",
     "//base",
-    "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/system",
     "//components/gcm_driver",
     "//components/prefs:prefs",
     "//components/session_manager/core",
-    "//dbus",
     "//google_apis",
     "//services/network/public/cpp",
     "//third_party/private_membership:private_membership",
@@ -70,17 +69,20 @@ source_set("unit_tests") {
   deps = [
     ":carrier_lock",
     ":carrier_lock_proto",
+    "//ash/constants:constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
-    "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//components/gcm_driver/instance_id:test_support",
     "//components/prefs:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/private_membership:private_membership",
     "//third_party/private_membership:private_membership_proto",
+    "//url",
   ]
 }
 
