@@ -1679,6 +1679,24 @@ GLES2ConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
       src_x, src_y, width, height, planes_yuv_color_space, plane_config,
       subsampling, mailboxes);
 }
+void GL_APIENTRY
+GLES2ConvertYUVAMailboxesToTextureINTERNAL(GLuint texture,
+                                           GLenum target,
+                                           GLuint internal_format,
+                                           GLenum type,
+                                           GLint src_x,
+                                           GLint src_y,
+                                           GLsizei width,
+                                           GLsizei height,
+                                           GLboolean flip_y,
+                                           GLenum planes_yuv_color_space,
+                                           GLenum plane_config,
+                                           GLenum subsampling,
+                                           const GLbyte* mailboxes) {
+  gles2::GetGLContext()->ConvertYUVAMailboxesToTextureINTERNAL(
+      texture, target, internal_format, type, src_x, src_y, width, height,
+      flip_y, planes_yuv_color_space, plane_config, subsampling, mailboxes);
+}
 void GL_APIENTRY GLES2CopySharedImageINTERNAL(GLint xoffset,
                                               GLint yoffset,
                                               GLint x,
@@ -3208,6 +3226,11 @@ extern const NameToFunc g_gles2_function_table[] = {
         "glConvertYUVAMailboxesToRGBINTERNAL",
         reinterpret_cast<GLES2FunctionPointer>(
             glConvertYUVAMailboxesToRGBINTERNAL),
+    },
+    {
+        "glConvertYUVAMailboxesToTextureINTERNAL",
+        reinterpret_cast<GLES2FunctionPointer>(
+            glConvertYUVAMailboxesToTextureINTERNAL),
     },
     {
         "glCopySharedImageINTERNAL",

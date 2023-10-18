@@ -2441,6 +2441,27 @@ void GLES2TraceImplementation::ConvertYUVAMailboxesToRGBINTERNAL(
                                          subsampling, mailboxes);
 }
 
+void GLES2TraceImplementation::ConvertYUVAMailboxesToTextureINTERNAL(
+    GLuint texture,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y,
+    GLenum planes_yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const GLbyte* mailboxes) {
+  TRACE_EVENT_BINARY_EFFICIENT0(
+      "gpu", "GLES2Trace::ConvertYUVAMailboxesToTextureINTERNAL");
+  gl_->ConvertYUVAMailboxesToTextureINTERNAL(
+      texture, target, internal_format, type, src_x, src_y, width, height,
+      flip_y, planes_yuv_color_space, plane_config, subsampling, mailboxes);
+}
+
 void GLES2TraceImplementation::CopySharedImageINTERNAL(
     GLint xoffset,
     GLint yoffset,

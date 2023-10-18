@@ -5329,6 +5329,26 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
   return error::kNoError;
 }
 
+error::Error
+GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToTextureINTERNAL(
+    GLuint texture,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y,
+    GLenum yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* mailboxes_in) {
+  // TODO(crbug.com/1410164): Implement.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageINTERNAL(
     GLint xoffset,
     GLint yoffset,

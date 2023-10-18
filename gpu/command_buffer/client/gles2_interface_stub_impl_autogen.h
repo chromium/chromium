@@ -1147,6 +1147,20 @@ void GLES2InterfaceStub::ConvertYUVAMailboxesToRGBINTERNAL(
     GLenum /* plane_config */,
     GLenum /* subsampling */,
     const GLbyte* /* mailboxes */) {}
+void GLES2InterfaceStub::ConvertYUVAMailboxesToTextureINTERNAL(
+    GLuint /* texture */,
+    GLenum /* target */,
+    GLuint /* internal_format */,
+    GLenum /* type */,
+    GLint /* src_x */,
+    GLint /* src_y */,
+    GLsizei /* width */,
+    GLsizei /* height */,
+    GLboolean /* flip_y */,
+    GLenum /* planes_yuv_color_space */,
+    GLenum /* plane_config */,
+    GLenum /* subsampling */,
+    const GLbyte* /* mailboxes */) {}
 void GLES2InterfaceStub::CopySharedImageINTERNAL(
     GLint /* xoffset */,
     GLint /* yoffset */,

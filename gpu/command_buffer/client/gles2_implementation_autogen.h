@@ -1178,6 +1178,20 @@ void ConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
                                        GLenum subsampling,
                                        const GLbyte* mailboxes) override;
 
+void ConvertYUVAMailboxesToTextureINTERNAL(GLuint texture,
+                                           GLenum target,
+                                           GLuint internal_format,
+                                           GLenum type,
+                                           GLint src_x,
+                                           GLint src_y,
+                                           GLsizei width,
+                                           GLsizei height,
+                                           GLboolean flip_y,
+                                           GLenum planes_yuv_color_space,
+                                           GLenum plane_config,
+                                           GLenum subsampling,
+                                           const GLbyte* mailboxes) override;
+
 void CopySharedImageINTERNAL(GLint xoffset,
                              GLint yoffset,
                              GLint x,

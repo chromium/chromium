@@ -3578,6 +3578,51 @@ void GLES2Implementation::ConvertYUVAMailboxesToRGBINTERNAL(
   CheckGLError();
 }
 
+void GLES2Implementation::ConvertYUVAMailboxesToTextureINTERNAL(
+    GLuint texture,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y,
+    GLenum planes_yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const GLbyte* mailboxes) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG(
+      "[" << GetLogPrefix() << "] glConvertYUVAMailboxesToTextureINTERNAL("
+          << texture << ", " << GLES2Util::GetStringEnum(target) << ", "
+          << internal_format << ", " << GLES2Util::GetStringEnum(type) << ", "
+          << src_x << ", " << src_y << ", " << width << ", " << height << ", "
+          << GLES2Util::GetStringBool(flip_y) << ", "
+          << GLES2Util::GetStringEnum(planes_yuv_color_space) << ", "
+          << GLES2Util::GetStringEnum(plane_config) << ", "
+          << GLES2Util::GetStringEnum(subsampling) << ", "
+          << static_cast<const void*>(mailboxes) << ")");
+  uint32_t count = 64;
+  for (uint32_t ii = 0; ii < count; ++ii) {
+    GPU_CLIENT_LOG("value[" << ii << "]: " << mailboxes[ii]);
+  }
+  if (width < 0) {
+    SetGLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToTextureINTERNAL",
+               "width < 0");
+    return;
+  }
+  if (height < 0) {
+    SetGLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToTextureINTERNAL",
+               "height < 0");
+    return;
+  }
+  helper_->ConvertYUVAMailboxesToTextureINTERNALImmediate(
+      texture, target, internal_format, type, src_x, src_y, width, height,
+      flip_y, planes_yuv_color_space, plane_config, subsampling, mailboxes);
+  CheckGLError();
+}
+
 void GLES2Implementation::CopySharedImageINTERNAL(GLint xoffset,
                                                   GLint yoffset,
                                                   GLint x,

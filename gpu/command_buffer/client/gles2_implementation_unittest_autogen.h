@@ -3054,6 +3054,23 @@ TEST_F(GLES2ImplementationTest, ConvertYUVAMailboxesToRGBINTERNAL) {
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
+TEST_F(GLES2ImplementationTest, ConvertYUVAMailboxesToTextureINTERNAL) {
+  GLbyte data[64] = {0};
+  struct Cmds {
+    cmds::ConvertYUVAMailboxesToTextureINTERNALImmediate cmd;
+    GLbyte data[64];
+  };
+
+  for (int jj = 0; jj < 64; ++jj) {
+    data[jj] = static_cast<GLbyte>(jj);
+  }
+  Cmds expected;
+  expected.cmd.Init(1, 2, 3, 4, 5, 6, 7, 8, true, 10, 11, 12, &data[0]);
+  gl_->ConvertYUVAMailboxesToTextureINTERNAL(1, 2, 3, 4, 5, 6, 7, 8, true, 10,
+                                             11, 12, &data[0]);
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+}
+
 TEST_F(GLES2ImplementationTest, CopySharedImageINTERNAL) {
   GLbyte data[32] = {0};
   struct Cmds {
