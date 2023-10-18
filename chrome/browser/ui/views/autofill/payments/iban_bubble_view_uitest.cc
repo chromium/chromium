@@ -359,7 +359,8 @@ class IbanBubbleViewFullFormBrowserTest
   LocationBarBubbleDelegateView* GetIbanBubbleDelegateView() {
     LocationBarBubbleDelegateView* iban_bubble_view = nullptr;
     switch (GetBubbleType()) {
-      case IbanBubbleType::kLocalSave: {
+      case IbanBubbleType::kLocalSave:
+      case IbanBubbleType::kUploadSave: {
         iban_bubble_view = GetSaveIbanBubbleView();
         CHECK(iban_bubble_view);
         break;

@@ -327,8 +327,17 @@ class TestAutofillClientTemplate : public T {
   void ConfirmSaveIbanLocally(
       const Iban& iban,
       bool should_show_prompt,
-      AutofillClient::LocalSaveIbanPromptCallback callback) override {
+      AutofillClient::SaveIbanPromptCallback callback) override {
     confirm_save_iban_locally_called_ = true;
+    offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
+  }
+
+  void ConfirmUploadIbanToCloud(
+      const Iban& iban,
+      const LegalMessageLines& legal_message_lines,
+      bool should_show_prompt,
+      AutofillClient::SaveIbanPromptCallback callback) override {
+    confirm_upload_iban_to_cloud_called_ = true;
     offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
   }
 
@@ -624,11 +633,6 @@ class TestAutofillClientTemplate : public T {
     should_save_autofill_profiles_ = value;
   }
 
-  void Reset() {
-    confirm_save_iban_locally_called_ = false;
-    offer_to_save_iban_bubble_was_shown_ = false;
-  }
-
   bool ConfirmSaveCardLocallyWasCalled() {
     return confirm_save_credit_card_locally_called_;
   }
@@ -795,6 +799,7 @@ class TestAutofillClientTemplate : public T {
   bool confirm_save_credit_card_to_cloud_called_ = false;
 
   bool confirm_save_iban_locally_called_ = false;
+  bool confirm_upload_iban_to_cloud_called_ = false;
 
   bool autofill_error_dialog_shown_ = false;
 

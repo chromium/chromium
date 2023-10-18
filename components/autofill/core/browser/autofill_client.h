@@ -370,11 +370,11 @@ class AutofillClient : public RiskDataLoader {
   using MigrationDeleteCardCallback =
       base::RepeatingCallback<void(const std::string&)>;
 
-  // Callback to run after local IBAN save is offered. The callback runs with
-  // `user_decision` indicating whether the prompt was accepted, declined,
+  // Callback to run after local/upload IBAN save is offered. The callback runs
+  // with `user_decision` indicating whether the prompt was accepted, declined,
   // or ignored. `nickname` is optionally provided by the user when IBAN local
-  // save is offered, and can be nullopt.
-  using LocalSaveIbanPromptCallback =
+  // or upload save is offered, and can be nullopt.
+  using SaveIbanPromptCallback =
       base::OnceCallback<void(SaveIbanOfferUserDecision user_decision,
                               const absl::optional<std::u16string>& nickname)>;
 
@@ -635,7 +635,16 @@ class AutofillClient : public RiskDataLoader {
   // `should_show_prompt` is true; otherwise only shows the omnibox icon.
   virtual void ConfirmSaveIbanLocally(const Iban& iban,
                                       bool should_show_prompt,
-                                      LocalSaveIbanPromptCallback callback) = 0;
+                                      SaveIbanPromptCallback callback) = 0;
+
+  // Runs `callback` once the user makes a decision with respect to the
+  // offer-to-upload prompt. On desktop, shows the offer-to-upload bubble if
+  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
+  virtual void ConfirmUploadIbanToCloud(
+      const Iban& iban,
+      const LegalMessageLines& legal_message_lines,
+      bool should_show_prompt,
+      SaveIbanPromptCallback callback) = 0;
 
   // TODO(crbug.com/991037): Find a way to merge these two functions. Shouldn't
   // use WebauthnDialogState as that state is a purely UI state (should not be

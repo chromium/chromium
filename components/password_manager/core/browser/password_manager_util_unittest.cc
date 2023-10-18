@@ -171,7 +171,14 @@ class MockAutofillClient : public autofill::AutofillClient {
               (override));
   MOCK_METHOD(void,
               ConfirmSaveIbanLocally,
-              (const autofill::Iban&, bool, LocalSaveIbanPromptCallback),
+              (const autofill::Iban&, bool, SaveIbanPromptCallback),
+              (override));
+  MOCK_METHOD(void,
+              ConfirmUploadIbanToCloud,
+              (const autofill::Iban&,
+               const autofill::LegalMessageLines& legal_message_lines,
+               bool,
+               SaveIbanPromptCallback),
               (override));
   MOCK_METHOD(void,
               ShowWebauthnOfferDialog,

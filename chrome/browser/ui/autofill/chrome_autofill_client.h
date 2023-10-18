@@ -188,7 +188,11 @@ class ChromeAutofillClient : public ContentAutofillClient,
       MigrationDeleteCardCallback delete_local_card_callback) override;
   void ConfirmSaveIbanLocally(const Iban& iban,
                               bool should_show_prompt,
-                              LocalSaveIbanPromptCallback callback) override;
+                              SaveIbanPromptCallback callback) override;
+  void ConfirmUploadIbanToCloud(const Iban& iban,
+                                const LegalMessageLines& legal_message_lines,
+                                bool should_show_prompt,
+                                SaveIbanPromptCallback callback) override;
   void ShowWebauthnOfferDialog(
       WebauthnDialogCallback offer_dialog_callback) override;
   void ShowWebauthnVerifyPendingDialog(

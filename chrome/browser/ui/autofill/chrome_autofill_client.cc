@@ -697,11 +697,23 @@ void ChromeAutofillClient::ShowLocalCardMigrationResults(
 void ChromeAutofillClient::ConfirmSaveIbanLocally(
     const Iban& iban,
     bool should_show_prompt,
-    LocalSaveIbanPromptCallback callback) {
+    SaveIbanPromptCallback callback) {
   // Do lazy initialization of IbanBubbleControllerImpl.
   IbanBubbleControllerImpl::CreateForWebContents(web_contents());
   IbanBubbleControllerImpl::FromWebContents(web_contents())
       ->OfferLocalSave(iban, should_show_prompt, std::move(callback));
+}
+
+void ChromeAutofillClient::ConfirmUploadIbanToCloud(
+    const Iban& iban,
+    const LegalMessageLines& legal_message_lines,
+    bool should_show_prompt,
+    SaveIbanPromptCallback callback) {
+  // Do lazy initialization of IbanBubbleControllerImpl.
+  IbanBubbleControllerImpl::CreateForWebContents(web_contents());
+  IbanBubbleControllerImpl::FromWebContents(web_contents())
+      ->OfferUploadSave(iban, legal_message_lines, should_show_prompt,
+                        std::move(callback));
 }
 
 void ChromeAutofillClient::ShowWebauthnOfferDialog(
