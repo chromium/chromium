@@ -405,10 +405,9 @@ union BASE_EXPORT TraceValue {
 template <typename T>
 struct TraceValue::Helper<
     T,
-    typename std::enable_if<std::is_integral<T>::value ||
-                            std::is_enum<T>::value>::type> {
+    typename std::enable_if<std::is_integral_v<T> || std::is_enum_v<T>>::type> {
   static constexpr unsigned char kType =
-      std::is_signed<T>::value ? TRACE_VALUE_TYPE_INT : TRACE_VALUE_TYPE_UINT;
+      std::is_signed_v<T> ? TRACE_VALUE_TYPE_INT : TRACE_VALUE_TYPE_UINT;
   static inline void SetValue(TraceValue* v, T value) {
     v->as_uint = static_cast<unsigned long long>(value);
   }
@@ -417,7 +416,7 @@ struct TraceValue::Helper<
 // TraceValue::Helper for floating-point types
 template <typename T>
 struct TraceValue::
-    Helper<T, typename std::enable_if<std::is_floating_point<T>::value>::type> {
+    Helper<T, typename std::enable_if<std::is_floating_point_v<T>>::type> {
   static constexpr unsigned char kType = TRACE_VALUE_TYPE_DOUBLE;
   static inline void SetValue(TraceValue* v, T value) { v->as_double = value; }
 };
@@ -486,9 +485,9 @@ struct TraceValue::Helper<std::unique_ptr<CONVERTABLE_TYPE>,
 template <typename T>
 struct TraceValue::Helper<
     T,
-    typename std::enable_if<std::is_same<T, base::Time>::value ||
-                            std::is_same<T, base::TimeTicks>::value ||
-                            std::is_same<T, base::ThreadTicks>::value>::type> {
+    typename std::enable_if<std::is_same_v<T, base::Time> ||
+                            std::is_same_v<T, base::TimeTicks> ||
+                            std::is_same_v<T, base::ThreadTicks>>::type> {
   static constexpr unsigned char kType = TRACE_VALUE_TYPE_INT;
   static inline void SetValue(TraceValue* v, const T& value) {
     v->as_int = value.ToInternalValue();

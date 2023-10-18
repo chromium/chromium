@@ -165,7 +165,7 @@ bool StringStorage::Contains(const TraceArguments& args) const {
 }
 
 static_assert(
-    std::is_pod<TraceValue>::value,
+    std::is_pod_v<TraceValue>,
     "TraceValue must be plain-old-data type for performance reasons!");
 
 void TraceValue::AppendAsJSON(unsigned char type, std::string* out) const {

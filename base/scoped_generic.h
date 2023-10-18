@@ -262,7 +262,7 @@ class ScopedGeneric {
 
   template <typename Void = void>
   typename std::enable_if_t<
-      std::is_base_of<ScopedGenericOwnershipTracking, Traits>::value,
+      std::is_base_of_v<ScopedGenericOwnershipTracking, Traits>,
       Void>
   TrackAcquire(const T& value) {
     if (value != traits_type::InvalidValue()) {
@@ -272,13 +272,13 @@ class ScopedGeneric {
 
   template <typename Void = void>
   typename std::enable_if_t<
-      !std::is_base_of<ScopedGenericOwnershipTracking, Traits>::value,
+      !std::is_base_of_v<ScopedGenericOwnershipTracking, Traits>,
       Void>
   TrackAcquire(const T& value) {}
 
   template <typename Void = void>
   typename std::enable_if_t<
-      std::is_base_of<ScopedGenericOwnershipTracking, Traits>::value,
+      std::is_base_of_v<ScopedGenericOwnershipTracking, Traits>,
       Void>
   TrackRelease(const T& value) {
     if (value != traits_type::InvalidValue()) {
@@ -288,7 +288,7 @@ class ScopedGeneric {
 
   template <typename Void = void>
   typename std::enable_if_t<
-      !std::is_base_of<ScopedGenericOwnershipTracking, Traits>::value,
+      !std::is_base_of_v<ScopedGenericOwnershipTracking, Traits>,
       Void>
   TrackRelease(const T& value) {}
 

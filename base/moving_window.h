@@ -699,9 +699,8 @@ class MovingWindow {
   typename std::conditional<
       internal::has_member_mean<EnabledFeatures>::value ||
           internal::has_memeber_deviation<EnabledFeatures>::value,
-      internal::MovingMeanBase<T,
-                               MeanSumType,
-                               std::is_floating_point<MeanSumType>::value>,
+      internal::
+          MovingMeanBase<T, MeanSumType, std::is_floating_point_v<MeanSumType>>,
       internal::NullMeanImpl<T>>::type mean_impl_;
 
   // Member for calculating deviation.

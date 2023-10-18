@@ -69,16 +69,15 @@ TEST(ValuesTest, SizeOfValue) {
 #endif
 
 TEST(ValuesTest, TestNothrow) {
-  static_assert(std::is_nothrow_move_constructible<Value>::value,
+  static_assert(std::is_nothrow_move_constructible_v<Value>,
                 "IsNothrowMoveConstructible");
-  static_assert(std::is_nothrow_default_constructible<Value>::value,
+  static_assert(std::is_nothrow_default_constructible_v<Value>,
                 "IsNothrowDefaultConstructible");
-  static_assert(std::is_nothrow_constructible<Value, std::string&&>::value,
+  static_assert(std::is_nothrow_constructible_v<Value, std::string&&>,
                 "IsNothrowMoveConstructibleFromString");
-  static_assert(
-      std::is_nothrow_constructible<Value, Value::BlobStorage&&>::value,
-      "IsNothrowMoveConstructibleFromBlob");
-  static_assert(std::is_nothrow_move_assignable<Value>::value,
+  static_assert(std::is_nothrow_constructible_v<Value, Value::BlobStorage&&>,
+                "IsNothrowMoveConstructibleFromBlob");
+  static_assert(std::is_nothrow_move_assignable_v<Value>,
                 "IsNothrowMoveAssignable");
 }
 
@@ -106,15 +105,15 @@ TEST(ValuesTest, ConstructBool) {
 }
 
 TEST(ValuesTest, ConstructFromPtrs) {
-  static_assert(!std::is_constructible<Value, int*>::value, "");
-  static_assert(!std::is_constructible<Value, const int*>::value, "");
-  static_assert(!std::is_constructible<Value, wchar_t*>::value, "");
-  static_assert(!std::is_constructible<Value, const wchar_t*>::value, "");
+  static_assert(!std::is_constructible_v<Value, int*>, "");
+  static_assert(!std::is_constructible_v<Value, const int*>, "");
+  static_assert(!std::is_constructible_v<Value, wchar_t*>, "");
+  static_assert(!std::is_constructible_v<Value, const wchar_t*>, "");
 
-  static_assert(std::is_constructible<Value, char*>::value, "");
-  static_assert(std::is_constructible<Value, const char*>::value, "");
-  static_assert(std::is_constructible<Value, char16_t*>::value, "");
-  static_assert(std::is_constructible<Value, const char16_t*>::value, "");
+  static_assert(std::is_constructible_v<Value, char*>, "");
+  static_assert(std::is_constructible_v<Value, const char*>, "");
+  static_assert(std::is_constructible_v<Value, char16_t*>, "");
+  static_assert(std::is_constructible_v<Value, const char16_t*>, "");
 }
 
 TEST(ValuesTest, ConstructInt) {

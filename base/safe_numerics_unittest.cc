@@ -71,16 +71,16 @@ static_assert(BigEnoughPromotion<int32_t, uint32_t>::is_contained, "");
 static_assert(BigEnoughPromotion<intmax_t, int8_t>::is_contained, "");
 static_assert(!BigEnoughPromotion<uintmax_t, int8_t>::is_contained, "");
 static_assert(
-    std::is_same<BigEnoughPromotion<int16_t, int8_t>::type, int16_t>::value,
+    std::is_same_v<BigEnoughPromotion<int16_t, int8_t>::type, int16_t>,
     "");
 static_assert(
-    std::is_same<BigEnoughPromotion<int32_t, uint32_t>::type, int64_t>::value,
+    std::is_same_v<BigEnoughPromotion<int32_t, uint32_t>::type, int64_t>,
     "");
 static_assert(
-    std::is_same<BigEnoughPromotion<intmax_t, int8_t>::type, intmax_t>::value,
+    std::is_same_v<BigEnoughPromotion<intmax_t, int8_t>::type, intmax_t>,
     "");
 static_assert(
-    std::is_same<BigEnoughPromotion<uintmax_t, int8_t>::type, uintmax_t>::value,
+    std::is_same_v<BigEnoughPromotion<uintmax_t, int8_t>::type, uintmax_t>,
     "");
 static_assert(BigEnoughPromotion<int16_t, int8_t>::is_contained, "");
 static_assert(BigEnoughPromotion<int32_t, uint32_t>::is_contained, "");
@@ -1082,7 +1082,7 @@ struct TestNumericConversion<Dst, Src, SIGN_PRESERVING_VALUE_PRESERVING> {
     } else if (numeric_limits<Src>::is_signed) {
       // This block reverses the Src to Dst relationship so we don't have to
       // complicate the test macros.
-      if (!std::is_same<Src, Dst>::value) {
+      if (!std::is_same_v<Src, Dst>) {
         TEST_EXPECTED_SUCCESS(CheckDiv(SrcLimits::lowest(), Dst(-1)));
       }
       TEST_EXPECTED_RANGE(RANGE_VALID, static_cast<Src>(-1));
@@ -1419,9 +1419,8 @@ size_t TestOverload(size_t) {  // Overload succeeds.
   return 0;
 }
 
-static_assert(
-    std::is_same<decltype(TestOverload(StrictNumeric<int>())), int>::value,
-    "");
+static_assert(std::is_same_v<decltype(TestOverload(StrictNumeric<int>())), int>,
+              "");
 static_assert(std::is_same<decltype(TestOverload(StrictNumeric<size_t>())),
                            size_t>::value,
               "");

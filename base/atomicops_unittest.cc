@@ -177,7 +177,7 @@ static void TestStore() {
 
   AtomicType value;
 
-  if constexpr (std::is_same<AtomicType, base::subtle::Atomic32>::value) {
+  if constexpr (std::is_same_v<AtomicType, base::subtle::Atomic32>) {
     base::subtle::NoBarrier_Store(&value, kVal1);
     EXPECT_EQ(kVal1, value);
     base::subtle::NoBarrier_Store(&value, kVal2);

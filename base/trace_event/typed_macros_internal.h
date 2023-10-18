@@ -148,7 +148,7 @@ inline void AddTypedTraceEventImpl(char phase,
 template <typename TrackType,
           typename... Args,
           typename TrackTypeCheck = typename std::enable_if<
-              std::is_convertible<TrackType, perfetto::Track>::value>::type>
+              std::is_convertible_v<TrackType, perfetto::Track>>::type>
 inline void AddTypedTraceEvent(char phase,
                                const unsigned char* category_group_enabled,
                                perfetto::StaticString name,
@@ -163,7 +163,7 @@ inline void AddTypedTraceEvent(char phase,
 template <typename TrackType,
           typename... Args,
           typename TrackTypeCheck = typename std::enable_if<
-              std::is_convertible<TrackType, perfetto::Track>::value>::type>
+              std::is_convertible_v<TrackType, perfetto::Track>>::type>
 inline void AddTypedTraceEvent(char phase,
                                const unsigned char* category_group_enabled,
                                perfetto::StaticString name,

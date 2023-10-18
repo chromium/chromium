@@ -235,7 +235,7 @@ template <class T, class X = void>
 struct EMUCaller {
   // std::is_same<> below makes static_assert depend on T, in order to
   // prevent it from asserting regardless instantiation.
-  static_assert(std::is_same<T, std::false_type>::value,
+  static_assert(std::is_same_v<T, std::false_type>,
                 "Neither global function 'size_t EstimateMemoryUsage(T)' "
                 "nor member function 'size_t T::EstimateMemoryUsage() const' "
                 "is defined for the type.");
@@ -255,7 +255,7 @@ template <template <class...> class Container, class I>
 struct IsComplexIteratorForContainer<
     Container,
     I,
-    std::enable_if_t<!std::is_pointer<I>::value &&
+    std::enable_if_t<!std::is_pointer_v<I> &&
                      base::internal::is_iterator<I>::value>> {
   using value_type = typename std::iterator_traits<I>::value_type;
   using container_type = Container<value_type>;
@@ -265,11 +265,10 @@ struct IsComplexIteratorForContainer<
   //
   // The downside is - value is not of type bool.
   enum : bool {
-    value =
-        std::is_same<typename container_type::iterator, I>::value ||
-        std::is_same<typename container_type::const_iterator, I>::value ||
-        std::is_same<typename container_type::reverse_iterator, I>::value ||
-        std::is_same<typename container_type::const_reverse_iterator, I>::value,
+    value = std::is_same_v<typename container_type::iterator, I> ||
+            std::is_same_v<typename container_type::const_iterator, I> ||
+            std::is_same_v<typename container_type::reverse_iterator, I> ||
+            std::is_same_v<typename container_type::const_reverse_iterator, I>,
   };
 };
 
@@ -304,7 +303,7 @@ constexpr bool IsStandardContainerComplexIterator() {
 // However variable template does.
 template <typename T>
 constexpr bool IsKnownNonAllocatingType_v =
-    std::is_trivially_destructible<T>::value ||
+    std::is_trivially_destructible_v<T> ||
     IsStandardContainerComplexIterator<T>();
 
 template <class T>
@@ -336,9 +335,8 @@ size_t EstimateIterableMemoryUsage(const I& iterable) {
 template <class T>
 auto EstimateMemoryUsage(const T& object)
     -> decltype(object.EstimateMemoryUsage()) {
-  static_assert(
-      std::is_same<decltype(object.EstimateMemoryUsage()), size_t>::value,
-      "'T::EstimateMemoryUsage() const' must return size_t.");
+  static_assert(std::is_same_v<decltype(object.EstimateMemoryUsage()), size_t>,
+                "'T::EstimateMemoryUsage() const' must return size_t.");
   return object.EstimateMemoryUsage();
 }
 

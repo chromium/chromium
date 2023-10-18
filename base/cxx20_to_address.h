@@ -31,7 +31,7 @@ struct has_std_to_address<
 // Reference: https://wg21.link/pointer.conversion#lib:to_address
 template <typename T>
 constexpr T* to_address(T* p) noexcept {
-  static_assert(!std::is_function<T>::value,
+  static_assert(!std::is_function_v<T>,
                 "Error: T must not be a function type.");
   return p;
 }

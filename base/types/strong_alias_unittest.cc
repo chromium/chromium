@@ -103,7 +103,7 @@ TYPED_TEST(StrongAliasTest, CanBeMoveConstructed) {
 
   // Check that FooAlias is nothrow move constructible. This matters for
   // performance when used in std::vectors.
-  static_assert(std::is_nothrow_move_constructible<FooAlias>::value,
+  static_assert(std::is_nothrow_move_constructible_v<FooAlias>,
                 "Error: Alias is not nothow move constructible");
 }
 
@@ -186,35 +186,35 @@ TYPED_TEST(StrongAliasTest, SizeSameAsUnderlyingType) {
 
 TYPED_TEST(StrongAliasTest, IsDefaultConstructible) {
   using FooAlias = StrongAlias<class FooTag, TypeParam>;
-  static_assert(std::is_default_constructible<FooAlias>::value,
+  static_assert(std::is_default_constructible_v<FooAlias>,
                 "Should be possible to default-construct a StrongAlias.");
   static_assert(
-      std::is_trivially_default_constructible<FooAlias>::value ==
-          std::is_trivially_default_constructible<TypeParam>::value,
+      std::is_trivially_default_constructible_v<FooAlias> ==
+          std::is_trivially_default_constructible_v<TypeParam>,
       "Should be possible to trivially default-construct a StrongAlias iff the "
       "underlying type is trivially default constructible.");
 }
 
 TEST(StrongAliasTest, TrivialTypeAliasIsStandardLayout) {
   using FooAlias = StrongAlias<class FooTag, int>;
-  static_assert(std::is_standard_layout<FooAlias>::value,
+  static_assert(std::is_standard_layout_v<FooAlias>,
                 "int-based alias should have standard layout. ");
-  static_assert(std::is_trivially_copyable<FooAlias>::value,
+  static_assert(std::is_trivially_copyable_v<FooAlias>,
                 "int-based alias should be trivially copyable. ");
 }
 
 TYPED_TEST(StrongAliasTest, CannotBeCreatedFromDifferentAlias) {
   using FooAlias = StrongAlias<class FooTag, TypeParam>;
   using BarAlias = StrongAlias<class BarTag, TypeParam>;
-  static_assert(!std::is_constructible<FooAlias, BarAlias>::value,
+  static_assert(!std::is_constructible_v<FooAlias, BarAlias>,
                 "Should be impossible to construct FooAlias from a BarAlias.");
-  static_assert(!std::is_convertible<BarAlias, FooAlias>::value,
+  static_assert(!std::is_convertible_v<BarAlias, FooAlias>,
                 "Should be impossible to convert a BarAlias into FooAlias.");
 }
 
 TYPED_TEST(StrongAliasTest, CannotBeImplicitlyConverterToUnderlyingValue) {
   using FooAlias = StrongAlias<class FooTag, TypeParam>;
-  static_assert(!std::is_convertible<FooAlias, TypeParam>::value,
+  static_assert(!std::is_convertible_v<FooAlias, TypeParam>,
                 "Should be impossible to implicitly convert a StrongAlias into "
                 "an underlying type.");
 }
