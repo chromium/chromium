@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATHML_PAINT_INFO_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATHML_PAINT_INFO_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MATHML_MATHML_PAINT_INFO_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MATHML_MATHML_PAINT_INFO_H_
 
 #include <unicode/uchar.h>
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,4 +33,4 @@ struct CORE_EXPORT MathMLPaintInfo {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATHML_PAINT_INFO_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MATHML_MATHML_PAINT_INFO_H_

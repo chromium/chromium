@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/table_constants.h"
-#include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_table_cell_with_anonymous_mrow.h"
+#include "third_party/blink/renderer/core/layout/mathml/layout_table_cell_with_anonymous_mrow.h"
 
 namespace blink {
 
