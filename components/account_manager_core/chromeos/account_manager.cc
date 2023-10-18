@@ -863,4 +863,8 @@ AccountManager::GetUrlLoaderFactory() {
   return url_loader_factory_;
 }
 
+base::WeakPtr<AccountManager> AccountManager::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace account_manager

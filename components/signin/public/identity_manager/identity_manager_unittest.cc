@@ -381,7 +381,7 @@ class IdentityManagerTest : public testing::Test {
             std::move(remote),
             /*remote_version=*/std::numeric_limits<uint32_t>::max(),
             /*account_manager_for_tests=*/
-            ash_account_manager);
+            ash_account_manager->GetWeakPtr());
 
     auto token_service = std::make_unique<CustomFakeProfileOAuth2TokenService>(
         &pref_service_,

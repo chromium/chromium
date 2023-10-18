@@ -237,6 +237,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   void GetTokenHash(const ::account_manager::AccountKey& account_key,
                     base::OnceCallback<void(const std::string&)> callback);
 
+  base::WeakPtr<AccountManager> GetWeakPtr();
+
  private:
   enum InitializationState {
     kNotStarted,   // Initialize has not been called

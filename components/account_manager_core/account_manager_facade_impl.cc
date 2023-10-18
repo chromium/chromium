@@ -295,11 +295,11 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
 AccountManagerFacadeImpl::AccountManagerFacadeImpl(
     mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
     uint32_t remote_version,
-    AccountManager* account_manager_for_tests,
+    base::WeakPtr<AccountManager> account_manager_for_tests,
     base::OnceClosure init_finished)
     : remote_version_(remote_version),
       account_manager_remote_(std::move(account_manager_remote)),
-      account_manager_for_tests_(account_manager_for_tests) {
+      account_manager_for_tests_(std::move(account_manager_for_tests)) {
   DCHECK(init_finished);
   initialization_callbacks_.emplace_back(std::move(init_finished));
 
@@ -505,12 +505,14 @@ void AccountManagerFacadeImpl::ReportAuthError(
 void AccountManagerFacadeImpl::UpsertAccountForTesting(
     const Account& account,
     const std::string& token_value) {
+  CHECK(account_manager_for_tests_);
   account_manager_for_tests_->UpsertAccount(account.key, account.raw_email,
                                             token_value);
 }
 
 void AccountManagerFacadeImpl::RemoveAccountForTesting(
     const AccountKey& account) {
+  CHECK(account_manager_for_tests_);
   account_manager_for_tests_->RemoveAccount(account);
 }
 

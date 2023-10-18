@@ -131,7 +131,8 @@ IdentityManagerDependenciesOwner::IdentityManagerDependenciesOwner(
           std::move(remote),
           /*remote_version=*/std::numeric_limits<uint32_t>::max(),
           /*account_manager_for_tests=*/
-          account_manager_factory_->GetAccountManager(std::string()));
+          account_manager_factory_->GetAccountManager(std::string())
+              ->GetWeakPtr());
 #endif
 }
 
