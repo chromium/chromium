@@ -19,7 +19,7 @@
 //         return "PROXY foobar1:8080; HTTPS foobar2:8080; DIRECT";
 //
 //   * Re-ordering the proxy list such that proxies that have recently failed
-//     are given lower priority (ProxyInfo::DeprioritizeBadProxies)
+//     are given lower priority (ProxyInfo::DeprioritizeBadProxyChains)
 //
 //   * Maintaining the expiring cache of proxies that have recently failed.
 //

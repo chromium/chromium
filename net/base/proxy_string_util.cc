@@ -155,6 +155,11 @@ std::string ProxyServerToPacResultElement(const ProxyServer& proxy_server) {
   }
 }
 
+ProxyChain ProxyUriToProxyChain(base::StringPiece uri,
+                                ProxyServer::Scheme default_scheme) {
+  return ProxyChain(ProxyUriToProxyServer(uri, default_scheme));
+}
+
 ProxyServer ProxyUriToProxyServer(base::StringPiece uri,
                                   ProxyServer::Scheme default_scheme) {
   // We will default to |default_scheme| if no scheme specifier was given.

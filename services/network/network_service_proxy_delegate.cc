@@ -31,7 +31,7 @@ bool ApplyProxyConfigToProxyInfo(const net::ProxyConfig::ProxyRules& rules,
   }
 
   rules.Apply(url, proxy_info);
-  proxy_info->DeprioritizeBadProxies(proxy_retry_info);
+  proxy_info->DeprioritizeBadProxyChains(proxy_retry_info);
   return !proxy_info->is_empty() && !proxy_info->proxy_server().is_direct();
 }
 
@@ -183,7 +183,7 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     result->set_is_for_ip_protection(true);
     result->OverrideProxyList(
         MergeProxyRules(result->proxy_list(), proxy_list));
-    result->DeprioritizeBadProxies(proxy_retry_info);
+    result->DeprioritizeBadProxyChains(proxy_retry_info);
     return;
   }
 

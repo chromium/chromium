@@ -99,24 +99,24 @@ TEST(ProxyListTest, RemoveProxiesWithoutScheme) {
   }
 }
 
-TEST(ProxyListTest, DeprioritizeBadProxies) {
+TEST(ProxyListTest, DeprioritizeBadProxyChains) {
   // Retry info that marks a proxy as being bad for a *very* long time (to avoid
   // the test depending on the current time.)
   ProxyRetryInfo proxy_retry_info;
   proxy_retry_info.bad_until = base::TimeTicks::Now() + base::Days(1);
 
-  // Call DeprioritizeBadProxies with an empty map -- should have no effect.
+  // Call DeprioritizeBadProxyChains with an empty map -- should have no effect.
   {
     ProxyList list;
     list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
 
     ProxyRetryInfoMap retry_info_map;
-    list.DeprioritizeBadProxies(retry_info_map);
+    list.DeprioritizeBadProxyChains(retry_info_map);
     EXPECT_EQ("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80",
               list.ToPacString());
   }
 
-  // Call DeprioritizeBadProxies with 2 of the three proxies marked as bad.
+  // Call DeprioritizeBadProxyChains with 2 of the three chains marked as bad.
   // These proxies should be retried last.
   {
     ProxyList list;
@@ -127,13 +127,13 @@ TEST(ProxyListTest, DeprioritizeBadProxies) {
     retry_info_map["foopy3:80"] = proxy_retry_info;
     retry_info_map["socks5://localhost:1080"] = proxy_retry_info;
 
-    list.DeprioritizeBadProxies(retry_info_map);
+    list.DeprioritizeBadProxyChains(retry_info_map);
 
     EXPECT_EQ("PROXY foopy2:80;PROXY foopy1:80;PROXY foopy3:80",
               list.ToPacString());
   }
 
-  // Call DeprioritizeBadProxies where ALL of the proxies are marked as bad.
+  // Call DeprioritizeBadProxyChains where ALL of the chains are marked as bad.
   // This should have no effect on the order.
   {
     ProxyList list;
@@ -144,14 +144,14 @@ TEST(ProxyListTest, DeprioritizeBadProxies) {
     retry_info_map["foopy2:80"] = proxy_retry_info;
     retry_info_map["foopy3:80"] = proxy_retry_info;
 
-    list.DeprioritizeBadProxies(retry_info_map);
+    list.DeprioritizeBadProxyChains(retry_info_map);
 
     EXPECT_EQ("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80",
               list.ToPacString());
   }
 
-  // Call DeprioritizeBadProxies with 2 of the three proxies marked as bad. Of
-  // the 2 bad proxies, one is to be reconsidered and should be retried last.
+  // Call DeprioritizeBadProxyChains with 2 of the three chains marked as bad.
+  // Of the 2 bad proxies, one is to be reconsidered and should be retried last.
   // The other is not to be reconsidered and should be removed from the list.
   {
     ProxyList list;
@@ -165,7 +165,7 @@ TEST(ProxyListTest, DeprioritizeBadProxies) {
     proxy_retry_info.try_while_bad = true;
     retry_info_map["socks5://localhost:1080"] = proxy_retry_info;
 
-    list.DeprioritizeBadProxies(retry_info_map);
+    list.DeprioritizeBadProxyChains(retry_info_map);
 
     EXPECT_EQ("PROXY foopy2:80;PROXY foopy1:80",
               list.ToPacString());

@@ -1188,7 +1188,7 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
     // This check is done to only log the NetLog event when necessary, it's
     // not a performance optimization.
     if (!proxy_retry_info_.empty()) {
-      result->DeprioritizeBadProxies(proxy_retry_info_);
+      result->DeprioritizeBadProxyChains(proxy_retry_info_);
       net_log.AddEvent(
           NetLogEventType::PROXY_RESOLUTION_SERVICE_DEPRIORITIZED_BAD_PROXIES,
           [&] { return NetLogFinishedResolvingProxyParams(result); });

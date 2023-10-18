@@ -9,6 +9,7 @@
 
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 
 namespace net {
@@ -79,6 +80,8 @@ NET_EXPORT std::string ProxyServerToPacResultElement(
 //   "quic://foopy:17"  {scheme=QUIC, host="foopy", port=17}
 //   "direct://"        {scheme=DIRECT}
 //   "foopy:X"          INVALID -- bad port.
+NET_EXPORT ProxyChain ProxyUriToProxyChain(base::StringPiece uri,
+                                           ProxyServer::Scheme default_scheme);
 NET_EXPORT ProxyServer
 ProxyUriToProxyServer(base::StringPiece uri,
                       ProxyServer::Scheme default_scheme);
