@@ -19,6 +19,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -1669,7 +1670,8 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
 
 // Helper to deserialize report rows. See `GetReport()` for the expected
 // ordering of columns used for the input to this function.
-absl::optional<AttributionReport>
+base::expected<AttributionReport,
+               AttributionStorageSql::ReportCorruptionStatusSet>
 AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 11);
 
@@ -1693,38 +1695,57 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   absl::optional<AttributionReport::Type> report_type =
       DeserializeReportType(statement.ColumnInt(col++));
 
+  ReportCorruptionStatusSet corruption_causes;
+
   // Ensure data is valid before continuing. This could happen if there is
   // database corruption.
   // TODO(apaseltiner): Should we raze the DB if we've detected corruption?
   //
   // TODO(apaseltiner): Consider verifying that `context_origin` is valid for
   // the associated source.
-  if (failed_send_attempts < 0 || !external_report_id.is_valid() ||
-      !context_origin.has_value() || !reporting_origin.has_value() ||
-      !report_type.has_value()) {
-    return absl::nullopt;
+
+  if (failed_send_attempts < 0) {
+    corruption_causes.Put(ReportCorruptionStatus::kInvalidFailedSendAttempts);
   }
 
-  if (source_data && *source_data->source.common_info().reporting_origin() !=
-                         *reporting_origin) {
-    return absl::nullopt;
+  if (!external_report_id.is_valid()) {
+    corruption_causes.Put(ReportCorruptionStatus::kInvalidExternalReportID);
+  }
+
+  if (!context_origin.has_value()) {
+    corruption_causes.Put(ReportCorruptionStatus::kInvalidContextOrigin);
+  }
+
+  if (!report_type.has_value()) {
+    corruption_causes.Put(ReportCorruptionStatus::kInvalidReportType);
+  }
+
+  if (!reporting_origin.has_value()) {
+    corruption_causes.Put(ReportCorruptionStatus::kInvalidReportingOrigin);
+  } else if (source_data &&
+             *source_data->source.common_info().reporting_origin() !=
+                 *reporting_origin) {
+    corruption_causes.Put(ReportCorruptionStatus::kReportingOriginMismatch);
   }
 
   std::string metadata;
   if (!statement.ColumnBlobAsString(col++, &metadata)) {
-    return absl::nullopt;
+    corruption_causes.Put(ReportCorruptionStatus::kMetadataAsStringFailed);
   }
 
   absl::optional<AttributionReport::Data> data;
   switch (*report_type) {
     case AttributionReport::Type::kEventLevel: {
       if (!source_data) {
-        return absl::nullopt;
+        corruption_causes.Put(
+            ReportCorruptionStatus::kSourceDataMissingEventLevel);
+        break;
       }
       uint64_t trigger_data;
       int64_t priority;
       if (!DeserializeReportMetadata(metadata, trigger_data, priority)) {
-        return absl::nullopt;
+        corruption_causes.Put(ReportCorruptionStatus::kInvalidMetadata);
+        break;
       }
 
       data = AttributionReport::EventLevelData(trigger_data, priority,
@@ -1733,7 +1754,9 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
     }
     case AttributionReport::Type::kAggregatableAttribution: {
       if (!source_data) {
-        return absl::nullopt;
+        corruption_causes.Put(
+            ReportCorruptionStatus::kSourceDataMissingAggregatable);
+        break;
       }
       data = AttributionReport::AggregatableAttributionData(
           AttributionReport::CommonAggregatableData(),
@@ -1742,24 +1765,33 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
               metadata,
               absl::get<AttributionReport::AggregatableAttributionData>(
                   *data))) {
-        return absl::nullopt;
+        corruption_causes.Put(ReportCorruptionStatus::kInvalidMetadata);
       }
       break;
     }
     case AttributionReport::Type::kNullAggregatable:
       if (source_data) {
-        return absl::nullopt;
+        corruption_causes.Put(
+            ReportCorruptionStatus::kSourceDataFoundNullAggregatable);
+        break;
       }
-      data = AttributionReport::NullAggregatableData(
-          AttributionReport::CommonAggregatableData(),
-          /*reporting_origin=*/std::move(*reporting_origin),
-          /*fake_source_time=*/base::Time());
-      if (!DeserializeReportMetadata(
-              metadata,
-              absl::get<AttributionReport::NullAggregatableData>(*data))) {
-        return absl::nullopt;
+      if (reporting_origin.has_value()) {
+        data = AttributionReport::NullAggregatableData(
+            AttributionReport::CommonAggregatableData(),
+            /*reporting_origin=*/std::move(*reporting_origin),
+            /*fake_source_time=*/base::Time());
+        if (!DeserializeReportMetadata(
+                metadata,
+                absl::get<AttributionReport::NullAggregatableData>(*data))) {
+          corruption_causes.Put(ReportCorruptionStatus::kInvalidMetadata);
+        }
       }
       break;
+  }
+
+  if (!corruption_causes.Empty()) {
+    corruption_causes.Put(ReportCorruptionStatus::kAnyFieldCorrupted);
+    return base::unexpected(std::move(corruption_causes));
   }
 
   DCHECK(data.has_value());
@@ -1800,7 +1832,7 @@ std::vector<AttributionReport> AttributionStorageSql::GetReportsInternal(
 
   std::vector<AttributionReport> reports;
   while (statement.Step()) {
-    absl::optional<AttributionReport> report =
+    base::expected<AttributionReport, ReportCorruptionStatusSet> report =
         ReadReportFromStatement(statement);
     if (report.has_value()) {
       reports.push_back(std::move(*report));
@@ -1859,8 +1891,9 @@ absl::optional<AttributionReport> AttributionStorageSql::GetReport(
   if (!statement.Step()) {
     return absl::nullopt;
   }
-
-  return ReadReportFromStatement(statement);
+  auto report = ReadReportFromStatement(statement);
+  return report.has_value() ? absl::make_optional(std::move(*report))
+                            : absl::nullopt;
 }
 
 bool AttributionStorageSql::DeleteExpiredSources() {
@@ -2378,18 +2411,20 @@ void AttributionStorageSql::RecordValidReports() {
   statement.BindInt(1, -1);
 
   int valid_reports = 0;
-  int corrupt_reports = 0;
   while (statement.Step()) {
-    if (ReadReportFromStatement(statement).has_value()) {
+    base::expected<AttributionReport, ReportCorruptionStatusSet> report =
+        ReadReportFromStatement(statement);
+    if (report.has_value()) {
       valid_reports++;
     } else {
-      corrupt_reports++;
+      for (auto corruption_cause : report.error()) {
+        base::UmaHistogramEnumeration("Conversions.CorruptReportsInDatabase2",
+                                      corruption_cause);
+      }
     }
   }
   base::UmaHistogramCounts1000("Conversions.ValidReportsInDatabase",
                                valid_reports);
-  base::UmaHistogramCounts1000("Conversions.CorruptReportsInDatabase",
-                               corrupt_reports);
 }
 
 void AttributionStorageSql::RecordSourcesPerSourceOrigin() {

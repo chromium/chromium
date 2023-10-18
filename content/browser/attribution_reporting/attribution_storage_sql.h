@@ -11,10 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -83,8 +85,29 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kFailedToInitializeSchema = 4,
     kMaxValue = kFailedToInitializeSchema,
   };
+  enum class ReportCorruptionStatus {
+    // Tracks total number of corrupted reports for analysis purposes.
+    kAnyFieldCorrupted = 0,
+    kInvalidFailedSendAttempts = 1,
+    kInvalidExternalReportID = 2,
+    kInvalidContextOrigin = 3,
+    kInvalidReportingOrigin = 4,
+    kInvalidReportType = 5,
+    kReportingOriginMismatch = 6,
+    kMetadataAsStringFailed = 7,
+    kSourceDataMissingEventLevel = 8,
+    kSourceDataMissingAggregatable = 9,
+    kSourceDataFoundNullAggregatable = 10,
+    kInvalidMetadata = 11,
+    kMaxValue = kInvalidMetadata,
+  };
 
  private:
+  using ReportCorruptionStatusSet =
+      base::EnumSet<ReportCorruptionStatus,
+                    ReportCorruptionStatus::kAnyFieldCorrupted,
+                    ReportCorruptionStatus::kMaxValue>;
+
   struct StoredSourceData;
 
   enum class DbStatus {
@@ -213,7 +236,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                      AttributionReport::Type report_type)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<AttributionReport> ReadReportFromStatement(sql::Statement&)
+  base::expected<AttributionReport, ReportCorruptionStatusSet>
+  ReadReportFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   absl::optional<StoredSourceData> ReadSourceFromStatement(sql::Statement&)

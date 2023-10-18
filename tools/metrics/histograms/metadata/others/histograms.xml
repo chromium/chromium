@@ -3636,6 +3636,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.CorruptReportsInDatabase2"
+    enum="ConversionCorruptReportStatus" expires_after="M121">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the cause of report corruption when deserializing from the database.
+    Multiple ReportCorruptionStatus values can be associated to a single report
+    as a report can be corrupted for multiple reasons. Reports are scanned
+    during database initialization.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.CreateReportStatus8"
     enum="ConversionStorageCreateReportStatus" expires_after="2024-03-10">
   <owner>tquintanilla@chromium.org</owner>
@@ -4328,6 +4341,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.ValidReportsInDatabase" units="Reports"
+    expires_after="M121">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of valid reports in a client's database. Reports are
+    scanned during database initialization.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ValuesPerFilter" units="values"
     expires_after="M121">
   <owner>linnan@chromium.org</owner>
@@ -4369,21 +4393,6 @@ chromium-metrics-reviews@google.com.
   <token key="RegistrationType">
     <variant name="Source" summary="source"/>
     <variant name="Trigger" summary="trigger"/>
-  </token>
-</histogram>
-
-<histogram name="Conversions.{ReportStatus}ReportsInDatabase" units="Reports"
-    expires_after="M121">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the number of valid/corrupted reports in a client's database.
-    Reports are scanned during database initialization.
-  </summary>
-  <token key="ReportStatus">
-    <variant name="Corrupt"/>
-    <variant name="Valid"/>
   </token>
 </histogram>
 
