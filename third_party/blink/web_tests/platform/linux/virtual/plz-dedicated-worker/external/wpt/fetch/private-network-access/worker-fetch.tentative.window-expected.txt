@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+[PASS] local to local: success.
+[FAIL] private to local: failure.
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+[PASS] private to private: success.
+[FAIL] public to local: failure.
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+[FAIL] public to private: failure.
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+[PASS] public to public: success.
+[FAIL] treat-as-public to local: failure.
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+[FAIL] treat-as-public to private: failure.
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+[PASS] treat-as-public to public: success.
+[PASS] local https to local https: success.
+[FAIL] private https to local https: failure.
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+[FAIL] public https to private https: failure.
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+[FAIL] public https to local https: failure.
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+Harness: the test ran to completion.
+

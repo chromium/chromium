@@ -1,66 +1,77 @@
 This is a testharness.js-based test.
 Found 62 tests; 51 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandIndeterm("insertunorderedlist") before
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandState("insertunorderedlist") before
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandValue("insertunorderedlist") before
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandIndeterm("insertunorderedlist") after
-FAIL [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandState("insertunorderedlist") after assert_equals: Wrong result returned expected true but got false
-FAIL [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "true" but got "false"
-FAIL [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>": execCommand("insertunorderedlist", false, "") return value assert_equals: expected true but got false
-FAIL [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>": execCommand("inserttext", false, "abc") return value assert_equals: expected true but got false
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<p></p>" not in array ["<ul><li>abc</li></ul>", "<ul><li>abc<br></li></ul>"]
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandIndeterm("insertunorderedlist") before
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandState("insertunorderedlist") before
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandValue("insertunorderedlist") before
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandIndeterm("insertunorderedlist") after
-FAIL [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandState("insertunorderedlist") after assert_equals: Wrong result returned expected true but got false
-FAIL [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "true" but got "false"
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>": execCommand("inserttext", false, "abc") return value
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<p><ul><li>abc</li></ul></p>" not in array ["<ul><li>abc</li></ul>", "<ul><li>abc<br></li></ul>"]
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandIndeterm("insertunorderedlist") before
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandState("insertunorderedlist") before
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandValue("insertunorderedlist") before
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandIndeterm("insertunorderedlist") after
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandState("insertunorderedlist") after
-PASS [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandValue("insertunorderedlist") after
-PASS [["insertunorderedlist",""]] "<div>[foo</div>bar]<div>baz</div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div>[foo</div>bar]<div>baz</div>" checks for modifications to non-editable content
-PASS [["insertunorderedlist",""]] "<div>[foo</div>bar]<div>baz</div>" compare innerHTML
-PASS [["insertunorderedlist",""]] "<div>[foo</div><div>bar]</div><div>baz</div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div>[foo</div><div>bar]</div><div>baz</div>" checks for modifications to non-editable content
-PASS [["insertunorderedlist",""]] "<div>[foo</div><div>bar]</div><div>baz</div>" compare innerHTML
-PASS [["insertunorderedlist",""]] "<div>[abc</div><div><br></div><div>def]</div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div>[abc</div><div><br></div><div>def]</div>" checks for modifications to non-editable content
-PASS [["insertunorderedlist",""]] "<div>[abc</div><div><br></div><div>def]</div>" compare innerHTML
-PASS [["insertunorderedlist",""]] "<div>{<br></div><div>abc</div><div>def]</div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div>{<br></div><div>abc</div><div>def]</div>" checks for modifications to non-editable content
-PASS [["insertunorderedlist",""]] "<div>{<br></div><div>abc</div><div>def]</div>" compare innerHTML
-PASS [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>}<br></div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>}<br></div>" checks for modifications to non-editable content
-PASS [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>}<br></div>" compare innerHTML
-PASS [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>]ghi</div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>]ghi</div>" checks for modifications to non-editable content
-PASS [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>]ghi</div>" compare innerHTML
-PASS [["insertunorderedlist",""]] "<div dir=\"rtl\">a[]bc</div><div dir=\"rtl\">def</div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div dir=\"rtl\">a[]bc</div><div dir=\"rtl\">def</div>" checks for modifications to non-editable content
-PASS [["insertunorderedlist",""]] "<div dir=\"rtl\">a[]bc</div><div dir=\"rtl\">def</div>" compare innerHTML
-PASS [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"rtl\">de]f</div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"rtl\">de]f</div>" checks for modifications to non-editable content
-PASS [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"rtl\">de]f</div>" compare innerHTML
-PASS [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"ltr\">de]f</div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"ltr\">de]f</div>" checks for modifications to non-editable content
-PASS [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"ltr\">de]f</div>" compare innerHTML
-PASS [["insertunorderedlist",""]] "<div id=\"a\">a[bc</div><div id=\"b\">de]f</div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div id=\"a\">a[bc</div><div id=\"b\">de]f</div>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<div id=\"a\">a[bc</div><div id=\"b\">de]f</div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div id=\"a\"><ul><li>abc</li><li>def</li></ul></div>" not in array ["<div><ul><li id=\"a\">abc</li><li id=\"b\">def</li></ul></div>", "<ul><li id=\"a\">abc</li><li id=\"b\">def</li></ul>"]
-PASS [["insertunorderedlist",""]] "<div class=\"a\">a[bc</div><div class=\"b\">de]f</div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div class=\"a\">a[bc</div><div class=\"b\">de]f</div>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<div class=\"a\">a[bc</div><div class=\"b\">de]f</div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div class=\"a\"><ul><li>abc</li><li>def</li></ul></div>" not in array ["<div><ul><li class=\"a\">abc</li><li class=\"b\">def</li></ul></div>", "<ul><li class=\"a\">abc</li><li class=\"b\">def</li></ul>"]
-PASS [["insertunorderedlist",""]] "<div title=\"a\">a[bc</div><div title=\"b\">de]f</div>": execCommand("insertunorderedlist", false, "") return value
-PASS [["insertunorderedlist",""]] "<div title=\"a\">a[bc</div><div title=\"b\">de]f</div>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<div title=\"a\">a[bc</div><div title=\"b\">de]f</div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div title=\"a\"><ul><li>abc</li><li>def</li></ul></div>" not in array ["<div><ul><li title=\"a\">abc</li><li title=\"b\">def</li></ul></div>", "<ul><li title=\"a\">abc</li><li title=\"b\">def</li></ul>"]
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandIndeterm("insertunorderedlist") before
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandState("insertunorderedlist") before
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandValue("insertunorderedlist") before
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandIndeterm("insertunorderedlist") after
+[FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandState("insertunorderedlist") after
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandValue("insertunorderedlist") after
+  assert_equals: Wrong result returned expected "true" but got "false"
+[FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>": execCommand("insertunorderedlist", false, "") return value
+  assert_equals: expected true but got false
+[FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>": execCommand("inserttext", false, "abc") return value
+  assert_equals: expected true but got false
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" checks for modifications to non-editable content
+[FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<p></p>" not in array ["<ul><li>abc</li></ul>", "<ul><li>abc<br></li></ul>"]
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandIndeterm("insertunorderedlist") before
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandState("insertunorderedlist") before
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandValue("insertunorderedlist") before
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandIndeterm("insertunorderedlist") after
+[FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandState("insertunorderedlist") after
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}</p>" queryCommandValue("insertunorderedlist") after
+  assert_equals: Wrong result returned expected "true" but got "false"
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>": execCommand("inserttext", false, "abc") return value
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" checks for modifications to non-editable content
+[FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<p><ul><li>abc</li></ul></p>" not in array ["<ul><li>abc</li></ul>", "<ul><li>abc<br></li></ul>"]
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandIndeterm("insertunorderedlist") before
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandState("insertunorderedlist") before
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandValue("insertunorderedlist") before
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandIndeterm("insertunorderedlist") after
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandState("insertunorderedlist") after
+[PASS] [["insertunorderedlist",""],["inserttext","abc"]] "<p>{}<br></p>" queryCommandValue("insertunorderedlist") after
+[PASS] [["insertunorderedlist",""]] "<div>[foo</div>bar]<div>baz</div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div>[foo</div>bar]<div>baz</div>" checks for modifications to non-editable content
+[PASS] [["insertunorderedlist",""]] "<div>[foo</div>bar]<div>baz</div>" compare innerHTML
+[PASS] [["insertunorderedlist",""]] "<div>[foo</div><div>bar]</div><div>baz</div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div>[foo</div><div>bar]</div><div>baz</div>" checks for modifications to non-editable content
+[PASS] [["insertunorderedlist",""]] "<div>[foo</div><div>bar]</div><div>baz</div>" compare innerHTML
+[PASS] [["insertunorderedlist",""]] "<div>[abc</div><div><br></div><div>def]</div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div>[abc</div><div><br></div><div>def]</div>" checks for modifications to non-editable content
+[PASS] [["insertunorderedlist",""]] "<div>[abc</div><div><br></div><div>def]</div>" compare innerHTML
+[PASS] [["insertunorderedlist",""]] "<div>{<br></div><div>abc</div><div>def]</div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div>{<br></div><div>abc</div><div>def]</div>" checks for modifications to non-editable content
+[PASS] [["insertunorderedlist",""]] "<div>{<br></div><div>abc</div><div>def]</div>" compare innerHTML
+[PASS] [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>}<br></div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>}<br></div>" checks for modifications to non-editable content
+[PASS] [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>}<br></div>" compare innerHTML
+[PASS] [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>]ghi</div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>]ghi</div>" checks for modifications to non-editable content
+[PASS] [["insertunorderedlist",""]] "<div>[abc</div><div>def</div><div>]ghi</div>" compare innerHTML
+[PASS] [["insertunorderedlist",""]] "<div dir=\"rtl\">a[]bc</div><div dir=\"rtl\">def</div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div dir=\"rtl\">a[]bc</div><div dir=\"rtl\">def</div>" checks for modifications to non-editable content
+[PASS] [["insertunorderedlist",""]] "<div dir=\"rtl\">a[]bc</div><div dir=\"rtl\">def</div>" compare innerHTML
+[PASS] [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"rtl\">de]f</div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"rtl\">de]f</div>" checks for modifications to non-editable content
+[PASS] [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"rtl\">de]f</div>" compare innerHTML
+[PASS] [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"ltr\">de]f</div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"ltr\">de]f</div>" checks for modifications to non-editable content
+[PASS] [["insertunorderedlist",""]] "<div dir=\"rtl\">a[bc</div><div dir=\"ltr\">de]f</div>" compare innerHTML
+[PASS] [["insertunorderedlist",""]] "<div id=\"a\">a[bc</div><div id=\"b\">de]f</div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div id=\"a\">a[bc</div><div id=\"b\">de]f</div>" checks for modifications to non-editable content
+[FAIL] [["insertunorderedlist",""]] "<div id=\"a\">a[bc</div><div id=\"b\">de]f</div>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div id=\"a\"><ul><li>abc</li><li>def</li></ul></div>" not in array ["<div><ul><li id=\"a\">abc</li><li id=\"b\">def</li></ul></div>", "<ul><li id=\"a\">abc</li><li id=\"b\">def</li></ul>"]
+[PASS] [["insertunorderedlist",""]] "<div class=\"a\">a[bc</div><div class=\"b\">de]f</div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div class=\"a\">a[bc</div><div class=\"b\">de]f</div>" checks for modifications to non-editable content
+[FAIL] [["insertunorderedlist",""]] "<div class=\"a\">a[bc</div><div class=\"b\">de]f</div>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div class=\"a\"><ul><li>abc</li><li>def</li></ul></div>" not in array ["<div><ul><li class=\"a\">abc</li><li class=\"b\">def</li></ul></div>", "<ul><li class=\"a\">abc</li><li class=\"b\">def</li></ul>"]
+[PASS] [["insertunorderedlist",""]] "<div title=\"a\">a[bc</div><div title=\"b\">de]f</div>": execCommand("insertunorderedlist", false, "") return value
+[PASS] [["insertunorderedlist",""]] "<div title=\"a\">a[bc</div><div title=\"b\">de]f</div>" checks for modifications to non-editable content
+[FAIL] [["insertunorderedlist",""]] "<div title=\"a\">a[bc</div><div title=\"b\">de]f</div>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div title=\"a\"><ul><li>abc</li><li>def</li></ul></div>" not in array ["<div><ul><li title=\"a\">abc</li><li title=\"b\">def</li></ul></div>", "<ul><li title=\"a\">abc</li><li title=\"b\">def</li></ul>"]
 Harness: the test ran to completion.
 

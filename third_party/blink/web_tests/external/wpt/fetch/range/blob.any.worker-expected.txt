@@ -1,30 +1,43 @@
 This is a testharness.js-based test.
-PASS A simple blob range request.
-PASS A blob range request with no type.
-PASS A blob range request with no end.
-PASS A blob range request with no start.
-PASS A simple blob range request with whitespace.
-PASS Blob content with short content and a large range end
-PASS Blob content with short content and a range end matching content length
-PASS Blob range with whitespace before and after hyphen
-PASS Blob range with whitespace after hyphen
-PASS Blob range with whitespace around equals sign
-FAIL Blob range with no value assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range with incorrect range header assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range with incorrect range header #2 assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range with incorrect range header #3 assert_unreached: Should have rejected: undefined Reached unreachable code
-PASS Blob range request with multiple range values
-PASS Blob range request with multiple range values and whitespace
-FAIL Blob range request with trailing comma assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range with no start or end assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range request with short range end assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range start should be an ASCII digit assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range should have a dash assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range end should be an ASCII digit assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range should include '-' assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range should include '=' assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range should include 'bytes=' assert_unreached: Should have rejected: undefined Reached unreachable code
-PASS Blob content with short content and a large range start
-PASS Blob content with short content and a range start matching the content length
+[PASS] A simple blob range request.
+[PASS] A blob range request with no type.
+[PASS] A blob range request with no end.
+[PASS] A blob range request with no start.
+[PASS] A simple blob range request with whitespace.
+[PASS] Blob content with short content and a large range end
+[PASS] Blob content with short content and a range end matching content length
+[PASS] Blob range with whitespace before and after hyphen
+[PASS] Blob range with whitespace after hyphen
+[PASS] Blob range with whitespace around equals sign
+[FAIL] Blob range with no value
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Blob range with incorrect range header
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Blob range with incorrect range header #2
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Blob range with incorrect range header #3
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[PASS] Blob range request with multiple range values
+[PASS] Blob range request with multiple range values and whitespace
+[FAIL] Blob range request with trailing comma
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Blob range with no start or end
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Blob range request with short range end
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Blob range start should be an ASCII digit
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Blob range should have a dash
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Blob range end should be an ASCII digit
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Blob range should include '-'
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Blob range should include '='
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Blob range should include 'bytes='
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[PASS] Blob content with short content and a large range start
+[PASS] Blob content with short content and a range start matching the content length
 Harness: the test ran to completion.
 

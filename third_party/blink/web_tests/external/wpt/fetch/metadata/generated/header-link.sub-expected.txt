@@ -1,33 +1,63 @@
 This is a testharness.js-based test.
-FAIL sec-fetch-site rel=icon - Not sent to non-trustworthy same-origin destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-site rel=stylesheet - Not sent to non-trustworthy same-origin destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-site rel=icon - Not sent to non-trustworthy same-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-site rel=stylesheet - Not sent to non-trustworthy same-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-site rel=icon - Not sent to non-trustworthy cross-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-site rel=stylesheet - Not sent to non-trustworthy cross-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-mode rel=icon - Not sent to non-trustworthy same-origin destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-mode rel=stylesheet - Not sent to non-trustworthy same-origin destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-mode rel=icon - Not sent to non-trustworthy same-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-mode rel=stylesheet - Not sent to non-trustworthy same-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-mode rel=icon - Not sent to non-trustworthy cross-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-mode rel=stylesheet - Not sent to non-trustworthy cross-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-dest rel=icon - Not sent to non-trustworthy same-origin destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-dest rel=stylesheet - Not sent to non-trustworthy same-origin destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-dest rel=icon - Not sent to non-trustworthy same-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-dest rel=stylesheet - Not sent to non-trustworthy same-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-dest rel=icon - Not sent to non-trustworthy cross-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-dest rel=stylesheet - Not sent to non-trustworthy cross-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-user rel=icon - Not sent to non-trustworthy same-origin destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-user rel=stylesheet - Not sent to non-trustworthy same-origin destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-user rel=icon - Not sent to non-trustworthy same-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-user rel=stylesheet - Not sent to non-trustworthy same-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-user rel=icon - Not sent to non-trustworthy cross-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-user rel=stylesheet - Not sent to non-trustworthy cross-site destination promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-site rel=icon - HTTPS downgrade (header not sent) promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-site rel=stylesheet - HTTPS downgrade (header not sent) promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-site rel=icon - HTTPS upgrade promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-site rel=stylesheet - HTTPS upgrade promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-site rel=icon - HTTPS downgrade-upgrade promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
-FAIL sec-fetch-site rel=stylesheet - HTTPS downgrade-upgrade promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=icon - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=stylesheet - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=icon - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=stylesheet - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=icon - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=stylesheet - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-mode rel=icon - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-mode rel=stylesheet - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-mode rel=icon - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-mode rel=stylesheet - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-mode rel=icon - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-mode rel=stylesheet - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-dest rel=icon - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-dest rel=stylesheet - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-dest rel=icon - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-dest rel=stylesheet - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-dest rel=icon - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-dest rel=stylesheet - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-user rel=icon - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-user rel=stylesheet - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-user rel=icon - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-user rel=stylesheet - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-user rel=icon - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-user rel=stylesheet - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=icon - HTTPS downgrade (header not sent)
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=stylesheet - HTTPS downgrade (header not sent)
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=icon - HTTPS upgrade
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=stylesheet - HTTPS upgrade
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=icon - HTTPS downgrade-upgrade
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site rel=stylesheet - HTTPS downgrade-upgrade
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
 Harness: the test ran to completion.
 

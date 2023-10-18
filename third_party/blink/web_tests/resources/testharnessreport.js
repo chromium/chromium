@@ -276,7 +276,9 @@
         }
         if (location.pathname.startsWith('/wpt_internal/') ||
             location.pathname.startsWith('/html/') ||
-            location.pathname.startsWith('/css/css-')) {
+            location.pathname.startsWith('/css/css-') ||
+            location.pathname.startsWith('/editing/') ||
+            location.pathname.startsWith('/fetch/')) {
             return true;
         }
         return false;

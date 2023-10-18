@@ -1,21 +1,23 @@
 This is a testharness.js-based test.
-PASS Calling arrayBuffer() on an aborted request
-PASS Aborting a request after calling arrayBuffer()
-PASS Calling arrayBuffer() on an aborted consumed empty request
-PASS Calling arrayBuffer() on an aborted consumed nonempty request
-PASS Calling blob() on an aborted request
-PASS Aborting a request after calling blob()
-PASS Calling blob() on an aborted consumed empty request
-PASS Calling blob() on an aborted consumed nonempty request
-FAIL Calling formData() on an aborted request promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-FAIL Aborting a request after calling formData() promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-PASS Calling formData() on an aborted consumed nonempty request
-PASS Calling json() on an aborted request
-PASS Aborting a request after calling json()
-PASS Calling json() on an aborted consumed nonempty request
-PASS Calling text() on an aborted request
-PASS Aborting a request after calling text()
-PASS Calling text() on an aborted consumed empty request
-PASS Calling text() on an aborted consumed nonempty request
+[PASS] Calling arrayBuffer() on an aborted request
+[PASS] Aborting a request after calling arrayBuffer()
+[PASS] Calling arrayBuffer() on an aborted consumed empty request
+[PASS] Calling arrayBuffer() on an aborted consumed nonempty request
+[PASS] Calling blob() on an aborted request
+[PASS] Aborting a request after calling blob()
+[PASS] Calling blob() on an aborted consumed empty request
+[PASS] Calling blob() on an aborted consumed nonempty request
+[FAIL] Calling formData() on an aborted request
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+[FAIL] Aborting a request after calling formData()
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+[PASS] Calling formData() on an aborted consumed nonempty request
+[PASS] Calling json() on an aborted request
+[PASS] Aborting a request after calling json()
+[PASS] Calling json() on an aborted consumed nonempty request
+[PASS] Calling text() on an aborted request
+[PASS] Aborting a request after calling text()
+[PASS] Calling text() on an aborted consumed empty request
+[PASS] Calling text() on an aborted consumed nonempty request
 Harness: the test ran to completion.
 

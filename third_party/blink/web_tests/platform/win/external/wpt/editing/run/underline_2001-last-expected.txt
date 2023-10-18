@@ -1,147 +1,168 @@
 This is a testharness.js-based test.
 Found 143 tests; 122 PASS, 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL [["stylewithcss","true"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("underline") after assert_equals: Wrong result returned expected false but got true
-FAIL [["stylewithcss","true"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("underline") after assert_equals: Wrong result returned expected "" but got "true"
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz": execCommand("underline", false, "") return value
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" compare innerHTML
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandIndeterm("underline") before
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("underline") before
-FAIL [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("underline") before assert_equals: Wrong result returned expected "" but got "true"
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandIndeterm("underline") after
-PASS [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("underline") after
-FAIL [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("underline") after assert_equals: Wrong result returned expected "" but got "false"
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz": execCommand("underline", false, "") return value
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" compare innerHTML
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("underline") before
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("underline") before
-FAIL [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("underline") before assert_equals: Wrong result returned expected "" but got "true"
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("underline") after
-PASS [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("underline") after
-FAIL [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("underline") after assert_equals: Wrong result returned expected "" but got "false"
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz": execCommand("underline", false, "") return value
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" compare innerHTML
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("underline") before
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("underline") before
-FAIL [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("underline") before assert_equals: Wrong result returned expected "" but got "true"
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("underline") after
-PASS [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("underline") after
-FAIL [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("underline") after assert_equals: Wrong result returned expected "" but got "false"
-PASS [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz": execCommand("underline", false, "") return value
-PASS [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" checks for modifications to non-editable content
-FAIL [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<span style=\"text-decoration:underline\">obar</span>baz" but got "fo<u>ob</u><span style=\"text-decoration:underline\">ar</span>baz"
-PASS [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandIndeterm("underline") before
-PASS [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandState("underline") before
-FAIL [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandValue("underline") before assert_equals: Wrong result returned expected "" but got "false"
-PASS [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandIndeterm("underline") after
-PASS [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandState("underline") after
-FAIL [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandValue("underline") after assert_equals: Wrong result returned expected "" but got "true"
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>": execCommand("underline", false, "") return value
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ins>foo</ins>b<span style=\"text-decoration:underline\">ar</span>" but got "<ins>foo</ins>b<u>ar</u>"
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("underline") before
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("underline") before
-FAIL [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("underline") before assert_equals: Wrong result returned expected "" but got "true"
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("underline") after
-PASS [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("underline") after
-FAIL [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("underline") after assert_equals: Wrong result returned expected "" but got "false"
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>": execCommand("underline", false, "") return value
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" compare innerHTML
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("underline") before
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("underline") before
-FAIL [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("underline") before assert_equals: Wrong result returned expected "" but got "true"
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("underline") after
-PASS [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("underline") after
-FAIL [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("underline") after assert_equals: Wrong result returned expected "" but got "false"
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>": execCommand("underline", false, "") return value
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"text-decoration:underline\">fo</span>o<ins>bar</ins>" but got "<u>fo</u>o<ins>bar</ins>"
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("underline") before
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("underline") before
-FAIL [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("underline") before assert_equals: Wrong result returned expected "" but got "true"
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("underline") after
-PASS [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("underline") after
-FAIL [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("underline") after assert_equals: Wrong result returned expected "" but got "false"
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>": execCommand("underline", false, "") return value
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" compare innerHTML
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("underline") before
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("underline") before
-FAIL [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("underline") before assert_equals: Wrong result returned expected "" but got "true"
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("underline") after
-PASS [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("underline") after
-FAIL [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("underline") after assert_equals: Wrong result returned expected "" but got "false"
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi": execCommand("underline", false, "") return value
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi" compare innerHTML
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through overline\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through overline\">[def]</span>ghi": execCommand("underline", false, "") return value
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through overline\">[def]</span>ghi" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through overline\">[def]</span>ghi" compare innerHTML
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through blue dotted\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through blue dotted\">[def]</span>ghi": execCommand("underline", false, "") return value
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through blue dotted\">[def]</span>ghi" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through blue dotted\">[def]</span>ghi" compare innerHTML
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi": execCommand("underline", false, "") return value
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi" compare innerHTML
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi": execCommand("underline", false, "") return value
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi" compare innerHTML
+[FAIL] [["stylewithcss","true"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("underline") after
+  assert_equals: Wrong result returned expected false but got true
+[FAIL] [["stylewithcss","true"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("underline") after
+  assert_equals: Wrong result returned expected "" but got "true"
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandIndeterm("underline") before
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("underline") before
+[FAIL] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("underline") before
+  assert_equals: Wrong result returned expected "" but got "true"
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandIndeterm("underline") after
+[PASS] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("underline") after
+[FAIL] [["stylewithcss","false"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("underline") after
+  assert_equals: Wrong result returned expected "" but got "false"
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("underline") before
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("underline") before
+[FAIL] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("underline") before
+  assert_equals: Wrong result returned expected "" but got "true"
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("underline") after
+[PASS] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("underline") after
+[FAIL] [["stylewithcss","true"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("underline") after
+  assert_equals: Wrong result returned expected "" but got "false"
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("underline") before
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("underline") before
+[FAIL] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("underline") before
+  assert_equals: Wrong result returned expected "" but got "true"
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandIndeterm("underline") after
+[PASS] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandState("underline") after
+[FAIL] [["stylewithcss","false"],["underline",""]] "foo{<u>bar</u>}baz" queryCommandValue("underline") after
+  assert_equals: Wrong result returned expected "" but got "false"
+[PASS] [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz": execCommand("underline", false, "") return value
+[PASS] [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" checks for modifications to non-editable content
+[FAIL] [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<span style=\"text-decoration:underline\">obar</span>baz" but got "fo<u>ob</u><span style=\"text-decoration:underline\">ar</span>baz"
+[PASS] [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandIndeterm("underline") before
+[PASS] [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandState("underline") before
+[FAIL] [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandValue("underline") before
+  assert_equals: Wrong result returned expected "" but got "false"
+[PASS] [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandIndeterm("underline") after
+[PASS] [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandState("underline") after
+[FAIL] [["underline",""]] "fo[o<span style=text-decoration:underline>b]ar</span>baz" queryCommandValue("underline") after
+  assert_equals: Wrong result returned expected "" but got "true"
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" checks for modifications to non-editable content
+[FAIL] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ins>foo</ins>b<span style=\"text-decoration:underline\">ar</span>" but got "<ins>foo</ins>b<u>ar</u>"
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("underline") before
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("underline") before
+[FAIL] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("underline") before
+  assert_equals: Wrong result returned expected "" but got "true"
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("underline") after
+[PASS] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("underline") after
+[FAIL] [["stylewithcss","true"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("underline") after
+  assert_equals: Wrong result returned expected "" but got "false"
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" compare innerHTML
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("underline") before
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("underline") before
+[FAIL] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("underline") before
+  assert_equals: Wrong result returned expected "" but got "true"
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandIndeterm("underline") after
+[PASS] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandState("underline") after
+[FAIL] [["stylewithcss","false"],["underline",""]] "<ins>fo[o</ins><u>b]ar</u>" queryCommandValue("underline") after
+  assert_equals: Wrong result returned expected "" but got "false"
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" checks for modifications to non-editable content
+[FAIL] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"text-decoration:underline\">fo</span>o<ins>bar</ins>" but got "<u>fo</u>o<ins>bar</ins>"
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("underline") before
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("underline") before
+[FAIL] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("underline") before
+  assert_equals: Wrong result returned expected "" but got "true"
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("underline") after
+[PASS] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("underline") after
+[FAIL] [["stylewithcss","true"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("underline") after
+  assert_equals: Wrong result returned expected "" but got "false"
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" compare innerHTML
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("underline") before
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("underline") before
+[FAIL] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("underline") before
+  assert_equals: Wrong result returned expected "" but got "true"
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandIndeterm("underline") after
+[PASS] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandState("underline") after
+[FAIL] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("underline") after
+  assert_equals: Wrong result returned expected "" but got "false"
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi" compare innerHTML
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through overline\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through overline\">[def]</span>ghi": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through overline\">[def]</span>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through overline\">[def]</span>ghi" compare innerHTML
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through blue dotted\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through blue dotted\">[def]</span>ghi": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through blue dotted\">[def]</span>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:line-through blue dotted\">[def]</span>ghi" compare innerHTML
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi" compare innerHTML
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi": execCommand("underline", false, "") return value
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["underline",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi" compare innerHTML
 Harness: the test ran to completion.
 

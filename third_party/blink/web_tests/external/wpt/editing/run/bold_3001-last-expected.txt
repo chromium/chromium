@@ -1,47 +1,55 @@
 This is a testharness.js-based test.
-PASS [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandIndeterm("stylewithcss") after
-FAIL [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandState("stylewithcss") after assert_equals: Wrong result returned expected false but got true
-PASS [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandIndeterm("bold") before
-PASS [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandState("bold") before
-FAIL [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandValue("bold") before assert_equals: Wrong result returned expected "" but got "false"
-PASS [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandIndeterm("bold") after
-FAIL [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandState("bold") after assert_equals: Wrong result returned expected true but got false
-FAIL [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandValue("bold") after assert_equals: Wrong result returned expected "" but got "false"
-PASS [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><b>e</b></span>f]</b>ghi": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><b>e</b></span>f]</b>ghi": execCommand("bold", false, "") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><b>e</b></span>f]</b>ghi" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><b>e</b></span>f]</b>ghi" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abcd<span contenteditable=\"false\"><b>e</b></span>fghi" but got "abcd<span contenteditable=\"false\" style=\"\"><b>e</b></span>fghi"
-PASS [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi": execCommand("bold", false, "") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abcd<span contenteditable=\"false\"><span contenteditable=\"\">e</span></span>fghi" but got "abcd<span contenteditable=\"false\" style=\"\"><span contenteditable=\"\">e</span></span>fghi"
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi": execCommand("bold", false, "") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi" compare innerHTML
-PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi": execCommand("bold", false, "") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abc<b><i>def</i></b>ghi" but got "abc<i><b>def</b></i>ghi"
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi": execCommand("bold", false, "") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi" compare innerHTML
-PASS [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi": execCommand("bold", false, "") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abc<b><i>def</i></b>ghi" but got "abc<i><b>def</b></i>ghi"
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi": execCommand("bold", false, "") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi" compare innerHTML
-PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi": execCommand("bold", false, "") return value
-PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi" compare innerHTML
+[PASS] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandIndeterm("stylewithcss") after
+[FAIL] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandState("stylewithcss") after
+  assert_equals: Wrong result returned expected false but got true
+[PASS] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandIndeterm("bold") before
+[PASS] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandState("bold") before
+[FAIL] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandValue("bold") before
+  assert_equals: Wrong result returned expected "" but got "false"
+[PASS] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandIndeterm("bold") after
+[FAIL] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandState("bold") after
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["stylewithcss","false"],["bold",""]] "<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>" queryCommandValue("bold") after
+  assert_equals: Wrong result returned expected "" but got "false"
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><b>e</b></span>f]</b>ghi": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><b>e</b></span>f]</b>ghi": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><b>e</b></span>f]</b>ghi" checks for modifications to non-editable content
+[FAIL] [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><b>e</b></span>f]</b>ghi" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abcd<span contenteditable=\"false\"><b>e</b></span>fghi" but got "abcd<span contenteditable=\"false\" style=\"\"><b>e</b></span>fghi"
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi" checks for modifications to non-editable content
+[FAIL] [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abcd<span contenteditable=\"false\"><span contenteditable=\"\">e</span></span>fghi" but got "abcd<span contenteditable=\"false\" style=\"\"><span contenteditable=\"\">e</span></span>fghi"
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi" compare innerHTML
+[PASS] [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi" checks for modifications to non-editable content
+[FAIL] [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abc<b><i>def</i></b>ghi" but got "abc<i><b>def</b></i>ghi"
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi" compare innerHTML
+[PASS] [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi" checks for modifications to non-editable content
+[FAIL] [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abc<b><i>def</i></b>ghi" but got "abc<i><b>def</b></i>ghi"
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi" compare innerHTML
+[PASS] [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi" compare innerHTML
 Harness: the test ran to completion.
 

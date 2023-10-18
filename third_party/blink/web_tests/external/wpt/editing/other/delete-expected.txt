@@ -1,19 +1,20 @@
 This is a testharness.js-based test.
-PASS 0: "<p><br></p><p><br></p>" 1,0 delete
-PASS 1: "<p><br></p><p><br></p>" 0,0 forwarddelete
-PASS 2: "<p><br></p><p><br></p>" 0,0-1,0 delete
-PASS 3: "<p><br></p><p><br></p>" 0,0-1,0 forwarddelete
-PASS 4: "<p><br></p><p><br></p>" 1,0-0,0 delete
-PASS 5: "<p><br></p><p><br></p>" 1,0-0,0 forwarddelete
-PASS 6: "<p>x<br></p><p><br></p>" 1,0 delete
-PASS 7: "<p><br><br></p><p><br></p>" 1,0 delete
-PASS 8: "<p><br></p><p><br><br></p>" 1,1 delete
-PASS 9: "<p><br><br><br></p>" 0,2 delete
-PASS 10: "<p><br></p><p><br><br><br></p>" 1,2 delete
-PASS 11: "<p><br><br></p><p><br><br></p>" 1,1 delete
-PASS 12: "<p><br></p><br>" 1 delete
-PASS 13: "<p><br></p><p><br></p>\n" 1,0 delete
-PASS 14: "<p><br></p><p><br></p>\n" 0,0 forwarddelete
-FAIL 15: "\n<p><tt>x</tt></p><p><tt><br></tt></p><p><tt><br></tt></p>\n" 3,0,0 delete assert_equals: innerHTML expected "\n<p><tt>x</tt></p><p><tt><br></tt></p>\n" but got "\n<p><tt>x</tt></p><p><br></p>\n"
+[PASS] 0: "<p><br></p><p><br></p>" 1,0 delete
+[PASS] 1: "<p><br></p><p><br></p>" 0,0 forwarddelete
+[PASS] 2: "<p><br></p><p><br></p>" 0,0-1,0 delete
+[PASS] 3: "<p><br></p><p><br></p>" 0,0-1,0 forwarddelete
+[PASS] 4: "<p><br></p><p><br></p>" 1,0-0,0 delete
+[PASS] 5: "<p><br></p><p><br></p>" 1,0-0,0 forwarddelete
+[PASS] 6: "<p>x<br></p><p><br></p>" 1,0 delete
+[PASS] 7: "<p><br><br></p><p><br></p>" 1,0 delete
+[PASS] 8: "<p><br></p><p><br><br></p>" 1,1 delete
+[PASS] 9: "<p><br><br><br></p>" 0,2 delete
+[PASS] 10: "<p><br></p><p><br><br><br></p>" 1,2 delete
+[PASS] 11: "<p><br><br></p><p><br><br></p>" 1,1 delete
+[PASS] 12: "<p><br></p><br>" 1 delete
+[PASS] 13: "<p><br></p><p><br></p>\n" 1,0 delete
+[PASS] 14: "<p><br></p><p><br></p>\n" 0,0 forwarddelete
+[FAIL] 15: "\n<p><tt>x</tt></p><p><tt><br></tt></p><p><tt><br></tt></p>\n" 3,0,0 delete
+  assert_equals: innerHTML expected "\n<p><tt>x</tt></p><p><tt><br></tt></p>\n" but got "\n<p><tt>x</tt></p><p><br></p>\n"
 Harness: the test ran to completion.
 

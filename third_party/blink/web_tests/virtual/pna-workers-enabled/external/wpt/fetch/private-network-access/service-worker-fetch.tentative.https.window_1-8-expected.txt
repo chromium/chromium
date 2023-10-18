@@ -1,11 +1,11 @@
 This is a testharness.js-based test.
-PASS local to local: success.
-PASS private to local: failed preflight.
-PASS private to local: success.
-PASS private to private: success.
-PASS public to local: failed preflight.
-PASS public to local: success.
-PASS public to private: failed preflight.
-PASS public to private: success.
+[PASS] local to local: success.
+[PASS] private to local: failed preflight.
+[PASS] private to local: success.
+[PASS] private to private: success.
+[PASS] public to local: failed preflight.
+[PASS] public to local: success.
+[PASS] public to private: failed preflight.
+[PASS] public to private: success.
 Harness: the test ran to completion.
 

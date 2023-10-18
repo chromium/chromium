@@ -1,427 +1,435 @@
 This is a testharness.js-based test.
 Found 423 tests; 415 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL [["defaultparagraphseparator",""]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "") return value assert_equals: expected false but got true
-PASS [["defaultparagraphseparator",""]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["defaultparagraphseparator",""]] "foo[bar]baz" compare innerHTML
-PASS [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","div"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "div") return value
-PASS [["defaultparagraphseparator","div"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["defaultparagraphseparator","div"]] "foo[bar]baz" compare innerHTML
-PASS [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","p"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "p") return value
-PASS [["defaultparagraphseparator","p"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["defaultparagraphseparator","p"]] "foo[bar]baz" compare innerHTML
-PASS [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","DIV"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "DIV") return value
-PASS [["defaultparagraphseparator","DIV"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["defaultparagraphseparator","DIV"]] "foo[bar]baz" compare innerHTML
-PASS [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
-FAIL [["defaultparagraphseparator"," p "]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, " p ") return value assert_equals: expected false but got true
-PASS [["defaultparagraphseparator"," p "]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["defaultparagraphseparator"," p "]] "foo[bar]baz" compare innerHTML
-PASS [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
-FAIL [["defaultparagraphseparator","<p>"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "<p>") return value assert_equals: expected false but got true
-PASS [["defaultparagraphseparator","<p>"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["defaultparagraphseparator","<p>"]] "foo[bar]baz" compare innerHTML
-PASS [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","P"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "P") return value
-PASS [["defaultparagraphseparator","P"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["defaultparagraphseparator","P"]] "foo[bar]baz" compare innerHTML
-PASS [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
-FAIL [["defaultparagraphseparator"," div "]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, " div ") return value assert_equals: expected false but got true
-PASS [["defaultparagraphseparator"," div "]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["defaultparagraphseparator"," div "]] "foo[bar]baz" compare innerHTML
-PASS [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
-FAIL [["defaultparagraphseparator","<div>"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "<div>") return value assert_equals: expected false but got true
-PASS [["defaultparagraphseparator","<div>"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["defaultparagraphseparator","<div>"]] "foo[bar]baz" compare innerHTML
-PASS [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
-FAIL [["defaultparagraphseparator","li"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "li") return value assert_equals: expected false but got true
-PASS [["defaultparagraphseparator","li"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["defaultparagraphseparator","li"]] "foo[bar]baz" compare innerHTML
-PASS [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
-FAIL [["defaultparagraphseparator","blockquote"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "blockquote") return value assert_equals: expected false but got true
-PASS [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" compare innerHTML
-PASS [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
-PASS [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
-PASS [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
-PASS [["selectall",""]] "foo[bar]baz": execCommand("selectall", false, "") return value
-PASS [["selectall",""]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["selectall",""]] "foo[bar]baz" compare innerHTML
-PASS [["selectall",""]] "foo[bar]baz" queryCommandIndeterm("selectall") before
-PASS [["selectall",""]] "foo[bar]baz" queryCommandState("selectall") before
-PASS [["selectall",""]] "foo[bar]baz" queryCommandValue("selectall") before
-PASS [["selectall",""]] "foo[bar]baz" queryCommandIndeterm("selectall") after
-PASS [["selectall",""]] "foo[bar]baz" queryCommandState("selectall") after
-PASS [["selectall",""]] "foo[bar]baz" queryCommandValue("selectall") after
-PASS [["stylewithcss","true"]] "foo[bar]baz": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","true"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss","true"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-FAIL [["stylewithcss","true"]] "foo[bar]baz" queryCommandState("stylewithcss") before assert_equals: Wrong result returned expected false but got true
-PASS [["stylewithcss","true"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","TRUE"]] "foo[bar]baz": execCommand("stylewithcss", false, "TRUE") return value
-PASS [["stylewithcss","TRUE"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","TRUE"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","TrUe"]] "foo[bar]baz": execCommand("stylewithcss", false, "TrUe") return value
-PASS [["stylewithcss","TrUe"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","TrUe"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","true "]] "foo[bar]baz": execCommand("stylewithcss", false, "true ") return value
-PASS [["stylewithcss","true "]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","true "]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss","true "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","true "]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","true "]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true "]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true "]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss"," true"]] "foo[bar]baz": execCommand("stylewithcss", false, " true") return value
-PASS [["stylewithcss"," true"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss"," true"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss"," true"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss"," true"]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss"," true"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss"," true"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss"," true"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss"," true"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","truer"]] "foo[bar]baz": execCommand("stylewithcss", false, "truer") return value
-PASS [["stylewithcss","truer"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","truer"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss","truer"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","truer"]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","truer"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","truer"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","truer"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","truer"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss"," true "]] "foo[bar]baz": execCommand("stylewithcss", false, " true ") return value
-PASS [["stylewithcss"," true "]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss"," true "]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss"," true "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss"," true "]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss"," true "]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss"," true "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss"," true "]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss"," true "]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss"," TrUe"]] "foo[bar]baz": execCommand("stylewithcss", false, " TrUe") return value
-PASS [["stylewithcss"," TrUe"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss"," TrUe"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss",""]] "foo[bar]baz": execCommand("stylewithcss", false, "") return value
-PASS [["stylewithcss",""]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss",""]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss",""]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss",""]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss",""]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss",""]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss",""]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss",""]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss"," "]] "foo[bar]baz": execCommand("stylewithcss", false, " ") return value
-PASS [["stylewithcss"," "]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss"," "]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss"," "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss"," "]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss"," "]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss"," "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss"," "]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss"," "]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"]] "foo[bar]baz": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss","false"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","FALSE"]] "foo[bar]baz": execCommand("stylewithcss", false, "FALSE") return value
-PASS [["stylewithcss","FALSE"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","FALSE"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","FaLsE"]] "foo[bar]baz": execCommand("stylewithcss", false, "FaLsE") return value
-PASS [["stylewithcss","FaLsE"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","FaLsE"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss"," false"]] "foo[bar]baz": execCommand("stylewithcss", false, " false") return value
-PASS [["stylewithcss"," false"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss"," false"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss"," false"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss"," false"]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss"," false"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss"," false"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss"," false"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss"," false"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false "]] "foo[bar]baz": execCommand("stylewithcss", false, "false ") return value
-PASS [["stylewithcss","false "]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false "]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss","false "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false "]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false "]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false "]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false "]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","falser"]] "foo[bar]baz": execCommand("stylewithcss", false, "falser") return value
-PASS [["stylewithcss","falser"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","falser"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss","falser"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","falser"]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","falser"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","falser"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","falser"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","falser"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","falsé"]] "foo[bar]baz": execCommand("stylewithcss", false, "falsé") return value
-PASS [["stylewithcss","falsé"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","falsé"]] "foo[bar]baz" compare innerHTML
-PASS [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
-PASS [["usecss","true"]] "foo[bar]baz": execCommand("usecss", false, "true") return value
-PASS [["usecss","true"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss","true"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss","true"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss","true"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss","true"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss","true"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss","true"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss","true"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss","TRUE"]] "foo[bar]baz": execCommand("usecss", false, "TRUE") return value
-PASS [["usecss","TRUE"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss","TRUE"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss","TRUE"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss","TRUE"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss","TRUE"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss","TRUE"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss","TRUE"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss","TRUE"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss","TrUe"]] "foo[bar]baz": execCommand("usecss", false, "TrUe") return value
-PASS [["usecss","TrUe"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss","TrUe"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss","TrUe"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss","TrUe"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss","TrUe"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss","TrUe"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss","TrUe"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss","TrUe"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss","true "]] "foo[bar]baz": execCommand("usecss", false, "true ") return value
-PASS [["usecss","true "]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss","true "]] "foo[bar]baz" compare innerHTML
-PASS [["usecss","true "]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss","true "]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss","true "]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss","true "]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss","true "]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss","true "]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss"," true"]] "foo[bar]baz": execCommand("usecss", false, " true") return value
-PASS [["usecss"," true"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss"," true"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss"," true"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss"," true"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss"," true"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss"," true"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss"," true"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss"," true"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss","truer"]] "foo[bar]baz": execCommand("usecss", false, "truer") return value
-PASS [["usecss","truer"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss","truer"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss","truer"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss","truer"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss","truer"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss","truer"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss","truer"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss","truer"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss"," true "]] "foo[bar]baz": execCommand("usecss", false, " true ") return value
-PASS [["usecss"," true "]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss"," true "]] "foo[bar]baz" compare innerHTML
-PASS [["usecss"," true "]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss"," true "]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss"," true "]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss"," true "]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss"," true "]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss"," true "]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss"," TrUe"]] "foo[bar]baz": execCommand("usecss", false, " TrUe") return value
-PASS [["usecss"," TrUe"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss"," TrUe"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss"," TrUe"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss"," TrUe"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss"," TrUe"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss"," TrUe"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss"," TrUe"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss"," TrUe"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss",""]] "foo[bar]baz": execCommand("usecss", false, "") return value
-PASS [["usecss",""]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss",""]] "foo[bar]baz" compare innerHTML
-PASS [["usecss",""]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss",""]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss",""]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss",""]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss",""]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss",""]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss"," "]] "foo[bar]baz": execCommand("usecss", false, " ") return value
-PASS [["usecss"," "]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss"," "]] "foo[bar]baz" compare innerHTML
-PASS [["usecss"," "]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss"," "]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss"," "]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss"," "]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss"," "]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss"," "]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss","false"]] "foo[bar]baz": execCommand("usecss", false, "false") return value
-PASS [["usecss","false"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss","false"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss","false"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss","false"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss","false"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss","false"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss","false"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss","false"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss","FALSE"]] "foo[bar]baz": execCommand("usecss", false, "FALSE") return value
-PASS [["usecss","FALSE"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss","FALSE"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss","FALSE"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss","FALSE"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss","FALSE"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss","FALSE"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss","FALSE"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss","FALSE"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss","FaLsE"]] "foo[bar]baz": execCommand("usecss", false, "FaLsE") return value
-PASS [["usecss","FaLsE"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss","FaLsE"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss","FaLsE"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss","FaLsE"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss","FaLsE"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss","FaLsE"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss","FaLsE"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss","FaLsE"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss"," false"]] "foo[bar]baz": execCommand("usecss", false, " false") return value
-PASS [["usecss"," false"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss"," false"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss"," false"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss"," false"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss"," false"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss"," false"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss"," false"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss"," false"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss","false "]] "foo[bar]baz": execCommand("usecss", false, "false ") return value
-PASS [["usecss","false "]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss","false "]] "foo[bar]baz" compare innerHTML
-PASS [["usecss","false "]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss","false "]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss","false "]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss","false "]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss","false "]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss","false "]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss","falser"]] "foo[bar]baz": execCommand("usecss", false, "falser") return value
-PASS [["usecss","falser"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss","falser"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss","falser"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss","falser"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss","falser"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss","falser"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss","falser"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss","falser"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["usecss","falsé"]] "foo[bar]baz": execCommand("usecss", false, "falsé") return value
-PASS [["usecss","falsé"]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["usecss","falsé"]] "foo[bar]baz" compare innerHTML
-PASS [["usecss","falsé"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
-PASS [["usecss","falsé"]] "foo[bar]baz" queryCommandState("usecss") before
-PASS [["usecss","falsé"]] "foo[bar]baz" queryCommandValue("usecss") before
-PASS [["usecss","falsé"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
-PASS [["usecss","falsé"]] "foo[bar]baz" queryCommandState("usecss") after
-PASS [["usecss","falsé"]] "foo[bar]baz" queryCommandValue("usecss") after
-PASS [["quasit",""]] "foo[bar]baz": execCommand("quasit", false, "") return value
-PASS [["quasit",""]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["quasit",""]] "foo[bar]baz" compare innerHTML
-PASS [["quasit",""]] "foo[bar]baz" queryCommandIndeterm("quasit") before
-PASS [["quasit",""]] "foo[bar]baz" queryCommandState("quasit") before
-PASS [["quasit",""]] "foo[bar]baz" queryCommandValue("quasit") before
-PASS [["quasit",""]] "foo[bar]baz" queryCommandIndeterm("quasit") after
-PASS [["quasit",""]] "foo[bar]baz" queryCommandState("quasit") after
-PASS [["quasit",""]] "foo[bar]baz" queryCommandValue("quasit") after
+[FAIL] [["defaultparagraphseparator",""]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "") return value
+  assert_equals: expected false but got true
+[PASS] [["defaultparagraphseparator",""]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator",""]] "foo[bar]baz" compare innerHTML
+[PASS] [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator",""]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "div") return value
+[PASS] [["defaultparagraphseparator","div"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator","div"]] "foo[bar]baz" compare innerHTML
+[PASS] [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "p") return value
+[PASS] [["defaultparagraphseparator","p"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator","p"]] "foo[bar]baz" compare innerHTML
+[PASS] [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","DIV"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "DIV") return value
+[PASS] [["defaultparagraphseparator","DIV"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator","DIV"]] "foo[bar]baz" compare innerHTML
+[PASS] [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","DIV"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
+[FAIL] [["defaultparagraphseparator"," p "]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, " p ") return value
+  assert_equals: expected false but got true
+[PASS] [["defaultparagraphseparator"," p "]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator"," p "]] "foo[bar]baz" compare innerHTML
+[PASS] [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator"," p "]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
+[FAIL] [["defaultparagraphseparator","<p>"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "<p>") return value
+  assert_equals: expected false but got true
+[PASS] [["defaultparagraphseparator","<p>"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator","<p>"]] "foo[bar]baz" compare innerHTML
+[PASS] [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","<p>"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","P"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "P") return value
+[PASS] [["defaultparagraphseparator","P"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator","P"]] "foo[bar]baz" compare innerHTML
+[PASS] [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","P"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
+[FAIL] [["defaultparagraphseparator"," div "]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, " div ") return value
+  assert_equals: expected false but got true
+[PASS] [["defaultparagraphseparator"," div "]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator"," div "]] "foo[bar]baz" compare innerHTML
+[PASS] [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator"," div "]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
+[FAIL] [["defaultparagraphseparator","<div>"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "<div>") return value
+  assert_equals: expected false but got true
+[PASS] [["defaultparagraphseparator","<div>"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator","<div>"]] "foo[bar]baz" compare innerHTML
+[PASS] [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","<div>"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
+[FAIL] [["defaultparagraphseparator","li"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "li") return value
+  assert_equals: expected false but got true
+[PASS] [["defaultparagraphseparator","li"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator","li"]] "foo[bar]baz" compare innerHTML
+[PASS] [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","li"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
+[FAIL] [["defaultparagraphseparator","blockquote"]] "foo[bar]baz": execCommand("defaultparagraphseparator", false, "blockquote") return value
+  assert_equals: expected false but got true
+[PASS] [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" compare innerHTML
+[PASS] [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","blockquote"]] "foo[bar]baz" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["selectall",""]] "foo[bar]baz": execCommand("selectall", false, "") return value
+[PASS] [["selectall",""]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["selectall",""]] "foo[bar]baz" compare innerHTML
+[PASS] [["selectall",""]] "foo[bar]baz" queryCommandIndeterm("selectall") before
+[PASS] [["selectall",""]] "foo[bar]baz" queryCommandState("selectall") before
+[PASS] [["selectall",""]] "foo[bar]baz" queryCommandValue("selectall") before
+[PASS] [["selectall",""]] "foo[bar]baz" queryCommandIndeterm("selectall") after
+[PASS] [["selectall",""]] "foo[bar]baz" queryCommandState("selectall") after
+[PASS] [["selectall",""]] "foo[bar]baz" queryCommandValue("selectall") after
+[PASS] [["stylewithcss","true"]] "foo[bar]baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss","true"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[FAIL] [["stylewithcss","true"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+  assert_equals: Wrong result returned expected false but got true
+[PASS] [["stylewithcss","true"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","TRUE"]] "foo[bar]baz": execCommand("stylewithcss", false, "TRUE") return value
+[PASS] [["stylewithcss","TRUE"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","TRUE"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","TRUE"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","TrUe"]] "foo[bar]baz": execCommand("stylewithcss", false, "TrUe") return value
+[PASS] [["stylewithcss","TrUe"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","TrUe"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","TrUe"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true "]] "foo[bar]baz": execCommand("stylewithcss", false, "true ") return value
+[PASS] [["stylewithcss","true "]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true "]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss","true "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true "]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true "]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true "]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true "]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss"," true"]] "foo[bar]baz": execCommand("stylewithcss", false, " true") return value
+[PASS] [["stylewithcss"," true"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss"," true"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss"," true"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss"," true"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss"," true"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss"," true"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss"," true"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss"," true"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","truer"]] "foo[bar]baz": execCommand("stylewithcss", false, "truer") return value
+[PASS] [["stylewithcss","truer"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","truer"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss","truer"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","truer"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","truer"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","truer"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","truer"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","truer"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss"," true "]] "foo[bar]baz": execCommand("stylewithcss", false, " true ") return value
+[PASS] [["stylewithcss"," true "]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss"," true "]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss"," true "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss"," true "]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss"," true "]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss"," true "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss"," true "]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss"," true "]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss"," TrUe"]] "foo[bar]baz": execCommand("stylewithcss", false, " TrUe") return value
+[PASS] [["stylewithcss"," TrUe"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss"," TrUe"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss"," TrUe"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss",""]] "foo[bar]baz": execCommand("stylewithcss", false, "") return value
+[PASS] [["stylewithcss",""]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss",""]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss",""]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss",""]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss",""]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss",""]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss",""]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss",""]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss"," "]] "foo[bar]baz": execCommand("stylewithcss", false, " ") return value
+[PASS] [["stylewithcss"," "]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss"," "]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss"," "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss"," "]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss"," "]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss"," "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss"," "]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss"," "]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"]] "foo[bar]baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss","false"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","FALSE"]] "foo[bar]baz": execCommand("stylewithcss", false, "FALSE") return value
+[PASS] [["stylewithcss","FALSE"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","FALSE"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","FALSE"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","FaLsE"]] "foo[bar]baz": execCommand("stylewithcss", false, "FaLsE") return value
+[PASS] [["stylewithcss","FaLsE"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","FaLsE"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","FaLsE"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss"," false"]] "foo[bar]baz": execCommand("stylewithcss", false, " false") return value
+[PASS] [["stylewithcss"," false"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss"," false"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss"," false"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss"," false"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss"," false"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss"," false"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss"," false"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss"," false"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false "]] "foo[bar]baz": execCommand("stylewithcss", false, "false ") return value
+[PASS] [["stylewithcss","false "]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false "]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss","false "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false "]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false "]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false "]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false "]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false "]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","falser"]] "foo[bar]baz": execCommand("stylewithcss", false, "falser") return value
+[PASS] [["stylewithcss","falser"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","falser"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss","falser"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","falser"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","falser"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","falser"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","falser"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","falser"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","falsé"]] "foo[bar]baz": execCommand("stylewithcss", false, "falsé") return value
+[PASS] [["stylewithcss","falsé"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","falsé"]] "foo[bar]baz" compare innerHTML
+[PASS] [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","falsé"]] "foo[bar]baz" queryCommandValue("stylewithcss") after
+[PASS] [["usecss","true"]] "foo[bar]baz": execCommand("usecss", false, "true") return value
+[PASS] [["usecss","true"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss","true"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss","true"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss","true"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss","true"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss","true"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss","true"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss","true"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss","TRUE"]] "foo[bar]baz": execCommand("usecss", false, "TRUE") return value
+[PASS] [["usecss","TRUE"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss","TRUE"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss","TRUE"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss","TRUE"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss","TRUE"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss","TRUE"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss","TRUE"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss","TRUE"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss","TrUe"]] "foo[bar]baz": execCommand("usecss", false, "TrUe") return value
+[PASS] [["usecss","TrUe"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss","TrUe"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss","TrUe"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss","TrUe"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss","TrUe"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss","TrUe"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss","TrUe"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss","TrUe"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss","true "]] "foo[bar]baz": execCommand("usecss", false, "true ") return value
+[PASS] [["usecss","true "]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss","true "]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss","true "]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss","true "]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss","true "]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss","true "]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss","true "]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss","true "]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss"," true"]] "foo[bar]baz": execCommand("usecss", false, " true") return value
+[PASS] [["usecss"," true"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss"," true"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss"," true"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss"," true"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss"," true"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss"," true"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss"," true"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss"," true"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss","truer"]] "foo[bar]baz": execCommand("usecss", false, "truer") return value
+[PASS] [["usecss","truer"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss","truer"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss","truer"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss","truer"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss","truer"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss","truer"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss","truer"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss","truer"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss"," true "]] "foo[bar]baz": execCommand("usecss", false, " true ") return value
+[PASS] [["usecss"," true "]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss"," true "]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss"," true "]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss"," true "]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss"," true "]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss"," true "]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss"," true "]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss"," true "]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss"," TrUe"]] "foo[bar]baz": execCommand("usecss", false, " TrUe") return value
+[PASS] [["usecss"," TrUe"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss"," TrUe"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss"," TrUe"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss"," TrUe"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss"," TrUe"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss"," TrUe"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss"," TrUe"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss"," TrUe"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss",""]] "foo[bar]baz": execCommand("usecss", false, "") return value
+[PASS] [["usecss",""]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss",""]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss",""]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss",""]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss",""]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss",""]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss",""]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss",""]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss"," "]] "foo[bar]baz": execCommand("usecss", false, " ") return value
+[PASS] [["usecss"," "]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss"," "]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss"," "]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss"," "]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss"," "]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss"," "]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss"," "]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss"," "]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss","false"]] "foo[bar]baz": execCommand("usecss", false, "false") return value
+[PASS] [["usecss","false"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss","false"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss","false"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss","false"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss","false"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss","false"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss","false"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss","false"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss","FALSE"]] "foo[bar]baz": execCommand("usecss", false, "FALSE") return value
+[PASS] [["usecss","FALSE"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss","FALSE"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss","FALSE"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss","FALSE"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss","FALSE"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss","FALSE"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss","FALSE"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss","FALSE"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss","FaLsE"]] "foo[bar]baz": execCommand("usecss", false, "FaLsE") return value
+[PASS] [["usecss","FaLsE"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss","FaLsE"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss","FaLsE"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss","FaLsE"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss","FaLsE"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss","FaLsE"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss","FaLsE"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss","FaLsE"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss"," false"]] "foo[bar]baz": execCommand("usecss", false, " false") return value
+[PASS] [["usecss"," false"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss"," false"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss"," false"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss"," false"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss"," false"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss"," false"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss"," false"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss"," false"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss","false "]] "foo[bar]baz": execCommand("usecss", false, "false ") return value
+[PASS] [["usecss","false "]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss","false "]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss","false "]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss","false "]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss","false "]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss","false "]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss","false "]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss","false "]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss","falser"]] "foo[bar]baz": execCommand("usecss", false, "falser") return value
+[PASS] [["usecss","falser"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss","falser"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss","falser"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss","falser"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss","falser"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss","falser"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss","falser"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss","falser"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["usecss","falsé"]] "foo[bar]baz": execCommand("usecss", false, "falsé") return value
+[PASS] [["usecss","falsé"]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["usecss","falsé"]] "foo[bar]baz" compare innerHTML
+[PASS] [["usecss","falsé"]] "foo[bar]baz" queryCommandIndeterm("usecss") before
+[PASS] [["usecss","falsé"]] "foo[bar]baz" queryCommandState("usecss") before
+[PASS] [["usecss","falsé"]] "foo[bar]baz" queryCommandValue("usecss") before
+[PASS] [["usecss","falsé"]] "foo[bar]baz" queryCommandIndeterm("usecss") after
+[PASS] [["usecss","falsé"]] "foo[bar]baz" queryCommandState("usecss") after
+[PASS] [["usecss","falsé"]] "foo[bar]baz" queryCommandValue("usecss") after
+[PASS] [["quasit",""]] "foo[bar]baz": execCommand("quasit", false, "") return value
+[PASS] [["quasit",""]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["quasit",""]] "foo[bar]baz" compare innerHTML
+[PASS] [["quasit",""]] "foo[bar]baz" queryCommandIndeterm("quasit") before
+[PASS] [["quasit",""]] "foo[bar]baz" queryCommandState("quasit") before
+[PASS] [["quasit",""]] "foo[bar]baz" queryCommandValue("quasit") before
+[PASS] [["quasit",""]] "foo[bar]baz" queryCommandIndeterm("quasit") after
+[PASS] [["quasit",""]] "foo[bar]baz" queryCommandState("quasit") after
+[PASS] [["quasit",""]] "foo[bar]baz" queryCommandValue("quasit") after
 Harness: the test ran to completion.
 

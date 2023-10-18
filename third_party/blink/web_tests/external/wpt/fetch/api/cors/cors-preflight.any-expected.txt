@@ -1,25 +1,26 @@
 This is a testharness.js-based test.
-PASS CORS [DELETE], server allows
-PASS CORS [DELETE], server refuses
-PASS CORS [PUT], server allows
-PASS CORS [PUT], server allows, check preflight has user agent
-PASS CORS [PUT], server refuses
-PASS CORS [PATCH], server allows
-PASS CORS [PATCH], server refuses
-PASS CORS [patcH], server allows
-PASS CORS [patcH], server refuses
-PASS CORS [NEW], server allows
-PASS CORS [NEW], server refuses
-PASS CORS [chicken], server allows
-PASS CORS [chicken], server refuses
-PASS CORS [GET] [x-test-header: allowed], server allows
-PASS CORS [GET] [x-test-header: refused], server refuses
-PASS CORS [GET] [several headers], server allows
-PASS CORS [GET] [several headers], server refuses
-PASS CORS [PUT] [several headers], server allows
-PASS CORS [PUT] [several headers], server refuses
-PASS CORS [PUT] [only safe headers], server allows
-FAIL "authorization" should not be covered by the wildcard symbol assert_unreached: Should have rejected: undefined Reached unreachable code
-PASS "authorization" should be covered by "authorization"
+[PASS] CORS [DELETE], server allows
+[PASS] CORS [DELETE], server refuses
+[PASS] CORS [PUT], server allows
+[PASS] CORS [PUT], server allows, check preflight has user agent
+[PASS] CORS [PUT], server refuses
+[PASS] CORS [PATCH], server allows
+[PASS] CORS [PATCH], server refuses
+[PASS] CORS [patcH], server allows
+[PASS] CORS [patcH], server refuses
+[PASS] CORS [NEW], server allows
+[PASS] CORS [NEW], server refuses
+[PASS] CORS [chicken], server allows
+[PASS] CORS [chicken], server refuses
+[PASS] CORS [GET] [x-test-header: allowed], server allows
+[PASS] CORS [GET] [x-test-header: refused], server refuses
+[PASS] CORS [GET] [several headers], server allows
+[PASS] CORS [GET] [several headers], server refuses
+[PASS] CORS [PUT] [several headers], server allows
+[PASS] CORS [PUT] [several headers], server refuses
+[PASS] CORS [PUT] [only safe headers], server allows
+[FAIL] "authorization" should not be covered by the wildcard symbol
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[PASS] "authorization" should be covered by "authorization"
 Harness: the test ran to completion.
 
