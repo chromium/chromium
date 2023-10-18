@@ -228,6 +228,8 @@
 -Default/MediaTest.AudioBearOpusWebm/1
 -Default/MediaTest.Navigate/0
 -Default/MediaTest.Navigate/1
+-Default/MediaTest.VideoBear3gpAacH264/0
+-Default/MediaTest.VideoBear3gpAacH264/1
 -Default/MediaTest.VideoBearHighBitDepthMp4/0
 -Default/MediaTest.VideoBearHighBitDepthMp4/1
 -Default/MediaTest.VideoBearMovPcmS16be/0
