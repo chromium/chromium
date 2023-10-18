@@ -132,6 +132,22 @@ void RemoveEventFilteredListenerOnIO(const std::string& extension_id,
                                        worker_thread_id),
       std::move(filter), remove_lazy_listener);
 }
+
+void HandleResponse(int request_id,
+                    bool success,
+                    base::Value::List args,
+                    const std::string& error,
+                    mojom::ExtraResponseDataPtr extra_data) {
+  // If the worker state was already destroyed via
+  // Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread,
+  // then drop this IPC. See https://crbug.com/1008143 for details.
+  if (!service_worker_data) {
+    return;
+  }
+  service_worker_data->bindings_system()->HandleResponse(
+      request_id, success, std::move(args), error, std::move(extra_data));
+}
+
 #endif
 
 }  // namespace
@@ -643,19 +659,9 @@ void WorkerThreadDispatcher::RequestWorker(mojom::RequestParamsPtr params) {
                         auto* dispatcher = WorkerThreadDispatcher::Get();
                         dispatcher->PostTaskToWorkerThread(
                             worker_thread_id,
-                            base::BindOnce(
-                                [](int request_id, bool success,
-                                   base::Value::List args,
-                                   const std::string& error,
-                                   mojom::ExtraResponseDataPtr extra_data) {
-                                  WorkerThreadDispatcher::GetServiceWorkerData()
-                                      ->bindings_system()
-                                      ->HandleResponse(request_id, success,
-                                                       std::move(args), error,
-                                                       std::move(extra_data));
-                                },
-                                request_id, success, std::move(args), error,
-                                std::move(extra_data)));
+                            base::BindOnce(&HandleResponse, request_id, success,
+                                           std::move(args), error,
+                                           std::move(extra_data)));
                       },
                       worker_thread_id, request_id, success, std::move(args),
                       error, std::move(extra_data)));
