@@ -171,13 +171,20 @@ void PrefetchDocumentManager::DidStartNavigation(
       serving_page_metrics_container->GetWeakPtr());
   prefetch_container->UpdateServingPageMetrics();
 
-  // Inform |PrefetchService| of the navigation to the prefetch.
-  // |navigation_handle->GetURL()| and |prefetched_iter->second->GetURL()|
-  // might be different but be equivalent under No-Vary-Search.
-  PrefetchService* prefetch_service = GetPrefetchService();
-  if (prefetch_service) {
-    prefetch_service->PrepareToServe(navigation_handle->GetURL(),
-                                     *prefetch_container);
+  switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kServable:
+      if (PrefetchService* prefetch_service = GetPrefetchService()) {
+        // For prefetches that are already servable, start the process of
+        // copying cookies from the isolated network context used to make the
+        // prefetch to the default network context.
+        prefetch_service->CopyIsolatedCookies(
+            prefetch_container->CreateReader());
+      }
+      break;
+
+    case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      break;
   }
 }
 

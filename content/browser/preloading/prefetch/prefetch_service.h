@@ -97,13 +97,6 @@ class CONTENT_EXPORT PrefetchService {
   virtual PrefetchOriginProber* GetPrefetchOriginProber() const;
   virtual void PrefetchUrl(base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Called when a navigation to `url` that will be served by
-  // `prefetch_container` is likely to occur in the immediate future.
-  // |url| and |prefetch_container.GetURL()| might not be the same
-  // because of No-Vary-Search non-exact url match.
-  virtual void PrepareToServe(const GURL& url,
-                              PrefetchContainer& prefetch_container);
-
   // Finds the prefetch (if any) that can be used to serve a navigation to
   // |url|, and then calls |on_prefetch_to_serve_ready| with that prefetch.
   using OnPrefetchToServeReady =
@@ -385,19 +378,6 @@ class CONTENT_EXPORT PrefetchService {
            std::pair<std::unique_ptr<PrefetchContainer>,
                      std::unique_ptr<base::OneShotTimer>>>
       owned_prefetches_;
-
-  // The set of prefetches that are ready to serve. In order to be in this map,
-  // the prefetch must also be in |owned_prefetches_|, have a valid prefetched
-  // response, and have started the cookie copy process. A prefetch is added to
-  // this map when |PrepareToServe| is called on it, and once in this map, it
-  // can be returned by |GetPrefetchToServe|.
-  // The other way a prefetch could be in this map is if the prefetch matches
-  // exactly by URL and we're waiting for head.
-  //
-  // Unlike other maps, the URL in `PrefetchContainer::Key` can be different
-  // from `PrefetchContainer::GetURL()` due to No-Vary-Search.
-  std::map<PrefetchContainer::Key, base::WeakPtr<PrefetchContainer>>
-      prefetches_ready_to_serve_;
 
 // Protects against Prefetch() being called recursively.
 #if DCHECK_IS_ON()

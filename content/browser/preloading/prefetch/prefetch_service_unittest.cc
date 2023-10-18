@@ -3120,10 +3120,6 @@ TEST_F(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
       GetMetricsForMostRecentNavigation();
   EXPECT_FALSE(serving_page_metrics);
 
-  PrefetchContainer::Reader serveable_reader =
-      GetPrefetchToServe(GURL("https://example.com"));
-  EXPECT_FALSE(serveable_reader);
-
   ExpectCorrectUkmLogs({});
 }
 
