@@ -631,6 +631,18 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
     return;
   }
 
+  if (AXObjectCache().EntireDocumentIsDirty()) {
+    // No need to walk parent chain when marking the entire document dirty,
+    // as every node will have the bit set. In addition, attempting to repair
+    // the parent chain while marking everything dirty is actually against
+    // the point, because all child-parent relationships will be rebuilt
+    // from the top down.
+    if (LastKnownIsIncludedInTreeValue()) {
+      SetHasDirtyDescendants(true);
+    }
+    return;
+  }
+
   const AXObject* ancestor = this;
   bool can_repair_parents = AXObjectCache().IsProcessingDeferredEvents();
 
