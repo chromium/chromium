@@ -9,11 +9,17 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "base/functional/bind.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace {
-base::TimeDelta kScrollTimeInterval = base::Seconds(1);
+base::TimeDelta GetScrollTimeInteval() {
+  return std::max(
+      base::Seconds(1) *
+          ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+      base::Milliseconds(5));
+}
 }
 
 namespace ash {
@@ -57,7 +63,7 @@ void ScrollArrowButton::OnDeskHoverStart() {
   if (timer_.IsRunning())
     return;
 
-  timer_.Start(FROM_HERE, kScrollTimeInterval, on_scroll_);
+  timer_.Start(FROM_HERE, GetScrollTimeInteval(), on_scroll_);
   on_scroll_.Run();
 }
 
@@ -72,7 +78,7 @@ void ScrollArrowButton::OnStateChanged() {
     // of the scroll arrow button will be set to |FALSE|, at the same time, the
     // state of the button will be set to |STATE_NORMAL|. In this case, stopping
     // timer will be called before starting timer.
-    timer_.Start(FROM_HERE, kScrollTimeInterval, on_scroll_);
+    timer_.Start(FROM_HERE, GetScrollTimeInteval(), on_scroll_);
     on_scroll_.Run();
   } else {
     timer_.Stop();

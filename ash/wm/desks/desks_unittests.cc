@@ -6438,29 +6438,8 @@ TEST_P(DesksTest, ContinueScrollBar) {
   EXPECT_TRUE(left_button->GetVisible());
   EXPECT_TRUE(right_button->GetVisible());
 
-  // Wait for 1s, there will be another scroll.
-  WaitForMilliseconds(1000);
-  current_index += desks_in_one_page;
-
-  // When `Jellyroll` is enabled and the maximum number of desks is 8, the new
-  // desk button is smaller, two scrolls will reach the end of the desks bar
-  // view, thus we verify the right of the visible scroll view.
-  if (chromeos::features::IsJellyrollEnabled() &&
-      !features::Is16DesksEnabled()) {
-    EXPECT_EQ(
-        scroll_view->GetVisibleRect().right() - focus_ring_width_and_padding,
-        GetExpandedStateNewDeskButton(desks_bar)->bounds().right());
-  } else {
-    EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
-              mini_views[current_index]->bounds().x());
-  }
-
-  // Release and click a few times to make sure we end up at the maximum offset.
-  event_generator->ReleaseLeftButton();
-  for (int i = 0; i != 3; ++i) {
-    event_generator->ClickLeftButton();
-  }
-
+  // Wait for a bit to scroll to the end.
+  WaitForMilliseconds(200);
   EXPECT_EQ(scroll_view->GetVisibleRect().x(),
             scroll_view->contents()->width() - page_size);
 
@@ -6469,30 +6448,15 @@ TEST_P(DesksTest, ContinueScrollBar) {
   EXPECT_TRUE(left_button->GetVisible());
   EXPECT_FALSE(right_button->GetVisible());
 
-  // Since we're scrolled all the way to the right and the new desk button is
-  // visible, this is the index of the leftmost visible mini view.
-  current_index = max_desks_size - 1;
-
   // Press on left scroll button by gesture should scroll to the previous page.
   // And the final scroll position should also be adjusted while scrolling to
   // previous page to make sure the desk preview will not be cropped.
   event_generator->MoveTouch(left_button->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
-  // When the feature flag `Jellyroll` is enabled, the new desk button and the
-  // library button become smaller, thus when scroll to the left from the right
-  // mode, the index of desk mini view on the left is smaller than it when
-  // `Jellyroll` is not enabled.
-  if (chromeos::features::IsJellyrollEnabled()) {
-    current_index -= (desks_in_one_page + 1);
-  } else {
-    current_index -= desks_in_one_page;
-  }
-  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
-            mini_views[current_index]->bounds().x());
 
-  // Wait for 1s, there is another scroll.
-  WaitForMilliseconds(1000);
-  current_index -= desks_in_one_page;
+  // Wait for a bit to scroll to the start.
+  WaitForMilliseconds(200);
+  current_index = 0;
   EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
             mini_views[current_index]->bounds().x());
 
@@ -7486,8 +7450,7 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   views::ScrollView* scroll_view =
       DesksTestApi::GetDeskBarScrollView(DeskBarViewBase::Type::kOverview);
   const int page_size = scroll_view->width();
-  auto mini_views = desks_bar->mini_views();
-  const int mini_view_width = mini_views[0]->bounds().width();
+  const int mini_view_width = desks_bar->mini_views()[0]->bounds().width();
   int desks_in_one_page = page_size / mini_view_width;
   float fractional_page = static_cast<float>(page_size % mini_view_width) /
                           static_cast<float>(mini_view_width);
@@ -7509,7 +7472,7 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   // And the final scroll position should be adjusted to make sure the desk
   // preview will not be cropped.
   auto* event_generator = GetEventGenerator();
-  DeskMiniView* mini_view_0 = mini_views[0];
+  DeskMiniView* mini_view_0 = desks_bar->mini_views()[0];
   Desk* desk_0 = mini_view_0->desk();
 
   const int focus_ring_width_and_padding = 4;
@@ -7519,35 +7482,17 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   event_generator->MoveMouseTo(right_button->GetBoundsInScreen().CenterPoint());
   current_index += desks_in_one_page;
   EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
-            mini_views[current_index]->bounds().x());
+            desks_bar->mini_views()[current_index]->bounds().x());
 
   // Both scroll buttons should be visible.
   EXPECT_TRUE(left_button->GetVisible());
   EXPECT_TRUE(right_button->GetVisible());
 
-  // Wait for 1s, there will be another scroll.
-  WaitForMilliseconds(1000);
-  current_index += desks_in_one_page;
-
-  // When `Jellyroll` is enabled and the maximum number of desks is 8, the new
-  // desk button is smaller, two scrolls will reach the end of the desks bar
-  // view, thus we verify the right of the visible scroll view.
-  if (chromeos::features::IsJellyrollEnabled() &&
-      !features::Is16DesksEnabled()) {
-    EXPECT_EQ(
-        scroll_view->GetVisibleRect().right() - focus_ring_width_and_padding,
-        GetExpandedStateNewDeskButton(desks_bar)->bounds().right());
-  } else {
-    EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
-              mini_views[current_index]->bounds().x());
-  }
+  // Wait for a bit to scroll to the end.
+  WaitForMilliseconds(200);
 
   // While scrolling, the desk cannot be reordered.
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
-
-  // Wait longer, it will scroll to the maximum offset. When 16 desks are
-  // enabled, we need to allow more time for scrolling.
-  WaitForMilliseconds(GetParam().use_16_desks ? 4000 : 1000);
   EXPECT_EQ(scroll_view->GetVisibleRect().x(),
             scroll_view->contents()->width() - page_size);
 
@@ -7557,8 +7502,9 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   EXPECT_FALSE(right_button->GetVisible());
 
   // Move the dragged desk to the center of the last desk.
-  event_generator->MoveMouseTo(
-      mini_views[max_desks_size - 1]->GetBoundsInScreen().CenterPoint());
+  event_generator->MoveMouseTo(desks_bar->mini_views()[max_desks_size - 1]
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
   // The dragged desk is reordered to the end.
   const int max_index = static_cast<int>(max_desks_size) - 1;
   // Now the desk is reordered to the last position.
@@ -7570,37 +7516,25 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   // Dragging the desk to left scroll button should scroll to the previous page.
   // And the final scroll position should also be adjusted while scrolling to
   // the previous page to make sure the desk preview will not be cropped.
-  mini_views = desks_bar->mini_views();
-  StartDragDeskPreview(mini_views[max_desks_size - 1], event_generator);
+  StartDragDeskPreview(desks_bar->mini_views()[max_desks_size - 1],
+                       event_generator);
   event_generator->MoveMouseTo(left_button->GetBoundsInScreen().CenterPoint());
-  // When the feature flag `Jellyroll` is enabled, the new desk button and the
-  // library button become smaller, thus when scroll to the left from the right
-  // most, the index of desk mini view on the left is smaller than it when
-  // `Jellyroll` is not enabled.
-  if (chromeos::features::IsJellyrollEnabled()) {
-    current_index -= (desks_in_one_page + 1);
-  } else {
-    current_index -= desks_in_one_page;
-  }
-  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
-            mini_views[current_index]->bounds().x());
 
-  // Wait for 1s, there is another scroll.
-  WaitForMilliseconds(1000);
-  current_index -= desks_in_one_page;
+  // Wait for a while to scroll to the start.
+  WaitForMilliseconds(200);
   EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
-            mini_views[current_index]->bounds().x());
+            desks_bar->mini_views()[0]->bounds().x());
 
   // The desk is still not reordered while scrolling backward.
   EXPECT_EQ(max_index, desks_controller->GetDeskIndex(desk_0));
 
   // Drop the desk. Desks bar will scroll to show the desk's target position.
   event_generator->ReleaseLeftButton();
-  // Wait 100 milliseconds for the animation of the scrollable bar to end.
+  // Wait 200 milliseconds for the animation of the scrollable bar to end.
   // Otherwise, the test could be flaky, i.e, the visible bounds of the scroll
   // bar is not updated yet if we get its bounds immediately after the desk is
   // dropped.
-  WaitForMilliseconds(100);
+  WaitForMilliseconds(200);
   gfx::Rect bounds_0 = mini_view_0->bounds();
   gfx::Rect bounds_visible = scroll_view->GetVisibleRect();
   EXPECT_LE(bounds_visible.x(), bounds_0.x());
