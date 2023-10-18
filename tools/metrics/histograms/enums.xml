@@ -80395,6 +80395,17 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OnboardingStartupState">
+  <int value="0" label="kIneligible"/>
+  <int value="1" label="kEligibleWaitingToOnboard"/>
+  <int value="2" label="kOnboardedWaitingToAck"/>
+  <int value="3" label="kAckedGotIt"/>
+  <int value="4" label="kAckedSettings"/>
+  <int value="5" label="kAckedClosed"/>
+  <int value="6" label="kAckedLearnMore"/>
+  <int value="7" label="kAckedOther"/>
+</enum>
+
 <enum name="OnboardingUserActionMetric">
   <int value="0" label="Unknown"/>
   <int value="1" label="Onboarding is started by user action"/>

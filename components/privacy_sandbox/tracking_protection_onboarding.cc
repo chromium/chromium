@@ -6,6 +6,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
@@ -71,6 +72,66 @@ void RecordActionMetrics(TrackingProtectionOnboarding::NoticeAction action) {
   }
 }
 
+void CreateHistogramOnboardingStartupState(
+    TrackingProtectionOnboarding::OnboardingStartupState state) {
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.TrackingProtection.OnboardingStartup.State", state);
+}
+
+void RecordOnboardedHistogramsOnStartup(PrefService* pref_service) {
+  if (!pref_service->GetBoolean(prefs::kTrackingProtectionOnboardingAcked)) {
+    CreateHistogramOnboardingStartupState(
+        TrackingProtectionOnboarding::OnboardingStartupState::
+            kOnboardedWaitingToAck);
+    return;
+  }
+  auto action = static_cast<TrackingProtectionOnboardingAckAction>(
+      pref_service->GetInteger(prefs::kTrackingProtectionOnboardingAckAction));
+  switch (action) {
+    case tracking_protection::TrackingProtectionOnboardingAckAction::kNotSet:
+      break;
+    case tracking_protection::TrackingProtectionOnboardingAckAction::kGotIt:
+      CreateHistogramOnboardingStartupState(
+          TrackingProtectionOnboarding::OnboardingStartupState::kAckedGotIt);
+      break;
+    case tracking_protection::TrackingProtectionOnboardingAckAction::kSettings:
+      CreateHistogramOnboardingStartupState(
+          TrackingProtectionOnboarding::OnboardingStartupState::kAckedSettings);
+      break;
+    case tracking_protection::TrackingProtectionOnboardingAckAction::kClosed:
+      CreateHistogramOnboardingStartupState(
+          TrackingProtectionOnboarding::OnboardingStartupState::kAckedClosed);
+      break;
+    case tracking_protection::TrackingProtectionOnboardingAckAction::kLearnMore:
+      CreateHistogramOnboardingStartupState(
+          TrackingProtectionOnboarding::OnboardingStartupState::
+              kAckedLearnMore);
+      break;
+    case tracking_protection::TrackingProtectionOnboardingAckAction::kOther:
+      CreateHistogramOnboardingStartupState(
+          TrackingProtectionOnboarding::OnboardingStartupState::kAckedOther);
+      break;
+  }
+}
+
+void RecordHistogramsOnStartup(PrefService* pref_service) {
+  auto status = GetInternalOnboardingStatus(pref_service);
+  switch (status) {
+    case TrackingProtectionOnboardingStatus::kIneligible:
+      CreateHistogramOnboardingStartupState(
+          TrackingProtectionOnboarding::OnboardingStartupState::kIneligible);
+      break;
+    case TrackingProtectionOnboardingStatus::kEligible:
+      CreateHistogramOnboardingStartupState(
+          TrackingProtectionOnboarding::OnboardingStartupState::
+              kEligibleWaitingToOnboard);
+      break;
+    case TrackingProtectionOnboardingStatus::kOnboarded:
+      RecordOnboardedHistogramsOnStartup(pref_service);
+      break;
+  }
+}
+
 }  // namespace
 
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
@@ -90,7 +151,6 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
       base::BindRepeating(
           &TrackingProtectionOnboarding::OnOnboardingAckedChanged,
           base::Unretained(this)));
-
   // If we're forcing eligibility, then let' set it now.
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kTrackingProtectionOnboardingForceEligibility) &&
@@ -98,6 +158,7 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
           TrackingProtectionOnboardingStatus::kIneligible) {
     MaybeMarkEligible();
   }
+  RecordHistogramsOnStartup(pref_service_);
 }
 
 TrackingProtectionOnboarding::~TrackingProtectionOnboarding() = default;

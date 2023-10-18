@@ -910,6 +910,16 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.TrackingProtection.OnboardingStartup.State"
+    enum="OnboardingStartupState" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the state on startup of being onboarded to 3PCD. This occurs once
+    per profile during the startup of onboarding.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.{ApiType}" enum="PrivacySandboxApiAllowed"
     expires_after="M122">
   <owner>linnan@chromium.org</owner>
