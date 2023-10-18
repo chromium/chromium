@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 
 namespace blink {
@@ -24,6 +25,10 @@ StyleRuleViewTransitions::~StyleRuleViewTransitions() = default;
 
 const CSSValue* StyleRuleViewTransitions::GetNavigationTrigger() const {
   return navigation_trigger_.Get();
+}
+
+void StyleRuleViewTransitions::SetNavigationTrigger(const CSSValue* new_value) {
+  navigation_trigger_ = new_value;
 }
 
 void StyleRuleViewTransitions::TraceAfterDispatch(

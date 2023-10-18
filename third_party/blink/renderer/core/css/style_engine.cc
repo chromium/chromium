@@ -2345,6 +2345,23 @@ RuleSet* StyleEngine::DefaultViewTransitionStyle() const {
       CSSDefaultStyleSheets::ScreenEval());
 }
 
+void StyleEngine::UpdateViewTransitionsOptIn() {
+  bool cross_document_enabled = false;
+
+  // TODO(https://crbug.com/1463966): This will likely need to change to a
+  // CSSValueList if we want to support multiple tokens as a trigger.
+  if (view_transitions_rule_) {
+    if (const CSSValue* value =
+            view_transitions_rule_->GetNavigationTrigger()) {
+      cross_document_enabled = To<CSSIdentifierValue>(value)->GetValueID() ==
+                               CSSValueID::kCrossDocumentSameOrigin;
+    }
+  }
+
+  ViewTransitionSupplement::From(GetDocument())
+      ->OnViewTransitionsStyleUpdated(cross_document_enabled);
+}
+
 bool StyleEngine::HasRulesForId(const AtomicString& id) const {
   DCHECK(global_rule_set_);
   return global_rule_set_->GetRuleFeatureSet().HasSelectorForId(id);
@@ -3019,20 +3036,7 @@ void StyleEngine::AddViewTransitionsRules(
     }
   }
 
-  bool cross_document_enabled = false;
-
-  // TODO(https://crbug.com/1463966): This will likely need to change to a
-  // CSSValueList if we want to support multiple tokens as a trigger.
-  if (view_transitions_rule_) {
-    if (const CSSValue* value =
-            view_transitions_rule_->GetNavigationTrigger()) {
-      cross_document_enabled = To<CSSIdentifierValue>(value)->GetValueID() ==
-                               CSSValueID::kCrossDocumentSameOrigin;
-    }
-  }
-
-  ViewTransitionSupplement::From(GetDocument())
-      ->OnViewTransitionsStyleUpdated(cross_document_enabled);
+  UpdateViewTransitionsOptIn();
 }
 
 void StyleEngine::AddFontPaletteValuesRules(const RuleSet& rule_set) {
