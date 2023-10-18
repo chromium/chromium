@@ -28,7 +28,7 @@
 
 namespace ash {
 
-using EventType = arc::ArcTracingGraphicsModel::BufferEventType;
+using EventType = arc::ArcTracingGraphicsModel::EventType;
 
 namespace {
 

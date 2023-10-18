@@ -27,7 +27,7 @@ namespace arc {
 namespace {
 
 using GraphicsEvents = ArcTracingGraphicsModel::BufferEvents;
-using GraphicsEventType = ArcTracingGraphicsModel::BufferEventType;
+using GraphicsEventType = ArcTracingGraphicsModel::EventType;
 
 constexpr char kAcquireBufferQuery[] =
     "android:onMessageReceived/android:handleMessageInvalidate/"

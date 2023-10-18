@@ -36,7 +36,7 @@ const zooms = [
 let zoomLevel = 5;
 
 /**
- * Keep in sync with ArcTracingGraphicsModel::BufferEventType
+ * Keep in sync with ArcTracingGraphicsModel::EventType
  * See chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h.
  * Describes how events should be rendered. |color| specifies color of the
  * event, |name| is used in tooltips. |width| defines the width in case it is
@@ -113,7 +113,7 @@ const eventAttributes = {
  * Defines the map of events that can be treated as the end of event sequence.
  * Time after such events is considered as idle time until the next event
  * starts. Key of |endSequenceEvents| is event type as defined in
- * ArcTracingGraphicsModel::BufferEventType and value is the list of event
+ * ArcTracingGraphicsModel::EventType and value is the list of event
  * types that should follow after the tested event to consider it as end of
  * sequence. Empty list means that tested event is certainly end of the
  * sequence.

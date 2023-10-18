@@ -61,7 +61,7 @@ class ArcTracingGraphicsModel {
   // When adding or editing lines, prefer an actual "= ###" rather than rely
   // on implicit incrementing, and do not change constant values once added.
   // clang-format off
-  enum class BufferEventType {
+  enum class EventType {
     kNone,  // 0
 
     // Surface flinger events.
@@ -115,14 +115,12 @@ class ArcTracingGraphicsModel {
   // clang-format on
 
   struct BufferEvent {
-    BufferEvent(BufferEventType type, int64_t timestamp);
-    BufferEvent(BufferEventType type,
-                int64_t timestamp,
-                const std::string& content);
+    BufferEvent(EventType type, int64_t timestamp);
+    BufferEvent(EventType type, int64_t timestamp, const std::string& content);
 
     bool operator==(const BufferEvent& other) const;
 
-    BufferEventType type;
+    EventType type;
     uint64_t timestamp;
     std::string content;
   };
@@ -241,8 +239,7 @@ class ArcTracingGraphicsModel {
   bool skip_structure_validation_ = false;
 };
 
-std::ostream& operator<<(std::ostream& os,
-                         ArcTracingGraphicsModel::BufferEventType);
+std::ostream& operator<<(std::ostream& os, ArcTracingGraphicsModel::EventType);
 
 }  // namespace arc
 
