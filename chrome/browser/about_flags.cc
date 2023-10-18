@@ -8233,10 +8233,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kMediaFoundationVideoCapture)},
 #endif  // BUILDFLAG(IS_WIN)
 
-    {"private-state-tokens", flag_descriptions::kPrivateStateTokensName,
-     flag_descriptions::kPrivateStateTokensDescription, kOsAll,
-     FEATURE_VALUE_TYPE(network::features::kPrivateStateTokens)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"copy-link-to-text", flag_descriptions::kCopyLinkToTextName,
      flag_descriptions::kCopyLinkToTextDescription, kOsDesktop,

@@ -6848,11 +6848,6 @@
     "owners": [ "lyf", "phao", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 124
   },
-  {
-    "name": "private-state-tokens",
-    "owners": [ "svaldez", "aykutb@google.com" ],
-    "expiry_milestone": 120
-  },
   {    "name": "productivity-launcher",
     "owners": [ "cros-system-ui-eng@google.com" ],
     "expiry_milestone": 106

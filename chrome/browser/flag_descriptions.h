@@ -1935,9 +1935,6 @@ extern const char kTranslateForceTriggerOnEnglishDescription[];
 extern const char kTreatInsecureOriginAsSecureName[];
 extern const char kTreatInsecureOriginAsSecureDescription[];
 
-extern const char kPrivateStateTokensName[];
-extern const char kPrivateStateTokensDescription[];
-
 extern const char kTailoredSecurityRetryForSyncUsersName[];
 extern const char kTailoredSecurityRetryForSyncUsersDescription[];
 
