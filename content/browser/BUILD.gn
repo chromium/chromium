@@ -3288,8 +3288,8 @@ source_set("browser") {
       # these files. This follows the pattern of #ifdef-ing around Android
       # to restrict APK-size, but not introducing the additional complexity
       # this produces for other feature/platform pairs.
-      "media/capture/crop_id_web_contents_helper.cc",
-      "media/capture/crop_id_web_contents_helper.h",
+      "media/capture/sub_capture_target_id_web_contents_helper.cc",
+      "media/capture/sub_capture_target_id_web_contents_helper.h",
 
       # Support for restricting NetworkService disk access to a certain path.
       # Not available on Android.
