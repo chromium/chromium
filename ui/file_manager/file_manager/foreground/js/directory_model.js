@@ -20,7 +20,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
-import {getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
+import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import {getFileData, getStore, getVolume} from '../../state/store.js';
 
 import {constants} from './constants.js';
@@ -110,6 +110,7 @@ export class DirectoryModel extends EventTarget {
     this.rescanTime_ = null;
     this.scanFailures_ = 0;
     this.changeDirectorySequence_ = 0;
+    this.cachedSearch_ = {};
 
     /** @private @type {?function(Event): void} */
     this.onSearchCompleted_ = null;
@@ -183,6 +184,16 @@ export class DirectoryModel extends EventTarget {
 
   /** @param {!State} state latest state from the store. */
   onStateChanged(state) {
+    this.handleDirectoryState_(state);
+    this.handleSearchState_(state);
+  }
+
+  /**
+   * Handles the current directory slice of the store's state.
+   * @param {!State} state latest state from the store.
+   * @private
+   */
+  handleDirectoryState_(state) {
     const currentEntry = this.getCurrentDirEntry();
     const currentURL = currentEntry ? currentEntry.toURL() : null;
     let newURL = state.currentDirectory ? state.currentDirectory.key : null;
@@ -220,6 +231,42 @@ export class DirectoryModel extends EventTarget {
 
       // Initiate the directory change.
       this.changeDirectoryEntry(/** @type {!DirectoryEntry} */ (entry));
+    }
+  }
+
+  /**
+   * Reacts to changes in the search state of the store. If the search changed
+   * and the query is not empty, this method triggers a new directory search.
+   * @param {!State} state
+   * @private
+   */
+  handleSearchState_(state) {
+    const currentEntry = this.getCurrentDirEntry();
+    // Do not handle any search state until we have the current directory set.
+    // Requests to handle current search state may be triggered by the files app
+    // before it is fully started.
+    if (!currentEntry) {
+      return;
+    }
+    const search = state.search;
+    if (this.cachedSearch_ === search) {
+      // Bail out early if the search part of the state has not changed.
+      return;
+    }
+
+    // Cache the last received search state for future comparisons.
+    const lastSearch = this.cachedSearch_;
+    this.cachedSearch_ = search;
+
+    // We change the search state (STARTED, SUCCESS, etc.) so only trigger
+    // a new search if the query or the options have changed.
+    if (!search) {
+      return;
+    }
+    if (!lastSearch || lastSearch.query !== search.query ||
+        lastSearch.options !== search.options) {
+      this.search_(
+          search.query || '', search.options || getDefaultSearchOptions());
     }
   }
 
@@ -1210,7 +1257,7 @@ export class DirectoryModel extends EventTarget {
    *
    * @param {!DirectoryEntry|!FilesAppDirEntry} dirEntry The entry of the new
    *     directory to be opened.
-   * @param {function()=} opt_callback Executed if the directory loads
+   * @param {function(boolean)=} opt_callback Executed if the directory loads
    *     successfully.
    */
   changeDirectoryEntry(dirEntry, opt_callback) {
@@ -1249,11 +1296,11 @@ export class DirectoryModel extends EventTarget {
 
       const previousDirEntry = this.currentDirContents_.getDirectoryEntry();
       this.clearAndScan_(newDirectoryContents, result => {
-        // Calls the callback of the method when successful.
-        if (result && opt_callback) {
-          opt_callback();
+        // Calls the callback of the method and inform it about success or lack
+        // of thereof.
+        if (opt_callback) {
+          opt_callback(result);
         }
-
         // Notify that the current task of this.directoryChangeQueue_
         // is completed.
         setTimeout(queueTaskCallback, 0);
@@ -1272,6 +1319,15 @@ export class DirectoryModel extends EventTarget {
       event.newDirEntry = dirEntry;
       event.volumeChanged = previousVolumeInfo !== currentVolumeInfo;
       this.dispatchEvent(event);
+      if (previousDirEntry) {
+        // If we changed from a directory to another directory always clear
+        // search and search query on directory change. When the Files app is
+        // started previousDirEntry is undefined. For that case we must not
+        // clear the search query as it may be part of the starting parameters.
+        this.cachedSearch_ = {};
+        this.store_.dispatch(clearSearch());
+        this.clearLastSearchQuery();
+      }
       // Notify the Store that the new directory has successfully changed.
       this.store_.dispatch(
           changeDirectory({to: dirEntry, status: PropStatus.SUCCESS}));
@@ -1661,10 +1717,9 @@ export class DirectoryModel extends EventTarget {
    * @param {string} query Query that will be searched for.
    * @param {!SearchOptions} options Search options, such as file
    *     type, etc.
-   * @param {function(Event)} onSearchRescan Function that will be called when
-   *     the search directory is rescanned (i.e. search results are displayed).
+   * @private
    */
-  search(query, options, onSearchRescan) {
+  search_(query, options) {
     this.lastSearchQuery_ = query;
     this.stopActiveSearch_();
     const currentDirEntry = this.getCurrentDirEntry();
@@ -1702,9 +1757,6 @@ export class DirectoryModel extends EventTarget {
       this.store_.dispatch(
           updateSearch({query: query, status: PropStatus.STARTED}));
       this.onSearchCompleted_ = (...args) => {
-        // Notify the caller via callback, for non-store based callers.
-        onSearchRescan(...args);
-
         // Notify the store-aware parts.
         this.store_.dispatch(updateSearch({status: PropStatus.SUCCESS}));
       };

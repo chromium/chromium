@@ -1564,6 +1564,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchImageByContent")
             .EnableLocalImageSearch()
             .EnableSearchV2(),
+        TestCase("changingDirectoryClosesSearch").EnableSearchV2(),
         TestCase("searchQueryLaunchParam")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

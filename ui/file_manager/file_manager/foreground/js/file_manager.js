@@ -83,7 +83,6 @@ import {QuickViewController} from './quick_view_controller.js';
 import {QuickViewModel} from './quick_view_model.js';
 import {QuickViewUma} from './quick_view_uma.js';
 import {ScanController} from './scan_controller.js';
-import {SearchController} from './search_controller.js';
 import {SelectionMenuController} from './selection_menu_controller.js';
 import {SortMenuController} from './sort_menu_controller.js';
 import {SpinnerController} from './spinner_controller.js';
@@ -241,12 +240,6 @@ export class FileManager extends EventTarget {
      * @private @type {DirectoryTreeNamingController}
      */
     this.directoryTreeNamingController_ = null;
-
-    /**
-     * Controller for search UI.
-     * @private @type {?SearchController}
-     */
-    this.searchController_ = null;
 
     /**
      * Controller for directory scan.
@@ -1189,13 +1182,6 @@ export class FileManager extends EventTarget {
         this.metadataUpdateController_, assert(this.crostini_),
         this.progressCenter);
 
-    // Create search controller.
-    this.searchController_ = new SearchController(
-        this.ui_.searchContainer,
-        this.directoryModel_,
-        assert(this.ui_),
-    );
-
     // Create directory tree naming controller.
     this.directoryTreeNamingController_ = new DirectoryTreeNamingController(
         this.directoryModel_, assert(this.ui_.directoryTree),
@@ -1450,7 +1436,7 @@ export class FileManager extends EventTarget {
       this.store_.dispatch(updateSearch({
         query: searchQuery,
         status: PropStatus.STARTED,
-        options: undefined,
+        options: getDefaultSearchOptions(),
       }));
       // Show a spinner, as the crossover search function call could be slow.
       const hideSpinnerCallback = this.spinnerController_.show();
@@ -1612,8 +1598,8 @@ export class FileManager extends EventTarget {
           this.directoryModel_.selectEntry(opt_selectionEntry);
         }
         if (this.launchParams_.searchQuery) {
-          this.searchController_.setSearchQuery(
-              this.launchParams_.searchQuery, getDefaultSearchOptions());
+          this.store_.dispatch(
+              updateSearch({query: this.launchParams_.searchQuery}));
         }
       } else {
         console.warn('No entry for finishSetupCurrentDirectory_');

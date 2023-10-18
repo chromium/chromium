@@ -122,7 +122,6 @@ static_js_files = [
   "file_manager/foreground/js/path_component.js",
   "file_manager/foreground/js/providers_model.js",
   "file_manager/foreground/js/scan_controller.js",
-  "file_manager/foreground/js/search_controller.js",
   "file_manager/foreground/js/selection_menu_controller.js",
   "file_manager/foreground/js/sort_menu_controller.js",
   "file_manager/foreground/js/spinner_controller.js",
