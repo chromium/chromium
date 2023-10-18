@@ -181,11 +181,14 @@ android_apk("webview_instrumentation_apk") {
     "shell/src/org/chromium/android_webview/shell/AwShellResourceProvider.java",
     "shell/src/org/chromium/android_webview/shell/AwShellSwitches.java",
     "shell/src/org/chromium/android_webview/test/AwJUnit4ClassRunner.java",
+    "shell/src/org/chromium/android_webview/test/AwJUnit4ClassRunnerWithParameters.java",
+    "shell/src/org/chromium/android_webview/test/AwSettingsMutation.java",
     "shell/src/org/chromium/android_webview/test/AwTestContainerView.java",
     "shell/src/org/chromium/android_webview/test/AwTestRunnerActivity.java",
     "shell/src/org/chromium/android_webview/test/NullContentsClient.java",
     "shell/src/org/chromium/android_webview/test/OnlyRunIn.java",
     "shell/src/org/chromium/android_webview/test/SecondBrowserProcess.java",
+    "shell/src/org/chromium/android_webview/test/SkipMutations.java",
     "shell/src/org/chromium/android_webview/test/TestContentProvider.java",
   ]
   product_config_java_packages = [ webview_product_config_java_package ]

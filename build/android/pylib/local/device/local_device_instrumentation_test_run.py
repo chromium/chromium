@@ -721,8 +721,8 @@ class LocalDeviceInstrumentationTestRun(
         # WebView tests run in 2 process modes (single and multi). We must
         # restart the process for each mode, so this means singleprocess tests
         # and multiprocess tests must not be in the same batch.
-        webview_multiprocess_mode = test['method'].endswith(
-            base_test_result.MULTIPROCESS_SUFFIX)
+        webview_multiprocess_mode = (
+          base_test_result.MULTIPROCESS_SUFFIX in test['method'])
         if webview_multiprocess_mode:
           batch_name += '|multiprocess_mode'
 

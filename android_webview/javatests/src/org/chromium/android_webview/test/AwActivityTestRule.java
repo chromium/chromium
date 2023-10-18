@@ -49,6 +49,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,8 +83,15 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
 
     private List<WeakReference<AwContents>> mAwContentsDestroyedInTearDown = new ArrayList<>();
 
+    private Consumer<AwSettings> mMaybeMutateAwSettings;
+
     public AwActivityTestRule() {
         super(AwTestRunnerActivity.class);
+    }
+
+    public AwActivityTestRule(Consumer<AwSettings> mMaybeMutateAwSettings) {
+        super(AwTestRunnerActivity.class);
+        this.mMaybeMutateAwSettings = mMaybeMutateAwSettings;
     }
 
     @Override
@@ -453,6 +461,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
 
         AwSettings awSettings =
                 testDependencyFactory.createAwSettings(getActivity(), supportsLegacyQuirks);
+        if (mMaybeMutateAwSettings != null) mMaybeMutateAwSettings.accept(awSettings);
         AwContents awContents = testDependencyFactory.createAwContents(mBrowserContext,
                 testContainerView, testContainerView.getContext(),
                 testContainerView.getInternalAccessDelegate(),
