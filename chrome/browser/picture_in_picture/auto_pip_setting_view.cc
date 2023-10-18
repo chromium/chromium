@@ -33,16 +33,16 @@ constexpr int kDescriptionViewHeight = 32;
 constexpr int kBubbleFixedWidth = 320;
 
 // Bubble border corner radius.
-constexpr int kBubbleBorderCornerRadius = 15;
+constexpr int kBubbleBorderCornerRadius = 12;
 
 // Bubble border MD shadow elevation.
 constexpr int kBubbleBorderMdShadowElevation = 2;
 
 // Bubble margins.
-constexpr gfx::Insets kBubbleMargins = gfx::Insets::TLBR(0, 20, 15, 20);
+constexpr gfx::Insets kBubbleMargins = gfx::Insets::TLBR(0, 20, 20, 20);
 
 // Bubble title margins.
-constexpr gfx::Insets kBubbleTitleMargins = gfx::Insets::TLBR(15, 20, 10, 20);
+constexpr gfx::Insets kBubbleTitleMargins = gfx::Insets::TLBR(16, 20, 10, 20);
 
 // Maximum origin text width, for cases where the origin needs to be
 // elided.
