@@ -27,6 +27,7 @@ lucicfg.config(
         "cq-builders.md",
         "cq-usage/default.cfg",
         "cq-usage/full.cfg",
+        "cq-usage/mega_cq_bots.txt",
         "health-specs/health-specs.json",
         "luci/commit-queue.cfg",
         "luci/cr-buildbucket.cfg",
