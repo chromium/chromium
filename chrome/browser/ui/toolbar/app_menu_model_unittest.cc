@@ -168,7 +168,8 @@ INSTANTIATE_TEST_SUITE_P(
 class TestAppMenuModelCR2023 : public AppMenuModelTest {
  public:
   TestAppMenuModelCR2023() {
-    feature_list_.InitAndEnableFeature(features::kChromeRefresh2023);
+    feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kChromeRefresh2023}, {});
   }
 
   TestAppMenuModelCR2023(const TestAppMenuModelCR2023&) = delete;
@@ -364,6 +365,14 @@ TEST_F(AppMenuModelTest, PerformanceItem) {
   size_t performance_index =
       toolModel.GetIndexOfCommandId(IDC_PERFORMANCE).value();
   EXPECT_TRUE(toolModel.IsEnabledAt(performance_index));
+}
+
+TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
+  AppMenuModel model(this, browser());
+  model.Init();
+  size_t organize_tabs_index =
+      model.GetIndexOfCommandId(IDC_ORGANIZE_TABS).value();
+  EXPECT_TRUE(model.IsEnabledAt(organize_tabs_index));
 }
 
 TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {

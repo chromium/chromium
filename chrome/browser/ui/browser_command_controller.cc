@@ -659,6 +659,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_VIRTUAL_CARD_ENROLL:
       ShowVirtualCardEnrollBubble(browser_);
       break;
+    case IDC_ORGANIZE_TABS:
+      StartTabOrganizationRequest(browser_);
+      break;
     case IDC_SHOW_TRANSLATE:
       ShowTranslateBubble(browser_);
       break;
@@ -1199,6 +1202,7 @@ void BrowserCommandController::InitCommandState() {
   UpdateTabRestoreCommandState();
   command_updater_.UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_.UpdateCommandEnabled(IDC_NAME_WINDOW, true);
+  command_updater_.UpdateCommandEnabled(IDC_ORGANIZE_TABS, true);
 #if BUILDFLAG(IS_CHROMEOS)
   command_updater_.UpdateCommandEnabled(IDC_TOGGLE_MULTITASK_MENU, true);
 #endif

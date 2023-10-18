@@ -39,14 +39,18 @@ void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
 
 const TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
     const Browser* browser) const {
-  CHECK(base::Contains(browser_session_map_, browser));
-  return browser_session_map_.at(browser).get();
+  if (base::Contains(browser_session_map_, browser)) {
+    return browser_session_map_.at(browser).get();
+  }
+  return nullptr;
 }
 
 TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
     const Browser* browser) {
-  CHECK(base::Contains(browser_session_map_, browser));
-  return browser_session_map_.at(browser).get();
+  if (base::Contains(browser_session_map_, browser)) {
+    return browser_session_map_.at(browser).get();
+  }
+  return nullptr;
 }
 
 TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(

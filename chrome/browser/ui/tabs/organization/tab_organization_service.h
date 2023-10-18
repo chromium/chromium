@@ -44,6 +44,11 @@ class TabOrganizationService : public KeyedService {
       const Browser* browser) const;
   TabOrganizationSession* GetSessionForBrowser(const Browser* browser);
 
+  // Creates a new tab organization session, checking to ensure one does not
+  // already exist for the browser. If callers are unsure whether there is an
+  // existing session, they should first call GetSessionForBrowser to confirm.
+  TabOrganizationSession* CreateSessionForBrowser(const Browser* browser);
+
   void AddObserver(TabOrganizationObserver* observer) {
     observers_.AddObserver(observer);
   }
@@ -53,8 +58,6 @@ class TabOrganizationService : public KeyedService {
   }
 
  private:
-  TabOrganizationSession* CreateSessionForBrowser(const Browser* browser);
-
   // mapping of browser to session.
   BrowserSessionMap browser_session_map_;
 

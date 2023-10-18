@@ -90,6 +90,9 @@
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -1506,6 +1509,19 @@ void ShowVirtualCardEnrollBubble(Browser* browser) {
           web_contents);
   if (controller) {
     controller->ReshowBubble();
+  }
+}
+
+void StartTabOrganizationRequest(Browser* browser) {
+  TabOrganizationService* service =
+      TabOrganizationServiceFactory::GetForProfile(browser->profile());
+  TabOrganizationSession* session = service->GetSessionForBrowser(browser);
+  if (session == nullptr) {
+    session = service->CreateSessionForBrowser(browser);
+  }
+  if (session->request()->state() ==
+      TabOrganizationRequest::State::NOT_STARTED) {
+    session->StartRequest();
   }
 }
 

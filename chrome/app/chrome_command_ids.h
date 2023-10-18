@@ -135,6 +135,7 @@
 #define IDC_SHOW_PASSWORD_MANAGER       35041
 #define IDC_SHOW_PAYMENT_METHODS        35042
 #define IDC_SHOW_ADDRESSES              35043
+#define IDC_ORGANIZE_TABS               35044
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.
