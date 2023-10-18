@@ -7093,8 +7093,8 @@ TEST_F(RenderTextTest, StringFitsOwnWidth) {
 // falling back to other fonts.
 TEST_F(RenderTextTest, HarfBuzz_FontListFallback) {
   // Double-check that the requested fonts are present.
-  std::string format = std::string(kTestFontName) + ", %s, 12px";
-  FontList font_list(base::StringPrintf(format.c_str(), kSymbolFontName));
+  FontList font_list(
+      base::StringPrintf("%s, %s, 12px", kTestFontName, kSymbolFontName));
   const std::vector<Font>& fonts = font_list.GetFonts();
   ASSERT_EQ(2u, fonts.size());
   ASSERT_EQ(base::ToLowerASCII(kTestFontName),
