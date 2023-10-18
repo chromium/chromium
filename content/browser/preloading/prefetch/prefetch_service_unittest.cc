@@ -6082,23 +6082,11 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // The metric should not be recorded for the third navigation, because the
   // PrefetchContainer was not servable when the third navigation starts and
   // thus shouldn't be considered as a candidate in the first place.
-  // TODO(crbug.com/1493192) Currently the metric is recorded (the
-  // `kPrefetchTimeout` bucket).
-  histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.%s",
-          histogram_suffix.c_str()),
-      2);
-  histogram_tester.ExpectTimeBucketCount(
+  histogram_tester.ExpectUniqueTimeSample(
       base::StringPrintf(
           "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.%s",
           histogram_suffix.c_str()),
       base::Milliseconds(kBlockUntilHeadTimeout), 1);
-  histogram_tester.ExpectTimeBucketCount(
-      base::StringPrintf(
-          "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.%s",
-          histogram_suffix.c_str()),
-      base::Milliseconds(kPrefetchTimeout), 1);
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(
           "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.%s",

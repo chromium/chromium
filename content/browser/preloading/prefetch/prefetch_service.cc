@@ -1512,15 +1512,12 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
     const PrefetchContainer::Key& key) {
   std::vector<PrefetchContainer*> matches;
   DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe(" << key << ")";
-  // Search for an exact match first. If one is found and not deleted, produce
-  // it.
+  // Search for an exact match first.
   auto it = prefetches_ready_to_serve_.find(key);
   if (it != prefetches_ready_to_serve_.end()) {
-    PrefetchContainer* prefetch = it->second.get();
-    DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe "
-             << "ready prefetch " << *prefetch;
+    PrefetchContainer* prefetch_container = it->second.get();
     prefetches_ready_to_serve_.erase(it);
-    if (prefetch && !prefetch->HasPrefetchBeenConsideredToServe()) {
+    if (prefetch_container) {
       // There are different types of prefetch containers that can be in
       // `prefetches_ready_to_serve_`:
       // - matched by URL exactly in `PrefetchService::PrepareToServe` when
@@ -1532,9 +1529,7 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
       // Even if the prefech is servable, we won't know if Cookies have changed
       // until `ReturnPrefetchToServe` runs the check. So we need to continue
       // matching other prefetches.
-      DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe "
-               << "matching with a ready prefetch " << *prefetch;
-      matches.push_back(prefetch);
+      matches.push_back(prefetch_container);
     }
   }
 
@@ -1545,27 +1540,43 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
     if (active_prefetch.first != key.first) {
       continue;
     }
-    PrefetchContainer* prefetch = all_prefetches_[active_prefetch].get();
-    if (!prefetch || prefetch->HasPrefetchBeenConsideredToServe()) {
+    PrefetchContainer* prefetch_container =
+        all_prefetches_[active_prefetch].get();
+    if (!prefetch_container) {
       continue;
     }
-    const auto& nvs_expected = prefetch->GetNoVarySearchHint();
+    const auto& nvs_expected = prefetch_container->GetNoVarySearchHint();
     if (!nvs_expected ||
-        !nvs_expected->AreEquivalent(nav_url, prefetch->GetURL())) {
+        !nvs_expected->AreEquivalent(nav_url, prefetch_container->GetURL())) {
       continue;
     }
-    switch (prefetch->GetServableState(PrefetchCacheableDuration())) {
+    matches.push_back(prefetch_container);
+  }
+
+  base::EraseIf(matches, [](const auto* prefetch_container) {
+    if (prefetch_container->HasPrefetchBeenConsideredToServe()) {
+      DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe: skipped "
+               << "because already considered to serve: "
+               << *prefetch_container;
+      return true;
+    }
+
+    switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
       case PrefetchContainer::ServableState::kNotServable:
-        break;
+        DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe: skipped "
+                    "because not servable: "
+                 << *prefetch_container;
+        return true;
       case PrefetchContainer::ServableState::kServable:
       case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-        DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe::"
-                 << "inexact_match::"
-                 << "prefetch = " << *prefetch;
-        matches.push_back(prefetch);
         break;
     }
-  }
+
+    DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe: matched: "
+             << *prefetch_container;
+    return false;
+  });
+
   return matches;
 }
 
@@ -1577,6 +1588,13 @@ PrefetchService::HandlePrefetchContainerToServe(
   const GURL& url = key.second;
   DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe("
            << prefetch_container << "): Start";
+
+  if (prefetch_container.HasPrefetchBeenConsideredToServe()) {
+    DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe("
+             << prefetch_container << "): Skipped already considered to serve.";
+    return HandlePrefetchContainerResult::kNotUsable;
+  }
+
   // If prefetch is servable that means it already was matched to navigation
   // url. Return it.
   switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
@@ -1715,8 +1733,8 @@ void PrefetchService::WaitOnPrefetchToServeHead(
   }
 
   if (nav_url == prefetch_container->GetURL()) {
-    PrepareToServe(nav_url, *prefetch_container);
-    GetPrefetchToServe(key, *prefetch_match_resolver);
+    HandlePrefetchContainerToServe(key, *prefetch_container,
+                                   *prefetch_match_resolver);
     return;
   }
 
@@ -1760,8 +1778,8 @@ void PrefetchService::WaitOnPrefetchToServeHead(
       static_cast<PreloadingAttemptImpl*>(attempt.get())
           ->SetIsAccurateTriggering(nav_url);
     }
-    PrepareToServe(nav_url, *prefetch_container);
-    GetPrefetchToServe(key, *prefetch_match_resolver);
+    HandlePrefetchContainerToServe(key, *prefetch_container,
+                                   *prefetch_match_resolver);
   }
 }
 
