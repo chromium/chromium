@@ -71,17 +71,17 @@ PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 2
 Test non-zero margins
 PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(10, 20, 40, 80)
 Test percentage margin
-PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(800, 400, 200, 100)
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1600, 400, 400, 100)
 Test margin: auto 4% 2% 1%
-PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1, 400, 200, 100)
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1, 400, 400, 100)
 Test margin: 8% auto 2% 1%
-PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(800, 2, 200, 100)
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1600, 2, 400, 100)
 Test margin: 8% 4% auto 1%
-PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(800, 400, 3, 100)
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1600, 400, 3, 100)
 Test margin: 8% 4% 2% auto
-PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(800, 400, 200, 4)
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1600, 400, 400, 4)
 Test visibility: hidden
-PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(800, 400, 200, 4)
+PASS internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4) is '(10000, 20000)' + pxMargins(1600, 400, 400, 4)
 
 
 PASS successfullyParsed is true

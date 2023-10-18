@@ -2819,22 +2819,21 @@ void Document::GetPageDescription(const ComputedStyle& style,
   }
 
   if (!description->ignore_css_margins) {
-    // The percentage is calculated with respect to the width even for margin
-    // top and bottom.
-    // http://www.w3.org/TR/CSS2/box.html#margin-properties
-    float width = description->size.width();
     if (!style.MarginTop().IsAuto()) {
-      description->margin_top = IntValueForLength(style.MarginTop(), width);
+      description->margin_top =
+          IntValueForLength(style.MarginTop(), description->size.height());
     }
     if (!style.MarginRight().IsAuto()) {
-      description->margin_right = IntValueForLength(style.MarginRight(), width);
+      description->margin_right =
+          IntValueForLength(style.MarginRight(), description->size.width());
     }
     if (!style.MarginBottom().IsAuto()) {
       description->margin_bottom =
-          IntValueForLength(style.MarginBottom(), width);
+          IntValueForLength(style.MarginBottom(), description->size.height());
     }
     if (!style.MarginLeft().IsAuto()) {
-      description->margin_left = IntValueForLength(style.MarginLeft(), width);
+      description->margin_left =
+          IntValueForLength(style.MarginLeft(), description->size.width());
     }
   }
 

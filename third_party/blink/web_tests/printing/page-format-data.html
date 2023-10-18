@@ -172,27 +172,27 @@
 
         debug("Test percentage margin");
         appendStyle("@page {margin: 8% 4% 2% 1%;}");
-        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(800, 400, 200, 100)");
+        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(1600, 400, 400, 100)");
 
         debug("Test margin: auto 4% 2% 1%");
         appendStyle("@page {margin: auto 4% 2% 1%;}");
-        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(1, 400, 200, 100)");
+        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(1, 400, 400, 100)");
 
         debug("Test margin: 8% auto 2% 1%");
         appendStyle("@page {margin: 8% auto 2% 1%;}");
-        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(800, 2, 200, 100)");
+        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(1600, 2, 400, 100)");
 
         debug("Test margin: 8% 4% auto 1%");
         appendStyle("@page {margin: 8% 4% auto 1%;}");
-        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(800, 400, 3, 100)");
+        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(1600, 400, 3, 100)");
 
         debug("Test margin: 8% 4% 2% auto");
         appendStyle("@page {margin: 8% 4% 2% auto;}");
-        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(800, 400, 200, 4)");
+        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(1600, 400, 400, 4)");
 
         debug("Test visibility: hidden");
         appendStyle("@page {visibility:hidden}");
-        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(800, 400, 200, 4)");
+        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "'(10000, 20000)' + pxMargins(1600, 400, 400, 4)");
 
         debug("");
 
