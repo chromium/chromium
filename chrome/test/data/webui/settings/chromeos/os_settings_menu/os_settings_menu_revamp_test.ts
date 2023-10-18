@@ -425,4 +425,16 @@ suite('<os-settings-menu>', () => {
       assertEquals('Touchpad, print, display', deviceMenuItem.sublabel);
     });
   });
+
+  suite('Privacy menu item', () => {
+    test('Privacy menu item description', async () => {
+      await createMenu();
+
+      const privacyMenuItem = queryMenuItemByPath(
+          `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`);
+      assertTrue(!!privacyMenuItem);
+
+      assertEquals('Lock screen, controls', privacyMenuItem.sublabel);
+    });
+  });
 });

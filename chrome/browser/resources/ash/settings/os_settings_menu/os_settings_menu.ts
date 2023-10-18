@@ -305,6 +305,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
           icon: 'cr:security',
           label: this.i18n('privacyPageTitle'),
+          sublabel: this.i18n('privacyMenuItemDescription'),
         },
         {
           section: Section.kApps,

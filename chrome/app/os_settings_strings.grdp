@@ -6024,6 +6024,15 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
       Help improve ChromeOS features and performance. Data is aggregated and highly protected.
     </message>
   </if>
+  <message name="IDS_OS_SETTINGS_PRIVACY_TITLE" desc="Name of the privacy settings page.">
+    Security and Privacy
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_PRIVACY_TITLE" desc="Name of the privacy settings page.">
+    Privacy and security
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_MENU_ITEM_DESCRIPTION" desc="Description for the Privacy menu item in the left menu.">
+    Lock screen, controls
+  </message>
   <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging in ChromeOS for user of the device.">
     Automatically sends crash reports as well as diagnostic and usage data to Google
   </message>

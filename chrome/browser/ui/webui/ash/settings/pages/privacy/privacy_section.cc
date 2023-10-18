@@ -418,7 +418,11 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        kIsRevampEnabled
            ? IDS_OS_SETTINGS_REVAMP_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_ALLOW_BUTTON_LABEL
            : IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL},
-      {"privacyPageTitle", IDS_SETTINGS_PRIVACY_V2},
+      {"privacyPageTitle", kIsRevampEnabled
+                               ? IDS_OS_SETTINGS_REVAMP_PRIVACY_TITLE
+                               : IDS_OS_SETTINGS_PRIVACY_TITLE},
+      {"privacyMenuItemDescription",
+       IDS_OS_SETTINGS_PRIVACY_MENU_ITEM_DESCRIPTION},
       {"smartPrivacyTitle", IDS_OS_SETTINGS_SMART_PRIVACY_TITLE},
       {"smartPrivacyQuickDimTitle",
        IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_DIM_TITLE},
