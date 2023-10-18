@@ -63,5 +63,6 @@ TrackingProtectionSettingsFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
       profile->GetPrefs(),
-      TrackingProtectionOnboardingFactory::GetForProfile(profile));
+      TrackingProtectionOnboardingFactory::GetForProfile(profile),
+      profile->IsIncognitoProfile());
 }

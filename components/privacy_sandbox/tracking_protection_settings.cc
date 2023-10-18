@@ -17,8 +17,11 @@ namespace privacy_sandbox {
 
 TrackingProtectionSettings::TrackingProtectionSettings(
     PrefService* pref_service,
-    TrackingProtectionOnboarding* onboarding_service)
-    : pref_service_(pref_service), onboarding_service_(onboarding_service) {
+    TrackingProtectionOnboarding* onboarding_service,
+    bool is_incognito)
+    : pref_service_(pref_service),
+      onboarding_service_(onboarding_service),
+      is_incognito_(is_incognito) {
   CHECK(pref_service_);
 
   pref_change_registrar_.Init(pref_service_);
@@ -76,7 +79,8 @@ bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
 }
 
 bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
-  return pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled);
+  return pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled) ||
+         is_incognito_;
 }
 
 bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {

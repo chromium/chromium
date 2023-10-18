@@ -336,11 +336,6 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
 }
 
 bool CookieSettings::MitigationsEnabledFor3pcdInternal() {
-  // Mitigations shouldn't be enabled in incognito;
-  if (is_incognito_) {
-    return false;
-  }
-
   // Mitigations won't be enabled when Third Party Cookies Blocking is enabled
   // by `features::kForceThirdPartyCookieBlocking` which is intended to be used
   // via command-lines by developers for testing.
@@ -350,7 +345,7 @@ bool CookieSettings::MitigationsEnabledFor3pcdInternal() {
 
   if (tracking_protection_settings_ &&
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
-    // Mitigations should be on iff the user has not chosen to block all 3PC.
+    // Mitigations should be on iff we are not blocking all 3PC in 3PCD.
     return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
   }
 
