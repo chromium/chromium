@@ -75,6 +75,12 @@ class PageInfoCookiesContentViewTest
         std::make_unique<PageInfoCookiesContentView>(presenter_.get());
   }
 
+  void TearDown() override {
+    presenter_.reset();
+    content_view_.reset();
+    TestWithBrowserView::TearDown();
+  }
+
   PageInfoCookiesContentView* content_view() { return content_view_.get(); }
 
   views::BoxLayoutView* third_party_cookies_container() {

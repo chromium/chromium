@@ -196,9 +196,7 @@ class CookieControlsController
   raw_ptr<HostContentSettingsMap> settings_map_;
   // TrackingProtectionSettings class for the current profile. Corresponds to
   // the regular profile if in incognito, since TP settings should still apply.
-  // TODO(fmacintosh): Remove `DanglingUntriaged` once we have time to
-  // investigate why this is dangling.
-  raw_ptr<privacy_sandbox::TrackingProtectionSettings, DanglingUntriaged>
+  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
 
   base::ScopedObservation<content_settings::CookieSettings,
