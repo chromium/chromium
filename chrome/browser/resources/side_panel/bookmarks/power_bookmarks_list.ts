@@ -1038,6 +1038,9 @@ export class PowerBookmarksListElement extends PolymerElement {
           {bookmark: chrome.bookmarks.BookmarkTreeNode, event: MouseEvent}>) {
     event.preventDefault();
     event.stopPropagation();
+    if (!event.detail.bookmark) {
+      return;
+    }
     const priceTracked = this.isPriceTracked(event.detail.bookmark);
     const priceTrackingEligible =
         this.isPriceTrackingEligible_(event.detail.bookmark);
