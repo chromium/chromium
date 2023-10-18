@@ -257,7 +257,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
   // Current playback rate.
   double playback_rate_;
 
-  raw_ptr<media::MediaLog, ExperimentalRenderer> media_log_;
+  std::unique_ptr<media::MediaLog> media_log_;
 
   bool is_client_audio_element_ = false;
 
