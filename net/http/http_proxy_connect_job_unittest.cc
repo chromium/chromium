@@ -532,7 +532,7 @@ TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeaders) {
   test_delegate.StartJobExpectingResult(connect_job.get(), OK,
                                         false /* expect_sync_result */);
   proxy_delegate_->VerifyOnTunnelHeadersReceived(
-      proxy_server, kResponseHeaderName, kResponseHeaderValue);
+      ProxyChain(proxy_server), 0, kResponseHeaderName, kResponseHeaderValue);
 }
 
 // Test the case where auth credentials are not cached.

@@ -20,10 +20,12 @@ TestProxyDelegate::TestProxyDelegate() = default;
 TestProxyDelegate::~TestProxyDelegate() = default;
 
 void TestProxyDelegate::VerifyOnTunnelHeadersReceived(
-    const ProxyServer& proxy_server,
+    const ProxyChain& proxy_chain,
+    size_t chain_index,
     const std::string& response_header_name,
     const std::string& response_header_value) const {
-  EXPECT_EQ(proxy_server, on_tunnel_headers_received_proxy_server_);
+  EXPECT_EQ(proxy_chain, on_tunnel_headers_received_proxy_chain_);
+  EXPECT_EQ(chain_index, on_tunnel_headers_received_chain_index_);
   ASSERT_NE(on_tunnel_headers_received_headers_.get(), nullptr);
   EXPECT_TRUE(on_tunnel_headers_received_headers_->HasHeaderValue(
       response_header_name, response_header_value));
@@ -36,25 +38,31 @@ void TestProxyDelegate::OnResolveProxy(
     const ProxyRetryInfoMap& proxy_retry_info,
     ProxyInfo* result) {}
 
-void TestProxyDelegate::OnFallback(const ProxyServer& bad_proxy,
-                                   int net_error) {}
+void TestProxyDelegate::OnFallback(const ProxyChain& bad_chain, int net_error) {
+}
 
 void TestProxyDelegate::OnBeforeTunnelRequest(
-    const ProxyServer& proxy_server,
+    const ProxyChain& proxy_chain,
+    size_t chain_index,
     HttpRequestHeaders* extra_headers) {
   on_before_tunnel_request_called_ = true;
-  if (extra_headers)
-    extra_headers->SetHeader("Foo", ProxyServerToProxyUri(proxy_server));
+  if (extra_headers) {
+    // TODO(crbug.com/1491092): Include the entire chain in the header.
+    extra_headers->SetHeader("Foo",
+                             ProxyServerToProxyUri(proxy_chain.proxy_server()));
+  }
 }
 
 Error TestProxyDelegate::OnTunnelHeadersReceived(
-    const ProxyServer& proxy_server,
+    const ProxyChain& proxy_chain,
+    size_t chain_index,
     const HttpResponseHeaders& response_headers) {
   EXPECT_EQ(on_tunnel_headers_received_headers_.get(), nullptr);
   on_tunnel_headers_received_headers_ =
       base::MakeRefCounted<HttpResponseHeaders>(response_headers.raw_headers());
 
-  on_tunnel_headers_received_proxy_server_ = proxy_server;
+  on_tunnel_headers_received_proxy_chain_ = proxy_chain;
+  on_tunnel_headers_received_chain_index_ = chain_index;
   return OK;
 }
 

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/http/http_auth_controller.h"
 #include "net/http/http_log_util.h"
@@ -344,8 +345,9 @@ int QuicProxyClientSocket::DoSendRequest() {
 
   if (proxy_delegate_) {
     HttpRequestHeaders proxy_delegate_headers;
-    proxy_delegate_->OnBeforeTunnelRequest(proxy_server_,
-                                           &proxy_delegate_headers);
+    // TODO(crbug.com/1491092): Provide the full chain with appropriate index.
+    proxy_delegate_->OnBeforeTunnelRequestServerOnly(proxy_server_,
+                                                     &proxy_delegate_headers);
     request_.extra_headers.MergeFrom(proxy_delegate_headers);
   }
 
@@ -407,8 +409,9 @@ int QuicProxyClientSocket::DoReadReplyComplete(int result) {
       response_.headers.get());
 
   if (proxy_delegate_) {
-    int rv = proxy_delegate_->OnTunnelHeadersReceived(proxy_server_,
-                                                      *response_.headers);
+    // TODO(crbug.com/1491092): Provide the full chain with appropriate index.
+    int rv = proxy_delegate_->OnTunnelHeadersReceivedServerOnly(
+        proxy_server_, *response_.headers);
     if (rv != OK) {
       DCHECK_NE(ERR_IO_PENDING, rv);
       return rv;

@@ -39,6 +39,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/request_priority.h"
 #include "net/base/url_util.h"
@@ -289,13 +290,15 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
     resolved_proxy_info_.proxy_info = *result;
   }
 
-  void OnFallback(const ProxyServer& bad_proxy, int net_error) override {}
+  void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
 
-  void OnBeforeTunnelRequest(const ProxyServer& proxy_server,
+  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                             size_t chain_index,
                              HttpRequestHeaders* extra_headers) override {}
 
   Error OnTunnelHeadersReceived(
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
+      size_t chain_index,
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }

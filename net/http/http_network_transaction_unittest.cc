@@ -381,11 +381,13 @@ class SingleProxyDelegate : public ProxyDelegate {
     if (proxy_server_.is_valid())
       result->UseProxyServer(proxy_server_);
   }
-  void OnFallback(const ProxyServer& bad_proxy, int net_error) override {}
-  void OnBeforeTunnelRequest(const ProxyServer& proxy_server,
+  void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
+  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                             size_t chain_index,
                              HttpRequestHeaders* extra_headers) override {}
   Error OnTunnelHeadersReceived(
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
+      size_t chain_index,
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }

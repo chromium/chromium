@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
-#include "net/base/proxy_server.h"
 
 class GURL;
 
@@ -27,7 +27,8 @@ class TestProxyDelegate : public ProxyDelegate {
   }
 
   void VerifyOnTunnelHeadersReceived(
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
+      size_t chain_index,
       const std::string& response_header_name,
       const std::string& response_header_value) const;
 
@@ -37,16 +38,19 @@ class TestProxyDelegate : public ProxyDelegate {
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override;
-  void OnFallback(const ProxyServer& bad_proxy, int net_error) override;
-  void OnBeforeTunnelRequest(const ProxyServer& proxy_server,
+  void OnFallback(const ProxyChain& bad_chain, int net_error) override;
+  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                             size_t chain_index,
                              HttpRequestHeaders* extra_headers) override;
   Error OnTunnelHeadersReceived(
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
+      size_t chain_index,
       const HttpResponseHeaders& response_headers) override;
 
  private:
   bool on_before_tunnel_request_called_ = false;
-  ProxyServer on_tunnel_headers_received_proxy_server_;
+  ProxyChain on_tunnel_headers_received_proxy_chain_;
+  size_t on_tunnel_headers_received_chain_index_;
   scoped_refptr<HttpResponseHeaders> on_tunnel_headers_received_headers_;
 };
 

@@ -233,13 +233,15 @@ class TestResolveProxyDelegate : public ProxyDelegate {
     return proxy_retry_info_;
   }
 
-  void OnFallback(const ProxyServer& bad_proxy, int net_error) override {}
+  void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
 
-  void OnBeforeTunnelRequest(const ProxyServer& proxy_server,
+  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                             size_t chain_index,
                              HttpRequestHeaders* extra_headers) override {}
 
   Error OnTunnelHeadersReceived(
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
+      size_t chain_index,
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }
@@ -262,24 +264,26 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {}
 
-  void OnFallback(const ProxyServer& bad_proxy, int net_error) override {
-    proxy_server_ = bad_proxy;
+  void OnFallback(const ProxyChain& bad_chain, int net_error) override {
+    proxy_chain_ = bad_chain;
     last_proxy_fallback_net_error_ = net_error;
     num_proxy_fallback_called_++;
   }
 
-  void OnBeforeTunnelRequest(const ProxyServer& proxy_server,
+  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                             size_t chain_index,
                              HttpRequestHeaders* extra_headers) override {}
 
   Error OnTunnelHeadersReceived(
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
+      size_t chain_index,
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }
 
   bool num_proxy_fallback_called() const { return num_proxy_fallback_called_; }
 
-  const ProxyServer& proxy_server() const { return proxy_server_; }
+  const ProxyChain& proxy_chain() const { return proxy_chain_; }
 
   int last_proxy_fallback_net_error() const {
     return last_proxy_fallback_net_error_;
@@ -287,7 +291,7 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
 
  private:
   int num_proxy_fallback_called_ = 0;
-  ProxyServer proxy_server_;
+  ProxyChain proxy_chain_;
   int last_proxy_fallback_net_error_ = OK;
 };
 
@@ -1621,7 +1625,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ProxyFallback) {
   TestProxyFallbackProxyDelegate test_delegate;
   service.SetProxyDelegate(&test_delegate);
   service.ReportSuccess(info);
-  EXPECT_EQ("foopy1:8080", ProxyServerToProxyUri(test_delegate.proxy_server()));
+  EXPECT_EQ("foopy1:8080", test_delegate.proxy_chain().ToDebugString());
   EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED,
             test_delegate.last_proxy_fallback_net_error());
   service.SetProxyDelegate(nullptr);

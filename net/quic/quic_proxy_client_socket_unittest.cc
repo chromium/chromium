@@ -687,7 +687,8 @@ TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
   ASSERT_TRUE(response != nullptr);
   ASSERT_EQ(200, response->headers->response_code());
   proxy_delegate_->VerifyOnTunnelHeadersReceived(
-      proxy_server, kResponseHeaderName, kResponseHeaderValue);
+      ProxyChain(proxy_server), /*chain_index=*/0, kResponseHeaderName,
+      kResponseHeaderValue);
 }
 
 TEST_P(QuicProxyClientSocketTest, ConnectWithAuthRequested) {

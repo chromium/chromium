@@ -8,6 +8,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
@@ -207,8 +209,11 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
   }
 }
 
-void NetworkServiceProxyDelegate::OnFallback(const net::ProxyServer& bad_proxy,
+void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
                                              int net_error) {
+  // TODO(crbug.com/1491092): Handle proxy chains.
+  const net::ProxyServer& bad_proxy = bad_chain.proxy_server();
+
   // If the bad proxy was an IP Protection proxy, refresh the list of IP
   // protection proxies immediately.
   if (IsProxyForIpProtection(bad_proxy) && ipp_config_cache_) {
@@ -221,8 +226,13 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyServer& bad_proxy,
 }
 
 void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
-    const net::ProxyServer& proxy_server,
+    const net::ProxyChain& proxy_chain,
+    size_t chain_index,
     net::HttpRequestHeaders* extra_headers) {
+  // TODO(crbug.com/1491092): Handle proxy chains.
+  CHECK(chain_index == 0);
+  const net::ProxyServer& proxy_server = proxy_chain.proxy_server();
+
   auto vlog = [](std::string message) {
     VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
   };
@@ -252,8 +262,13 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
 }
 
 net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
-    const net::ProxyServer& proxy_server,
+    const net::ProxyChain& proxy_chain,
+    size_t chain_index,
     const net::HttpResponseHeaders& response_headers) {
+  // TODO(crbug.com/1491092): Handle proxy chains.
+  CHECK_EQ(chain_index, 0u);
+  const net::ProxyServer& proxy_server = proxy_chain.proxy_server();
+
   if (observer_) {
     // Copy the response headers since mojo expects a ref counted object.
     observer_->OnTunnelHeadersReceived(
