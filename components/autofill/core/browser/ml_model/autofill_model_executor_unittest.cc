@@ -5,15 +5,14 @@
 #include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
 
 #include "base/base_paths.h"
-#include "base/functional/callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -24,6 +23,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+
+namespace {
+
+using ExecutorType =
+    optimization_guide::ModelExecutor<AutofillModelExecutor::ModelOutput,
+                                      const AutofillModelExecutor::ModelInput&>;
 
 class AutofillModelExecutorTest : public testing::Test {
  public:
@@ -73,20 +78,9 @@ class AutofillModelExecutorTest : public testing::Test {
 TEST_F(AutofillModelExecutorTest, ExecuteModel) {
   // Update model file.
   execution_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &optimization_guide::ModelExecutor<std::vector<ServerFieldType>,
-                                             const FormData&>::UpdateModelFile,
-          model_executor_->GetWeakPtrForExecutionThread(), model_file_path_));
-  // Execute model.
-  base::RunLoop run_loop;
-  absl::optional<std::vector<ServerFieldType>> predictions;
-  base::OnceCallback<void(const absl::optional<std::vector<ServerFieldType>>&)>
-      execution_callback = base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<ServerFieldType>>& output) {
-            predictions = output;
-            run_loop.Quit();
-          });
+      FROM_HERE, base::BindOnce(&ExecutorType::UpdateModelFile,
+                                model_executor_->GetWeakPtrForExecutionThread(),
+                                model_file_path_));
   // The overfitted model is trained on this exact form in this order so this
   // is the only form that can be used for unittests. The model that will be
   // provided by the server side will be trained on many different other forms.
@@ -98,20 +92,23 @@ TEST_F(AutofillModelExecutorTest, ExecuteModel) {
                                     {.label = u"email"},
                                     {.label = u"senha"},
                                     {.label = u"cep"}}});
+  // Execute model.
+  base::test::TestFuture<
+      const absl::optional<AutofillModelExecutor::ModelOutput>&>
+      predictions;
   execution_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &optimization_guide::ModelExecutor<std::vector<ServerFieldType>,
-                                             const FormData&>::SendForExecution,
-          model_executor_->GetWeakPtrForExecutionThread(),
-          std::move(execution_callback),
-          /*start_time=*/AutofillTickClock::NowTicks(), form_data));
-  run_loop.Run();
-  ASSERT_TRUE(predictions.has_value());
-  EXPECT_THAT(predictions.value(),
+      base::BindOnce(&ExecutorType::SendForExecution,
+                     model_executor_->GetWeakPtrForExecutionThread(),
+                     predictions.GetCallback(),
+                     /*start_time=*/AutofillTickClock::NowTicks(), form_data));
+  ASSERT_TRUE(predictions.Get());
+  EXPECT_THAT(*predictions.Get(),
               testing::ElementsAre(NAME_FULL, UNKNOWN_TYPE, UNKNOWN_TYPE,
                                    PHONE_HOME_CITY_AND_NUMBER, EMAIL_ADDRESS,
                                    UNKNOWN_TYPE, ADDRESS_HOME_ZIP));
 }
+
+}  // namespace
 
 }  // namespace autofill

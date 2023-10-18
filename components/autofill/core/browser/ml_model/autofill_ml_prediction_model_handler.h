@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -21,8 +22,9 @@ namespace autofill {
 // it with FormStructure as input and associate the model ServerFieldType
 // predictions with the FormStructure.
 class AutofillMlPredictionModelHandler
-    : public optimization_guide::ModelHandler<std::vector<ServerFieldType>,
-                                              const FormData&>,
+    : public optimization_guide::ModelHandler<
+          AutofillModelExecutor::ModelOutput,
+          const AutofillModelExecutor::ModelInput&>,
       public KeyedService {
  public:
   explicit AutofillMlPredictionModelHandler(

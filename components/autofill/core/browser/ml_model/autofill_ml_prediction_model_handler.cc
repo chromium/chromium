@@ -20,8 +20,9 @@ namespace autofill {
 
 AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider)
-    : optimization_guide::ModelHandler<std::vector<ServerFieldType>,
-                                       const FormData&>(
+    : optimization_guide::ModelHandler<
+          AutofillModelExecutor::ModelOutput,
+          const AutofillModelExecutor::ModelInput&>(
           model_provider,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
@@ -42,25 +43,29 @@ AutofillMlPredictionModelHandler::~AutofillMlPredictionModelHandler() = default;
 void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
     std::unique_ptr<FormStructure> form_structure,
     base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback) {
+  if (!ModelAvailable()) {
+    // No model, no predictions.
+    std::move(callback).Run(std::move(form_structure));
+    return;
+  }
+
   // TODO(crbug.com/1465926): Remove `ToFormData()` as it creates a new copy
   // of the FormData.
-  FormData form_data = form_structure->ToFormData();
+  AutofillModelExecutor::ModelInput form_data = form_structure->ToFormData();
   ExecuteModelWithInput(
       base::BindOnce(
           [](std::unique_ptr<FormStructure> form_structure,
-             base::OnceCallback<void(std::unique_ptr<FormStructure>)>
-                 outer_callback,
-             const absl::optional<std::vector<ServerFieldType>>& outputs) {
-            // TODO(crbug.com/1465926): `outputs` is nullopt when the model
-            // first gets loaded into memory.
-            if (outputs) {
-              CHECK_LE(outputs->size(), form_structure->field_count());
-              for (size_t i = 0; i < outputs->size(); i++) {
-                form_structure->field(i)->set_heuristic_type(
-                    HeuristicSource::kMachineLearning, (*outputs)[i]);
-              }
+             base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
+             const absl::optional<AutofillModelExecutor::ModelOutput>& output) {
+            CHECK(output);
+            // The model only outputs type for the first
+            // `AutofillModelExecutor::kMaxNumberOfFields` many fields.
+            CHECK_LE(output->size(), form_structure->field_count());
+            for (size_t i = 0; i < output->size(); i++) {
+              form_structure->field(i)->set_heuristic_type(
+                  HeuristicSource::kMachineLearning, (*output)[i]);
             }
-            std::move(outer_callback).Run(std::move(form_structure));
+            std::move(callback).Run(std::move(form_structure));
           },
           std::move(form_structure), std::move(callback)),
       std::move(form_data));

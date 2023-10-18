@@ -23,7 +23,7 @@ AutofillModelExecutor::~AutofillModelExecutor() = default;
 
 bool AutofillModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
-    const FormData& input) {
+    const ModelInput& input) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillModelPredictions));
   if (!vectorizer_) {
     vectorizer_ =
@@ -85,7 +85,8 @@ bool AutofillModelExecutor::Preprocess(
   return true;
 }
 
-absl::optional<std::vector<ServerFieldType>> AutofillModelExecutor::Postprocess(
+absl::optional<AutofillModelExecutor::ModelOutput>
+AutofillModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   // `output_tensors` is a 3D vector of floats. The first dimension is used
   // for batching, which the ML model declares with size 1. The second and third
@@ -99,7 +100,7 @@ absl::optional<std::vector<ServerFieldType>> AutofillModelExecutor::Postprocess(
   CHECK_EQ(output_tensors[0]->dims->data[2],
            static_cast<int>(kSupportedFieldTypes.size()));
 
-  std::vector<ServerFieldType> model_predictions(fields_count_);
+  ModelOutput model_predictions(fields_count_);
   for (size_t i = 0; i < fields_count_; i++) {
     std::vector<float> output(kSupportedFieldTypes.size());
     for (size_t j = 0; j < kSupportedFieldTypes.size(); j++) {

@@ -24,6 +24,9 @@ class AutofillModelExecutor
     : public optimization_guide::BaseModelExecutor<std::vector<ServerFieldType>,
                                                    const FormData&> {
  public:
+  using ModelInput = FormData;
+  using ModelOutput = std::vector<ServerFieldType>;
+
   AutofillModelExecutor();
   ~AutofillModelExecutor() override;
 
@@ -99,14 +102,14 @@ class AutofillModelExecutor
   // It initializes the vectorizer by reading the dictionary file
   // which can't be done on the UI thread.
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                  const FormData& input) override;
-  absl::optional<std::vector<ServerFieldType>> Postprocess(
+                  const ModelInput& input) override;
+  absl::optional<ModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 
   std::unique_ptr<AutofillModelVectorizer> vectorizer_;
 
-  // Stores the number of fields in the given to 'PreProcess()' FormData if it
-  // is less than `kMaxNumberOfFields`. It will be used in `PostProcess()` to
+  // Stores the number of fields in the given to 'Preprocess()' FormData if it
+  // is less than `kMaxNumberOfFields`. It will be used in `Postprocess()` to
   // return the first `fields_count_` predictions from the model.
   size_t fields_count_ = 0;
 };
