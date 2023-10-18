@@ -208,11 +208,6 @@ BASE_FEATURE(kJavaScriptRabGsab,
              "JavaScriptRabGsab",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the well-formed JavaScript strings proposal.
-BASE_FEATURE(kJavaScriptStringIsWellFormed,
-             "JavaScriptStringIsWellFormed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the JavaScript RegExp Unicode set notation proposal.
 BASE_FEATURE(kJavaScriptRegExpUnicodeSets,
              "JavaScriptRegExpUnicodeSets",
