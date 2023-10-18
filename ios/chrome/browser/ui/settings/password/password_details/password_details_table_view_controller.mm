@@ -189,6 +189,13 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 @property(nonatomic, strong)
     NSMutableSet<NSString*>* usernamesWithMoveToAccountOfferRecorded;
 
+// Used to create and show the actions users can execute when they tap on a row
+// in the tableView. These actions are displayed a pop-up.
+// TODO(crbug.com/1489457): Remove available guard when min deployment target is
+// bumped to iOS 16.0.
+@property(nonatomic, strong)
+    UIEditMenuInteraction* interactionMenu API_AVAILABLE(ios(16));
+
 @end
 
 @implementation PasswordDetailsTableViewController
@@ -220,6 +227,12 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerId;
   self.tableView.allowsSelectionDuringEditing = YES;
 
+  if (base::FeatureList::IsEnabled(kEnableUIEditMenuInteraction)) {
+    if (@available(iOS 16.0, *)) {
+      _interactionMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+      [self.tableView addInteraction:self.interactionMenu];
+    }
+  }
   [self setOrExtendAuthValidityTimer];
 }
 
@@ -625,15 +638,31 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 - (void)ensureContextMenuShownForItemType:(NSInteger)itemType
                                 tableView:(UITableView*)tableView
                               atIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/1481223): Replace UIMenuController with
-  // UIEditMenuInteraction in iOS 16+.
-  UIMenuController* menu = [UIMenuController sharedMenuController];
-  if (![menu isMenuVisible]) {
-    menu.menuItems = [self menuItemsForItemType:itemType];
-
-    [menu showMenuFromView:tableView
-                      rect:[tableView rectForRowAtIndexPath:indexPath]];
+  if (base::FeatureList::IsEnabled(kEnableUIEditMenuInteraction) &&
+      base::ios::IsRunningOnIOS16OrLater()) {
+    if (@available(iOS 16.0, *)) {
+      CGRect row = [tableView rectForRowAtIndexPath:indexPath];
+      CGPoint editMenuLocation =
+          CGPointMake(row.origin.x + row.size.width / 2, row.origin.y);
+      UIEditMenuConfiguration* configuration = [UIEditMenuConfiguration
+          configurationWithIdentifier:[NSNumber numberWithInt:itemType]
+                          sourcePoint:editMenuLocation];
+      [self.interactionMenu presentEditMenuWithConfiguration:configuration];
+    }
   }
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
+  else {
+    // TODO(crbug.com/1481223): Replace UIMenuController with
+    // UIEditMenuInteraction in iOS 16+.
+    UIMenuController* menu = [UIMenuController sharedMenuController];
+    if (![menu isMenuVisible]) {
+      menu.menuItems = [self menuItemsForItemType:itemType];
+
+      [menu showMenuFromView:tableView
+                        rect:[tableView rectForRowAtIndexPath:indexPath]];
+    }
+  }
+#endif
 }
 
 - (BOOL)tableView:(UITableView*)tableView
@@ -1268,6 +1297,31 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   }
 }
 
+#pragma mark - UIEditMenuInteractionDelegate
+
+// TODO(crbug.com/1489457): Remove available guard when min deployment target is
+// bumped to iOS 16.0.
+- (UIMenu*)editMenuInteraction:(UIEditMenuInteraction*)interaction
+          menuForConfiguration:(UIEditMenuConfiguration*)configuration
+              suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions
+    API_AVAILABLE(ios(16)) {
+  UIAction* copy = [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_SETTINGS_SITE_COPY_MENU_ITEM)
+                image:nil
+           identifier:nil
+              handler:^(__kindof UIAction* _Nonnull action) {
+                base::RecordAction(
+                    base::UserMetricsAction("MobilePasswordDetailsCopy"));
+
+                [self setOrExtendAuthValidityTimer];
+                NSUInteger itemType = [base::apple::ObjCCastStrict<NSNumber>(
+                    configuration.identifier) intValue];
+                [self copyPasswordDetailsHelper:itemType];
+              }];
+  return [UIMenu menuWithChildren:@[ copy ]];
+}
+
 #pragma mark - Actions
 
 // Called when the user tapped on the show/hide button near password.
@@ -1326,6 +1380,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   [self presentViewController:errorInfoPopover animated:YES completion:nil];
 }
 
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
+
 // Returns an array of UIMenuItems to display in a context menu on the site
 // cell.
 - (NSArray*)menuItemsForItemType:(NSInteger)itemType {
@@ -1348,9 +1404,17 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       base::apple::ObjCCastStrict<PasswordDetailsMenuItem>(
           menu.menuItems.firstObject);
 
+  [self copyPasswordDetailsHelper:menuItem.itemType];
+}
+
+#endif
+
+// A helper function that copies the password information to system pasteboard
+// and shows a toast of success/failure.
+- (void)copyPasswordDetailsHelper:(NSInteger)itemType {
   NSString* message = nil;
 
-  switch (menuItem.itemType) {
+  switch (itemType) {
     case PasswordDetailsItemTypeWebsite: {
       PasswordDetails* detailsToCopy;
       detailsToCopy =

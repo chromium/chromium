@@ -18,7 +18,8 @@
 // Screen which shows password details and allows to edit it.
 @interface PasswordDetailsTableViewController
     : AutofillEditTableViewController <PasswordDetailsConsumer,
-                                       SettingsControllerProtocol>
+                                       SettingsControllerProtocol,
+                                       UIEditMenuInteractionDelegate>
 
 // The designated initializer.
 - (instancetype)init;
