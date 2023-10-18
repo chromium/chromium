@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
@@ -264,20 +265,22 @@ EncryptedRecordDictionaryBuilder::GetCompressionInformationPath() {
 
 SequenceInformationDictionaryBuilder::SequenceInformationDictionaryBuilder(
     const SequenceInformation& sequence_information) {
+  bool generation_guid_is_invalid = false;
+#if BUILDFLAG(IS_CHROMEOS)
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  //  Generation guid is required for unmanaged ChromeOS devices.
+  generation_guid_is_invalid =
+      !policy::ManagementServiceFactory::GetForPlatform()
+           ->HasManagementAuthority(
+               policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) &&
+      !sequence_information.has_generation_guid();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // SequenceInformation requires these fields be set. `generation_guid` is
-  // required only for unmanaged devices.
+  // required only for unmanaged ChromeOS devices.
   if (!sequence_information.has_sequencing_id() ||
       !sequence_information.has_generation_id() ||
-      !sequence_information.has_priority()
-#if BUILDFLAG(IS_CHROMEOS)
-      ||
-      // Require generation guid for unmanaged ChromeOS devices.
-      (!policy::ManagementServiceFactory::GetForPlatform()
-            ->HasManagementAuthority(
-                policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) &&
-       !sequence_information.has_generation_guid())
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  ) {
+      !sequence_information.has_priority() || generation_guid_is_invalid) {
     return;
   }
 

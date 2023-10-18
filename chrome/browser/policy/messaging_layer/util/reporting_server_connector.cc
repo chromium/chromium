@@ -207,6 +207,7 @@ void ReportingServerConnector::OnCoreDestruction(CloudPolicyCore* core) {
 // Returns true if device info should be including in the upload. Returns false
 // otherwise.
 bool DeviceInfoRequiredForUpload() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return !base::FeatureList::IsEnabled(kEnableReportingFromUnmanagedDevices) ||
          // Check if this is a managed device.
          policy::ManagementServiceFactory::GetForPlatform()

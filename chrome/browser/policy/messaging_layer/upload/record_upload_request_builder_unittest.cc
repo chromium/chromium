@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -21,6 +20,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::AllOf;
@@ -114,7 +114,7 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
 
   bool need_encryption_key() const { return GetParam(); }
 
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<ResourceManager> memory_resource_;
 
   // Set up device as a managed device by default. To set the device as

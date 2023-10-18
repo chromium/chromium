@@ -82,6 +82,7 @@ static absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
 static bool IsMissingGenerationGuid(const std::string* generation_guid) {
   // Generation guid is only required for devices that aren't ChromeOS managed
   // devices.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (policy::ManagementServiceFactory::GetForPlatform()
           ->HasManagementAuthority(
               policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
@@ -111,6 +112,7 @@ static bool IsMissingSequenceInformation(
 // `generation_guid` does not need to be parsed based on the type of device.
 // Returns false otherwise.
 static bool GenerationGuidIsValid(const std::string& generation_guid) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (generation_guid.empty() &&
       policy::ManagementServiceFactory::GetForPlatform()
           ->HasManagementAuthority(
@@ -483,6 +485,7 @@ void RecordHandlerImpl::ReportUploader::LogNumRecordsInUpload(
     size_t num_records) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_CHROMEOS)
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (policy::ManagementServiceFactory::GetForPlatform()
           ->HasManagementAuthority(
               policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
