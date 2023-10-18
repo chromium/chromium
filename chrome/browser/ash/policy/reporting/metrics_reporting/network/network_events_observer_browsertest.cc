@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
@@ -130,7 +129,6 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
   ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,

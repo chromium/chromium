@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
