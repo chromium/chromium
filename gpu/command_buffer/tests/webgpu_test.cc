@@ -216,20 +216,11 @@ void WebGPUTest::WaitForCompletion(wgpu::Device device) {
   // importantly the callbacks will have been called.
   wgpu::Queue queue = device.GetQueue();
   bool done = false;
-#ifdef WGPU_BREAKING_WORK_DONE_SIGNAL_VALUE_CHANGE
   queue.OnSubmittedWorkDone(
       [](WGPUQueueWorkDoneStatus, void* userdata) {
         *static_cast<bool*>(userdata) = true;
       },
       &done);
-#else
-  queue.OnSubmittedWorkDone(
-      0u,
-      [](WGPUQueueWorkDoneStatus, void* userdata) {
-        *static_cast<bool*>(userdata) = true;
-      },
-      &done);
-#endif
 
   while (!done) {
     device.Tick();
