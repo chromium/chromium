@@ -360,6 +360,7 @@ android_library("cronet_impl_java_util_java") {
 
   deps = [
     ":cronet_api_java",
+    ":cronet_impl_common_base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
@@ -1789,7 +1790,7 @@ action("api_static_checks") {
   script = "//components/cronet/tools/api_static_checks.py"
   outputs = [ "$target_gen_dir/$target_name.stamp" ]
   _api_jar = "$_package_dir/cronet_api.jar"
-  _common_jar = "$target_out_dir/cronet_impl_common_base_java.processed.jar"
+  _common_jar = "$_package_dir/cronet_impl_common_java.jar"
   _platform_jar = "$_package_dir/cronet_impl_platform_java.jar"
   _native_jar = "$_package_dir/cronet_impl_native_java.jar"
   args = [
@@ -1806,7 +1807,7 @@ action("api_static_checks") {
   ]
   deps = [
     ":repackage_api",
-    ":cronet_impl_common_base_java",
+    ":repackage_common",
     ":repackage_native",
     ":repackage_platform",
   ]

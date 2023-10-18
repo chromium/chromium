@@ -38,7 +38,7 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
     private final AtomicInteger /*SinkState*/ mSinkState = new AtomicInteger(SinkState.NOT_STARTED);
     private final Executor mUserUploadExecutor;
     private final Executor mExecutor;
-    private final UploadDataProvider mUploadProvider;
+    private final VersionSafeCallbacks.UploadDataProviderWrapper mUploadProvider;
     private ByteBuffer mBuffer;
     /** This holds the total bytes to send (the content-length). -1 if unknown. */
     private long mTotalBytes;
@@ -58,7 +58,7 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
             }
         };
         mExecutor = executor;
-        mUploadProvider = provider;
+        mUploadProvider = new VersionSafeCallbacks.UploadDataProviderWrapper(provider);
     }
 
     @Override
