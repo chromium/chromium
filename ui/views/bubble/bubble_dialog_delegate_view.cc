@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -442,6 +443,7 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
       shadow_(shadow),
       close_on_deactivate_pins_(std::make_unique<CloseOnDeactivatePin::Pins>()),
       bubble_created_time_(base::TimeTicks::Now()) {
+  bubble_uma_logger().set_delegate(this);
   SetOwnedByWidget(true);
   SetAnchorView(anchor_view);
   SetArrow(arrow);
@@ -527,14 +529,14 @@ Widget* BubbleDialogDelegateView::CreateBubble(BubbleDialogDelegateView* view) {
 }
 
 BubbleDialogDelegateView::BubbleDialogDelegateView()
-    : BubbleDialogDelegateView(nullptr, BubbleBorder::TOP_LEFT) {
-  bubble_uma_logger().set_bubble_name(GetClassName());
-}
+    : BubbleDialogDelegateView(nullptr, BubbleBorder::TOP_LEFT) {}
 
 BubbleDialogDelegateView::BubbleDialogDelegateView(View* anchor_view,
                                                    BubbleBorder::Arrow arrow,
                                                    BubbleBorder::Shadow shadow)
-    : BubbleDialogDelegate(anchor_view, arrow, shadow) {}
+    : BubbleDialogDelegate(anchor_view, arrow, shadow) {
+  bubble_uma_logger().set_bubble_view(this);
+}
 
 BubbleDialogDelegateView::~BubbleDialogDelegateView() {
   // TODO(pbos): Investigate if this is actually still needed, and if so
@@ -855,20 +857,62 @@ BubbleDialogDelegate::BubbleUmaLogger::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+absl::optional<std::string>
+BubbleDialogDelegate::BubbleUmaLogger::GetBubbleName() const {
+  // Some dialogs might only use BDD and not BDDV. In those cases, the class
+  // name should be based on BDDs' content view.
+  if (delegate_.has_value()) {
+    std::string class_name =
+        delegate_.value()->GetContentsView()->GetClassName();
+    if (class_name != "View") {
+      return class_name;
+    }
+  }
+
+  if (bubble_view_.has_value()) {
+    return bubble_view_.value()->GetClassName();
+  }
+  return absl::optional<std::string>();
+}
+
 template <typename Value>
 void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
     void (*uma_func)(const std::string&, Value),
-    std::string histogram_name,
+    const std::string& histogram_name,
     Value value) const {
   if (!base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
     return;
   }
+  // Record histogram for all BDDV subclasses under a generic name
   uma_func(base::StrCat({"Bubble.All.", histogram_name}), value);
-  if (bubble_name_.has_value()) {
-    uma_func(base::StrCat({"Bubble.", *bubble_name_, ".", histogram_name}),
-             value);
+  // Record histograms for specific BDDV subclasses
+  absl::optional<std::string> bubble_name = GetBubbleName();
+  if (!bubble_name.has_value()) {
+    return;
   }
+
+  const std::unordered_set<std::string> kAllowedClassNames{
+      "ProfileMenuViewBase", "ExtensionsMenuView", "PageInfoBubbleViewBase",
+      "PermissionPromptBaseView", "DownloadBubbleContentsView"};
+
+  const auto& allowed_class_names =
+      allowed_class_names_for_testing_.has_value()
+          ? allowed_class_names_for_testing_.value()
+          : kAllowedClassNames;
+
+  if (!base::Contains(allowed_class_names, bubble_name.value())) {
+    return;
+  }
+
+  uma_func(base::StrCat({"Bubble.", bubble_name.value(), ".", histogram_name}),
+           value);
 }
+
+// Instantiate template function to be able to use in views_unittests.
+template VIEWS_EXPORT void BubbleDialogDelegate::BubbleUmaLogger::LogMetric<
+    base::TimeDelta>(void (*uma_func)(const std::string&, base::TimeDelta),
+                     const std::string& histogram_name,
+                     base::TimeDelta value) const;
 
 gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {
   // The argument rect has its origin at the bubble's arrow anchor point;

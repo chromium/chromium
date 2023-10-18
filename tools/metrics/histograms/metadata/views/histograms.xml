@@ -24,6 +24,16 @@ chromium-metrics-reviews@google.com.
 
 <variants name="BubbleName">
   <variant name="All" summary="Aggregated metrics for all bubbles"/>
+  <variant name="DownloadBubbleContentsView"
+      summary="Aggregated metrics DownloadBubbleContentsView bubbles"/>
+  <variant name="ExtensionsMenuView"
+      summary="Aggregated metrics for ExtensionsMenuView bubbles"/>
+  <variant name="PageInfoBubbleViewBase"
+      summary="Aggregated metrics for PageInfoBubbleViewBase bubbles"/>
+  <variant name="PermissionPromptBaseView"
+      summary="Aggregated metrics for PermissionPromptBaseView bubbles"/>
+  <variant name="ProfileMenuViewBase"
+      summary="Aggregated metrics for ProfileMenuViewBase bubbles"/>
 </variants>
 
 <histogram name="Bubble.{BubbleName}.CloseReason" enum="WidgetClosedReason"

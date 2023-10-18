@@ -90,6 +90,10 @@ class ExampleBubble : public BubbleDialogDelegateView {
     AddChildView(std::make_unique<Label>(GetArrowName(arrow())));
   }
 };
+
+BEGIN_METADATA(ExampleBubble, BubbleDialogDelegateView)
+END_METADATA
+
 }  // namespace
 
 BubbleExample::BubbleExample() : ExampleBase("Bubble") {}
@@ -143,7 +147,4 @@ void BubbleExample::ShowBubble(Button** button,
       "Click with optional modifiers: [Ctrl] for set_arrow(NONE), "
       "[Alt] for set_arrow(FLOAT), or [Shift] to reverse the arrow iteration.");
 }
-
-BEGIN_METADATA(ExampleBubble, views::BubbleDialogDelegateView)
-END_METADATA
 }  // namespace views::examples
