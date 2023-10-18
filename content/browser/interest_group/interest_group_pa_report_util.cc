@@ -40,8 +40,6 @@ namespace {
 // Returns the actual value of `base_value` with corresponding post auction
 // signal such as `winning_bid`. Returns absl::nullopt if corresponding signal
 // is not available.
-// TODO(crbug.com/1385549): Pass in signals for script run time and signals
-// fetch time.
 absl::optional<double> GetBaseValue(
     auction_worklet::mojom::BaseValue base_value,
     double winning_bid,
@@ -82,8 +80,6 @@ absl::optional<absl::uint128> CalculateBucket(
     const auction_worklet::mojom::SignalBucketPtr& bucket_obj,
     absl::optional<double> base) {
   if (!base.has_value()) {
-    // Once kScriptRunTime and kSignalsFetchTime are supported, this should not
-    // happen.
     return absl::nullopt;
   }
 
