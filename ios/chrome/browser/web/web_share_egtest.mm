@@ -9,6 +9,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -78,6 +79,13 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   return std::move(http_response);
 }
 
+// Taps the Web Share button in the web view.
+void TapWebShareButton() {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementUnverified([ElementSelector
+                        selectorWithElementID:kWebShareButtonId])];
+}
+
 }  // namespace
 
 @interface WebShareTestCase : ChromeTestCase
@@ -94,15 +102,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a fully specified url can be shared.
 - (void)testShareUrl {
-  // TODO(crbug.com/1468173): Failing on iOS17.
-  if (@available(iOS 17.0, *)) {
-    XCTSkip(@"Tapping kWebShareButtonId is failing on iOS17 beta 5.");
-  }
-
   const GURL pageURL = self.testServer->GetURL(kWebShareValidLinkUrl);
   [ChromeEarlGrey loadURL:pageURL];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kWebShareButtonId)];
+  TapWebShareButton();
 
   [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
 
@@ -111,15 +113,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a relative  url can be shared.
 - (void)testShareRelativeUrl {
-  // TODO(crbug.com/1468173): Failing on iOS17.
-  if (@available(iOS 17.0, *)) {
-    XCTSkip(@"Tapping kWebShareButtonId is failing on iOS17 beta 5.");
-  }
-
   const GURL pageURL = self.testServer->GetURL(kWebShareRelativeLinkUrl);
   [ChromeEarlGrey loadURL:pageURL];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kWebShareButtonId)];
+  TapWebShareButton();
 
   [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
 
@@ -128,16 +124,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a relative url can be shared when the filename starts with "file".
 - (void)testShareRelativeFilenameUrl {
-  // TODO(crbug.com/1468173): Failing on iOS17.
-  if (@available(iOS 17.0, *)) {
-    XCTSkip(@"Tapping kWebShareButtonId is failing on iOS17 beta 5.");
-  }
-
   const GURL pageURL =
       self.testServer->GetURL(kWebShareRelativeFilenameFileUrl);
   [ChromeEarlGrey loadURL:pageURL];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kWebShareButtonId)];
+  TapWebShareButton();
 
   [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
 
@@ -148,8 +138,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 - (void)testShareFileUrl {
   const GURL pageURL = self.testServer->GetURL(kWebShareFileUrl);
   [ChromeEarlGrey loadURL:pageURL];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kWebShareButtonId)];
+  TapWebShareButton();
 
   [ChromeEarlGrey waitForWebStateContainingText:kWebShareStatusFailure];
 
@@ -159,14 +148,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that an url object can be shared.
 - (void)testShareUrlObject {
-  // TODO(crbug.com/1468173): Failing on iOS17.
-  if (@available(iOS 17.0, *)) {
-    XCTSkip(@"Tapping kWebShareButtonId is failing on iOS17 beta 5.");
-  }
   const GURL pageURL = self.testServer->GetURL(kWebShareUrlObjectUrl);
   [ChromeEarlGrey loadURL:pageURL];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kWebShareButtonId)];
+  TapWebShareButton();
 
   [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
 
