@@ -33,9 +33,7 @@ async def test_subscribe_status(bidi_session, top_context, wait_for_event, url, 
     async def on_event(_, data):
         events.append(data)
 
-    remove_listener = bidi_session.add_event_listener(
-        RESPONSE_STARTED_EVENT, on_event
-    )
+    remove_listener = bidi_session.add_event_listener(RESPONSE_STARTED_EVENT, on_event)
 
     text_url = url(PAGE_EMPTY_TEXT)
     on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
@@ -113,7 +111,9 @@ async def test_load_page_twice(
 async def test_response_status(
     wait_for_event, url, fetch, setup_network_test, status, status_text
 ):
-    status_url = url(f"/webdriver/tests/support/http_handlers/status.py?status={status}&nocache={RESPONSE_STARTED_EVENT}")
+    status_url = url(
+        f"/webdriver/tests/support/http_handlers/status.py?status={status}&nocache={RESPONSE_STARTED_EVENT}"
+    )
 
     network_events = await setup_network_test(events=[RESPONSE_STARTED_EVENT])
     events = network_events[RESPONSE_STARTED_EVENT]
@@ -140,9 +140,7 @@ async def test_response_status(
 
 
 @pytest.mark.asyncio
-async def test_response_headers(
-    wait_for_event, url, fetch, setup_network_test
-):
+async def test_response_headers(wait_for_event, url, fetch, setup_network_test):
     headers_url = url(
         "/webdriver/tests/support/http_handlers/headers.py?header=foo:bar&header=baz:biz"
     )
@@ -210,9 +208,48 @@ async def test_response_mime_type_file(
 
 
 @pytest.mark.asyncio
+async def test_www_authenticate(
+    bidi_session, new_tab, url, wait_for_event, setup_network_test
+):
+    auth_url = url(
+        f"/webdriver/tests/support/http_handlers/authentication.py?realm=testrealm"
+    )
+
+    network_events = await setup_network_test(events=[RESPONSE_STARTED_EVENT])
+    events = network_events[RESPONSE_STARTED_EVENT]
+
+    on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"],
+        url=auth_url,
+        wait="none",
+    )
+
+    await on_response_started
+
+    assert len(events) == 1
+
+    expected_request = {"method": "GET", "url": auth_url}
+    expected_response = {
+        "url": auth_url,
+        "authChallenges": [
+            ({"scheme": "Basic", "realm": "testrealm"}),
+        ],
+    }
+    assert_response_event(
+        events[0],
+        expected_request=expected_request,
+        expected_response=expected_response,
+        redirect_count=0,
+    )
+
+
+@pytest.mark.asyncio
 async def test_redirect(bidi_session, url, fetch, setup_network_test):
     text_url = url(PAGE_EMPTY_TEXT)
-    redirect_url = url(f"/webdriver/tests/support/http_handlers/redirect.py?location={text_url}")
+    redirect_url = url(
+        f"/webdriver/tests/support/http_handlers/redirect.py?location={text_url}"
+    )
 
     network_events = await setup_network_test(events=[RESPONSE_STARTED_EVENT])
     events = network_events[RESPONSE_STARTED_EVENT]
