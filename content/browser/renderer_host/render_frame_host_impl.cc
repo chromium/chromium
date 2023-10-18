@@ -1769,25 +1769,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // If this was the last active frame in the SiteInstanceGroup, the
   // DecrementActiveFrameCount call will trigger the deletion of the
   // SiteInstanceGroup's proxies.
-  {
-    SCOPED_CRASH_KEY_BOOL("Bug1470312", "is_main_frame", is_main_frame());
-    SCOPED_CRASH_KEY_BOOL(
-        "Bug1470312", "is_sandboxed",
-        policy_container_host_
-            ? IsSandboxed(network::mojom::WebSandboxFlags::kOrigin)
-            : false);
-    SCOPED_CRASH_KEY_BOOL(
-        "Bug1470312", "sig_is_notifying_observers",
-        GetSiteInstance()->group()->is_notifying_observers_for_debugging());
-    SCOPED_CRASH_KEY_STRING256("Bug1470312", "origin",
-                               GetLastCommittedOrigin().GetDebugString());
-    SCOPED_CRASH_KEY_STRING256("Bug1470312", "origin_from_url",
-                               GetLastCommittedURL().GetWithEmptyPath().spec());
-    SCOPED_CRASH_KEY_STRING256(
-        "Bug1470312", "site_info",
-        GetSiteInstance()->GetSiteInfo().GetDebugString());
-    GetSiteInstance()->group()->DecrementActiveFrameCount();
-  }
+  GetSiteInstance()->group()->DecrementActiveFrameCount();
 
   // Once a RenderFrame is created in the renderer, there are three possible
   // clean-up paths:

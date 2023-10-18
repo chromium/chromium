@@ -165,11 +165,6 @@ class CONTENT_EXPORT SiteInstanceGroup
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
-  // Used for setting crashkeys for Bug1470312.
-  bool is_notifying_observers_for_debugging() const {
-    return is_notifying_observers_;
-  }
-
  private:
   friend class RefCounted<SiteInstanceGroup>;
   ~SiteInstanceGroup() override;
