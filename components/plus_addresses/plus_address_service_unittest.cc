@@ -190,13 +190,12 @@ TEST_F(PlusAddressServiceRequestsTest, OfferPlusAddressCreation) {
       url::Origin::Create(GURL("https://test.example"));
   service.OfferPlusAddressCreation(no_subdomain_origin, future.GetCallback());
 
-  // Check that the future callback is still blocked, and unblock it.
+  // Check that the future callback is blocked and unblock it.
   ASSERT_FALSE(future.IsReady());
   test_url_loader_factory.SimulateResponseForPendingRequest(
       plus_profiles_endpoint,
       MakeCreateResponse("test.example", "plus+remote@plus.plus"));
   ASSERT_TRUE(future.IsReady());
-  std::string plus_address = future.Get();
   EXPECT_EQ(future.Get(), "plus+remote@plus.plus");
 
   // Assert that ensuing calls to the same facet do not make a network request.
@@ -207,6 +206,86 @@ TEST_F(PlusAddressServiceRequestsTest, OfferPlusAddressCreation) {
                                    second_future.GetCallback());
   ASSERT_TRUE(second_future.IsReady());
   EXPECT_EQ(second_future.Get(), "plus+remote@plus.plus");
+}
+
+// Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PlusAddressServiceRequestsTest,
+       PrimaryAccountCleared_TogglesPlusAddressCreationOff) {
+  // Setup state where the PlusAddressService would create a PlusAddress.
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakePrimaryAccountAvailable("plus@plus.plus",
+                                                signin::ConsentLevel::kSignin);
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             std::move(client));
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://test.example"));
+
+  // Toggle creation off by removing the primary account.
+  identity_test_env.ClearPrimaryAccount();
+
+  // Verify that Plus Address creation doesn't occur.
+  base::MockOnceCallback<void(const std::string&)> on_created;
+  EXPECT_CALL(on_created, Run).Times(0);
+  service.OfferPlusAddressCreation(test_origin, on_created.Get());
+
+  // Toggle creation back on by signing in again.
+  identity_test_env.MakePrimaryAccountAvailable("plus@plus.plus",
+                                                signin::ConsentLevel::kSignin);
+
+  // Verify that Plus Address creation occurs and makes a network request.
+  base::test::TestFuture<const std::string&> future;
+  service.OfferPlusAddressCreation(test_origin, future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      plus_profiles_endpoint,
+      MakeCreateResponse("test.example", "plus+remote@plus.plus"));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), "plus+remote@plus.plus");
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(PlusAddressServiceRequestsTest,
+       PrimaryRefreshTokenError_TogglesPlusAddressCreationOff) {
+  // Setup state where the PlusAddressService would create a PlusAddress.
+  signin::IdentityTestEnvironment identity_test_env;
+  AccountInfo primary_account = identity_test_env.MakePrimaryAccountAvailable(
+      "plus@plus.plus", signin::ConsentLevel::kSignin);
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             std::move(client));
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://test.example"));
+
+  // Toggle creation off by triggering an error for the primary refresh token.
+  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // Verify that Plus Address creation doesn't occur.
+  base::MockOnceCallback<void(const std::string&)> on_created;
+  EXPECT_CALL(on_created, Run).Times(0);
+  service.OfferPlusAddressCreation(test_origin, on_created.Get());
+
+  // Toggle creation back on by removing the error.
+  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+
+  // Verify that Plus Address creation occurs and makes a network request.
+  base::test::TestFuture<const std::string&> future;
+  service.OfferPlusAddressCreation(test_origin, future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      plus_profiles_endpoint,
+      MakeCreateResponse("test.example", "plus+remote@plus.plus"));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), "plus+remote@plus.plus");
 }
 
 // Tests the PlusAddressService ability to make network requests.
@@ -251,7 +330,7 @@ class PlusAddressServicePolling : public PlusAddressServiceRequestsTest {
   TestingPrefServiceSimple pref_service_;
 };
 
-// TODO (kaklilu): Make this test simulate timer firing instead of directly
+// TODO: b/305696884 - Make this test simulate timer firing instead of directly
 // calling SyncPlusAddressMapping.
 TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
   signin::IdentityTestEnvironment identity_test_env;
@@ -289,6 +368,85 @@ TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
   ASSERT_TRUE(service.GetPlusAddress(bar_origin).has_value());
   EXPECT_EQ(service.GetPlusAddress(bar_origin).value(), "plus+bar@plus.plus");
   EXPECT_TRUE(service.IsPlusAddress("plus+bar@plus.plus"));
+}
+
+// Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PlusAddressServicePolling, PrimaryAccountCleared_TogglesPollingOff) {
+  // Setup state where the PlusAddressService begins polling on creation.
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakePrimaryAccountAvailable("plus1@plus.plus",
+                                                signin::ConsentLevel::kSignin);
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
+  PlusAddressService service(identity_test_env.identity_manager(), prefs(),
+                             std::move(client));
+  // Unblock initial poll.
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      plus_profiles_endpoint, MakeListResponse({}));
+
+  identity_test_env.ClearPrimaryAccount();
+  service.SyncPlusAddressMapping();
+  // The above doesn't block since it doesn't make network requests in this
+  // state.
+
+  // Toggle polling back on by signing into a primary account.
+  identity_test_env.MakePrimaryAccountAvailable("plus2@plus.plus",
+                                                signin::ConsentLevel::kSignin);
+  service.SyncPlusAddressMapping();
+  // TODO: b/305696884 - Remove above call to verify that observing
+  // OnPrimaryAccountChanged will trigger this via CreateAndStartTimer().
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      plus_profiles_endpoint,
+      MakeListResponse({PlusProfile{.facet = "foo.com",
+                                    .plus_address = "plus+foo@plus.plus"}}));
+  url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
+  ASSERT_TRUE(service.GetPlusAddress(foo_origin).has_value());
+  EXPECT_EQ(service.GetPlusAddress(foo_origin).value(), "plus+foo@plus.plus");
+  EXPECT_TRUE(service.IsPlusAddress("plus+foo@plus.plus"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(PlusAddressServicePolling,
+       PrimaryRefreshTokenError_TogglesPlusAddressCreationOff) {
+  // Setup state where the PlusAddressService begins polling on creation.
+  signin::IdentityTestEnvironment identity_test_env;
+  CoreAccountInfo primary_account =
+      identity_test_env.MakePrimaryAccountAvailable(
+          "plus1@plus.plus", signin::ConsentLevel::kSignin);
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
+  PlusAddressService service(identity_test_env.identity_manager(), prefs(),
+                             std::move(client));
+  // Unblock initial poll.
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      plus_profiles_endpoint, MakeListResponse({}));
+
+  // Toggle creation off by triggering an error for the primary refresh token.
+  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  service.SyncPlusAddressMapping();
+  // The above doesn't block since it doesn't make network requests in this
+  // state.
+
+  // Toggle creation back on by removing the error.
+  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+  service.SyncPlusAddressMapping();
+  // TODO: b/305696884 - Remove above call to verify that observing
+  // OnPrimaryAccountChanged will trigger this via CreateAndStartTimer().
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      plus_profiles_endpoint,
+      MakeListResponse({PlusProfile{.facet = "foo.com",
+                                    .plus_address = "plus+foo@plus.plus"}}));
+  url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
+  ASSERT_TRUE(service.GetPlusAddress(foo_origin).has_value());
+  EXPECT_EQ(service.GetPlusAddress(foo_origin).value(), "plus+foo@plus.plus");
+  EXPECT_TRUE(service.IsPlusAddress("plus+foo@plus.plus"));
 }
 
 class PlusAddressServiceDisabledTest : public PlusAddressServiceTest {
@@ -376,4 +534,92 @@ TEST_F(PlusAddressServiceEnabledTest, SignedInGetEmail) {
   PlusAddressService service(identity_test_env.identity_manager());
   EXPECT_EQ(service.GetPrimaryEmail(), expected_email);
 }
+
+// Tests that PlusAddresses is "disabled" in the following states:
+// - When a primary account is unset after login.
+// - When a primary account's refresh token has an auth error.
+//
+// If PlusAddressService is "disabled" it should stop offering the feature,
+// clear any local storage, and not issue network requests.
+class PlusAddressServiceSignoutTest : public ::testing::Test {
+ public:
+  PlusAddressServiceSignoutTest() {
+    secondary_account = identity_test_env_.MakeAccountAvailable(
+        "beta@plus.plus", {signin::ConsentLevel::kSignin});
+    primary_account = identity_test_env_.MakePrimaryAccountAvailable(
+        "alpha@plus.plus", signin::ConsentLevel::kSignin);
+  }
+
+  CoreAccountInfo primary_account;
+  AccountInfo secondary_account;
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return &identity_test_env_;
+  }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  base::test::ScopedFeatureList scoped_feature_list_{plus_addresses::kFeature};
+};
+
+// Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
+  PlusAddressService service(identity_test_env()->identity_manager());
+  ASSERT_TRUE(service.is_enabled());
+
+  // Verify behaviors expected when service is enabled.
+  url::Origin site = url::Origin::Create(GURL("https://foo.com"));
+  service.SavePlusAddress(site, "plus@plus.plus");
+  EXPECT_TRUE(service.SupportsPlusAddresses(site));
+  EXPECT_TRUE(service.GetPlusAddress(site));
+  EXPECT_EQ(service.GetPlusAddress(site).value(), "plus@plus.plus");
+  EXPECT_TRUE(service.IsPlusAddress("plus@plus.plus"));
+
+  identity_test_env()->ClearPrimaryAccount();
+  EXPECT_FALSE(service.is_enabled());
+
+  // Ensure that the local data is cleared on disabling.
+  EXPECT_FALSE(service.SupportsPlusAddresses(site));
+  EXPECT_FALSE(service.IsPlusAddress("plus@plus.plus"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(PlusAddressServiceSignoutTest,
+       PrimaryRefreshTokenError_TogglesIsEnabled) {
+  PlusAddressService service(identity_test_env()->identity_manager());
+  ASSERT_TRUE(service.is_enabled());
+
+  // Verify behaviors expected when service is enabled.
+  url::Origin site = url::Origin::Create(GURL("https://foo.com"));
+  service.SavePlusAddress(site, "plus@plus.plus");
+  EXPECT_TRUE(service.SupportsPlusAddresses(site));
+  EXPECT_TRUE(service.GetPlusAddress(site));
+  EXPECT_EQ(service.GetPlusAddress(site).value(), "plus@plus.plus");
+  EXPECT_TRUE(service.IsPlusAddress("plus@plus.plus"));
+
+  // Setting to NONE doesn't disable the service.
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+  EXPECT_TRUE(service.is_enabled());
+
+  // The PlusAddressService isn't disabled for secondary account auth errors.
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      secondary_account.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  EXPECT_TRUE(service.is_enabled());
+
+  // Being in the "sync-paused" state results in this error.
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  EXPECT_FALSE(service.is_enabled());
+
+  // Ensure that the local data is cleared on disabling.
+  EXPECT_FALSE(service.SupportsPlusAddresses(site));
+  EXPECT_FALSE(service.IsPlusAddress("plus@plus.plus"));
+}
+
 }  // namespace plus_addresses

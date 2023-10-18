@@ -7,10 +7,14 @@
 
 #include <unordered_set>
 
-#include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/plus_address_client.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -25,7 +29,8 @@ namespace plus_addresses {
 
 // An experimental class for filling plus addresses (asdf+123@some-domain.com).
 // Not intended for widespread use.
-class PlusAddressService : public KeyedService {
+class PlusAddressService : public KeyedService,
+                           public signin::IdentityManager::Observer {
  public:
   // Used to simplify testing in cases where calls depending on external classes
   // can be mocked out.
@@ -80,16 +85,27 @@ class PlusAddressService : public KeyedService {
   // TODO (crbug.com/1467623): Make this private when testing improves.
   void SyncPlusAddressMapping();
 
- private:
   bool is_enabled() const;
 
-  // Create a timer to keep `plus_address_by_site_` and `plus_addresses` in sync
-  // with a remote plus address server.
-  std::unique_ptr<signin::PersistentRepeatingTimer> CreateTimer(
-      PrefService* pref_service);
+ private:
+  // Creates and starts a timer to keep `plus_address_by_site_` and
+  // `plus_addresses` in sync with a remote plus address server.
+  //
+  // This has no effect if this service is not enabled, `pref_service_` is null
+  // or `repeating_timer_` has already been created.
+  void CreateAndStartTimer();
 
   // Updates `plus_address_by_site_` and `plus_addresses_` using `map`.
   void UpdatePlusAddressMap(const PlusAddressMap& map);
+
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error) override;
+
+  void HandleSignout();
 
   // The user's existing set of plus addresses, scoped to sites.
   PlusAddressMap plus_address_by_site_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -103,12 +119,25 @@ class PlusAddressService : public KeyedService {
   // PlusAddressService and can be null during tests.
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
+  // Stores pointer to a PrefService to create `repeating_timer_` when the user
+  // signs in after PlusAddressService is created.
+  const raw_ptr<PrefService> pref_service_;
+
   // A timer to periodically retrieve all plus addresses from a remote server
   // to keep this service in sync.
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 
   // Handles requests to a remote server that this service uses.
   PlusAddressClient plus_address_client_;
+
+  // Stores last auth error (potentially NONE) to toggle is_enabled() on/off.
+  // Defaults to NONE to enable this service while refresh tokens (and potential
+  // auth errors) are loading.
+  GoogleServiceAuthError primary_account_auth_error_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -4,8 +4,7 @@
 
 #include "components/plus_addresses/plus_address_service.h"
 
-#include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_client.h"
@@ -13,7 +12,9 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace plus_addresses {
@@ -48,11 +49,12 @@ PlusAddressService::PlusAddressService(
     PrefService* pref_service,
     PlusAddressClient plus_address_client)
     : identity_manager_(identity_manager),
-      repeating_timer_(CreateTimer(pref_service)),
+      pref_service_(pref_service),
       plus_address_client_(std::move(plus_address_client)) {
   // Begin PlusAddress periodic actions at construction.
-  if (repeating_timer_) {
-    repeating_timer_->Start();
+  CreateAndStartTimer();
+  if (identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
   }
 }
 
@@ -139,26 +141,31 @@ bool PlusAddressService::is_enabled() const {
          identity_manager_ != nullptr &&
          // Note that having a primary account implies that account's email will
          // be populated.
-         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+         primary_account_auth_error_.state() ==
+             GoogleServiceAuthError::State::NONE;
 }
 
-std::unique_ptr<signin::PersistentRepeatingTimer>
-PlusAddressService::CreateTimer(PrefService* pref_service) {
-  if (!is_enabled() || !pref_service ||
-      !kSyncWithEnterprisePlusAddressServer.Get()) {
-    return nullptr;
+void PlusAddressService::CreateAndStartTimer() {
+  if (!is_enabled() || !pref_service_ ||
+      !kSyncWithEnterprisePlusAddressServer.Get() || repeating_timer_) {
+    return;
   }
-  return std::make_unique<signin::PersistentRepeatingTimer>(
-      pref_service, prefs::kPlusAddressLastFetchedTime,
+  repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
+      pref_service_, prefs::kPlusAddressLastFetchedTime,
       /*delay=*/kEnterprisePlusAddressTimerDelay.Get(),
       /*task=*/
       base::BindRepeating(&PlusAddressService::SyncPlusAddressMapping,
                           // base::Unretained(this) is safe here since the timer
                           // that is created has same lifetime as this service.
                           base::Unretained(this)));
+  repeating_timer_->Start();
 }
 
 void PlusAddressService::SyncPlusAddressMapping() {
+  if (!is_enabled()) {
+    return;
+  }
   plus_address_client_.GetAllPlusAddresses(base::BindOnce(
       &PlusAddressService::UpdatePlusAddressMap,
       // base::Unretained is safe here since PlusAddressService owns
@@ -175,6 +182,39 @@ void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
   for (const auto& [_, value] : map) {
     plus_addresses_.insert(value);
   }
+}
+
+void PlusAddressService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  signin::PrimaryAccountChangeEvent::Type type =
+      event.GetEventTypeFor(signin::ConsentLevel::kSignin);
+  if (type == signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    HandleSignout();
+  } else if (type == signin::PrimaryAccountChangeEvent::Type::kSet) {
+    CreateAndStartTimer();
+  }
+}
+
+void PlusAddressService::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error) {
+  if (auto primary_account = identity_manager_->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+      primary_account.IsEmpty() ||
+      primary_account.account_id != account_info.account_id) {
+    return;
+  }
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    HandleSignout();
+  }
+  primary_account_auth_error_ = error;
+}
+
+void PlusAddressService::HandleSignout() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  plus_address_by_site_.clear();
+  plus_addresses_.clear();
+  repeating_timer_.reset();
 }
 
 }  // namespace plus_addresses
