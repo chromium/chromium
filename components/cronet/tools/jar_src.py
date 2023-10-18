@@ -22,6 +22,7 @@ import zip_helpers
 # pylint: enable=wrong-import-position
 
 JAVA_PACKAGE_PREFIX = 'org/chromium/'
+JNI_ZERO_PACKAGE_PREFIX = 'org/jni_zero/'
 
 
 def main():
@@ -69,6 +70,8 @@ def main():
   # the Java package name.
   for i, s in enumerate(src_files):
     prefix_position = s.find(JAVA_PACKAGE_PREFIX)
+    if prefix_position == -1:
+      prefix_position = s.find(JNI_ZERO_PACKAGE_PREFIX)
     if prefix_position != -1:
       src_files[i] = s[prefix_position:]
 
