@@ -3257,6 +3257,7 @@ test("ash_unittests") {
     "frame/default_frame_header_unittest.cc",
     "frame/non_client_frame_view_ash_unittest.cc",
     "frame_sink/frame_sink_holder_unittest.cc",
+    "frame_sink/frame_sink_host_unittest.cc",
     "frame_sink/ui_resource_manager_unittest.cc",
     "frame_throttler/frame_throttling_controller_unittest.cc",
     "game_dashboard/game_dashboard_context_unittest.cc",

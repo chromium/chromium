@@ -159,7 +159,6 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   views::UniqueWidgetPtr cursor_view_widget_;
 
   const bool is_cursor_motion_blur_enabled_;
-  base::TimeTicks start_time_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       scoped_container_observer_{this};
 };

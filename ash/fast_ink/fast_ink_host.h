@@ -44,10 +44,10 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
     gfx::Canvas& canvas() { return canvas_; }
 
    private:
-    raw_ptr<gfx::GpuMemoryBuffer, ExperimentalAsh> gpu_memory_buffer_;
+    const raw_ptr<FastInkHost> host_;
 
     // Damage rect in the buffer coordinates.
-    const gfx::Rect damage_rect_;
+    gfx::Rect damage_rect_;
     gfx::Canvas canvas_;
   };
 
@@ -65,6 +65,14 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
     return window_to_buffer_transform_;
   }
 
+  gfx::GpuMemoryBuffer* gpu_memory_buffer_for_test() {
+    return gpu_memory_buffer_.get();
+  }
+
+  int get_pending_bitmaps_size_for_test() const {
+    return pending_bitmaps_.size();
+  }
+
   // FrameSinkHost:
   void Init(aura::Window* host_window) override;
   void InitForTesting(
@@ -79,13 +87,27 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
       bool auto_update,
       const gfx::Size& last_submitted_frame_size,
       float last_submitted_frame_dsf) override;
+  void OnFirstFrameRequested() override;
 
  private:
+  void InitBufferMetadata(aura::Window* host_window);
   void InitializeFastInkBuffer(aura::Window* host_window);
+  gfx::Rect BufferRectFromWindowRect(const gfx::Rect& rect_in_window) const;
+  void Draw(SkBitmap bitmap, const gfx::Rect& damage_rect);
+  void DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect);
 
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
 
   gfx::Transform window_to_buffer_transform_;
+
+  gfx::Size buffer_size_;
+
+  struct PendingBitmap {
+    SkBitmap bitmap;
+    gfx::Rect damage_rect;
+  };
+
+  std::vector<PendingBitmap> pending_bitmaps_;
 };
 
 }  // namespace ash

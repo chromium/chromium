@@ -250,10 +250,7 @@ CursorWindowController::CursorWindowController()
     : delegate_(new CursorWindowDelegate()),
       is_cursor_motion_blur_enabled_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kAshEnableCursorMotionBlur)),
-      // TODO(b/296641218): Find another way to make sure gpu process is fully
-      // initialized first before updating cursor view.
-      start_time_(base::TimeTicks::Now()) {}
+              switches::kAshEnableCursorMotionBlur)) {}
 
 CursorWindowController::~CursorWindowController() {
   SetContainer(NULL);
@@ -292,7 +289,7 @@ void CursorWindowController::SetCursorColor(SkColor cursor_color) {
 }
 
 bool CursorWindowController::ShouldEnableCursorCompositing() {
-  if (CanEnableMotionBlur()) {
+  if (is_cursor_motion_blur_enabled_) {
     return true;
   }
 
@@ -518,7 +515,7 @@ void CursorWindowController::SetContainer(aura::Window* container) {
   bounds_in_screen_ = display_.bounds();
   rotation_ = display_.rotation();
 
-  if (CanEnableMotionBlur()) {
+  if (is_cursor_motion_blur_enabled_) {
     UpdateCursorView();
   } else {
     delegate_->SetCursorWindow(nullptr);
@@ -657,11 +654,6 @@ void CursorWindowController::UpdateCursorView() {
 
 const gfx::ImageSkia& CursorWindowController::GetCursorImageForTest() const {
   return delegate_->cursor_images()[0];
-}
-
-bool CursorWindowController::CanEnableMotionBlur() const {
-  return is_cursor_motion_blur_enabled_ &&
-         base::TimeTicks::Now() - start_time_ > base::Seconds(5);
 }
 
 }  // namespace ash

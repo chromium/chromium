@@ -46,6 +46,7 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
   ~FrameSinkHost() override;
 
   aura::Window* host_window() { return host_window_; }
+  const aura::Window* host_window() const { return host_window_; }
 
   void SetPresentationCallback(PresentationCallback callback);
 
@@ -94,6 +95,11 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
       bool auto_update,
       const gfx::Size& last_submitted_frame_size,
       float last_submitted_frame_dsf) = 0;
+
+  // Callback invoked when underlying frame sink holder gets the first begin
+  // frame from viz. This signifies that the gpu process has been fully
+  // initialized.
+  virtual void OnFirstFrameRequested();
 
   const gfx::Rect& GetTotalDamage() const { return total_damage_rect_; }
 
