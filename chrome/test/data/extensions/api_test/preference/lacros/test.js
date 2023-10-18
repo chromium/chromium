@@ -5,7 +5,7 @@
 // Preferences API test for extension controlled prefs where the underlying
 // feature lives in ash. These tests make use of the crosapi to set the value
 // in ash. Thus, they run as lacros_chrome_browsertests.
-// Run with lacros_chrome_browsertests_run_in_series \
+// Run with lacros_chrome_browsertests \
 //     --gtest_filter=ExtensionPreferenceLacrosBrowserTest.Lacros
 // Based on the "standard" extension test.
 

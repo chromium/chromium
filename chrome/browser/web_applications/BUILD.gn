@@ -983,7 +983,7 @@ source_set("app_service_browser_tests") {
     sources += [ "chromeos_web_app_experiments_browsertest.cc" ]
   }
 
-  # On Lacros, this test is added to the lacros_chrome_browsertests_run_in_series target.
+  # On Lacros, this test is added to the lacros_chrome_browsertests target.
   if (!is_chromeos_lacros) {
     sources += [ "externally_managed_app_manager_browsertest.cc" ]
   }

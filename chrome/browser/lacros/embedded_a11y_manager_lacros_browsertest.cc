@@ -41,7 +41,7 @@
 // NOTE: Tests in this file modify Ash accessibility features. That is
 // potentially a lasting side effect that can affect other tests.
 // * To prevent interference with tests that are run in parallel, these tests
-// are a part of lacros_chrome_browsertests_run_in_series test suite.
+// are a part of lacros_chrome_browsertests test suite.
 // * To prevent interference with following tests, they try to clean up all the
 // side effects themselves, e.g. if a test sets a pref, it is also responsible
 // for unsetting it.

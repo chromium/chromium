@@ -117,7 +117,6 @@ _TARGETS_REQUIRE_MOJO_CROSAPI = [
     # serially.
     'interactive_ui_tests',
     'lacros_chrome_browsertests',
-    'lacros_chrome_browsertests_run_in_series'
 ]
 
 # Default test filter file for each target. These filter files will be

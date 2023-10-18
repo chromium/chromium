@@ -23,11 +23,11 @@ Depends on which workflow you use, they support different test targets.
 *    Lacros browser tests
 *    Lacros Interactive_ui_tests
 *    crosapi tests: lacros_chrome_browsertests,
-lacros_chrome_browsertests_run_in_series
+lacros_chrome_browsertests
 *    Ash browser tests that requires Lacros: Only On Linux ChromeOS.
 (linux-chromeos-rel).
 *    Version skew testing: lacros_chrome_browsertests,
-lacros_chrome_browsertests_run_in_series, interactive_ui_tests.
+lacros_chrome_browsertests, interactive_ui_tests.
 
 ### Building on a Linux workstation and running on a physical ChromeOS device.
 

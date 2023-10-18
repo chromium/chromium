@@ -75,7 +75,7 @@ out_linux_lacros/Release/bin/run_browser_tests --gtest_filter=BrowserTest.Title
 ```
 
 You can use this to run Chrome tests, such as browser_tests, unit_tests,
-interactive_ui_tests, lacros_chrome_browsertests_run_in_series etc.
+interactive_ui_tests, lacros_chrome_browsertests etc.
 
 Note: Some tests are disabled by filter file. e.g. This
 [file](https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/filters/linux-lacros.browser_tests.filter)
@@ -98,7 +98,7 @@ to repro a bot failure.
 By default, //build/lacros/test_runner.py downloads a prebuilt test_ash_chrome.
 If you only change Lacros, this would save your time to not build ash.
 ```
-./build/lacros/test_runner.py test out_linux_lacros/Release/lacros_chrome_browsertests_run_in_series --gtest_filter=ScreenManagerLacrosBrowserTest.*
+./build/lacros/test_runner.py test out_linux_lacros/Release/lacros_chrome_browsertests --gtest_filter=ScreenManagerLacrosBrowserTest.*
 ```
 
 2.  Build linux Ash in a separate folder
@@ -107,15 +107,15 @@ Build test_ash_chrome in out_linux_ash and pass in it using –ash-chrome-path.
 ```
 ./build/lacros/test_runner.py test \
 --ash-chrome-path=out_linux_ash/Release/test_ash_chrome \
-out_linux_lacros/Release/lacros_chrome_browsertests_run_in_series \
+out_linux_lacros/Release/lacros_chrome_browsertests \
 --gtest_filter=ScreenManagerLacrosBrowserTest.*
 ```
 
 ## Linux version skew testing
 
-If you see a test step name like “lacros_chrome_browsertests_run_in_series_Lacros version skew
+If you see a test step name like “lacros_chrome_browsertests_Lacros version skew
 testing ash 101.0.4951.1 on Ubuntu-18.04”, this means it’s version skew testing
-that “lacros_chrome_browsertests_run_in_series” target is running against a pre-built ash with
+that “lacros_chrome_browsertests” target is running against a pre-built ash with
 version 101.0.4951.13.
 
 There are two ways to run Linux based version skew testing:
@@ -133,7 +133,7 @@ cipd ensure -ensure-file /tmp/ensure-file.txt -root lacros_version_skew_tests_v9
 Then you can use
 ```
 ./build/lacros/test_runner.py test \
-out_linux_lacros_lacros/Release/lacros_chrome_browsertests_run_in_series \
+out_linux_lacros_lacros/Release/lacros_chrome_browsertests \
 --ash-chrome-path-override=lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
 ```
 to run the test against that version of ash.
