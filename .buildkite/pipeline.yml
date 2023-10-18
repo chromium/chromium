@@ -74,6 +74,7 @@ steps:
       - "build-chromium-linux-x86_64"
       - "build-chromium-mac-x86_64"
       - "build-chromium-mac-arm64"
+      - "build-chromium-windows"
   - label: "Metabase Test Suite"
     depends_on: "build-chromium-linux-x86_64"
     if: build.branch == "master"

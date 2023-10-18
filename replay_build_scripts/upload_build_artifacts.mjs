@@ -251,7 +251,14 @@ function buildkiteStuff(downloadUris, platform, buildId, arch) {
     .map((uri) => `* [${path.basename(uri)}](${uri})`)
     .join("\n");
 
-  const markdownMessage = `# ${platform} (${arch}) links\n\n${markdownDownloadList}\n`;
+  let markdownMessage = `# ${platform} (${arch}) links\n\n${markdownDownloadList}\n`;
+  if (platform === "linux") {
+    // Linux is usually the first. Let's prefix it with relevant Admin App link.
+    const buildPattern = buildId.substring(buildId.indexOf("-"));
+    const aaCrashTriageLink = `http://admin.replay.io/crash?buildReleaseOptions=DevOnly&builds=${buildPattern}&platforms=macOS&platforms=linux&platforms=windows`;
+    const aaCrashTriageMessage = `# Admin App Crash Triage\n* ${aaCrashTriageLink}\n`;
+    markdownMessage = aaCrashTriageMessage + markdownMessage;
+  }
 
   spawnChecked(
     "buildkite-agent",
