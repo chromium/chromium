@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/isolated_web_apps/isolated_web_app_installer_view_controller.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 
 #include <memory>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "chrome/browser/ui/web_applications/isolated_web_apps/isolated_web_app_installer_model.h"
-#include "chrome/browser/ui/web_applications/isolated_web_apps/isolated_web_app_installer_view.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/webapps/common/web_app_id.h"

@@ -170,6 +170,10 @@ void ShowWebAppDetailedInstallDialog(
 // user interaction.
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
 
+// Shows the Isolated Web App manual install wizard.
+void LaunchIsolatedWebAppInstaller(Profile* profile,
+                                   const base::FilePath& bundle_path);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_DIALOGS_H_
