@@ -1387,7 +1387,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyNegativeGroupNames) {
 // storage size limit.
 TEST_F(InterestGroupStorageTest, JoinTooMuchStorage) {
   base::HistogramTester histograms;
-  const size_t kExcessGroups = 3;
+  const size_t kExcessGroups = 4;
   const url::Origin kTestOrigin =
       url::Origin::Create(GURL("https://owner.example.com"));
   const size_t kGroupSize = 800;
@@ -1397,7 +1397,8 @@ TEST_F(InterestGroupStorageTest, JoinTooMuchStorage) {
   std::vector<std::string> added_groups;
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
-  for (size_t i = 0; i < groups_before_full + kExcessGroups; i++) {
+
+  for (size_t i = 0; i < groups_before_full - 1; i++) {
     const std::string group_name = base::NumberToString(i);
     // Allow time to pass so that they have different expiration times.
     // This makes which groups get removed deterministic as they are sorted by
@@ -1408,7 +1409,38 @@ TEST_F(InterestGroupStorageTest, JoinTooMuchStorage) {
     group.user_bidding_signals =
         std::string(kGroupSize - group.EstimateSize(), 'P');
     EXPECT_EQ(kGroupSize, group.EstimateSize());
+    storage->JoinInterestGroup(group, kTestOrigin.GetURL());
+    added_groups.push_back(group_name);
+  }
 
+  const std::string big_group_name =
+      base::NumberToString(groups_before_full - 1);
+  task_environment().FastForwardBy(base::Microseconds(1));
+  blink::InterestGroup big_group =
+      NewInterestGroup(kTestOrigin, big_group_name);
+  // Let the group be just the size left to reach
+  // `kInterestGroupStorageMaxStoragePerOwner` plus 1, so that this group will
+  // be removed during maintenance. This also guarantees its size is greater
+  // than `kGroupSize`, so that once this group is removed, one more group of
+  // `kGroupSize` can be stored.
+  size_t size_left_before_full =
+      blink::features::kInterestGroupStorageMaxStoragePerOwner.Get() -
+      kGroupSize * (groups_before_full - 1);
+  big_group.user_bidding_signals =
+      std::string(size_left_before_full - big_group.EstimateSize() + 1, 'P');
+  EXPECT_GT(big_group.EstimateSize(), kGroupSize);
+  storage->JoinInterestGroup(big_group, kTestOrigin.GetURL());
+  added_groups.push_back(big_group_name);
+
+  for (size_t i = groups_before_full; i < groups_before_full + kExcessGroups;
+       i++) {
+    const std::string group_name = base::NumberToString(i);
+    task_environment().FastForwardBy(base::Microseconds(1));
+    blink::InterestGroup group = NewInterestGroup(kTestOrigin, group_name);
+    ASSERT_GT(kGroupSize, group.EstimateSize());
+    group.user_bidding_signals =
+        std::string(kGroupSize - group.EstimateSize(), 'P');
+    EXPECT_EQ(kGroupSize, group.EstimateSize());
     storage->JoinInterestGroup(group, kTestOrigin.GetURL());
     added_groups.push_back(group_name);
   }
@@ -1431,8 +1463,16 @@ TEST_F(InterestGroupStorageTest, JoinTooMuchStorage) {
   for (const auto& db_group : interest_groups) {
     remaining_groups.push_back(db_group.interest_group.name);
   }
-  std::vector<std::string> remaining_groups_expected(
-      added_groups.begin() + kExcessGroups, added_groups.end());
+  std::vector<std::string> remaining_groups_expected;
+  // Interest group `groups_before_full` - 1 is removed and one more interest
+  // group `groups_before_full` - 2 can be kept, since the total size is still
+  // within `kInterestGroupStorageMaxStoragePerOwner` with it.
+  for (size_t i = groups_before_full + kExcessGroups - 1;
+       i >= groups_before_full - 2; i--) {
+    if (i != groups_before_full - 1) {
+      remaining_groups_expected.push_back(base::NumberToString(i));
+    }
+  }
   EXPECT_THAT(remaining_groups,
               UnorderedElementsAreArray(remaining_groups_expected));
 }

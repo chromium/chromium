@@ -3472,13 +3472,13 @@ bool ClearExcessiveStorage(sql::Database& db, size_t max_owner_storage_size) {
 
     if (!previous || *previous != group_owner) {
       previous = group_owner;
-      cum_size = group_size;
-      continue;
+      cum_size = 0;
     }
-    cum_size += group_size;
-    if (cum_size > max_owner_storage_size) {
+    if (cum_size + group_size > max_owner_storage_size) {
       groups_to_remove.emplace_back(std::move(group_owner),
                                     std::move(group_name));
+    } else {
+      cum_size += group_size;
     }
   }
   if (!excessive_storage_groups.Succeeded()) {
