@@ -37,6 +37,8 @@ template("system_webview_apk_or_module_tmpl") {
   if (_is_trichrome) {
     _is_64_bit_browser = android_64bit_target_cpu && invoker.is_64_bit_browser
     _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
+    # Allow a custom version_code, but always use the default _trichrome_library_version_code
+    _trichrome_library_version_code = _version_code
   } else {
     _version_code = WEBVIEW_VERSION_MAP["${android_64bit_target_cpu}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
   }
@@ -48,6 +50,9 @@ template("system_webview_apk_or_module_tmpl") {
   # Need to apply override explicitly to have it apply to library version.
   if (android_override_version_code != "") {
     _version_code = android_override_version_code
+    if (_is_trichrome) {
+      _trichrome_library_version_code = android_override_version_code
+    }
   }
 
   if (defined(invoker.manifest_package)) {
@@ -68,7 +73,7 @@ template("system_webview_apk_or_module_tmpl") {
     ]
     if (_is_trichrome) {
       variables +=
-          trichrome_jinja_variables + [ "trichrome_version=$_version_code" ]
+          trichrome_jinja_variables + [ "trichrome_version=$_trichrome_library_version_code" ]
       if (_is_64_bit_browser) {
         variables += [ "library=libmonochrome_64.so" ]
       } else {
