@@ -2335,6 +2335,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_device_flex_hw_data_for_product_improvement_enabled()) {
+    const em::DeviceFlexHwDataForProductImprovementEnabledProto& container(
+        policy.device_flex_hw_data_for_product_improvement_enabled());
+    if (container.has_enabled()) {
+      policies->Set(key::kDeviceFlexHwDataForProductImprovementEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
+                    nullptr);
+    }
+  }
 }
 
 }  // namespace

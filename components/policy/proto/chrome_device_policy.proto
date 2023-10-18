@@ -1823,6 +1823,12 @@ message DeviceSwitchFunctionKeysBehaviorEnabledProto {
   optional bool enabled = 1;
 }
 
+message DeviceFlexHwDataForProductImprovementEnabledProto {
+  // Enable sending hardware data specifically for product improvement on
+  // managed ChromeOS Flex devices.
+  optional bool enabled = 1 [default = true];
+}
+
 // Mirrors ExtendedFkeysModifier from the extended_fkeys_modifier.mojom
 message ExtendedFkeysModifierProto {
   enum ExtendedFkeysModifier {
@@ -2044,4 +2050,6 @@ message ChromeDeviceSettingsProto {
   optional StringListPolicyProto device_dlc_predownload_list = 154;
   optional BooleanPolicyProto device_ephemeral_network_policies_enabled = 155;
   optional ExtendedFkeysModifierProto extended_fkeys_modifier = 156;
+  optional DeviceFlexHwDataForProductImprovementEnabledProto
+      device_flex_hw_data_for_product_improvement_enabled = 157;
 }
