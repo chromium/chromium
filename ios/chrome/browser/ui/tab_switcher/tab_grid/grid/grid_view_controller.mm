@@ -1913,7 +1913,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
   // Check `index` boundaries in order to filter out possible race conditions
   // while mutating the collection.
-  if (index == NSNotFound || index >= self.items.count) {
+  if (index == NSNotFound || index >= self.items.count ||
+      static_cast<NSInteger>(index) >=
+          [self.collectionView numberOfItemsInSection:kOpenTabsSectionIndex]) {
     return;
   }
 
