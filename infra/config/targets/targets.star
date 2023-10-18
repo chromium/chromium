@@ -1802,11 +1802,6 @@ targets.generated_script(
     label = "//services:services_junit_tests",
 )
 
-targets.console_test_launcher(
-    name = "service_manager_unittests",
-    label = "//services/service_manager/tests:service_manager_unittests",
-)
-
 targets.windowed_test_launcher(
     name = "services_unittests",
     label = "//services:services_unittests",

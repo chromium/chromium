@@ -2539,7 +2539,6 @@ targets.legacy_basic_suite(
         "perfetto_unittests": None,
         # TODO(crbug.com/1459686): Enable this.
         # "rust_gtest_interop_unittests": None,
-        "service_manager_unittests": None,
         "services_unittests": targets.legacy_test_config(
             args = [
                 "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
@@ -5358,7 +5357,6 @@ targets.legacy_basic_suite(
         "ppapi_unittests": None,
         "printing_unittests": None,
         "remoting_unittests": None,
-        "service_manager_unittests": None,  # https://crbug.com/843134
         "snapshot_unittests": None,
         "sync_integration_tests": targets.legacy_test_config(
             swarming = targets.swarming(
@@ -5396,7 +5394,6 @@ targets.legacy_basic_suite(
         "pdf_unittests": None,
         "printing_unittests": None,
         "remoting_unittests": None,
-        "service_manager_unittests": None,  # https://crbug.com/843134
         "snapshot_unittests": None,
         "sync_integration_tests": targets.legacy_test_config(
             swarming = targets.swarming(

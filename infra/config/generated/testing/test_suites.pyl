@@ -2158,7 +2158,6 @@
       },
       'ozone_unittests': {},
       'perfetto_unittests': {},
-      'service_manager_unittests': {},
       'services_unittests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter',
@@ -4539,7 +4538,6 @@
       'ppapi_unittests': {},
       'printing_unittests': {},
       'remoting_unittests': {},
-      'service_manager_unittests': {},
       'snapshot_unittests': {},
       'sync_integration_tests': {
         'swarming': {
@@ -4574,7 +4572,6 @@
       'pdf_unittests': {},
       'printing_unittests': {},
       'remoting_unittests': {},
-      'service_manager_unittests': {},
       'snapshot_unittests': {},
       'sync_integration_tests': {
         'swarming': {

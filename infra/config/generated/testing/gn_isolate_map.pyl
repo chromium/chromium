@@ -1468,10 +1468,6 @@
     "label": "//services:services_junit_tests",
     "type": "generated_script",
   },
-  "service_manager_unittests": {
-    "label": "//services/service_manager/tests:service_manager_unittests",
-    "type": "console_test_launcher",
-  },
   "services_unittests": {
     "label": "//services:services_unittests",
     "type": "windowed_test_launcher",
