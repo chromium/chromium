@@ -20,77 +20,65 @@ enum class NGCacheSlot;
 struct NGTableColumnLocation;
 
 // Table size distribution algorithms.
-class NGTableAlgorithmUtils {
- public:
-  static bool IsBaseline(EVerticalAlign align) {
-    return align == EVerticalAlign::kBaseline ||
-           align == EVerticalAlign::kBaselineMiddle ||
-           align == EVerticalAlign::kSub || align == EVerticalAlign::kSuper ||
-           align == EVerticalAlign::kTextTop ||
-           align == EVerticalAlign::kTextBottom ||
-           align == EVerticalAlign::kLength;
-  }
 
-  // Computes a cell's block-size, and if its initial block-size should be
-  // considered indefinite.
-  struct CellBlockSizeData {
-    LayoutUnit block_size;
-    bool is_initial_block_size_indefinite;
-  };
-  static CellBlockSizeData ComputeCellBlockSize(
-      const NGTableTypes::CellBlockConstraint& cell_block_constraint,
-      const NGTableTypes::Rows& rows,
-      wtf_size_t row_index,
-      const LogicalSize& border_spacing,
-      bool is_table_block_size_specified);
-
-  // Sets up a constraint space builder for a table-cell.
-  //
-  // In order to make the cache as effective as possible, we try and keep
-  // creating the constraint-space for table-cells as consistent as possible.
-  static void SetupTableCellConstraintSpaceBuilder(
-      const WritingDirectionMode table_writing_direction,
-      const NGBlockNode cell,
-      const BoxStrut& cell_borders,
-      const Vector<NGTableColumnLocation>& column_locations,
-      LayoutUnit cell_block_size,
-      LayoutUnit percentage_inline_size,
-      absl::optional<LayoutUnit> alignment_baseline,
-      wtf_size_t start_column,
-      bool is_initial_block_size_indefinite,
-      bool is_restricted_block_size_table,
-      bool has_collapsed_borders,
-      NGCacheSlot,
-      NGConstraintSpaceBuilder*);
-
-  static wtf_size_t ComputeMaximumNonMergeableColumnCount(
-      const HeapVector<NGBlockNode>& columns,
-      bool is_fixed_layout);
-
-  static scoped_refptr<NGTableTypes::Columns> ComputeColumnConstraints(
-      const NGBlockNode& table,
-      const NGTableGroupedChildren&,
-      const NGTableBorders& table_borders,
-      const BoxStrut& border_padding);
-
-  static void ComputeSectionMinimumRowBlockSizes(
-      const NGBlockNode& section,
-      const LayoutUnit cell_percentage_resolution_inline_size,
-      const bool is_table_block_size_specified,
-      const Vector<NGTableColumnLocation>& column_locations,
-      const NGTableBorders& table_borders,
-      const LayoutUnit block_border_spacing,
-      wtf_size_t section_index,
-      bool treat_section_as_tbody,
-      NGTableTypes::Sections* sections,
-      NGTableTypes::Rows* rows,
-      NGTableTypes::CellBlockConstraints* cell_block_constraints);
-
-  // Performs any final adjustments for table-cells at the end of layout.
-  static void FinalizeTableCellLayout(
-      LayoutUnit unconstrained_intrinsic_block_size,
-      NGBoxFragmentBuilder*);
+// Computes a cell's block-size, and if its initial block-size should be
+// considered indefinite.
+struct CellBlockSizeData {
+  LayoutUnit block_size;
+  bool is_initial_block_size_indefinite;
 };
+CellBlockSizeData ComputeCellBlockSize(
+    const NGTableTypes::CellBlockConstraint& cell_block_constraint,
+    const NGTableTypes::Rows& rows,
+    wtf_size_t row_index,
+    const LogicalSize& border_spacing,
+    bool is_table_block_size_specified);
+
+// Sets up a constraint space builder for a table-cell.
+//
+// In order to make the cache as effective as possible, we try and keep
+// creating the constraint-space for table-cells as consistent as possible.
+void SetupTableCellConstraintSpaceBuilder(
+    const WritingDirectionMode table_writing_direction,
+    const NGBlockNode cell,
+    const BoxStrut& cell_borders,
+    const Vector<NGTableColumnLocation>& column_locations,
+    LayoutUnit cell_block_size,
+    LayoutUnit percentage_inline_size,
+    absl::optional<LayoutUnit> alignment_baseline,
+    wtf_size_t start_column,
+    bool is_initial_block_size_indefinite,
+    bool is_restricted_block_size_table,
+    bool has_collapsed_borders,
+    NGCacheSlot,
+    NGConstraintSpaceBuilder*);
+
+wtf_size_t ComputeMaximumNonMergeableColumnCount(
+    const HeapVector<NGBlockNode>& columns,
+    bool is_fixed_layout);
+
+scoped_refptr<NGTableTypes::Columns> ComputeColumnConstraints(
+    const NGBlockNode& table,
+    const NGTableGroupedChildren&,
+    const NGTableBorders& table_borders,
+    const BoxStrut& border_padding);
+
+void ComputeSectionMinimumRowBlockSizes(
+    const NGBlockNode& section,
+    const LayoutUnit cell_percentage_resolution_inline_size,
+    const bool is_table_block_size_specified,
+    const Vector<NGTableColumnLocation>& column_locations,
+    const NGTableBorders& table_borders,
+    const LayoutUnit block_border_spacing,
+    wtf_size_t section_index,
+    bool treat_section_as_tbody,
+    NGTableTypes::Sections* sections,
+    NGTableTypes::Rows* rows,
+    NGTableTypes::CellBlockConstraints* cell_block_constraints);
+
+// Performs any final adjustments for table-cells at the end of layout.
+void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
+                             NGBoxFragmentBuilder*);
 
 // NGColspanCellTabulator keeps track of columns occupied by colspanned cells
 // when traversing rows in a section. It is used to compute cell's actual
@@ -136,7 +124,7 @@ class NGColspanCellTabulator {
 class NGRowBaselineTabulator {
  public:
   void ProcessCell(const NGBoxFragment& fragment,
-                   bool is_baseline_aligned,
+                   EVerticalAlign align,
                    bool is_rowspanned,
                    bool descendant_depends_on_percentage_block_size);
 

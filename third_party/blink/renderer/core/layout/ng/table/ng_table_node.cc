@@ -37,7 +37,7 @@ scoped_refptr<const NGTableTypes::Columns> NGTableNode::GetColumnConstraints(
   scoped_refptr<const NGTableTypes::Columns> column_constraints =
       layout_table->GetCachedTableColumnConstraints();
   if (!column_constraints) {
-    column_constraints = NGTableAlgorithmUtils::ComputeColumnConstraints(
+    column_constraints = ComputeColumnConstraints(
         *this, grouped_children, *GetTableBorders(), border_padding);
     layout_table->SetCachedTableColumnConstraints(column_constraints.get());
   }

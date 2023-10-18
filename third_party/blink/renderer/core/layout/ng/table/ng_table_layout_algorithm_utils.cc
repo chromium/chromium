@@ -138,9 +138,9 @@ void ApplyCellConstraintsToColumnConstraints(
   std::stable_sort(colspan_cell_constraints->begin(),
                    colspan_cell_constraints->end(), colspan_cell_less_than);
 
-  NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
-      *colspan_cell_constraints, inline_border_spacing, is_fixed_layout,
-      column_constraints);
+  DistributeColspanCellsToColumns(*colspan_cell_constraints,
+                                  inline_border_spacing, is_fixed_layout,
+                                  column_constraints);
 
   // Column total percentage inline-size is clamped to 100%.
   // Auto tables: max(0, 100% minus the sum of percentages of all
@@ -221,7 +221,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
         /* is_new_fc */ true);
 
     // We want these values to match the "layout" pass as close as possible.
-    NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
+    SetupTableCellConstraintSpaceBuilder(
         table_writing_direction, cell, cell_borders, column_locations,
         /* cell_block_size */ kIndefiniteSize, cell_percentage_inline_size,
         /* alignment_baseline */ absl::nullopt,
@@ -258,8 +258,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     is_constrained |=
         cell_block_constraint.is_constrained && !has_effective_rowspan;
     row_baseline_tabulator.ProcessCell(
-        fragment, NGTableAlgorithmUtils::IsBaseline(cell_style.VerticalAlign()),
-        has_effective_rowspan,
+        fragment, cell_style.VerticalAlign(), has_effective_rowspan,
         has_descendant_that_depends_on_percentage_block_size);
 
     // Compute cell's css block size.
@@ -422,7 +421,7 @@ void ComputeSectionInlineConstraints(
       bool ignore_because_of_fixed_layout =
           is_fixed_layout && (!is_first_section || !is_first_row);
 
-      wtf_size_t max_column = NGTableAlgorithmHelpers::ComputeMaxColumn(
+      wtf_size_t max_column = ComputeMaxColumn(
           colspan_cell_tabulator.CurrentColumn(), colspan, is_fixed_layout);
       if (max_column >= cell_inline_constraints->size())
         cell_inline_constraints->Grow(max_column);
@@ -459,11 +458,18 @@ void ComputeSectionInlineConstraints(
   }
 }
 
+bool IsBaseline(EVerticalAlign align) {
+  return align == EVerticalAlign::kBaseline ||
+         align == EVerticalAlign::kBaselineMiddle ||
+         align == EVerticalAlign::kSub || align == EVerticalAlign::kSuper ||
+         align == EVerticalAlign::kTextTop ||
+         align == EVerticalAlign::kTextBottom ||
+         align == EVerticalAlign::kLength;
+}
+
 }  // namespace
 
-// static
-NGTableAlgorithmUtils::CellBlockSizeData
-NGTableAlgorithmUtils::ComputeCellBlockSize(
+CellBlockSizeData ComputeCellBlockSize(
     const NGTableTypes::CellBlockConstraint& cell_block_constraint,
     const NGTableTypes::Rows& rows,
     wtf_size_t row_index,
@@ -493,8 +499,7 @@ NGTableAlgorithmUtils::ComputeCellBlockSize(
   return {cell_block_size, !is_initial_block_size_definite};
 }
 
-// static
-void NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
+void SetupTableCellConstraintSpaceBuilder(
     const WritingDirectionMode table_writing_direction,
     const NGBlockNode cell,
     const BoxStrut& cell_borders,
@@ -559,7 +564,7 @@ void NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
 }
 
 // Computes maximum possible number of non-mergeable columns.
-wtf_size_t NGTableAlgorithmUtils::ComputeMaximumNonMergeableColumnCount(
+wtf_size_t ComputeMaximumNonMergeableColumnCount(
     const HeapVector<NGBlockNode>& columns,
     bool is_fixed_layout) {
   // Build column constraints.
@@ -581,8 +586,7 @@ wtf_size_t NGTableAlgorithmUtils::ComputeMaximumNonMergeableColumnCount(
   return column_index + 1;
 }
 
-scoped_refptr<NGTableTypes::Columns>
-NGTableAlgorithmUtils::ComputeColumnConstraints(
+scoped_refptr<NGTableTypes::Columns> ComputeColumnConstraints(
     const NGBlockNode& table,
     const NGTableGroupedChildren& grouped_children,
     const NGTableBorders& table_borders,
@@ -619,7 +623,7 @@ NGTableAlgorithmUtils::ComputeColumnConstraints(
   return column_constraints;
 }
 
-void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
+void ComputeSectionMinimumRowBlockSizes(
     const NGBlockNode& section,
     const LayoutUnit cell_percentage_inline_size,
     const bool is_table_block_size_specified,
@@ -679,8 +683,7 @@ void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
   // Redistribute rowspanned cell block sizes.
   std::stable_sort(rowspan_cells.begin(), rowspan_cells.end());
   for (const auto& rowspan_cell : rowspan_cells) {
-    NGTableAlgorithmHelpers::DistributeRowspanCellToRows(
-        rowspan_cell, block_border_spacing, rows);
+    DistributeRowspanCellToRows(rowspan_cell, block_border_spacing, rows);
   }
 
   const wtf_size_t block_spacing_count =
@@ -697,7 +700,7 @@ void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
     LayoutUnit section_fixed_block_size =
         LayoutUnit(section_specified_block_length.Value());
     if (section_fixed_block_size > section_block_size) {
-      NGTableAlgorithmHelpers::DistributeSectionFixedBlockSizeToRows(
+      DistributeSectionFixedBlockSizeToRows(
           start_row, current_row - start_row, section_fixed_block_size,
           block_border_spacing, section_fixed_block_size, rows);
       section_block_size = section_fixed_block_size;
@@ -708,9 +711,8 @@ void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
                                   section_block_size, treat_section_as_tbody));
 }
 
-void NGTableAlgorithmUtils::FinalizeTableCellLayout(
-    LayoutUnit unconstrained_intrinsic_block_size,
-    NGBoxFragmentBuilder* builder) {
+void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
+                             NGBoxFragmentBuilder* builder) {
   const NGBlockNode& node = builder->Node();
   const NGConstraintSpace& space = builder->ConstraintSpace();
   const bool has_inflow_children = !builder->Children().empty();
@@ -812,10 +814,10 @@ void NGColspanCellTabulator::ProcessCell(const NGBlockNode& cell) {
 
 void NGRowBaselineTabulator::ProcessCell(
     const NGBoxFragment& fragment,
-    const bool is_baseline_aligned,
+    EVerticalAlign align,
     const bool is_rowspanned,
     const bool descendant_depends_on_percentage_block_size) {
-  if (is_baseline_aligned && fragment.HasDescendantsForTablePart() &&
+  if (IsBaseline(align) && fragment.HasDescendantsForTablePart() &&
       fragment.FirstBaseline()) {
     max_cell_baseline_depends_on_percentage_block_descendant_ |=
         descendant_depends_on_percentage_block_size;

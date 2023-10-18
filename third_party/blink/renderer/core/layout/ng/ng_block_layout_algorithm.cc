@@ -1149,8 +1149,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
 
   // At this point, perform any final table-cell adjustments needed.
   if (ConstraintSpace().IsTableCell()) {
-    NGTableAlgorithmUtils::FinalizeTableCellLayout(intrinsic_block_size_,
-                                                   &container_builder_);
+    FinalizeTableCellLayout(intrinsic_block_size_, &container_builder_);
   }
 
   if (Style().AlignContentBlockCenter() &&

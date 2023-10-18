@@ -128,9 +128,8 @@ const NGTableBorders* NGTableBorders::ComputeTableBorders(
       table.Style().GetWritingDirection();
 
   wtf_size_t box_order = 0;
-  wtf_size_t table_column_count =
-      NGTableAlgorithmUtils::ComputeMaximumNonMergeableColumnCount(
-          grouped_children.columns, table.Style().IsFixedTableLayout());
+  wtf_size_t table_column_count = ComputeMaximumNonMergeableColumnCount(
+      grouped_children.columns, table.Style().IsFixedTableLayout());
   wtf_size_t table_row_index = 0;
   // Mark cell borders.
   bool found_multispan_cells = false;
@@ -149,10 +148,10 @@ const NGTableBorders* NGTableBorders::ComputeTableBorders(
         // Rowspan has to be limited by section size. Since we do not know
         // section size, we have to rerun cell distribution with limited
         // rowspans.
-        table_column_count = std::max(
-            table_column_count, NGTableAlgorithmHelpers::ComputeMaxColumn(
-                                    tabulator.CurrentColumn(), cell_colspan,
-                                    table.Style().IsFixedTableLayout()));
+        table_column_count =
+            std::max(table_column_count,
+                     ComputeMaxColumn(tabulator.CurrentColumn(), cell_colspan,
+                                      table.Style().IsFixedTableLayout()));
         if (!found_multispan_cells) {
           table_borders->MergeBorders(
               table_row_index, tabulator.CurrentColumn(),

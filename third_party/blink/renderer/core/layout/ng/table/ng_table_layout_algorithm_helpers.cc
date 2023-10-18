@@ -877,7 +877,7 @@ void DistributeExcessBlockSizeToRows(
 
 }  // namespace
 
-MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
+MinMaxSizes ComputeGridInlineMinMax(
     const NGTableNode& node,
     const NGTableTypes::Columns& column_constraints,
     LayoutUnit undistributable_space,
@@ -958,7 +958,7 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
   return min_max;
 }
 
-void NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
+void DistributeColspanCellsToColumns(
     const NGTableTypes::ColspanCells& colspan_cells,
     LayoutUnit inline_border_spacing,
     bool is_fixed_layout,
@@ -981,8 +981,7 @@ void NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
 // Standard: https://www.w3.org/TR/css-tables-3/#width-distribution-algorithm
 // After synchroniziation, assignable table inline size and sum of column
 // final inline sizes will be equal.
-Vector<LayoutUnit>
-NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
+Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
     LayoutUnit assignable_table_inline_size,
     bool is_fixed_layout,
     const NGTableTypes::Columns& column_constraints) {
@@ -1001,10 +1000,9 @@ NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
   }
 }
 
-void NGTableAlgorithmHelpers::DistributeRowspanCellToRows(
-    const NGTableTypes::RowspanCell& rowspan_cell,
-    LayoutUnit border_block_spacing,
-    NGTableTypes::Rows* rows) {
+void DistributeRowspanCellToRows(const NGTableTypes::RowspanCell& rowspan_cell,
+                                 LayoutUnit border_block_spacing,
+                                 NGTableTypes::Rows* rows) {
   DCHECK_GT(rowspan_cell.effective_rowspan, 1u);
   DistributeExcessBlockSizeToRows(rowspan_cell.start_row,
                                   rowspan_cell.effective_rowspan,
@@ -1014,7 +1012,7 @@ void NGTableAlgorithmHelpers::DistributeRowspanCellToRows(
 }
 
 // Legacy code ignores section block size.
-void NGTableAlgorithmHelpers::DistributeSectionFixedBlockSizeToRows(
+void DistributeSectionFixedBlockSizeToRows(
     const wtf_size_t start_row,
     const wtf_size_t rowspan,
     LayoutUnit section_fixed_block_size,
@@ -1027,11 +1025,10 @@ void NGTableAlgorithmHelpers::DistributeSectionFixedBlockSizeToRows(
                                   percentage_resolution_block_size, rows);
 }
 
-void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
-    LayoutUnit border_block_spacing,
-    LayoutUnit table_block_size,
-    NGTableTypes::Sections* sections,
-    NGTableTypes::Rows* rows) {
+void DistributeTableBlockSizeToSections(LayoutUnit border_block_spacing,
+                                        LayoutUnit table_block_size,
+                                        NGTableTypes::Sections* sections,
+                                        NGTableTypes::Rows* rows) {
   if (sections->empty())
     return;
 

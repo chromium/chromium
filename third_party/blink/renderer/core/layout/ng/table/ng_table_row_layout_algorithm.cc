@@ -66,7 +66,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
                                          cell.Style().GetWritingDirection(),
                                          /* is_new_fc */ true);
 
-        NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
+        SetupTableCellConstraintSpaceBuilder(
             table_data.table_writing_direction, cell, cell_data.borders,
             table_data.column_locations, cell_block_size,
             container_builder_.InlineSize(), row_baseline,
@@ -183,9 +183,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
       const NGBoxFragment fragment(table_data.table_writing_direction,
                                    physical_fragment);
       row_baseline_tabulator.ProcessCell(
-          fragment,
-          NGTableAlgorithmUtils::IsBaseline(cell_style.VerticalAlign()),
-          has_rowspan,
+          fragment, cell_style.VerticalAlign(), has_rowspan,
           cell_data.has_descendant_that_depends_on_percentage_block_size);
       if (min_block_size_should_encompass_intrinsic_size) {
         max_cell_block_size =

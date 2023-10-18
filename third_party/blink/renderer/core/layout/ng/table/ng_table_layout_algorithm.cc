@@ -233,10 +233,9 @@ LayoutUnit ComputeAssignableTableInlineSize(
         .ClampNegativeToZero();
   }
 
-  const MinMaxSizes grid_min_max =
-      NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
-          table, column_constraints, undistributable_space, is_fixed_layout,
-          /* is_layout_pass */ true);
+  const MinMaxSizes grid_min_max = ComputeGridInlineMinMax(
+      table, column_constraints, undistributable_space, is_fixed_layout,
+      /* is_layout_pass */ true);
 
   // Standard: "used width of the table".
   LayoutUnit used_table_inline_size = ComputeUsedInlineSizeForTableFragment(
@@ -338,9 +337,8 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
            cell_index < row.start_cell_index + row.cell_count; ++cell_index) {
         const auto& cell_block_constraint = cell_block_constraints[cell_index];
         const auto [cell_block_size, is_initial_block_size_indefinite] =
-            NGTableAlgorithmUtils::ComputeCellBlockSize(
-                cell_block_constraint, rows, row_index, border_spacing,
-                is_table_block_size_specified);
+            ComputeCellBlockSize(cell_block_constraint, rows, row_index,
+                                 border_spacing, is_table_block_size_specified);
 
         LayoutUnit rowspan_block_size =
             cell_block_constraint.effective_rowspan > 1 ? cell_block_size
@@ -553,7 +551,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
   }
 
   const Vector<LayoutUnit> column_sizes =
-      NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
+      SynchronizeAssignableTableInlineSizeAndColumns(
           assignable_table_inline_size, is_fixed_layout, *column_constraints);
 
   // Final inline size must depend on column locations, because columns can be
@@ -607,7 +605,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
 
   // Distribute assignable table width.
   const Vector<LayoutUnit> column_sizes =
-      NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
+      SynchronizeAssignableTableInlineSizeAndColumns(
           assignable_table_inline_size, is_fixed_layout, *column_constraints);
 
   Vector<NGTableColumnLocation> column_locations;
@@ -721,10 +719,9 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
       *column_constraints, border_padding.InlineSum(),
       border_spacing.inline_size);
 
-  const MinMaxSizes grid_min_max =
-      NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
-          Node(), *column_constraints, undistributable_space, is_fixed_layout,
-          /* is_layout_pass */ false);
+  const MinMaxSizes grid_min_max = ComputeGridInlineMinMax(
+      Node(), *column_constraints, undistributable_space, is_fixed_layout,
+      /* is_layout_pass */ false);
 
   MinMaxSizes min_max{
       std::max(grid_min_max.min_size, caption_constraint.min_size),
@@ -788,7 +785,7 @@ void NGTableLayoutAlgorithm::ComputeRows(
     wtf_size_t section_index = 0;
     for (auto it = grouped_children.begin(); it != grouped_children.end();
          ++it) {
-      NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
+      ComputeSectionMinimumRowBlockSizes(
           *it, table_grid_inline_size, is_table_block_size_specified,
           column_locations, table_borders, border_spacing.block_size,
           section_index++, it.TreatAsTBody(), sections, rows,
@@ -834,7 +831,7 @@ void NGTableLayoutAlgorithm::ComputeRows(
     LayoutUnit distributable_block_size = std::max(
         LayoutUnit(), css_table_block_size - table_border_padding.BlockSum());
     if (distributable_block_size > total_table_min_block_size_) {
-      NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
+      DistributeTableBlockSizeToSections(
           border_spacing.block_size, distributable_block_size, sections, rows);
     }
   }

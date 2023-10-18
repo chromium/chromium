@@ -71,8 +71,8 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoPercent) {
   column_constraints->data.push_back(MakeColumn(0, 10));
   column_constraints->data.push_back(MakeColumn(0, 20));
   column_constraints->data.push_back(MakeColumn(0, 10, 30));
-  NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
-      colspan_cells, LayoutUnit(), false, column_constraints.get());
+  DistributeColspanCellsToColumns(colspan_cells, LayoutUnit(), false,
+                                  column_constraints.get());
   EXPECT_EQ(column_constraints->data[0].percent, 10);
   EXPECT_EQ(column_constraints->data[1].percent, 20);
 
@@ -83,8 +83,8 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoPercent) {
   column_constraints->data.push_back(MakeColumn(0, 0));
   column_constraints->data.push_back(MakeColumn(0, 0));
   column_constraints->data.push_back(MakeColumn(0, 10, 10));
-  NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
-      colspan_cells, LayoutUnit(), false, column_constraints.get());
+  DistributeColspanCellsToColumns(colspan_cells, LayoutUnit(), false,
+                                  column_constraints.get());
   EXPECT_EQ(column_constraints->data[0].percent, 25);
   EXPECT_EQ(column_constraints->data[1].percent, 25);
 }
@@ -110,8 +110,8 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoSizeUnconstrained) {
   column_constraints->data.push_back(MakeColumn(0, 10));
   column_constraints->data.push_back(MakeColumn(0, 10));
   column_constraints->data.push_back(MakeColumn(0, 20));
-  NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
-      colspan_cells, LayoutUnit(), false, column_constraints.get());
+  DistributeColspanCellsToColumns(colspan_cells, LayoutUnit(), false,
+                                  column_constraints.get());
   EXPECT_EQ(column_constraints->data[0].min_inline_size, 25);
   EXPECT_EQ(column_constraints->data[1].min_inline_size, 25);
   EXPECT_EQ(column_constraints->data[2].min_inline_size, 50);
@@ -138,8 +138,8 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoSizeConstrained) {
   column_constraints->data.push_back(MakeColumn(0, 10, absl::nullopt, true));
   column_constraints->data.push_back(MakeColumn(10, 10, absl::nullopt, true));
   column_constraints->data.push_back(MakeColumn(0, 20, absl::nullopt, true));
-  NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
-      colspan_cells, LayoutUnit(), false, column_constraints.get());
+  DistributeColspanCellsToColumns(colspan_cells, LayoutUnit(), false,
+                                  column_constraints.get());
   EXPECT_EQ(column_constraints->data[0].min_inline_size, 25);
   EXPECT_EQ(column_constraints->data[1].min_inline_size, 25);
   EXPECT_EQ(column_constraints->data[2].min_inline_size, 50);
@@ -171,7 +171,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoExactMaxSize) {
   LayoutUnit assignable_table_inline_size =
       column_widths[0] + column_widths[1] + column_widths[2] + column_widths[3];
   Vector<LayoutUnit> column_sizes =
-      NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
+      SynchronizeAssignableTableInlineSizeAndColumns(
           assignable_table_inline_size, false, *column_constraints);
   EXPECT_EQ(column_sizes[0], column_widths[0]);
   EXPECT_EQ(column_sizes[1], column_widths[1]);
@@ -199,9 +199,9 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
   column_constraints->data.push_back(MakeColumn(20, 200));
   column_constraints->data.push_back(MakeColumn(30, 300));
 
-  MinMaxSizes minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
-      node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass);
+  MinMaxSizes minmax =
+      ComputeGridInlineMinMax(node, *column_constraints, undistributable_space,
+                              is_fixed_layout, is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(60));
   EXPECT_EQ(minmax.max_size, LayoutUnit(600));
 
@@ -211,16 +211,16 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
   column_constraints->data.push_back(MakeColumn(10, 99, 10));
   column_constraints->data.push_back(MakeColumn(10, 10));
   column_constraints->data.push_back(MakeColumn(10, 10));
-  minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
-      node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass);
+  minmax =
+      ComputeGridInlineMinMax(node, *column_constraints, undistributable_space,
+                              is_fixed_layout, is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(30));
   EXPECT_EQ(minmax.max_size, LayoutUnit(990));
 
   is_layout_pass = false;
-  minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
-      node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass);
+  minmax =
+      ComputeGridInlineMinMax(node, *column_constraints, undistributable_space,
+                              is_fixed_layout, is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(30));
   EXPECT_EQ(minmax.max_size, LayoutUnit(119));
 
@@ -231,9 +231,9 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
   column_constraints->data.push_back(MakeColumn(10, 100, 10));
   column_constraints->data.push_back(MakeColumn(10, 10, 10));
   column_constraints->data.push_back(MakeColumn(10, 800));
-  minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
-      node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass);
+  minmax =
+      ComputeGridInlineMinMax(node, *column_constraints, undistributable_space,
+                              is_fixed_layout, is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(30));
   EXPECT_EQ(minmax.max_size, LayoutUnit(1000));
 }
@@ -246,8 +246,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeRowspanCellToRows) {
   rows.push_back(MakeRow(10));
   rows.push_back(MakeRow(20));
   rows.push_back(MakeRow(30));
-  NGTableAlgorithmHelpers::DistributeRowspanCellToRows(rowspan_cell,
-                                                       LayoutUnit(), &rows);
+  DistributeRowspanCellToRows(rowspan_cell, LayoutUnit(), &rows);
   EXPECT_EQ(rows[0].block_size, LayoutUnit(50));
   EXPECT_EQ(rows[1].block_size, LayoutUnit(100));
   EXPECT_EQ(rows[2].block_size, LayoutUnit(150));
@@ -257,8 +256,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeRowspanCellToRows) {
   rows.push_back(MakeRow(0));
   rows.push_back(MakeRow(10));
   rows.push_back(MakeRow(0));
-  NGTableAlgorithmHelpers::DistributeRowspanCellToRows(rowspan_cell,
-                                                       LayoutUnit(), &rows);
+  DistributeRowspanCellToRows(rowspan_cell, LayoutUnit(), &rows);
   EXPECT_EQ(rows[0].block_size, LayoutUnit(0));
   EXPECT_EQ(rows[1].block_size, LayoutUnit(300));
   EXPECT_EQ(rows[2].block_size, LayoutUnit(0));
@@ -268,8 +266,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeRowspanCellToRows) {
   rows.push_back(MakeRow(0));
   rows.push_back(MakeRow(0));
   rows.push_back(MakeRow(0));
-  NGTableAlgorithmHelpers::DistributeRowspanCellToRows(rowspan_cell,
-                                                       LayoutUnit(), &rows);
+  DistributeRowspanCellToRows(rowspan_cell, LayoutUnit(), &rows);
   EXPECT_EQ(rows[0].block_size, LayoutUnit(0));
   EXPECT_EQ(rows[1].block_size, LayoutUnit(0));
   EXPECT_EQ(rows[2].block_size, LayoutUnit(300));
@@ -282,8 +279,8 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeSectionFixedBlockSizeToRows) {
   rows.push_back(MakeRow(100));
   rows.push_back(MakeRow(100, true, false, 50));
   rows.push_back(MakeRow(100));
-  NGTableAlgorithmHelpers::DistributeSectionFixedBlockSizeToRows(
-      0, 3, LayoutUnit(1000), LayoutUnit(), LayoutUnit(1000), &rows);
+  DistributeSectionFixedBlockSizeToRows(0, 3, LayoutUnit(1000), LayoutUnit(),
+                                        LayoutUnit(1000), &rows);
   EXPECT_EQ(rows[0].block_size, LayoutUnit(250));
   EXPECT_EQ(rows[1].block_size, LayoutUnit(500));
   EXPECT_EQ(rows[2].block_size, LayoutUnit(250));
@@ -296,8 +293,8 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeTableBlockSizeToSections) {
   // Empty sections only grow if there are no other growable sections.
   sections.push_back(MakeSection(&rows, 0));
   sections.push_back(MakeSection(&rows, 100));
-  NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
-      LayoutUnit(), LayoutUnit(500), &sections, &rows);
+  DistributeTableBlockSizeToSections(LayoutUnit(), LayoutUnit(500), &sections,
+                                     &rows);
   EXPECT_EQ(sections[0].block_size, LayoutUnit(400));
 
   // Sections with % block size grow to percentage.
@@ -305,8 +302,8 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeTableBlockSizeToSections) {
   rows.Shrink(0);
   sections.push_back(MakeSection(&rows, 100, 1, 90));
   sections.push_back(MakeSection(&rows, 100));
-  NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
-      LayoutUnit(), LayoutUnit(1000), &sections, &rows);
+  DistributeTableBlockSizeToSections(LayoutUnit(), LayoutUnit(1000), &sections,
+                                     &rows);
   EXPECT_EQ(sections[0].block_size, LayoutUnit(900));
   EXPECT_EQ(sections[1].block_size, LayoutUnit(100));
 
@@ -320,8 +317,8 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeTableBlockSizeToSections) {
   // 30% section grows to 300px.
   // Extra 600 px is distributed between 300 and 100 px proportionally.
   // TODO(atotic) Is this what we want? FF/Edge/Legacy all disagree.
-  NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
-      LayoutUnit(), LayoutUnit(1000), &sections, &rows);
+  DistributeTableBlockSizeToSections(LayoutUnit(), LayoutUnit(1000), &sections,
+                                     &rows);
   EXPECT_EQ(sections[0].block_size, LayoutUnit(300));
   EXPECT_EQ(sections[1].block_size, LayoutUnit(700));
 
@@ -333,8 +330,8 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeTableBlockSizeToSections) {
   section.is_constrained = false;
   sections.push_back(section);
   sections.push_back(MakeSection(&rows, 100));
-  NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
-      LayoutUnit(), LayoutUnit(1000), &sections, &rows);
+  DistributeTableBlockSizeToSections(LayoutUnit(), LayoutUnit(1000), &sections,
+                                     &rows);
   EXPECT_EQ(sections[0].block_size, LayoutUnit(900));
   EXPECT_EQ(sections[1].block_size, LayoutUnit(100));
 }
