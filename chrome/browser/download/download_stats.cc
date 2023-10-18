@@ -95,9 +95,6 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     DownloadCommands::Command download_command,
     bool clicked) {
   switch (download_command) {
-    case DownloadCommands::Command::MAX:
-      NOTREACHED();
-      return DownloadShelfContextMenuAction::kMaxValue;
     case DownloadCommands::Command::SHOW_IN_FOLDER:
       return clicked ? DownloadShelfContextMenuAction::kShowInFolderClicked
                      : DownloadShelfContextMenuAction::kShowInFolderEnabled;

@@ -208,7 +208,6 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:
-    case DownloadCommands::MAX:
       NOTREACHED();
       break;
   }
@@ -961,7 +960,6 @@ std::u16string DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:
-    case DownloadCommands::MAX:
       // Only for menu.
       NOTREACHED();
       return std::u16string();

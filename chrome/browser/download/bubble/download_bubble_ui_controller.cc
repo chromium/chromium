@@ -256,8 +256,7 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     return;
   }
   DownloadCommands commands(model);
-  base::UmaHistogramExactLinear("Download.Bubble.ProcessedCommand", command,
-                                DownloadCommands::MAX + 1);
+  base::UmaHistogramEnumeration("Download.Bubble.ProcessedCommand2", command);
   DownloadItemWarningData::WarningSurface warning_surface =
       is_main_view ? DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE
                    : DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE;

@@ -623,7 +623,6 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
-    case DownloadCommands::MAX:
       NOTREACHED();
       return false;
     case DownloadCommands::CANCEL:
@@ -661,7 +660,6 @@ bool DownloadUIModel::IsCommandChecked(
   switch (command) {
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
-    case DownloadCommands::MAX:
       NOTREACHED();
       return false;
     case DownloadCommands::PAUSE:
@@ -694,7 +692,6 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
-    case DownloadCommands::MAX:
       NOTREACHED();
       break;
     case DownloadCommands::PLATFORM_OPEN:

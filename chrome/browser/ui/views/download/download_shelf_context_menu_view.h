@@ -72,7 +72,7 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
   base::TimeTicks close_time_;
 
   // Determines whether we should record if a DownloadCommand was executed.
-  bool download_commands_executed_recorded_[DownloadCommands::MAX + 1] = {
+  bool download_commands_executed_recorded_[DownloadCommands::kMaxValue + 1] = {
       false};
 };
 

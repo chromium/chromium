@@ -50,7 +50,7 @@ void DownloadShelfContextMenu::RecordCommandsEnabled(
     return;
   }
 
-  for (int command_int = 1; command_int < DownloadCommands::Command::MAX;
+  for (int command_int = 0; command_int <= DownloadCommands::Command::kMaxValue;
        command_int++) {
     if (model->GetIndexOfCommandId(command_int).has_value() &&
         IsCommandIdEnabled(command_int)) {
@@ -210,7 +210,6 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
-    case DownloadCommands::MAX:
       NOTREACHED();
       break;
   }

@@ -138,15 +138,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.Bubble.ProcessedCommand" enum="DownloadCommand"
-    expires_after="2024-03-17">
-  <owner>xinghuilu@chromium.org</owner>
+<histogram name="Download.Bubble.ProcessedCommand2" enum="DownloadCommand"
+    expires_after="2024-10-20">
+  <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records each time a download command is executed on download bubble. It is
-    logged when a quick action is clicked on the primary view or a button is
-    clicked on the subpage. Actions on context menu are excluded. Clicking the
-    trasparent button is also excluded.
+    logged when a quick action is clicked on the primary view or a button or
+    link is clicked on the security subpage. Actions on context menu are
+    excluded. Clicking the trasparent button is also excluded. This histogram
+    replaced Download.Bubble.ProcessedCommand in M120 due to the enum being
+    incorrectly numbered.
   </summary>
 </histogram>
 
