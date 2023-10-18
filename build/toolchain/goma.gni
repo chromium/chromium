@@ -4,6 +4,8 @@
 
 # Defines the configuration of Goma.
 
+import("//build/toolchain/siso.gni")
+
 declare_args() {
   # Set to true to enable distributed compilation using Goma.
   use_goma = false
@@ -37,4 +39,6 @@ if (use_goma && current_toolchain == default_toolchain) {
           "https://chromium.googlesource.com/chromium/src/+/main/docs/" +
           "linux/build_instructions.md#use-reclient for setup instructions.")
   }
+  assert(!use_siso,
+         "Siso does not support Goma. Use use_remoteexec=true instead.")
 }
