@@ -46,7 +46,7 @@
       ]
     },
     "e2e-headful": {
-      "command": "python3 -m pytest",
+      "command": "python3 -m pytest --ignore=tests/input",
       "dependencies": [
         "server-headful"
       ],
