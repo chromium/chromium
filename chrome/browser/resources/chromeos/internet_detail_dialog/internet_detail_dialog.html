@@ -33,6 +33,10 @@
     margin-inline-start: 0;
   }
 
+  #apnRow {
+    height: var(--cr-section-two-line-min-height);
+  }
+
   #apnRowSublabel {
     color: var(--cros-text-color-positive);
   }
@@ -134,7 +138,7 @@
   <template is="dom-if"
       if="[[shouldShowApnSection_(managedProperties_,
           isApnRevampEnabled_)]]">
-    <cr-expand-button class="settings-box cr-row"
+    <cr-expand-button id="apnRow" class="settings-box cr-row"
         expanded="{{apnExpanded_}}">
       <div id="apnRowTitle">$i18n{internetApnPageTitle}</div>
       <div id="apnRowSublabel" class="cr-secondary-text">
