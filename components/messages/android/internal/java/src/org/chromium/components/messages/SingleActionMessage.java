@@ -42,6 +42,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     private final Supplier<Integer> mTopOffsetSupplier;
     private final Supplier<Integer> mMaxTranslationSupplier;
     private final SwipeAnimationHandler mSwipeAnimationHandler;
+    private final boolean mIsFullyVisibileCallbackEnabled;
     private boolean mMessageDismissed;
 
     // The timestamp when the message was shown. Used for reproting visible duration.
@@ -71,6 +72,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         mTopOffsetSupplier = topOffsetSupplier;
         mMaxTranslationSupplier = maxTranslationSupplier;
         mSwipeAnimationHandler = swipeAnimationHandler;
+        mIsFullyVisibileCallbackEnabled = MessageFeatureList.isFullyVisibleCallbackEnabled();
 
         long dismissalDuration =
                 mModel.getAllSetProperties().contains(MessageBannerProperties.DISMISSAL_DURATION)
@@ -118,8 +120,10 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
 
         if (toIndex == Position.FRONT) {
             mContainer.setA11yDelegate(this);
+            notifyVisibilityChange(true);
+        } else {
+            notifyVisibilityChange(false);
         }
-
         mMessageShownTime = MessagesMetrics.now();
         return mMessageBanner.show(fromIndex, toIndex, () -> MessageDimens.from(mContainer, mView));
     }
@@ -134,6 +138,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     @Nullable
     @Override
     public Animator hide(int fromIndex, int toIndex, boolean animate) {
+        notifyVisibilityChange(false);
         return mMessageBanner.hide(
                 fromIndex, toIndex, animate, () -> mContainer.removeMessage(mView));
     }
@@ -200,6 +205,18 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         // Avoid running the secondary action callback if the message has already been dismissed.
         if (mMessageDismissed) return;
         mModel.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
+    }
+
+    private void notifyVisibilityChange(boolean fullyVisible) {
+        if (!mIsFullyVisibileCallbackEnabled) return;
+        if (!mModel.containsKey(MessageBannerProperties.ON_FULLY_VISIBLE)) return;
+
+        var callback = mModel.get(MessageBannerProperties.ON_FULLY_VISIBLE);
+        if (callback == null) return;
+        if (fullyVisible == mModel.get(MessageBannerProperties.IS_FULLY_VISIBLE)) return;
+
+        mModel.set(MessageBannerProperties.IS_FULLY_VISIBLE, fullyVisible);
+        callback.onResult(fullyVisible);
     }
 
     @VisibleForTesting

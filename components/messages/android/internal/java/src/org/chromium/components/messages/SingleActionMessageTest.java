@@ -6,6 +6,7 @@ package org.chromium.components.messages;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -23,10 +24,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -39,7 +42,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Tests for {@link SingleActionMessage}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -77,6 +81,7 @@ public class SingleActionMessageTest {
     private CallbackHelper mDismissCallback;
     private SingleActionMessage.DismissCallback mEmptyDismissCallback =
             (model, dismissReason) -> {};
+    private Map<String, Boolean> mFeatureMap = new HashMap<>();
 
     @BeforeClass
     public static void setupSuite() {
@@ -92,9 +97,9 @@ public class SingleActionMessageTest {
         mDismissCallback = new CallbackHelper();
         mPrimaryActionCallback = new CallbackHelper();
         mSecondaryActionCallback = new CallbackHelper();
-        FeatureList.setTestFeatures(
-                Collections.singletonMap(
-                        MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false));
+        mFeatureMap.put(MessageFeatureList.MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK, true);
+        mFeatureMap.put(MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false);
+        FeatureList.setTestFeatures(mFeatureMap);
     }
 
     @Test
@@ -200,9 +205,8 @@ public class SingleActionMessageTest {
     @Test
     @MediumTest
     public void testAddAndRemoveSingleActionMessage_withStacking() {
-        FeatureList.setTestFeatures(
-                Collections.singletonMap(
-                        MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true));
+        mFeatureMap.put(MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true);
+        FeatureList.setTestFeatures(mFeatureMap);
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel m1 = createBasicSingleActionMessageModel();
         PropertyModel m2 = createBasicSingleActionMessageModel();
@@ -232,9 +236,8 @@ public class SingleActionMessageTest {
     @Test(expected = IllegalStateException.class)
     @MediumTest
     public void testAddMultipleSingleActionMessage_withStacking() {
-        FeatureList.setTestFeatures(
-                Collections.singletonMap(
-                        MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true));
+        mFeatureMap.put(MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true);
+        FeatureList.setTestFeatures(mFeatureMap);
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel m1 = createBasicSingleActionMessageModel();
         PropertyModel m2 = createBasicSingleActionMessageModel();
@@ -265,6 +268,38 @@ public class SingleActionMessageTest {
         final MessageBannerView view = createMessageBannerView(container);
         SingleActionMessage message = createAndShowSingleActionMessage(container, model, view);
         executeAndVerifyRepeatedButtonClicks(false, model, message, view);
+    }
+
+    @Test
+    @MediumTest
+    public void testOnFullyVisible() {
+        mFeatureMap.put(MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true);
+        FeatureList.setTestFeatures(mFeatureMap);
+        MessageContainer container = new MessageContainer(sActivity, null);
+        PropertyModel m1 = createBasicSingleActionMessageModel();
+        PropertyModel m2 = createBasicSingleActionMessageModel();
+        Callback<Boolean> callback1 = Mockito.mock(Callback.class);
+        m1.set(MessageBannerProperties.ON_FULLY_VISIBLE, callback1);
+        Callback<Boolean> callback2 = Mockito.mock(Callback.class);
+        m2.set(MessageBannerProperties.ON_FULLY_VISIBLE, callback2);
+
+        final MessageBannerView view1 = createMessageBannerView(container);
+        final MessageBannerView view2 = createMessageBannerView(container);
+        var sam1 =
+                createAndShowSingleActionMessage(
+                        container, m1, view1, Position.INVISIBLE, Position.FRONT);
+        var sam2 =
+                createAndShowSingleActionMessage(
+                        container, m2, view2, Position.FRONT, Position.BACK);
+
+        verify(callback1).onResult(true);
+        verify(callback2, never()).onResult(anyBoolean());
+
+        sam1.hide(Position.FRONT, Position.INVISIBLE, false);
+        verify(callback1).onResult(false);
+
+        sam2.show(Position.BACK, Position.FRONT);
+        verify(callback2).onResult(true);
     }
 
     @Test
