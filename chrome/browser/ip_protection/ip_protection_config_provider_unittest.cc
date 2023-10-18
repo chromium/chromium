@@ -174,7 +174,9 @@ class IpProtectionConfigProviderTest : public testing::Test {
       }
     }
 
-    getter_->TryGetAuthTokens(num_tokens, tokens_future_.GetCallback());
+    getter_->TryGetAuthTokens(num_tokens,
+                              network::mojom::IpProtectionProxyLayer::kProxyA,
+                              tokens_future_.GetCallback());
 
     switch (primary_account_behavior_) {
       case PrimaryAccountBehavior::kNone:
@@ -485,7 +487,8 @@ TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
       absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>,
       absl::optional<base::Time>>
       tokens_future;
-  getter_->TryGetAuthTokens(1, tokens_future.GetCallback());
+  getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA,
+                            tokens_future.GetCallback());
   const absl::optional<base::Time>& try_again_after =
       tokens_future.Get<absl::optional<base::Time>>();
   ASSERT_TRUE(try_again_after);
@@ -497,7 +500,8 @@ TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
 
   bsa_->tokens_ = {{"single-use-1", absl_expiration_time_}};
   tokens_future.Clear();
-  getter_->TryGetAuthTokens(1, tokens_future.GetCallback());
+  getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA,
+                            tokens_future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now());
   const absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>&

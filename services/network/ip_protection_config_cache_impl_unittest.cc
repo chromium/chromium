@@ -94,10 +94,12 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManager) {
       std::make_unique<MockIpProtectionTokenCacheManager>();
   ipp_token_cache_manager_->SetAuthToken(std::move(exp_token));
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
+      network::mojom::IpProtectionProxyLayer::kProxyA,
       std::move(ipp_token_cache_manager_));
 
-  ASSERT_TRUE(ipp_config_cache_->IsAuthTokenAvailable());
-  ASSERT_TRUE(ipp_config_cache_->GetAuthToken());
+  ASSERT_TRUE(ipp_config_cache_->AreAuthTokensAvailable());
+  ASSERT_TRUE(ipp_config_cache_->GetAuthToken(
+      network::mojom::IpProtectionProxyLayer::kProxyA));
 }
 
 // Proxy list manager returns currently cached proxy hostnames.

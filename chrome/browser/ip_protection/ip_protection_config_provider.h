@@ -83,6 +83,7 @@ class IpProtectionConfigProvider
   // It is forbidden for two calls to this method to be outstanding at the same
   // time.
   void TryGetAuthTokens(uint32_t batch_size,
+                        network::mojom::IpProtectionProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
 
   // Get the list of IP Protection proxies.

@@ -153,7 +153,7 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
       vlog("proxy allow list did not match");
       return;
     }
-    if (!ipp_config_cache_->IsAuthTokenAvailable()) {
+    if (!ipp_config_cache_->AreAuthTokensAvailable()) {
       vlog("no auth token available from cache");
       return;
     }
@@ -231,7 +231,8 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
   }
   if (IsForIpProtection() && IsProxyForIpProtection(proxy_server)) {
     if (ipp_config_cache_) {
-      auto token = ipp_config_cache_->GetAuthToken();
+      auto token = ipp_config_cache_->GetAuthToken(
+          network::mojom::IpProtectionProxyLayer::kProxyA);
       if (token) {
         vlog("adding auth token");
         std::string encoded_token;

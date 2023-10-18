@@ -27,18 +27,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   // Initializes the proxy list and token managers for the cache.
   virtual void SetUp() = 0;
 
-  // Check whether tokens are available.
+  // Check whether tokens are available in all token caches.
   //
   // This function is called on every URL load, so it should complete quickly.
-  virtual bool IsAuthTokenAvailable() = 0;
+  virtual bool AreAuthTokensAvailable() = 0;
 
   // Get a token, if one is available.
   //
   // Returns `nullopt` if no token is available, whether for a transient or
   // permanent reason. This method may return `nullopt` even if
   // `IsAuthTokenAvailable()` recently returned `true`.
-  virtual absl::optional<network::mojom::BlindSignedAuthTokenPtr>
-  GetAuthToken() = 0;
+  virtual absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
+      network::mojom::IpProtectionProxyLayer proxy_layer) = 0;
 
   // Invalidate any previous instruction that token requests should not be
   // made until after a specified time.
@@ -46,12 +46,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
 
   // Set the token cache manager for the cache.
   virtual void SetIpProtectionTokenCacheManagerForTesting(
+      network::mojom::IpProtectionProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager>
           ipp_token_cache_manager) = 0;
 
   // Fetch the token cache manager.
   virtual IpProtectionTokenCacheManager*
-  GetIpProtectionTokenCacheManagerForTesting() = 0;
+  GetIpProtectionTokenCacheManagerForTesting(
+      network::mojom::IpProtectionProxyLayer proxy_layer) = 0;
 
   // Set the proxy list manager for the cache.
   virtual void SetIpProtectionProxyListManagerForTesting(

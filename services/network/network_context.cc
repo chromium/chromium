@@ -2040,7 +2040,8 @@ void NetworkContext::VerifyIpProtectionConfigGetterForTesting(
   auto* ipp_token_cache_manager_impl =
       static_cast<IpProtectionTokenCacheManagerImpl*>(
           ipp_config_cache
-              ->GetIpProtectionTokenCacheManagerForTesting());  // IN-TEST
+              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
+                  network::mojom::IpProtectionProxyLayer::kProxyA));
   CHECK(ipp_token_cache_manager_impl);
 
   // If active cache management is enabled (the default), disable it and do a
@@ -2061,8 +2062,9 @@ void NetworkContext::VerifyIpProtectionConfigGetterForTesting(
               auto* ipp_config_cache =
                   weak_ptr->proxy_delegate_->GetIpProtectionConfigCache();
               ipp_config_cache->InvalidateTryAgainAfterTime();
-              while (ipp_config_cache->IsAuthTokenAvailable()) {
-                ipp_config_cache->GetAuthToken();
+              while (ipp_config_cache->AreAuthTokensAvailable()) {
+                ipp_config_cache->GetAuthToken(
+                    network::mojom::IpProtectionProxyLayer::kProxyA);
               }
               // Call `PostTask()` instead of invoking the Verify method again
               // directly so that if `DisableCacheManagementForTesting()` needed
@@ -2103,10 +2105,12 @@ void NetworkContext::OnIpProtectionConfigAvailableForTesting(
   auto* ipp_token_cache_manager_impl =
       static_cast<IpProtectionTokenCacheManagerImpl*>(
           ipp_config_cache
-              ->GetIpProtectionTokenCacheManagerForTesting());  // IN-TEST
+              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
+                  network::mojom::IpProtectionProxyLayer::kProxyA));
 
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> result =
-      ipp_config_cache->GetAuthToken();
+      ipp_config_cache->GetAuthToken(
+          network::mojom::IpProtectionProxyLayer::kProxyA);
   if (result.has_value()) {
     std::move(callback).Run(std::move(result).value(), absl::nullopt);
     return;

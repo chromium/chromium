@@ -13,6 +13,7 @@
 #include "services/network/ip_protection_config_cache_impl.h"
 #include "services/network/ip_protection_token_cache_manager.h"
 #include "services/network/ip_protection_token_cache_manager_impl.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -76,6 +77,7 @@ class MockIpProtectionConfigGetter
   void Reset() { expected_try_get_auth_token_calls_.clear(); }
 
   void TryGetAuthTokens(uint32_t batch_size,
+                        network::mojom::IpProtectionProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
     ASSERT_FALSE(expected_try_get_auth_token_calls_.empty())
         << "Unexpected call to TryGetAuthTokens";
@@ -112,7 +114,7 @@ class IpProtectionTokenCacheManagerImplTest : public testing::Test {
     remote_.Bind(receiver_.BindNewPipeAndPassRemote());
     ipp_token_cache_manager_ =
         std::make_unique<IpProtectionTokenCacheManagerImpl>(
-            &remote_,
+            &remote_, network::mojom::IpProtectionProxyLayer::kProxyA,
             /* disable_cache_management_for_testing=*/true);
   }
 
@@ -273,7 +275,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, SkipExpiredTokens) {
 // but things don't crash.
 TEST_F(IpProtectionTokenCacheManagerImplTest, NullGetter) {
   auto ipp_token_cache_manager = IpProtectionTokenCacheManagerImpl(
-      nullptr,
+      nullptr, network::mojom::IpProtectionProxyLayer::kProxyA,
       /* disable_cache_management_for_testing=*/true);
   EXPECT_FALSE(ipp_token_cache_manager_->IsAuthTokenAvailable());
   auto token = ipp_token_cache_manager.GetAuthToken();

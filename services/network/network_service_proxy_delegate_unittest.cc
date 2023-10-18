@@ -38,10 +38,10 @@ constexpr char kWebsocketUrl[] = "ws://example.com";
 
 class MockIpProtectionConfigCache : public IpProtectionConfigCache {
  public:
-  bool IsAuthTokenAvailable() override { return auth_token_.has_value(); }
+  bool AreAuthTokensAvailable() override { return auth_token_.has_value(); }
   void InvalidateTryAgainAfterTime() override {}
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
-      override {
+  absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
+      network::mojom::IpProtectionProxyLayer proxy_layer) override {
     return std::move(auth_token_);
   }
 
@@ -60,12 +60,13 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
     NOTREACHED_NORETURN();
   }
 
-  IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting()
-      override {
+  IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
+      network::mojom::IpProtectionProxyLayer proxy_layer) override {
     NOTREACHED_NORETURN();
   }
 
   void SetIpProtectionTokenCacheManagerForTesting(
+      network::mojom::IpProtectionProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
       override {
     NOTREACHED_NORETURN();

@@ -26,6 +26,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
  public:
   explicit IpProtectionTokenCacheManagerImpl(
       mojo::Remote<network::mojom::IpProtectionConfigGetter>* config_getter,
+      network::mojom::IpProtectionProxyLayer proxy_layer,
       bool disable_cache_management_for_testing = false);
   ~IpProtectionTokenCacheManagerImpl() override;
 
@@ -95,6 +96,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
   // Source of proxy list, when needed.
   raw_ptr<mojo::Remote<network::mojom::IpProtectionConfigGetter>>
       config_getter_;
+
+  // The proxy layer which the cache of tokens will be used for.
+  network::mojom::IpProtectionProxyLayer proxy_layer_;
 
   // True if an invocation of `config_getter_.TryGetAuthTokens()` is
   // outstanding.

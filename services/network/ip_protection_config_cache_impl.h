@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_IP_PROTECTION_CONFIG_CACHE_IMPL_H_
 
 #include <deque>
+#include <map>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -33,15 +34,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
 
   // IpProtectionConfigCache implementation.
   void SetUp() override;
-  bool IsAuthTokenAvailable() override;
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
-      override;
+  bool AreAuthTokensAvailable() override;
+  absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
+      network::mojom::IpProtectionProxyLayer proxy_layer) override;
   void InvalidateTryAgainAfterTime() override;
   void SetIpProtectionTokenCacheManagerForTesting(
+      network::mojom::IpProtectionProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
       override;
-  IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting()
-      override;
+  IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
+      network::mojom::IpProtectionProxyLayer proxy_layer) override;
   void SetIpProtectionProxyListManagerForTesting(
       std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
       override;
@@ -56,8 +58,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   // A manager for the list of currently cached proxy hostnames.
   std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager_;
 
-  // A manager for cache of blind-signed auth tokens.
-  std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager_;
+  // Proxy layer managers for cache of blind-signed auth tokens.
+  std::map<network::mojom::IpProtectionProxyLayer,
+           std::unique_ptr<IpProtectionTokenCacheManager>>
+      ipp_token_cache_managers_;
 
   base::WeakPtrFactory<IpProtectionConfigCacheImpl> weak_ptr_factory_{this};
 };

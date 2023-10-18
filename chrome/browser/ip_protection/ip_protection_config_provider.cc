@@ -73,13 +73,15 @@ IpProtectionConfigProvider::~IpProtectionConfigProvider() = default;
 
 void IpProtectionConfigProvider::TryGetAuthTokens(
     uint32_t batch_size,
+    network::mojom::IpProtectionProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
   SetUp();
+  CHECK(proxy_layer == network::mojom::IpProtectionProxyLayer::kProxyA);
 
-  // The `batch_size` is cast to an `int` for use by BlindSignAuth, so check for
-  // overflow here.
+  // The `batch_size` is cast to an `int` for use by BlindSignAuth, so check
+  // for overflow here.
   if (batch_size == 0 || batch_size > INT_MAX) {
     mojo::ReportBadMessage("Invalid batch_size");
     return;
