@@ -59,6 +59,7 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/signout_action_sheet",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
