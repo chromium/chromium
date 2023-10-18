@@ -92,8 +92,8 @@ class RefreshRateControllerTest : public AshTestBase {
   }
 
   void TearDown() override {
-    game_mode_controller_.reset();
     controller_.reset();
+    game_mode_controller_.reset();
     AshTestBase::TearDown();
   }
 
