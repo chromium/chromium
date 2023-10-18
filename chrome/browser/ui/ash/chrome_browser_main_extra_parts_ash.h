@@ -18,7 +18,7 @@ class ArcWindowWatcher;
 class NetworkPortalNotificationController;
 class NewWindowDelegateProvider;
 class NightLightClient;
-class VariableRefreshRateController;
+class RefreshRateController;
 class VideoConferenceTrayController;
 }  // namespace ash
 
@@ -147,8 +147,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;
   std::unique_ptr<DesksClient> desks_client_;
-  std::unique_ptr<ash::VariableRefreshRateController>
-      variable_refresh_rate_controller_;
+  std::unique_ptr<ash::RefreshRateController> refresh_rate_controller_;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   std::unique_ptr<ExoParts> exo_parts_;

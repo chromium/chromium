@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/display/refresh_rate_throttle_controller.h"
+#include "chrome/browser/ash/display/refresh_rate_controller.h"
 
 #include <memory>
 #include <vector>
@@ -11,6 +11,8 @@
 #include "ash/system/power/power_status.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
@@ -34,6 +36,7 @@ using display::NativeDisplayDelegate;
 using display::ScopedSetInternalDisplayIds;
 using display::test::ActionLogger;
 using display::test::TestNativeDisplayDelegate;
+using game_mode::GameModeController;
 using power_manager::PowerSupplyProperties;
 
 std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
@@ -65,14 +68,15 @@ PowerSupplyProperties BuildFakePowerSupplyProperties(
   return fake_power;
 }
 
-class RefreshRateThrottleControllerTest : public AshTestBase {
+class RefreshRateControllerTest : public AshTestBase {
  public:
-  RefreshRateThrottleControllerTest() = default;
-  RefreshRateThrottleControllerTest(const RefreshRateThrottleControllerTest&) =
+  RefreshRateControllerTest()
+      : scoped_features_(ash::features::kSeamlessRefreshRateSwitching) {}
+  RefreshRateControllerTest(const RefreshRateControllerTest&) =
       delete;
-  RefreshRateThrottleControllerTest& operator=(
-      const RefreshRateThrottleControllerTest&) = delete;
-  ~RefreshRateThrottleControllerTest() override = default;
+  RefreshRateControllerTest& operator=(
+      const RefreshRateControllerTest&) = delete;
+  ~RefreshRateControllerTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -81,11 +85,14 @@ class RefreshRateThrottleControllerTest : public AshTestBase {
     native_display_delegate_ = new TestNativeDisplayDelegate(logger_.get());
     display_manager()->configurator()->SetDelegateForTesting(
         std::unique_ptr<NativeDisplayDelegate>(native_display_delegate_));
-    controller_ = std::make_unique<RefreshRateThrottleController>(
-        Shell::Get()->display_configurator(), PowerStatus::Get());
+    game_mode_controller_ = std::make_unique<GameModeController>();
+    controller_ = std::make_unique<RefreshRateController>(
+        Shell::Get()->display_configurator(), PowerStatus::Get(),
+        game_mode_controller_.get());
   }
 
   void TearDown() override {
+    game_mode_controller_.reset();
     controller_.reset();
     AshTestBase::TearDown();
   }
@@ -117,13 +124,15 @@ class RefreshRateThrottleControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<ActionLogger> logger_;
-  std::unique_ptr<RefreshRateThrottleController> controller_;
+  std::unique_ptr<RefreshRateController> controller_;
+  std::unique_ptr<GameModeController> game_mode_controller_;
   // Owned by DisplayConfigurator.
   raw_ptr<TestNativeDisplayDelegate, DanglingUntriaged | ExperimentalAsh>
       native_display_delegate_;
+  base::test::ScopedFeatureList scoped_features_;
 };
 
-TEST_F(RefreshRateThrottleControllerTest, ShouldNotThrottleOnAC) {
+TEST_F(RefreshRateControllerTest, ShouldNotThrottleOnAC) {
   constexpr int64_t kDisplayId = 12345;
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
@@ -153,7 +162,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldNotThrottleOnAC) {
   }
 }
 
-TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleWithBatterySaverMode) {
+TEST_F(RefreshRateControllerTest, ShouldThrottleWithBatterySaverMode) {
   constexpr int64_t kDisplayId = 12345;
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
@@ -185,7 +194,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleWithBatterySaverMode) {
   }
 }
 
-TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleOnBattery) {
+TEST_F(RefreshRateControllerTest, ShouldThrottleOnBattery) {
   constexpr int64_t kDisplayId = 12345;
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
@@ -215,7 +224,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleOnBattery) {
   }
 }
 
-TEST_F(RefreshRateThrottleControllerTest, ShouldNotAffectExternalDisplay) {
+TEST_F(RefreshRateControllerTest, ShouldNotAffectExternalDisplay) {
   constexpr int64_t kDisplayId = 12345;
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
@@ -245,7 +254,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldNotAffectExternalDisplay) {
   }
 }
 
-TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleOnUSBCharger) {
+TEST_F(RefreshRateControllerTest, ShouldThrottleOnUSBCharger) {
   constexpr int64_t kDisplayId = 12345;
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(

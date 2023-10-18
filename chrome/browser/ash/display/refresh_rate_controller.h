@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_DISPLAY_VARIABLE_REFRESH_RATE_CONTROLLER_H_
-#define CHROME_BROWSER_ASH_DISPLAY_VARIABLE_REFRESH_RATE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_DISPLAY_REFRESH_RATE_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_DISPLAY_REFRESH_RATE_CONTROLLER_H_
 
 #include "ash/system/power/power_status.h"
 #include "base/scoped_observation.h"
@@ -16,24 +16,27 @@ namespace {
 using GameMode = ash::ResourcedClient::GameMode;
 }  // namespace
 
-// VariableRefreshRateController manages the VRR enabled/disabled state. It is
+// RefreshRateController manages features related to display refresh rate, such
+// as the VRR enabled/disabled state and refresh rate throttling. It is
 // responsible for communicating the desired VRR state to the configurator. VRR
 // is meant to be enabled as long as Borealis game mode is active, except when
-// battery saver mode is also active.
-class VariableRefreshRateController
+// battery saver mode is also active. For high-refresh rate devices, the refresh
+// rate will be throttled while on battery, except when Borealis game mode is
+// active.
+class RefreshRateController
     : public PowerStatus::Observer,
       public game_mode::GameModeController::Observer {
  public:
-  VariableRefreshRateController(
+  RefreshRateController(
       display::DisplayConfigurator* display_configurator,
       PowerStatus* power_status,
       game_mode::GameModeController* game_mode_controller);
 
-  VariableRefreshRateController(const VariableRefreshRateController&) = delete;
-  VariableRefreshRateController& operator=(
-      const VariableRefreshRateController&) = delete;
+  RefreshRateController(const RefreshRateController&) = delete;
+  RefreshRateController& operator=(
+      const RefreshRateController&) = delete;
 
-  ~VariableRefreshRateController() override;
+  ~RefreshRateController() override;
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
@@ -56,9 +59,9 @@ class VariableRefreshRateController
                           game_mode::GameModeController::Observer>
       game_mode_observer_{this};
 
-  base::WeakPtrFactory<VariableRefreshRateController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<RefreshRateController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_DISPLAY_VARIABLE_REFRESH_RATE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_DISPLAY_REFRESH_RATE_CONTROLLER_H_

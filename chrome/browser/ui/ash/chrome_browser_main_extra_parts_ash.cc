@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/display/variable_refresh_rate_controller.h"
+#include "chrome/browser/ash/display/refresh_rate_controller.h"
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
@@ -343,10 +343,9 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
 
   game_mode_controller_ = std::make_unique<game_mode::GameModeController>();
-  variable_refresh_rate_controller_ =
-      std::make_unique<ash::VariableRefreshRateController>(
-          ash::Shell::Get()->display_configurator(), ash::PowerStatus::Get(),
-          game_mode_controller_.get());
+  refresh_rate_controller_ = std::make_unique<ash::RefreshRateController>(
+      ash::Shell::Get()->display_configurator(), ash::PowerStatus::Get(),
+      game_mode_controller_.get());
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
@@ -393,7 +392,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   tab_cluster_ui_client_.reset();
 
   // Initialized in PostProfileInit (which may not get called in some tests).
-  variable_refresh_rate_controller_.reset();
+  refresh_rate_controller_.reset();
   game_mode_controller_.reset();
   ash_web_view_factory_.reset();
   network_portal_notification_controller_.reset();
