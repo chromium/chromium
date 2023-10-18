@@ -59,7 +59,10 @@ tools is needed in order to support reading the large-page PDBs that Chrome uses
 to allow greater-than 4 GiB PDBs. This can be installed after the matching
 Windows SDK version is installed, from: Control Panel -> Programs and Features
 -> Windows Software Development Kit [version] -> Change -> Debugging Tools for
-Windows.
+Windows. If building on ARM64 Windows then you will need to manually copy the
+Debuggers\x64 directory from another machine because it does not get installed
+on ARM64 and is needed, whether you are building Chromium for x64 or ARM64 on
+ARM64.
 
 ## Install `depot_tools`
 
