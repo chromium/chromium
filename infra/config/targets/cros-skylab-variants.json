@@ -10,8 +10,7 @@
   "CROS_BRYA_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "brya",
-      "cros_chrome_version": "120.0.6057.0",
-      "cros_img": "brya-release/R120-15642.0.0",
+      "use_lkgm": true,
       "dut_pool": "chrome"
     },
     "enabled": true,
@@ -50,8 +49,7 @@
   "CROS_DEDEDE_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "dedede",
-      "cros_chrome_version": "120.0.6062.0",
-      "cros_img": "dedede-release/R120-15645.0.0"
+      "use_lkgm": true
     },
     "enabled": true,
     "identifier": "DEDEDE_RELEASE_LKGM"
@@ -86,8 +84,7 @@
   "CROS_FIZZ_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "fizz",
-      "cros_chrome_version": "120.0.6062.0",
-      "cros_img": "fizz-release/R120-15645.0.0",
+      "use_lkgm": true,
       "dut_pool": "chrome"
     },
     "enabled": true,
@@ -126,8 +123,7 @@
   "CROS_GUYBRUSH_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "guybrush",
-      "cros_chrome_version": "120.0.6062.0",
-      "cros_img": "guybrush-release/R120-15645.0.0",
+      "use_lkgm": true,
       "dut_pool": "chrome"
     },
     "enabled": true,
@@ -166,8 +162,7 @@
   "CROS_PUFF_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "puff",
-      "cros_chrome_version": "120.0.6062.0",
-      "cros_img": "puff-release/R120-15645.0.0",
+      "use_lkgm": true,
       "dut_pool": "chrome"
     },
     "enabled": true,
@@ -219,8 +214,7 @@
   "CROS_HANA_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "hana",
-      "cros_chrome_version": "120.0.6062.0",
-      "cros_img": "hana-release/R120-15645.0.0"
+      "use_lkgm": true
     },
     "enabled": true,
     "identifier": "HANA_RELEASE_LKGM"
@@ -255,8 +249,7 @@
   "CROS_JACUZZI_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "jacuzzi",
-      "cros_chrome_version": "120.0.6062.0",
-      "cros_img": "jacuzzi-release/R120-15645.0.0"
+      "use_lkgm": true
     },
     "enabled": true,
     "identifier": "JACUZZI_RELEASE_LKGM"
@@ -347,8 +340,7 @@
   "CROS_OCTOPUS_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "octopus",
-      "cros_chrome_version": "120.0.6062.0",
-      "cros_img": "octopus-release/R120-15645.0.0"
+      "use_lkgm": true
     },
     "enabled": true,
     "identifier": "OCTOPUS_RELEASE_LKGM"
@@ -383,8 +375,7 @@
   "CROS_STRONGBAD_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "strongbad",
-      "cros_chrome_version": "120.0.6062.0",
-      "cros_img": "strongbad-release/R120-15645.0.0"
+      "use_lkgm": true
     },
     "enabled": true,
     "identifier": "STRONGBAD_RELEASE_LKGM"
