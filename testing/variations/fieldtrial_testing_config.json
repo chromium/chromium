@@ -3624,6 +3624,21 @@
             ]
         }
     ],
+    "ChromeOSScreenSaverDuration": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Dogfood_CANARY_DEV_50",
+                    "enable_features": [
+                        "ScreenSaverDuration"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSWelcomeTour": [
         {
             "platforms": [
