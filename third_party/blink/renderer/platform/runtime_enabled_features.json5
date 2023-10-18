@@ -406,6 +406,12 @@
     {
       name: "BackfaceVisibilityInterop",
     },
+    // This is a killswitch for the fix for crbug.com/954591 and should be
+    // removable a few weeks after M120 ships.
+    {
+      name: "BackfaceVisibilityNewInheritance",
+      status: "stable",
+    },
     {
       name: "BackForwardCache",
       base_feature: "none",

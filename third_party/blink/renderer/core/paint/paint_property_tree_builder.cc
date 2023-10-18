@@ -1226,6 +1226,24 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         if (object_.HasHiddenBackface()) {
           state.backface_visibility =
               TransformPaintPropertyNode::BackfaceVisibility::kHidden;
+        } else if (RuntimeEnabledFeatures::
+                       BackfaceVisibilityNewInheritanceEnabled()) {
+          if (!context_.can_inherit_backface_visibility ||
+              style.Has3DTransformOperation()) {
+            // We want to set backface-visibility back to visible, if the
+            // parent doesn't allow this element to inherit backface visibility
+            // (e.g. if the parent preserves 3d), or this element has a
+            // syntactically-3D transform in *any* of the transform properties
+            // (not just 'transform'). This means that backface-visibility on
+            // an ancestor element no longer affects this element.
+            state.backface_visibility =
+                TransformPaintPropertyNode::BackfaceVisibility::kVisible;
+          } else {
+            // Otherwise we want to inherit backface-visibility.
+            DCHECK_EQ(
+                state.backface_visibility,
+                TransformPaintPropertyNode::BackfaceVisibility::kInherited);
+          }
         } else if (state.direct_compositing_reasons !=
                    CompositingReason::kNone) {
           // The above condition fixes a CompositeAfterPaint regression
@@ -2663,7 +2681,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // scrolling contents.
       if (object_.HasTransform() && object_.StyleRef().BackfaceVisibility() ==
                                         EBackfaceVisibility::kHidden) {
-        state.flags.delegates_to_parent_for_backface = true;
+        if (RuntimeEnabledFeatures::BackfaceVisibilityNewInheritanceEnabled()) {
+          CHECK_EQ(state.backface_visibility,
+                   TransformPaintPropertyNode::BackfaceVisibility::kInherited);
+        } else {
+          state.flags.delegates_to_parent_for_backface = true;
+        }
       }
 
       auto effective_change_type = properties_->UpdateScrollTranslation(
@@ -3108,6 +3131,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
                                    force_subtree_update);
   }
 #endif
+
+  // Child transform nodes should not inherit backface visibility if the parent
+  // transform node preserves 3d. This is before UpdatePerspective() because
+  // perspective itself doesn't affect backface visibility inheritance.
+  context_.can_inherit_backface_visibility =
+      context_.should_flatten_inherited_transform;
 
   if (properties_) {
     UpdateInnerBorderRadiusClip();

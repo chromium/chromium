@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -76,8 +77,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
  public:
   enum class BackfaceVisibility : unsigned char {
     // backface-visibility is not inherited per the css spec. However, for an
-    // element that don't create a new plane, for now we let the element
-    // inherit the parent backface-visibility.
+    // element that don't create a new plane, we let the element inherit the
+    // parent backface-visibility and use the parent's transform to determine
+    // whether the backface is facing forward.
     kInherited,
     // backface-visibility: hidden for the new plane.
     kHidden,
@@ -370,6 +372,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   }
 
   bool DelegatesToParentForBackface() const {
+    if (RuntimeEnabledFeatures::BackfaceVisibilityNewInheritanceEnabled()) {
+      return state_.backface_visibility == BackfaceVisibility::kInherited;
+    }
     return state_.flags.delegates_to_parent_for_backface;
   }
 

@@ -146,6 +146,12 @@ struct PaintPropertyTreeBuilderFragmentContext {
   // be updated whenever |transform| is; flattening only needs to happen
   // to immediate children.
   bool should_flatten_inherited_transform = false;
+
+  // Whether newly created child Transform nodes can inherit
+  // backface-visibility from the parent. Some situations (e.g. having 3d
+  // transform operations) of the child can override this flag.
+  bool can_inherit_backface_visibility = false;
+
   // Rendering context for 3D sorting. See
   // TransformPaintPropertyNode::renderingContextId.
   unsigned rendering_context_id = 0;
