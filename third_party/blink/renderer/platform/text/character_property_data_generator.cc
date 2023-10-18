@@ -5,44 +5,71 @@
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 
 #include <stdio.h>
-#include <cassert>
-#include <cstring>
-#include <memory>
 #include <unicode/ucptrie.h>
 #include <unicode/umutablecptrie.h>
 
-#include "base/check.h"
+#include <cassert>
+#include <cstring>
+#include <iterator>
+#include <memory>
+
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
 
 namespace blink {
 namespace {
 
-const UChar32 kMaxCodepoint = 0x10FFFF;
-#define ARRAY_LENGTH(a) (sizeof(a) / sizeof((a)[0]))
+class CharacterPropertyValues {
+ public:
+  constexpr static UChar32 kMaxCodepoint = 0x10FFFF;
+  constexpr static UChar32 kSize = kMaxCodepoint + 1;
 
-static void SetRanges(CharacterProperty* values,
-                      const UChar32* ranges,
-                      size_t length,
-                      CharacterProperty value) {
-  assert(length % 2 == 0);
-  const UChar32* end = ranges + length;
-  for (; ranges != end; ranges += 2) {
-    assert(ranges[0] <= ranges[1] && ranges[1] <= kMaxCodepoint);
-    for (UChar32 c = ranges[0]; c <= ranges[1]; c++)
-      values[c] |= value;
+  CharacterPropertyValues() : values_(new CharacterProperty[kSize]) {
+    Initialize();
   }
-}
 
-static void SetValues(CharacterProperty* values,
-                      const UChar32* begin,
-                      size_t length,
-                      CharacterProperty value) {
-  const UChar32* end = begin + length;
-  for (; begin != end; begin++) {
-    assert(*begin <= kMaxCodepoint);
-    values[*begin] |= value;
+  CharacterProperty operator[](UChar32 index) const { return values_[index]; }
+
+ private:
+  void Initialize() {
+    memset(values_.get(), 0, sizeof(CharacterProperty) * kSize);
+
+#define SET(name)                                                            \
+  SetRanges(name##Ranges, std::size(name##Ranges), CharacterProperty::name); \
+  SetValues(name##Array, std::size(name##Array), CharacterProperty::name);
+
+    SET(kIsCJKIdeographOrSymbol);
+    SET(kIsPotentialCustomElementNameChar);
+    SET(kIsBidiControl);
+#undef SET
+    SetRanges(kIsHangulRanges, std::size(kIsHangulRanges),
+              CharacterProperty::kIsHangul);
   }
-}
+
+  void SetRanges(const UChar32* ranges,
+                 size_t length,
+                 CharacterProperty value) {
+    CHECK_EQ(length % 2, 0u);
+    const UChar32* end = ranges + length;
+    for (; ranges != end; ranges += 2) {
+      CHECK_LE(ranges[0], ranges[1]);
+      CHECK_LE(ranges[1], kMaxCodepoint);
+      for (UChar32 c = ranges[0]; c <= ranges[1]; c++) {
+        values_[c] |= value;
+      }
+    }
+  }
+
+  void SetValues(const UChar32* begin, size_t length, CharacterProperty value) {
+    const UChar32* end = begin + length;
+    for (; begin != end; begin++) {
+      CHECK_LE(*begin, kMaxCodepoint);
+      values_[*begin] |= value;
+    }
+  }
+
+  std::unique_ptr<CharacterProperty[]> values_;
+};
 
 static void GenerateUTrieSerialized(FILE* fp, int32_t size, uint8_t* array) {
   fprintf(fp,
@@ -65,20 +92,7 @@ static void GenerateUTrieSerialized(FILE* fp, int32_t size, uint8_t* array) {
 
 static void GenerateCharacterPropertyData(FILE* fp) {
   // Create a value array of all possible code points.
-  const UChar32 kSize = kMaxCodepoint + 1;
-  std::unique_ptr<CharacterProperty[]> values(new CharacterProperty[kSize]);
-  memset(values.get(), 0, sizeof(CharacterProperty) * kSize);
-
-#define SET(name)                                                   \
-  SetRanges(values.get(), name##Ranges, ARRAY_LENGTH(name##Ranges), \
-            CharacterProperty::name);                               \
-  SetValues(values.get(), name##Array, ARRAY_LENGTH(name##Array),   \
-            CharacterProperty::name);
-
-  SET(kIsCJKIdeographOrSymbol);
-  SET(kIsPotentialCustomElementNameChar);
-  SET(kIsBidiControl);
-  SET(kIsHangul);
+  CharacterPropertyValues values;
 
   // Create a trie from the value array.
   UErrorCode error = U_ZERO_ERROR;
@@ -88,15 +102,17 @@ static void GenerateCharacterPropertyData(FILE* fp) {
   UChar32 start = 0;
   CharacterProperty value = values[0];
   for (UChar32 c = 1;; c++) {
-    if (c < kSize && values[c] == value)
+    if (c < CharacterPropertyValues::kSize && values[c] == value) {
       continue;
+    }
     if (static_cast<uint32_t>(value)) {
       umutablecptrie_setRange(trie.get(), start, c - 1,
                               static_cast<uint32_t>(value), &error);
       assert(error == U_ZERO_ERROR);
     }
-    if (c >= kSize)
+    if (c >= CharacterPropertyValues::kSize) {
       break;
+    }
     start = c;
     value = values[start];
   }
