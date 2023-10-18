@@ -168,6 +168,7 @@ aggregate_vector_icons("components_vector_icons") {
     "photo.icon",
     "photo_chrome_refresh.icon",
     "photo_off_chrome_refresh.icon",
+    "picture_in_picture.icon",
     "picture_in_picture_alt.icon",
     "play_arrow.icon",
     "play_arrow_chrome_refresh.icon",

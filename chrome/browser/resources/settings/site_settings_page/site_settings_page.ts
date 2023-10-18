@@ -59,8 +59,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE,
       id: Id.AUTO_PICTURE_IN_PICTURE,
       label: 'siteSettingsAutoPictureInPicture',
-      // TODO(https://crbug.com/1471051): Use real icon.
-      icon: 'settings:window-management',
+      icon: 'settings:picture-in-picture',
       enabledLabel: 'siteSettingsAutoPictureInPictureAllowed',
       disabledLabel: 'siteSettingsAutoPictureInPictureBlocked',
       shouldShow: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
