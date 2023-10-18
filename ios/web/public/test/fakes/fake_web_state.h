@@ -30,6 +30,7 @@ namespace web {
 class FakeWebState : public WebState {
  public:
   FakeWebState();
+  FakeWebState(WebStateID unique_identifier, NSString* stable_identifier);
   ~FakeWebState() override;
 
   // WebState implementation.
