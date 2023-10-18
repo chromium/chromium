@@ -454,7 +454,7 @@ third_party/bidimapper/build.sh
 4.1. Trigger a build and test run:
 
 ```shell
-third_party/blink/tools/blink_tool.py update-metadata --build="linux-blink-rel"
+third_party/blink/tools/blink_tool.py update-metadata --build="linux-blink-rel" --verbose
 ```
 
 4.2. Once the test completes on the builder, rerun that command to update the metadata.
