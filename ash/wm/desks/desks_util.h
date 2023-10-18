@@ -66,7 +66,7 @@ ASH_EXPORT aura::Window* GetDeskContainerForContext(aura::Window* context);
 // nullptr. Note that floated window is not in the desk container but still
 // considered as "belonging" to the desk, as it's only visible on a particular
 // desk.
-const Desk* GetDeskForContext(aura::Window* context);
+ASH_EXPORT const Desk* GetDeskForContext(aura::Window* context);
 
 // Returns true if the DesksBar widget should be created in overview mode.
 ASH_EXPORT bool ShouldDesksBarBeCreated();

@@ -311,13 +311,13 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                               bool for_drop);
 
   // Updates the drag details for LegacyDeskBarView to end the drag and move the
-  // window of |drag_item| to another desk if it was dropped on a mini_view of
-  // a desk that is different than that of the active desk or if dropped on the
-  // new desk button. Returns true if the window was successfully moved to
-  // another desk.
+  // window(s) represented by the `dragged_item` to another desk if it was
+  // dropped on a mini_view of a desk that is different than that of the active
+  // desk or if dropped on the new desk button. Returns true if the window(s)
+  // were successfully moved to another desk.
   bool MaybeDropItemOnDeskMiniViewOrNewDeskButton(
       const gfx::Point& screen_location,
-      OverviewItemBase* drag_item);
+      OverviewItemBase* dragged_item);
 
   // Transforms `desks_bar_view_` from zero state to expanded state. Called when
   // a normal drag starts to enable user dragging a window and dropping it to

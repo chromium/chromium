@@ -889,11 +889,9 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
   if (overview_session_)
     overview_session_->UpdateFrameThrottling();
 
-  if (!item_destroying)
+  if (!item_destroying || !overview_session_) {
     return;
-
-  if (!overview_session_)
-    return;
+  }
 
   if (empty()) {
     overview_session_->OnGridEmpty();
@@ -1556,24 +1554,25 @@ bool OverviewGrid::IntersectsWithDesksBar(const gfx::Point& screen_location,
 
 bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
     const gfx::Point& screen_location,
-    OverviewItemBase* drag_item) {
-  DCHECK(desks_util::ShouldDesksBarBeCreated());
+    OverviewItemBase* dragged_item) {
+  CHECK(desks_util::ShouldDesksBarBeCreated());
 
-  aura::Window* const dragged_window = drag_item->GetWindow();
-  const bool dragged_window_is_visible_on_all_desks =
-      dragged_window &&
-      desks_util::IsWindowVisibleOnAllWorkspaces(dragged_window);
+  const bool has_windows_visible_on_all_desks =
+      dragged_item->HasVisibleOnAllDesksWindow();
+
   // End the drag for the LegacyDeskBarView.
   if (!IntersectsWithDesksBar(screen_location,
                               /*update_desks_bar_drag_details=*/
-                              !dragged_window_is_visible_on_all_desks,
+                              !has_windows_visible_on_all_desks,
                               /*for_drop=*/true)) {
     return false;
   }
 
-  if (dragged_window_is_visible_on_all_desks) {
+  if (has_windows_visible_on_all_desks) {
     // Show toast since items that are visible on all desks should not be able
     // to be unassigned during overview.
+    // TODO(b/306034162): Consider updating the string for the toast with the
+    // existence of group item.
     Shell::Get()->toast_manager()->Show(
         ToastData(kMoveVisibleOnAllDesksWindowToastId,
                   ToastCatalogName::kMoveVisibleOnAllDesksWindow,
@@ -1583,6 +1582,22 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
   }
 
   auto* desks_controller = DesksController::Get();
+
+  auto move_windows_to_target_desk = [&](Desk* target_desk) -> bool {
+    bool did_any_window_move = false;
+    for (auto* dragged_window : dragged_item->GetWindows()) {
+      if (!desks_controller->MoveWindowFromActiveDeskTo(
+              dragged_window, target_desk, root_window_,
+              DesksMoveWindowFromActiveDeskSource::kDragAndDrop)) {
+        CHECK(!did_any_window_move);
+        return false;
+      }
+      did_any_window_move = true;
+    }
+    return true;
+  };
+
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
   for (auto* mini_view : desks_bar_view_->mini_views()) {
     if (!mini_view->IsPointOnMiniView(screen_location))
       continue;
@@ -1591,7 +1606,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
     if (target_desk == desks_controller->active_desk())
       return false;
 
-    if (chromeos::features::IsJellyrollEnabled()) {
+    if (is_jellyroll_enabled) {
       // Make sure that new desk button goes back to the expanded state after
       // the window is dropped on an existing desk.
       desks_bar_view_->UpdateDeskIconButtonState(
@@ -1599,31 +1614,27 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
           /*target_state=*/CrOSNextDeskIconButton::State::kExpanded);
     }
 
-    return desks_controller->MoveWindowFromActiveDeskTo(
-        dragged_window, target_desk, root_window_,
-        DesksMoveWindowFromActiveDeskSource::kDragAndDrop);
+    return move_windows_to_target_desk(target_desk);
   }
 
-  if (!desks_controller->CanCreateDesks())
+  if (!desks_controller->CanCreateDesks()) {
     return false;
+  }
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    if (!desks_bar_view_->new_desk_button()->IsPointOnButton(screen_location)) {
-      return false;
-    }
-  } else {
-    if (!desks_bar_view_->expanded_state_new_desk_button()->IsPointOnButton(
-            screen_location)) {
-      return false;
-    }
+  const bool is_point_on_new_desk_button =
+      is_jellyroll_enabled
+          ? desks_bar_view_->new_desk_button()->IsPointOnButton(screen_location)
+          : desks_bar_view_->expanded_state_new_desk_button()->IsPointOnButton(
+                screen_location);
+
+  if (!is_point_on_new_desk_button) {
+    return false;
   }
 
   desks_bar_view_->OnNewDeskButtonPressed(
       DesksCreationRemovalSource::kDragToNewDeskButton);
 
-  return desks_controller->MoveWindowFromActiveDeskTo(
-      dragged_window, desks_controller->desks().back().get(), root_window_,
-      DesksMoveWindowFromActiveDeskSource::kDragAndDrop);
+  return move_windows_to_target_desk(desks_controller->desks().back().get());
 }
 
 void OverviewGrid::MaybeExpandDesksBarView(const gfx::PointF& screen_location) {

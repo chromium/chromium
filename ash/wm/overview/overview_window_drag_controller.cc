@@ -5,7 +5,6 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 
 #include <algorithm>
-#include <utility>
 
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/screen_util.h"

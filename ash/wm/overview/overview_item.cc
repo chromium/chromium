@@ -255,6 +255,10 @@ std::vector<aura::Window*> OverviewItem::GetWindows() {
   return {transform_window_.window()};
 }
 
+bool OverviewItem::HasVisibleOnAllDesksWindow() {
+  return desks_util::IsWindowVisibleOnAllWorkspaces(GetWindow());
+}
+
 bool OverviewItem::Contains(const aura::Window* target) const {
   return transform_window_.Contains(target);
 }

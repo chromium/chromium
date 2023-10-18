@@ -145,6 +145,10 @@ class ASH_EXPORT OverviewItemBase {
   // a list of windows.
   virtual std::vector<aura::Window*> GetWindows() = 0;
 
+  // Returns true if all the windows represented by `this` are visible on all
+  // workspaces.
+  virtual bool HasVisibleOnAllDesksWindow() = 0;
+
   // Returns true if the given `target` is contained within `this`.
   virtual bool Contains(const aura::Window* target) const = 0;
 

@@ -17,6 +17,8 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
@@ -1414,9 +1416,9 @@ TEST_F(SnapGroupEntryPointArm1Test, GroupItemActivation) {
 TEST_F(SnapGroupEntryPointArm1Test, DragAndDropBasic) {
   // Explicitly create another desk so that the virtual desk bar won't expand
   // from zero-state to expanded-state when dragging starts.
-  auto* desk_controller = DesksController::Get();
-  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  ASSERT_EQ(2u, desk_controller->desks().size());
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
 
   std::unique_ptr<aura::Window> window0 = CreateAppWindow();
   std::unique_ptr<aura::Window> window1 = CreateAppWindow();
@@ -1455,9 +1457,9 @@ TEST_F(SnapGroupEntryPointArm1Test, DragAndDropBasic) {
 // Tests that the bounds of the drop target for `OverviewGroupItem` will match
 // that of the corresponding item which the drop target is a placeholder for.
 TEST_F(SnapGroupEntryPointArm1Test, DropTargetBoundsForGroupItem) {
-  auto* desk_controller = DesksController::Get();
-  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  ASSERT_EQ(2u, desk_controller->desks().size());
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
 
   std::unique_ptr<aura::Window> window0 = CreateAppWindow();
   std::unique_ptr<aura::Window> window1 = CreateAppWindow();
@@ -1505,9 +1507,9 @@ TEST_F(SnapGroupEntryPointArm1Test, DropTargetBoundsForGroupItem) {
 // Tests the stacking order of the overview group item should be above other
 // overview items while being dragged.
 TEST_F(SnapGroupEntryPointArm1Test, StackingOrderWhileDraggingInOverview) {
-  auto* desk_controller = DesksController::Get();
-  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  ASSERT_EQ(2u, desk_controller->desks().size());
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
 
   std::unique_ptr<aura::Window> w0 = CreateAppWindow();
   std::unique_ptr<aura::Window> w1 = CreateAppWindow();
@@ -1568,9 +1570,9 @@ TEST_F(SnapGroupEntryPointArm1Test, StackingOrderWhileDraggingInOverview) {
 // two windows hosted by it however when one of the windows gets destroyed in
 // overview, the remaining item becomes snappable.
 TEST_F(SnapGroupEntryPointArm1Test, GroupItemSnapBehaviorInOverview) {
-  auto* desk_controller = DesksController::Get();
-  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  ASSERT_EQ(2u, desk_controller->desks().size());
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
 
   std::unique_ptr<aura::Window> window0 = CreateAppWindow();
   std::unique_ptr<aura::Window> window1 = CreateAppWindow();
@@ -1613,6 +1615,51 @@ TEST_F(SnapGroupEntryPointArm1Test, GroupItemSnapBehaviorInOverview) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(WindowState::Get(window1.get())->GetStateType(),
             chromeos::WindowStateType::kPrimarySnapped);
+}
+
+// Tests that the two windows contained in the overview group item will be moved
+// from the original desk to another desk on drag complete.
+TEST_F(SnapGroupEntryPointArm1Test, DragOverviewGroupItemToAnotherDeskBasic) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  std::unique_ptr<aura::Window> window0 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& window_list = overview_grid->window_list();
+  ASSERT_EQ(window_list.size(), 1u);
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+  const auto& mini_views = desks_bar_view->mini_views();
+  ASSERT_EQ(mini_views.size(), 2u);
+
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+
+  // Verify the initial conditions before dragging the item to another desk.
+  ASSERT_EQ(desks_util::GetDeskForContext(window0.get()), desk0);
+  ASSERT_EQ(desks_util::GetDeskForContext(window1.get()), desk0);
+
+  // Test that both windows contained in the overview group item will be moved
+  // to the another desk.
+  DragItemToPoint(
+      overview_controller->overview_session()->GetOverviewItemForWindow(
+          window0.get()),
+      mini_views[1]->GetBoundsInScreen().CenterPoint(), GetEventGenerator(),
+      /*by_touch_gestures=*/false,
+      /*drop=*/true);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_EQ(desks_util::GetDeskForContext(window0.get()), desk1);
+  ASSERT_EQ(desks_util::GetDeskForContext(window1.get()), desk1);
 }
 
 // Tests that the hit area of the split view divider can be outside of its

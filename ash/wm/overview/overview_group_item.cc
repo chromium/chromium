@@ -82,6 +82,16 @@ std::vector<aura::Window*> OverviewGroupItem::GetWindows() {
   return windows;
 }
 
+bool OverviewGroupItem::HasVisibleOnAllDesksWindow() {
+  for (const auto& item : overview_items_) {
+    if (item->HasVisibleOnAllDesksWindow()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool OverviewGroupItem::Contains(const aura::Window* target) const {
   for (const auto& item : overview_items_) {
     if (item->Contains(target)) {
