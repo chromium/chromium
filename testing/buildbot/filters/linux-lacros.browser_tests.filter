@@ -84,6 +84,3 @@
 -ProfileHelperTest.OpenNewWindowForProfile
 -WebAppBrowserTest.WindowsOffsetForMultiWindowPWA
 -WebAppTabStripBrowserTest.ActiveTabColorIsBackgroundColor
-
-# crbug.com/1493211
--SafeBrowsingBlockingPageBrowserTestWithThreatTypeAndIsolationSetting.*
