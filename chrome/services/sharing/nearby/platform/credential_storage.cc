@@ -53,10 +53,16 @@ void CredentialStorage::UpdateLocalCredential(
     nearby::internal::LocalCredential credential,
     SaveCredentialsResultCallback callback) {}
 
-// TODO(b/287334225): Implement.
 void CredentialStorage::GetLocalCredentials(
     const CredentialSelector& credential_selector,
-    GetLocalCredentialsResultCallback callback) {}
+    GetLocalCredentialsResultCallback callback) {
+  // Because 'manager_app_id' and 'account_name' are consistent per user, and
+  // credentials are stored in the user's cryptohome, 'credential_selector' is
+  // redundant.
+  nearby_presence_credential_storage_->GetPrivateCredentials(
+      base::BindOnce(&CredentialStorage::OnLocalCredentialsRetrieved,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
 // TODO(b/287334335): Implement.
 void CredentialStorage::GetPublicCredentials(
@@ -112,6 +118,33 @@ void CredentialStorage::OnPublicCredentialsRetrieved(
 
   std::move(on_public_credentials_retrieved_callback)
       .credentials_fetched_cb(shared_credentials);
+}
+
+void CredentialStorage::OnLocalCredentialsRetrieved(
+    nearby::presence::GetLocalCredentialsResultCallback
+        on_local_credentials_retrieved_callback,
+    mojo_base::mojom::AbslStatusCode retrieved_status,
+    absl::optional<
+        std::vector<ash::nearby::presence::mojom::LocalCredentialPtr>>
+        local_credentials_mojom) {
+  if (retrieved_status != mojo_base::mojom::AbslStatusCode::kOk) {
+    std::move(on_local_credentials_retrieved_callback)
+        .credentials_fetched_cb(absl::Status(
+            absl::StatusCode::kAborted, "Failed to retrieve from database."));
+    return;
+  }
+
+  CHECK(local_credentials_mojom.has_value());
+
+  std::vector<LocalCredential> local_credentials;
+  for (const auto& local_credential_mojom : *local_credentials_mojom) {
+    local_credentials.push_back(
+        ash::nearby::presence::proto::LocalCredentialFromMojom(
+            local_credential_mojom.get()));
+  }
+
+  std::move(on_local_credentials_retrieved_callback)
+      .credentials_fetched_cb(local_credentials);
 }
 
 }  // namespace nearby::chrome

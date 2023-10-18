@@ -18,6 +18,7 @@ const char kManagerAppName[] = "test_manager_app_id";
 const char kAccountName[] = "test_account_name";
 
 const unsigned int kPublicCredentialInStorageCount = 1u;
+const unsigned int kPrivateCredentialInStorageCount = 1u;
 
 const std::vector<uint8_t> kSecretId_Local = {0x11, 0x12, 0x13,
                                               0x14, 0x15, 0x16};
@@ -153,6 +154,42 @@ ash::nearby::presence::mojom::SharedCredentialPtr CreateSharedCredentialMojo(
       advertisement_signature_verification_key, identity_type, version);
 }
 
+ash::nearby::presence::mojom::LocalCredentialPtr CreateLocalCredential(
+    const std::vector<uint8_t>& secret_id,
+    const std::vector<uint8_t>& key_seed,
+    const int64_t start_time_millis,
+    const std::vector<uint8_t>& metadata_encryption_key_v0,
+    const std::string& advertisement_signing_key_certificate_alias,
+    const std::vector<uint8_t>& advertisement_signing_key_data,
+    const std::string& connection_signing_key_certificate_alias,
+    const std::vector<uint8_t>& connection_signing_key_data,
+    const ash::nearby::presence::mojom::IdentityType identity_type,
+    const base::flat_map<uint32_t, bool>& consumed_salts,
+    const std::vector<uint8_t>& metadata_encryption_key_v1) {
+  auto local_credential = ash::nearby::presence::mojom::LocalCredential::New();
+
+  local_credential->secret_id = secret_id;
+  local_credential->key_seed = key_seed;
+  local_credential->start_time_millis = start_time_millis;
+  local_credential->metadata_encryption_key_v0 = metadata_encryption_key_v0;
+  local_credential->identity_type = identity_type;
+  local_credential->consumed_salts = consumed_salts;
+  local_credential->metadata_encryption_key_v1 = metadata_encryption_key_v1;
+
+  auto advertisement_key = ash::nearby::presence::mojom::PrivateKey::New();
+  advertisement_key->certificate_alias =
+      advertisement_signing_key_certificate_alias;
+  advertisement_key->key = advertisement_signing_key_data;
+  local_credential->advertisement_signing_key = std::move(advertisement_key);
+
+  auto connection_key = ash::nearby::presence::mojom::PrivateKey::New();
+  connection_key->certificate_alias = connection_signing_key_certificate_alias;
+  connection_key->key = connection_signing_key_data;
+  local_credential->connection_signing_key = std::move(connection_key);
+
+  return local_credential;
+}
+
 void PopulateTestData(
     std::vector<::nearby::internal::LocalCredential>& local_credentials,
     std::vector<::nearby::internal::SharedCredential>& shared_credentials) {
@@ -218,7 +255,6 @@ class FakeNearbyPresenceCredentialStorage
         kAdvertisementSignatureVerificationKey,
         ash::nearby::presence::mojom::IdentityType::kIdentityTypePrivate,
         kVersion));
-
     // The constant must be changed if more shared credentials are added to
     // the vector.
     ASSERT_EQ(kPublicCredentialInStorageCount, shared_credentials.size());
@@ -228,8 +264,26 @@ class FakeNearbyPresenceCredentialStorage
   }
 
   void GetPrivateCredentials(GetPrivateCredentialsCallback callback) override {
-    // TODO(b:295336839): Method will be implemented when CredentialStorage
-    // consumes the GetPrivateCredentials method.
+    if (!should_private_credentials_successfully_retrieve_) {
+      std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kUnknown,
+                              absl::nullopt);
+      return;
+    }
+
+    std::vector<ash::nearby::presence::mojom::LocalCredentialPtr>
+        local_credentials;
+    local_credentials.emplace_back(CreateLocalCredential(
+        kSecretId_Local, kKeySeed, kStartTimeMillis, kMetadataEncryptionKeyV0,
+        AdvertisementSigningKeyCertificateAlias, kAdvertisementPrivateKey,
+        ConnectionSigningKeyCertificateAlias, kConnectionPrivateKey,
+        ash::nearby::presence::mojom::IdentityType::kIdentityTypePrivate,
+        kConsumedSalts, kMetadataEncryptionKeyV1));
+    // The constant must be changed if more local credentials are added to
+    // the vector.
+    ASSERT_EQ(kPrivateCredentialInStorageCount, local_credentials.size());
+
+    std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kOk,
+                            std::move(local_credentials));
   }
 
   void SetShouldCredentialsSuccessfullySave(bool should_succeed) {
@@ -240,9 +294,14 @@ class FakeNearbyPresenceCredentialStorage
     should_public_credentials_successfully_retrieve_ = should_succed;
   }
 
+  void SetShouldPrivateCredentialsSuccessfullyRetrieve(bool should_succed) {
+    should_private_credentials_successfully_retrieve_ = should_succed;
+  }
+
  private:
   bool should_credentials_successfully_save_ = true;
   bool should_public_credentials_successfully_retrieve_ = true;
+  bool should_private_credentials_successfully_retrieve_ = true;
 };
 
 }  // namespace
@@ -450,6 +509,38 @@ TEST_F(CredentialStorageTest, GetPublicCredentials_Remote_Fail) {
   credential_storage_->GetPublicCredentials(
       CreateCredentialSelector(),
       ::nearby::presence::PublicCredentialType::kLocalPublicCredential,
+      {.credentials_fetched_cb = [&](auto status_or_creds) {
+        EXPECT_FALSE(status_or_creds.ok());
+        run_loop.Quit();
+      }});
+
+  run_loop.Run();
+}
+
+TEST_F(CredentialStorageTest, GetLocalCredentials_Success) {
+  base::RunLoop run_loop;
+
+  credential_storage_->GetLocalCredentials(
+      CreateCredentialSelector(),
+      {.credentials_fetched_cb = [&](auto status_or_creds) {
+        ASSERT_TRUE(status_or_creds.ok());
+
+        auto& creds = *status_or_creds;
+        EXPECT_EQ(creds.size(), kPrivateCredentialInStorageCount);
+
+        run_loop.Quit();
+      }});
+
+  run_loop.Run();
+}
+
+TEST_F(CredentialStorageTest, GetLocalCredentials_Fail) {
+  base::RunLoop run_loop;
+
+  fake_credential_storage_->SetShouldPrivateCredentialsSuccessfullyRetrieve(
+      /*should_succeed=*/false);
+  credential_storage_->GetLocalCredentials(
+      CreateCredentialSelector(),
       {.credentials_fetched_cb = [&](auto status_or_creds) {
         EXPECT_FALSE(status_or_creds.ok());
         run_loop.Quit();
