@@ -133,7 +133,7 @@ GPU::GPU(NavigatorBase& navigator)
 GPU::~GPU() = default;
 
 WGSLLanguageFeatures* GPU::wgslLanguageFeatures() const {
-  return wgsl_language_features_;
+  return wgsl_language_features_.Get();
 }
 
 void GPU::Trace(Visitor* visitor) const {

@@ -86,7 +86,7 @@ StorageNamespace* StorageController::CreateSessionStorageNamespace(
   // around.
   auto it = namespaces_->find(namespace_id);
   if (it != namespaces_->end())
-    return it->value;
+    return it->value.Get();
   StorageNamespace* ns =
       MakeGarbageCollected<StorageNamespace>(page, this, namespace_id);
   namespaces_->insert(namespace_id, ns);

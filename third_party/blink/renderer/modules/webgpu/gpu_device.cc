@@ -447,11 +447,11 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
 }
 
 GPUAdapter* GPUDevice::adapter() const {
-  return adapter_;
+  return adapter_.Get();
 }
 
 GPUSupportedFeatures* GPUDevice::features() const {
-  return features_;
+  return features_.Get();
 }
 
 ScriptPromise GPUDevice::lost(ScriptState* script_state) {
@@ -459,7 +459,7 @@ ScriptPromise GPUDevice::lost(ScriptState* script_state) {
 }
 
 GPUQueue* GPUDevice::queue() {
-  return queue_;
+  return queue_.Get();
 }
 
 bool GPUDevice::destroyed() const {

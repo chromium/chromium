@@ -1059,7 +1059,7 @@ HTMLElement* TextControlElement::CreateInnerEditorElement() {
   DCHECK(!inner_editor_);
   inner_editor_ =
       MakeGarbageCollected<TextControlInnerEditorElement>(GetDocument());
-  return inner_editor_;
+  return inner_editor_.Get();
 }
 
 const String& TextControlElement::SuggestedValue() const {

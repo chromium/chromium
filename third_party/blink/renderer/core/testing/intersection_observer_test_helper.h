@@ -41,7 +41,9 @@ class TestIntersectionObserverDelegate : public IntersectionObserverDelegate {
   }
   int CallCount() const { return call_count_; }
   int EntryCount() const { return entries_.size(); }
-  const IntersectionObserverEntry* LastEntry() const { return entries_.back(); }
+  const IntersectionObserverEntry* LastEntry() const {
+    return entries_.back().Get();
+  }
   void Clear() {
     entries_.clear();
     call_count_ = 0;

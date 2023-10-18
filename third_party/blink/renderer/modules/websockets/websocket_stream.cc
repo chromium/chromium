@@ -592,7 +592,7 @@ void WebSocketStream::ContextDestroyed() {
 }
 
 bool WebSocketStream::HasPendingActivity() const {
-  return channel_;
+  return channel_ != nullptr;
 }
 
 void WebSocketStream::Trace(Visitor* visitor) const {

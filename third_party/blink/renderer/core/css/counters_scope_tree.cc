@@ -338,7 +338,7 @@ CountersScope* CountersScopeTree::FindScopeForElement(
     // If we found direct ancestor.
     if (IsAncestorOf((*rev_it)->RootElement(), element) ||
         &(*rev_it)->RootElement() == &element) {
-      return *rev_it;
+      return rev_it->Get();
     }
   }
   if (ancestor_sibling_scope) {

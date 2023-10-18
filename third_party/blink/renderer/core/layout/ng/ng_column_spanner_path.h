@@ -22,7 +22,7 @@ class NGColumnSpannerPath : public GarbageCollected<NGColumnSpannerPath> {
       : box_(block.GetLayoutBox()), child_(child) {}
 
   NGBlockNode BlockNode() const { return NGBlockNode(box_); }
-  const NGColumnSpannerPath* Child() const { return child_; }
+  const NGColumnSpannerPath* Child() const { return child_.Get(); }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(box_);

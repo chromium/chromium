@@ -157,8 +157,9 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
     if (Member<CSSColor>* found = color_value_cache_.Find(color, hash); found) {
       return found->Get();
     }
-    return color_value_cache_.Insert(
-        color, MakeGarbageCollected<CSSColor>(color), hash);
+    return color_value_cache_
+        .Insert(color, MakeGarbageCollected<CSSColor>(color), hash)
+        .Get();
   }
   FontFamilyValueCache::AddResult GetFontFamilyCacheEntry(
       const String& family_name) {

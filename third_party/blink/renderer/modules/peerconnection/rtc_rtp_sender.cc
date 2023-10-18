@@ -649,12 +649,12 @@ RTCRtpSender::RTCRtpSender(RTCPeerConnection* pc,
 
 MediaStreamTrack* RTCRtpSender::track() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return track_;
+  return track_.Get();
 }
 
 RTCDtlsTransport* RTCRtpSender::transport() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return transport_;
+  return transport_.Get();
 }
 
 RTCDtlsTransport* RTCRtpSender::rtcpTransport() {
@@ -894,7 +894,7 @@ RTCDTMFSender* RTCRtpSender::dtmf() {
     dtmf_ =
         RTCDTMFSender::Create(pc_->GetExecutionContext(), std::move(handler));
   }
-  return dtmf_;
+  return dtmf_.Get();
 }
 
 void RTCRtpSender::setStreams(HeapVector<Member<MediaStream>> streams,
@@ -940,7 +940,7 @@ RTCInsertableStreams* RTCRtpSender::createEncodedAudioStreams(
   }
 
   InitializeEncodedAudioStreams(script_state);
-  return encoded_audio_streams_;
+  return encoded_audio_streams_.Get();
 }
 
 RTCInsertableStreams* RTCRtpSender::createEncodedVideoStreams(
@@ -960,7 +960,7 @@ RTCInsertableStreams* RTCRtpSender::createEncodedVideoStreams(
   }
 
   InitializeEncodedVideoStreams(script_state);
-  return encoded_video_streams_;
+  return encoded_video_streams_.Get();
 }
 
 void RTCRtpSender::ContextDestroyed() {

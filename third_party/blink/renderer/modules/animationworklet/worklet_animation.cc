@@ -724,7 +724,7 @@ void WorkletAnimation::DestroyCompositorAnimation() {
 
 KeyframeEffect* WorkletAnimation::GetEffect() const {
   DCHECK(effects_.at(0));
-  return effects_.at(0);
+  return effects_.at(0).Get();
 }
 
 bool WorkletAnimation::IsActiveAnimation() const {

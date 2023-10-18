@@ -279,7 +279,7 @@ void USB::ContextDestroyed() {
 USBDevice* USB::GetOrCreateDevice(UsbDeviceInfoPtr device_info) {
   auto it = device_cache_.find(device_info->guid);
   if (it != device_cache_.end()) {
-    return it->value;
+    return it->value.Get();
   }
 
   String guid = device_info->guid;

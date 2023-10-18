@@ -267,7 +267,7 @@ FrameOrWorkerScheduler* WorkletGlobalScope::GetScheduler() {
 
 LocalFrame* WorkletGlobalScope::GetFrame() const {
   DCHECK(IsMainThreadWorkletGlobalScope());
-  return frame_;
+  return frame_.Get();
 }
 
 // Implementation of the first half of the "fetch and invoke a worklet script"

@@ -324,7 +324,7 @@ class MockFileChooserClient : public GarbageCollected<MockFileChooserClient>,
   void FilesChosen(FileChooserFileInfoList, const base::FilePath&) override {}
   void WillOpenPopup() override {}
 
-  LocalFrame* FrameOrNull() const override { return frame_; }
+  LocalFrame* FrameOrNull() const override { return frame_.Get(); }
 
   Member<LocalFrame> frame_;
 };

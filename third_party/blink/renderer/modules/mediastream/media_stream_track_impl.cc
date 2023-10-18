@@ -699,7 +699,7 @@ MediaStreamTrackVideoStats* MediaStreamTrackImpl::stats(
       if (!video_stats_) {
         video_stats_ = MakeGarbageCollected<MediaStreamTrackVideoStats>(this);
       }
-      return video_stats_;
+      return video_stats_.Get();
     }
   }
 }

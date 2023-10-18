@@ -58,7 +58,7 @@ MediaStreamTrackProcessor::MediaStreamTrackProcessor(
 
 ReadableStream* MediaStreamTrackProcessor::readable(ScriptState* script_state) {
   if (source_stream_)
-    return source_stream_;
+    return source_stream_.Get();
 
   if (input_track_->Component()->GetSourceType() ==
       MediaStreamSource::kTypeVideo) {
@@ -71,7 +71,7 @@ ReadableStream* MediaStreamTrackProcessor::readable(ScriptState* script_state) {
       MakeGarbageCollected<UnderlyingSourceCloser>(input_track_, this);
   input_track_->AddObserver(source_closer_);
 
-  return source_stream_;
+  return source_stream_.Get();
 }
 
 void MediaStreamTrackProcessor::CreateVideoSourceStream(

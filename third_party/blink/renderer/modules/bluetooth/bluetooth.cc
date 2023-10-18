@@ -656,7 +656,7 @@ BluetoothDevice* Bluetooth::GetBluetoothDeviceRepresentingDevice(
   auto it =
       device_instance_map_.find(device_ptr->id.DeviceIdInBase64().c_str());
   if (it != device_instance_map_.end()) {
-    return it->value;
+    return it->value.Get();
   }
 
   BluetoothDevice* device = MakeGarbageCollected<BluetoothDevice>(

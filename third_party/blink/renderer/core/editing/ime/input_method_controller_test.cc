@@ -41,7 +41,7 @@ class InputMethodControllerTest : public EditingTestBase {
   // TODO(editing-dev): We should use |CompositionEphemeralRange()| instead
   // of having |GetCompositionRange()| and marking |InputMethodControllerTest|
   // as friend class.
-  Range* GetCompositionRange() { return Controller().composition_range_; }
+  Range* GetCompositionRange() { return Controller().composition_range_.Get(); }
 
   Element* InsertHTMLElement(const char* element_code, const char* element_id);
   void CreateHTMLWithCompositionInputEventListeners();

@@ -228,10 +228,10 @@ class MediaControlsImplTest : public PageTestBase,
 
   MediaControlsImpl& MediaControls() { return *media_controls_; }
   MediaControlVolumeSliderElement* VolumeSliderElement() const {
-    return media_controls_->volume_slider_;
+    return media_controls_->volume_slider_.Get();
   }
   MediaControlTimelineElement* TimelineElement() const {
-    return media_controls_->timeline_;
+    return media_controls_->timeline_.Get();
   }
   Element* TimelineTrackElement() const {
     if (!TimelineElement())
@@ -239,35 +239,35 @@ class MediaControlsImplTest : public PageTestBase,
     return &TimelineElement()->GetTrackElement();
   }
   MediaControlCurrentTimeDisplayElement* GetCurrentTimeDisplayElement() const {
-    return media_controls_->current_time_display_;
+    return media_controls_->current_time_display_.Get();
   }
   MediaControlRemainingTimeDisplayElement* GetRemainingTimeDisplayElement()
       const {
-    return media_controls_->duration_display_;
+    return media_controls_->duration_display_.Get();
   }
   MediaControlMuteButtonElement* MuteButtonElement() const {
-    return media_controls_->mute_button_;
+    return media_controls_->mute_button_.Get();
   }
   MediaControlCastButtonElement* CastButtonElement() const {
-    return media_controls_->cast_button_;
+    return media_controls_->cast_button_.Get();
   }
   MediaControlDownloadButtonElement* DownloadButtonElement() const {
-    return media_controls_->download_button_;
+    return media_controls_->download_button_.Get();
   }
   MediaControlFullscreenButtonElement* FullscreenButtonElement() const {
-    return media_controls_->fullscreen_button_;
+    return media_controls_->fullscreen_button_.Get();
   }
   MediaControlPlaybackSpeedButtonElement* PlaybackSpeedButtonElement() const {
-    return media_controls_->playback_speed_button_;
+    return media_controls_->playback_speed_button_.Get();
   }
   MediaControlPlayButtonElement* PlayButtonElement() const {
-    return media_controls_->play_button_;
+    return media_controls_->play_button_.Get();
   }
   MediaControlOverflowMenuButtonElement* OverflowMenuButtonElement() const {
-    return media_controls_->overflow_menu_;
+    return media_controls_->overflow_menu_.Get();
   }
   MediaControlOverflowMenuListElement* OverflowMenuListElement() const {
-    return media_controls_->overflow_list_;
+    return media_controls_->overflow_list_.Get();
   }
 
   MockWebMediaPlayerForImpl* WebMediaPlayer() {

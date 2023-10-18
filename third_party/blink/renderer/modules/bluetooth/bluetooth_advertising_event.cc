@@ -61,7 +61,7 @@ BluetoothManufacturerDataMap* BluetoothAdvertisingEvent::manufacturerData()
 }
 
 BluetoothServiceDataMap* BluetoothAdvertisingEvent::serviceData() const {
-  return service_data_map_;
+  return service_data_map_.Get();
 }
 
 }  // namespace blink

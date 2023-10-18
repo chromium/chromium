@@ -54,7 +54,7 @@ Element* LargestContentfulPaint::element() const {
   if (!document.IsActive() || !document.GetFrame())
     return nullptr;
 
-  return element_;
+  return element_.Get();
 }
 
 void LargestContentfulPaint::BuildJSONValue(V8ObjectBuilder& builder) const {

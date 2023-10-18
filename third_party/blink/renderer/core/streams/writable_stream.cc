@@ -50,7 +50,7 @@ class WritableStream::PendingAbortRequest final
   PendingAbortRequest(const PendingAbortRequest&) = delete;
   PendingAbortRequest& operator=(const PendingAbortRequest&) = delete;
 
-  StreamPromiseResolver* GetPromise() { return promise_; }
+  StreamPromiseResolver* GetPromise() { return promise_.Get(); }
   v8::Local<v8::Value> Reason(v8::Isolate* isolate) {
     return reason_.Get(isolate);
   }

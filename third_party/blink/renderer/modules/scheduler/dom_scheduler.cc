@@ -307,7 +307,7 @@ DOMTaskSignal* DOMScheduler::GetFixedPriorityTaskSignal(
     CHECK(signal->HasFixedPriority());
     fixed_priority_task_signals_[index] = signal;
   }
-  return fixed_priority_task_signals_[index];
+  return fixed_priority_task_signals_[index].Get();
 }
 
 DOMScheduler::DOMTaskQueue* DOMScheduler::GetTaskQueue(

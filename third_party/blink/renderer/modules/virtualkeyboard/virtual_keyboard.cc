@@ -70,7 +70,7 @@ bool VirtualKeyboard::overlaysContent() const {
 }
 
 DOMRect* VirtualKeyboard::boundingRect() const {
-  return bounding_rect_;
+  return bounding_rect_.Get();
 }
 
 void VirtualKeyboard::setOverlaysContent(bool overlays_content) {

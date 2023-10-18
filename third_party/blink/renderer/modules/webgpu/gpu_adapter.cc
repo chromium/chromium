@@ -147,7 +147,7 @@ void GPUAdapter::AddConsoleWarning(ExecutionContext* execution_context,
 }
 
 GPUSupportedFeatures* GPUAdapter::features() const {
-  return features_;
+  return features_.Get();
 }
 
 bool GPUAdapter::isFallbackAdapter() const {

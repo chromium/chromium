@@ -25,7 +25,7 @@ const StyleImage* GetStyleImage(const CSSProperty& property,
     case CSSPropertyID::kBorderImageSource:
       return style.BorderImageSource();
     case CSSPropertyID::kListStyleImage:
-      return style.ListStyleImage();
+      return style.ListStyleImage().Get();
     case CSSPropertyID::kWebkitMaskBoxImageSource:
       return style.MaskBoxImageSource();
     default:

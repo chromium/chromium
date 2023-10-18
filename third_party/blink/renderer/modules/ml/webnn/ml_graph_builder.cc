@@ -481,7 +481,7 @@ void MLGraphBuilder::Trace(Visitor* visitor) const {
 }
 
 MLContext* MLGraphBuilder::GetContext() const {
-  return ml_context_;
+  return ml_context_.Get();
 }
 
 // static

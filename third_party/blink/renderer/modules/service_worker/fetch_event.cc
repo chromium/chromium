@@ -39,7 +39,7 @@ FetchEvent* FetchEvent::Create(ScriptState* script_state,
 }
 
 Request* FetchEvent::request() const {
-  return request_;
+  return request_.Get();
 }
 
 String FetchEvent::clientId() const {

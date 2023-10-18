@@ -28,7 +28,7 @@ class NGPhysicalLineBoxFragmentTest : public RenderingTest {
   const NGPhysicalLineBoxFragment* GetLineBox() const {
     HeapVector<Member<const NGPhysicalLineBoxFragment>> lines = GetLineBoxes();
     if (!lines.empty())
-      return lines.front();
+      return lines.front().Get();
     return nullptr;
   }
 };

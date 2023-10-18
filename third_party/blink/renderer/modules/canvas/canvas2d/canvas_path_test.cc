@@ -26,7 +26,7 @@ class TestCanvasPath : public GarbageCollected<TestCanvasPath>,
       : execution_context_(context) {}
 
   ExecutionContext* GetTopExecutionContext() const override {
-    return execution_context_;
+    return execution_context_.Get();
   }
 
   void Trace(Visitor* v) const override {

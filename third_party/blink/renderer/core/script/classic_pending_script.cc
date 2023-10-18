@@ -501,7 +501,7 @@ ClassicScript* ClassicPendingScript::GetSource() const {
                          TRACE_EVENT_FLAG_FLOW_IN, "not_streamed_reason",
                          classic_script_->NotStreamingReason());
 
-  return classic_script_;
+  return classic_script_.Get();
 }
 
 // static

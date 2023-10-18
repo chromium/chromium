@@ -49,7 +49,7 @@ class NGAbstractInlineTextBoxCache final {
         To<LayoutText>(cursor.CurrentMutableLayoutObject());
     if (it != map_->end()) {
       CHECK(layout_text->HasAbstractInlineTextBox());
-      return it->value;
+      return it->value.Get();
     }
     auto* obj = MakeGarbageCollected<NGAbstractInlineTextBox>(cursor);
     map_->Set(key, obj);

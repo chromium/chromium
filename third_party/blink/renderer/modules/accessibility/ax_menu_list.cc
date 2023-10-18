@@ -161,7 +161,7 @@ AXObject* AXMenuList::GetOrCreateMockPopupChild() {
     children_.push_back(popup);
   }
   DCHECK_EQ(children_.size(), 1U);
-  return children_[0];
+  return children_[0].Get();
 }
 
 bool AXMenuList::IsCollapsed() const {

@@ -229,13 +229,13 @@ void BlinkAXTreeSource::Thaw() {
 AXObject* BlinkAXTreeSource::GetRoot() const {
   CHECK(frozen_);
   CHECK(root_);
-  return root_;
+  return root_.Get();
 }
 
 AXObject* BlinkAXTreeSource::GetFocusedObject() const {
   CHECK(frozen_);
   CHECK(focus_);
-  return focus_;
+  return focus_.Get();
 }
 
 AXObject* BlinkAXTreeSource::GetFromId(int32_t id) const {

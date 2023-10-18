@@ -867,7 +867,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void ClearSpannerPlaceholder();
   LayoutMultiColumnSpannerPlaceholder* SpannerPlaceholder() const final {
     NOT_DESTROYED();
-    return rare_data_ ? rare_data_->spanner_placeholder_ : nullptr;
+    return rare_data_ ? rare_data_->spanner_placeholder_.Get() : nullptr;
   }
 
   bool MapToVisualRectInAncestorSpaceInternal(

@@ -157,7 +157,7 @@ USBConfiguration* USBDevice::configuration() const {
   if (configuration_index_ == kNotFound)
     return nullptr;
   DCHECK_LT(configuration_index_, configurations_.size());
-  return configurations_[configuration_index_];
+  return configurations_[configuration_index_].Get();
 }
 
 HeapVector<Member<USBConfiguration>> USBDevice::configurations() const {

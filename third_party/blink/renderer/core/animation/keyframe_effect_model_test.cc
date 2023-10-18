@@ -191,7 +191,7 @@ Interpolation* FindValue(HeapVector<Member<Interpolation>>& values,
         To<InvalidatableInterpolation>(value.Get())->GetProperty();
     if (property.IsCSSProperty() &&
         property.GetCSSProperty().PropertyID() == id)
-      return value;
+      return value.Get();
   }
   return nullptr;
 }

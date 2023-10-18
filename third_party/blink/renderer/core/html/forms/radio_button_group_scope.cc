@@ -277,7 +277,7 @@ RadioButtonGroup* RadioButtonGroupScope::FindGroupByName(
   if (!name_to_group_map_)
     return nullptr;
   auto it = name_to_group_map_->find(name);
-  return it != name_to_group_map_->end() ? it->value : nullptr;
+  return it != name_to_group_map_->end() ? it->value.Get() : nullptr;
 }
 
 }  // namespace blink

@@ -213,11 +213,11 @@ FilterEffect* SVGFilterBuilder::GetEffectById(const AtomicString& id) const {
   if (!id.empty()) {
     auto builtin_it = builtin_effects_.find(id);
     if (builtin_it != builtin_effects_.end())
-      return builtin_it->value;
+      return builtin_it->value.Get();
 
     auto named_it = named_effects_.find(id);
     if (named_it != named_effects_.end())
-      return named_it->value;
+      return named_it->value.Get();
   }
 
   if (last_effect_)

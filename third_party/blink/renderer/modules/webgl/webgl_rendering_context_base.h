@@ -1035,7 +1035,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
         extension_field_ = extension_;
       }
 
-      return extension_;
+      return extension_.Get();
     }
 
     bool Supported(WebGLRenderingContextBase* context) const override {
@@ -1053,7 +1053,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     }
 
     WebGLExtension* GetExtensionObjectIfAlreadyEnabled() override {
-      return extension_;
+      return extension_.Get();
     }
 
     void Trace(Visitor* visitor) const override {

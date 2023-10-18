@@ -1428,7 +1428,7 @@ DocumentMarker* Internals::MarkerAt(Text* text,
       text->GetDocument().Markers().MarkersFor(*text, marker_types.value());
   if (markers.size() <= index)
     return nullptr;
-  return markers[index];
+  return markers[index].Get();
 }
 
 Range* Internals::markerRangeForNode(Text* text,

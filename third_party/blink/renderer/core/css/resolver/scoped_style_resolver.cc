@@ -356,7 +356,7 @@ StyleRulePositionFallback* ScopedStyleResolver::PositionFallbackForName(
   DCHECK(fallback_name);
   auto iter = position_fallback_rule_map_.find(fallback_name);
   if (iter != position_fallback_rule_map_.end()) {
-    return iter->value;
+    return iter->value.Get();
   }
   return nullptr;
 }

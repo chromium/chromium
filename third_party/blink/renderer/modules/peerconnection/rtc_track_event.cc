@@ -46,7 +46,7 @@ RTCRtpReceiver* RTCTrackEvent::receiver() const {
 }
 
 MediaStreamTrack* RTCTrackEvent::track() const {
-  return track_;
+  return track_.Get();
 }
 
 const HeapVector<Member<MediaStream>>& RTCTrackEvent::streams() const {
@@ -54,7 +54,7 @@ const HeapVector<Member<MediaStream>>& RTCTrackEvent::streams() const {
 }
 
 RTCRtpTransceiver* RTCTrackEvent::transceiver() const {
-  return transceiver_;
+  return transceiver_.Get();
 }
 
 void RTCTrackEvent::Trace(Visitor* visitor) const {

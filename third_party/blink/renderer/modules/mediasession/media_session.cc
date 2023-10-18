@@ -208,7 +208,7 @@ void MediaSession::setMetadata(MediaMetadata* metadata) {
 }
 
 MediaMetadata* MediaSession::metadata() const {
-  return metadata_;
+  return metadata_.Get();
 }
 
 void MediaSession::OnMetadataChanged() {

@@ -888,7 +888,7 @@ void WindowPerformance::PageVisibilityChanged() {
 EventCounts* WindowPerformance::eventCounts() {
   if (!event_counts_)
     event_counts_ = MakeGarbageCollected<EventCounts>();
-  return event_counts_;
+  return event_counts_.Get();
 }
 
 uint64_t WindowPerformance::interactionCount() const {

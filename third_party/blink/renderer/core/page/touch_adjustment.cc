@@ -65,7 +65,7 @@ class SubtargetGeometry {
       : node_(node), quad_(quad) {}
   void Trace(Visitor* visitor) const { visitor->Trace(node_); }
 
-  Node* GetNode() const { return node_; }
+  Node* GetNode() const { return node_.Get(); }
   gfx::QuadF Quad() const { return quad_; }
   gfx::Rect BoundingBox() const {
     return gfx::ToEnclosingRect(quad_.BoundingBox());

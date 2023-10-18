@@ -240,7 +240,7 @@ ScriptPromise SerialPort::open(ScriptState* script_state,
 ReadableStream* SerialPort::readable(ScriptState* script_state,
                                      ExceptionState& exception_state) {
   if (readable_)
-    return readable_;
+    return readable_.Get();
 
   if (!port_.is_bound() || open_resolver_ || IsClosing() || read_fatal_)
     return nullptr;
@@ -260,13 +260,13 @@ ReadableStream* SerialPort::readable(ScriptState* script_state,
       script_state, this, std::move(consumer));
   readable_ =
       ReadableStream::CreateByteStream(script_state, underlying_source_);
-  return readable_;
+  return readable_.Get();
 }
 
 WritableStream* SerialPort::writable(ScriptState* script_state,
                                      ExceptionState& exception_state) {
   if (writable_)
-    return writable_;
+    return writable_.Get();
 
   if (!port_.is_bound() || open_resolver_ || IsClosing() || write_fatal_)
     return nullptr;
@@ -291,7 +291,7 @@ WritableStream* SerialPort::writable(ScriptState* script_state,
   // extra layer of buffering.
   writable_ = WritableStream::CreateWithCountQueueingStrategy(
       script_state, underlying_sink_, /*high_water_mark=*/1);
-  return writable_;
+  return writable_.Get();
 }
 
 ScriptPromise SerialPort::getSignals(ScriptState* script_state,

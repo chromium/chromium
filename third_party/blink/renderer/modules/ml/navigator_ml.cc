@@ -19,7 +19,7 @@ ML* NavigatorML::ml(NavigatorBase& navigator) {
     supplement = MakeGarbageCollected<NavigatorML>(navigator);
     ProvideTo(navigator, supplement);
   }
-  return supplement->ml_;
+  return supplement->ml_.Get();
 }
 
 void NavigatorML::Trace(Visitor* visitor) const {

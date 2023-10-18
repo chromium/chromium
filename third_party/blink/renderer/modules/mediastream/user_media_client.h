@@ -107,9 +107,9 @@ class MODULES_EXPORT UserMediaClient
       return user_media_request_.Get();
     }
     blink::ApplyConstraintsRequest* apply_constraints_request() const {
-      return apply_constraints_request_;
+      return apply_constraints_request_.Get();
     }
-    MediaStreamComponent* track_to_stop() const { return track_to_stop_; }
+    MediaStreamComponent* track_to_stop() const { return track_to_stop_.Get(); }
 
     bool IsUserMedia() const { return !!user_media_request_; }
     bool IsApplyConstraints() const { return !!apply_constraints_request_; }

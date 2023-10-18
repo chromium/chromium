@@ -684,7 +684,7 @@ class RuleSetCascadeLayerTest : public SimTest {
   }
 
   const CascadeLayer* ImplicitOuterLayer() {
-    return GetRuleSet().implicit_outer_layer_;
+    return GetRuleSet().implicit_outer_layer_.Get();
   }
 
   const RuleData& GetIdRule(const char* key) {

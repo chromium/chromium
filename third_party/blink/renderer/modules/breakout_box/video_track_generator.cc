@@ -58,7 +58,7 @@ void VideoTrackGenerator::setMuted(bool muted) {
 }
 
 MediaStreamTrack* VideoTrackGenerator::track() {
-  return wrapped_generator_;
+  return wrapped_generator_.Get();
 }
 
 void VideoTrackGenerator::Trace(Visitor* visitor) const {

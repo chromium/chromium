@@ -85,7 +85,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
         script_state,
         WTF::BindOnce(&StreamCreator::Close, WrapWeakPersistent(this)),
         udp_socket, network::mojom::RestrictedUDPSocketMode::CONNECTED);
-    return stream_wrapper_;
+    return stream_wrapper_.Get();
   }
 
   void Trace(Visitor* visitor) const {

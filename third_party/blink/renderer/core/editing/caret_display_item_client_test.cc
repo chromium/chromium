@@ -67,11 +67,11 @@ class CaretDisplayItemClientTest : public PaintAndRasterInvalidationTest {
   }
 
   const LayoutBlock* CaretLayoutBlock() {
-    return GetCaretDisplayItemClient().layout_block_;
+    return GetCaretDisplayItemClient().layout_block_.Get();
   }
 
   const LayoutBlock* PreviousCaretLayoutBlock() {
-    return GetCaretDisplayItemClient().previous_layout_block_;
+    return GetCaretDisplayItemClient().previous_layout_block_.Get();
   }
 
   bool ShouldPaintCursorCaret(const LayoutBlock& block) {

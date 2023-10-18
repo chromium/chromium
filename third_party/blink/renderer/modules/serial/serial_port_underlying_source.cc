@@ -80,7 +80,7 @@ ScriptPromise SerialPortUnderlyingSource::Cancel(
 }
 
 ScriptState* SerialPortUnderlyingSource::GetScriptState() {
-  return script_state_;
+  return script_state_.Get();
 }
 
 void SerialPortUnderlyingSource::ContextDestroyed() {

@@ -555,7 +555,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   // time, the same texture should be returned. |texture_| is set to
   // null when presented so that we know we should create a new one.
   if (texture_ && !new_texture_required_) {
-    return texture_;
+    return texture_.Get();
   }
   new_texture_required_ = false;
 
@@ -589,7 +589,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
     }
     texture_ = swap_texture_ =
         GPUTexture::CreateError(device_, &texture_descriptor_);
-    return texture_;
+    return texture_.Get();
   }
 
   mailbox_texture->SetNeedsPresent(true);
@@ -620,7 +620,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   UseCounter::Count(execution_context,
                     WebFeature::kWebGPUCanvasContextGetCurrentTexture);
 
-  return texture_;
+  return texture_.Get();
 }
 
 void GPUCanvasContext::ReplaceDrawingBuffer(bool destroy_swap_buffers) {

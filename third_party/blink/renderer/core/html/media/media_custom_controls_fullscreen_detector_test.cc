@@ -27,7 +27,7 @@ class MediaCustomControlsFullscreenDetectorTest : public testing::Test {
 
   static MediaCustomControlsFullscreenDetector* FullscreenDetectorFor(
       HTMLVideoElement* video_element) {
-    return video_element->custom_controls_fullscreen_detector_;
+    return video_element->custom_controls_fullscreen_detector_.Get();
   }
 
   MediaCustomControlsFullscreenDetector* FullscreenDetector() const {

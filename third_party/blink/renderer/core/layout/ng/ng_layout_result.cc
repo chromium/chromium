@@ -298,7 +298,7 @@ NGLayoutResult::RareData* NGLayoutResult::EnsureRareData() {
   if (!rare_data_) {
     rare_data_ = MakeGarbageCollected<RareData>();
   }
-  return rare_data_;
+  return rare_data_.Get();
 }
 
 void NGLayoutResult::CopyMutableOutOfFlowData(

@@ -42,7 +42,7 @@ XRSpace* XRImageTrackingResult::imageSpace() const {
         session_, this);
   }
 
-  return image_space_;
+  return image_space_.Get();
 }
 
 device::mojom::blink::XRNativeOriginInformationPtr

@@ -68,7 +68,7 @@ class DynamicModuleResolverTestModulator final : public DummyModulator {
 
  private:
   // Implements Modulator:
-  ScriptState* GetScriptState() final { return script_state_; }
+  ScriptState* GetScriptState() final { return script_state_.Get(); }
 
   ModuleScript* GetFetchedModuleScript(const KURL& url,
                                        ModuleType module_type) final {

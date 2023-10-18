@@ -134,11 +134,11 @@ String RTCRtpTransceiver::mid() const {
 }
 
 RTCRtpSender* RTCRtpTransceiver::sender() const {
-  return sender_;
+  return sender_.Get();
 }
 
 RTCRtpReceiver* RTCRtpTransceiver::receiver() const {
-  return receiver_;
+  return receiver_.Get();
 }
 
 bool RTCRtpTransceiver::stopped() const {

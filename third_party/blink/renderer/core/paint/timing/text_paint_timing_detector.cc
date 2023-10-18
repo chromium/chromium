@@ -79,7 +79,7 @@ TextRecord* LargestTextPaintManager::UpdateMetricsCandidate() {
     DCHECK(!time.is_null());
     ReportCandidateToTrace(*largest_text_);
   }
-  return largest_text_;
+  return largest_text_.Get();
 }
 
 void TextPaintTimingDetector::OnPaintFinished() {

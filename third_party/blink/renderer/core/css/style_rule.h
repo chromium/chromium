@@ -220,7 +220,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   ~StyleRule();
 
   void SetProperties(CSSPropertyValueSet* properties) {
-    DCHECK_EQ(properties_, nullptr);
+    DCHECK_EQ(properties_.Get(), nullptr);
     properties_ = properties;
   }
 

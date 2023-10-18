@@ -57,7 +57,7 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
 
   // Front source is the first successfully loaded source.
   const CSSFontFaceSource* FrontSource() const {
-    return sources_.empty() ? nullptr : sources_.front();
+    return sources_.empty() ? nullptr : sources_.front().Get();
   }
   FontFace* GetFontFace() const { return font_face_.Get(); }
 

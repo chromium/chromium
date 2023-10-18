@@ -331,7 +331,7 @@ Vector<String> DataTransfer::types() {
 FileList* DataTransfer::files() const {
   if (!CanReadData()) {
     files_->clear();
-    return files_;
+    return files_.Get();
   }
 
   if (!files_->IsEmpty())

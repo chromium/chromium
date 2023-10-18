@@ -102,7 +102,7 @@ class TestTransformer : public TransformStreamTransformer {
     return ScriptPromise::CastUndefined(script_state_);
   }
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);
@@ -140,7 +140,7 @@ class MockTransformStreamTransformer : public TransformStreamTransformer {
                ScriptPromise(TransformStreamDefaultController*,
                              ExceptionState&));
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);

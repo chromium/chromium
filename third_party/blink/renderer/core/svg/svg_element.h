@@ -327,7 +327,8 @@ void SVGElement::NotifyIncomingReferences(
   // adjustments on changes, so we need to break possible cycles here.
   SVGElementSet& invalidating_dependencies = GetDependencyTraversalVisitedSet();
 
-  for (SVGElement* element : *dependencies) {
+  for (auto& member : *dependencies) {
+    auto* element = member.Get();
     if (!element->GetLayoutObject())
       continue;
     if (UNLIKELY(!invalidating_dependencies.insert(element).is_new_entry)) {

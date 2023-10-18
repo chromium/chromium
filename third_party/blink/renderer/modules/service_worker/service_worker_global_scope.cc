@@ -581,15 +581,15 @@ void ServiceWorkerGlobalScope::RunClassicScript(
 ServiceWorkerClients* ServiceWorkerGlobalScope::clients() {
   if (!clients_)
     clients_ = ServiceWorkerClients::Create();
-  return clients_;
+  return clients_.Get();
 }
 
 ServiceWorkerRegistration* ServiceWorkerGlobalScope::registration() {
-  return registration_;
+  return registration_.Get();
 }
 
 ::blink::ServiceWorker* ServiceWorkerGlobalScope::serviceWorker() {
-  return service_worker_;
+  return service_worker_.Get();
 }
 
 ScriptPromise ServiceWorkerGlobalScope::skipWaiting(ScriptState* script_state) {
@@ -689,7 +689,7 @@ ServiceWorker* ServiceWorkerGlobalScope::GetOrCreateServiceWorker(
 
   auto it = service_worker_objects_.find(info.version_id);
   if (it != service_worker_objects_.end())
-    return it->value;
+    return it->value.Get();
 
   const int64_t version_id = info.version_id;
   ::blink::ServiceWorker* worker =

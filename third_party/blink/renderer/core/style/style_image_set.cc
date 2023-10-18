@@ -57,7 +57,7 @@ ImageResourceContent* StyleImageSet::CachedImage() const {
 }
 
 CSSValue* StyleImageSet::CssValue() const {
-  return image_set_value_;
+  return image_set_value_.Get();
 }
 
 CSSValue* StyleImageSet::ComputedCSSValue(const ComputedStyle& style,

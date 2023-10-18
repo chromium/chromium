@@ -430,7 +430,7 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
   }
 
   MediaStreamDescriptor* last_generated_descriptor() {
-    return last_generated_descriptor_;
+    return last_generated_descriptor_.Get();
   }
   void ClearLastGeneratedStream() { last_generated_descriptor_ = nullptr; }
 
@@ -699,7 +699,7 @@ class UserMediaClientTest : public ::testing::TestWithParam<bool> {
     EXPECT_EQ(audio_components.size(), 1u);
     EXPECT_TRUE(video_components.empty());
 
-    return audio_components[0];
+    return audio_components[0].Get();
   }
 
   void StartMockedVideoSource(

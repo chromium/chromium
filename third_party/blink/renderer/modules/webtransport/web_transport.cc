@@ -309,7 +309,7 @@ class WebTransport::DatagramUnderlyingSource final
     return ScriptPromise::CastUndefined(script_state_);
   }
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   // Interface for use by WebTransport.
   void Close(ReadableByteStreamController* controller,

@@ -80,12 +80,12 @@ RTCRtpReceiver::RTCRtpReceiver(RTCPeerConnection* pc,
 
 MediaStreamTrack* RTCRtpReceiver::track() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return track_;
+  return track_.Get();
 }
 
 RTCDtlsTransport* RTCRtpReceiver::transport() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return transport_;
+  return transport_.Get();
 }
 
 RTCDtlsTransport* RTCRtpReceiver::rtcpTransport() {
@@ -163,7 +163,7 @@ RTCInsertableStreams* RTCRtpReceiver::createEncodedAudioStreams(
   }
 
   InitializeEncodedAudioStreams(script_state);
-  return encoded_audio_streams_;
+  return encoded_audio_streams_.Get();
 }
 
 RTCInsertableStreams* RTCRtpReceiver::createEncodedVideoStreams(
@@ -183,7 +183,7 @@ RTCInsertableStreams* RTCRtpReceiver::createEncodedVideoStreams(
   }
 
   InitializeEncodedVideoStreams(script_state);
-  return encoded_video_streams_;
+  return encoded_video_streams_.Get();
 }
 
 RTCRtpReceiverPlatform* RTCRtpReceiver::platform_receiver() {

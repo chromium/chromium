@@ -27,7 +27,7 @@ bool StyleCrossfadeImage::IsEqual(const StyleImage& other) const {
 }
 
 CSSValue* StyleCrossfadeImage::CssValue() const {
-  return original_value_;
+  return original_value_.Get();
 }
 
 CSSValue* StyleCrossfadeImage::ComputedCSSValue(

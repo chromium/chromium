@@ -425,7 +425,7 @@ PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
     }
     return nullptr;
   }
-  return waiting_scripts->TakeFirst();
+  return waiting_scripts->TakeFirst().Get();
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#stop-parsing">

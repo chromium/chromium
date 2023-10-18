@@ -130,7 +130,7 @@ StorageArea* DOMWindowStorage::GetOrCreateSessionStorage(
   }
 
   if (session_storage_)
-    return session_storage_;
+    return session_storage_.Get();
 
   StorageNamespace* storage_namespace =
       StorageNamespace::From(window->GetFrame()->GetPage());
@@ -148,7 +148,7 @@ StorageArea* DOMWindowStorage::GetOrCreateSessionStorage(
       StorageArea::Create(window, std::move(cached_storage_area),
                           StorageArea::StorageType::kSessionStorage);
 
-  return session_storage_;
+  return session_storage_.Get();
 }
 
 StorageArea* DOMWindowStorage::GetOrCreateLocalStorage(
@@ -175,13 +175,13 @@ StorageArea* DOMWindowStorage::GetOrCreateLocalStorage(
     return nullptr;
 
   if (local_storage_)
-    return local_storage_;
+    return local_storage_.Get();
 
   auto storage_area = StorageController::GetInstance()->GetLocalStorageArea(
       window, std::move(storage_area_for_init));
   local_storage_ = StorageArea::Create(window, std::move(storage_area),
                                        StorageArea::StorageType::kLocalStorage);
-  return local_storage_;
+  return local_storage_.Get();
 }
 
 }  // namespace blink

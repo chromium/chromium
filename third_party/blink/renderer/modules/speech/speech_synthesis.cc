@@ -358,7 +358,7 @@ SpeechSynthesisUtterance* SpeechSynthesis::CurrentSpeechUtterance() const {
   if (utterance_queue_.empty())
     return nullptr;
 
-  return utterance_queue_.front();
+  return utterance_queue_.front().Get();
 }
 
 ExecutionContext* SpeechSynthesis::GetExecutionContext() const {

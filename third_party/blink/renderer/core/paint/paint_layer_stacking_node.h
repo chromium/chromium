@@ -119,7 +119,7 @@ class CORE_EXPORT PaintLayerStackingNode
     auto it = layer_to_overlay_overflow_controls_painting_after_.find(layer);
     return it == layer_to_overlay_overflow_controls_painting_after_.end()
                ? nullptr
-               : it->value;
+               : it->value.Get();
   }
 
   void ClearNeedsReorderOverlayOverflowControls();

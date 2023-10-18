@@ -916,7 +916,7 @@ TextAutosizer::FingerprintMapper::CreateSuperclusterIfNeeded(
       superclusters_.insert(fingerprint, nullptr);
   is_new_entry = add_result.is_new_entry;
   if (!add_result.is_new_entry)
-    return add_result.stored_value->value;
+    return add_result.stored_value->value.Get();
 
   Supercluster* supercluster = MakeGarbageCollected<Supercluster>(roots);
   add_result.stored_value->value = supercluster;
@@ -1082,7 +1082,7 @@ const LayoutBlock* TextAutosizer::DeepestBlockContainingAllText(
     cluster->deepest_block_containing_all_text_ =
         DeepestBlockContainingAllText(cluster->root_);
 
-  return cluster->deepest_block_containing_all_text_;
+  return cluster->deepest_block_containing_all_text_.Get();
 }
 
 // FIXME: Refactor this to look more like TextAutosizer::deepestCommonAncestor.
@@ -1290,7 +1290,7 @@ void TextAutosizer::Supercluster::Trace(Visitor* visitor) const {
 
 TextAutosizer::Cluster* TextAutosizer::CurrentCluster() const {
   SECURITY_DCHECK(!cluster_stack_.empty());
-  return cluster_stack_.back();
+  return cluster_stack_.back().Get();
 }
 
 TextAutosizer::Cluster::Cluster(const LayoutBlock* root,

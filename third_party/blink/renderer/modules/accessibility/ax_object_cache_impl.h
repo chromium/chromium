@@ -125,7 +125,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // The main document.
   Document& GetDocument() const { return *document_; }
   // The popup document, if showing, otherwise null.
-  Document* GetPopupDocumentIfShowing() const { return popup_document_; }
+  Document* GetPopupDocumentIfShowing() const { return popup_document_.Get(); }
 
   AXObject* FocusedObject();
 

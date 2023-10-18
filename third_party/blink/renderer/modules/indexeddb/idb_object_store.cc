@@ -910,7 +910,7 @@ IDBIndex* IDBObjectStore::index(const String& name,
 
   IDBIndexMap::iterator it = index_map_.find(name);
   if (it != index_map_.end())
-    return it->value;
+    return it->value.Get();
 
   int64_t index_id = FindIndexId(name);
   if (index_id == IDBIndexMetadata::kInvalidId) {

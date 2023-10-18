@@ -155,7 +155,7 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
                                 Element* element) {
       HeapVector<Member<Element>>* vector =
           map.insert(key, MakeGarbageCollected<HeapVector<Member<Element>>>())
-              .stored_value->value;
+              .stored_value->value.Get();
       vector->push_back(element);
     }
 

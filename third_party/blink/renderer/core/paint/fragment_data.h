@@ -26,7 +26,7 @@ struct StickyPositionScrollingConstraints;
 class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
  public:
   FragmentData* NextFragment() const {
-    return rare_data_ ? rare_data_->next_fragment_ : nullptr;
+    return rare_data_ ? rare_data_->next_fragment_.Get() : nullptr;
   }
   FragmentData& EnsureNextFragment();
 
@@ -57,13 +57,13 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
   // depending on the return value of LayoutBoxModelObject::LayerTypeRequired().
   PaintLayer* Layer() const {
     AssertIsFirst();
-    return rare_data_ ? rare_data_->layer : nullptr;
+    return rare_data_ ? rare_data_->layer.Get() : nullptr;
   }
   void SetLayer(PaintLayer*);
 
   StickyPositionScrollingConstraints* StickyConstraints() const {
     AssertIsFirst();
-    return rare_data_ ? rare_data_->sticky_constraints : nullptr;
+    return rare_data_ ? rare_data_->sticky_constraints.Get() : nullptr;
   }
   void SetStickyConstraints(StickyPositionScrollingConstraints* constraints) {
     AssertIsFirst();

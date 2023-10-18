@@ -43,7 +43,7 @@ class ModuleScriptTestModulator final : public DummyModulator {
   }
 
  private:
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   Member<ScriptState> script_state_;
 };

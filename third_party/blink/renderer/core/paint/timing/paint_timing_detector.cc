@@ -389,7 +389,7 @@ void PaintTimingDetector::RestartRecordingLCPToUkm() {
 LargestContentfulPaintCalculator*
 PaintTimingDetector::GetLargestContentfulPaintCalculator() {
   if (largest_contentful_paint_calculator_) {
-    return largest_contentful_paint_calculator_;
+    return largest_contentful_paint_calculator_.Get();
   }
 
   auto* dom_window = frame_view_->GetFrame().DomWindow();
@@ -400,7 +400,7 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
   largest_contentful_paint_calculator_ =
       MakeGarbageCollected<LargestContentfulPaintCalculator>(
           DOMWindowPerformance::performance(*dom_window));
-  return largest_contentful_paint_calculator_;
+  return largest_contentful_paint_calculator_.Get();
 }
 
 bool PaintTimingDetector::NotifyMetricsIfLargestImagePaintChanged(

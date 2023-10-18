@@ -299,7 +299,7 @@ class TestCache : public Cache {
   AbortController* CreateAbortController(ScriptState* script_state) override {
     if (!abort_controller_)
       abort_controller_ = AbortController::Create(script_state);
-    return abort_controller_;
+    return abort_controller_.Get();
   }
 
  private:

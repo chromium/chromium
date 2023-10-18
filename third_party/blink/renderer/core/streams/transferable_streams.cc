@@ -346,8 +346,8 @@ class CrossRealmTransformWritable final : public CrossRealmTransformStream {
 
   WritableStream* CreateWritableStream(ExceptionState&);
 
-  ScriptState* GetScriptState() const override { return script_state_; }
-  MessagePort* GetMessagePort() const override { return message_port_; }
+  ScriptState* GetScriptState() const override { return script_state_.Get(); }
+  MessagePort* GetMessagePort() const override { return message_port_.Get(); }
   void HandleMessage(MessageType type, v8::Local<v8::Value> value) override;
   void HandleError(v8::Local<v8::Value> error) override;
 
@@ -667,8 +667,8 @@ class CrossRealmTransformReadable final : public CrossRealmTransformStream {
 
   ReadableStream* CreateReadableStream(ExceptionState&);
 
-  ScriptState* GetScriptState() const override { return script_state_; }
-  MessagePort* GetMessagePort() const override { return message_port_; }
+  ScriptState* GetScriptState() const override { return script_state_.Get(); }
+  MessagePort* GetMessagePort() const override { return message_port_.Get(); }
   void HandleMessage(MessageType type, v8::Local<v8::Value> value) override;
   void HandleError(v8::Local<v8::Value> error) override;
 

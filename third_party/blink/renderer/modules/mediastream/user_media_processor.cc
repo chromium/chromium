@@ -322,7 +322,7 @@ class UserMediaProcessor::RequestInfo final
                             MediaStreamRequestResult result,
                             const String& result_name);
 
-  UserMediaRequest* request() { return request_; }
+  UserMediaRequest* request() { return request_.Get(); }
   int32_t request_id() const { return request_->request_id(); }
 
   State state() const { return state_; }
@@ -397,7 +397,7 @@ class UserMediaProcessor::RequestInfo final
 
   MediaStreamDescriptorVector* descriptors() {
     DCHECK(descriptors_);
-    return descriptors_;
+    return descriptors_.Get();
   }
 
   const mojom::blink::StreamDevicesSet& devices_set() const {
@@ -1683,7 +1683,7 @@ MediaStreamComponent* UserMediaProcessor::CreateAudioTrack(
   // set. Thus, all audio processing properties are known and can be surfaced
   // to |source|.
   SurfaceAudioProcessingSettings(source);
-  return component;
+  return component.Get();
 }
 
 void UserMediaProcessor::OnCreateNativeTracksCompleted(
@@ -1822,7 +1822,7 @@ MediaStreamSource* UserMediaProcessor::FindLocalSource(
         local_source->GetPlatformSource();
     const MediaStreamDevice& active_device = source->device();
     if (IsSameDevice(active_device, device)) {
-      return local_source;
+      return local_source.Get();
     }
   }
   return nullptr;

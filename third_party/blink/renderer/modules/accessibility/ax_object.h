@@ -1100,7 +1100,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Get the parent of this object if it has already been created.
   // Works for all nodes, and may return nodes that are accessibility ignored,
   // including nodes that might not be in the tree.
-  AXObject* CachedParentObject() const { return parent_; }
+  AXObject* CachedParentObject() const { return parent_.Get(); }
 
   // Get the current unignored children without refreshing them, even if
   // children_dirty_ aka NeedsToUpdateChildren() is true.

@@ -189,7 +189,7 @@ class NGOffsetMappingTest : public RenderingTest {
   }
 
   bool IsOffsetMappingStored() const {
-    return layout_block_flow_->GetNGInlineNodeData()->offset_mapping;
+    return layout_block_flow_->GetNGInlineNodeData()->offset_mapping != nullptr;
   }
 
   const LayoutText* GetLayoutTextUnder(const char* parent_id) {

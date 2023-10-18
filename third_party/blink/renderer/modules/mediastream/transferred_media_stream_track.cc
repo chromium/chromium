@@ -288,7 +288,7 @@ MediaStreamComponent* TransferredMediaStreamTrack::Component() const {
   if (track_) {
     return track_->Component();
   }
-  return transferred_component_;
+  return transferred_component_.Get();
 }
 
 bool TransferredMediaStreamTrack::Ended() const {
@@ -321,7 +321,7 @@ const AtomicString& TransferredMediaStreamTrack::InterfaceName() const {
 }
 
 ExecutionContext* TransferredMediaStreamTrack::GetExecutionContext() const {
-  return execution_context_;
+  return execution_context_.Get();
 }
 
 void TransferredMediaStreamTrack::AddedEventListener(

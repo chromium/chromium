@@ -991,7 +991,7 @@ DOMRectReadOnly* VideoFrame::codedRect() {
         0, 0, local_frame->coded_size().width(),
         local_frame->coded_size().height());
   }
-  return coded_rect_;
+  return coded_rect_.Get();
 }
 
 DOMRectReadOnly* VideoFrame::visibleRect() {
@@ -1005,7 +1005,7 @@ DOMRectReadOnly* VideoFrame::visibleRect() {
         local_frame->visible_rect().width(),
         local_frame->visible_rect().height());
   }
-  return visible_rect_;
+  return visible_rect_.Get();
 }
 
 uint32_t VideoFrame::displayWidth() const {
@@ -1053,14 +1053,14 @@ VideoColorSpace* VideoFrame::colorSpace() {
     if (!empty_color_space_)
       empty_color_space_ = MakeGarbageCollected<VideoColorSpace>();
 
-    return empty_color_space_;
+    return empty_color_space_.Get();
   }
 
   if (!color_space_) {
     color_space_ =
         MakeGarbageCollected<VideoColorSpace>(local_frame->ColorSpace());
   }
-  return color_space_;
+  return color_space_.Get();
 }
 
 uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,

@@ -270,7 +270,7 @@ UserMediaClient::Request::~Request() = default;
 UserMediaRequest* UserMediaClient::Request::MoveUserMediaRequest() {
   auto user_media_request = user_media_request_;
   user_media_request_ = nullptr;
-  return user_media_request;
+  return user_media_request.Get();
 }
 
 UserMediaClient::UserMediaClient(
@@ -516,9 +516,9 @@ UserMediaClient::RequestQueue* UserMediaClient::GetRequestQueue(
       (IsScreenCaptureMediaType(media_stream_type) ||
        media_stream_type ==
            mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE)) {
-    return pending_display_requests_;
+    return pending_display_requests_.Get();
   } else {
-    return pending_requests_;
+    return pending_requests_.Get();
   }
 }
 

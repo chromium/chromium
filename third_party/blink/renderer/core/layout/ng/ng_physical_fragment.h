@@ -452,12 +452,12 @@ class CORE_EXPORT NGPhysicalFragment
   // returns |nullptr| for the historical reasons. TODO(kojii): We may change
   // this in future. Use |IsLineBox()| instead of testing this is |nullptr|.
   const LayoutObject* GetLayoutObject() const {
-    return IsCSSBox() ? layout_object_ : nullptr;
+    return IsCSSBox() ? layout_object_.Get() : nullptr;
   }
   // TODO(kojii): We should not have mutable version at all, the use of this
   // function should be eliminiated over time.
   LayoutObject* GetMutableLayoutObject() const {
-    return IsCSSBox() ? layout_object_ : nullptr;
+    return IsCSSBox() ? layout_object_.Get() : nullptr;
   }
   // Similar to |GetLayoutObject|, but returns the |LayoutObject| of its
   // container for |!IsCSSBox()| fragments instead of |nullptr|.

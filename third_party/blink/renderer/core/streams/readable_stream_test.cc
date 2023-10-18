@@ -637,7 +637,7 @@ class TestUnderlyingByteSource : public UnderlyingByteSourceBase {
     return ScriptPromise::CastUndefined(script_state_);
   }
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);
@@ -659,7 +659,7 @@ class MockUnderlyingByteSource : public UnderlyingByteSourceBase {
   MOCK_METHOD2(Cancel,
                ScriptPromise(v8::Local<v8::Value> reason, ExceptionState&));
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);

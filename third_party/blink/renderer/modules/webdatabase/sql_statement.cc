@@ -105,11 +105,11 @@ void SQLStatement::SetBackend(SQLStatementBackend* backend) {
 }
 
 bool SQLStatement::HasCallback() {
-  return success_callback_;
+  return success_callback_ != nullptr;
 }
 
 bool SQLStatement::HasErrorCallback() {
-  return error_callback_;
+  return error_callback_ != nullptr;
 }
 
 bool SQLStatement::PerformCallback(SQLTransaction* transaction) {

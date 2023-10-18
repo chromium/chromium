@@ -180,7 +180,7 @@ class CORE_EXPORT NGFragmentItem final {
   const ComputedStyle& Style() const {
     return layout_object_->EffectiveStyle(StyleVariant());
   }
-  const LayoutObject* GetLayoutObject() const { return layout_object_; }
+  const LayoutObject* GetLayoutObject() const { return layout_object_.Get(); }
   LayoutObject* GetMutableLayoutObject() const {
     return const_cast<LayoutObject*>(layout_object_.Get());
   }
@@ -262,7 +262,7 @@ class CORE_EXPORT NGFragmentItem final {
   // Returns |NGPhysicalBoxFragment| if one is associated with this item.
   const NGPhysicalBoxFragment* BoxFragment() const {
     if (Type() == kBox)
-      return box_.box_fragment;
+      return box_.box_fragment.Get();
     return nullptr;
   }
   const NGPhysicalBoxFragment* PostLayoutBoxFragment() const {
@@ -285,7 +285,7 @@ class CORE_EXPORT NGFragmentItem final {
   // this function. See |InlineBreakToken()| for example.
   const NGPhysicalLineBoxFragment* LineBoxFragment() const {
     if (Type() == kLine)
-      return line_.line_box_fragment;
+      return line_.line_box_fragment.Get();
     return nullptr;
   }
 

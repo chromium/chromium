@@ -156,7 +156,7 @@ IDBFactory* StorageBucket::indexedDB() {
     remote_->GetIdbFactory(remote_factory.InitWithNewPipeAndPassReceiver());
     idb_factory_->SetRemote(std::move(remote_factory));
   }
-  return idb_factory_;
+  return idb_factory_.Get();
 }
 
 LockManager* StorageBucket::locks() {
@@ -166,7 +166,7 @@ LockManager* StorageBucket::locks() {
     lock_manager_ = MakeGarbageCollected<LockManager>(*navigator_base_);
     lock_manager_->SetManager(std::move(lock_manager), GetExecutionContext());
   }
-  return lock_manager_;
+  return lock_manager_.Get();
 }
 
 CacheStorage* StorageBucket::caches(ExceptionState& exception_state) {
@@ -180,7 +180,7 @@ CacheStorage* StorageBucket::caches(ExceptionState& exception_state) {
         std::move(cache_storage));
   }
 
-  return caches_;
+  return caches_.Get();
 }
 
 ScriptPromise StorageBucket::getDirectory(ScriptState* script_state,

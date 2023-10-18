@@ -129,7 +129,7 @@ const LayoutObject* NGPhysicalAnchorQuery::AnchorLayoutObject(
     const NGAnchorKey& key) const {
   if (const NGPhysicalAnchorReference* reference =
           AnchorReference(query_object, key)) {
-    return reference->layout_object;
+    return reference->layout_object.Get();
   }
   return nullptr;
 }

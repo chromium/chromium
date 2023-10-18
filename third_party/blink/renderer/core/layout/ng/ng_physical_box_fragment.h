@@ -166,7 +166,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   const NGTableFragmentData::ColumnGeometries* TableColumnGeometries() const {
-    return rare_data_->table_column_geometries_;
+    return rare_data_->table_column_geometries_.Get();
   }
 
   const NGTableBorders* TableCollapsedBorders() const {

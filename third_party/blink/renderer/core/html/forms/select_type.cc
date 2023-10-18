@@ -1070,7 +1070,7 @@ void ListBoxSelectType::SetActiveSelectionEnd(HTMLOptionElement* option) {
 
 HTMLOptionElement* ListBoxSelectType::ActiveSelectionEnd() const {
   if (active_selection_end_)
-    return active_selection_end_;
+    return active_selection_end_.Get();
   return select_->LastSelectedOption();
 }
 

@@ -40,7 +40,7 @@ class FakeAreaSource : public GarbageCollected<FakeAreaSource>,
     return blink::WebScopedVirtualTimePauser();
   }
 
-  LocalDOMWindow* GetDOMWindow() override { return local_dom_window_; }
+  LocalDOMWindow* GetDOMWindow() override { return local_dom_window_.Get(); }
 
   struct Event {
     String key, old_value, new_value, url;

@@ -214,7 +214,7 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
 
   explicit CSSMathExpressionNumericLiteral(const CSSNumericLiteralValue* value);
 
-  CSSMathExpressionNode* Copy() const final { return Create(value_); }
+  CSSMathExpressionNode* Copy() const final { return Create(value_.Get()); }
 
   const CSSNumericLiteralValue& GetValue() const { return *value_; }
 

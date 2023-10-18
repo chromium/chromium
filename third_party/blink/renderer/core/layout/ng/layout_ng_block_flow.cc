@@ -44,7 +44,7 @@ NGInlineNodeData* LayoutNGBlockFlow::TakeNGInlineNodeData() {
 
 NGInlineNodeData* LayoutNGBlockFlow::GetNGInlineNodeData() const {
   NOT_DESTROYED();
-  return ng_inline_node_data_;
+  return ng_inline_node_data_.Get();
 }
 
 void LayoutNGBlockFlow::ResetNGInlineNodeData() {

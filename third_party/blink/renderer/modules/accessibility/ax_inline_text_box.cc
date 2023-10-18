@@ -210,7 +210,7 @@ Document* AXInlineTextBox::GetDocument() const {
 }
 
 NGAbstractInlineTextBox* AXInlineTextBox::GetInlineTextBox() const {
-  return inline_text_box_;
+  return inline_text_box_.Get();
 }
 
 AXObject* AXInlineTextBox::NextOnLine() const {

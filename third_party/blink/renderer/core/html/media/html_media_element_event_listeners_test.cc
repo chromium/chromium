@@ -200,7 +200,7 @@ class HTMLMediaElementEventListenersTest : public PageTestBase {
   }
 
   MediaCustomControlsFullscreenDetector* FullscreenDetector() {
-    return Video()->custom_controls_fullscreen_detector_;
+    return Video()->custom_controls_fullscreen_detector_.Get();
   }
 };
 

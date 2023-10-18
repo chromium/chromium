@@ -76,7 +76,7 @@ MLModelLoader* MLContext::GetModelLoaderForWebNN(ScriptState* script_state) {
     ml_model_loader_ =
         MakeGarbageCollected<MLModelLoader>(execution_context, this);
   }
-  return ml_model_loader_;
+  return ml_model_loader_.Get();
 }
 
 void MLContext::Trace(Visitor* visitor) const {

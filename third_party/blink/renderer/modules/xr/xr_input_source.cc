@@ -164,7 +164,7 @@ const String XRInputSource::targetRayMode() const {
 }
 
 XRSpace* XRInputSource::targetRaySpace() const {
-  return target_ray_space_;
+  return target_ray_space_.Get();
 }
 
 XRSpace* XRInputSource::gripSpace() const {
@@ -172,7 +172,7 @@ XRSpace* XRInputSource::gripSpace() const {
     return nullptr;
 
   if (state_.target_ray_mode == device::mojom::XRTargetRayMode::POINTING) {
-    return grip_space_;
+    return grip_space_.Get();
   }
 
   return nullptr;
