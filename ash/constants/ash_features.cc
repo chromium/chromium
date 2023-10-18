@@ -1827,9 +1827,7 @@ BASE_FEATURE(kSysUiDownloadsIntegrationV2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of the new System Nudges. (go/cros-educationalnudge-spec)
-BASE_FEATURE(kSystemNudgeV2,
-             "SystemNudgeV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSystemNudgeV2, "SystemNudgeV2", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Night Light feature.
 BASE_FEATURE(kNightLight, "NightLight", base::FEATURE_ENABLED_BY_DEFAULT);
