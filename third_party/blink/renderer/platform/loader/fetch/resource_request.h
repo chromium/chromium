@@ -615,7 +615,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
     shared_dictionary_writer_enabled_ = shared_dictionary_writer_enabled;
   }
 
-  base::UnguessableToken GetServiceWorkerRaceNetworkRequestToken() const {
+  absl::optional<base::UnguessableToken>
+  GetServiceWorkerRaceNetworkRequestToken() const {
     return service_worker_race_network_request_token_;
   }
 
@@ -768,7 +769,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled_ = false;
 
-  base::UnguessableToken service_worker_race_network_request_token_;
+  absl::optional<base::UnguessableToken>
+      service_worker_race_network_request_token_;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

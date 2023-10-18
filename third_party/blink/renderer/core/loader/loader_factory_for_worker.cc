@@ -103,18 +103,21 @@ std::unique_ptr<URLLoader> LoaderFactoryForWorker::CreateURLLoader(
       }
     }
     // URLLoader for RaceNetworkRequest
-    absl::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
-        race_network_request_url_loader_factory =
-            global_scope_->FindRaceNetworkRequestURLLoaderFactory(
-                request.GetServiceWorkerRaceNetworkRequestToken());
-    if (race_network_request_url_loader_factory) {
-      return web_context_
-          ->WrapURLLoaderFactory(
-              std::move(race_network_request_url_loader_factory.value()))
-          ->CreateURLLoader(
-              wrapped, freezable_task_runner, unfreezable_task_runner,
-              std::move(keep_alive_handle), back_forward_cache_loader_helper,
-              std::move(throttles));
+    if (request.GetServiceWorkerRaceNetworkRequestToken().has_value()) {
+      absl::optional<
+          mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
+          race_network_request_url_loader_factory =
+              global_scope_->FindRaceNetworkRequestURLLoaderFactory(
+                  request.GetServiceWorkerRaceNetworkRequestToken().value());
+      if (race_network_request_url_loader_factory) {
+        return web_context_
+            ->WrapURLLoaderFactory(
+                std::move(race_network_request_url_loader_factory.value()))
+            ->CreateURLLoader(
+                wrapped, freezable_task_runner, unfreezable_task_runner,
+                std::move(keep_alive_handle), back_forward_cache_loader_helper,
+                std::move(throttles));
+      }
     }
   } else {
     CHECK(!web_context_->GetScriptLoaderFactory());
