@@ -51,8 +51,8 @@ test(() => {
   let root5 = host5.attachShadow({mode:"open"});
   root5.innerHTML = '<span dir="auto"><slot>اختبر</slot></span>';
   let span = root5.querySelector("span");
-  assert_equals(getComputedStyle(span).direction, "rtl");
-  assert_true(span.matches(":dir(rtl)"));
+  assert_equals(getComputedStyle(span).direction, "ltr");
+  assert_true(span.matches(":dir(ltr)"));
 }, 'Slots: Directionality: dir=auto in shadow tree with Arabic shadow tree content');
 
 test(() => {
@@ -62,5 +62,36 @@ test(() => {
   assert_equals(getComputedStyle(span).direction, "rtl");
   assert_true(span.matches(":dir(rtl)"));
 }, 'Slots: Directionality: dir=auto on slot with Arabic light tree content');
+
+test(() => {
+  let host = document.createElement("div");
+  host.dir = "rtl";
+  document.body.appendChild(host);
+  let root = host.attachShadow({mode:"open"});
+  root.innerHTML = '<section dir="ltr"><div dir="auto"><slot></slot>A</div></section>';
+  let div = root.querySelector("div");
+  assert_true(div.matches(":dir(rtl)"));
+  host.remove();
+}, 'slot provides its directionality (from host) to a dir=auto container');
+
+test(() => {
+  let host = document.createElement("div");
+  document.body.appendChild(host);
+  let root = host.attachShadow({mode:"open"});
+  root.innerHTML = '<div dir="auto"><span dir="ltr">A</span>\u05D0</div><slot></slot>';
+  let div = root.querySelector("div");
+  assert_true(div.matches(":dir(rtl)"));
+  host.remove();
+}, 'children with dir attribute are skipped by dir=auto');
+
+test(() => {
+  let host = document.createElement("div");
+  document.body.appendChild(host);
+  let root = host.attachShadow({mode:"open"});
+  root.innerHTML = '<div dir="auto"><slot dir="ltr"></slot>\u05D0</div>';
+  let div = root.querySelector("div");
+  assert_true(div.matches(":dir(rtl)"));
+  host.remove();
+}, 'slot with dir attribute is skipped by dir=auto');
 
 </script>

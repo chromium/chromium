@@ -159,6 +159,8 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   void ClearAssignedNodesAndFlatTreeChildren();
   void DetachDisplayLockedAssignedNodesLayoutTreeIfNeeded();
 
+  void UpdateDirAutoAncestorsForSupportsAssignmentChange();
+
   HeapVector<Member<Node>> assigned_nodes_;
   HeapVector<Member<Node>> flat_tree_children_;
 

@@ -378,9 +378,19 @@ void HTMLSlotElement::AttributeChanged(
   HTMLElement::AttributeChanged(params);
 }
 
+// When the result of `SupportsAssignment()` changes, the behavior of a
+// <slot> element for ancestors with dir=auto changes.
+void HTMLSlotElement::UpdateDirAutoAncestorsForSupportsAssignmentChange() {
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
+      SelfOrAncestorHasDirAutoAttribute()) {
+    UpdateAncestorWithDirAuto(UpdateAncestorTraversal::ExcludeSelf);
+  }
+}
+
 Node::InsertionNotificationRequest HTMLSlotElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
+  UpdateDirAutoAncestorsForSupportsAssignmentChange();
   if (SupportsAssignment()) {
     ShadowRoot* root = ContainingShadowRoot();
     DCHECK(root);
@@ -453,6 +463,7 @@ void HTMLSlotElement::RemovedFrom(ContainerNode& insertion_point) {
     DCHECK(assigned_nodes_.empty());
   }
 
+  UpdateDirAutoAncestorsForSupportsAssignmentChange();
   HTMLElement::RemovedFrom(insertion_point);
 }
 

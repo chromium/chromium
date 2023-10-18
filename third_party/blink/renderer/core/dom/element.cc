@@ -4316,13 +4316,6 @@ absl::optional<TextDirection> Element::ResolveAutoDirectionality(
       }
     }
 
-    // TODO(https://crbug.com/576815): Once we have final spec text for
-    // https://github.com/whatwg/html/issues/3699 we should recheck the
-    // relative order of this check and the "Skip elements with valid
-    // dir attribute" check above, and add tests for the case that
-    // exercises both.  (Note that if the order is switched, this test
-    // needs to consider the dir attribute on the slot element rather
-    // than just jumping to its shadow host.)
     if (slot && RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
       ShadowRoot* root = slot->ContainingShadowRoot();
       return root->host().CachedDirectionality();
