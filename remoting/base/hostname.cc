@@ -19,11 +19,7 @@
 namespace remoting {
 
 std::string GetHostname() {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag
-// switch of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  return net::GetHostName();
-#elif BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
   wchar_t buffer[MAX_PATH] = {0};
   DWORD size = MAX_PATH;
   if (!::GetComputerNameExW(ComputerNameDnsFullyQualified, buffer, &size)) {
@@ -37,7 +33,7 @@ std::string GetHostname() {
   }
   return hostname;
 #else
-  return std::string();
+  return net::GetHostName();
 #endif
 }
 
