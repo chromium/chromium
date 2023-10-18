@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewStub;
 
 import androidx.test.filters.MediumTest;
 
@@ -66,7 +67,26 @@ public class RevampedIncognitoDescriptionViewRenderTest extends BlankUiTestActiv
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view.setBackgroundResource(R.color.ntp_bg_incognito);
+                    ViewStub cardStub = getActivity().findViewById(R.id.cookie_card_stub);
+                    cardStub.setLayoutResource(R.layout.revamped_incognito_cookie_controls_card);
+                    cardStub.inflate();
                 });
         mRenderTestRule.render(view, "revamped_incognito_description_view");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_RevampedIncognitoDescriptionViewTrackingProtection() throws IOException {
+        View view = getActivity().findViewById(android.R.id.content);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view.setBackgroundResource(R.color.ntp_bg_incognito);
+                    ViewStub cardStub = getActivity().findViewById(R.id.cookie_card_stub);
+                    cardStub.setLayoutResource(
+                            R.layout.revamped_incognito_tracking_protection_card);
+                    cardStub.inflate();
+                });
+        mRenderTestRule.render(view, "revamped_incognito_description_view_tracking_protection");
     }
 }

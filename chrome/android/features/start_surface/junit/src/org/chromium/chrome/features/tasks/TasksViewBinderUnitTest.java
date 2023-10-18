@@ -7,6 +7,7 @@ package org.chromium.chrome.features.tasks;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.BACKGROUND_COLOR;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_CLICK_LISTENER;
@@ -46,15 +47,25 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -77,13 +88,28 @@ public class TasksViewBinderUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private IncognitoCookieControlsManager mCookieControlsManager;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Mock
+    private IncognitoCookieControlsManager mCookieControlsManager;
+
+    @Mock private Profile mProfile;
+
+    @Mock private PrefService mPrefService;
+
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
     @Before
     public void setUp() throws Exception {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         MockitoAnnotations.initMocks(this);
 
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        when(mProfile.getPrimaryOTRProfile(true)).thenReturn(mProfile);
+        Profile.setLastUsedProfileForTesting(mProfile);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         mTasksView =
                 (TasksView) mActivity.getLayoutInflater().inflate(R.layout.tasks_view_layout, null);
         mActivity.setContentView(mTasksView);
@@ -94,7 +120,9 @@ public class TasksViewBinderUnitTest {
     }
 
     private boolean isViewVisible(int viewId) {
-        return mTasksView.findViewById(viewId).getVisibility() == View.VISIBLE;
+        View view = mTasksView.findViewById(viewId);
+        if (view == null) return false;
+        return view.getVisibility() == View.VISIBLE;
     }
 
     @Test
@@ -250,7 +278,12 @@ public class TasksViewBinderUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
+        ChromeFeatureList.INCOGNITO_NTP_REVAMP
+    })
     public void testSetIncognitoDescriptionVisibilityAndClickListener() {
+        when(mPrefService.getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)).thenReturn(false);
         assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -268,6 +301,34 @@ public class TasksViewBinderUnitTest {
                     mTasksViewPropertyModel.set(IS_INCOGNITO_DESCRIPTION_VISIBLE, true);
                 });
         assertTrue(isViewVisible(R.id.new_tab_incognito_container));
+        assertTrue(isViewVisible(R.id.cookie_controls_card_toggle));
+        assertFalse(isViewVisible(R.id.tracking_protection_card_title));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.INCOGNITO_NTP_REVAMP)
+    public void testSetIncognitoDescriptionVisibilityAndClickListenerTrackingProtection() {
+        when(mPrefService.getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)).thenReturn(true);
+        assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTasksViewPropertyModel.set(
+                            INCOGNITO_LEARN_MORE_CLICK_LISTENER, mViewOnClickListener);
+                });
+        assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTasksViewPropertyModel.set(
+                            INCOGNITO_COOKIE_CONTROLS_MANAGER, mCookieControlsManager);
+                    mTasksViewPropertyModel.set(IS_INCOGNITO_DESCRIPTION_INITIALIZED, true);
+                    mTasksViewPropertyModel.set(IS_INCOGNITO_DESCRIPTION_VISIBLE, true);
+                });
+        assertTrue(isViewVisible(R.id.new_tab_incognito_container));
+        assertTrue(isViewVisible(R.id.tracking_protection_card_title));
+        assertFalse(isViewVisible(R.id.cookie_controls_card_toggle));
     }
 
     @Test

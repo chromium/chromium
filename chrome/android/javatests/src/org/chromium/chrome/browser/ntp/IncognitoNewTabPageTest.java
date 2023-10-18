@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -74,7 +75,17 @@ public class IncognitoNewTabPageTest {
                 });
     }
 
-    /** Test cookie controls toggle defaults to on if cookie controls mode is on. */
+    private void enableTrackingProtection() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    prefService.setBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED, true);
+                });
+    }
+
+    /**
+     * Test cookie controls toggle defaults to on if cookie controls mode is on.
+     */
     @Test
     @SmallTest
     public void testCookieControlsToggleStartsOn() throws Exception {
@@ -136,5 +147,15 @@ public class IncognitoNewTabPageTest {
         onView(withId(toggle_id)).check(matches(not(isEnabled())));
         setCookieControlsMode(CookieControlsMode.OFF);
         onView(withId(toggle_id)).check(matches(allOf(isNotChecked(), isEnabled())));
+    }
+
+    /** Test the tracking protection layout. */
+    @Test
+    @SmallTest
+    public void testTrackingProtection() throws Exception {
+        enableTrackingProtection();
+        sActivityTestRule.newIncognitoTabFromMenu();
+        onView(withId(R.id.tracking_protection_card))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 }
