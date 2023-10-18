@@ -23,6 +23,7 @@ enum InspectorIssueCode {
   kLowTextContrastIssue,
   kFederatedAuthRequestIssue,
   kBounceTrackingIssue,
+  kCookieDeprecationMetadataIssue,
   kGenericIssue,
   kDeprecationIssue,
   kFederatedAuthUserInfoRequestIssue,
@@ -268,6 +269,10 @@ struct BounceTrackingIssueDetails {
   array<string> tracking_sites;
 };
 
+struct CookieDeprecationMetadataIssueDetails {
+  array<string> allowed_sites;
+};
+
 enum GenericIssueErrorType {
   kCrossOriginPortalPostMessageError,
   kFormLabelForNameError,
@@ -313,6 +318,7 @@ struct InspectorIssueDetails {
   LowTextContrastIssue? low_text_contrast_details;
   FederatedAuthRequestIssueDetails? federated_auth_request_details;
   BounceTrackingIssueDetails? bounce_tracking_issue_details;
+  CookieDeprecationMetadataIssueDetails? cookie_deprecation_metadata_issue_details;
   GenericIssueDetails? generic_issue_details;
   DeprecationIssueDetails? deprecation_issue_details;
   FederatedAuthUserInfoRequestIssueDetails? federated_auth_user_info_request_details;

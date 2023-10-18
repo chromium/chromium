@@ -256,6 +256,10 @@ class CookieSettingsBase {
       net::CookieSettingOverrides overrides,
       SettingInfo* info) const;
 
+  // Returns true iff the query for third-party cookie access should consider
+  // grants awarded by the global allowlist.
+  bool ShouldConsider3pcdMetadataGrantsSettings() const;
+
  private:
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
@@ -272,8 +276,6 @@ class CookieSettingsBase {
                                      const GURL& first_party_url) const;
 
   bool ShouldConsider3pcdSupportSettings() const;
-
-  bool ShouldConsider3pcdMetadataGrantsSettings() const;
 
   bool ShouldConsider3pcdHeuristicsGrantsSettings() const;
 

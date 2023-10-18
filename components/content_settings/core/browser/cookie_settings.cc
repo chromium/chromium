@@ -95,6 +95,25 @@ void CookieSettings::SetCookieSetting(const GURL& primary_url,
       primary_url, GURL(), ContentSettingsType::COOKIES, setting);
 }
 
+bool CookieSettings::IsAllowedByTpcdMetadataGrant(
+    const GURL& url,
+    const GURL& first_party_url) const {
+  if (!ShouldConsider3pcdMetadataGrantsSettings()) {
+    return false;
+  }
+
+  base::AutoLock lock(tpcd_lock_);
+  const auto& entry = base::ranges::find_if(
+      settings_for_3pcd_metadata_grants_,
+      [&](const ContentSettingPatternSource& entry) {
+        CHECK(IsAllowed(
+            content_settings::ValueToContentSetting(entry.setting_value)));
+        return entry.primary_pattern.Matches(url) &&
+               entry.secondary_pattern.Matches(first_party_url);
+      });
+  return entry != settings_for_3pcd_metadata_grants_.end();
+}
+
 void CookieSettings::SetTemporaryCookieGrantForHeuristic(
     const GURL& url,
     const GURL& first_party_url,
@@ -264,16 +283,7 @@ ContentSetting CookieSettings::GetContentSetting(
     ContentSettingsType content_type,
     content_settings::SettingInfo* info) const {
   if (content_type == ContentSettingsType::TPCD_METADATA_GRANTS) {
-    base::AutoLock lock(tpcd_lock_);
-    const auto& entry = base::ranges::find_if(
-        settings_for_3pcd_metadata_grants_,
-        [&](const ContentSettingPatternSource& entry) {
-          CHECK(IsAllowed(
-              content_settings::ValueToContentSetting(entry.setting_value)));
-          return entry.primary_pattern.Matches(primary_url) &&
-                 entry.secondary_pattern.Matches(secondary_url);
-        });
-    return entry != settings_for_3pcd_metadata_grants_.end()
+    return IsAllowedByTpcdMetadataGrant(primary_url, secondary_url)
                ? CONTENT_SETTING_ALLOW
                : CONTENT_SETTING_BLOCK;
   }

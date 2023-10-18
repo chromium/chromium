@@ -770,6 +770,15 @@ experimental domain Audits
     properties
       array of string trackingSites
 
+  # This issue warns about third-party sites that are accessing cookies on the
+  # current page, and have been permitted due to having a global metadata grant.
+  # Note that in this context 'site' means eTLD+1. For example, if the URL
+  # `https://example.test:80/web_page` was accessing cookies, the site reported
+  # would be `example.test`.
+  type CookieDeprecationMetadataIssueDetails extends object
+    properties
+      array of string allowedSites
+
   type ClientHintIssueReason extends string
     enum
       # Items in the accept-ch meta tag allow list must be valid origins.
@@ -915,6 +924,7 @@ experimental domain Audits
       ClientHintIssue
       FederatedAuthRequestIssue
       BounceTrackingIssue
+      CookieDeprecationMetadataIssue
       StylesheetLoadingIssue
       FederatedAuthUserInfoRequestIssue
       PropertyRuleIssue
@@ -940,6 +950,7 @@ experimental domain Audits
       optional ClientHintIssueDetails clientHintIssueDetails
       optional FederatedAuthRequestIssueDetails federatedAuthRequestIssueDetails
       optional BounceTrackingIssueDetails bounceTrackingIssueDetails
+      optional CookieDeprecationMetadataIssueDetails cookieDeprecationMetadataIssueDetails
       optional StylesheetLoadingIssueDetails stylesheetLoadingIssueDetails
       optional PropertyRuleIssueDetails propertyRuleIssueDetails
       optional FederatedAuthUserInfoRequestIssueDetails federatedAuthUserInfoRequestIssueDetails

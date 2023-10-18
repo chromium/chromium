@@ -1523,6 +1523,7 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdMetadataGrants) {
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
             SettingWith3pcdMetadataGrantEligibleOverride());
+
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
@@ -1535,14 +1536,20 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdMetadataGrants) {
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 top_level_url, url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(
+      cookie_settings_->IsAllowedByTpcdMetadataGrant(top_level_url, url));
 
   // Invalid pairs where a |third_url| is used.
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, third_url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(cookie_settings_->IsAllowedByTpcdMetadataGrant(third_url, url));
+
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 third_url, top_level_url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(
+      cookie_settings_->IsAllowedByTpcdMetadataGrant(top_level_url, third_url));
 }
 
 TEST_P(CookieSettingsTest, GetCookieSetting3pcdHeuristicsGrants) {

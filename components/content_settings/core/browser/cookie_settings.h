@@ -102,6 +102,13 @@ class CookieSettings
   // This should only be called on the UI thread.
   void SetCookieSetting(const GURL& primary_url, ContentSetting setting);
 
+  // Returns whether a cookie access is allowed for the `TPCD_METADATA_GRANTS`
+  // content settings type, scoped on the provided `url` and `first_party_url`.
+  //
+  // This may be called on any thread.
+  bool IsAllowedByTpcdMetadataGrant(const GURL& url,
+                                    const GURL& first_party_url) const;
+
   // Sets the `TPCD_HEURISTICS_GRANTS` setting for the given (`url`,
   // `first_party_url`) pair, for the provided `ttl`.
   //

@@ -510,6 +510,31 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildBounceTrackingIssue(
   return issue;
 }
 
+std::unique_ptr<protocol::Audits::InspectorIssue>
+BuildCookieDeprecationMetadataIssue(
+    const blink::mojom::CookieDeprecationMetadataIssueDetailsPtr&
+        issue_details) {
+  auto metadata_issue_details =
+      protocol::Audits::CookieDeprecationMetadataIssueDetails::Create()
+          .SetAllowedSites(std::make_unique<protocol::Array<protocol::String>>(
+              issue_details->allowed_sites))
+          .Build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetCookieDeprecationMetadataIssueDetails(
+              std::move(metadata_issue_details))
+          .Build();
+
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                                CookieDeprecationMetadataIssue)
+                   .SetDetails(std::move(protocol_issue_details))
+                   .Build();
+
+  return issue;
+}
+
 void UpdateChildFrameTrees(FrameTreeNode* ftn, bool update_target_info) {
   if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
           WebContentsImpl::FromFrameTreeNode(ftn))) {
@@ -1811,6 +1836,10 @@ void BuildAndReportBrowserInitiatedIssue(
              blink::mojom::InspectorIssueCode::kBounceTrackingIssue) {
     issue =
         BuildBounceTrackingIssue(info->details->bounce_tracking_issue_details);
+  } else if (info->code == blink::mojom::InspectorIssueCode::
+                               kCookieDeprecationMetadataIssue) {
+    issue = BuildCookieDeprecationMetadataIssue(
+        info->details->cookie_deprecation_metadata_issue_details);
   } else if (info->code == blink::mojom::InspectorIssueCode::
                                kFederatedAuthUserInfoRequestIssue) {
     issue = BuildFederatedAuthUserInfoRequestIssue(

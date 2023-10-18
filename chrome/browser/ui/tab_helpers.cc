@@ -84,6 +84,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
+#include "chrome/browser/tpcd/metadata/devtools_observer.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -352,8 +353,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     }
   }
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
-  if (breadcrumbs::IsEnabled())
+  if (breadcrumbs::IsEnabled()) {
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
+  }
   chrome::ChainedBackNavigationTracker::CreateForWebContents(web_contents);
   chrome_browser_net::NetErrorTabHelper::CreateForWebContents(web_contents);
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -388,18 +390,21 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   webapps::InstallableManager::CreateForWebContents(web_contents);
   login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(
       web_contents);
-  if (MediaEngagementService::IsEnabled())
+  if (MediaEngagementService::IsEnabled()) {
     MediaEngagementService::CreateWebContentsObserver(web_contents);
-  if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore))
+  }
+  if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore)) {
     MediaHistoryContentsObserver::CreateForWebContents(web_contents);
+  }
   metrics::MetricsServicesWebContentsObserver::CreateForWebContents(
       web_contents);
   MixedContentSettingsTabHelper::CreateForWebContents(web_contents);
   NavigationMetricsRecorder::CreateForWebContents(web_contents);
   NavigationPredictorPreconnectClient::CreateForWebContents(web_contents);
   OpenerHeuristicTabHelper::CreateForWebContents(web_contents);
-  if (optimization_guide::features::IsOptimizationHintsEnabled())
+  if (optimization_guide::features::IsOptimizationHintsEnabled()) {
     OptimizationGuideWebContentsObserver::CreateForWebContents(web_contents);
+  }
   optimization_guide::PageContentAnnotationsService*
       page_content_annotations_service =
           PageContentAnnotationsServiceFactory::GetForProfile(profile);
@@ -453,8 +458,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   blocked_content::PopupOpenerTabHelper::CreateForWebContents(
       web_contents, base::DefaultTickClock::GetInstance(),
       HostContentSettingsMapFactory::GetForProfile(profile));
-  if (predictors::LoadingPredictorFactory::GetForProfile(profile))
+  if (predictors::LoadingPredictorFactory::GetForProfile(profile)) {
     predictors::LoadingPredictorTabHelper::CreateForWebContents(web_contents);
+  }
   PrefsTabHelper::CreateForWebContents(web_contents);
   prerender::NoStatePrefetchTabHelper::CreateForWebContents(web_contents);
   RecentlyAudibleHelper::CreateForWebContents(web_contents);
@@ -501,6 +507,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           profile));
   TabUIHelper::CreateForWebContents(web_contents);
   tasks::TaskTabHelper::CreateForWebContents(web_contents);
+  tpcd::metadata::TpcdMetadataDevtoolsObserver::CreateForWebContents(
+      web_contents);
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
   v8_compile_hints::V8CompileHintsTabHelper::MaybeCreateForWebContents(
@@ -555,8 +563,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
   }
   ManagePasswordsUIController::CreateForWebContents(web_contents);
-  if (PrivacySandboxPromptHelper::ProfileRequiresPrompt(profile))
+  if (PrivacySandboxPromptHelper::ProfileRequiresPrompt(profile)) {
     PrivacySandboxPromptHelper::CreateForWebContents(web_contents);
+  }
 
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   if (search_engines::IsChoiceScreenFlagEnabled(
@@ -623,8 +632,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  if (screentime::TabHelper::IsScreentimeEnabledForProfile(profile))
+  if (screentime::TabHelper::IsScreentimeEnabledForProfile(profile)) {
     screentime::TabHelper::CreateForWebContents(web_contents);
+  }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -690,17 +700,19 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
 
 #if defined(TOOLKIT_VIEWS)
-  if (IsSideSearchEnabled(profile))
+  if (IsSideSearchEnabled(profile)) {
     SideSearchTabContentsHelper::CreateForWebContents(web_contents);
+  }
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (customize_chrome::IsSidePanelEnabled())
+  if (customize_chrome::IsSidePanelEnabled()) {
     CustomizeChromeTabHelper::CreateForWebContents(web_contents);
+  }
 #endif
 
-    // --- Section 3: Feature tab helpers behind BUILDFLAGs ---
-    // NOT for "if enabled"; put those in section 1.
+  // --- Section 3: Feature tab helpers behind BUILDFLAGs ---
+  // NOT for "if enabled"; put those in section 1.
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   captive_portal::CaptivePortalTabHelper::CreateForWebContents(
@@ -723,11 +735,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
 
   extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
-  if (web_app::AreWebAppsEnabled(profile))
+  if (web_app::AreWebAppsEnabled(profile)) {
     web_app::WebAppTabHelper::CreateForWebContents(web_contents);
+  }
   // Note WebAppMetricsTabHelper must be created after AppBannerManager.
-  if (web_app::WebAppMetricsTabHelper::IsEnabled(web_contents))
+  if (web_app::WebAppMetricsTabHelper::IsEnabled(web_contents)) {
     web_app::WebAppMetricsTabHelper::CreateForWebContents(web_contents);
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -753,8 +767,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
 
 #if BUILDFLAG(ENABLE_FEED_V2)
-  if (base::FeatureList::IsEnabled(feed::kWebUiFeed))
+  if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
     feed::WebFeedTabHelper::CreateForWebContents(web_contents);
+  }
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
 
   // --- Section 4: The warning ---
