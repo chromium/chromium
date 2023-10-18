@@ -78,16 +78,45 @@ class TrackingProtectionNoticeService
   };
 
  private:
+  // IPH Based Tracking Protection Notice, in charge of showing/hiding the IPH
+  // Promo based on page eligibility and user navigation.
+  class BaseIPHNotice {
+   public:
+    BaseIPHNotice(Profile* profile,
+                  TrackingProtectionOnboarding* onboarding_service);
+    virtual ~BaseIPHNotice();
+
+    void MaybeUpdateNoticeVisibility(content::WebContents* web_content);
+
+   private:
+    // Fires when the notice is closed (For any reason)
+    void OnNoticeClosed(
+        base::Time showed_when,
+        user_education::FeaturePromoController* promo_controller);
+
+    bool IsPromoShowing(Browser* browser);
+    bool MaybeShowPromo(Browser* browser);
+    void HidePromo(Browser* browser);
+
+    virtual TrackingProtectionOnboarding::NoticeType GetNoticeType() = 0;
+    virtual const base::Feature& GetIPHFeature() = 0;
+
+    raw_ptr<Profile> profile_;
+    raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
+  };
+
+  class OnboardingNotice : public BaseIPHNotice {
+   public:
+    OnboardingNotice(Profile* profile,
+                     TrackingProtectionOnboarding* onboarding_service);
+
+   private:
+    TrackingProtectionOnboarding::NoticeType GetNoticeType() override;
+    const base::Feature& GetIPHFeature() override;
+  };
+
   // Indicates if the notice is needed to be displayed.
   bool IsNoticeNeeded();
-
-  // Assumes this is a time to show the user the onboarding Notice. This
-  // method will attempt do so.
-  void MaybeUpdateNoticeVisibility(content::WebContents* web_content);
-
-  // Fires when the Notice is closed (for any reason).
-  void OnNoticeClosed(base::Time showed_when,
-                      user_education::FeaturePromoController* promo_controller);
 
   // This is called internally when the service should start observing the tab
   // strip model across all eligible browsers. Browser eligibility is determined
@@ -111,8 +140,9 @@ class TrackingProtectionNoticeService
   void OnShouldShowNoticeUpdated() override;
 
   raw_ptr<Profile> profile_;
-  std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
   raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
+  std::unique_ptr<BaseIPHNotice> onboarding_notice_;
+  std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
   base::ScopedObservation<TrackingProtectionOnboarding,
                           TrackingProtectionOnboarding::Observer>
       onboarding_observation_{this};
