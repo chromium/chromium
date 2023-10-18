@@ -817,8 +817,74 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Remote_Fail) {
               EXPECT_FALSE(credentials.has_value());
               run_loop.Quit();
             }));
-
     remote_public_db_->LoadCallback(false);
+
+    run_loop.Run();
+  }
+}
+
+TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Success) {
+  {
+    base::RunLoop run_loop;
+    FullyInitializeDatabases(run_loop);
+  }
+
+  {
+    base::RunLoop run_loop;
+    PrepopulateCredentials(run_loop,
+                           ash::nearby::presence::mojom::PublicCredentialType::
+                               kLocalPublicCredential);
+    run_loop.Run();
+  }
+
+  ASSERT_EQ(private_db_entries_.size(), 3u);
+
+  {
+    base::RunLoop run_loop;
+    credential_storage_->GetPrivateCredentials(base::BindLambdaForTesting(
+        [&run_loop](mojo_base::mojom::AbslStatusCode status,
+                    absl::optional<std::vector<mojom::LocalCredentialPtr>>
+                        credentials) {
+          EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kOk);
+          EXPECT_TRUE(credentials.has_value());
+          EXPECT_EQ(credentials->size(), 3u);
+          run_loop.Quit();
+        }));
+    private_db_->LoadCallback(true);
+
+    run_loop.Run();
+  }
+}
+
+TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Fail) {
+  {
+    base::RunLoop run_loop;
+    FullyInitializeDatabases(run_loop);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    PrepopulateCredentials(run_loop,
+                           ash::nearby::presence::mojom::PublicCredentialType::
+                               kLocalPublicCredential);
+    run_loop.Run();
+  }
+
+  ASSERT_EQ(private_db_entries_.size(), 3u);
+
+  {
+    base::RunLoop run_loop;
+    credential_storage_->GetPrivateCredentials(base::BindLambdaForTesting(
+        [&run_loop](mojo_base::mojom::AbslStatusCode status,
+                    absl::optional<std::vector<mojom::LocalCredentialPtr>>
+                        credentials) {
+          EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kAborted);
+          EXPECT_FALSE(credentials.has_value());
+          run_loop.Quit();
+        }));
+
+    private_db_->LoadCallback(false);
 
     run_loop.Run();
   }

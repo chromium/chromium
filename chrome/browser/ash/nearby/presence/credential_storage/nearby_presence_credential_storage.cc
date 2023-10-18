@@ -164,6 +164,41 @@ void NearbyPresenceCredentialStorage::GetPublicCredentials(
   }
 }
 
+void NearbyPresenceCredentialStorage::GetPrivateCredentials(
+    GetPrivateCredentialsCallback callback) {
+  CHECK(callback);
+  private_db_->LoadEntries(base::BindOnce(
+      &NearbyPresenceCredentialStorage::OnPrivateCredentialsRetrieved,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void NearbyPresenceCredentialStorage::OnPrivateCredentialsRetrieved(
+    GetPrivateCredentialsCallback callback,
+    bool success,
+    std::unique_ptr<std::vector<::nearby::internal::LocalCredential>> entries) {
+  CHECK(callback);
+
+  if (!success) {
+    // TODO(b/287334363): Emit a failure metric.
+    LOG(ERROR) << __func__ << ": failed to retrieve private credentials";
+    std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kAborted,
+                            absl::nullopt);
+    return;
+  }
+
+  CHECK(entries);
+
+  std::vector<ash::nearby::presence::mojom::LocalCredentialPtr>
+      local_credentials_mojom;
+  for (const auto& entry : *entries) {
+    local_credentials_mojom.emplace_back(
+        ash::nearby::presence::proto::LocalCredentialToMojom(entry));
+  }
+
+  std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kOk,
+                          std::move(local_credentials_mojom));
+}
+
 void NearbyPresenceCredentialStorage::OnPublicCredentialsRetrieved(
     GetPublicCredentialsCallback callback,
     bool success,

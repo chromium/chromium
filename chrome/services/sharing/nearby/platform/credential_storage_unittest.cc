@@ -227,6 +227,11 @@ class FakeNearbyPresenceCredentialStorage
                             std::move(shared_credentials));
   }
 
+  void GetPrivateCredentials(GetPrivateCredentialsCallback callback) override {
+    // TODO(b:295336839): Method will be implemented when CredentialStorage
+    // consumes the GetPrivateCredentials method.
+  }
+
   void SetShouldCredentialsSuccessfullySave(bool should_succeed) {
     should_credentials_successfully_save_ = should_succeed;
   }
