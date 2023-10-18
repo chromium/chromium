@@ -3038,10 +3038,14 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
       RuntimeEnabledFeatures::CSSImageSetEnabled()
           ? ConsumeStringUrlImagePolicy::kAllow
           : ConsumeStringUrlImagePolicy::kForbid;
+  const ConsumeGeneratedImagePolicy image_set_generated_image_policy =
+      RuntimeEnabledFeatures::CSSImageSetEnabled()
+          ? generated_image_policy
+          : ConsumeGeneratedImagePolicy::kForbid;
 
-  const CSSValue* image = ConsumeImage(range, context, generated_image_policy,
-                                       string_url_image_policy,
-                                       ConsumeImageSetImagePolicy::kForbid);
+  const CSSValue* image = ConsumeImage(
+      range, context, image_set_generated_image_policy, string_url_image_policy,
+      ConsumeImageSetImagePolicy::kForbid);
   if (!image) {
     return nullptr;
   }

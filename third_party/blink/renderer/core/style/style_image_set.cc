@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/style/style_image_set.h"
 
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
+#include "third_party/blink/renderer/core/style/style_image_computed_css_value_builder.h"
 
 namespace blink {
 
@@ -60,7 +62,8 @@ CSSValue* StyleImageSet::CssValue() const {
 
 CSSValue* StyleImageSet::ComputedCSSValue(const ComputedStyle& style,
                                           bool allow_visited_style) const {
-  return image_set_value_->ComputedCSSValue(style, allow_visited_style);
+  return StyleImageComputedCSSValueBuilder(style, allow_visited_style)
+      .Build(image_set_value_);
 }
 
 bool StyleImageSet::CanRender() const {

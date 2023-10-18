@@ -37,7 +37,6 @@
 
 namespace blink {
 
-class CSSValue;
 class ImageResourceObserver;
 
 // StylePendingImage is a placeholder StyleImage that is entered into the
@@ -109,4 +108,5 @@ inline bool StylePendingImage::IsEqual(const StyleImage& other) const {
 }
 
 }  // namespace blink
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_PENDING_IMAGE_H_

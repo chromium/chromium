@@ -87,6 +87,8 @@ blink_core_sources_style = [
   "style_hyphenate_limit_chars.h",
   "style_image.cc",
   "style_image.h",
+  "style_image_computed_css_value_builder.cc",
+  "style_image_computed_css_value_builder.h",
   "style_image_set.cc",
   "style_image_set.h",
   "style_inherited_variables.cc",

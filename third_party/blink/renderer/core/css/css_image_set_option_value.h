@@ -5,18 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IMAGE_SET_OPTION_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IMAGE_SET_OPTION_VALUE_H_
 
-#include "third_party/blink/renderer/core/css/css_image_set_type_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
-#include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/style_image.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class CSSImageSetTypeValue;
+class CSSPrimitiveValue;
 
 // This class represents an image-set-option as specified in:
 // https://w3c.github.io/csswg-drafts/css-images-4/#typedef-image-set-option
@@ -33,12 +29,6 @@ class CSSImageSetOptionValue : public CSSValue {
 
   ~CSSImageSetOptionValue();
 
-  StyleImage* CacheImage(
-      const Document& document,
-      const FetchParameters::ImageRequestBehavior image_request_behavior,
-      const CrossOriginAttributeValue cross_origin,
-      const CSSToLengthConversionData::ContainerSizes& container_sizes) const;
-
   // Gets the resolution value in Dots Per Pixel
   double ComputedResolution() const;
 
@@ -46,13 +36,13 @@ class CSSImageSetOptionValue : public CSSValue {
   // browser can render.
   bool IsSupported() const;
 
+  CSSValue& GetImage() const;
+  const CSSPrimitiveValue& GetResolution() const;
+  const CSSImageSetTypeValue* GetType() const;
+
   String CustomCSSText() const;
 
   bool Equals(const CSSImageSetOptionValue& other) const;
-
-  CSSImageSetOptionValue* ComputedCSSValue(
-      const ComputedStyle& style,
-      const bool allow_visited_style) const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const;
 
