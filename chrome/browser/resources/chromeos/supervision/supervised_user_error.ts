@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './supervised_user_error.html.js';
 
 class SupervisedUserError extends PolymerElement {
   static get is() {
@@ -10,7 +11,7 @@ class SupervisedUserError extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 }
 customElements.define(SupervisedUserError.is, SupervisedUserError);
