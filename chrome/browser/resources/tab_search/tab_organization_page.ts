@@ -14,7 +14,7 @@ import './tab_organization_results.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './tab_organization_page.html.js';
-import {Tab, TabOrganization, TabOrganizationSession, TabOrganizationState} from './tab_search.mojom-webui.js';
+import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabOrganizationState} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 export class TabOrganizationPageElement extends PolymerElement {
@@ -27,6 +27,7 @@ export class TabOrganizationPageElement extends PolymerElement {
       state_: Object,
       name_: String,
       tabs_: Array,
+      error_: Object,
 
       tabOrganizationStateEnum_: {
         type: Object,
@@ -40,6 +41,7 @@ export class TabOrganizationPageElement extends PolymerElement {
   private state_: TabOrganizationState = TabOrganizationState.kNotStarted;
   private name_: string;
   private tabs_: Tab[];
+  private error_: TabOrganizationError = TabOrganizationError.kNone;
   private sessionId_: number = -1;
   private organizationId_: number = -1;
 
@@ -71,6 +73,7 @@ export class TabOrganizationPageElement extends PolymerElement {
   private setSession_(session: TabOrganizationSession) {
     this.sessionId_ = session.sessionId;
     this.state_ = session.state;
+    this.error_ = session.error;
     if (session.state === TabOrganizationState.kSuccess) {
       const organization: TabOrganization = session.organizations[0];
       this.name_ = organization.name;

@@ -19,6 +19,7 @@
       on-create-group-click="onCreateGroupClick_">
   </tab-organization-results>
   <tab-organization-failure
-      hidden="[[!isState_(tabOrganizationStateEnum_.kFailure, state_)]]">
+      hidden="[[!isState_(tabOrganizationStateEnum_.kFailure, state_)]]"
+      error="[[error_]]">
   </tab-organization-failure>
 </div>
