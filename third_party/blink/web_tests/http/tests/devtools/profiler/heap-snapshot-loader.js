@@ -9,6 +9,7 @@ import * as Common from 'devtools/core/common/common.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Profiler from 'devtools/panels/profiler/profiler.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`This test checks HeapSnapshots loader.\n`);
@@ -63,21 +64,21 @@ import * as Profiler from 'devtools/panels/profiler/profiler.js';
         function saveMock(url, data) {
           savedSnapshotData = data;
           setTimeout(
-              () => Workspace.fileManager.savedURL({data: {url: url}}), 0);
+              () => Workspace.FileManager.FileManager.instance().savedURL({data: {url: url}}), 0);
         }
         TestRunner.override(InspectorFrontendHost, 'save', saveMock);
 
         var oldAppend = InspectorFrontendHost.append;
         InspectorFrontendHost.append = function appendMock(url, data) {
           savedSnapshotData += data;
-          Workspace.fileManager.appendedToURL({data: url});
+          Workspace.FileManager.FileManager.instance().appendedToURL({data: url});
         };
         function closeMock(url) {
           TestRunner.assertEquals(sourceStringified, savedSnapshotData, 'Saved snapshot data');
           InspectorFrontendHost.append = oldAppend;
           next();
         }
-        TestRunner.override(Workspace.FileManager.prototype, 'close', closeMock);
+        TestRunner.override(Workspace.FileManager.FileManager.prototype, 'close', closeMock);
         profileHeader.saveToFile();
       }
 
