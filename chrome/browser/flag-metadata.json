@@ -222,6 +222,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "app-install-service-uri",
+    "owners": [ "tsergeant", "chromeos-apps-foundation-team@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "app-launch-automation",
     "owners": [ "dandersson", "janetmac" ],
     "expiry_milestone": 123

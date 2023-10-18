@@ -150,6 +150,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsCrosBatterySaverAvailable() const;
 
+  bool IsAppInstallServiceUriEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

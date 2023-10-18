@@ -13,6 +13,13 @@
 
 namespace chromeos::features {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables triggering app installs from a specific URI.
+BASE_FEATURE(kAppInstallServiceUri,
+             "AppInstallServiceUri",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Enables or disables more filtering out of phones from the Bluetooth UI.
 BASE_FEATURE(kBluetoothPhoneFilter,
              "BluetoothPhoneFilter",
@@ -122,6 +129,20 @@ BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
              "UploadOfficeToCloudForEnterprise",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRoundedWindows,
+             "RoundedWindows",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kRoundedWindowsRadius[] = "window_radius";
+
+bool IsAppInstallServiceUriEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsAppInstallServiceUriEnabled();
+#else
+  return base::FeatureList::IsEnabled(kAppInstallServiceUri);
+#endif
+}
+
 bool IsClipboardHistoryRefreshEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->EnableClipboardHistoryRefresh();
@@ -130,12 +151,6 @@ bool IsClipboardHistoryRefreshEnabled() {
          IsJellyEnabled();
 #endif
 }
-
-BASE_FEATURE(kRoundedWindows,
-             "RoundedWindows",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kRoundedWindowsRadius[] = "window_radius";
 
 bool IsCloudGamingDeviceEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

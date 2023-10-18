@@ -10991,6 +10991,12 @@ const FeatureEntry kFeatureEntries[] = {
              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"app-install-service-uri", flag_descriptions::kAppInstallServiceUriName,
+     flag_descriptions::kAppInstallServiceUriDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kAppInstallServiceUri)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
