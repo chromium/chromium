@@ -110,6 +110,15 @@ chrome.inputMethodPrivate.LanguagePackStatus = {
 };
 
 /**
+ * Object returned by callbacks when the status of language packs change.
+ * @typedef {{
+ *   engineIds: !Array<string>,
+ *   status: !chrome.inputMethodPrivate.LanguagePackStatus
+ * }}
+ */
+chrome.inputMethodPrivate.LanguagePackStatusChange;
+
+/**
  * Describes an input Context
  * @typedef {{
  *   contextID: number,
@@ -465,3 +474,9 @@ chrome.inputMethodPrivate.onSuggestionsChanged;
  * @type {!ChromeEvent}
  */
 chrome.inputMethodPrivate.onInputMethodOptionsChanged;
+
+/**
+ * This event is sent when any IME's language pack status is changed.
+ * @type {!ChromeEvent}
+ */
+chrome.inputMethodPrivate.onLanguagePackStatusChanged;

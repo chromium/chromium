@@ -35898,6 +35898,8 @@ Called by update_extension_histograms.py.-->
   <int value="546" label="OS_DIAGNOSTICS_ON_ROUTINE_EXCEPTION"/>
   <int value="547"
       label="ACCESSIBILITY_SERVICE_PRIVATE_CLIPBOARD_COPY_IN_ACTIVE_GOOGLE_DOC"/>
+  <int value="548"
+      label="INPUT_METHOD_PRIVATE_ON_LANGUAGE_PACK_STATUS_CHANGED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

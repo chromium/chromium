@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/extensions/dictionary_event_router.h"
 #include "chrome/browser/ash/extensions/ime_menu_event_router.h"
 #include "chrome/browser/ash/extensions/input_method_event_router.h"
+#include "chrome/browser/ash/extensions/language_packs/language_pack_event_router.h"
 #include "chrome/browser/ash/extensions/language_packs/language_packs_extensions_util.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
@@ -83,6 +84,8 @@ namespace GetTextFieldBounds =
     extensions::api::input_method_private::GetTextFieldBounds;
 namespace GetLanguagePackStatus =
     extensions::api::input_method_private::GetLanguagePackStatus;
+namespace OnLanguagePackStatusChanged =
+    extensions::api::input_method_private::OnLanguagePackStatusChanged;
 
 using ::ash::input_method::InputMethodEngine;
 
@@ -591,6 +594,8 @@ InputMethodAPI::InputMethodAPI(content::BrowserContext* context)
       ->RegisterObserver(this, OnImeMenuListChanged::kEventName);
   EventRouter::Get(context_)
       ->RegisterObserver(this, OnImeMenuItemsChanged::kEventName);
+  EventRouter::Get(context_)->RegisterObserver(
+      this, OnLanguagePackStatusChanged::kEventName);
   ExtensionFunctionRegistry& registry =
       ExtensionFunctionRegistry::GetInstance();
   registry.RegisterFunction<InputMethodPrivateGetInputMethodConfigFunction>();
@@ -639,6 +644,10 @@ void InputMethodAPI::OnListenerAdded(
              !ime_menu_event_router_.get()) {
     ime_menu_event_router_ =
         std::make_unique<chromeos::ExtensionImeMenuEventRouter>(context_);
+  } else if (details.event_name == OnLanguagePackStatusChanged::kEventName &&
+             !language_pack_event_router_.get()) {
+    language_pack_event_router_ =
+        std::make_unique<chromeos::LanguagePackEventRouter>(context_);
   }
 }
 
