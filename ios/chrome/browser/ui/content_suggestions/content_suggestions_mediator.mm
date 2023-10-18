@@ -700,7 +700,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     }
   }
   [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
-
+  tab_resumption_prefs::SetTabResumptionLastOpenedTabURL(
+      _tabResumptionItem.tabURL, _localState);
   web::NavigationManager::WebLoadParams webLoadParams =
       web::NavigationManager::WebLoadParams(_tabResumptionItem.tabURL);
   UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);
@@ -1491,7 +1492,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     return;
   }
 
-  // TODO(crbug.com/1478156): Add restrictions.
   if (_tabResumptionItem) {
     [self.consumer showTabResumptionWithItem:_tabResumptionItem];
     return;
@@ -1509,6 +1509,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 // Shows the tab resumption tile with the given `item` configuration.
 - (void)showTabResumptionWithItem:(TabResumptionItem*)item {
+  if (tab_resumption_prefs::IsLastOpenedURL(item.tabURL, _localState)) {
+    return;
+  }
+
   _tabResumptionItem = item;
   _latestMagicStackOrder =
       base::FeatureList::IsEnabled(
