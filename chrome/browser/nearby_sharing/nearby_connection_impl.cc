@@ -15,6 +15,10 @@ NearbyConnectionImpl::NearbyConnectionImpl(
 
 NearbyConnectionImpl::~NearbyConnectionImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Update |nearby_connections_manager_| to prevent a dangling raw_ptr since
+  // disconnect listeners may destroy the NearbyConnectionsManager object.
+  nearby_connections_manager_ = nullptr;
+
   if (disconnect_listener_)
     std::move(disconnect_listener_).Run();
 

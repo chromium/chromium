@@ -40,6 +40,8 @@ class QuickStartConnectivityServiceImpl : public QuickStartConnectivityService {
   void Cleanup() override;
 
  private:
+  friend class QuickStartConnectivityServiceImplTest;
+
   void OnNearbyProcessStopped(
       nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
