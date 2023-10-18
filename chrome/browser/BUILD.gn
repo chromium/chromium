@@ -2180,6 +2180,7 @@ static_library("browser") {
     "//components/component_updater",
     "//components/component_updater/installer_policies",
     "//components/compose:buildflags",
+    "//components/compose/core/browser",
     "//components/compose/core/browser:features",
     "//components/consent_auditor",
     "//components/content_capture/browser",

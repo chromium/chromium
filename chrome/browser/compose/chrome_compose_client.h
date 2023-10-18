@@ -117,7 +117,7 @@ class ChromeComposeClient
   base::flat_map<autofill::FieldGlobalId, compose::mojom::ComposeStatePtr>
       field_states_;
 
-  bool skip_show_dialog_for_test_;
+  bool skip_show_dialog_for_test_ = false;
 
   base::WeakPtrFactory<ChromeComposeClient> weak_ptr_factory_{this};
 

@@ -129,6 +129,7 @@
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -222,6 +223,11 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/compose/chrome_compose_client.h"
+#include "components/compose/core/browser/compose_manager.h"
+#endif
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 #include "chrome/browser/renderer_context_menu/spelling_options_submenu_observer.h"
@@ -3264,10 +3270,24 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
     }
 
+#if BUILDFLAG(ENABLE_COMPOSE)
     case IDC_CONTEXT_COMPOSE: {
-      // TODO(b/301371110): implement the click functionality.
+      auto* client = ChromeComposeClient::FromWebContents(source_web_contents_);
+      compose::ComposeManager* compose_manager =
+          client ? &client->GetManager() : nullptr;
+      RenderFrameHost* render_frame_host = GetRenderFrameHost();
+      if (compose_manager && render_frame_host) {
+        const autofill::LocalFrameToken frame_token = autofill::LocalFrameToken(
+            render_frame_host->GetFrameToken().value());
+        // TODO(b/305798770): Use appropriate parameters once the Autofill Form
+        // Extraction API is available.
+        compose_manager->OpenComposeFromContextMenu(
+            frame_token, autofill::FieldRendererId(*params_.field_renderer_id),
+            gfx::RectF(params_.x, params_.y, 50, 50));
+      }
       break;
     }
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU: {
 #if BUILDFLAG(IS_CHROMEOS)

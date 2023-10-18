@@ -13,6 +13,12 @@ namespace compose {
 class ComposeManager : public autofill::AutofillComposeDelegate {
  public:
   // TODO(b/300325327): Add non-Autofill specific methods.
+  // Opens compose from the context menu given the 'frame_token',
+  // 'field_renderer_id', and 'bounds'.
+  virtual void OpenComposeFromContextMenu(
+      const autofill::LocalFrameToken frame_token,
+      const autofill::FieldRendererId field_renderer_id,
+      const gfx::RectF bounds) = 0;
 };
 
 }  // namespace compose
