@@ -595,7 +595,9 @@ void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node) {
   scoped_refptr<RenderFrameDevToolsAgentHost> previous_host =
       static_cast<RenderFrameDevToolsAgentHost*>(
           RenderFrameDevToolsAgentHost::GetFor(&new_node));
-  previous_host->SetFrameTreeNode(nullptr);
+  // Disconnect old host entirely, so it detaches from renderer and does not
+  // cause problem if renderer comes back from the BFCache.
+  previous_host->DisconnectWebContents();
   host->SetFrameTreeNode(&new_node);
 }
 
