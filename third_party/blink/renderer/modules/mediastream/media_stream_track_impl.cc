@@ -674,11 +674,33 @@ MediaStreamTrackVideoStats* MediaStreamTrackImpl::stats(
           DOMExceptionCode::kNotSupportedError,
           "MediaStreamTrack.stats is not supported on audio tracks.");
       return nullptr;
-    case MediaStreamSource::kTypeVideo:
+    case MediaStreamSource::kTypeVideo: {
+      absl::optional<const MediaStreamDevice> source_device = device();
+      if (!source_device.has_value() ||
+          source_device->type == mojom::blink::MediaStreamType::NO_SERVICE) {
+        // If the track is backed by a getUserMedia or getDisplayMedia device,
+        // a service will be set. Other sources may have default initialized
+        // devices, but these have type NO_SERVICE.
+        // TODO(https://github.com/w3c/mediacapture-extensions/issues/102): This
+        // is an unnecessary restriction - if the W3C Working Group can be
+        // convinced otherwise, simply don't throw this exception. Some sources
+        // may need to wire up the OnFrameDropped callback in order for
+        // totalFrames to include "early" frame drops, but this is probably N/A
+        // for most (if not all) sources that are not backed by a gUM/gDM device
+        // since non-device sources aren't real-time in which case FPS can be
+        // reduced by not generating the frame in the first place, so then there
+        // is no need to drop it.
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            "MediaStreamTrack.stats on video tracks is only supported if the "
+            "source is a getUserMedia() or getDisplayMedia() source.");
+        return nullptr;
+      }
       if (!video_stats_) {
         video_stats_ = MakeGarbageCollected<MediaStreamTrackVideoStats>(this);
       }
       return video_stats_;
+    }
   }
 }
 
