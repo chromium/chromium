@@ -47,12 +47,12 @@
 namespace ash {
 
 bool IsInOverviewSession() {
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   return overview_controller && overview_controller->InOverviewSession();
 }
 
 OverviewSession* GetOverviewSession() {
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   return overview_controller && overview_controller->InOverviewSession()
              ? overview_controller->overview_session()
              : nullptr;
@@ -70,7 +70,7 @@ bool ShouldAnimateWallpaper(aura::Window* root_window) {
   // after the animations are done running. Check the mru window list windows in
   // this case to see if they cover the workspace.
   OverviewSession* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
+      OverviewController::Get()->overview_session();
   if (overview_session) {
     // Never animate when doing app dragging or when immediately exiting.
     const auto enter_exit_type = overview_session->enter_exit_overview_type();
@@ -115,7 +115,7 @@ void FadeInWidgetToOverview(views::Widget* widget,
   if (observe) {
     auto enter_observer = std::make_unique<EnterAnimationObserver>();
     scoped_overview_animation_settings.AddObserver(enter_observer.get());
-    Shell::Get()->overview_controller()->AddEnterAnimationObserver(
+    OverviewController::Get()->AddEnterAnimationObserver(
         std::move(enter_observer));
   }
 }
@@ -127,7 +127,7 @@ void FadeOutWidgetFromOverview(std::unique_ptr<views::Widget> widget,
   widget->widget_delegate()->SetCanActivate(false);
 
   // The overview controller may be nullptr on shutdown.
-  OverviewController* controller = Shell::Get()->overview_controller();
+  OverviewController* controller = OverviewController::Get();
   if (!controller) {
     widget->SetOpacity(0.f);
     return;
@@ -288,8 +288,7 @@ gfx::Rect GetGridBoundsInScreen(
     // the hotseat state does not get updated until the window gets dragged a
     // bit. In this case, determine whether the hotseat will be extended to
     // avoid doing a expensive double grid layout.
-    auto* overview_session =
-        Shell::Get()->overview_controller()->overview_session();
+    auto* overview_session = OverviewController::Get()->overview_session();
     const bool hotseat_will_extend =
         overview_session && overview_session->ShouldEnterWithoutAnimations() &&
         !split_view_controller->InSplitViewMode();
@@ -341,8 +340,7 @@ absl::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
     return absl::nullopt;
   if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
     return absl::nullopt;
-  auto* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
+  auto* overview_session = OverviewController::Get()->overview_session();
   DCHECK(overview_session);
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   DCHECK(overview_session->GetGridWithRootWindow(root_window)
@@ -374,8 +372,7 @@ gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect) {
 }
 
 void MoveFocusToView(OverviewFocusableView* target_view) {
-  auto* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
+  auto* overview_session = OverviewController::Get()->overview_session();
   CHECK(overview_session);
 
   auto* focus_cycler = overview_session->focus_cycler();

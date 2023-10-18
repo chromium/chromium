@@ -472,7 +472,7 @@ TEST_P(AppListControllerImplTest,
        CloseAppListShownFromOverviewAfterTabletExit) {
   auto* shell = Shell::Get();
   auto* tablet_mode_controller = shell->tablet_mode_controller();
-  auto* controller = Shell::Get()->app_list_controller();
+  auto* app_list_controller = shell->app_list_controller();
   // Move to tablet mode and back.
   tablet_mode_controller->SetEnabledForTest(true);
   tablet_mode_controller->SetEnabledForTest(false);
@@ -484,15 +484,15 @@ TEST_P(AppListControllerImplTest,
   // Press home button - verify overview exits and the app list is shown.
   PressHomeButton();
 
-  EXPECT_FALSE(shell->overview_controller()->InOverviewSession());
-  EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
-  EXPECT_TRUE(controller->IsVisible());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
+  EXPECT_TRUE(app_list_controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_TRUE(app_list_controller->IsVisible());
 
   // Pressing home button again should close the app list.
   PressHomeButton();
 
-  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
-  EXPECT_FALSE(controller->IsVisible());
+  EXPECT_FALSE(app_list_controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(app_list_controller->IsVisible());
 }
 
 // Tests that swapping out an AppListModel (simulating a profile swap with

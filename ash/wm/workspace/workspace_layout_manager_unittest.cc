@@ -2270,14 +2270,13 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
 
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   // One of the windows in the default container is the overview
   // no_windows_widget window. Exclude it.
   aura::Window::Windows children = default_container()->children();
   children.erase(std::remove_if(children.begin(), children.end(),
                                 [](aura::Window* window) {
-                                  return window == Shell::Get()
-                                                       ->overview_controller()
+                                  return window == OverviewController::Get()
                                                        ->overview_session()
                                                        ->grid_list()[0]
                                                        ->no_windows_widget()

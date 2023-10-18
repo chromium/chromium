@@ -396,7 +396,7 @@ TEST_F(ShelfWidgetTest, CheckVerticalShelfCornersInOverviewMode) {
   // corners are squared (no effective radius).
   EXPECT_FALSE(opaque_background_layer->rounded_corner_radii().IsEmpty());
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   // Enter overview mode. Expect the shelf with square corners.
   EnterOverview();
   WaitForOverviewAnimation(/*enter=*/true);

@@ -580,9 +580,8 @@ TEST_P(DesksTest, DeskRemovalWithPausedMruTracker) {
   auto win2 = CreateAppWindow(win_bounds);
 
   // Enter overview and remove `desk_2`. A crash should not be observed.
-  auto* overview_controller = Shell::Get()->overview_controller();
   EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   RemoveDesk(desk_2);
 }
 
@@ -620,9 +619,8 @@ TEST_P(DesksTest, DesksTextfieldAddTooltipText) {
   controller->GetDeskAtIndex(1)->SetName(desk_name2, /*set_by_user=*/true);
 
   // Start overview.
-  auto* overview_controller = Shell::Get()->overview_controller();
   EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Expect there to be no tooltip when the desk name is short enough.
   auto* desks_bar_view =
@@ -637,7 +635,7 @@ TEST_P(DesksTest, DesksTextfieldAddTooltipText) {
 TEST_P(DesksTest, DesksBarViewDeskCreation) {
   auto* controller = DesksController::Get();
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
@@ -718,7 +716,7 @@ TEST_P(DesksTest, RemoveDeskWithEmptyName) {
   auto* controller = DesksController::Get();
 
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
 
@@ -814,7 +812,7 @@ TEST_P(DesksTest, RemovingActiveDeskUpdatesWindowWorkspaces) {
 // button is disabled. https://crbug.com/1084241.
 TEST_P(DesksTest, GestureTapOnNewDeskButton) {
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   const auto* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
@@ -1216,7 +1214,7 @@ TEST_P(DesksTest, WindowActivation) {
 
 TEST_P(DesksTest, ActivateDeskFromOverview) {
   auto* controller = DesksController::Get();
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   auto* event_generator = GetEventGenerator();
 
   // Create three desks other than the default initial desk.
@@ -1326,7 +1324,7 @@ TEST_P(DesksTest, ActivateDeskFromOverviewDualDisplay) {
   ASSERT_EQ(4u, controller->desks().size());
 
   // Enter overview mode.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
@@ -1378,7 +1376,7 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
   // Active desk_4 and enter overview mode, and add a single window.
   Desk* desk_4 = controller->GetDeskAtIndex(3);
   ActivateDesk(desk_4);
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   auto win3 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
@@ -1485,7 +1483,7 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
             mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks));
 
   // Enter overview mode, and remove desk_2 from its mini-view close button.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const auto* overview_grid =
@@ -1585,12 +1583,12 @@ TEST_P(DesksTest,
   controller->RemoveDesk(desk_1, DesksCreationRemovalSource::kButton,
                          DeskCloseType::kCloseAllWindowsAndWait);
   ASSERT_EQ(desk_2, controller->GetTargetActiveDesk());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   controller->RemoveDesk(desk_2, DesksCreationRemovalSource::kButton,
                          DeskCloseType::kCloseAllWindowsAndWait);
   ASSERT_EQ(desk_3, controller->GetTargetActiveDesk());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   if (GetParam().enable_jellyroll) {
     // When the feature Jellyroll is enabled, the desk bar doesn't switch to
     // zero state.
@@ -1612,7 +1610,7 @@ TEST_P(DesksTest, ActivateActiveDeskFromOverview) {
 
   // Enter overview mode, and click on `desk_1`'s mini_view, and expect that
   // overview mode exits since this is the already active desk.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const auto* overview_grid =
@@ -1724,7 +1722,7 @@ TEST_P(DesksTest, DragWindowToDesk) {
   ASSERT_TRUE(shadow->layer());
   EXPECT_TRUE(shadow->layer()->GetTargetVisibility());
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
@@ -1838,7 +1836,7 @@ TEST_P(DesksTest, DragMinimizedWindowToDesk) {
   window_state->Minimize();
   ASSERT_TRUE(window_state->IsMinimized());
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
@@ -1878,7 +1876,7 @@ TEST_P(DesksTest, DragAllOverviewWindowsToOtherDesksNotEndOverview) {
   NewDesk();
   ASSERT_EQ(2u, DesksController::Get()->desks().size());
   auto win = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   ASSERT_TRUE(EnterOverview());
   auto* overview_session = overview_controller->overview_session();
   DragItemToPoint(overview_session->GetOverviewItemForWindow(win.get()),
@@ -1902,7 +1900,7 @@ TEST_P(DesksTest, DragWindowToNonMiniViewPoints) {
   wm::ActivateWindow(window.get());
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const auto* overview_grid =
@@ -1936,7 +1934,7 @@ TEST_P(DesksTest, DragWindowAtZeroState) {
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
 
   ASSERT_EQ(1u, controller->desks().size());
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
 
   ASSERT_TRUE(overview_controller->InOverviewSession());
@@ -2054,7 +2052,7 @@ TEST_P(DesksTest, DragWindowAtZeroStateWithoutDroppingItOnTheNewDesk) {
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
 
   ASSERT_EQ(1u, controller->desks().size());
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
 
   ASSERT_TRUE(overview_controller->InOverviewSession());
@@ -2155,7 +2153,7 @@ TEST_P(DesksTest, DragWindowAtExpandedState) {
   NewDesk();
 
   ASSERT_EQ(2u, controller->desks().size());
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
 
   ASSERT_TRUE(overview_controller->InOverviewSession());
@@ -2216,7 +2214,7 @@ TEST_P(DesksTest, DragWindowAtMaximumDesksState) {
   }
 
   ASSERT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
 
   ASSERT_TRUE(overview_controller->InOverviewSession());
@@ -2364,7 +2362,7 @@ TEST_P(DesksTest, NoMiniViewsUpdateOnOverviewEnter) {
   // desk's container, should never result in mini_views updates since they're
   // not mirrored there at all.
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   EXPECT_EQ(0, desk_1_observer.notify_counts());
   EXPECT_EQ(0, desk_2_observer.notify_counts());
@@ -2624,7 +2622,7 @@ TEST_F(DesksWithMultiDisplayOverview, DropOnSameDeskInOtherDisplay) {
   ASSERT_EQ(2u, roots.size());
 
   auto win = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_session = overview_controller->overview_session();
@@ -2667,7 +2665,7 @@ TEST_F(DesksWithMultiDisplayOverview, DropOnOtherDeskInOtherDisplay) {
   ASSERT_EQ(2u, roots.size());
 
   auto win = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_session = overview_controller->overview_session();
@@ -2738,7 +2736,7 @@ TEST_F(DesksWithMultiDisplayOverview, CloseDeskBeforeAnimationFinishes) {
   ASSERT_TRUE(WindowState::Get(win0.get())->IsMaximized());
 
   EnterOverview();
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   ASSERT_TRUE(overview_controller->InOverviewSession());
 
   // Check that the desk bar on our first root window has finished initializing,
@@ -2837,7 +2835,7 @@ class DesksEditableNamesTest : public DesksTest {
   }
 
   void ClickOnDeskNameViewAtIndex(size_t index) {
-    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
     ASSERT_LT(index, desks_bar_view_->mini_views().size());
 
     auto* desk_name_view =
@@ -2858,7 +2856,7 @@ class DesksEditableNamesTest : public DesksTest {
 
 TEST_P(DesksEditableNamesTest, DefaultNameChangeAborted) {
   ASSERT_EQ(2u, controller()->desks().size());
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Click on the desk name view of the second mini view.
   auto* desk_name_view_2 = desks_bar_view()->mini_views()[1]->desk_name_view();
@@ -2882,7 +2880,7 @@ TEST_P(DesksEditableNamesTest, DefaultNameChangeAborted) {
 
 TEST_P(DesksEditableNamesTest, NamesSetByUsersAreNotOverwritten) {
   ASSERT_EQ(2u, controller()->desks().size());
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Change the name of the first desk. Adding/removing desks or
   // exiting/reentering overview should not cause changes to the desk's name.
@@ -2946,7 +2944,7 @@ TEST_P(DesksEditableNamesTest, NamesSetByUsersAreNotOverwritten) {
 
 TEST_P(DesksEditableNamesTest, DontAllowEmptyNames) {
   ASSERT_EQ(2u, controller()->desks().size());
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Change the name of a desk to an empty string.
   ClickOnDeskNameViewAtIndex(0);
@@ -2966,7 +2964,7 @@ TEST_P(DesksEditableNamesTest, DontAllowEmptyNames) {
 
 TEST_P(DesksEditableNamesTest, RevertDeskNameOnEscape) {
   ASSERT_EQ(2u, controller()->desks().size());
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Select first desk name view.
   ClickOnDeskNameViewAtIndex(0);
@@ -2984,7 +2982,7 @@ TEST_P(DesksEditableNamesTest, RevertDeskNameOnEscape) {
 
 TEST_P(DesksEditableNamesTest, SelectAllOnFocus) {
   ASSERT_EQ(2u, controller()->desks().size());
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
   ClickOnDeskNameViewAtIndex(0);
 
   auto* desk_name_view = desks_bar_view()->mini_views()[0]->desk_name_view();
@@ -2996,7 +2994,7 @@ TEST_P(DesksEditableNamesTest, SelectAllOnFocus) {
 
 TEST_P(DesksEditableNamesTest, EventsThatCommitChanges) {
   ASSERT_EQ(2u, controller()->desks().size());
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
   ClickOnDeskNameViewAtIndex(0);
   auto* desk_name_view = desks_bar_view()->mini_views()[0]->desk_name_view();
   EXPECT_TRUE(desk_name_view->HasFocus());
@@ -3021,12 +3019,12 @@ TEST_P(DesksEditableNamesTest, EventsThatCommitChanges) {
   event_generator->MoveMouseTo(gfx::Point(2, 2));
   event_generator->ClickLeftButton();
   EXPECT_FALSE(desk_name_view->HasFocus());
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 }
 
 TEST_P(DesksEditableNamesTest, MaxLength) {
   ASSERT_EQ(2u, controller()->desks().size());
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   ClickOnDeskNameViewAtIndex(0);
   // Select all and delete.
@@ -3156,9 +3154,8 @@ TEST_P(TabletModeDesksTest, CantDestroyBackdropWhileHiding) {
 
   // Enter overview and expect that the backdrop is still present for desk_1 but
   // hidden.
-  auto* overview_controller = Shell::Get()->overview_controller();
   EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   ASSERT_TRUE(desk_1_backdrop_controller->backdrop_window());
   EXPECT_FALSE(desk_1_backdrop_controller->backdrop_window()->IsVisible());
 }
@@ -3186,7 +3183,7 @@ TEST_P(TabletModeDesksTest, Backdrops) {
 
   // Enter overview and expect that the backdrop is still present for desk_1 but
   // hidden.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   ASSERT_TRUE(desk_1_backdrop_controller->backdrop_window());
@@ -3253,7 +3250,7 @@ TEST_P(TabletModeDesksTest,
 
   // Enter overview and expect that |desk_1| has a backdrop stacked under
   // |window| while desk_2 has none.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   ASSERT_TRUE(desk_1_backdrop_controller->backdrop_window());
@@ -3316,7 +3313,7 @@ TEST_P(TabletModeDesksTest, NoDesksBarInTabletModeWithOneDesk) {
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 
   // Enter overview and expect that the DesksBar widget won't be created.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const auto* overview_grid =
@@ -3442,7 +3439,7 @@ TEST_P(TabletModeDesksTest, SnappedStateRetainedOnSwitchingDesksFromOverview) {
   // Enter overview and switch to desk_2 using its mini_view. Overview should
   // end, but TabletModeWindowManager should not maximize the snapped windows
   // and they should retain their snapped state.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
@@ -3509,7 +3506,7 @@ TEST_P(
   win3_delegate.set_minimum_size(big);
   std::unique_ptr<aura::Window> win3(CreateTestWindowInShellWithDelegate(
       &win3_delegate, /*id=*/-1, gfx::Rect(big)));
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(EnterOverview());
   split_view_controller()->SnapWindow(
       win1.get(), SplitViewController::SnapPosition::kPrimary);
@@ -3571,7 +3568,7 @@ TEST_P(TabletModeDesksTest, OverviewStateOnSwitchToDeskWithSplitView) {
       win2.get(), SplitViewController::SnapPosition::kSecondary);
   EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
   EXPECT_EQ(win2.get(), split_view_controller()->secondary_window());
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   ActivateDesk(desk_2);
   EXPECT_FALSE(overview_controller->InOverviewSession());
@@ -3636,7 +3633,7 @@ TEST_P(TabletModeDesksTest, RemoveDeskWithMaximizedWindowAndMergeWithSnapped) {
   // Removing desk_2 will cause us to enter overview mode without any crashes.
   // SplitView will remain left snapped.
   RemoveDesk(desk_2);
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
   EXPECT_EQ(nullptr, split_view_controller()->secondary_window());
   EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
@@ -3652,7 +3649,7 @@ TEST_P(TabletModeDesksTest, RemovingActiveDeskDoesNotExitOverview) {
   Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   ASSERT_TRUE(overview_controller->InOverviewSession());
 
@@ -3724,7 +3721,7 @@ TEST_P(TabletModeDesksTest, HotSeatStateAfterMovingAWindowToAnotherDesk) {
   wm::ActivateWindow(win1.get());
   EXPECT_EQ(win1.get(), window_util::GetActiveWindow());
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_session = overview_controller->overview_session();
@@ -3828,7 +3825,7 @@ TEST_P(DesksTest, MiniViewsTouchGestures) {
   NewDesk();
   NewDesk();
   ASSERT_EQ(3u, controller->desks().size());
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const auto* overview_grid =
@@ -3934,7 +3931,7 @@ TEST_P(DesksTest, AutohiddenShelfAnimatesAfterDeskSwitch) {
 
 TEST_P(DesksTest, SwitchToDeskWithSnappedActiveWindow) {
   auto* desks_controller = DesksController::Get();
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
 
   // Two virtual desks: |desk_1| (active) and |desk_2|.
   NewDesk();
@@ -3973,7 +3970,7 @@ TEST_P(DesksTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
   wm::ActivateWindow(window.get());
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
@@ -4023,7 +4020,7 @@ TEST_P(DesksTest, DragAllOverviewWindowsToOtherDesksNotEndClamshellSplitView) {
   // Two windows: |win0| (in clamshell split view) and |win1| (in overview).
   auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   ASSERT_TRUE(EnterOverview());
   auto* overview_session = overview_controller->overview_session();
   auto* generator = GetEventGenerator();
@@ -5113,7 +5110,7 @@ TEST_F(DesksMultiUserTest, RemoveDesks) {
 
 TEST_F(DesksMultiUserTest, SwitchingUsersEndsOverview) {
   SimulateUserLogin(GetUser1AccountId());
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(EnterOverview());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   SwitchActiveUser(GetUser2AccountId());
@@ -5456,7 +5453,7 @@ TEST_P(DesksAcceleratorsTest, RemoveDesk) {
   EXPECT_TRUE(desk_2->is_active());
 
   // Using the accelerator doesn't result in exiting overview.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   SendAccelerator(ui::VKEY_OEM_MINUS, flags);
@@ -5583,7 +5580,7 @@ TEST_P(DesksAcceleratorsTest, MoveWindowLeftRightDeskOverview) {
   wm::ActivateWindow(win0.get());
   EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const int flags = ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN;
@@ -5764,10 +5761,10 @@ TEST_P(DesksAcceleratorsTest, IndexedDeskActivationShortcut) {
 
   // Open overview and switch to the active desk. This should close overview.
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
   SendAccelerator(ui::VKEY_2, flags);
   EXPECT_TRUE(desks[1]->is_active());
-  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
   histogram_tester.ExpectBucketCount(
       kDesksSwitchHistogramName, DesksSwitchSource::kIndexedDeskSwitchShortcut,
       2);
@@ -6027,7 +6024,7 @@ TEST_P(DesksTest, NameNudges) {
 
   // Start overview.
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Hover over the new desk button.
   const auto* overview_grid =
@@ -6070,7 +6067,7 @@ TEST_P(DesksTest, NameNudgesMultiDisplay) {
 
   // Start overview.
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Retrieve the desks bar view for each root window.
   auto root_windows = Shell::GetAllRootWindows();
@@ -6147,7 +6144,7 @@ TEST_P(DesksTest, ClickingOverviewGridUnfocusesDeskNameView) {
   NewDesk();
 
   // Start overview.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
@@ -6172,7 +6169,7 @@ TEST_P(DesksTest, ClickingOverviewGridUnfocusesDeskNameView) {
 TEST_P(DesksTest, ScrollableDesks) {
   UpdateDisplay("201x400");
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   auto* root_window = Shell::GetPrimaryRootWindow();
   const auto* desks_bar_view =
@@ -6230,7 +6227,7 @@ TEST_P(DesksTest, ScrollButtonsVisibility) {
   auto* root_window = Shell::GetPrimaryRootWindow();
   SplitViewController::Get(root_window)
       ->SnapWindow(window.get(), SplitViewController::SnapPosition::kPrimary);
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   auto* desks_bar = GetOverviewGridForRoot(root_window)->desks_bar_view();
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(desks_bar->GetBoundsInScreen().CenterPoint());
@@ -6399,7 +6396,7 @@ TEST_P(DesksTest, ContinueScrollBar) {
   auto* desks_controller = DesksController::Get();
   EXPECT_EQ(desks_controller->desks().size(), max_desks_size);
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   auto* desks_bar =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
 
@@ -6519,7 +6516,7 @@ TEST_P(DesksTest, FocusedMiniViewIsVisible) {
   auto* root_window = Shell::GetPrimaryRootWindow();
   SplitViewController::Get(root_window)
       ->SnapWindow(window.get(), SplitViewController::SnapPosition::kPrimary);
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   auto* desks_bar = GetOverviewGridForRoot(root_window)->desks_bar_view();
   auto mini_views = desks_bar->mini_views();
   ASSERT_EQ(mini_views.size(), desks_util::GetMaxNumberOfDesks());
@@ -6985,7 +6982,7 @@ TEST_P(DesksTest, DesksBarButtonVisibility) {
   ASSERT_EQ(2u, controller->desks().size());
 
   // Enter overview mode and check that the desks bar is in the expanded state.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const auto* desks_bar_view =
@@ -7148,7 +7145,7 @@ TEST_P(DesksTest, ReorderDesksByMouse) {
   auto* desks_controller = DesksController::Get();
 
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   auto* root_window = Shell::GetPrimaryRootWindow();
   const auto* desks_bar_view =
@@ -7218,7 +7215,7 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
   auto* desks_controller = DesksController::Get();
 
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   auto* root_window = Shell::GetPrimaryRootWindow();
   const auto* desks_bar_view =
@@ -7299,7 +7296,7 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
 TEST_P(DesksTest, ReorderDesksByKeyboard) {
   auto* desks_controller = DesksController::Get();
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
@@ -7385,7 +7382,7 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
 
   auto* desks_controller = DesksController::Get();
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
@@ -7482,7 +7479,7 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   auto* desks_controller = DesksController::Get();
   EXPECT_EQ(desks_controller->desks().size(), max_desks_size);
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   auto* desks_bar =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
 
@@ -7615,7 +7612,7 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
 // Regression test of https://crbug.com/1171880.
 TEST_P(DesksTest, ClickTargetLocationOfDroppedDesk) {
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   DeskBarViewBase* desk_bar_view = overview_grid->desks_bar_view();
@@ -7649,7 +7646,7 @@ TEST_P(DesksTest, ClickTargetLocationOfDroppedDesk) {
 // back, dragging a desk preview on the shelf will start a new drag.
 TEST_P(DesksTest, DragNewDeskWhileSnappingBack) {
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
@@ -7688,7 +7685,7 @@ TEST_P(DesksTest, DragNewDeskWhileSnappingBack) {
 // (https://crbug.com/1222120).
 TEST_P(DesksTest, RemoveDeskWhileDragging) {
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   const auto* desks_bar_view =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
@@ -7777,7 +7774,7 @@ TEST_P(DesksTest, DragMiniViewWhileRemoving) {
   NewDesk();
 
   EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   const auto* desks_bar_view =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
@@ -7876,7 +7873,7 @@ TEST_P(DesksTest, NameNudgesTabletMode) {
 
   // Start overview.
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Setup an internal keyboard and an external keyboard.
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
@@ -8008,7 +8005,7 @@ TEST_P(DesksTest, EnterOverviewAndAddDeskInGuestMode) {
   // Verify no crash while entering overview mode.
   EnterOverview();
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   ASSERT_TRUE(overview_controller->InOverviewSession());
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
@@ -8190,7 +8187,7 @@ class DesksCloseAllTest : public DesksTest {
 
   // Clicks on the close-all button for the desk at index `index`.
   void ClickOnCloseAllButtonForDesk(size_t index) {
-    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
     const auto* desks_bar_view = GetPrimaryRootDesksBarView();
     ASSERT_LT(index, desks_bar_view->mini_views().size());
 
@@ -8203,7 +8200,7 @@ class DesksCloseAllTest : public DesksTest {
 
   // Executes the close-all context menu command for the desk at index `index`.
   void ExecuteContextMenuCloseAllForDesk(size_t index) {
-    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
     const auto* desks_bar_view = GetPrimaryRootDesksBarView();
     ASSERT_LT(index, desks_bar_view->mini_views().size());
 
@@ -8217,7 +8214,7 @@ class DesksCloseAllTest : public DesksTest {
 
   // Opens the context menu for the mini view at `index`.
   void OpenContextMenuForMiniView(int index) {
-    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
     const DeskPreviewView* desk_preview_view =
         GetPrimaryRootDesksBarView()->mini_views()[index]->desk_preview();
     const gfx::Point desk_preview_view_center =
@@ -8225,7 +8222,7 @@ class DesksCloseAllTest : public DesksTest {
     auto* event_generator = GetEventGenerator();
     event_generator->MoveMouseTo(desk_preview_view_center);
     event_generator->ClickRightButton();
-    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
   }
 
   void ClickOnUndoDeskRemovalButton() {
@@ -8286,7 +8283,7 @@ TEST_P(DesksCloseAllTest, CloseDesksWithWindowsInOverview) {
     ASSERT_EQ(1u, desk_2->windows().size());
 
     EnterOverview();
-    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
     // Execute and evaluate a test case for an inactive desk and an active desk.
     // We do it in this order so that we do not switch the active desk.
@@ -8331,7 +8328,7 @@ TEST_P(DesksCloseAllTest, CloseDesksWithWindowsInOverview) {
     // Desk activation should have changed to `desk_3` and we should still be in
     // overview.
     EXPECT_TRUE(desk_3->is_active());
-    EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
     // We should have one desk remaining, which means that `desks_bar_view` will
     // be in zero state, meaning that it will have no `DeskMiniView`s.
@@ -8355,7 +8352,7 @@ TEST_P(DesksCloseAllTest, ClearStoredDeskWhenDeskAdded) {
   ASSERT_TRUE(desk_1->is_active());
 
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Remove `desk_2` to store it in the `controller`.
   RemoveDesk(desk_2, DeskCloseType::kCloseAllWindowsAndWait);
@@ -8414,7 +8411,7 @@ TEST_P(DesksCloseAllTest, ClearStoredDeskWhenClosingAnotherDesk) {
     ASSERT_TRUE(desk_1->is_active());
 
     EnterOverview();
-    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
     // Remove `desk_1` by a close-all-and-wait operation to store it in the
     // `controller`.
@@ -8478,7 +8475,7 @@ TEST_P(DesksCloseAllTest, RestoreOrDestroyDeskWithToast) {
   ASSERT_TRUE(desk_1->is_active());
 
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.scope_trace);
@@ -8528,7 +8525,7 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   // mini views.
   NewDesk();
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // We need to hover over the desk preview to properly check the combine desks
   // button's visibility.
@@ -8554,7 +8551,7 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   auto window = CreateAppWindow();
   DesksController::Get()->SendToDeskAtIndex(window.get(), 0);
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
   mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
 
   // Closing and reopening overview will invalidate the
@@ -8584,8 +8581,7 @@ TEST_P(DesksCloseAllTest, ShortcutCloseAll) {
   ASSERT_TRUE(base::Contains(desk_1->windows(), window2.window()));
 
   EnterOverview();
-  auto* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
+  auto* overview_session = OverviewController::Get()->overview_session();
   ASSERT_TRUE(overview_session);
 
   auto* desks_bar =
@@ -8621,8 +8617,7 @@ TEST_P(DesksCloseAllTest, ShortcutUndoCloseAll) {
   ASSERT_TRUE(base::Contains(desk_1->windows(), window2.window()));
 
   EnterOverview();
-  auto* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
+  auto* overview_session = OverviewController::Get()->overview_session();
   ASSERT_TRUE(overview_session);
 
   // Closes the active desk.
@@ -8705,7 +8700,7 @@ TEST_P(DesksCloseAllTest, DeskPreviewHighlightShowsWhenContextMenuIsOpen) {
   NewDesk();
 
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // The highlight overlay should start out invisible.
   views::View* highlight_overlay =
@@ -8722,7 +8717,7 @@ TEST_P(DesksCloseAllTest, DeskPreviewHighlightShowsWhenContextMenuIsOpen) {
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(desk_preview_view_center);
   event_generator->ClickRightButton();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
   ASSERT_TRUE(highlight_overlay->GetVisible());
 
   // Close the context menu and check that the highlight overlay is no longer
@@ -8791,7 +8786,7 @@ TEST_P(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
   ASSERT_EQ(1u, desk_2->windows().size());
 
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   const LegacyDeskBarView* desks_bar_view = GetPrimaryRootDesksBarView();
 
@@ -8810,7 +8805,7 @@ TEST_P(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.scope_trace);
 
-    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
     ASSERT_EQ(tooltip_prefix + controller->GetCombineDesksTargetName(desk_1),
               combine_desks_button_1->GetTooltipText());
     ASSERT_EQ(tooltip_prefix + controller->GetCombineDesksTargetName(desk_2),
@@ -8952,7 +8947,7 @@ TEST_P(DesksCloseAllTest, TestMetricsRecordingWhenCloseAllWindows) {
 TEST_P(DesksCloseAllTest, ContextMenuOpensOnLongPress) {
   NewDesk();
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Long press on the first desk preview view.
   const DeskPreviewView* desk_preview_view =
@@ -8975,7 +8970,7 @@ TEST_P(DesksCloseAllTest, CanCloseMultipleDesksInSuccessionAndUndo) {
   ASSERT_EQ(3u, controller->desks().size());
 
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   ClickOnCloseAllButtonForDesk(0);
   ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
@@ -9001,12 +8996,12 @@ TEST_P(DesksCloseAllTest,
   ASSERT_TRUE(desk_1->is_active());
 
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_FALSE(window.window()->transform().IsIdentity());
 
   ClickOnCloseAllButtonForDesk(0);
   ExitOverview();
-  ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_FALSE(OverviewController::Get()->InOverviewSession());
 
   // Overview is destroyed asynchronously so we have to wait for it to finish.
   base::RunLoop().RunUntilIdle();
@@ -9039,7 +9034,7 @@ TEST_P(DesksCloseAllTest, CanAddLastDeskWhileUndoToastIsBeingDisplayed) {
   controller->SendToDeskAtIndex(window.window(), last_desk_index);
 
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Remove the last desk with close-all. This should show the undo toast.
   RemoveDesk(controller->GetDeskAtIndex(last_desk_index),
@@ -9232,7 +9227,7 @@ TEST_P(DesksCloseAllTest, InteractingWithShelfClosesToast) {
 
   // Enter overview and close the desk.
   EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
   ClickOnCloseAllButtonForDesk(0);
 
   // Get the view for the shelf item.
@@ -9381,7 +9376,7 @@ class DeskBarTest
     DeskBarViewBase* desk_bar_view = nullptr;
     switch (bar_type) {
       case DeskBarViewBase::Type::kOverview:
-        if (Shell::Get()->overview_controller()->InOverviewSession()) {
+        if (OverviewController::Get()->InOverviewSession()) {
           desk_bar_view = GetOverviewGridForRoot(root)->desks_bar_view();
         }
         break;
@@ -9415,7 +9410,7 @@ class DeskBarTest
     // It should enter overview mode and the saved desk library should be
     // visible. Desk button desk bar should be gone, and the overview desk bar
     // should show up.
-    auto* overview_controller = Shell::Get()->overview_controller();
+    auto* overview_controller = OverviewController::Get();
     ASSERT_TRUE(overview_controller->InOverviewSession());
     auto* overview_session = overview_controller->overview_session();
     EXPECT_TRUE(overview_session &&

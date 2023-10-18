@@ -35,7 +35,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/work_area_insets.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
@@ -311,7 +310,7 @@ TEST_F(DragWindowFromShelfControllerTest, MayOrMayNotReShowHiddenWindows) {
   Drag(gfx::Point(200, 200), 0.f, 1.f);
   EXPECT_FALSE(window2->IsVisible());
   EXPECT_TRUE(window2->GetProperty(kHideDuringWindowDragging));
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
@@ -353,7 +352,7 @@ TEST_F(DragWindowFromShelfControllerTest, MinimizedWindowsShowInOverview) {
   Drag(gfx::Point(200, 200), 0.f, 1.f);
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(window1->IsVisible());
   EXPECT_FALSE(window2->IsVisible());
@@ -381,7 +380,7 @@ TEST_F(DragWindowFromShelfControllerTest, OpenOverviewWhenHold) {
   StartDrag(window.get(), GetShelfBounds().CenterPoint());
   Drag(gfx::Point(200, 200), 0.f,
        DragWindowFromShelfController::kOpenOverviewThreshold + 1);
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   Drag(gfx::Point(200, 200), 0.f,
        DragWindowFromShelfController::kOpenOverviewThreshold);
@@ -405,7 +404,7 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreWindowToOriginalBounds) {
   Drag(gfx::Point(200, 200), 0.f,
        DragWindowFromShelfController::kShowOverviewThreshold + 1);
   EXPECT_FALSE(window->layer()->GetTargetTransform().IsIdentity());
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EndDrag(gfx::Point(200, 400), absl::nullopt);
   EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
@@ -456,7 +455,7 @@ TEST_F(DragWindowFromShelfControllerTest, FlingInOverview) {
   // kVelocityToRestoreBoundsThreshold.
   StartDrag(window.get(), shelf_bounds.CenterPoint());
   Drag(gfx::Point(200, 200), 0.f, 1.f);
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EndDrag(gfx::Point(200, 200), kVelocityToRestoreBoundsThreshold);
   EXPECT_FALSE(overview_controller->InOverviewSession());
@@ -533,7 +532,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
 
   auto window1 = CreateTestWindow();
   auto window2 = CreateTestWindow();
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(
@@ -606,7 +605,7 @@ TEST_F(DragWindowFromShelfControllerTest, WallpaperBlurDuringDragging) {
   StartDrag(window.get(), shelf_bounds.CenterPoint());
   Drag(gfx::Point(0, 200), 0.f,
        DragWindowFromShelfController::kShowOverviewThreshold + 1);
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   auto* wallpaper_view =
       RootWindowController::ForWindow(window->GetRootWindow())
@@ -632,7 +631,7 @@ TEST_F(DragWindowFromShelfControllerTest, HideOverviewDuringDragging) {
   Drag(gfx::Point(200, 200), 0.5f, 0.5f);
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   // We test the visibility of overview by testing the drop target widget's
   // visibility in the overview.
@@ -672,7 +671,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   Drag(gfx::Point(200, 200), 0.5f, 0.5f);
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   OverviewSession* overview_session = overview_controller->overview_session();
   ASSERT_EQ(1u, overview_session->grid_list().size());
@@ -733,7 +732,7 @@ TEST_F(DragWindowFromShelfControllerTest, CancelDragDismissOverview) {
   Drag(gfx::Point(200, 200), 0.5f, 0.5f);
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(window1->IsVisible());
   EXPECT_FALSE(window2->IsVisible());
@@ -839,7 +838,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragToSnapMinDistance) {
   gfx::Point end = gfx::Point(
       start.x() - DragWindowFromShelfController::kMinDragDistance + 10, 200);
   EndDrag(end, absl::nullopt);
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
@@ -943,7 +942,7 @@ TEST_F(DragWindowFromShelfControllerTest, TestOverviewInvisible) {
       window_drag_controller());
   // End drag without any fling, the window should be added to overview.
   EndDrag(gfx::Point(200, 200), absl::nullopt);
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
       window.get()));
@@ -999,7 +998,7 @@ TEST_F(DragWindowFromShelfControllerTest,
       gfx::Vector2d(10 + DragWindowFromShelfController::kMinDragDistance, 200);
   EndDrag(end, absl::nullopt);
 
-  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 }
@@ -1021,7 +1020,7 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreBackdropAfterDragEnds) {
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
   EndDrag(gfx::Point(200, 200), absl::nullopt);
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
       window.get()));
@@ -1090,7 +1089,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   // During dragging, the active window should not change.
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
@@ -1110,7 +1109,7 @@ TEST_F(DragWindowFromShelfControllerTest,
        NoCrashIfDropWindowInOverviewBeforeStartAnimationComplete) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   overview_controller->set_delayed_animation_task_delay_for_test(
       base::Milliseconds(100));
 
@@ -1167,7 +1166,7 @@ TEST_F(DragWindowFromShelfControllerTest, DropsIntoOverviewAtCorrectPosition) {
   EndDrag(gfx::Point(200, 200), absl::nullopt);
 
   // Verify the grid arrangement.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   ASSERT_TRUE(overview_controller->InOverviewSession());
   const std::vector<aura::Window*> expected_mru_list = {
       window2.get(), window1.get(), window3.get()};
@@ -1210,7 +1209,7 @@ TEST_F(DragWindowFromShelfControllerTest, NoAnimationWhenReturnToMaximize) {
       window_drag_controller());
 
   // Get the bounds and transform of the item associated with |item2|.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   ASSERT_TRUE(overview_controller->InOverviewSession());
   auto* item = GetOverviewItemForWindow(window2.get());
   ASSERT_TRUE(item);
@@ -1262,7 +1261,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   Drag(gfx::Point(400, 200), 1.f, 1.f);
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   OverviewSession* overview_session = overview_controller->overview_session();
   EndDrag(gfx::Point(200, 200), /*velocity_y=*/absl::nullopt);
   // Ensure that the window is not in splitview but in overview.
@@ -1317,7 +1316,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_FALSE(window->IsVisible());
   EXPECT_FALSE(window_transient->IsVisible());
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   overview_controller->StartOverview(OverviewStartAction::kExitHomeLauncher);
 
   ASSERT_TRUE(overview_controller->InOverviewSession());
@@ -1528,7 +1527,7 @@ TEST_F(FloatDragWindowFromShelfControllerTest, WindowStatePreserved) {
 
   // Verify that on exiting overview, the original window state is preserved
   // (neither window is minimized).
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   ASSERT_TRUE(overview_controller->InOverviewSession());
   ExitOverview();
   EXPECT_TRUE(WindowState::Get(maximized_window.get())->IsMaximized());

@@ -1153,7 +1153,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
 
 TEST_P(ClientControlledStateTestClamshellAndTablet,
        DragOverviewWindowToSnapOneSide) {
-  auto* const overview_controller = Shell::Get()->overview_controller();
+  auto* const overview_controller = OverviewController::Get();
   auto* const split_view_controller = SplitViewController::Get(window());
 
   widget_delegate()->EnableSnap();
@@ -1198,7 +1198,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
 
 TEST_P(ClientControlledStateTestClamshellAndTablet,
        DragOverviewWindowToSnapBothSide) {
-  auto* const overview_controller = Shell::Get()->overview_controller();
+  auto* const overview_controller = OverviewController::Get();
   auto* const split_view_controller = SplitViewController::Get(window());
   auto* const event_generator = GetEventGenerator();
 
@@ -1263,7 +1263,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
 
 TEST_P(ClientControlledStateTestClamshellAndTablet,
        SnapBeforePreviousEventIsApplied) {
-  auto* const overview_controller = Shell::Get()->overview_controller();
+  auto* const overview_controller = OverviewController::Get();
   auto* const split_view_controller = SplitViewController::Get(window());
 
   widget_delegate()->EnableSnap();

@@ -5065,11 +5065,11 @@ AutotestPrivateRemoveActiveDeskFunction::
 
 ExtensionFunction::ResponseAction
 AutotestPrivateRemoveActiveDeskFunction::Run() {
-  // Check whether overview mode is active before removing the desk. In case of
+  // Check whether overview mode was active before removing the desk. In case of
   // split view, the desk removal may cause overview to end, but what matters is
-  // whether overview mode is active before.
-  const bool in_overview =
-      ash::Shell::Get()->overview_controller()->InOverviewSession();
+  // whether overview mode was active before.
+  const bool was_in_overview =
+      ash::OverviewController::Get()->InOverviewSession();
 
   if (!ash::AutotestDesksApi().RemoveActiveDesk(base::BindOnce(
           &AutotestPrivateRemoveActiveDeskFunction::OnAnimationComplete,
@@ -5077,11 +5077,12 @@ AutotestPrivateRemoveActiveDeskFunction::Run() {
     return RespondNow(WithArguments(false));
   }
 
-  // In overview, the desk removal animation does
-  // not apply, so we should not wait for it.
-  if (in_overview) {
+  // In overview, the desk removal animation does not apply, so we should not
+  // wait for it.
+  if (was_in_overview) {
     return RespondNow(WithArguments(true));
   }
+
   return RespondLater();
 }
 

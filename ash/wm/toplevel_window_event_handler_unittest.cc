@@ -1283,8 +1283,7 @@ TEST_F(ToplevelWindowEventHandlerDragTest,
                    ui::ET_GESTURE_SCROLL_UPDATE);
   EXPECT_FALSE(WindowState::Get(dragged_window_.get())->is_dragged());
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 }
 
 // Test that if window destroyed during resize/dragging, no crash should happen.

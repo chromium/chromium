@@ -3066,14 +3066,14 @@ TEST_P(OverviewSessionTest, EatKeysDuringStartAnimation) {
 
   // Keys should be eaten by overview session when entering overview mode.
   ToggleOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->IsInStartAnimation());
+  ASSERT_TRUE(OverviewController::Get()->IsInStartAnimation());
   ASSERT_TRUE(test_window->HasFocus());
   SendKey(ui::VKEY_B);
   EXPECT_FALSE(test_event_handler.HasSeenEvent());
   EXPECT_TRUE(InOverviewSession());
 
   WaitForOverviewEnterAnimation();
-  ASSERT_FALSE(Shell::Get()->overview_controller()->IsInStartAnimation());
+  ASSERT_FALSE(OverviewController::Get()->IsInStartAnimation());
   EXPECT_FALSE(test_window->HasFocus());
 
   ToggleOverview();
@@ -6635,7 +6635,7 @@ TEST_F(TabletModeOverviewSessionTest, AvoidUaFOnCompleteDrag) {
   window_state->OnWMEvent(&snap_type);
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             window_state->GetStateType());
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
   window_state->Minimize();
@@ -7960,7 +7960,7 @@ TEST_F(SplitViewOverviewSessionTest, DragDividerToExitTest) {
   DragWindowTo(overview_item1, gfx::PointF());
   // Test that overview mode and split view mode are both active.
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Drag the divider toward closing the snapped window.
   gfx::Rect divider_bounds = GetSplitViewDividerBounds(false /* is_dragging */);
@@ -7970,14 +7970,14 @@ TEST_F(SplitViewOverviewSessionTest, DragDividerToExitTest) {
 
   // Test that split view mode is ended. Overview mode is still active.
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Now drag |window2| selector item to snap to left.
   auto* overview_item2 = GetOverviewItemForWindow(window2.get());
   DragWindowTo(overview_item2, gfx::PointF());
   // Test that overview mode and split view mode are both active.
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Drag the divider toward closing the overview window grid.
   divider_bounds = GetSplitViewDividerBounds(false /*is_dragging=*/);
@@ -7989,7 +7989,7 @@ TEST_F(SplitViewOverviewSessionTest, DragDividerToExitTest) {
   // Test that split view mode is ended. Overview mode is also ended. |window2|
   // should be activated.
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
-  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
   EXPECT_EQ(window2.get(), window_util::GetActiveWindow());
 }
 
@@ -8042,7 +8042,7 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsTest) {
   DragWindowTo(overview_item1, gfx::PointF());
   EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Then drag the divider to left toward closing the snapped window.
   gfx::Rect divider_bounds = GetSplitViewDividerBounds(false /*is_dragging=*/);
@@ -8054,7 +8054,7 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsTest) {
 
   // Test that split view mode is ended. Overview mode is still active.
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   // Test that |window1| has the dimensions of a tablet mode maxed window, so
   // that when it is placed back on the grid it will not look skinny.
   EXPECT_LE(window1->bounds().x(), 0);
@@ -8068,7 +8068,7 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsTest) {
   DragWindowTo(overview_item2, gfx::PointF(end_location2));
   EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // Then drag the divider to right toward closing the snapped window.
   divider_bounds = GetSplitViewDividerBounds(false /* is_dragging */);
@@ -8081,7 +8081,7 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsTest) {
 
   // Test that split view mode is ended. Overview mode is still active.
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   // Test that |window2| has the dimensions of a tablet mode maxed window, so
   // that when it is placed back on the grid it will not look skinny.
   EXPECT_GE(window2->bounds().x(), 0);

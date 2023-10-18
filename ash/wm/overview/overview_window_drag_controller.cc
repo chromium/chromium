@@ -88,7 +88,7 @@ constexpr char kOverviewWindowDragMaxLatencyHistogram[] =
     "Ash.Overview.WindowDrag.PresentationTime.MaxLatency.TabletMode";
 
 void UnpauseOcclusionTracker() {
-  Shell::Get()->overview_controller()->UnpauseOcclusionTracker(
+  OverviewController::Get()->UnpauseOcclusionTracker(
       kOcclusionPauseDurationForDrag);
 }
 
@@ -193,8 +193,7 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
   OverviewItemMoveHelper(const OverviewItemMoveHelper&) = delete;
   OverviewItemMoveHelper& operator=(const OverviewItemMoveHelper&) = delete;
   ~OverviewItemMoveHelper() override {
-    OverviewController* overview_controller =
-        Shell::Get()->overview_controller();
+    OverviewController* overview_controller = OverviewController::Get();
     if (overview_controller->InOverviewSession()) {
       overview_controller->overview_session()->PositionWindows(
           /*animate=*/true);
@@ -209,8 +208,7 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
   void OnWindowAddedToRootWindow(aura::Window* window) override {
     DCHECK_EQ(window_, window);
     window->RemoveObserver(this);
-    OverviewController* overview_controller =
-        Shell::Get()->overview_controller();
+    OverviewController* overview_controller = OverviewController::Get();
     if (overview_controller->InOverviewSession()) {
       // OverviewSession::AddItemInMruOrder() will add |window| to the grid
       // associated with |window|'s root. Do not reposition or restack as we
@@ -245,7 +243,7 @@ OverviewWindowDragController::OverviewWindowDragController(
       is_touch_dragging_(is_touch_dragging),
       is_eligible_for_drag_to_snap_(IsEligibleForDragToSnap(item)),
       virtual_desks_bar_enabled_(GetVirtualDesksBarEnabled(item)) {
-  CHECK(!Shell::Get()->overview_controller()->IsInStartAnimation());
+  CHECK(!OverviewController::Get()->IsInStartAnimation());
   CHECK(!SplitViewController::Get(item_->root_window())->IsDividerAnimating());
 }
 
@@ -263,7 +261,7 @@ void OverviewWindowDragController::InitiateDrag(
   initial_centerpoint_ = item_->target_bounds().CenterPoint();
   original_opacity_ = item_->GetOpacity();
   current_drag_behavior_ = DragBehavior::kUndefined;
-  Shell::Get()->overview_controller()->PauseOcclusionTracker();
+  OverviewController::Get()->PauseOcclusionTracker();
   DCHECK(!presentation_time_recorder_);
 
   presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
@@ -770,7 +768,7 @@ OverviewWindowDragController::CompleteNormalDrag(
   // current |location_in_screen|.
   base::ScopedClosureRunner at_exit_runner(base::BindOnce([]() {
     // Overview might have exited if we snapped windows on both sides.
-    auto* overview_controller = Shell::Get()->overview_controller();
+    auto* overview_controller = OverviewController::Get();
     if (!overview_controller->InOverviewSession())
       return;
 

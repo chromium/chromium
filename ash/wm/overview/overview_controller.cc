@@ -44,6 +44,8 @@ namespace ash {
 
 namespace {
 
+OverviewController* g_instance = nullptr;
+
 // It can take up to two frames until the frame created in the UI thread that
 // triggered animation observer is drawn. Wait 50ms in attempt to let its draw
 // and swap finish.
@@ -110,6 +112,8 @@ OverviewController::OverviewController()
   }
 
   Shell::Get()->activation_client()->AddObserver(this);
+  CHECK_EQ(g_instance, nullptr);
+  g_instance = this;
 }
 
 OverviewController::~OverviewController() {
@@ -127,6 +131,15 @@ OverviewController::~OverviewController() {
     overview_session_->Shutdown();
     overview_session_.reset();
   }
+
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
+// static
+OverviewController* OverviewController::Get() {
+  CHECK(g_instance);
+  return g_instance;
 }
 
 bool OverviewController::StartOverview(OverviewStartAction action,

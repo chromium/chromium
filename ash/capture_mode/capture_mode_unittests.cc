@@ -2612,7 +2612,7 @@ TEST_F(CaptureModeTest, RefreshCaptureRegionInOverviewForKWindow) {
   EXPECT_EQ(window.get(), session->GetSelectedWindow());
 
   // Start overview and verify that the capture region is refreshed correctly.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   overview_controller->StartOverview(OverviewStartAction::kTests);
   ASSERT_TRUE(overview_controller->InOverviewSession());
   auto* overview_item =

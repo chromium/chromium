@@ -570,13 +570,13 @@ void AshTestBase::GestureTapOn(const views::View* view) {
 }
 
 bool AshTestBase::EnterOverview(OverviewEnterExitType type) {
-  return Shell::Get()->overview_controller()->StartOverview(
-      OverviewStartAction::kTests, type);
+  return OverviewController::Get()->StartOverview(OverviewStartAction::kTests,
+                                                  type);
 }
 
 bool AshTestBase::ExitOverview(OverviewEnterExitType type) {
-  return Shell::Get()->overview_controller()->EndOverview(
-      OverviewEndAction::kTests, type);
+  return OverviewController::Get()->EndOverview(OverviewEndAction::kTests,
+                                                type);
 }
 
 void AshTestBase::SetShelfAnimationDuration(base::TimeDelta duration) {

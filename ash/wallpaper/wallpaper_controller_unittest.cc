@@ -3168,7 +3168,7 @@ TEST_P(WallpaperControllerTest, ClosePreviewWallpaperOnOverviewStart) {
   EXPECT_NE(kWallpaperColor, GetWallpaperColor());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 }
 
 TEST_P(WallpaperControllerTest, ClosePreviewWallpaperOnWindowCycleStart) {

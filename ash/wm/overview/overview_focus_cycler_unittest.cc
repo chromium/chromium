@@ -295,19 +295,20 @@ TEST_P(OverviewFocusCyclerTest, FocusOverviewWindowWithReturnKey) {
   // Pressing the return key on an item that is not focused should not do
   // anything.
   SendKey(ui::VKEY_RETURN);
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  OverviewController* overview_controller = OverviewController::Get();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
 
   // Highlight the first window.
   ASSERT_TRUE(FocusOverviewWindow(window1.get()));
   SendKey(ui::VKEY_RETURN);
-  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
   // Highlight the second window.
   ToggleOverview();
   ASSERT_TRUE(FocusOverviewWindow(window2.get()));
   SendKey(ui::VKEY_RETURN);
-  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 }
 
@@ -962,7 +963,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ZeroStateOfDesksBar) {
   // Trigger the zero state new desk button will focus on the new created desk's
   // name view.
   ToggleOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   desks_bar_view = GetOverviewSession()
                        ->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
                        ->desks_bar_view();

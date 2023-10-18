@@ -21,7 +21,7 @@ OverviewTestApi::~OverviewTestApi() = default;
 void OverviewTestApi::SetOverviewMode(
     bool start,
     OverviewTestApi::DoneCallback done_callback) {
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   const bool in_overview_session = overview_controller->InOverviewSession();
 
   if (start && in_overview_session &&
@@ -51,7 +51,7 @@ void OverviewTestApi::SetOverviewMode(
 void OverviewTestApi::WaitForOverviewState(
     OverviewAnimationState expected_state,
     DoneCallback callback) {
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   const bool overview_finished_showing =
       overview_controller->InOverviewSession() &&
       !overview_controller->IsInStartAnimation();
@@ -70,7 +70,7 @@ void OverviewTestApi::WaitForOverviewState(
 }
 
 absl::optional<OverviewInfo> OverviewTestApi::GetOverviewInfo() const {
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   if (!overview_controller->InOverviewSession())
     return absl::nullopt;
 

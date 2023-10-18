@@ -39,6 +39,10 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
 
   ~OverviewController() override;
 
+  // Convenience function to get the overview controller instance, which is
+  // created and owned by Shell.
+  static OverviewController* Get();
+
   // Starts/Ends overview with `type`. Returns true if enter or exit overview
   // successful. Depending on `type` the enter/exit animation will look
   // different. `action` is used by UMA to record the reasons that trigger

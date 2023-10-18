@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ToggleOverview();
   WaitForOverviewExitAnimation();
 
-  ASSERT_FALSE(Shell::Get()->overview_controller()->overview_session());
+  ASSERT_FALSE(OverviewController::Get()->overview_session());
 
   // Move the browser a bit and then close it. This is to make sure that when we
   // create a new browser, its bounds are actually coming from the template.

@@ -240,7 +240,7 @@ class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver,
                          single_animation,
                          minimized_in_tablet) {
     compositor->AddObserver(this);
-    Shell::Get()->overview_controller()->AddObserver(this);
+    OverviewController::Get()->AddObserver(this);
   }
   ShutdownAnimationMetricsTrackerObserver(
       const ShutdownAnimationMetricsTrackerObserver&) = delete;
@@ -248,8 +248,10 @@ class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver,
       const ShutdownAnimationMetricsTrackerObserver&) = delete;
   ~ShutdownAnimationMetricsTrackerObserver() override {
     compositor_->RemoveObserver(this);
-    if (Shell::Get()->overview_controller())
-      Shell::Get()->overview_controller()->RemoveObserver(this);
+    if (OverviewController* overview_controller =
+            Shell::Get()->overview_controller()) {
+      overview_controller->RemoveObserver(this);
+    }
   }
 
   // OverviewObserver:
@@ -405,11 +407,10 @@ bool ShouldExcludeItemFromGridLayout(
 }
 
 bool IsUnsupportedWindow(aura::Window* window) {
-  const bool has_restore_id = !wm::GetTransientParent(window) &&
-                              (Shell::Get()
-                                   ->overview_controller()
-                                   ->disable_app_id_check_for_saved_desks() ||
-                               !saved_desk_util::GetAppId(window).empty());
+  const bool has_restore_id =
+      !wm::GetTransientParent(window) &&
+      (OverviewController::Get()->disable_app_id_check_for_saved_desks() ||
+       !saved_desk_util::GetAppId(window).empty());
 
   return !DeskTemplate::IsAppTypeSupported(window) || !has_restore_id;
 }
@@ -1660,7 +1661,7 @@ void OverviewGrid::MaybeShrinkDesksBarView() {
 }
 
 void OverviewGrid::StartScroll() {
-  Shell::Get()->overview_controller()->PauseOcclusionTracker();
+  OverviewController::Get()->PauseOcclusionTracker();
 
   // Users are not allowed to scroll past the leftmost or rightmost bounds of
   // the items on screen in the grid. |scroll_offset_min_| is the amount needed
@@ -1730,7 +1731,7 @@ bool OverviewGrid::UpdateScrollOffset(float delta) {
 }
 
 void OverviewGrid::EndScroll() {
-  Shell::Get()->overview_controller()->UnpauseOcclusionTracker(
+  OverviewController::Get()->UnpauseOcclusionTracker(
       kOcclusionUnpauseDurationForScroll);
   for (const auto& item : window_list_)
     item->set_scrolling_bounds(absl::nullopt);
@@ -2083,9 +2084,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
       !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
       !IsShowingSavedDeskLibrary() && desks_widget_ &&
       (!features::IsContinuousOverviewScrollAnimationEnabled() ||
-       !Shell::Get()
-            ->overview_controller()
-            ->is_continuous_scroll_in_progress());
+       !OverviewController::Get()->is_continuous_scroll_in_progress());
 
   const bool visibility_changed =
       target_visible != IsSaveDeskButtonContainerVisible();
@@ -2273,7 +2272,7 @@ void OverviewGrid::OnSplitViewStateChanged(
     SplitViewController::State previous_state,
     SplitViewController::State state) {
   // Do nothing if overview is being shutdown.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   if (!overview_controller->InOverviewSession())
     return;
 
@@ -2316,7 +2315,7 @@ void OverviewGrid::OnSplitViewDividerPositionChanged() {
 }
 
 void OverviewGrid::OnScreenCopiedBeforeRotation() {
-  Shell::Get()->overview_controller()->PauseOcclusionTracker();
+  OverviewController::Get()->PauseOcclusionTracker();
 
   for (auto& window : window_list()) {
     window->UpdateRoundedCornersAndShadow();
@@ -2327,8 +2326,9 @@ void OverviewGrid::OnScreenCopiedBeforeRotation() {
 void OverviewGrid::OnScreenRotationAnimationFinished(
     ScreenRotationAnimator* animator,
     bool canceled) {
-  Shell::Get()->overview_controller()->DelayedUpdateRoundedCornersAndShadow();
-  Shell::Get()->overview_controller()->UnpauseOcclusionTracker(
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->DelayedUpdateRoundedCornersAndShadow();
+  overview_controller->UnpauseOcclusionTracker(
       kOcclusionUnpauseDurationForRotation);
 }
 

@@ -156,9 +156,7 @@ void SetWidgetBoundsAndMaybeAnimateTransform(
 
 bool IsContinuousScrollInProgress() {
   return features::IsContinuousOverviewScrollAnimationEnabled() &&
-         Shell::Get()
-             ->overview_controller()
-             ->is_continuous_scroll_in_progress();
+         OverviewController::Get()->is_continuous_scroll_in_progress();
 }
 
 }  // namespace
@@ -201,7 +199,7 @@ void OverviewItem::UpdateRoundedCorners() {
   // feature ContinuousOverviewScrollAnimation is enabled, always show rounded
   // corners for minimized windows, and show rounded corners for non-minimized
   // windows after the continuous scroll has ended.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   bool show_rounded_corners_for_start_animation = false;
   if (features::IsContinuousOverviewScrollAnimationEnabled() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
@@ -275,8 +273,7 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
   // initial transform.
   ScopedPauseRasterScaleUpdates scoped_pause;
 
-  if (in_bounds_update_ ||
-      !Shell::Get()->overview_controller()->InOverviewSession()) {
+  if (in_bounds_update_ || !OverviewController::Get()->InOverviewSession()) {
     return;
   }
 
@@ -1061,8 +1058,9 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
     return;
 
   // Do not update the overview bounds if we're shutting down.
-  if (!Shell::Get()->overview_controller()->InOverviewSession())
+  if (!OverviewController::Get()->InOverviewSession()) {
     return;
+  }
 
   // Do not update the overview item if the window is to be snapped into split
   // view. It will be removed from overview soon and will update overview grid
@@ -1206,8 +1204,9 @@ void OverviewItem::OnItemBoundsAnimationStarted() {
 void OverviewItem::OnItemBoundsAnimationEnded() {
   // Do nothing if overview is shutting down. See crbug.com/1025267 for when it
   // might happen.
-  if (!Shell::Get()->overview_controller()->InOverviewSession())
+  if (!OverviewController::Get()->InOverviewSession()) {
     return;
+  }
 
   if (overview_session_->IsShowingSavedDeskLibrary()) {
     HideForSavedDeskLibrary(false);
@@ -1330,7 +1329,7 @@ void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {
       animation_type == OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER) {
     auto enter_observer = std::make_unique<EnterAnimationObserver>();
     animation_settings.AddObserver(enter_observer.get());
-    Shell::Get()->overview_controller()->AddEnterAnimationObserver(
+    OverviewController::Get()->AddEnterAnimationObserver(
         std::move(enter_observer));
   }
 
@@ -1372,7 +1371,7 @@ void OverviewItem::UpdateHeaderLayoutCrOSNext(
       animation_type == OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER) {
     auto enter_observer = std::make_unique<EnterAnimationObserver>();
     item_animation_settings.AddObserver(enter_observer.get());
-    Shell::Get()->overview_controller()->AddEnterAnimationObserver(
+    OverviewController::Get()->AddEnterAnimationObserver(
         std::move(enter_observer));
   }
   widget_window->SetTransform(gfx::Transform());

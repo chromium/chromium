@@ -1227,7 +1227,7 @@ TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
   waiter.WaitIfNeededAndGet();
 
   // Ensure we are in overview.
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   ASSERT_TRUE(overview_controller->InOverviewSession());
 
   // Check to see that the desks bar has been created. Previously, there was a
@@ -3616,7 +3616,7 @@ TEST_F(SavedDeskTest, SnapWindowTest) {
   LeftClickOn(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
 
   // Test that overview is still active and there is no crash.
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 }
 
 // Test that when an unsupported window left in overview grid and a supported
@@ -4685,7 +4685,7 @@ TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
   ActivateDesk(controller->desks().back().get());
   aura::WindowTracker tracker({CreateAppWindow().release()});
   ToggleOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
   // We should have the max number of desks at this point and therefore the new
   // desk button should be disabled.

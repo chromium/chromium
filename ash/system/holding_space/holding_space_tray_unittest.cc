@@ -2314,8 +2314,7 @@ TEST_F(
 
   // Tap the test window preview within the overview UI, and tap it to exit
   // overview.
-  auto* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
+  auto* overview_session = OverviewController::Get()->overview_session();
   ASSERT_TRUE(overview_session);
   auto* window = widget->GetNativeWindow();
   auto* overview_item =
