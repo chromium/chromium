@@ -18,7 +18,7 @@ build_webui("build") {
     "images/password_manager_logo.svg",
     "images/password_sharing_family_banner.svg",
     "images/password_sharing_family_banner_dark.svg",
-    "images/password_sharing_secure_shield.svg",
+    "images/password_sharing_secure_lock.svg",
     "images/password_sharing_progress_bar.svg",
     "password_manager.html",
   ]
