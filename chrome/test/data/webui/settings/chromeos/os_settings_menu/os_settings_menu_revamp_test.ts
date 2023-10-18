@@ -187,6 +187,13 @@ suite('<os-settings-menu>', () => {
       },
     ];
 
+    function getAccountsMenuItem(): OsSettingsMenuItemElement {
+      const accountsMenuItem =
+          queryMenuItemByPath(`/${routesMojom.PEOPLE_SECTION_PATH}`);
+      assertTrue(!!accountsMenuItem);
+      return accountsMenuItem;
+    }
+
     suite('When there is only one account', () => {
       setup(() => {
         browserProxy.setAccountsForTesting(fakeAccounts.slice(0, 1));
@@ -195,18 +202,14 @@ suite('<os-settings-menu>', () => {
       test('Description should show account email', async () => {
         await createMenu();
 
-        const accountsMenuItem =
-            queryMenuItemByPath(`/${routesMojom.PEOPLE_SECTION_PATH}`);
-        assertTrue(!!accountsMenuItem);
+        const accountsMenuItem = getAccountsMenuItem();
         assertEquals(fakeAccounts[0]!.email, accountsMenuItem.sublabel);
       });
 
       test('Description should update when an account is added', async () => {
         await createMenu();
 
-        const accountsMenuItem =
-            queryMenuItemByPath(`/${routesMojom.PEOPLE_SECTION_PATH}`);
-        assertTrue(!!accountsMenuItem);
+        const accountsMenuItem = getAccountsMenuItem();
         assertEquals(fakeAccounts[0]!.email, accountsMenuItem.sublabel);
 
         // Update accounts to have 2 accounts
@@ -226,18 +229,14 @@ suite('<os-settings-menu>', () => {
       test('Description should show number of accounts', async () => {
         await createMenu();
 
-        const accountsMenuItem =
-            queryMenuItemByPath(`/${routesMojom.PEOPLE_SECTION_PATH}`);
-        assertTrue(!!accountsMenuItem);
+        const accountsMenuItem = getAccountsMenuItem();
         assertEquals('2 accounts', accountsMenuItem.sublabel);
       });
 
       test('Description should update when an account is removed', async () => {
         await createMenu();
 
-        const accountsMenuItem =
-            queryMenuItemByPath(`/${routesMojom.PEOPLE_SECTION_PATH}`);
-        assertTrue(!!accountsMenuItem);
+        const accountsMenuItem = getAccountsMenuItem();
         assertEquals('2 accounts', accountsMenuItem.sublabel);
 
         // Remove an account to leave only 1 account
