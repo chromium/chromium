@@ -231,8 +231,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [toolbarView.heightAnchor
         constraintEqualToConstant:content_suggestions::FakeToolbarHeight()],
     [toolbarView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [toolbarView.topAnchor
-        constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
+    [toolbarView.topAnchor constraintEqualToAnchor:self.topAnchor],
   ]];
 }
 

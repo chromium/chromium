@@ -33,6 +33,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/device_form_factor.h"
 
 namespace {
@@ -1263,11 +1264,12 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 - (void)handleStickyElementsForScrollPosition:(CGFloat)scrollPosition
                                         force:(BOOL)force {
   // Handles the sticky omnibox. Does not stick for iPads.
+  CGFloat offsetToStickOmnibox = [self offsetToStickOmnibox];
   if ([self shouldPinFakeOmnibox]) {
-    if (scrollPosition > [self offsetToStickOmnibox] &&
+    if (scrollPosition >= offsetToStickOmnibox &&
         (!self.isFakeboxPinned || force)) {
       [self pinFakeOmniboxToTop];
-    } else if (scrollPosition <= [self offsetToStickOmnibox] &&
+    } else if (scrollPosition < offsetToStickOmnibox &&
                (self.isFakeboxPinned || force)) {
       [self resetFakeOmniboxConstraints];
     }
@@ -1554,11 +1556,9 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // The y-position content offset for when the fake omnibox
 // should stick to the top of the NTP.
 - (CGFloat)offsetToStickOmnibox {
-  // Do not need to factor in safeAreaInsets.top because the fake omnibox sticks
-  // below it, so it is effectively just the scroll distance between top of
-  // NTPHeader and the top of the Fake Omnibox.
-  return -([self heightAboveFeed] - [self.headerViewController headerHeight] +
-           [self stickyOmniboxHeight]);
+  return AlignValueToPixel(-([self heightAboveFeed] -
+                             [self.headerViewController headerHeight] +
+                             [self stickyOmniboxHeight]));
 }
 
 // Whether the collection view has attained its minimum height.

@@ -640,6 +640,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 - (void)setLogoVendor:(id<LogoVendor>)logoVendor {
   _logoVendor = logoVendor;
   _logoVendor.doodleObserver = self;
+  [self updateLogoAndFakeboxDisplay];
 }
 
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {
