@@ -226,9 +226,10 @@ void ResizeFilter::ComputeFilters(int src_size,
   for (int dest_subset_i = dest_subset_lo; dest_subset_i < dest_subset_hi;
        dest_subset_i++) {
     // Reset the arrays. We don't declare them inside so they can re-use the
-    // same malloc-ed buffer.
-    filter_values.clear();
-    fixed_filter_values.clear();
+    // same malloc-ed buffer. absl::InlinedVector::clear() frees the backing
+    // storage, so use resize(0) instead.
+    filter_values.resize(0);
+    fixed_filter_values.resize(0);
 
     // This is the pixel in the source directly under the pixel in the dest.
     // Note that we base computations on the "center" of the pixels. To see
@@ -242,6 +243,7 @@ void ResizeFilter::ComputeFilters(int src_size,
     int src_begin = std::max(0, FloorInt(src_pixel - src_support));
     int src_end = std::min(src_size - 1, CeilInt(src_pixel + src_support));
 
+    filter_values.reserve(src_end + 1 - src_begin);
     // Compute the unnormalized filter value at each location of the source
     // it covers.
     float filter_sum = 0.0f;  // Sub of the filter values for normalizing.
@@ -267,11 +269,12 @@ void ResizeFilter::ComputeFilters(int src_size,
     }
     DCHECK(!filter_values.empty()) << "We should always get a filter!";
 
+    fixed_filter_values.reserve(filter_values.size());
     // The filter must be normalized so that we don't affect the brightness of
     // the image. Convert to normalized fixed point.
     int16_t fixed_sum = 0;
-    for (size_t i = 0; i < filter_values.size(); i++) {
-      int16_t cur_fixed = output->FloatToFixed(filter_values[i] / filter_sum);
+    for (float filter_value : filter_values) {
+      int16_t cur_fixed = output->FloatToFixed(filter_value / filter_sum);
       fixed_sum += cur_fixed;
       fixed_filter_values.push_back(cur_fixed);
     }
