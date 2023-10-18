@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/ash/printing/usb_printer_detector.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
+#include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -1248,17 +1249,32 @@ TEST_F(CupsPrintersManagerTest, PrinterStatusPolling) {
   feature_list_.InitAndEnableFeature(::features::kLocalPrinterObserving);
 
   // Add a saved printer to be queried for status.
-  synced_printers_manager_.AddSavedPrinters({Printer("Printer1")});
+  synced_printers_manager_.AddSavedPrinters({Printer("SavedPrinter")});
+  zeroconf_detector_->AddDetections({MakeDiscoveredPrinter("RecentPrinter"),
+                                     MakeDiscoveredPrinter("OldPrinter")});
   task_environment_.RunUntilIdle();
+
+  // Add `RecentPrinter` to the Print Preview sticky settings so it'll get
+  // polled for status. `OldPrinter` will not get queried.
+  ::printing::PrintPreviewStickySettings* sticky_settings =
+      ::printing::PrintPreviewStickySettings::GetInstance();
+  sticky_settings->StoreAppState(R"({
+    "recentDestinations": [
+      {
+        "id": "RecentPrinter"
+      }
+    ]
+  })");
 
   // Add the observer to capture the triggers from printer status queries.
   FakeLocalPrintersObserver observer;
   manager_->AddLocalPrintersObserver(&observer);
   task_environment_.FastForwardUntilNoTasksRemain();
 
-  // 1 call when observer added + 1 call from initial printer status query +
-  // 30 calls from polling (every 10 seconds for 5 minutes).
-  const size_t expected_obsever_calls = 32;
+  // 1 call when observer added + 2 calls for initial printer status queries to
+  // the Saved and Recent printer + 60 calls from polling both the Saved and
+  // Recent printer 30 times each (every 10 seconds for 5 minutes).
+  const size_t expected_obsever_calls = 63;
   EXPECT_EQ(expected_obsever_calls, observer.num_observer_calls());
 }
 

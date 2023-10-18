@@ -41,6 +41,7 @@
 #include "chrome/browser/ash/printing/zeroconf_printer_detector.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -425,13 +426,25 @@ class CupsPrintersManagerImpl
     OnPrinterStatusTimerElapsed();
   }
 
-  // Starts printer status requests for all Saved printers then queues the next
-  // round of requests if the overall timer hasn't elapsed.
+  // Starts printer status requests for all Saved and recently used printers
+  // then queues the next round of requests if the overall timer hasn't elapsed.
   void OnPrinterStatusTimerElapsed() {
-    const auto printers = printers_.Get(chromeos::PrinterClass::kSaved);
+    std::vector<std::string> recently_used_printers;
+    ::printing::PrintPreviewStickySettings* sticky_settings =
+        ::printing::PrintPreviewStickySettings::GetInstance();
+    if (sticky_settings) {
+      recently_used_printers = sticky_settings->GetRecentlyUsedPrinters();
+    }
+
+    const auto printers = printers_.Get();
     for (const auto& printer : printers) {
-      FetchPrinterStatus(printer.id(),
-                         /*PrinterStatusCallback=*/base::DoNothing());
+      // Query every printer that is either saved or recently used.
+      if (printers_.IsPrinterInClass(chromeos::PrinterClass::kSaved,
+                                     printer.id()) ||
+          base::Contains(recently_used_printers, printer.id())) {
+        FetchPrinterStatus(printer.id(),
+                           /*PrinterStatusCallback=*/base::DoNothing());
+      }
     }
 
     // Only restart requests when the 5 minute timer hasn't elapsed.
