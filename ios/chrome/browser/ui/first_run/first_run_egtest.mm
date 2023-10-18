@@ -9,6 +9,7 @@
 #import "build/branding_buildflags.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/sync/base/features.h"
@@ -170,6 +171,11 @@ void DismissDefaultBrowserPromo() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  // Disable the search engine choice at the end of FRE.
+  // TODO(b/289998773): Re-enable it. Update EG test so that they
+  // close this view if they need to interact more after the FRE.
+  config.additional_args.push_back(std::string("--") +
+                                   switches::kDisableSearchEngineChoiceScreen);
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kSignInAtStartup);
   config.additional_args.push_back("-FirstRunForceEnabled");
@@ -228,14 +234,7 @@ void DismissDefaultBrowserPromo() {
 }
 
 // Tests FRE with UMA off and without sign-in.
-// TODO(crbug.com/1487756): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testWithUMAUncheckedAndNoSignin \
-  DISABLED_testWithUMAUncheckedAndNoSignin
-#else
-#define MAYBE_testWithUMAUncheckedAndNoSignin testWithUMAUncheckedAndNoSignin
-#endif
-- (void)MAYBE_testWithUMAUncheckedAndNoSignin {
+- (void)testWithUMAUncheckedAndNoSignin {
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
@@ -246,6 +245,7 @@ void DismissDefaultBrowserPromo() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
   // Turn off UMA.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
@@ -272,15 +272,7 @@ void DismissDefaultBrowserPromo() {
 }
 
 // Tests FRE with UMA off, reopen UMA dialog and close the FRE without sign-in.
-// TODO(crbug.com/1487756): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testUMAUncheckedWhenOpenedSecondTime \
-  DISABLED_testUMAUncheckedWhenOpenedSecondTime
-#else
-#define MAYBE_testUMAUncheckedWhenOpenedSecondTime \
-  testUMAUncheckedWhenOpenedSecondTime
-#endif
-- (void)MAYBE_testUMAUncheckedWhenOpenedSecondTime {
+- (void)testUMAUncheckedWhenOpenedSecondTime {
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
@@ -291,6 +283,10 @@ void DismissDefaultBrowserPromo() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
+
+  // This wait is required because, on devices, EG-test may tap on the button
+  // while it is sliding up, which cause the tap to misses the button.
+  [ChromeEarlGreyUI waitForAppToIdle];
   // Turn off UMA.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
@@ -307,6 +303,7 @@ void DismissDefaultBrowserPromo() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
   // Check UMA off.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
@@ -351,6 +348,7 @@ void DismissDefaultBrowserPromo() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
   // Turn off UMA.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
@@ -367,6 +365,7 @@ void DismissDefaultBrowserPromo() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
   // Turn UMA back on.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
@@ -393,14 +392,7 @@ void DismissDefaultBrowserPromo() {
 }
 
 // Tests FRE with UMA off and without sign-in.
-// TODO(crbug.com/1487756): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testWithUMAUncheckedAndSignin \
-  DISABLED_testWithUMAUncheckedAndSignin
-#else
-#define MAYBE_testWithUMAUncheckedAndSignin testWithUMAUncheckedAndSignin
-#endif
-- (void)MAYBE_testWithUMAUncheckedAndSignin {
+- (void)testWithUMAUncheckedAndSignin {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -414,6 +406,7 @@ void DismissDefaultBrowserPromo() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
   // Turn off UMA.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
