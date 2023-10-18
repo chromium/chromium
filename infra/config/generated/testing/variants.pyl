@@ -472,7 +472,7 @@
     'identifier': 'DEDEDE_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R120-15642.0.0',
+      'cros_img': 'dedede-release/R120-15645.0.0',
     },
   },
   'CROS_DEDEDE_RELEASE_DEV': {
@@ -500,7 +500,7 @@
     'identifier': 'FIZZ_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'fizz',
-      'cros_img': 'fizz-release/R120-15642.0.0',
+      'cros_img': 'fizz-release/R120-15645.0.0',
       'dut_pool': 'chrome',
     },
   },
@@ -532,7 +532,7 @@
     'identifier': 'GUYBRUSH_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'guybrush',
-      'cros_img': 'guybrush-release/R120-15642.0.0',
+      'cros_img': 'guybrush-release/R120-15645.0.0',
       'dut_pool': 'chrome',
     },
   },
@@ -564,7 +564,7 @@
     'identifier': 'PUFF_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'puff',
-      'cros_img': 'puff-release/R120-15642.0.0',
+      'cros_img': 'puff-release/R120-15645.0.0',
       'dut_pool': 'chrome',
     },
   },
@@ -596,7 +596,7 @@
     'identifier': 'EVE_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-public/R120-15642.0.0',
+      'cros_img': 'eve-public/R120-15645.0.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
@@ -607,7 +607,7 @@
     'identifier': 'HANA_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R120-15642.0.0',
+      'cros_img': 'hana-release/R120-15645.0.0',
     },
   },
   'CROS_HANA_RELEASE_DEV': {
@@ -635,7 +635,7 @@
     'identifier': 'JACUZZI_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-release/R120-15642.0.0',
+      'cros_img': 'jacuzzi-release/R120-15645.0.0',
     },
   },
   'CROS_JACUZZI_RELEASE_DEV': {
@@ -670,7 +670,7 @@
     'identifier': 'JACUZZI_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-public/R120-15642.0.0',
+      'cros_img': 'jacuzzi-public/R120-15645.0.0',
       'bucket': 'chromiumos-image-archive',
     },
   },
@@ -678,7 +678,7 @@
     'identifier': 'JACUZZI_CQ_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-public/R120-15642.0.0',
+      'cros_img': 'jacuzzi-public/R120-15645.0.0',
       'bucket': 'chromiumos-image-archive',
       'public_builder': 'cros_test_platform_public',
       'public_builder_bucket': 'testplatform-public',
@@ -688,7 +688,7 @@
     'identifier': 'TROGDOR_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'trogdor',
-      'cros_img': 'trogdor-public/R120-15642.0.0',
+      'cros_img': 'trogdor-public/R120-15645.0.0',
       'bucket': 'chromiumos-image-archive',
     },
   },
@@ -696,7 +696,7 @@
     'identifier': 'OCTOPUS_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-public/R120-15642.0.0',
+      'cros_img': 'octopus-public/R120-15645.0.0',
       'bucket': 'chromiumos-image-archive',
     },
   },
@@ -711,7 +711,7 @@
     'identifier': 'OCTOPUS_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R120-15642.0.0',
+      'cros_img': 'octopus-release/R120-15645.0.0',
     },
   },
   'CROS_OCTOPUS_RELEASE_DEV': {
@@ -739,7 +739,7 @@
     'identifier': 'STRONGBAD_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R120-15642.0.0',
+      'cros_img': 'strongbad-release/R120-15645.0.0',
     },
   },
   'CROS_STRONGBAD_RELEASE_DEV': {
@@ -775,7 +775,7 @@
     'skylab': {
       'cros_board': 'volteer',
       'cros_model': 'voxel',
-      'cros_img': 'volteer-public/R120-15642.0.0',
+      'cros_img': 'volteer-public/R120-15645.0.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
