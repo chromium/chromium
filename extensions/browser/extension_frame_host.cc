@@ -118,14 +118,9 @@ void ExtensionFrameHost::UpdateDraggableRegions(
     std::vector<mojom::DraggableRegionPtr> regions) {
   content::RenderFrameHost* render_frame_host =
       receivers_.GetCurrentTargetFrame();
-  // This message should come from a primary main frame.
-  if (!render_frame_host->IsInPrimaryMainFrame()) {
-    bad_message::ReceivedBadMessage(
-        render_frame_host->GetProcess(),
-        bad_message::AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME);
-    return;
-  }
 
+  // TODO(dtapuska): We should restrict sending the draggable region
+  // only to AppWindows.
   AppWindowRegistry* registry =
       AppWindowRegistry::Get(render_frame_host->GetBrowserContext());
   if (!registry) {
@@ -133,6 +128,14 @@ void ExtensionFrameHost::UpdateDraggableRegions(
   }
   AppWindow* app_window = registry->GetAppWindowForWebContents(web_contents_);
   if (!app_window) {
+    return;
+  }
+
+  // This message should come from a primary main frame.
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host->GetProcess(),
+        bad_message::AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME);
     return;
   }
   app_window->UpdateDraggableRegions(std::move(regions));
