@@ -145,13 +145,4 @@ std::u16string PermissionPromptAndroid::GetMessageText() const {
           delegate_->GetRequestingOrigin(),
           url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }
-
-std::u16string PermissionPromptAndroid::GetSecondaryText() const {
-  const std::vector<PermissionRequest*>& requests = delegate_->Requests();
-  CHECK_GT(requests.size(), 0U);
-
-  // TODO(crbug.com/1478113): Remove this method if not needed.
-  return std::u16string();
-}
-
 }  // namespace permissions

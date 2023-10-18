@@ -34,13 +34,6 @@ class PermissionDialogModel {
         TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 messageTextView, delegate.getDrawableId(), 0, 0, 0);
 
-        String secondaryText = delegate.getSecondaryText();
-        if (!secondaryText.isEmpty()) {
-            TextView secondaryTextView = customView.findViewById(R.id.secondary);
-            secondaryTextView.setText(secondaryText);
-            secondaryTextView.setVisibility(View.VISIBLE);
-        }
-
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, controller)
                 .with(ModalDialogProperties.FOCUS_DIALOG, true)
