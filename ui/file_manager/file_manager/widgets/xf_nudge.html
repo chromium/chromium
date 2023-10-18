@@ -1,14 +1,7 @@
 <style>
 #container > * {
-  z-index: 999;
-}
-
-:host-context([theme='legacy']) #container > * {
-  background-color: var(--cros-nudge-background-color);
-}
-
-:host-context([theme='refresh23']) #container > * {
   background-color: var(--cros-sys-primary);
+  z-index: 999;
 }
 
 #dot {
@@ -22,20 +15,13 @@
 #bubble {
   align-items: center;
   border-radius: 16px;
+  color: var(--cros-sys-on_primary);
   display: flex;
   left: -296px;
   max-width: calc(296px - 2 * 16px);
   padding: 8px 16px;
   position: fixed;
   width: fit-content;
-}
-
-:host-context([theme='legacy']) #bubble {
-  color: var(--cros-button-icon-color-primary);
-}
-
-:host-context([theme='refresh23']) #bubble {
-  color: var(--cros-sys-on_primary);
 }
 
 #bubble.single-line {
@@ -52,11 +38,7 @@
   width: 20px;
 }
 
-:host-context([theme='legacy']) #bubble > span {
-  font: var(--cros-body-2-font);
-}
-
-:host-context([theme='refresh23']) #bubble > span {
+#bubble > span {
   font: var(--cros-body-1-font);
 }
 

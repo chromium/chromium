@@ -14,14 +14,7 @@ found in the LICENSE file.
     display: none;
   }
 
-  :host-context([theme='legacy']) #box {
-    display: block;
-    overflow: auto;
-    padding-top: 16px;
-    width: 320px;
-  }
-
-  :host-context([theme='refresh23']) #box {
+  #box {
     display: block;
     overflow: auto;
     padding-bottom: 16px;
@@ -29,15 +22,7 @@ found in the LICENSE file.
     width: 320px;
   }
 
-  :host-context([theme='legacy']) .category {
-    color: var(--cros-text-color-primary);
-    font-family: 'Roboto Medium';
-    font-size: 14px;
-    line-height: 56px;
-    margin-inline-start: 32px;
-  }
-
-  :host-context([theme='refresh23']) .category {
+  .category {
     color: var(--cros-sys-on_surface);
     font: var(--cros-button-1-font);
     padding-bottom: 16px;
@@ -45,29 +30,12 @@ found in the LICENSE file.
     padding-top: 16px;
   }
 
-  :host-context([theme='legacy']) hr {
-    border-color: var(--cros-separator-color);
-    border-top-width: 1px !important;
-    border-width: 0;
-    margin-bottom: 8px;
-    margin-top: 16px;
-  }
-
-  :host-context([theme='refresh23']) hr {
+  hr {
     border-color: var(--cros-sys-separator);
     border-top-width: 1px !important;
     border-width: 0;
     margin-bottom: 16px;
     margin-top: 16px;
-  }
-
-  @media only screen and (max-width: 720px) {
-    :host-context([theme='legacy']) #box {
-      width: 240px;
-    }
-    :host-context([theme='legacy']) .category {
-      margin: 12px 12px;
-    }
   }
 </style>
 <div id="box">
