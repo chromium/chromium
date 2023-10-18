@@ -4,6 +4,18 @@
 
 module ash.web_app_install.mojom;
 
+import "url/mojom/url.mojom";
+
+struct DialogArgs {
+  url.mojom.Url url;
+
+  string name;
+
+  string description;
+
+  // TODO(crbug.com/1488697): Add icons and screenshots.
+};
+
 // Lives in the browser process. A renderer uses this to create a page handler
 // that enables communication between a renderer and the browser process.
 interface PageHandlerFactory {
@@ -15,6 +27,9 @@ interface PageHandlerFactory {
 // are implemented in the browser process.
 interface PageHandler {
   // TODO(crbug.com/1488697): Add an InstallApp method.
+
+  // Returns arguments passed to the dialog on creation.
+  GetDialogArgs() => (DialogArgs args);
 
   // Closes the dialog.
   CloseDialog();

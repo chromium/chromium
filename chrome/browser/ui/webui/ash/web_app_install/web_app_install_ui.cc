@@ -39,6 +39,10 @@ WebAppInstallDialogUI::WebAppInstallDialogUI(content::WebUI* web_ui)
 
 WebAppInstallDialogUI::~WebAppInstallDialogUI() = default;
 
+void WebAppInstallDialogUI::SetDialogArgs(mojom::DialogArgsPtr args) {
+  dialog_args_ = std::move(args);
+}
+
 void WebAppInstallDialogUI::BindInterface(
     mojo::PendingReceiver<mojom::PageHandlerFactory> pending_receiver) {
   if (factory_receiver_.is_bound()) {
@@ -50,8 +54,9 @@ void WebAppInstallDialogUI::BindInterface(
 void WebAppInstallDialogUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<WebAppInstallPageHandler>(
-      std::move(receiver), base::BindOnce(&WebAppInstallDialogUI::CloseDialog,
-                                          base::Unretained(this)));
+      std::move(dialog_args_), std::move(receiver),
+      base::BindOnce(&WebAppInstallDialogUI::CloseDialog,
+                     base::Unretained(this)));
 }
 
 void WebAppInstallDialogUI::CloseDialog() {

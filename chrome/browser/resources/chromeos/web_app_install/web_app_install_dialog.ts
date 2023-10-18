@@ -27,12 +27,38 @@ class WebAppInstallDialogElement extends HTMLElement {
     return getTemplate();
   }
 
+  private proxy = BrowserProxy.getInstance();
+
   constructor() {
     super();
     const template = document.createElement('template');
     template.innerHTML = WebAppInstallDialogElement.template as string;
     const fragment = template.content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(fragment);
+
+    this.initDynamicContent();
+  }
+
+  async initDynamicContent() {
+    try {
+      const dialogArgs = await this.proxy.handler.getDialogArgs();
+      assert(dialogArgs.args);
+
+      const nameElement = this.$<HTMLSpanElement>('#name');
+      assert(nameElement);
+      nameElement.textContent = dialogArgs.args.name;
+
+      const urlElement = this.$<HTMLSpanElement>('#url');
+      assert(urlElement);
+      urlElement.textContent = dialogArgs.args.url.url;
+
+      const descriptionElement = this.$<HTMLSpanElement>('#description');
+      assert(descriptionElement);
+      descriptionElement.textContent = dialogArgs.args.description;
+    } catch (e) {
+      // TODO(crbug.com/1488697) Define expected behavior.
+      console.error(`Unable to get dialog arguments . Error: ${e}.`);
+    }
   }
 
   $<T extends Element>(query: string): T {
@@ -51,8 +77,7 @@ class WebAppInstallDialogElement extends HTMLElement {
   }
 
   private onCancelButtonClick(): void {
-    const proxy = BrowserProxy.getInstance();
-    proxy.handler.closeDialog();
+    this.proxy.handler.closeDialog();
   }
 
   private async onInstallButtonClick(event: MouseEvent) {

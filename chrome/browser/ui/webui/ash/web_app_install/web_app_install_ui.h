@@ -21,6 +21,8 @@ class WebAppInstallDialogUI : public ui::MojoWebDialogUI,
   WebAppInstallDialogUI& operator=(const WebAppInstallDialogUI&) = delete;
   ~WebAppInstallDialogUI() override;
 
+  void SetDialogArgs(mojom::DialogArgsPtr args);
+
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(mojo::PendingReceiver<mojom::PageHandlerFactory> receiver);
@@ -32,6 +34,7 @@ class WebAppInstallDialogUI : public ui::MojoWebDialogUI,
  private:
   void CloseDialog();
 
+  mojom::DialogArgsPtr dialog_args_;
   std::unique_ptr<WebAppInstallPageHandler> page_handler_;
   mojo::Receiver<mojom::PageHandlerFactory> factory_receiver_{this};
 

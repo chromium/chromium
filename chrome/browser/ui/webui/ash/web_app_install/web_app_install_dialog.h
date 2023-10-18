@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_WEB_APP_INSTALL_WEB_APP_INSTALL_DIALOG_H_
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/web_app_install/web_app_install.mojom.h"
 
 namespace ash::web_app_install {
 
@@ -19,10 +20,15 @@ class WebAppInstallDialog : public SystemWebDialogDelegate {
   // if a new dialog has been effectively created.
   static bool Show();
 
+  void OnDialogShown(content::WebUI* webui) override;
+
  protected:
-  WebAppInstallDialog();
+  explicit WebAppInstallDialog(mojom::DialogArgsPtr args);
   ~WebAppInstallDialog() override;
   bool ShouldShowCloseButton() const override;
+
+ private:
+  mojom::DialogArgsPtr dialog_args_;
 };
 
 }  // namespace ash::web_app_install

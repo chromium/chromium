@@ -21,6 +21,7 @@ class WebAppInstallPageHandler : public mojom::PageHandler {
  public:
   using CloseDialogCallback = base::OnceCallback<void()>;
   explicit WebAppInstallPageHandler(
+      mojom::DialogArgsPtr args,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
       CloseDialogCallback close_dialog_callback);
 
@@ -30,9 +31,11 @@ class WebAppInstallPageHandler : public mojom::PageHandler {
   ~WebAppInstallPageHandler() override;
 
   // mojom::PageHandler:
+  void GetDialogArgs(GetDialogArgsCallback callback) override;
   void CloseDialog() override;
 
  private:
+  mojom::DialogArgsPtr dialog_args_;
   mojo::Receiver<mojom::PageHandler> receiver_;
   CloseDialogCallback close_dialog_callback_;
 
