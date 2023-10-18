@@ -1415,7 +1415,7 @@ be describing additional metrics about the same event.
       name="SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget.MaxEventDuration2">
     <obsolete>
       Removed September 2023 in favor of
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The average value of user interaction latency above budget of a page load
@@ -1430,7 +1430,7 @@ be describing additional metrics about the same event.
       name="SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The average value of user interaction latency above budget of a page load
@@ -1471,7 +1471,7 @@ be describing additional metrics about the same event.
       name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       An approximation of high percentile of user interaction latency above
@@ -1486,7 +1486,7 @@ be describing additional metrics about the same event.
       name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       An approximation of high percentile of user interaction latency above
@@ -1501,7 +1501,7 @@ be describing additional metrics about the same event.
       name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration2">
     <obsolete>
       Removed September 2023 in favor of
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       An approximation of high percentile of user interaction latency above
@@ -1516,7 +1516,7 @@ be describing additional metrics about the same event.
       name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       An approximation of high percentile of user interaction latency above
@@ -1531,7 +1531,7 @@ be describing additional metrics about the same event.
       name="SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget.MaxEventDuration2">
     <obsolete>
       Removed September 2023 in favor of
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The sum of user interaction latency above budget of a page load in AMP
@@ -1546,7 +1546,7 @@ be describing additional metrics about the same event.
       name="SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The sum of user interaction latency above budget of a page load in AMP
@@ -1578,7 +1578,7 @@ be describing additional metrics about the same event.
       name="SubFrame.InteractiveTiming.WorstUserInteractionLatency.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The maximum value of high percentile of user interaction latency above
@@ -1591,7 +1591,7 @@ be describing additional metrics about the same event.
       name="SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget.MaxEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The maximum value of user interaction latency above budget of a page load
@@ -1606,7 +1606,7 @@ be describing additional metrics about the same event.
       name="SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The maximum value of user interaction latency above budget of a page load
@@ -16806,7 +16806,7 @@ be describing additional metrics about the same event.
       name="InteractiveTiming.AverageUserInteractionLatencyOverBudget.MaxEventDuration">
     <obsolete>
       Deprecated September 2023 for
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The average value of user interaction latency above budget of a page load,
@@ -16820,7 +16820,7 @@ be describing additional metrics about the same event.
       name="InteractiveTiming.AverageUserInteractionLatencyOverBudget.TotalEventDuration">
     <obsolete>
       Deprecated March 2022 for
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The average value of user interaction latency above budget of a page load,
@@ -17126,7 +17126,7 @@ be describing additional metrics about the same event.
       name="InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventDuration">
     <obsolete>
       Deprecated March 2022 for
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       An approximation of a high percentile of user interaction latency above
@@ -17141,7 +17141,7 @@ be describing additional metrics about the same event.
       name="InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.TotalEventDuration">
     <obsolete>
       Deprecated March 2022 for
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       An approximation of a high percentile of user interaction latency above
@@ -17156,7 +17156,7 @@ be describing additional metrics about the same event.
       name="InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration">
     <obsolete>
       Deprecated September 2023 for
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       An approximation of a high percentile of user interaction latency above
@@ -17171,7 +17171,7 @@ be describing additional metrics about the same event.
       name="InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.TotalEventDuration">
     <obsolete>
       Deprecated March 2022 for
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       An approximation of a high percentile of user interaction latency above
@@ -17186,7 +17186,7 @@ be describing additional metrics about the same event.
       name="InteractiveTiming.SumOfUserInteractionLatencyOverBudget.MaxEventDuration">
     <obsolete>
       Deprecated September 2023 for
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The sum of user interaction latency above budget of a page load, in ms.
@@ -17200,7 +17200,7 @@ be describing additional metrics about the same event.
       name="InteractiveTiming.SumOfUserInteractionLatencyOverBudget.TotalEventDuration">
     <obsolete>
       Deprecated March 2022 for
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The sum of user interaction latency above budget of a page load, in ms.
@@ -17299,7 +17299,7 @@ be describing additional metrics about the same event.
       name="InteractiveTiming.WorstUserInteractionLatency.TotalEventDuration">
     <obsolete>
       Deprecated March 2022 for
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The maximum value of user interaction latency of a page load, in ms. For
@@ -17312,7 +17312,7 @@ be describing additional metrics about the same event.
       name="InteractiveTiming.WorstUserInteractionLatencyOverBudget.MaxEventDuration">
     <obsolete>
       Deprecated March 2022 for
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The maximum value of user interaction latency above budget of a page load,
@@ -17326,7 +17326,7 @@ be describing additional metrics about the same event.
       name="InteractiveTiming.WorstUserInteractionLatencyOverBudget.TotalEventDuration">
     <obsolete>
       Deprecated March 2022 for
-      SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
     </obsolete>
     <summary>
       The maximum value of user interaction latency above budget of a page load,
