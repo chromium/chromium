@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_STORAGE_APP_STORAGE_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_STORAGE_APP_STORAGE_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -15,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
 namespace base {
@@ -23,8 +25,9 @@ class FilePath;
 
 namespace apps {
 
-class AppStorageFileHandler;
 class FakeAppStorage;
+
+using AppInfo = AppStorageFileHandler::AppInfo;
 
 // AppStorage is responsible for reading and writing the app information on
 // disk.
@@ -51,7 +54,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
   // Invoked when reading the app info data from the AppStorage file is
   // finished.
   virtual void OnGetAppInfoData(base::OnceCallback<void()> callback,
-                                std::vector<AppPtr> apps);
+                                std::unique_ptr<AppInfo> app_info);
 
   // Returns true if the app info is changed compared with the app info saved in
   // the AppStorage file.

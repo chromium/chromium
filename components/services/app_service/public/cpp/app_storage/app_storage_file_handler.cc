@@ -13,6 +13,8 @@
 
 namespace apps {
 
+using AppInfo = AppStorageFileHandler::AppInfo;
+
 namespace {
 
 constexpr char kAppServiceDirName[] = "app_service";
@@ -36,6 +38,9 @@ absl::optional<std::string> GetStringValueFromDict(
 }
 
 }  // namespace
+
+AppStorageFileHandler::AppInfo::AppInfo() = default;
+AppStorageFileHandler::AppInfo::~AppInfo() = default;
 
 AppStorageFileHandler::AppStorageFileHandler(const base::FilePath& base_path)
     : RefCountedDeleteOnSequence(base::ThreadPool::CreateSequencedTaskRunner(
@@ -66,20 +71,20 @@ void AppStorageFileHandler::WriteToFile(std::vector<AppPtr> apps) {
   }
 }
 
-std::vector<AppPtr> AppStorageFileHandler::ReadFromFile() {
+std::unique_ptr<AppInfo> AppStorageFileHandler::ReadFromFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   if (!base::PathExists(file_path_)) {
-    return std::vector<AppPtr>();
+    return nullptr;
   }
 
   std::string app_info_data;
   if (!base::ReadFileToString(file_path_, &app_info_data) ||
       app_info_data.empty()) {
-    return std::vector<AppPtr>();
+    return nullptr;
   }
 
   base::JSONReader::Result app_info_value =
@@ -90,7 +95,7 @@ std::vector<AppPtr> AppStorageFileHandler::ReadFromFile() {
         << app_info_value.error().message << ", in line "
         << app_info_value.error().line << ", column "
         << app_info_value.error().column;
-    return std::vector<AppPtr>();
+    return nullptr;
   }
 
   return ConvertValueToApps(std::move(*app_info_value));
@@ -148,15 +153,15 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
   return base::Value(std::move(app_info_dict));
 }
 
-std::vector<AppPtr> AppStorageFileHandler::ConvertValueToApps(
+std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     base::Value app_info_value) {
-  std::vector<AppPtr> apps;
+  std::unique_ptr<AppInfo> app_info = std::make_unique<AppInfo>();
 
   base::Value::Dict* dict = app_info_value.GetIfDict();
   if (!dict) {
     LOG(ERROR) << "Fail to parse the app info value. "
                << "Cannot find the app info dict.";
-    return apps;
+    return nullptr;
   }
 
   for (auto [app_id, app_value] : *dict) {
@@ -209,9 +214,10 @@ std::vector<AppPtr> AppStorageFileHandler::ConvertValueToApps(
     app->searchable = value->FindBool(kSearchableKey);
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
-    apps.push_back(std::move(app));
+    app_info->apps.push_back(std::move(app));
+    app_info->app_types.insert(static_cast<AppType>(app_type.value()));
   }
-  return apps;
+  return app_info;
 }
 
 }  // namespace apps

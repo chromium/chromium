@@ -296,8 +296,6 @@ source_set("unit_tests") {
     "app_capability_access_cache_wrapper_unittest.cc",
     "app_registry_cache_unittest.cc",
     "app_registry_cache_wrapper_unittest.cc",
-    "app_storage/app_storage_file_handler_unittest.cc",
-    "app_storage/app_storage_unittest.cc",
     "app_types_unittest.cc",
     "app_update_unittest.cc",
     "capability_access_update_unittest.cc",
@@ -322,6 +320,8 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [
+      "app_storage/app_storage_file_handler_unittest.cc",
+      "app_storage/app_storage_unittest.cc",
       "instance_registry_unittest.cc",
       "instance_unittest.cc",
       "instance_update_unittest.cc",

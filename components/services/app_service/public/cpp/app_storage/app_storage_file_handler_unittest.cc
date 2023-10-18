@@ -4,8 +4,10 @@
 
 #include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 
+#include <memory>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -18,6 +20,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
+
+using AppInfo = AppStorageFileHandler::AppInfo;
 
 namespace {
 
@@ -51,8 +55,8 @@ class AppStorageFileHandlerTest : public testing::Test {
 
   // Call AppStorageFileHandler::ReadFromFile to read the app info data from the
   // AppStorage file.
-  std::vector<AppPtr> ReadFromFile() {
-    base::test::TestFuture<std::vector<AppPtr>> result;
+  std::unique_ptr<AppInfo> ReadFromFile() {
+    base::test::TestFuture<std::unique_ptr<AppInfo>> result;
     file_handler_->owning_task_runner()->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&AppStorageFileHandler::ReadFromFile,
@@ -119,23 +123,23 @@ class AppStorageFileHandlerTest : public testing::Test {
 
 // Test AppStorageFileHandler can work from an unavailable file.
 TEST_F(AppStorageFileHandlerTest, ReadFromNotValidFile) {
-  auto apps = ReadFromFile();
-  EXPECT_TRUE(apps.empty());
+  auto app_info = ReadFromFile();
+  EXPECT_FALSE(app_info);
 }
 
 // Test AppStorageFileHandler won't crash when the file is empty.
 TEST_F(AppStorageFileHandlerTest, ReadFromEmptyFile) {
   WriteToFile("");
-  auto apps = ReadFromFile();
-  EXPECT_TRUE(apps.empty());
+  auto app_info = ReadFromFile();
+  EXPECT_FALSE(app_info);
 }
 
 // Test AppStorageFileHandler won't crash when the file isn't a json format.
 TEST_F(AppStorageFileHandlerTest, ReadFromWrongJSONFile) {
   const char kAppInfoData[] = "\"abc\":{\"type\":5}";
   WriteToFile(kAppInfoData);
-  auto apps = ReadFromFile();
-  EXPECT_TRUE(apps.empty());
+  auto app_info = ReadFromFile();
+  EXPECT_FALSE(app_info);
 }
 
 // Test AppStorageFileHandler can work when the data format isn't correct.
@@ -143,48 +147,66 @@ TEST_F(AppStorageFileHandlerTest, ReadFromWrongDataFile) {
   const char kAppInfoData[] =
       "{\"abc\":{}, \"aaa\":{\"type\":2, \"readiness\":100}}";
   WriteToFile(kAppInfoData);
-  auto apps = ReadFromFile();
+  auto app_info = ReadFromFile();
 
   // The app type for "abc" is empty, so we can get one app only {app_id =
   // "aaa", app_type = kBuiltIn}.
-  EXPECT_EQ(1u, apps.size());
-  EXPECT_EQ("aaa", apps[0]->app_id);
-  EXPECT_EQ(AppType::kBuiltIn, apps[0]->app_type);
+  ASSERT_TRUE(app_info);
+  EXPECT_EQ(1u, app_info->apps.size());
+  EXPECT_EQ("aaa", app_info->apps[0]->app_id);
+  EXPECT_EQ(AppType::kBuiltIn, app_info->apps[0]->app_type);
   // The readiness for the app "aaa" is wrong, so readiness is set as the
   // default value.
-  EXPECT_EQ(Readiness::kUnknown, apps[0]->readiness);
+  EXPECT_EQ(Readiness::kUnknown, app_info->apps[0]->readiness);
+
+  EXPECT_EQ(1u, app_info->app_types.size());
+  EXPECT_TRUE(base::Contains(app_info->app_types, AppType::kBuiltIn));
 }
 
 // Test AppStorageFileHandler can work when the app type isn't correct.
 TEST_F(AppStorageFileHandlerTest, ReadFromWrongAppType) {
   const char kAppInfoData[] = "{\"abc\":{\"type\":100}, \"aaa\":{\"type\":2}}";
   WriteToFile(kAppInfoData);
-  auto apps = ReadFromFile();
+  auto app_info = ReadFromFile();
 
   // The app type for "abc" is wrong, so we can get one app only {app_id =
   // "aaa", app_type = kBuiltIn}.
-  EXPECT_EQ(1u, apps.size());
-  EXPECT_EQ("aaa", apps[0]->app_id);
-  EXPECT_EQ(AppType::kBuiltIn, apps[0]->app_type);
+  ASSERT_TRUE(app_info);
+  EXPECT_EQ(1u, app_info->apps.size());
+  EXPECT_EQ("aaa", app_info->apps[0]->app_id);
+  EXPECT_EQ(AppType::kBuiltIn, app_info->apps[0]->app_type);
+
+  EXPECT_EQ(1u, app_info->app_types.size());
+  EXPECT_TRUE(base::Contains(app_info->app_types, AppType::kBuiltIn));
 }
 
 // Test AppStorageFileHandler can read and write the empty app info data.
 TEST_F(AppStorageFileHandlerTest, ReadAndWriteEmptyData) {
   WriteToFile(std::vector<AppPtr>());
-  auto apps = ReadFromFile();
-  EXPECT_TRUE(apps.empty());
+  auto app_info = ReadFromFile();
+  ASSERT_TRUE(app_info);
+  EXPECT_TRUE(app_info->apps.empty());
 }
 
 // Test AppStorageFileHandler can read and write one app.
 TEST_F(AppStorageFileHandlerTest, ReadAndWriteOneApp) {
   WriteToFile(CreateOneApp());
-  EXPECT_TRUE(IsEqual(CreateOneApp(), ReadFromFile()));
+  auto app_info = ReadFromFile();
+  ASSERT_TRUE(app_info);
+  EXPECT_TRUE(IsEqual(CreateOneApp(), app_info->apps));
+  EXPECT_EQ(1u, app_info->app_types.size());
+  EXPECT_TRUE(base::Contains(app_info->app_types, kAppType1));
 }
 
 // Test AppStorageFileHandler can read and write multiple apps.
 TEST_F(AppStorageFileHandlerTest, ReadAndWriteMultipleApps) {
   WriteToFile(CreateTwoApps());
-  EXPECT_TRUE(IsEqual(CreateTwoApps(), ReadFromFile()));
+  auto app_info = ReadFromFile();
+  ASSERT_TRUE(app_info);
+  EXPECT_TRUE(IsEqual(CreateTwoApps(), app_info->apps));
+  EXPECT_EQ(2u, app_info->app_types.size());
+  EXPECT_TRUE(base::Contains(app_info->app_types, kAppType1));
+  EXPECT_TRUE(base::Contains(app_info->app_types, kAppType2));
 }
 
 }  // namespace apps

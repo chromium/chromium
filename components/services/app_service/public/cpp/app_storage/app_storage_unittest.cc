@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/app_storage/app_storage.h"
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -73,6 +74,7 @@ class FakeAppStorage : public AppStorage {
   ~FakeAppStorage() override = default;
 
   std::vector<AppPtr>& GetAppInfo() { return apps_; }
+  std::set<AppType>& GetAppTypeInfo() { return app_types_; }
 
   void WaitForSaveFinished(size_t expect_app_count) {
     expect_app_count_ = expect_app_count;
@@ -83,12 +85,14 @@ class FakeAppStorage : public AppStorage {
  private:
   // Override to call to AppStorage::OnGetAppInfoData.
   void OnGetAppInfoData(base::OnceCallback<void()> callback,
-                        std::vector<AppPtr> apps) override {
-    for (const auto& app : apps) {
-      apps_.push_back(app->Clone());
+                        std::unique_ptr<AppInfo> app_info) override {
+    if (app_info) {
+      for (const auto& app : app_info->apps) {
+        apps_.push_back(app->Clone());
+      }
     }
 
-    AppStorage::OnGetAppInfoData(std::move(callback), std::move(apps));
+    AppStorage::OnGetAppInfoData(std::move(callback), std::move(app_info));
   }
 
   void OnSaveFinished() override {
@@ -100,7 +104,12 @@ class FakeAppStorage : public AppStorage {
     }
   }
 
+  void OnAppTypeInitialized(apps::AppType app_type) override {
+    app_types_.insert(app_type);
+  }
+
   std::vector<AppPtr> apps_;
+  std::set<AppType> app_types_;
 
   std::unique_ptr<base::test::TestFuture<void>> write_result_;
   size_t expect_app_count_ = -1;
@@ -171,13 +180,28 @@ class AppStorageTest : public testing::Test {
                                /*should_notify_initialized=*/false);
   }
 
-  void VerifySavedApps(std::vector<AppPtr>& apps) {
+  void VerifySavedApps(std::vector<AppPtr>& apps,
+                       bool should_verify_app_type_init = false) {
     // Create a new AppStorage to read the AppStorage file to verify the app has
     // been written correctly.
     auto app_storage = std::make_unique<FakeAppStorage>(
         tmp_dir().GetPath(), app_registry_cache_,
         std::make_unique<base::RunLoop>());
     EXPECT_TRUE(IsEqual(apps, app_storage->GetAppInfo()));
+
+    if (!should_verify_app_type_init) {
+      return;
+    }
+
+    std::set<AppType> app_types;
+    for (const auto& app : apps) {
+      app_types.insert(app->app_type);
+    }
+
+    EXPECT_EQ(app_types.size(), app_storage->GetAppTypeInfo().size());
+    for (AppType app_type : app_types) {
+      EXPECT_TRUE(base::Contains(app_storage->GetAppTypeInfo(), app_type));
+    }
   }
 
   void OnApps(std::vector<AppPtr> deltas,
@@ -203,6 +227,7 @@ class AppStorageTest : public testing::Test {
 TEST_F(AppStorageTest, ReadFromNotValidFile) {
   CreateAppStorage();
   EXPECT_TRUE(app_storage()->GetAppInfo().empty());
+  EXPECT_TRUE(app_storage()->GetAppTypeInfo().empty());
 }
 
 // Test AppStorage can work when there is no app info in the AppStorage file.
@@ -215,6 +240,7 @@ TEST_F(AppStorageTest, ReadFromEmptyFile) {
 
   CreateAppStorage();
   EXPECT_TRUE(app_storage()->GetAppInfo().empty());
+  EXPECT_TRUE(app_storage()->GetAppTypeInfo().empty());
 }
 
 // Test AppStorageTest can read and write one app.
@@ -229,7 +255,7 @@ TEST_F(AppStorageTest, ReadAndWriteOneApp) {
 
   // Verify the app is saved correctly.
   auto apps1 = CreateOneApp(kAppType1, kAppId1);
-  VerifySavedApps(apps1);
+  VerifySavedApps(apps1, /*should_verify_app_type_init=*/true);
 
   // Remove the app.
   RemoveOneApp(kAppType1, kAppId1);
@@ -252,7 +278,7 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
 
   // Verify the apps are saved correctly.
   auto apps = CreateTwoApps();
-  VerifySavedApps(apps);
+  VerifySavedApps(apps, /*should_verify_app_type_init=*/true);
 
   VERIFY_MODIFY_FIELD(name, kAppName2);
   VERIFY_MODIFY_FIELD(short_name, kAppShortName2);
@@ -302,7 +328,7 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleAppsAtSameTime) {
   apps.push_back(std::move(apps1[0]));
   apps.push_back(std::move(apps2[0]));
   apps.push_back(std::move(apps3[0]));
-  VerifySavedApps(apps);
+  VerifySavedApps(apps, /*should_verify_app_type_init=*/true);
 }
 
 // Test AppStorageTest can handle the removed app case(kRemoved).
@@ -317,7 +343,7 @@ TEST_F(AppStorageTest, AddAndRemoveApp) {
 
   // Verify the app is saved correctly.
   auto apps1 = CreateOneApp(kAppType1, kAppId1);
-  VerifySavedApps(apps1);
+  VerifySavedApps(apps1, /*should_verify_app_type_init=*/true);
 
   // Remove the app.
   std::vector<AppPtr> apps2;

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_STORAGE_APP_STORAGE_FILE_HANDLER_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_STORAGE_APP_STORAGE_FILE_HANDLER_H_
 
+#include <memory>
+#include <set>
 #include <vector>
 
 #include "base/component_export.h"
@@ -27,6 +29,13 @@ namespace apps {
 class COMPONENT_EXPORT(APP_UPDATE) AppStorageFileHandler
     : public base::RefCountedDeleteOnSequence<AppStorageFileHandler> {
  public:
+  struct AppInfo {
+    AppInfo();
+    ~AppInfo();
+    std::vector<AppPtr> apps;
+    std::set<AppType> app_types;
+  };
+
   // Creates a AppStorageFileHandler. This method is invoked on the main
   // thread, and does no IO. `base_path` is the path of the app storage file.
   explicit AppStorageFileHandler(const base::FilePath& base_path);
@@ -45,7 +54,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorageFileHandler
 
   // Reads the app info from the AppStorage file. This method must be invoked on
   // a background task runner `owning_task_runner`.
-  std::vector<AppPtr> ReadFromFile();
+  std::unique_ptr<AppInfo> ReadFromFile();
 
   const base::FilePath& GetFilePath() { return file_path_; }
 
@@ -75,7 +84,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorageFileHandler
   base::Value ConvertAppsToValue(std::vector<AppPtr> apps);
 
   // Converts base::Value to std::vector<AppPtr>,
-  std::vector<AppPtr> ConvertValueToApps(base::Value app_info_value);
+  std::unique_ptr<AppInfo> ConvertValueToApps(base::Value app_info_value);
 
   base::FilePath file_path_;
 

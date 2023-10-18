@@ -5,6 +5,8 @@
 #include "components/services/app_service/public/cpp/app_storage/app_storage.h"
 
 #include <map>
+#include <memory>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -70,24 +72,29 @@ void AppStorage::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void AppStorage::OnGetAppInfoData(base::OnceCallback<void()> callback,
-                                  std::vector<AppPtr> apps) {
-  onapps_in_progress_ = true;
-
-  app_registry_cache_->OnApps(std::move(apps), AppType::kUnknown,
-                              /*should_notify_initialized=*/false);
-
-  onapps_in_progress_ = false;
-
+                                  std::unique_ptr<AppInfo> app_info) {
   // As the reading process is done, set io_in_progress_` as false to unblock
   // the writing process.
   io_in_progress_ = false;
 
+  if (app_info) {
+    onapps_in_progress_ = true;
+
+    app_registry_cache_->OnApps(std::move(app_info->apps), AppType::kUnknown,
+                                /*should_notify_initialized=*/false);
+
+    // Init app types.
+    for (auto app_type : app_info->app_types) {
+      app_registry_cache_->OnApps(std::vector<AppPtr>(), app_type,
+                                  /*should_notify_initialized=*/true);
+    }
+
+    onapps_in_progress_ = false;
+  }
+
   if (!callback.is_null()) {
     std::move(callback).Run();
   }
-
-  // TODO(crbug.com/1385932): Get the app types to set initialized for app
-  // types.
 }
 
 bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
