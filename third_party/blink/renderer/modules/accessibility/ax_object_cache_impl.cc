@@ -1010,6 +1010,10 @@ void AXObjectCacheImpl::Invalidate(Document& document, AXID ax_id) {
 }
 
 AXID AXObjectCacheImpl::GetAXID(Node* node) {
+  AXID existing_axid = GetExistingAXID(node);
+  if (existing_axid != ui::AXNodeData::kInvalidAXID) {
+    return existing_axid;
+  }
   UpdateAXForAllDocuments();
   return GetExistingAXID(node);
 }
@@ -2681,6 +2685,8 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
   }
 #endif
 
+  mark_all_dirty_ = false;
+
   // Build out tree, such that each node has computed its children.
   if (RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
     UpdateTreeIfNeeded();
@@ -4234,7 +4240,6 @@ void AXObjectCacheImpl::MarkDocumentDirtyWithCleanLayout() {
   // but will not create new AXObjects, which avoids resetting the user's
   // position in the content.
   DCHECK(mark_all_dirty_);
-  mark_all_dirty_ = false;
 
   // Don't keep previous parent-child relationships.
   // This loop operates on a copy of values in the objects_ map, because some
