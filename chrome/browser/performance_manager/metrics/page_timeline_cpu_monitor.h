@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_monitor.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
@@ -30,8 +31,7 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // CPUMeasurementDelegate object will be created for each ProcessNode to be
   // measured. Can be overridden for testing by passing a factory callback to
   // SetCPUMeasurementDelegateFactoryForTesting().
-  using CPUMeasurementDelegate =
-      resource_attribution::CPUMeasurementMonitor::CPUMeasurementDelegate;
+  using CPUMeasurementDelegate = resource_attribution::CPUMeasurementDelegate;
 
   // A map from FrameNode's or WorkerNode's to the estimated CPU usage of each.
   // The estimate is a fraction in the range 0% to 100% *

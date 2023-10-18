@@ -39,8 +39,7 @@ namespace performance_manager::resource_attribution {
 
 namespace {
 
-class CPUMeasurementDelegateImpl final
-    : public CPUMeasurementMonitor::CPUMeasurementDelegate {
+class CPUMeasurementDelegateImpl final : public CPUMeasurementDelegate {
  public:
   // Default factory function.
   static std::unique_ptr<CPUMeasurementDelegate> Create(

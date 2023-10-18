@@ -15,7 +15,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -25,6 +24,7 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
+#include "components/performance_manager/test_support/resource_attribution/simulated_cpu_measurement_delegate.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -43,37 +43,6 @@ namespace {
 using PageMeasurementBackgroundState =
     PageTimelineMonitor::PageMeasurementBackgroundState;
 
-// A class that returns defaults to returning 50% CPU used since it was created,
-// but the divisor for what proportion of a CPU is being used is configurable.
-class FixedCPUMeasurementDelegate final
-    : public PageTimelineCPUMonitor::CPUMeasurementDelegate {
- public:
-  FixedCPUMeasurementDelegate() = default;
-  ~FixedCPUMeasurementDelegate() final = default;
-
-  base::TimeDelta GetCumulativeCPUUsage() final {
-    return (base::TimeTicks::Now() - creation_time_) * cpu_scale_factor_;
-  }
-
-  static std::unique_ptr<CPUMeasurementDelegate> Create(const ProcessNode*) {
-    return std::make_unique<FixedCPUMeasurementDelegate>();
-  }
-
-  static void SetCPUScaleFactor(double scale_factor) {
-    FixedCPUMeasurementDelegate::cpu_scale_factor_ = scale_factor;
-  }
-
-  static void ResetCPUScaleFactor() {
-    FixedCPUMeasurementDelegate::cpu_scale_factor_ = 0.5;
-  }
-
- private:
-  base::TimeTicks creation_time_ = base::TimeTicks::Now();
-  static double cpu_scale_factor_;
-};
-
-double FixedCPUMeasurementDelegate::cpu_scale_factor_ = 0.5;
-
 }  // namespace
 
 class PageTimelineMonitorUnitTest : public GraphTestHarness {
@@ -91,6 +60,9 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     graph()->PassToGraph(
         std::make_unique<performance_manager::TabPageDecorator>());
 
+    // Return 50% CPU used by default.
+    cpu_delegate_factory_.SetDefaultCPUUsage(0.5);
+
     std::unique_ptr<PageTimelineMonitor> monitor =
         std::make_unique<PageTimelineMonitor>();
     monitor_ = monitor.get();
@@ -98,7 +70,7 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     monitor_->SetShouldCollectSliceCallbackForTesting(
         base::BindRepeating([]() { return true; }));
     monitor_->cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
-        base::BindRepeating(&FixedCPUMeasurementDelegate::Create));
+        cpu_delegate_factory_.GetFactoryCallback());
     graph()->PassToGraph(std::move(monitor));
     ResetUkmRecorder();
   }
@@ -112,6 +84,11 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
   raw_ptr<PageTimelineMonitor> monitor_;
 
   base::HistogramTester histogram_tester_;
+
+  // Factory to return CPUMeasurementDelegates. This must be deleted after
+  // `monitor_` to ensure that it outlives all delegates it creates.
+  resource_attribution::SimulatedCPUMeasurementDelegateFactory
+      cpu_delegate_factory_;
 
  protected:
   ukm::TestUkmRecorder* test_ukm_recorder() { return test_ukm_recorder_.get(); }
@@ -619,7 +596,7 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestResourceUsage) {
           // `other_page` is the sum of `other_frame` and `child_frame`
           {mock_source_id2, 1789},
       });
-  // FixedCPUMeasurementDelegate always returns 50% of the CPU is used.
+  // The SimulatedCPUMeasurementDelegate returns 50% of the CPU is used.
   // `process` contains `frame` and `other_frame` -> each gets 25%
   // `other_process` contains `child_frame` -> 50%
   const auto kExpectedCPUUsage =
@@ -695,12 +672,6 @@ TEST_F(PageTimelineMonitorUnitTest, TestResourceUsageBackgroundState) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
-  // The intervention metrics measure total CPU, not percentage of each core, so
-  // set the measurement delegate to return half of the total available CPU
-  // (100% per processor).
-  FixedCPUMeasurementDelegate::SetCPUScaleFactor(
-      base::SysInfo::NumberOfProcessors() / 2);
-
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
   const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -710,6 +681,14 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   const ukm::SourceId mock_source_id2 = ukm::AssignNewSourceId();
   mock_graph.other_page->SetType(performance_manager::PageType::kTab);
   mock_graph.other_page->SetUkmSourceId(mock_source_id2);
+
+  // The intervention metrics measure total CPU, not percentage of each core, so
+  // set the measurement delegates to return half of the total available CPU
+  // (100% per processor).
+  cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
+      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2);
+  cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
+      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2);
 
   // Let an arbitrary amount of time pass so there's some CPU usage to measure.
   task_env().FastForwardBy(base::Minutes(1));
@@ -804,11 +783,19 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
         "TopNBackgroundCPU.2."
         "Delayed",
         75, 1);
+  } else {
+    // The legacy CPU monitor only measures the CPU during
+    // TriggerCollectPageResourceUsage(), and returns the average CPU since the
+    // last call. Measure now so the next test doesn't include the last minute
+    // of CPU in the average.
+    TriggerCollectPageResourceUsage();
   }
 
   // Lower CPU measurement so the duration is logged.
-  FixedCPUMeasurementDelegate::SetCPUScaleFactor(
-      base::SysInfo::NumberOfProcessors() / 6);
+  cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
+      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 6);
+  cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
+      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 6);
   task_env().FastForwardBy(base::Minutes(1));
   TriggerCollectPageResourceUsage();
 
@@ -816,8 +803,6 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
       "PerformanceManager.PerformanceInterventions.CPU."
       "DurationOverThreshold",
       base::Minutes(2).InMilliseconds(), 1);
-
-  FixedCPUMeasurementDelegate::ResetCPUScaleFactor();
 }
 #endif
 

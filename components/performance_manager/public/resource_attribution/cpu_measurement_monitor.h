@@ -16,6 +16,7 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
+#include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
 #include "components/performance_manager/public/resource_attribution/graph_change.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
@@ -39,24 +40,6 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
                               public ProcessNode::ObserverDefaultImpl,
                               public WorkerNode::ObserverDefaultImpl {
  public:
-  // A shim to request CPU measurements for a process. A new
-  // CPUMeasurementDelegate object will be created for each ProcessNode to be
-  // measured. Can be overridden for testing by passing a factory callback to
-  // SetCPUMeasurementDelegateFactoryForTesting().
-  class CPUMeasurementDelegate {
-   public:
-    using FactoryCallback =
-        base::RepeatingCallback<std::unique_ptr<CPUMeasurementDelegate>(
-            const ProcessNode*)>;
-
-    CPUMeasurementDelegate() = default;
-    virtual ~CPUMeasurementDelegate() = default;
-
-    // Requests CPU usage for the process. This is [[nodiscard]] to match the
-    // semantics of ProcessMetrics::GetCumulativeCPUUsage().
-    [[nodiscard]] virtual base::TimeDelta GetCumulativeCPUUsage() = 0;
-  };
-
   CPUMeasurementMonitor();
   ~CPUMeasurementMonitor() override;
 

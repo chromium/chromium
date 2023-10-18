@@ -4,20 +4,15 @@
 
 #include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
 
-#include <map>
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
+
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -35,6 +30,8 @@
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
+#include "components/performance_manager/test_support/resource_attribution/simulated_cpu_measurement_delegate.h"
+#include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/process_type.h"
@@ -72,57 +69,6 @@ struct SinglePageRendererNodes {
   ResourceContext resource_context;
 };
 
-// State of a simulated process for CPU measurements.
-class SimulatedCPUMeasurementDelegate final
-    : public PageTimelineCPUMonitor::CPUMeasurementDelegate {
- public:
-  struct CPUUsagePeriod {
-    base::TimeTicks start_time;
-    base::TimeTicks end_time;
-    double cpu_usage;
-  };
-
-  explicit SimulatedCPUMeasurementDelegate(
-      base::OnceClosure unregister_callback)
-      : unregister_callback_(std::move(unregister_callback)) {}
-
-  ~SimulatedCPUMeasurementDelegate() final {
-    std::move(unregister_callback_).Run();
-  }
-
-  // Returns the simulated CPU usage of the process by summing
-  // `cpu_usage_periods`.
-  base::TimeDelta GetCumulativeCPUUsage() final;
-
-  // List of periods of varying CPU usage.
-  std::vector<CPUUsagePeriod> cpu_usage_periods;
-
-  // If not nullopt, GetCumulativeCPUUsage() will ignore `cpu_usage_periods` and
-  // return this value to simulate an error.
-  absl::optional<base::TimeDelta> usage_error;
-
- private:
-  base::OnceClosure unregister_callback_;
-};
-
-base::TimeDelta SimulatedCPUMeasurementDelegate::GetCumulativeCPUUsage() {
-  if (usage_error.has_value()) {
-    return usage_error.value();
-  }
-  base::TimeDelta cumulative_usage;
-  for (const auto& usage_period : cpu_usage_periods) {
-    CHECK(!usage_period.start_time.is_null());
-    // The last interval in the list will have no end time.
-    const base::TimeTicks end_time = usage_period.end_time.is_null()
-                                         ? base::TimeTicks::Now()
-                                         : usage_period.end_time;
-    CHECK(end_time >= usage_period.start_time);
-    cumulative_usage +=
-        (end_time - usage_period.start_time) * usage_period.cpu_usage;
-  }
-  return cumulative_usage;
-}
-
 // Helpers to lookup measurement results from TestNodeWrapper's.
 
 absl::optional<double> GetMeasurementResult(
@@ -146,27 +92,6 @@ absl::optional<double> GetMeasurementResult(
     const TestNodeWrapper<WorkerNodeImpl>& worker_wrapper) {
   return GetMeasurementResult(cpu_usage_map,
                               worker_wrapper->resource_context());
-}
-
-void RunOnPMSequence(base::OnceClosure closure) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([&run_loop, &closure] {
-        std::move(closure).Run();
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
-
-void RunOnPMSequence(base::OnceCallback<void(Graph*)> callback) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindLambdaForTesting([&run_loop, &callback](Graph* graph) {
-        std::move(callback).Run(graph);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
 }
 
 // A GMock matcher that will match 0.0 if the kUseResourceAttributionCPUMonitor
@@ -209,9 +134,8 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness,
     mock_utility_process_->SetProcess(base::Process::Current(),
                                       /*launch_time=*/base::TimeTicks::Now());
 
-    cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(base::BindRepeating(
-        &PageTimelineCPUMonitorTest::CPUMeasurementDelegateFactory,
-        base::Unretained(this)));
+    cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
+        delegate_factory_.GetFactoryCallback());
   }
 
   // Creates a renderer process containing a single page and frame, for simple
@@ -254,75 +178,26 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness,
   }
 
   void SetProcessCPUUsage(const ProcessNodeImpl* process_node, double usage) {
-    SimulatedCPUMeasurementDelegate::CPUUsagePeriod usage_period{
-        .start_time = base::TimeTicks::Now(),
-        .cpu_usage = usage,
-    };
-    auto& delegate = GetOrCreateCPUMeasurementDelegate(process_node);
-    if (!delegate.cpu_usage_periods.empty()) {
-      delegate.cpu_usage_periods.back().end_time = usage_period.start_time;
-    }
-    delegate.cpu_usage_periods.push_back(std::move(usage_period));
+    delegate_factory_.GetDelegate(process_node).SetCPUUsage(usage);
   }
 
   void SetProcessCPUUsageError(const ProcessNodeImpl* process_node,
                                base::TimeDelta usage_error) {
-    GetOrCreateCPUMeasurementDelegate(process_node).usage_error = usage_error;
-  }
-
-  std::unique_ptr<SimulatedCPUMeasurementDelegate>
-  CreateSimulatedCPUMeasurementDelegate(const ProcessNode* process_node) {
-    CHECK(!base::Contains(pending_cpu_delegates_, process_node));
-    CHECK(!base::Contains(simulated_cpu_delegates_, process_node));
-    auto delegate = std::make_unique<SimulatedCPUMeasurementDelegate>(
-        // Clear pointers to this delegate when it's deleted.
-        base::BindLambdaForTesting([this, process_node] {
-          this->simulated_cpu_delegates_.erase(process_node);
-        }));
-    simulated_cpu_delegates_.emplace(process_node, delegate.get());
-    return delegate;
-  }
-
-  std::unique_ptr<PageTimelineCPUMonitor::CPUMeasurementDelegate>
-  CPUMeasurementDelegateFactory(const ProcessNode* process_node) {
-    auto it = pending_cpu_delegates_.find(process_node);
-    if (it != pending_cpu_delegates_.end()) {
-      auto delegate = std::move(it->second);
-      pending_cpu_delegates_.erase(it);
-      return delegate;
-    }
-    return CreateSimulatedCPUMeasurementDelegate(process_node);
-  }
-
-  SimulatedCPUMeasurementDelegate& GetOrCreateCPUMeasurementDelegate(
-      const ProcessNodeImpl* process_node) {
-    auto it = simulated_cpu_delegates_.find(process_node);
-    if (it != simulated_cpu_delegates_.end()) {
-      return *(it->second);
-    }
-    CHECK(!base::Contains(pending_cpu_delegates_, process_node));
-    auto new_delegate = CreateSimulatedCPUMeasurementDelegate(process_node);
-    auto* delegate_ptr = new_delegate.get();
-    CHECK_EQ(simulated_cpu_delegates_.at(process_node), delegate_ptr);
-    pending_cpu_delegates_.emplace(process_node, std::move(new_delegate));
-    return *delegate_ptr;
+    delegate_factory_.GetDelegate(process_node).SetError(usage_error);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  // Factory to return CPUMeasurementDelegates for `cpu_monitor_`. This must be
+  // created before `cpu_monitor_` and deleted afterward to ensure that it
+  // outlives all delegates it creates.
+  resource_attribution::SimulatedCPUMeasurementDelegateFactory
+      delegate_factory_;
+
+  // The object under test.
   PageTimelineCPUMonitor cpu_monitor_;
 
   TestNodeWrapper<ProcessNodeImpl> mock_utility_process_;
-
-  // Map of ProcessNode to CPUMeasurementDelegate that simulates that process.
-  // The delegates are owned by `cpu_monitor_` or `pending_cpu_delegates_`.
-  std::map<const ProcessNode*, SimulatedCPUMeasurementDelegate*>
-      simulated_cpu_delegates_;
-
-  // CPUMeasurementDelegates that have been created but not passed to
-  // `cpu_monitor_` yet.
-  std::map<const ProcessNode*, std::unique_ptr<SimulatedCPUMeasurementDelegate>>
-      pending_cpu_delegates_;
 
   std::unique_ptr<MockMultiplePagesAndWorkersWithMultipleProcessesGraph>
       mock_graph_;
@@ -679,17 +554,17 @@ class PageTimelineCPUMonitorTimingTest
   void SetUp() override {
     Super::SetUp();
     pm_helper_.SetUp();
-    RunOnPMSequence(base::BindLambdaForTesting([&](Graph* graph) {
+    RunInGraph([&](Graph* graph) {
       cpu_monitor_ = std::make_unique<PageTimelineCPUMonitor>();
       cpu_monitor_->StartMonitoring(graph);
-    }));
+    });
   }
 
   void TearDown() override {
-    RunOnPMSequence(base::BindLambdaForTesting([&](Graph* graph) {
+    RunInGraph([&](Graph* graph) {
       cpu_monitor_->StopMonitoring(graph);
       cpu_monitor_.reset();
-    }));
+    });
     pm_helper_.TearDown();
     Super::TearDown();
   }
@@ -735,18 +610,18 @@ TEST_P(PageTimelineCPUMonitorTimingTest, ProcessLifetime) {
   // but has no pid. (Equivalent to the time between OnProcessNodeAdded and
   // OnProcessLifetimeChange.)
   LetTimePass();
-  RunOnPMSequence(base::BindLambdaForTesting([&] {
+  RunInGraph([&] {
     ASSERT_TRUE(process_node);
     EXPECT_EQ(process_node->GetProcessId(), base::kNullProcessId);
 
     // Process can't be measured yet.
     EXPECT_THAT(get_measurement_result(frame_node), Eq(absl::nullopt));
-  }));
+  });
 
   // Assign a real process to the ProcessNode. (Will call
   // OnProcessLifetimeChange.)
   LetTimePass();
-  RunOnPMSequence(base::BindLambdaForTesting([&] {
+  RunInGraph([&] {
     ASSERT_TRUE(process_node);
     ProcessNodeImpl::FromNode(process_node.get())
         ->SetProcess(base::Process::Current(), base::TimeTicks::Now());
@@ -755,13 +630,13 @@ TEST_P(PageTimelineCPUMonitorTimingTest, ProcessLifetime) {
     // Process can be measured now.
     ASSERT_TRUE(frame_node);
     EXPECT_THAT(get_measurement_result(frame_node), Optional(_));
-  }));
+  });
 
   // Simulate that the process died.
   LetTimePass();
   process()->SimulateRenderProcessExit(
       base::TERMINATION_STATUS_NORMAL_TERMINATION, 0);
-  RunOnPMSequence(base::BindLambdaForTesting([&] {
+  RunInGraph([&] {
     // Process is no longer running, so can't be measured.
     // TODO(crbug.com/1410503): Capture the final CPU usage correctly.
     ASSERT_TRUE(process_node);
@@ -773,7 +648,7 @@ TEST_P(PageTimelineCPUMonitorTimingTest, ProcessLifetime) {
     if (frame_node) {
       EXPECT_THAT(get_measurement_result(frame_node), Eq(absl::nullopt));
     }
-  }));
+  });
 }
 
 }  // namespace performance_manager::metrics

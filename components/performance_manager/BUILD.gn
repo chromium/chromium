@@ -165,6 +165,7 @@ static_library("performance_manager") {
     "public/render_process_host_id.h",
     "public/render_process_host_proxy.h",
     "public/resource_attribution/attribution_helpers.h",
+    "public/resource_attribution/cpu_measurement_delegate.h",
     "public/resource_attribution/cpu_measurement_monitor.h",
     "public/resource_attribution/frame_context.h",
     "public/resource_attribution/graph_change.h",
