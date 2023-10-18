@@ -162,6 +162,7 @@ enum CookieWarningReason {
   kWarnAttributeValueExceedsMaxSize,
   kWarnDomainNonASCII,
   kWarnThirdPartyPhaseout,
+  kWarnCrossSiteRedirectDowngradeChangesInclusion,
 };
 
 // Specific information about |kCookieIssue| type issues.

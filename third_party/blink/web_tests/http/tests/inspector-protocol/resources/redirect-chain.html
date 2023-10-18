@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      if(urlParams.has("start")) {
+        window.location = "https://example.test:8443/inspector-protocol/resources/cross-site-redirect.php"
+      }
+    </script>
+  </body>
+</html>

@@ -144,6 +144,10 @@ protocol::String BuildCookieWarningReason(
       return protocol::Audits::CookieWarningReasonEnum::WarnDomainNonASCII;
     case blink::mojom::blink::CookieWarningReason::kWarnThirdPartyPhaseout:
       return protocol::Audits::CookieWarningReasonEnum::WarnThirdPartyPhaseout;
+    case blink::mojom::blink::CookieWarningReason::
+        kWarnCrossSiteRedirectDowngradeChangesInclusion:
+      return protocol::Audits::CookieWarningReasonEnum::
+          WarnCrossSiteRedirectDowngradeChangesInclusion;
   }
 }
 
