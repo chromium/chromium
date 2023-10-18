@@ -10,9 +10,13 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/unexportable_keys/service_error.h"
@@ -46,9 +50,17 @@ constexpr std::string_view kBoundSessionParamsValidJson = R"(
         "credentials": [
             {
                 "type": "cookie",
-                "name": "auth_cookie",
+                "name": "auth_cookie_1P",
                 "scope": {
-                    "domain": "test.me/",
+                    "domain": ".google.com",
+                    "path": "/"
+                }
+            },
+            {
+                "type": "cookie",
+                "name": "auth_cookie_3P",
+                "scope": {
+                    "domain": ".google.com",
                     "path": "/"
                 }
             }
@@ -62,7 +74,7 @@ constexpr std::string_view kBoundSessionParamsMissingSessionIdJson = R"(
                 "type": "cookie",
                 "name": "auth_cookie",
                 "scope": {
-                    "domain": "test.me/",
+                    "domain": ".google.com",
                     "path": "/"
                 }
             }
@@ -71,23 +83,56 @@ constexpr std::string_view kBoundSessionParamsMissingSessionIdJson = R"(
 )";
 constexpr std::string_view kChallenge = "test_challenge";
 
+// Checks equality of the two protos in an std::tuple. Useful for matching two
+// two protos using ::testing::Pointwise or ::testing::UnorderedPointwise.
+MATCHER(TupleEqualsProto, "") {
+  return testing::ExplainMatchResult(base::EqualsProto(std::get<1>(arg)),
+                                     std::get<0>(arg), result_listener);
+}
+
 std::vector<crypto::SignatureVerifier::SignatureAlgorithm> CreateAlgArray() {
   return {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
           crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
 }
 
-bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams() {
+bound_session_credentials::Credential CreateTestBoundSessionCredential(
+    const std::string& name,
+    const std::string& domain,
+    const std::string& path) {
+  bound_session_credentials::Credential credential;
+  bound_session_credentials::CookieCredential* cookie =
+      credential.mutable_cookie_credential();
+  cookie->set_name(name);
+  cookie->set_domain(domain);
+  cookie->set_path(path);
+  return credential;
+}
+
+bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams(
+    const std::string& wrapped_key) {
   bound_session_credentials::BoundSessionParams params;
   params.set_site("https://google.com");
   params.set_session_id("007");
+  params.set_wrapped_key(wrapped_key);
+  *params.mutable_creation_time() =
+      bound_session_credentials::TimeToTimestamp(base::Time::Now());
+
+  *params.add_credentials() =
+      CreateTestBoundSessionCredential("auth_cookie_1P", ".google.com", "/");
+  *params.add_credentials() =
+      CreateTestBoundSessionCredential("auth_cookie_3P", ".google.com", "/");
   return params;
 }
 
-MATCHER_P(ParamMatching, expected, "") {
-  return arg->site() == expected.site() &&
-         arg->session_id() == expected.session_id();
+base::Value::Dict CreateBoundSessionCredentialDict(const std::string& name,
+                                                   const std::string& domain,
+                                                   const std::string& path) {
+  return base::Value::Dict()
+      .Set("type", "cookie")
+      .Set("name", name)
+      .Set("scope",
+           base::Value::Dict().Set("domain", domain).Set("path", path));
 }
-
 }  // namespace
 
 class BoundSessionRegistrationFetcherImplTest : public testing::Test {
@@ -133,7 +178,7 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
     return intercepted_request_body_;
   }
 
-  std::unique_ptr<BoundSessionRegistrationFetcher> CreateFetcher() {
+  std::unique_ptr<BoundSessionRegistrationFetcherImpl> CreateFetcher() {
     BoundSessionRegistrationFetcherParam params =
         BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
             kRegistrationUrl, CreateAlgArray(), std::string(kChallenge));
@@ -169,6 +214,7 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
   const GURL kRegistrationUrl = GURL("https://www.google.com/startsession");
 
   base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::
           QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
                     // called.
@@ -200,7 +246,11 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   SetUpServerResponse(
       base::StrCat({kXssiPrefix, kBoundSessionParamsValidJson}));
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get<>(), ParamMatching(CreateTestBoundSessionParams()));
+  ASSERT_TRUE(future.Get().has_value());
+  ASSERT_TRUE(bound_session_credentials::AreParamsValid(*future.Get()));
+  EXPECT_THAT(future.Get(),
+              testing::Optional(base::EqualsProto(
+                  CreateTestBoundSessionParams(future.Get()->wrapped_key()))));
 
   ExpectRecordedResultHistogram(RegistrationError::kNone);
 
@@ -232,7 +282,10 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {
   RunBackgroundTasks();
   EXPECT_TRUE(WasRequestSent());
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get<>(), ParamMatching(CreateTestBoundSessionParams()));
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_THAT(future.Get(),
+              testing::Optional(base::EqualsProto(
+                  CreateTestBoundSessionParams(future.Get()->wrapped_key()))));
 }
 
 TEST_F(BoundSessionRegistrationFetcherImplTest, MissingJSONBoundSessionParams) {
@@ -263,6 +316,47 @@ TEST_F(BoundSessionRegistrationFetcherImplTest,
 
   EXPECT_EQ(future.Get<>(), absl::nullopt);
   ExpectRecordedResultHistogram(RegistrationError::kRequiredFieldMissing);
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest,
+       MissingCredentialsBoundSessionParams) {
+  SetUpServerResponse(R"({"session_identifier": "007"})");
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
+  RegistrationResultFuture future;
+
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  ExpectRecordedResultHistogram(RegistrationError::kRequiredFieldMissing);
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest,
+       CredentialsInvalidBoundSessionParams) {
+  // Missing name
+  SetUpServerResponse(R"(
+    {
+        "session_identifier": "007",
+        "credentials": [
+            {
+                "type": "cookie",
+                "scope": {
+                    "domain": ".google.com",
+                    "path": "/"
+                }
+            }
+        ]
+    }
+  )");
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
+  RegistrationResultFuture future;
+
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  ExpectRecordedResultHistogram(
+      RegistrationError::kRequiredCredentialFieldMissing);
 }
 
 TEST_F(BoundSessionRegistrationFetcherImplTest, NonOkHttpResponseCode) {
@@ -301,4 +395,83 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, NoKeyProvider) {
   EXPECT_EQ(future.Get<>(), absl::nullopt);
   ExpectRecordedResultHistogram(
       RegistrationError::kGenerateRegistrationTokenFailed);
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest, ParseCredentials) {
+  std::unique_ptr<BoundSessionRegistrationFetcherImpl> fetcher =
+      CreateFetcher();
+  base::Value::List credentials_list;
+  credentials_list.Append(
+      CreateBoundSessionCredentialDict("auth_cookie_1P", ".google.com", "/"));
+  credentials_list.Append(
+      CreateBoundSessionCredentialDict("auth_cookie_3P", ".google.com", "/"));
+  auto result = fetcher->ParseCredentials(credentials_list);
+
+  std::vector<bound_session_credentials::Credential> expected_credentials;
+  expected_credentials.push_back(
+      CreateTestBoundSessionCredential("auth_cookie_1P", ".google.com", "/"));
+  expected_credentials.push_back(
+      CreateTestBoundSessionCredential("auth_cookie_3P", ".google.com", "/"));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(result.value(), ::testing::UnorderedPointwise(
+                                  TupleEqualsProto(), expected_credentials));
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest, ParseCredentialsError) {
+  std::unique_ptr<BoundSessionRegistrationFetcherImpl> fetcher =
+      CreateFetcher();
+  base::Value::List credentials_list;
+  credentials_list.Append(
+      CreateBoundSessionCredentialDict("auth_cookie_1P", "google.com", "/"));
+
+  // Missing cookie name.
+  credentials_list.Append(base::Value::Dict()
+                              .Set("type", "cookie")
+                              .Set("scope", base::Value::Dict()
+                                                .Set("domain", "google.com")
+                                                .Set("path", "/")));
+  EXPECT_EQ(fetcher->ParseCredentials(credentials_list)
+                .error_or(RegistrationError::kNone),
+            RegistrationError::kRequiredCredentialFieldMissing);
+
+  credentials_list.erase(credentials_list.end() - 1);
+  ASSERT_TRUE(fetcher->ParseCredentials(credentials_list).has_value());
+
+  // Missing domain.
+  credentials_list.Append(
+      base::Value::Dict()
+          .Set("type", "cookie")
+          .Set("name", "auth_cookie_3P")
+          .Set("scope", base::Value::Dict().Set("path", "/")));
+  EXPECT_EQ(fetcher->ParseCredentials(credentials_list)
+                .error_or(RegistrationError::kNone),
+            RegistrationError::kRequiredCredentialFieldMissing);
+
+  credentials_list.erase(credentials_list.end() - 1);
+  ASSERT_TRUE(fetcher->ParseCredentials(credentials_list).has_value());
+
+  // Missing path.
+  credentials_list.Append(
+      base::Value::Dict()
+          .Set("type", "cookie")
+          .Set("name", "auth_cookie_3P")
+          .Set("scope", base::Value::Dict().Set("domain", "google.com")));
+  EXPECT_EQ(fetcher->ParseCredentials(credentials_list)
+                .error_or(RegistrationError::kNone),
+            RegistrationError::kRequiredCredentialFieldMissing);
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest,
+       ParseCredentialsSkipsExtraFields) {
+  std::unique_ptr<BoundSessionRegistrationFetcherImpl> fetcher =
+      CreateFetcher();
+  base::Value::List credentials_list;
+  credentials_list.Append(
+      CreateBoundSessionCredentialDict("auth_cookie_1P", ".google.com", "/"));
+  credentials_list.Append(
+      CreateBoundSessionCredentialDict("auth_cookie_3P", ".google.com", "/"));
+  credentials_list.Append("optional not dict item");
+  auto result = fetcher->ParseCredentials(credentials_list);
+
+  EXPECT_TRUE(result.has_value());
 }

@@ -13775,6 +13775,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="Failed to parse the server response"/>
   <int value="5" label="Required field missing"/>
   <int value="6" label="Invalid session parameters"/>
+  <int value="7" label="Required credential field missing"/>
 </enum>
 
 <enum name="BreakageIndicatorType">
