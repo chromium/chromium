@@ -8,4 +8,5 @@ include_rules = [
   "+content/public/android",
   "+third_party/jni_zero",
   "+ui/android",
+  "+ui/strings/grit/ui_strings.h",
 ]

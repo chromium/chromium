@@ -12,6 +12,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace permissions {
 
@@ -110,11 +111,21 @@ std::u16string PermissionPromptAndroid::GetMessageText() const {
     if (requests[0]->request_type() == RequestType::kStorageAccess) {
       if (base::FeatureList::IsEnabled(
               permissions::features::kPermissionStorageAccessAPI)) {
+        auto requesting_origin = url_formatter::FormatUrlForSecurityDisplay(
+            delegate_->GetRequestingOrigin(),
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+        auto embedding_origin = url_formatter::FormatUrlForSecurityDisplay(
+            delegate_->GetEmbeddingOrigin(),
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+
         return l10n_util::GetStringFUTF16(
-            IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE,
-            url_formatter::FormatUrlForSecurityDisplay(
-                delegate_->GetRequestingOrigin(),
-                url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+            IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
+            l10n_util::GetStringFUTF16(
+                IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE,
+                requesting_origin),
+            l10n_util::GetStringFUTF16(
+                IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_EXPLANATION,
+                requesting_origin, embedding_origin));
       }
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_INFOBAR_TEXT,
@@ -139,18 +150,7 @@ std::u16string PermissionPromptAndroid::GetSecondaryText() const {
   const std::vector<PermissionRequest*>& requests = delegate_->Requests();
   CHECK_GT(requests.size(), 0U);
 
-  if (requests[0]->request_type() == RequestType::kStorageAccess &&
-      base::FeatureList::IsEnabled(
-          permissions::features::kPermissionStorageAccessAPI)) {
-    return l10n_util::GetStringFUTF16(
-        IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_EXPLANATION,
-        url_formatter::FormatUrlForSecurityDisplay(
-            delegate_->GetRequestingOrigin(),
-            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
-        url_formatter::FormatUrlForSecurityDisplay(
-            delegate_->GetEmbeddingOrigin(),
-            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-  }
+  // TODO(crbug.com/1478113): Remove this method if not needed.
   return std::u16string();
 }
 
