@@ -1025,6 +1025,10 @@ struct ChromeFileSystemAccessPermissionContext::OriginState {
 
   PersistedGrantStatus persisted_grant_status = PersistedGrantStatus::kLoaded;
 
+  // Cached data about whether this origin has an actively installed web app.
+  // This is used to determine the origin's extended permission eligibility.
+  WebAppInstallStatus web_app_install_status = WebAppInstallStatus::kUnknown;
+
   // Timer that is triggered whenever the user navigates away from this origin.
   // This is used to give a website a little bit of time for background work
   // before revoking all permissions for the origin.
@@ -1993,6 +1997,11 @@ void ChromeFileSystemAccessPermissionContext::OnShutdown() {
 
 void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
     const webapps::AppId& app_id) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
+    return;
+  }
+
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(profile()));
   const auto& registrar = provider->registrar_unsafe();
@@ -2007,6 +2016,17 @@ void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
     return;
   }
   const auto origin = url::Origin::Create(gurl);
+  auto origin_it = active_permissions_map_.find(origin);
+  if (origin_it == active_permissions_map_.end()) {
+    // Ignore the origin if it does not have any active permission.
+    return;
+  }
+
+  // Update the cache value for web app state.
+  OriginState& origin_state = origin_it->second;
+  origin_state.web_app_install_status = WebAppInstallStatus::kInstalled;
+
+  // Update the persisted grants, if needed.
   auto content_setting_value = content_settings_->GetContentSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION);
@@ -2017,8 +2037,7 @@ void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
     // change the extended permission state.
     return;
   }
-  if (active_permissions_map_[origin].persisted_grant_status ==
-      PersistedGrantStatus::kCurrent) {
+  if (origin_state.persisted_grant_status == PersistedGrantStatus::kCurrent) {
     // Previously, the given origin's persisted grants were shadow grants, and
     // installing a WebApp promotes these grants to extended grants. The
     // persisted grants are not affected, given that they are now considered
@@ -2030,12 +2049,16 @@ void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
   // are cleared so that they cannot be considered extended grants.
   RevokeObjectPermissions(origin);
   ScheduleUsageIconUpdate();
-  active_permissions_map_[origin].persisted_grant_status =
-      PersistedGrantStatus::kCurrent;
+  origin_state.persisted_grant_status = PersistedGrantStatus::kCurrent;
 }
 
 void ChromeFileSystemAccessPermissionContext::OnWebAppWillBeUninstalled(
     const webapps::AppId& app_id) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
+    return;
+  }
+
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(profile()));
   const auto& registrar = provider->registrar_unsafe();
@@ -2044,6 +2067,17 @@ void ChromeFileSystemAccessPermissionContext::OnWebAppWillBeUninstalled(
     return;
   }
   const auto origin = url::Origin::Create(gurl);
+  auto origin_it = active_permissions_map_.find(origin);
+  if (origin_it == active_permissions_map_.end()) {
+    // Ignore the origin if it does not have any active permission.
+    return;
+  }
+
+  // Update the cache value for web app state.
+  OriginState& origin_state = origin_it->second;
+  origin_state.web_app_install_status = WebAppInstallStatus::kUninstalled;
+
+  // Update the persisted grants, if needed.
   auto content_setting_value = content_settings_->GetContentSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION);
@@ -2058,8 +2092,7 @@ void ChromeFileSystemAccessPermissionContext::OnWebAppWillBeUninstalled(
   RevokeObjectPermissions(origin);
   CreatePersistedGrantsFromActiveGrants(origin);
   ScheduleUsageIconUpdate();
-  active_permissions_map_[origin].persisted_grant_status =
-      PersistedGrantStatus::kCurrent;
+  origin_state.persisted_grant_status = PersistedGrantStatus::kCurrent;
 }
 
 void ChromeFileSystemAccessPermissionContext::
@@ -2472,7 +2505,7 @@ bool ChromeFileSystemAccessPermissionContext::
 }
 
 bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
-    const url::Origin& origin) const {
+    const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2497,26 +2530,36 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
   }
 
   // If user has not set the extended permission preference, the extended
-  // permission state depends on whether the origin has webapp actively
-  // installed.
+  // permission state depends on whether the origin has an web app actively
+  // installed. First, check the cached value.
+  auto& origin_state = active_permissions_map_[origin];
+  if (origin_state.web_app_install_status != WebAppInstallStatus::kUnknown) {
+    return origin_state.web_app_install_status ==
+           WebAppInstallStatus::kInstalled;
+  }
+  // No cached value for web app install status. Retrieve the install status.
   DCHECK(profile());
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(profile()));
   if (!web_app_provider) {
     return false;
   }
-
   auto app_id = web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
       origin.GetURL());
-  return app_id.has_value() &&
-         web_app_provider->registrar_unsafe().IsActivelyInstalled(
-             app_id.value());
+  auto has_actively_installed_app =
+      app_id.has_value() &&
+      web_app_provider->registrar_unsafe().IsActivelyInstalled(app_id.value());
+  // Update the cached value.
+  origin_state.web_app_install_status = has_actively_installed_app
+                                            ? WebAppInstallStatus::kInstalled
+                                            : WebAppInstallStatus::kUninstalled;
+  return has_actively_installed_app;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ChromeFileSystemAccessPermissionContext::PersistedGrantType
 ChromeFileSystemAccessPermissionContext::GetPersistedGrantType(
-    const url::Origin& origin) const {
+    const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (OriginHasExtendedPermission(origin)) {

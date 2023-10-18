@@ -292,6 +292,12 @@ class ChromeFileSystemAccessPermissionContext
     kUpdatePersistedPermission,
   };
 
+  enum class WebAppInstallStatus {
+    kUnknown = 0,
+    kInstalled,
+    kUninstalled,
+  };
+
   void PermissionGrantDestroyed(PermissionGrantImpl* grant);
 
   // Checks whether the file or directory at `path` corresponds to a directory
@@ -412,10 +418,10 @@ class ChromeFileSystemAccessPermissionContext
 
   // Returns whether the origin has extended permission enabled via user
   // opt-in or by having an actively installed PWA.
-  bool OriginHasExtendedPermission(const url::Origin& origin) const;
+  bool OriginHasExtendedPermission(const url::Origin& origin);
 
   // Retrieve the persisted grant type for a given origin.
-  PersistedGrantType GetPersistedGrantType(const url::Origin& origin) const;
+  PersistedGrantType GetPersistedGrantType(const url::Origin& origin);
 
   PersistedGrantStatus GetPersistedGrantStatus(const url::Origin& origin) const;
   void SetPersistedGrantStatus(const url::Origin& origin,
