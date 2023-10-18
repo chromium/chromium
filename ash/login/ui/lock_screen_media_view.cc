@@ -9,6 +9,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/media/media_color_theme.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/global_media_controls/public/constants.h"
@@ -36,6 +37,10 @@ constexpr int kDismissButtonIconSize = 15;
 // The time to delay before considering a new media session has started to
 // replace the current one.
 constexpr base::TimeDelta kSwitchMediaDelay = base::Seconds(2);
+
+// Constants for histograms.
+constexpr char kMediaDisplayPageHistogram[] = "Media.Notification.DisplayPage";
+constexpr char kMediaUserActionHistogram[] = "Media.Notification.UserAction";
 
 class DismissButton : public views::ImageButton {
  public:
@@ -93,6 +98,8 @@ LockScreenMediaView::LockScreenMediaView(
       media_color_theme.focus_ring_color_id);
   dismiss_button_ = dismiss_button.get();
 
+  // Create the media view to receive media info updates, but the view may not
+  // be visible to users yet and its visibility is set in LockContentsView.
   view_ = AddChildView(
       std::make_unique<global_media_controls::MediaNotificationViewAshImpl>(
           this, /*item=*/nullptr, /*footer_view=*/nullptr,
@@ -204,26 +211,39 @@ void LockScreenMediaView::MediaSessionActionsChanged(
 
 void LockScreenMediaView::MediaSessionChanged(
     const absl::optional<base::UnguessableToken>& request_id) {
+  // Record to metric when the media view is visible to users and a non-empty
+  // media session starts. This usually means the screen is locked and a playing
+  // media is switching to the next media in a playlist. We need to check the
+  // media view is visible to record the metric because MediaSessionChanged()
+  // can also be called if there is a paused media.
+  if (IsDrawn() && request_id.has_value()) {
+    base::UmaHistogramEnumeration(
+        kMediaDisplayPageHistogram,
+        global_media_controls::MediaDisplayPage::kLockScreenMediaView);
+  }
+
+  // Record the active media session ID and future IDs will either be the same
+  // as this one or be null.
   if (!media_session_id_.has_value()) {
     media_session_id_ = request_id;
     return;
   }
 
-  // If |media_session_id_| resumed while waiting, stop the timer.
+  // If |media_session_id_| resumed while waiting, stop the timer so that we do
+  // not hide the media view.
   if (switch_media_delay_timer_->IsRunning() &&
       request_id == media_session_id_) {
     switch_media_delay_timer_->Stop();
   }
 
-  // If this session is different than the previous one, wait to see if the
-  // previous one resumes before hiding the media view.
-  if (request_id == media_session_id_) {
-    return;
+  // If this session is different than the previous one (which means it becomes
+  // null), wait to see if the previous one resumes before hiding the media
+  // view.
+  if (request_id != media_session_id_) {
+    switch_media_delay_timer_->Start(
+        FROM_HERE, kSwitchMediaDelay,
+        base::BindOnce(&LockScreenMediaView::Hide, base::Unretained(this)));
   }
-
-  switch_media_delay_timer_->Start(
-      FROM_HERE, kSwitchMediaDelay,
-      base::BindOnce(&LockScreenMediaView::Hide, base::Unretained(this)));
 }
 
 void LockScreenMediaView::MediaSessionPositionChanged(
@@ -255,6 +275,7 @@ void LockScreenMediaView::MediaControllerImageChanged(
 void LockScreenMediaView::OnMediaSessionActionButtonPressed(
     MediaSessionAction action) {
   if (media_session_id_.has_value()) {
+    base::UmaHistogramEnumeration(kMediaUserActionHistogram, action);
     media_session::PerformMediaSessionAction(action, media_controller_remote_);
   }
 }
@@ -297,6 +318,14 @@ LockScreenMediaView::GetMediaNotificationViewForTesting() {
 // LockScreenMediaView implementations:
 
 void LockScreenMediaView::Show() {
+  // Show() is called to make the media view become visible at most once every
+  // time the user locks the screen. There must be a playing media if Show() is
+  // called, but the first MediaSessionChanged() call for that media happens
+  // before this and MediaSessionChanged() skips recording to metric because the
+  // media view is not visible. Therefore we need to record to metric here.
+  base::UmaHistogramEnumeration(
+      kMediaDisplayPageHistogram,
+      global_media_controls::MediaDisplayPage::kLockScreenMediaView);
   show_media_view_callback_.Run();
 }
 

@@ -60,7 +60,7 @@ constexpr auto kArtworkSize = gfx::Size(80, 80);
 constexpr auto kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr auto kControlsButtonSize = gfx::Size(32, 32);
 
-const char kMediaDisplayPageHistogramName[] = "Media.Notification.DisplayPage";
+constexpr char kMediaDisplayPageHistogram[] = "Media.Notification.DisplayPage";
 
 class MediaButton : public views::ImageButton {
  public:
@@ -145,13 +145,15 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       media_display_page_(media_display_page) {
   CHECK(container_);
 
+  // Media display page histogram for lock screen media view will be recorded in
+  // LockScreenMediaView when the media view becomes visible to users.
   if (media_display_page_ == MediaDisplayPage::kLockScreenMediaView) {
     CHECK(dismiss_button);
   } else {
     CHECK(item_);
+    base::UmaHistogramEnumeration(kMediaDisplayPageHistogram,
+                                  media_display_page_);
   }
-  base::UmaHistogramEnumeration(kMediaDisplayPageHistogramName,
-                                media_display_page_);
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
   SetBackground(views::CreateThemedRoundedRectBackground(
