@@ -53,12 +53,14 @@ using PixelLayoutCandidate = ImageProcessor::PixelLayoutCandidate;
 // See http://crbug.com/255116.
 constexpr int k480pArea = 720 * 480;
 constexpr int k1080pArea = 1920 * 1088;
+// We are aligning these with the Widevine spec for sample sizes for various
+// resolutions. 1MB for SD, 2MB for HD and 4MB for UHD.
 // Input bitstream buffer size fo rup to 480p streams.
-constexpr size_t kInputBuferMaxSizeFor480p = 512 * 1024;
+constexpr size_t kInputBuferMaxSizeFor480p = 1024 * 1024;
 // Input bitstream buffer size for up to 1080p streams.
 constexpr size_t kInputBufferMaxSizeFor1080p = 2 * kInputBuferMaxSizeFor480p;
 // Input bitstream buffer size for up to 4k streams.
-constexpr size_t kInputBufferMaxSizeFor4k = 4 * kInputBufferMaxSizeFor1080p;
+constexpr size_t kInputBufferMaxSizeFor4k = 2 * kInputBufferMaxSizeFor1080p;
 
 // Input format V4L2 fourccs this class supports.
 const std::vector<uint32_t> kSupportedInputFourccs = {
