@@ -59,6 +59,16 @@ class MLGraphTestBase : public ::testing::Test,
                              MLNamedArrayBufferViews& inputs,
                              MLNamedArrayBufferViews& outputs);
 
+  // Helper method for testing both context and ML graph builder creation.
+  // If the context cannot be created for the graph, returns nullptr.
+  static MLGraphBuilder* CreateGraphBuilder(V8TestingScope& scope,
+                                            MLContextOptions* options);
+
+  // Helper method for testing only context creation.
+  static ScriptPromise CreateContext(
+      V8TestingScope& scope,
+      MLContextOptions* options = MLContextOptions::Create());
+
  private:
   // The execution mode for testing build and compute graph (e.g. async, sync.).
   ExecutionMode GetExecutionMode();

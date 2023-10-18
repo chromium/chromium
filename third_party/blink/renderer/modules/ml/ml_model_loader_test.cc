@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
@@ -158,10 +159,14 @@ class MLModelLoaderTest : public testing::Test {
 
   MLModelLoader* CreateTestLoader(V8TestingScope& scope) {
     ML* ml = MakeGarbageCollected<ML>(scope.GetExecutionContext());
-    MLContext* ml_context = MakeGarbageCollected<MLContext>(
-        V8MLDevicePreference(V8MLDevicePreference::Enum::kCpu),
-        V8MLPowerPreference(V8MLPowerPreference::Enum::kAuto),
-        V8MLModelFormat(V8MLModelFormat::Enum::kTflite), 1, ml);
+
+    MLContextOptions* options = MLContextOptions::Create();
+    options->setDevicePreference(V8MLDevicePreference::Enum::kCpu);
+    options->setPowerPreference(V8MLPowerPreference::Enum::kAuto);
+    options->setModelFormat(V8MLModelFormat::Enum::kTflite);
+
+    MLContext* ml_context = ml->createContextSync(
+        scope.GetScriptState(), options, scope.GetExceptionState());
     return MLModelLoader::Create(scope.GetScriptState(), ml_context,
                                  scope.GetExceptionState());
   }

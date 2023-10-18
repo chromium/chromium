@@ -1763,7 +1763,10 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
     // Reject unsupported error on unimplemented platform when getting
     // `WebNNContext` mojo interface with BrowserInterfaceBroker's
     // GetInterface() method before creating `WebNNGraph` message pipe.
-    MLGraphMojo::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
+    MLContextMojo* ml_context_mojo =
+        static_cast<MLContextMojo*>(ml_context_.Get());
+    MLGraphMojo::ValidateAndBuildAsync(ml_context_mojo, named_outputs,
+                                       resolver);
     return promise;
   }
 #endif

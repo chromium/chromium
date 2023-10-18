@@ -34,7 +34,9 @@ TEST_P(MLGraphXnnpackTest, SharedXnnpackContextTest) {
     // Test building MLGraphXnnpack with default options. The promise should be
     // resoveld with an MLGraphXnnpack object. The XNNPACK library should be
     // initialized successfully.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input =
         BuildInput(builder, "input", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
                    scope.GetExceptionState());
@@ -49,8 +51,9 @@ TEST_P(MLGraphXnnpackTest, SharedXnnpackContextTest) {
     // should be initialized successfully.
     auto* context_options = MLContextOptions::Create();
     context_options->setDevicePreference(V8MLDevicePreference::Enum::kCpu);
-    auto* builder =
-        CreateMLGraphBuilder(scope.GetExecutionContext(), context_options);
+    auto* builder = CreateMLGraphBuilder(
+        scope.GetExecutionContext(), scope.GetScriptState(),
+        scope.GetExceptionState(), context_options);
     auto* input =
         BuildInput(builder, "input", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
                    scope.GetExceptionState());
@@ -63,7 +66,9 @@ TEST_P(MLGraphXnnpackTest, SharedXnnpackContextTest) {
 
 TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test sorting a graph in the following topology:
     //   conv2d
@@ -125,7 +130,9 @@ TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
 
 TEST_P(MLGraphXnnpackTest, DefineXnnpackValuesTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   Vector<uint32_t> shape({1, 4, 4, 3});
   // TODO(crbug.com/1273291): Test float16 data type once the XNNPACK Subgraph
   // Add Node supports it.
@@ -319,7 +326,9 @@ void CheckExternalValues(const MLGraphXnnpack* xnnpack_graph,
 // Add an unit test to validate the value of exponent for pow operator.
 TEST_P(MLGraphXnnpackTest, PowTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   auto* input0 =
       BuildInput(builder, "input0", {1, 2, 2, 1},
                  V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
@@ -335,7 +344,9 @@ TEST_P(MLGraphXnnpackTest, PowTest) {
 
 TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   Vector<uint32_t> shape({1, 2, 2, 1});
   // Create an MLGraphXnnpack with the following topology:
   //       [input0] [input1]
@@ -454,7 +465,9 @@ TEST_P(MLGraphXnnpackTest, InvokeXnnpackRuntimeTest) {
 // name.
 TEST_P(MLGraphXnnpackTest, InputAndOutputUseSameNameTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   Vector<uint32_t> shape({1, 2, 2, 1});
   {
     // Create an MLGraphXnnpack with the following topology:
@@ -517,7 +530,9 @@ TEST_P(MLGraphXnnpackTest, InputAndOutputUseSameNameTest) {
 
 TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   // Build an MLGraphXnnpack with the following topology:
   //        [a]     [b]
   //           \    /
@@ -759,7 +774,9 @@ struct EluTester {
     xnnpack_output.Shrink(batch_size * channels);
 
     // Build WebNN graph with elu operator.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -857,7 +874,9 @@ struct SoftmaxTester {
     xnnpack_output.Shrink(batch_size * channels);
 
     // Build WebNN graph with softmax operator.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -955,7 +974,9 @@ struct SigmoidTester {
     xnnpack_output.Shrink(batch_size * channels);
 
     // Build WebNN graph with sigmoid operator.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -1067,7 +1088,9 @@ struct TanhTester {
     xnnpack_output.Shrink(batch_size * channels);
 
     // Build WebNN graph with tanh operator.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -1126,8 +1149,9 @@ struct ThreadPoolTester {
 
     // Build a simple WebNN graph with the options. A pthreadpool will be
     // created internally with `num_threads`.
-    auto* builder =
-        CreateMLGraphBuilder(scope.GetExecutionContext(), context_options);
+    auto* builder = CreateMLGraphBuilder(
+        scope.GetExecutionContext(), scope.GetScriptState(),
+        scope.GetExceptionState(), context_options);
     auto* input_operand =
         BuildInput(builder, "input", {1, 2, 2, 1},
                    V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());

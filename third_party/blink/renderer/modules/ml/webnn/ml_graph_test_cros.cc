@@ -208,7 +208,9 @@ struct ElementWiseAddTester {
     //            add
     //             |
     //          [output]
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input = BuildInput(builder, "input", lhs.dimensions, lhs.type,
                              scope.GetExceptionState());
     auto* constant = BuildConstant(builder, rhs.dimensions, rhs.type,

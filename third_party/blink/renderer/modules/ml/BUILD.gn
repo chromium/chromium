@@ -71,10 +71,14 @@ blink_modules_sources("ml") {
 
   if (!is_chromeos) {
     sources += [
-      # MLGraphMojo is platform independent which packages the model information
-      # into a neutral struct type, it will be built and executed with hardware
+      # Platform independent sources which packages the model information
+      # into a neutral struct types, it will be built and executed with hardware
       # accelerated OS machine learning API in WebNN Service which run out of
       # renderer process.
+      "webnn/ml_context_mojo.cc",
+      "webnn/ml_context_mojo.h",
+      "webnn/ml_error_mojo.cc",
+      "webnn/ml_error_mojo.h",
       "webnn/ml_graph_mojo.cc",
       "webnn/ml_graph_mojo.h",
       "webnn/ml_graph_type_converter.cc",

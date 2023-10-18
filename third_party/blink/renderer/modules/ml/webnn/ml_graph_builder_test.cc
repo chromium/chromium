@@ -35,7 +35,9 @@ class MLGraphBuilderTest : public testing::Test {
 
 TEST_F(MLGraphBuilderTest, InputTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building a 2-D input without errors.
     auto* input =
@@ -110,7 +112,9 @@ TEST_F(MLGraphBuilderTest, InputTest) {
 
 TEST_F(MLGraphBuilderTest, ConstantTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building a 2-D constant without errors.
     auto* constant =
@@ -197,7 +201,9 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
 
 TEST_F(MLGraphBuilderTest, ConcatTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building Concat with one input.
     Vector<uint32_t> input_a_shape({4, 4, 3});
@@ -405,7 +411,9 @@ MLOperand* BuildConv2d(V8TestingScope& scope,
 
 TEST_F(MLGraphBuilderTest, Conv2dTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test conv2d with default options.
     auto* input =
@@ -1109,7 +1117,9 @@ MLOperand* BuildConvTranspose2d(V8TestingScope& scope,
 
 TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test convTranspose2d with default options.
     auto* input =
@@ -1910,7 +1920,9 @@ void CheckPool2dOutput(const MLOperand* input,
 
 TEST_F(MLGraphBuilderTest, Pool2dTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   const auto Pool2dKinds = {Pool2dKind::kAverage, Pool2dKind::kMax};
   for (const auto pool2d_kind : Pool2dKinds) {
     {
@@ -2332,7 +2344,9 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
 
 TEST_F(MLGraphBuilderTest, PReluTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building prelu when slope_shape is the same as the input_shape.
     Vector<uint32_t> input_shape({3, 2, 5});
@@ -2460,7 +2474,9 @@ TEST_F(MLGraphBuilderTest, PReluTest) {
 
 TEST_F(MLGraphBuilderTest, ReluTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building relu with float32 input.
     Vector<uint32_t> input_shape({3, 4, 5});
@@ -2508,7 +2524,9 @@ TEST_F(MLGraphBuilderTest, ReluTest) {
 
 TEST_F(MLGraphBuilderTest, HardSwishTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   ASSERT_NE(nullptr, builder);
   {
     // Test building hard-swish with float32 input.
@@ -2569,7 +2587,9 @@ MLOperand* BuildGemm(V8TestingScope& scope,
 
 TEST_F(MLGraphBuilderTest, GemmTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   ASSERT_NE(nullptr, builder);
   {
     // Test building gemm with default option.
@@ -2863,7 +2883,9 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
 
 TEST_F(MLGraphBuilderTest, ElementWiseBinaryTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Testing building add with two input dimensions - {8, 1, 6, 1} and {7, 1,
     // 5}. Both the a and b dimensions have axes with length one that are
@@ -2968,7 +2990,9 @@ void TestBuildElementWiseUnary(V8TestingScope& scope,
 
 TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building element-wise abs.
     const Vector<uint32_t> input_shape({1});
@@ -3070,7 +3094,9 @@ void CheckReduceOutput(const MLOperand* input,
 
 TEST_F(MLGraphBuilderTest, ReduceTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   const auto ReduceKinds = {ReduceKind::kMean, ReduceKind::kSum};
   for (const auto reduce_kind : ReduceKinds) {
     {
@@ -3143,7 +3169,9 @@ TEST_F(MLGraphBuilderTest, ReduceTest) {
 
 TEST_F(MLGraphBuilderTest, ReshapeTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building reshape with new shape = {3, null}.
     auto* input =
@@ -3270,7 +3298,9 @@ MLOperand* BuildResample2d(V8TestingScope& scope,
 
 TEST_F(MLGraphBuilderTest, Resample2dTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building resample2d with default options.
     auto* input =
@@ -3509,7 +3539,9 @@ MLOperand* BuildTranspose(V8TestingScope& scope,
 
 TEST_F(MLGraphBuilderTest, TransposeTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building transpose with default options.
     auto* input =
@@ -3597,7 +3629,9 @@ MLOperand* BuildClamp(V8TestingScope& scope,
 
 TEST_F(MLGraphBuilderTest, ClampTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building clamp with default options.
     auto* input =
@@ -3667,7 +3701,9 @@ void TestBuildElu(V8TestingScope& scope,
 
 TEST_F(MLGraphBuilderTest, EluTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building elu with float32 input and default options.
     auto* input =
@@ -3757,7 +3793,9 @@ MLOperand* BuildLeakyRelu(V8TestingScope& scope,
 
 TEST_F(MLGraphBuilderTest, LeakyReluTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building leaky_relu with float32 input.
     auto* input =
@@ -3810,7 +3848,9 @@ MLOperand* BuildPad(V8TestingScope& scope,
 
 TEST_F(MLGraphBuilderTest, PadTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building pad with default options, beginningPadding = {1, 2} and
     // endingPadding = {1, 2}.
@@ -3878,7 +3918,9 @@ TEST_F(MLGraphBuilderTest, PadTest) {
 
 TEST_F(MLGraphBuilderTest, Softmax) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building softmax with float32 input.
     auto* input =
@@ -3923,7 +3965,9 @@ TEST_F(MLGraphBuilderTest, Softmax) {
 
 TEST_F(MLGraphBuilderTest, SigmoidTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building sigmoid with float32 input.
     Vector<uint32_t> input_shape({3, 4, 5});
@@ -3967,7 +4011,9 @@ TEST_F(MLGraphBuilderTest, SigmoidTest) {
 
 TEST_F(MLGraphBuilderTest, SliceTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building slice with starts = {0, 1, 2} and sizes = {1, 2, 3}.
     Vector<uint32_t> input_shape({3, 4, 5});
@@ -4080,7 +4126,9 @@ TEST_F(MLGraphBuilderTest, SliceTest) {
 
 TEST_F(MLGraphBuilderTest, Split) {
   V8TestingScope scope;
-  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building split with default option.
     auto* input =
@@ -4222,7 +4270,9 @@ TEST_F(MLGraphBuilderTest, Split) {
 
 TEST_F(MLGraphBuilderTest, TanhTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test building tanh with float32 input.
     Vector<uint32_t> input_shape({3, 4});
@@ -4366,7 +4416,9 @@ class FakeMLGraphTest : public MLGraphTestBase {
 
 TEST_P(FakeMLGraphTest, BuildTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test throwing exception if the named outputs is empty.
     MLNamedOperands named_outputs;
@@ -4580,7 +4632,9 @@ NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
 
 TEST_P(FakeMLGraphTest, ComputeTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   // Build a fake graph represents computation 'c = a * b';
   auto* a = BuildInput(builder, "a", {3, 4}, V8MLOperandType::Enum::kFloat32,
                        scope.GetExceptionState());

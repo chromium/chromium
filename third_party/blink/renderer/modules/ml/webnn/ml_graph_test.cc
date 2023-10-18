@@ -28,7 +28,9 @@ struct ElementWiseBinaryTester {
 
   void Test(MLGraphTest& helper, V8TestingScope& scope) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions, lhs.type,
                                    scope.GetExceptionState());
     auto* rhs_operand = BuildInput(builder, "rhs", rhs.dimensions, rhs.type,
@@ -209,7 +211,9 @@ struct PowTester {
 
   void Test(MLGraphTest& helper, V8TestingScope& scope) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions, lhs.type,
                                    scope.GetExceptionState());
     auto* rhs_operand = BuildConstant(builder, rhs.dimensions, rhs.type,
@@ -267,7 +271,9 @@ struct ElementWiseUnaryTester {
 
   void Test(MLGraphTest& helper, V8TestingScope& scope) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     MLOperand* output_operand = nullptr;
@@ -365,7 +371,9 @@ struct PReluTester {
 
   void Test(MLGraphTest& helper, V8TestingScope& scope) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* slope_operand =
@@ -431,7 +439,9 @@ struct ReluTester {
 
   void Test(MLGraphTest& helper, V8TestingScope& scope) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -501,7 +511,9 @@ struct LeakyReluTester {
             V8TestingScope& scope,
             MLLeakyReluOptions* options = MLLeakyReluOptions::Create()) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -556,7 +568,9 @@ struct ReduceTester {
   void Test(MLGraphTest& helper,
             V8TestingScope& scope,
             MLReduceOptions* options = MLReduceOptions::Create()) {
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -612,7 +626,9 @@ struct Resample2dTester {
             V8TestingScope& scope,
             MLResample2dOptions* options = MLResample2dOptions::Create()) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -676,7 +692,9 @@ struct ClampTester {
             V8TestingScope& scope,
             MLClampOptions* options = MLClampOptions::Create()) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -787,7 +805,9 @@ struct Conv2dTester {
 
 TEST_P(MLGraphTest, Conv2dTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test conv2d operator for nhwc input layout and ohwi filter layout.
     auto* options = MLConv2dOptions::Create();
@@ -948,7 +968,9 @@ struct ConvTranspose2dTester {
 
 TEST_P(MLGraphTest, ConvTranspose2dTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test convTranspose2d operator for nhwc input layout and ohwi filter
     // layout.
@@ -1109,7 +1131,9 @@ struct GemmTester {
 
 TEST_P(MLGraphTest, GemmTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test gemm operator without operand c.
     GemmTester<float>{.a = {.type = V8MLOperandType::Enum::kFloat32,
@@ -1161,7 +1185,9 @@ struct HardSwishTester {
 
   void Test(MLGraphTest& helper, V8TestingScope& scope) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -1235,7 +1261,9 @@ struct Pool2dTester {
   void Test(MLGraphTest& helper,
             V8TestingScope& scope,
             MLPool2dOptions* options = MLPool2dOptions::Create()) {
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -1312,7 +1340,9 @@ struct ReshapeTester {
 
   void Test(MLGraphTest& helper, V8TestingScope& scope) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     auto* input_operand = BuildInput(builder, "input", input.dimensions,
                                      input.type, scope.GetExceptionState());
     auto* output_operand =
@@ -1422,7 +1452,9 @@ struct SplitTester {
 
 TEST_P(MLGraphTest, SplitTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test split operator with default options.
     auto* options = MLSplitOptions::Create();
@@ -1505,7 +1537,9 @@ struct TransposeTester {
 
 TEST_P(MLGraphTest, TransposeTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test transpose operator with default options.
     auto* options = MLTransposeOptions::Create();
@@ -1554,7 +1588,9 @@ struct ConcatTester {
 
   void Test(MLGraphTest& helper, V8TestingScope& scope) {
     // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
     HeapVector<Member<MLOperand>> input_operands;
     String input_str = "input_";
     for (uint32_t i = 0; i < inputs.size(); ++i) {
@@ -1702,7 +1738,9 @@ struct PadTester {
 
 TEST_P(MLGraphTest, PadTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test pad operator with default options.
     auto* options = MLPadOptions::Create();
@@ -1765,7 +1803,9 @@ struct SliceTester {
 
 TEST_P(MLGraphTest, SliceTest) {
   V8TestingScope scope;
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
   {
     // Test slice with input_shape = {3, 4, 5}, starts = {0, 0, 1} and sizes =
     // {2, 3, 4}.

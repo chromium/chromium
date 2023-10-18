@@ -191,8 +191,15 @@ MLGraphMojo* ToMLGraphMojo(V8TestingScope* scope, ScriptValue value) {
 // Build a simple MLGraph asynchronously with only one relu operator.
 ScriptPromise BuildSimpleGraph(V8TestingScope& scope,
                                MLContextOptions* context_options) {
-  auto* builder =
-      CreateMLGraphBuilder(scope.GetExecutionContext(), context_options);
+  auto* builder = MLGraphTestBase::CreateGraphBuilder(scope, context_options);
+  if (builder == nullptr) {
+    return ScriptPromise::RejectWithDOMException(
+        scope.GetScriptState(),
+        DOMException::Create(
+            "Unable to create graph builder.",
+            DOMException::GetErrorName(DOMExceptionCode::kOperationError)));
+  }
+
   auto* lhs_operand =
       BuildInput(builder, "lhs", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
                  scope.GetExceptionState());
@@ -311,7 +318,8 @@ TEST_P(MLGraphTestMojo, ClampTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
   {
     // Test clamp operator with default options that no minimum and maximum
     // values are defined.
@@ -428,7 +436,7 @@ TEST_P(MLGraphTestMojo, ConcatTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
   {
     // Test concat operator with one input.
     ConcatTester{
@@ -640,7 +648,8 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
   {
     // Test conv2d with default options.
     Conv2dTester{
@@ -872,7 +881,8 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
   {
     // Test element-wise add operator for two 1-D tensors.
     ElementWiseBinaryTester{
@@ -1018,7 +1028,8 @@ TEST_P(MLGraphTestMojo, GemmTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
   {
     // Test building gemm with default option.
     GemmTester{
@@ -1219,7 +1230,8 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
   {
     // Test pool2d with default options.
     Pool2dTester{
@@ -1413,7 +1425,8 @@ TEST_P(MLGraphTestMojo, ReluTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
   {
     // Test relu operator for 1-D tensor.
     ReluTester{
@@ -1519,7 +1532,7 @@ TEST_P(MLGraphTestMojo, Resample2dTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
   {
     Resample2dTester{
         .input = {.type = V8MLOperandType::Enum::kFloat32,
@@ -1660,7 +1673,8 @@ TEST_P(MLGraphTestMojo, ReshapeTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
   {
     // Test reshaping 2-D tensor to 1-D tensor.
     ReshapeTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
@@ -1756,7 +1770,7 @@ TEST_P(MLGraphTestMojo, SliceTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
   {
     SliceTester{
         .input = {.type = V8MLOperandType::Enum::kFloat32,
@@ -1821,7 +1835,8 @@ TEST_P(MLGraphTestMojo, SoftmaxTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
   {
     // Test building softmax with float32 input.
     SoftmaxTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
@@ -1905,7 +1920,7 @@ TEST_P(MLGraphTestMojo, TransposeTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
   {
     // Test transpose operator with default options.
     TransposeTester{
@@ -1984,7 +1999,8 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
   {
     // Test Constant operand for Float32 data type.
     ConstantTester<float>{
@@ -2114,7 +2130,7 @@ TEST_P(MLGraphTestMojo, SplitTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
   using v8 = V8MLOperandType::Enum;
   using blink = blink_mojom::Operand::DataType;
   {
@@ -2152,7 +2168,8 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device preference.
   options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
-  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
   const Vector<uint32_t> dimensions = {3, 5};
   const wtf_size_t number_of_elements = base::checked_cast<wtf_size_t>(
       webnn::ValidateAndCalculateElementsNumber(dimensions).value());

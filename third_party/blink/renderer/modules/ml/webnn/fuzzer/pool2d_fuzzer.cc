@@ -70,10 +70,15 @@ DEFINE_PROTO_FUZZER(const webnn_proto::pool2d& pool2d) {
     return page_holder.release();
   }();
 
-  auto* builder = CreateMLGraphBuilder(
-      page_holder->GetFrame().DomWindow()->GetExecutionContext());
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(&page_holder->GetFrame());
 
   DummyExceptionStateForTesting exception_state;
+  auto* builder = CreateMLGraphBuilder(
+      page_holder->GetFrame().DomWindow()->GetExecutionContext(), script_state,
+      exception_state);
+  CHECK(builder);
+
   auto* input =
       BuildInput(builder, "input", Vector<uint32_t>(pool2d.input_dimensions()),
                  ToV8MLOperandType(pool2d.input_type()), exception_state);
