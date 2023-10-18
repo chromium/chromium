@@ -2231,11 +2231,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "enable-cbd-sign-out",
-    "owners": [ "triploblastic", "chrome-signin-team", "arthurmilchior"],
-    "expiry_milestone":120
-  },
-  {
     "name": "enable-cct-text-fragment-lookup-api",
     "owners": [ "tbansal", "chrome-intelligence-core"],
     "expiry_milestone":120
@@ -4654,11 +4649,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "gaia-id-in-amf",
-    "owners": [ "triploblastic", "chrome-signin-team" ],
-    "expiry_milestone":120
-  },
-  {
     "name": "gainmap-hdr-images",
     "owners": [ "ccameron", "chrome-color@google.com" ],
     "expiry_milestone":120
@@ -4846,11 +4836,6 @@
       "trusty-transport@chromium.org"
     ],
     "expiry_milestone": 122
-  },
-  {
-    "name": "identity-status-consistency",
-    "owners": [ "triploblastic", "chrome-signin-team" ],
-    "expiry_milestone":120
   },
   {
     "name": "ignore-gpu-blocklist",

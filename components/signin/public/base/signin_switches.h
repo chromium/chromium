@@ -21,8 +21,6 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kIdentityStatusConsistency);
-
 BASE_DECLARE_FEATURE(kSeedAccountsRevamp);
 #endif
 

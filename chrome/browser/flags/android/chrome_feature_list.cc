@@ -401,7 +401,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &supervised_user::kEnableProtoApiForClassifyUrl,
     &supervised_user::kKidFriendlyContentFeed,
     &switches::kForceStartupSigninPromo,
-    &switches::kIdentityStatusConsistency,
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kSearchEngineChoice,
     &switches::kSeedAccountsRevamp,

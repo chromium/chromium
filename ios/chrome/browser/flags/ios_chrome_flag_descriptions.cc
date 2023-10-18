@@ -367,10 +367,6 @@ const char kEnableBookmarksAccountStorageName[] =
 const char kEnableBookmarksAccountStorageDescription[] =
     "Enable bookmarks account storage and related UI features.";
 
-const char kEnableCBDSignOutName[] = "Enable Clear Browsing Data Sign-out";
-const char kEnableCBDSignOutDescription[] =
-    "Offer signed-in user to sign-out from Clear Browsing Data settings.";
-
 const char kEnableCompromisedPasswordsMutingName[] =
     "Enable the muting of compromised passwords in the Password Manager";
 const char kEnableCompromisedPasswordsMutingDescription[] =

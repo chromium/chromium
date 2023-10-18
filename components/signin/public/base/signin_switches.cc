@@ -11,11 +11,6 @@ namespace switches {
 // All switches in alphabetical order.
 
 #if BUILDFLAG(IS_ANDROID)
-// Feature to add a signed-out avatar on the NTP.
-BASE_FEATURE(kIdentityStatusConsistency,
-             "IdentityStatusConsistency",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature to refactor how and when accounts are seeded on Android.
 BASE_FEATURE(kSeedAccountsRevamp,
              "SeedAccountsRevamp",

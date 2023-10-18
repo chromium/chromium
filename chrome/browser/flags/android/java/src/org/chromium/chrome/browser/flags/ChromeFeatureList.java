@@ -298,7 +298,6 @@ public abstract class ChromeFeatureList {
             "SafeBrowsingHashPrefixRealTimeLookups";
     public static final String HIDE_TAB_ON_TAB_SWITCHER = "HideTabOnTabSwitcher";
     public static final String HISTORY_JOURNEYS = "Journeys";
-    public static final String IDENTITY_STATUS_CONSISTENCY = "IdentityStatusConsistency";
     public static final String INCOGNITO_DOWNLOADS_WARNING = "IncognitoDownloadsWarning";
     public static final String INCOGNITO_NTP_REVAMP = "IncognitoNtpRevamp";
     public static final String INCOGNITO_REAUTHENTICATION_FOR_ANDROID =

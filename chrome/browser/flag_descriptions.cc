@@ -214,10 +214,6 @@ const char kAvifGainmapHdrImagesDescription[] =
     "Chrome uses the gainmap (if present) in AVIF images to render the HDR "
     "version on HDR displays and the SDR version on SDR displays.";
 
-const char kIdentityStatusConsistencyName[] = "Identity Status Consistency";
-const char kIdentityStatusConsistencyDescription[] =
-    "If enabled, always show identity status - even for signed-out users";
-
 const char kTangibleSyncName[] = "Tangible Sync";
 const char kTangibleSyncDescription[] =
     "Enables the tangible sync when a user starts the sync consent flow";

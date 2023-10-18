@@ -177,9 +177,6 @@ extern const char kGainmapHdrImagesDescription[];
 extern const char kAvifGainmapHdrImagesName[];
 extern const char kAvifGainmapHdrImagesDescription[];
 
-extern const char kIdentityStatusConsistencyName[];
-extern const char kIdentityStatusConsistencyDescription[];
-
 extern const char kTangibleSyncName[];
 extern const char kTangibleSyncDescription[];
 
