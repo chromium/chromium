@@ -188,6 +188,7 @@ NSString* const kShippingBoxFillSymbol = @"shippingbox.fill";
 NSString* const kButtonProgrammableSymbol = @"button.programmable";
 NSString* const kCircleCircleFillSymbol = @"circle.circle.fill";
 NSString* const kLockSymbol = @"lock";
+NSString* const kRulerSymbol = @"ruler";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
