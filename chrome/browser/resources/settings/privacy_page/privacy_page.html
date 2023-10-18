@@ -478,6 +478,12 @@
             </template>
 
             <template is="dom-if" if="[[showDedicatedCpssSetting_]]">
+              <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+              <div id="geolocationSubHeading"
+                class="secondary radio-sub-heading">
+                $i18n{siteSettingsDefaultBehaviorDescription}
+              </div>
+
               <cr-radio-button no-collapse
                   id="location-ask-radio-button"
                   on-click="onLocationAskClicked_"
@@ -493,7 +499,7 @@
               <settings-radio-group
                   pref="{{prefs.generated.geolocation}}"
                   selectable-elements="cr-radio-button">
-                <cr-radio-button class="two-line padded-radio-section"
+                <cr-radio-button class="padded-radio-section"
                     id="location-ask-quiet"
                     name="[[settingsStateEnum_.QUIET]]"
                     pref="[[prefs.generated.geolocation]]"
@@ -501,7 +507,7 @@
                     label="$i18n{siteSettingsLocationAskQuiet}">
                 </cr-radio-button>
 
-                <cr-radio-button class="two-line padded-radio-section"
+                <cr-radio-button class="padded-radio-section"
                     id="location-ask-cpss"
                     name="[[settingsStateEnum_.CPSS]]"
                     pref="[[prefs.generated.geolocation]]"
@@ -509,7 +515,7 @@
                     label="$i18n{siteSettingsLocationAskCPSS}">
                 </cr-radio-button>
 
-                <cr-radio-button class="two-line padded-radio-section"
+                <cr-radio-button class="padded-radio-section"
                     id="location-ask-loud"
                     name="[[settingsStateEnum_.LOUD]]"
                     pref="[[prefs.generated.geolocation]]"
@@ -773,7 +779,7 @@
               <settings-radio-group
                   pref="{{prefs.generated.notification}}"
                   selectable-elements="cr-radio-button">
-                <cr-radio-button class="two-line padded-radio-section"
+                <cr-radio-button class="padded-radio-section"
                     id="notification-ask-quiet"
                     name="[[settingsStateEnum_.QUIET]]"
                     pref="[[prefs.generated.notification]]"
@@ -781,7 +787,7 @@
                     label="$i18n{siteSettingsNotificationsAskQuiet}">
                 </cr-radio-button>
 
-                <cr-radio-button class="two-line padded-radio-section"
+                <cr-radio-button class="padded-radio-section"
                     id="notification-ask-cpss"
                     name="[[settingsStateEnum_.CPSS]]"
                     hidden$="[[!isNotificationAllowed_]]"
@@ -789,7 +795,7 @@
                     label="$i18n{siteSettingsNotificationsAskCPSS}">
                 </cr-radio-button>
 
-                <cr-radio-button class="two-line padded-radio-section"
+                <cr-radio-button class="padded-radio-section"
                     id="notification-ask-loud"
                     name="[[settingsStateEnum_.LOUD]]"
                     pref="[[prefs.generated.notification]]"
