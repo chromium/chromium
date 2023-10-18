@@ -46,6 +46,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -66,26 +67,17 @@ import org.chromium.ui.dragdrop.DropDataAndroid;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
 public class TabDragSourceTest {
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Mock
-    private MultiInstanceManager mMultiInstanceManager;
-    @Mock
-    private LayoutManagerHost mManagerHost;
-    @Mock
-    private LayoutUpdateHost mUpdateHost;
-    @Mock
-    private LayoutRenderHost mRenderHost;
-    @Mock
-    private CompositorButton mModelSelectorBtn;
-    @Mock
-    private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private View mToolbarContainerView;
-    @Mock
-    private TabDropTarget mTabDropTarget;
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private LayoutManagerHost mManagerHost;
+    @Mock private LayoutUpdateHost mUpdateHost;
+    @Mock private LayoutRenderHost mRenderHost;
+    @Mock private CompositorButton mModelSelectorBtn;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private View mToolbarContainerView;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private TabDropTarget mTabDropTarget;
     @Mock private DragAndDropDelegate mDragDropDelegate;
 
     private Activity mActivity;
@@ -183,6 +175,7 @@ public class TabDragSourceTest {
                         mModelSelectorBtn,
                         mMultiInstanceManager,
                         mDragDropDelegate,
+                        mBrowserControlsStateProvider,
                         mTabsToolbarView);
         stripLayoutHelper.onContextChanged(mActivity);
         return stripLayoutHelper;
@@ -223,7 +216,11 @@ public class TabDragSourceTest {
                 .thenReturn(true);
         // Act and verify.
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         assertTrue(
                 "Failed to start the tag drag action.",
                 mTabDragSource.startTabDragAction(
@@ -253,7 +250,11 @@ public class TabDragSourceTest {
                 .thenReturn(true);
         // Act and verify.
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         assertTrue("Failed to start the tag drag action.",
                 mTabDragSource.startTabDragAction(
                         mTabsToolbarView, mStripLayoutHelper, tabBeingDragged, DRAG_START_POINT));
@@ -279,7 +280,11 @@ public class TabDragSourceTest {
 
         // Act and verify.
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         assertFalse(mTabDragSource.startTabDragAction(
                 mTabsToolbarView, mStripLayoutHelper, tabBeingDragged, DRAG_START_POINT));
         verify(mTabsToolbarView, never()).startDragAndDrop(any(), any(), any(), anyInt());
@@ -297,7 +302,11 @@ public class TabDragSourceTest {
 
         // Act
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
 
         // Verify flow.
         assertTrue(mTabDropTarget.getDropContentReceiver() != null);
@@ -324,7 +333,11 @@ public class TabDragSourceTest {
 
         // Act and verify.
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         assertTrue(mTabDragSource.getDragSourceTabsToolbarHashCode() == 0);
         assertTrue(mTabDragSource.startTabDragAction(
                 mTabsToolbarView, mStripLayoutHelper, tabBeingDragged, DRAG_START_POINT));
@@ -342,7 +355,11 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
@@ -369,7 +386,11 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
@@ -397,7 +418,11 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
@@ -421,7 +446,11 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
@@ -445,7 +474,11 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
@@ -565,7 +598,11 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
@@ -619,7 +656,11 @@ public class TabDragSourceTest {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
@@ -647,7 +688,11 @@ public class TabDragSourceTest {
         final float dragStartYPosition = 45f;
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(
-                mTabsToolbarView, mMultiInstanceManager, mDragDropDelegate, mTabDropTarget);
+                mTabsToolbarView,
+                mMultiInstanceManager,
+                mDragDropDelegate,
+                mTabDropTarget,
+                mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
         mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()),

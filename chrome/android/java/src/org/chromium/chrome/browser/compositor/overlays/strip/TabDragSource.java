@@ -24,10 +24,10 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -60,6 +60,7 @@ public class TabDragSource {
     private float mTabsToolbarHeightInDp;
 
     private float mPxToDp;
+    private BrowserControlsStateProvider mBrowserControlStateProvider;
 
     private TabDragSource() {}
 
@@ -375,10 +376,7 @@ public class TabDragSource {
                     context.getResources().getDimensionPixelSize(R.dimen.tab_hover_card_width);
             shadowHeightPx =
                     TabUtils.deriveGridCardHeight(
-                            shadowWidthPx,
-                            context,
-                            BrowserControlsManagerSupplier.getValueOrNullFrom(
-                                    mTabBeingDragged.getWindowAndroid()));
+                            shadowWidthPx, context, mBrowserControlStateProvider);
         }
         if (show) {
             imageView.setBackgroundDrawable(new ColorDrawable(Color.LTGRAY));
@@ -423,7 +421,8 @@ public class TabDragSource {
             View tabsToolbarView,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
-            TabDropTarget tabDropTarget) {
+            TabDropTarget tabDropTarget,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
 
         assert (tabsToolbarView != null);
@@ -433,6 +432,7 @@ public class TabDragSource {
         mPxToDp = 1.f / tabsToolbarView.getContext().getResources().getDisplayMetrics().density;
         mMultiInstanceManager = multiInstanceManager;
         mDragAndDropDelegate = dragAndDropDelegate;
+        mBrowserControlStateProvider = browserControlsStateProvider;
 
         // Setup a drop target and register the callback where the drag events
         // will be received.

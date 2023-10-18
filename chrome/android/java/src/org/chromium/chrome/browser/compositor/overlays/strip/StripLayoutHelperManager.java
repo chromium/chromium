@@ -423,6 +423,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                         mModelSelectorButton,
                         multiInstanceManager,
                         dragDropDelegate,
+                        managerHost.getBrowserControlsManager(),
                         toolbarContainerView);
         mIncognitoHelper =
                 new StripLayoutHelper(
@@ -434,6 +435,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                         mModelSelectorButton,
                         multiInstanceManager,
                         dragDropDelegate,
+                        managerHost.getBrowserControlsManager(),
                         toolbarContainerView);
 
         tabHoverCardViewStub.setOnInflateListener((viewStub, view) -> {
