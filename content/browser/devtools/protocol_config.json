@@ -28,7 +28,29 @@
             },
             {
                 "domain": "Emulation",
-                "include": ["setIdleOverride", "clearIdleOverride", "setGeolocationOverride", "clearGeolocationOverride", "setEmitTouchEventsForMouse", "canEmulate", "setDeviceMetricsOverride", "clearDeviceMetricsOverride", "setVisibleSize", "setUserAgentOverride", "setFocusEmulationEnabled", "setEmulatedMedia"]
+                "include": [
+                  "getOverriddenSensorInformation",
+                  "setSensorOverrideEnabled",
+                  "setSensorOverrideReadings",
+
+                  "setIdleOverride",
+                  "clearIdleOverride",
+                  "setGeolocationOverride",
+                  "clearGeolocationOverride",
+                  "setEmitTouchEventsForMouse",
+                  "canEmulate",
+                  "setDeviceMetricsOverride",
+                  "clearDeviceMetricsOverride",
+                  "setVisibleSize",
+                  "setUserAgentOverride",
+                  "setFocusEmulationEnabled",
+                  "setEmulatedMedia"
+                ],
+                "async": [
+                  "getOverriddenSensorInformation",
+                  "setSensorOverrideEnabled",
+                  "setSensorOverrideReadings"
+                ]
             },
             {
                 "domain": "FedCm"

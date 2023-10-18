@@ -1,0 +1,17 @@
+Tests setSensorOverrideEnabled handles metadata
+{
+    error : {
+        code : -32602
+        message : The specified minimum frequency is higher than the maximum frequency
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+sensor.start() failed with NotReadableError
+

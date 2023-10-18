@@ -3923,6 +3923,49 @@ domain Emulation
       optional string bitness
       optional boolean wow64
 
+  # Used to specify sensor types to emulate.
+  # See https://w3c.github.io/sensors/#automation for more information.
+  experimental type SensorType extends string
+    enum
+      absolute-orientation
+      accelerometer
+      ambient-light
+      gravity
+      gyroscope
+      linear-acceleration
+      magnetometer
+      proximity
+      relative-orientation
+
+  experimental type SensorMetadata extends object
+    properties
+      optional boolean available
+      optional number minimumFrequency
+      optional number maximumFrequency
+
+  experimental type SensorReadingSingle extends object
+    properties
+      number value
+
+  experimental type SensorReadingXYZ extends object
+    properties
+      number x
+      number y
+      number z
+
+  experimental type SensorReadingQuaternion extends object
+    properties
+      number x
+      number y
+      number z
+      number w
+
+  experimental type SensorReading extends object
+    properties
+      optional SensorReadingSingle single
+      optional SensorReadingXYZ xyz
+      optional SensorReadingQuaternion quaternion
+
   # Tells whether emulation is supported.
   command canEmulate
     returns
@@ -4051,6 +4094,30 @@ domain Emulation
       optional number longitude
       # Mock accuracy
       optional number accuracy
+
+  experimental command getOverriddenSensorInformation
+    parameters
+      SensorType type
+    returns
+      number requestedSamplingFrequency
+
+  # Overrides a platform sensor of a given type. If |enabled| is true, calls to
+  # Sensor.start() will use a virtual sensor as backend rather than fetching
+  # data from a real hardware sensor. Otherwise, existing virtual
+  # sensor-backend Sensor objects will fire an error event and new calls to
+  # Sensor.start() will attempt to use a real sensor instead.
+  experimental command setSensorOverrideEnabled
+    parameters
+      boolean enabled
+      SensorType type
+      optional SensorMetadata metadata
+
+  # Updates the sensor readings reported by a sensor type previously overriden
+  # by setSensorOverrideEnabled.
+  experimental command setSensorOverrideReadings
+    parameters
+      SensorType type
+      SensorReading reading
 
   # Overrides the Idle state.
   experimental command setIdleOverride
