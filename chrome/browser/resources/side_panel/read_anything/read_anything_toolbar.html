@@ -38,18 +38,24 @@
     min-width: 180px;
     font-size: 13px;
   }
+  #voiceSelectionMenu::part(dialog) {
+    min-width: 304px;
+    width: 304px;
+    margin-left: var(--sp-body-padding);
+    max-height: 95%;
+  }
   .dropdown-voice-selection {
     display: flex;
-    min-width: 312px;
     align-items: center;
     justify-content: space-between;
   }
   .dropdown-voice-selection cr-icon-button {
     margin: 0;
   }
-  .dropdown-voice-selection p {
-    margin: 8px 0;
-    display: inline;
+  .voice-name {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .item-invisible-true {
     visibility: hidden;
@@ -244,11 +250,11 @@
             listing the languages of the locale -->
       <button class="dropdown-item dropdown-voice-selection"
         on-click="onVoiceSelectClick_">
-        <span>
+        <span class="voice-name">
           <iron-icon
           class$="button-image item-invisible-[[!item.data.selected]]"
             icon="read-anything-20:check-mark"></iron-icon>
-          <p>[[item.title]]</p>
+          [[item.title]]
         </span>
         <cr-icon-button on-click="onVoicePreviewClick_"
           class$="button-image display-[[!item.data.previewPlaying]]"

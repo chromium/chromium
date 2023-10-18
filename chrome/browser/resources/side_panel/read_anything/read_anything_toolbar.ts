@@ -504,7 +504,8 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
               ]),
           []);
 
-      this.openMenu_(this.$.voiceSelectionMenu, event.target as HTMLElement);
+      this.openMenu_(
+          this.$.voiceSelectionMenu, event.target as HTMLElement, true);
     }
   }
 
@@ -512,7 +513,9 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.openMenu_(this.$.moreOptionsMenu, event.target as HTMLElement);
   }
 
-  private openMenu_(menuToOpen: CrActionMenuElement, target: HTMLElement) {
+  private openMenu_(
+      menuToOpen: CrActionMenuElement, target: HTMLElement,
+      fullScreen: boolean = false) {
     // The button should stay active while the menu is open and deactivate when
     // the menu closes.
     menuToOpen.addEventListener('close', () => {
@@ -523,11 +526,22 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
-    menuToOpen.showAt(target, {
-      anchorAlignmentX: AnchorAlignment.AFTER_START,
-      anchorAlignmentY: AnchorAlignment.AFTER_END,
-      noOffset: true,
-    });
+    const minY = target.getBoundingClientRect().bottom;
+    if (fullScreen) {
+      menuToOpen.showAt(target, {
+        minY: minY,
+        left: 0,
+        anchorAlignmentY: AnchorAlignment.AFTER_END,
+        noOffset: true,
+      });
+    } else {
+      menuToOpen.showAt(target, {
+        minY: minY,
+        anchorAlignmentX: AnchorAlignment.AFTER_START,
+        anchorAlignmentY: AnchorAlignment.AFTER_END,
+        noOffset: true,
+      });
+    }
   }
 
   private onHighlightClick_() {
