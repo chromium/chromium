@@ -762,7 +762,6 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
 }
 
 struct ElementWiseBinaryTester {
-  ElementWiseBinaryKind kind;
   OperandInfoBlink lhs;
   OperandInfoBlink rhs;
   OperandInfoMojo expected;
@@ -770,6 +769,19 @@ struct ElementWiseBinaryTester {
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
+    Test(helper, scope, builder, ElementWiseBinaryKind::kAdd);
+    Test(helper, scope, builder, ElementWiseBinaryKind::kSub);
+    Test(helper, scope, builder, ElementWiseBinaryKind::kMul);
+    Test(helper, scope, builder, ElementWiseBinaryKind::kDiv);
+    Test(helper, scope, builder, ElementWiseBinaryKind::kMin);
+    Test(helper, scope, builder, ElementWiseBinaryKind::kMax);
+    Test(helper, scope, builder, ElementWiseBinaryKind::kPow);
+  }
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder,
+            ElementWiseBinaryKind kind) {
     // Build the graph.
     auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions, lhs.type,
                                    scope.GetExceptionState());
@@ -816,13 +828,37 @@ struct ElementWiseBinaryTester {
     // Verify the `mojo::Operator`.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_generic_operator(), true);
-    auto& generic_operator = operation->get_generic_operator();
-    ASSERT_EQ(generic_operator->input_operands.size(), 2u);
-    EXPECT_EQ(generic_operator->input_operands[0], lhs_operand_id);
-    EXPECT_EQ(generic_operator->input_operands[1], rhs_operand_id);
-    ASSERT_EQ(generic_operator->output_operands.size(), 1u);
-    EXPECT_EQ(generic_operator->output_operands[0], output_operand_id);
+    EXPECT_EQ(operation->is_element_wise_binary(), true);
+    auto& binary_mojo = operation->get_element_wise_binary();
+
+    blink_mojom::ElementWiseBinary::Kind binary_kind;
+    switch (kind) {
+      case ElementWiseBinaryKind::kAdd:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kAdd;
+        break;
+      case ElementWiseBinaryKind::kSub:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kSub;
+        break;
+      case ElementWiseBinaryKind::kMul:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kMul;
+        break;
+      case ElementWiseBinaryKind::kDiv:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kDiv;
+        break;
+      case ElementWiseBinaryKind::kMin:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kMin;
+        break;
+      case ElementWiseBinaryKind::kMax:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kMax;
+        break;
+      case ElementWiseBinaryKind::kPow:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kPow;
+        break;
+    }
+    EXPECT_EQ(binary_mojo->kind, binary_kind);
+    EXPECT_EQ(binary_mojo->lhs_operand, lhs_operand_id);
+    EXPECT_EQ(binary_mojo->rhs_operand, rhs_operand_id);
+    EXPECT_EQ(binary_mojo->output_operand, output_operand_id);
   }
 };
 
@@ -840,7 +876,6 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   {
     // Test element-wise add operator for two 1-D tensors.
     ElementWiseBinaryTester{
-        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
         .rhs = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
         .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
@@ -850,7 +885,6 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   {
     // Test element-wise add operator for two 2-D tensors.
     ElementWiseBinaryTester{
-        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.type = V8MLOperandType::Enum::kFloat16, .dimensions = {3, 7}},
         .rhs = {.type = V8MLOperandType::Enum::kFloat16, .dimensions = {3, 7}},
         .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
@@ -860,7 +894,6 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   {
     // Test element-wise add operator for broadcasting to 2-D tensor.
     ElementWiseBinaryTester{
-        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.type = V8MLOperandType::Enum::kInt32, .dimensions = {5, 3}},
         .rhs = {.type = V8MLOperandType::Enum::kInt32, .dimensions = {5, 1}},
         .expected = {.type = blink_mojom::Operand::DataType::kInt32,
@@ -870,7 +903,6 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   {
     // Test element-wise add operator for broadcasting to 3-D tensor.
     ElementWiseBinaryTester{
-        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.type = V8MLOperandType::Enum::kInt8, .dimensions = {4, 2, 1}},
         .rhs = {.type = V8MLOperandType::Enum::kInt8, .dimensions = {4}},
         .expected = {.type = blink_mojom::Operand::DataType::kInt8,
@@ -880,7 +912,6 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   {
     // Test element-wise add operator for broadcasting to 4-D tensors.
     ElementWiseBinaryTester{
-        .kind = ElementWiseBinaryKind::kAdd,
         .lhs = {.type = V8MLOperandType::Enum::kUint8,
                 .dimensions = {8, 1, 6, 1}},
         .rhs = {.type = V8MLOperandType::Enum::kUint8, .dimensions = {7, 1, 5}},

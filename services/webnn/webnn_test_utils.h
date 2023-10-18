@@ -116,6 +116,11 @@ class GraphInfoBuilder final {
         mojom::Operation::NewConv2d(std::move(conv2d)));
   }
 
+  void BuildElementWiseBinary(mojom::ElementWiseBinary::Kind kind,
+                              uint64_t lhs_operand,
+                              uint64_t rhs_operand,
+                              uint64_t output_operand);
+
   // A `Pool2dAttributes` type should have the following members:
   // struct Pool2dAttributes {
   //   std::vector<uint32_t> window_dimensions;

@@ -455,7 +455,7 @@ template <typename T>
 struct ElementWiseBinaryTester {
   OperandInfo<T> lhs;
   OperandInfo<T> rhs;
-  mojom::Operator::Kind kind;
+  mojom::ElementWiseBinary::Kind kind;
   OperandInfo<float> output;
   void Test() {
     // Build the graph with mojo type.
@@ -466,8 +466,8 @@ struct ElementWiseBinaryTester {
         builder.BuildInput("rhs", rhs.dimensions, rhs.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    builder.BuildOperator(kind, {lhs_operand_id, rhs_operand_id},
-                          {output_operand_id});
+    builder.BuildElementWiseBinary(kind, lhs_operand_id, rhs_operand_id,
+                                   output_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"lhs", VectorToBigBuffer(lhs.values)});
@@ -495,7 +495,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 1},
                 .values = {6, 5, 4, 3, 2, 1}},
-        .kind = mojom::Operator::Kind::kAdd,
+        .kind = mojom::ElementWiseBinary::Kind::kAdd,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {7, 7, 7, 7, 7, 7}}}
@@ -511,7 +511,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 1, 1, 2},
                 .values = {1, 11}},
-        .kind = mojom::Operator::Kind::kAdd,
+        .kind = mojom::ElementWiseBinary::Kind::kAdd,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 2},
                    .values = {2, 12, 3, 13, 4, 14, 5, 15, 6, 16, 7, 17}}}
@@ -526,7 +526,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 1},
                 .values = {2, 2, 2, 2, 2, 2}},
-        .kind = mojom::Operator::Kind::kDiv,
+        .kind = mojom::ElementWiseBinary::Kind::kDiv,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0.5, 1, 1.5, 2, 2.5, 3}}}
@@ -542,7 +542,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 1, 3, 2},
                 .values = {2, 2, 2, 2, 2, 2}},
-        .kind = mojom::Operator::Kind::kDiv,
+        .kind = mojom::ElementWiseBinary::Kind::kDiv,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 2},
                    .values = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1, 1, 1}}}
@@ -557,7 +557,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 1},
                 .values = {6, 5, 4, 3, 2, 1}},
-        .kind = mojom::Operator::Kind::kMax,
+        .kind = mojom::ElementWiseBinary::Kind::kMax,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {6, 5, 4, 4, 5, 6}}}
@@ -573,7 +573,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 1, 1},
                 .values = {6, 3}},
-        .kind = mojom::Operator::Kind::kMax,
+        .kind = mojom::ElementWiseBinary::Kind::kMax,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {6, 6, 6, 4, 5, 6}}}
@@ -588,7 +588,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 1},
                 .values = {6, 5, 4, 3, 2, 1}},
-        .kind = mojom::Operator::Kind::kMin,
+        .kind = mojom::ElementWiseBinary::Kind::kMin,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 2, 3, 3, 2, 1}}}
@@ -604,7 +604,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 1, 2, 1},
                 .values = {2, 1}},
-        .kind = mojom::Operator::Kind::kMin,
+        .kind = mojom::ElementWiseBinary::Kind::kMin,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 3, 2, 1},
                    .values = {1, 1, 2, 1, 2, 1}}}
@@ -619,7 +619,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 1},
                 .values = {6, 5, 4, 3, 2, 1}},
-        .kind = mojom::Operator::Kind::kMul,
+        .kind = mojom::ElementWiseBinary::Kind::kMul,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {6, 10, 12, 12, 10, 6}}}
@@ -635,7 +635,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 1},
                 .values = {1, 2, 3, 4, 5, 6}},
-        .kind = mojom::Operator::Kind::kMul,
+        .kind = mojom::ElementWiseBinary::Kind::kMul,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {6, 12, 18, 20, 25, 30}}}
@@ -650,7 +650,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 1},
                 .values = {1, 2, 1, 1, 2, 1}},
-        .kind = mojom::Operator::Kind::kPow,
+        .kind = mojom::ElementWiseBinary::Kind::kPow,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 4, 3, 4, 25, 6}}}
@@ -666,7 +666,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 1, 3, 1},
                 .values = {1, 2, 1}},
-        .kind = mojom::Operator::Kind::kPow,
+        .kind = mojom::ElementWiseBinary::Kind::kPow,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 4, 3, 4, 25, 6}}}
@@ -681,7 +681,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 2, 3, 1},
                 .values = {1, 2, 1, 2, 1, 2}},
-        .kind = mojom::Operator::Kind::kSub,
+        .kind = mojom::ElementWiseBinary::Kind::kSub,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0, 0, 2, 2, 4, 4}}}
@@ -697,7 +697,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {1, 1, 1, 1},
                 .values = {2}},
-        .kind = mojom::Operator::Kind::kSub,
+        .kind = mojom::ElementWiseBinary::Kind::kSub,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {-1, 0, 1, 2, 3, 4}}}
@@ -1512,9 +1512,9 @@ TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsThirdOperator) {
       "input_b", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
   uint64_t intermediate_1_operand_id = builder.BuildIntermediateOperand(
       {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kAdd,
-                        {input_a_operand_id, input_b_operand_id},
-                        {intermediate_1_operand_id});
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 input_a_operand_id, input_b_operand_id,
+                                 intermediate_1_operand_id);
 
   // Relu.
   uint64_t intermediate_2_operand_id = builder.BuildIntermediateOperand(
@@ -1564,9 +1564,9 @@ TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsSecondOperator) {
       "input_b", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
   uint64_t intermediate_1_operand_id = builder.BuildIntermediateOperand(
       {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kAdd,
-                        {input_a_operand_id, input_b_operand_id},
-                        {intermediate_1_operand_id});
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 input_a_operand_id, input_b_operand_id,
+                                 intermediate_1_operand_id);
 
   // Max pooling.
   uint64_t intermediate_2_operand_id = builder.BuildIntermediateOperand(
@@ -1629,9 +1629,9 @@ TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsFirstOperator) {
       "input_b", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
   uint64_t intermediate_2_operand_id = builder.BuildIntermediateOperand(
       {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kAdd,
-                        {intermediate_1_operand_id, input_b_operand_id},
-                        {intermediate_2_operand_id});
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 intermediate_1_operand_id, input_b_operand_id,
+                                 intermediate_2_operand_id);
 
   // Relu.
   uint64_t output_operand_id = builder.BuildOutput(

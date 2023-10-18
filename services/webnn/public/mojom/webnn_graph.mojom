@@ -117,6 +117,35 @@ struct Conv2d {
   Operation? activation;
 };
 
+// Represents an element-wise binary operation, mathematically equivalent to:
+// <output_operand> = <lhs_operand> <operation_kind> <rhs_operand>;
+// The shapes of left-hand side (lhs) operand and right-hand side (rhs) operand
+// must be compatible according to numpy-broadcasting-rule:
+// https://www.w3.org/TR/webnn/#biblio-numpy-broadcasting-rule
+struct ElementWiseBinary  {
+  enum Kind {
+    kAdd,
+    kSub,
+    kMul,
+    kDiv,
+    kMax,
+    kMin,
+    kPow,
+  };
+
+  // The kind of binary operation.
+  Kind kind;
+  // The id of lhs operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 lhs_operand;
+  // The id of rhs operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 rhs_operand;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand;
+};
+
 // Represents an average or max pooling operation across all the elements with
 // moving window over the input tensor.
 // This struct also contains the attributes of pool2d operator, but the
@@ -265,14 +294,6 @@ struct Resample2d {
 // functional semantics.
 struct Operator {
   enum Kind {
-    // Keep the order as the same as build methods of `MLGraphBuilder`.
-    kAdd,
-    kSub,
-    kMul,
-    kDiv,
-    kMax,
-    kMin,
-    kPow,
     kGemm,
     kReshape,
   };
@@ -291,9 +312,11 @@ struct Operator {
 
 // Holds one of operator.
 union Operation {
+  // Keep the order as the same as build methods of `MLGraphBuilder`.
   Clamp clamp;
   Concat concat;
   Conv2d conv2d;
+  ElementWiseBinary element_wise_binary;
   Pool2d pool2d;
   Relu relu;
   Resample2d resample2d;

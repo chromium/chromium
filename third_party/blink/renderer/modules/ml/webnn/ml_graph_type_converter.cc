@@ -94,6 +94,7 @@ namespace blink {
 
 namespace {
 
+using blink_mojom::ElementWiseBinary;
 using blink_mojom::Operation;
 using blink_mojom::OperationPtr;
 using blink_mojom::Operator;
@@ -285,32 +286,37 @@ OperationPtr CreateElementWiseBinaryOperator(
   const uint64_t output_operand_id =
       GetOperatorOutputId(binary, operand_to_id_map);
 
-  auto operator_mojo = blink_mojom::Operator::New();
+  auto operator_mojo = ElementWiseBinary::New();
   switch (binary->Kind()) {
     case MLOperator::OperatorKind::kAdd:
-      operator_mojo->kind = Operator::Kind::kAdd;
+      operator_mojo->kind = ElementWiseBinary::Kind::kAdd;
       break;
     case MLOperator::OperatorKind::kSub:
-      operator_mojo->kind = Operator::Kind::kSub;
+      operator_mojo->kind = ElementWiseBinary::Kind::kSub;
       break;
     case MLOperator::OperatorKind::kMul:
-      operator_mojo->kind = Operator::Kind::kMul;
+      operator_mojo->kind = ElementWiseBinary::Kind::kMul;
       break;
     case MLOperator::OperatorKind::kDiv:
-      operator_mojo->kind = Operator::Kind::kDiv;
+      operator_mojo->kind = ElementWiseBinary::Kind::kDiv;
       break;
     case MLOperator::OperatorKind::kMax:
-      operator_mojo->kind = Operator::Kind::kMax;
+      operator_mojo->kind = ElementWiseBinary::Kind::kMax;
       break;
     case MLOperator::OperatorKind::kMin:
-      operator_mojo->kind = Operator::Kind::kMin;
+      operator_mojo->kind = ElementWiseBinary::Kind::kMin;
+      break;
+    case MLOperator::OperatorKind::kPow:
+      operator_mojo->kind = ElementWiseBinary::Kind::kPow;
       break;
     default:
       NOTREACHED();
   }
-  operator_mojo->input_operands = {lhs_operand_id, rhs_operand_id};
-  operator_mojo->output_operands = {output_operand_id};
-  return blink_mojom::Operation::NewGenericOperator(std::move(operator_mojo));
+  operator_mojo->lhs_operand = lhs_operand_id;
+  operator_mojo->rhs_operand = rhs_operand_id;
+  operator_mojo->output_operand = output_operand_id;
+  return webnn::mojom::blink::Operation::NewElementWiseBinary(
+      std::move(operator_mojo));
 }
 
 blink_mojom::GemmAttributesPtr ConvertToGemmAttributes(

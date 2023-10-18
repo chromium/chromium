@@ -661,7 +661,7 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
 }
 
 struct ElementWiseBinaryTester {
-  mojom::Operator::Kind kind;
+  mojom::ElementWiseBinary::Kind kind;
   OperandInfo lhs;
   OperandInfo rhs;
   OperandInfo output;
@@ -676,8 +676,8 @@ struct ElementWiseBinaryTester {
         builder.BuildInput("rhs", rhs.dimensions, rhs.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    builder.BuildOperator(kind, {lhs_operand_id, rhs_operand_id},
-                          {output_operand_id});
+    builder.BuildElementWiseBinary(kind, lhs_operand_id, rhs_operand_id,
+                                   output_operand_id);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
@@ -691,7 +691,7 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
     // b_dimensions     (3d)     7 * 1 * 5
     // output_dimenions (4d) 8 * 7 * 6 * 5
     ElementWiseBinaryTester{
-        .kind = mojom::Operator::Kind::kAdd,
+        .kind = mojom::ElementWiseBinary::Kind::kAdd,
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {8, 1, 6, 1}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -707,7 +707,7 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
     // b_dimensions     (1d)         4
     // output_dimenions (3d) 4 * 2 * 4
     ElementWiseBinaryTester{
-        .kind = mojom::Operator::Kind::kSub,
+        .kind = mojom::ElementWiseBinary::Kind::kSub,
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {4, 2, 1}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4}},
@@ -719,7 +719,7 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
   {
     // Test the invalid graph for the input shapes are not broadcastable.
     ElementWiseBinaryTester{
-        .kind = mojom::Operator::Kind::kMul,
+        .kind = mojom::ElementWiseBinary::Kind::kMul,
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {4, 2}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4}},
@@ -731,7 +731,7 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
   {
     // Test the invalid graph for the output shapes are not expected.
     ElementWiseBinaryTester{
-        .kind = mojom::Operator::Kind::kDiv,
+        .kind = mojom::ElementWiseBinary::Kind::kDiv,
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {4, 2}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -744,7 +744,7 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
   {
     // Test the invalid graph for input types don't match.
     ElementWiseBinaryTester{
-        .kind = mojom::Operator::Kind::kMax,
+        .kind = mojom::ElementWiseBinary::Kind::kMax,
         .lhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .rhs = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
@@ -755,7 +755,7 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
   {
     // Test the invalid graph for output types don't match.
     ElementWiseBinaryTester{
-        .kind = mojom::Operator::Kind::kMin,
+        .kind = mojom::ElementWiseBinary::Kind::kMin,
         .lhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
@@ -1637,8 +1637,9 @@ TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
       builder.BuildInput("rhs", dimensions, mojom::Operand::DataType::kUint8);
   uint64_t output_operand_id = builder.BuildOutput(
       "output", dimensions, mojom::Operand::DataType::kUint8);
-  builder.BuildOperator(mojom::Operator::Kind::kAdd,
-                        {lhs_operand_id, rhs_operand_id}, {output_operand_id});
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 lhs_operand_id, rhs_operand_id,
+                                 output_operand_id);
   EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), true);
 
   auto byte_length =
@@ -1703,9 +1704,9 @@ struct ConstantOperandTester {
         dimensions, mojom::Operand::DataType::kUint8, values);
     uint64_t output_operand_id = builder.BuildOutput(
         "output", dimensions, mojom::Operand::DataType::kUint8);
-    builder.BuildOperator(mojom::Operator::Kind::kAdd,
-                          {lhs_operand_id, rhs_operand_id},
-                          {output_operand_id});
+    builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                   lhs_operand_id, rhs_operand_id,
+                                   output_operand_id);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };

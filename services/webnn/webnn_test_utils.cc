@@ -114,6 +114,20 @@ void GraphInfoBuilder::BuildConcat(std::vector<uint64_t> input_operand_ids,
       mojom::Operation::NewConcat(std::move(concat)));
 }
 
+void GraphInfoBuilder::BuildElementWiseBinary(
+    mojom::ElementWiseBinary::Kind kind,
+    uint64_t lhs_operand,
+    uint64_t rhs_operand,
+    uint64_t output_operand) {
+  mojom::ElementWiseBinaryPtr binary = mojom::ElementWiseBinary::New();
+  binary->kind = kind;
+  binary->lhs_operand = lhs_operand;
+  binary->rhs_operand = rhs_operand;
+  binary->output_operand = output_operand;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewElementWiseBinary(std::move(binary)));
+}
+
 void GraphInfoBuilder::BuildRelu(uint64_t input_operand_id,
                                  uint64_t output_operand_id) {
   mojom::ReluPtr relu = mojom::Relu::New();

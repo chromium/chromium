@@ -332,10 +332,10 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
 }
 
 bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
-                               const mojom::OperatorPtr& operation) {
-  auto* a = GetMojoOperand(id_to_operand_map, operation->input_operands, 0);
-  auto* b = GetMojoOperand(id_to_operand_map, operation->input_operands, 1);
-  auto* output = GetMojoOperand(id_to_operand_map, operation->output_operands);
+                               const mojom::ElementWiseBinaryPtr& operation) {
+  auto* a = GetMojoOperand(id_to_operand_map, operation->lhs_operand);
+  auto* b = GetMojoOperand(id_to_operand_map, operation->rhs_operand);
+  auto* output = GetMojoOperand(id_to_operand_map, operation->output_operand);
   if (!a || !b || !output || output == a || output == b) {
     // The elementWise binary operator is invalid.
     return false;
@@ -588,14 +588,6 @@ bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
 bool ValidateGenericOperator(const IdToOperandMap& id_to_operand_map,
                              const mojom::OperatorPtr& operation) {
   switch (operation->kind) {
-    case mojom::Operator::Kind::kAdd:
-    case mojom::Operator::Kind::kSub:
-    case mojom::Operator::Kind::kMul:
-    case mojom::Operator::Kind::kDiv:
-    case mojom::Operator::Kind::kMax:
-    case mojom::Operator::Kind::kMin:
-    case mojom::Operator::Kind::kPow:
-      return ValidateElementWiseBinary(id_to_operand_map, operation);
     case mojom::Operator::Kind::kGemm:
       return ValidateGemm(id_to_operand_map, operation);
     case mojom::Operator::Kind::kReshape:
@@ -633,6 +625,9 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateConcat(id_to_operand_map, operation->get_concat());
     case mojom::Operation::Tag::kConv2d:
       return ValidateConv2d(id_to_operand_map, operation->get_conv2d());
+    case mojom::Operation::Tag::kElementWiseBinary:
+      return ValidateElementWiseBinary(id_to_operand_map,
+                                       operation->get_element_wise_binary());
     case mojom::Operation::Tag::kPool2d:
       return ValidatePool2d(id_to_operand_map, operation->get_pool2d());
     case mojom::Operation::Tag::kResample2d:
