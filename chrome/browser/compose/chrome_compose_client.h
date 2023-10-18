@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "chrome/browser/compose/compose_session.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/common/compose/compose.mojom.h"
@@ -31,7 +32,6 @@ class WebContents;
 // An implementation of `ComposeClient` for Desktop and Android.
 class ChromeComposeClient
     : public compose::ComposeClient,
-      public compose::mojom::ComposeDialogPageHandler,
       public content::WebContentsUserData<ChromeComposeClient> {
  public:
   ChromeComposeClient(const ChromeComposeClient&) = delete;
@@ -50,13 +50,6 @@ class ChromeComposeClient
   void BindComposeDialog(
       mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
       mojo::PendingRemote<compose::mojom::ComposeDialog> dialog);
-
-  // ComposeDialogPageHandler
-  void Compose(compose::mojom::StyleModifiersPtr style,
-               const std::string& input,
-               ComposeCallback callback) override;
-  void SaveWebUIState(const std::string& webui_state) override;
-  void RequestInitialState(RequestInitialStateCallback callback) override;
 
   void SetModelExecutorForTest(
       optimization_guide::OptimizationGuideModelExecutor* model_executor);
@@ -78,34 +71,15 @@ class ChromeComposeClient
   explicit ChromeComposeClient(content::WebContents* web_contents);
   raw_ptr<Profile> profile_;
 
-  void ModelExecutionCallback(
-      ComposeCallback callback,
-      optimization_guide::OptimizationGuideModelExecutionResult result);
-
   // Creates a compose state for `field_id` if it does not exist.
   void SaveFieldAndCreateComposeStateIfEmpty(
       const autofill::FieldGlobalId& field_id);
-  // Saves the compose request in the current state, and saves the previous
-  // state for undo.
-  void SaveNewComposeRequest(compose::mojom::StyleModifiersPtr style);
-  // Saves the current state in the undo stack if it contains a valid
-  // response. States with no response, or with error will not be stored for
-  // undo.
-  void MaybeSaveCurrentStateInUndoStack();
-  // Replaces the existing current compose state with a new blank state.
-  void CreateNewCurrentComposeState();
-  // Updates the compose state with a new response.
-  void UpdateComposeStateWithResponse(compose::mojom::ComposeStatus status,
-                                      const std::string& response_text);
 
   compose::ComposeManagerImpl manager_;
+
   // A handle to optimization guide for information about URLs that have
   // recently been navigated to.
   raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;
-
-  std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialogPageHandler>>
-      handler_receiver_;
-  std::unique_ptr<mojo::Remote<compose::mojom::ComposeDialog>> dialog_remote_;
 
   std::optional<optimization_guide::OptimizationGuideModelExecutor*>
       model_executor_for_test_;
@@ -114,8 +88,8 @@ class ChromeComposeClient
   autofill::FieldGlobalId last_compose_field_id_;
 
   // Saved states for each compose field.
-  base::flat_map<autofill::FieldGlobalId, compose::mojom::ComposeStatePtr>
-      field_states_;
+  base::flat_map<autofill::FieldGlobalId, std::unique_ptr<ComposeSession>>
+      sessions_;
 
   bool skip_show_dialog_for_test_ = false;
 

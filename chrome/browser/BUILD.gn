@@ -7939,6 +7939,8 @@ static_library("browser") {
       "compose/chrome_compose_client.h",
       "compose/compose_enabling.cc",
       "compose/compose_enabling.h",
+      "compose/compose_session.cc",
+      "compose/compose_session.h",
     ]
 
     deps += [

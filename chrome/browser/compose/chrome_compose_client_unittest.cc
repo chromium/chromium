@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -31,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::base::EqualsProto;
+using base::test::RunOnceCallback;
 using testing::_;
 
 namespace {
@@ -79,6 +81,13 @@ class MockOptimizationGuideDecider
            callback));
 };
 
+class MockComposeDialog : public compose::mojom::ComposeDialog {
+ public:
+  MOCK_METHOD(void,
+              ResponseReceived,
+              (compose::mojom::ComposeResponsePtr response));
+};
+
 }  // namespace
 
 class ChromeComposeClientTest : public BrowserWithTestWindowTest {
@@ -97,6 +106,13 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     client_->SetModelExecutorForTest(&model_executor_);
     client_->SetSkipShowDialogForTest();
     client_->SetOptimizationGuideForTest(&opt_guide_);
+  }
+
+  void ShowDialogAndBindMojo() {
+    // Show the dialog.
+    client().ShowComposeDialog(
+        autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
+        autofill::FormFieldData(), std::nullopt, base::NullCallback());
 
     // Setup Dialog Page Handler.
     mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler>
@@ -104,11 +120,12 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
             page_handler_.BindNewPipeAndPassReceiver();
 
     // Setup Compose Dialog.
-    compose::mojom::ComposeDialog dialog_stub;
-    mojo::Receiver<compose::mojom::ComposeDialog> callback_router(&dialog_stub);
+    callback_router_ =
+        std::make_unique<mojo::Receiver<compose::mojom::ComposeDialog>>(
+            &compose_dialog());
     mojo::PendingRemote<compose::mojom::ComposeDialog>
         callback_router_pending_remote =
-            callback_router.BindNewPipeAndPassRemote();
+            callback_router_->BindNewPipeAndPassRemote();
 
     // Bind mojo to client.
     client_->BindComposeDialog(std::move(page_handler_pending_receiver),
@@ -122,6 +139,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   ChromeComposeClient& client() { return *client_; }
   MockModelExecutor& model_executor() { return model_executor_; }
   MockOptimizationGuideDecider& opt_guide() { return opt_guide_; }
+  MockComposeDialog& compose_dialog() { return compose_dialog_; }
+
   mojo::Remote<compose::mojom::ComposeDialogPageHandler>& page_handler() {
     return page_handler_;
   }
@@ -174,11 +193,15 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   raw_ptr<ChromeComposeClient> client_;
   MockModelExecutor model_executor_;
   MockOptimizationGuideDecider opt_guide_;
+  MockComposeDialog compose_dialog_;
 
+  std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialog>>
+      callback_router_;
   mojo::Remote<compose::mojom::ComposeDialogPageHandler> page_handler_;
 };
 
 TEST_F(ChromeComposeClientTest, TestCompose) {
+  ShowDialogAndBindMojo();
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
       .WillOnce(testing::WithArg<2>(testing::Invoke(
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
@@ -188,17 +211,23 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillOnce(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
 
   auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          test_future.GetCallback());
+  page_handler()->Compose(std::move(style_modifiers), "a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
+
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Cucumbers", result->result);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeParams) {
+  ShowDialogAndBindMojo();
   std::string user_input = "a user typed this";
   auto matcher = EqualsProto(ComposeRequest(user_input));
   EXPECT_CALL(model_executor(), ExecuteModel(_, matcher, _))
@@ -210,26 +239,35 @@ TEST_F(ChromeComposeClientTest, TestComposeParams) {
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillOnce(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
 
   auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), user_input,
-                          test_future.GetCallback());
+  page_handler()->Compose(std::move(style_modifiers), user_input);
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
+  ShowDialogAndBindMojo();
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
       .WillOnce(testing::WithArg<2>(testing::Invoke(
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) { std::move(callback).Run(absl::nullopt); })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillOnce(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
 
   auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          test_future.GetCallback());
+  page_handler()->Compose(std::move(style_modifiers), "a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kError, result->status);
@@ -238,6 +276,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
 // Tests that we return an error if Optimization Guide is unable to parse the
 // response. In this case the response will be absl::nullopt.
 TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
+  ShowDialogAndBindMojo();
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
       .WillOnce(testing::WithArg<2>(testing::Invoke(
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
@@ -247,10 +286,14 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillOnce(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
 
   auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          test_future.GetCallback());
+  page_handler()->Compose(std::move(style_modifiers), "a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kError, result->status);
@@ -264,12 +307,19 @@ TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {
       {compose::features::kEnableCompose},
       {optimization_guide::features::kOptimizationGuideModelExecution});
 
+  ShowDialogAndBindMojo();
+
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillOnce(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
+
   auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          test_future.GetCallback());
+  page_handler()->Compose(std::move(style_modifiers), "a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kError, result->status);
@@ -277,17 +327,26 @@ TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {
 
 TEST_F(ChromeComposeClientTest, TestNoModelExecutor) {
   client().SetModelExecutorForTest(nullptr);
+  ShowDialogAndBindMojo();
+
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillOnce(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
+
   auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          test_future.GetCallback());
+  page_handler()->Compose(std::move(style_modifiers), "a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kError, result->status);
 }
 
 TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {
+  ShowDialogAndBindMojo();
+
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
       .WillOnce(testing::WithArg<2>(testing::Invoke(
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
@@ -297,11 +356,16 @@ TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillOnce(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            test_future.SetValue(std::move(response));
+          }));
+
   auto style_modifiers = compose::mojom::StyleModifiers::New();
   style_modifiers->tone = compose::mojom::Tone::kCasual;
   style_modifiers->length = compose::mojom::Length::kLonger;
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          test_future.GetCallback());
+  page_handler()->Compose(std::move(style_modifiers), "a user typed this");
 
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
   page_handler()->RequestInitialState(open_test_future.GetCallback());
@@ -316,6 +380,8 @@ TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {
 }
 
 TEST_F(ChromeComposeClientTest, TestRestoreEmptyState) {
+  ShowDialogAndBindMojo();
+
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
   page_handler()->RequestInitialState(open_test_future.GetCallback());
 
@@ -326,6 +392,8 @@ TEST_F(ChromeComposeClientTest, TestRestoreEmptyState) {
 }
 
 TEST_F(ChromeComposeClientTest, TestSaveAndRestoreWebUIState) {
+  ShowDialogAndBindMojo();
+
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> test_future;
 
   page_handler()->SaveWebUIState("web ui state");

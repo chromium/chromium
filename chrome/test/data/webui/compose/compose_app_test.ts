@@ -5,7 +5,7 @@
 import 'chrome://compose/app.js';
 
 import {ComposeAppElement} from 'chrome://compose/app.js';
-import {ComposeResponse, ComposeStatus, Length, StyleModifiers, Tone} from 'chrome://compose/compose.mojom-webui.js';
+import {ComposeDialogCallbackRouter, ComposeStatus, Length, StyleModifiers, Tone} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -15,15 +15,23 @@ import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
 class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   private composeOutput_: string = 'Some output';
+  private router_: ComposeDialogCallbackRouter =
+      new ComposeDialogCallbackRouter();
+  remote = this.router_.$.bindNewPipeAndPassRemote();
 
   constructor() {
     super(['compose']);
   }
 
-  compose(style: StyleModifiers, input: string): Promise<ComposeResponse> {
-    this.methodCalled('compose', {style, input});
-    return Promise.resolve(
+  compose(style: StyleModifiers, input: string): void {
+    this.remote.responseReceived(
         {status: ComposeStatus.kOk, result: this.composeOutput_});
+    this.methodCalled('compose', {style, input});
+  }
+
+  /** @override */
+  getRouter() {
+    return this.router_;
   }
 
   setComposeOutput(output: string) {
@@ -50,7 +58,6 @@ suite('ComposeApp', () => {
     app.$.textarea.value = input;
     app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
   }
-
   test('SubmitsInput', async () => {
     // Starts off with submit disabled since input is empty.
     assertTrue(isVisible(app.$.submitButton));
@@ -71,6 +78,8 @@ suite('ComposeApp', () => {
     assertTrue(isVisible(app.$.loading));
 
     const args = await testProxy.whenCalled('compose');
+    await testProxy.remote.$.flushForTesting();
+
     assertEquals(Length.kUnset, args.style.length);
     assertEquals(Tone.kUnset, args.style.tone);
     assertEquals('Here is my input.', args.input);
@@ -86,22 +95,29 @@ suite('ComposeApp', () => {
     testProxy.setComposeOutput('Outdated output.');
     mockInput('Input to refresh.');
     app.$.submitButton.click();
-    await testProxy.whenCalled('compose');
+    await testProxy.remote.$.flushForTesting();
     testProxy.resetResolver('compose');
-    assertTrue(isVisible(app.$.refreshButton));
+    assertTrue(
+        isVisible(app.$.refreshButton), 'Refresh button should be visible.');
 
     // Click the refresh button and assert compose is called with the same args.
     testProxy.setComposeOutput('Refreshed output.');
     app.$.refreshButton.click();
-    assertTrue(isVisible(app.$.loading));
+    assertTrue(
+        isVisible(app.$.loading), 'Loading indicator should be visible.');
+
     const args = await testProxy.whenCalled('compose');
+    await testProxy.remote.$.flushForTesting();
+
     assertEquals(Length.kUnset, args.style.length);
     assertEquals(Tone.kUnset, args.style.tone);
     assertEquals('Input to refresh.', args.input);
 
     // Verify UI has updated with refreshed results.
     assertFalse(isVisible(app.$.loading));
-    assertTrue(isVisible(app.$.resultContainer));
+    assertTrue(
+        isVisible(app.$.resultContainer),
+        'App result container should be visible.');
     assertTrue(
         app.$.resultContainer.textContent!.includes('Refreshed output.'));
   });

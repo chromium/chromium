@@ -73,11 +73,11 @@ struct OpenMetadata {
 };
 
 
-// Interface for calls from Compose dialog JS into the native handler.
+// Interface for calls from Compose dialog JS into the Browser process.
 interface ComposeDialogPageHandler {
-  // Asks the native handler to compose `input` with `stye` applied. Response
-  // contains the modified output.
-  Compose(StyleModifiers style, string input) => (ComposeResponse response);
+  // Asks the Browser to compose `input` with `stye` applied. Response contains
+  // the modified output.
+  Compose(StyleModifiers style, string input);
 
   // Asks the native handler to store `webui_state` for the last field the user
   // selected compose on.
@@ -92,6 +92,11 @@ interface ComposeDialogPageHandler {
   RequestInitialState() => (OpenMetadata initial_state);
 };
 
-// Interface for calls from native code into Compose dialog JS.
+// Interface for calls from the Browser process into Compose dialog JS.
 interface ComposeDialog {
+  // Called when a compose request is fulfilled, either by the model execution
+  // service or due to an error. Because compose requests can outlive this
+  // WebUI, this is an event rather than a callback on the original `Compose`
+  // call above.
+  ResponseReceived(ComposeResponse response);
 };

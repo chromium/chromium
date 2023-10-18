@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeDialogCallbackRouter, ComposeDialogPageHandlerFactory, ComposeDialogPageHandlerInterface, ComposeDialogPageHandlerRemote, ComposeResponse, StyleModifiers} from './compose.mojom-webui.js';
+import {ComposeDialogCallbackRouter, ComposeDialogPageHandlerFactory, ComposeDialogPageHandlerInterface, ComposeDialogPageHandlerRemote, StyleModifiers} from './compose.mojom-webui.js';
 
 /** @interface */
 export interface ComposeApiProxy {
-  compose(style: StyleModifiers, input: string): Promise<ComposeResponse>;
+  compose(style: StyleModifiers, input: string): void;
+  getRouter(): ComposeDialogCallbackRouter;
 }
 
 export class ComposeApiProxyImpl implements ComposeApiProxy {
@@ -15,13 +16,13 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
   handler: ComposeDialogPageHandlerInterface =
       new ComposeDialogPageHandlerRemote();
   composeDialogPageHandler = new ComposeDialogPageHandlerRemote();
-  composeDialogCallbackRouter = new ComposeDialogCallbackRouter();
+  router = new ComposeDialogCallbackRouter();
 
   constructor() {
     const factoryRemote = ComposeDialogPageHandlerFactory.getRemote();
     factoryRemote.createComposeDialogPageHandler(
         this.composeDialogPageHandler.$.bindNewPipeAndPassReceiver(),
-        this.composeDialogCallbackRouter.$.bindNewPipeAndPassRemote());
+        this.router.$.bindNewPipeAndPassRemote());
   }
 
   static getInstance(): ComposeApiProxy {
@@ -34,8 +35,12 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
   }
 
   /** @override */
-  compose(style: StyleModifiers, input: string): Promise<ComposeResponse> {
-    return this.composeDialogPageHandler.compose(style, input)
-        .then(composeResponse => composeResponse.response);
+  compose(style: StyleModifiers, input: string): void {
+    this.composeDialogPageHandler.compose(style, input);
+  }
+
+  /** @override */
+  getRouter() {
+    return this.router;
   }
 }

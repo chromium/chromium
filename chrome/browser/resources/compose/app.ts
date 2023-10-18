@@ -15,7 +15,7 @@ import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js'
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {Length, Tone} from './compose.mojom-webui.js';
+import {ComposeDialogCallbackRouter, ComposeResponse, Length, Tone} from './compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeTextareaElement} from './textarea.js';
 
@@ -76,6 +76,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
+  private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
   private input_: string;
   private isSubmitEnabled_: boolean;
   private loading_: boolean;
@@ -88,6 +89,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
+    this.router_.responseReceived.addListener((response: ComposeResponse) => {
+      this.composeResponseReceived_(response);
+    });
   }
 
   private onSubmit_() {
@@ -104,15 +108,18 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.isSubmitEnabled_ = this.$.textarea.validate();
   }
 
-  private async compose_() {
+  private compose_() {
     this.loading_ = true;
     this.result_ = undefined;
-    const response = await this.apiProxy_.compose(
+    this.apiProxy_.compose(
         {
           length: this.selectedLength_,
           tone: this.selectedTone_,
         },
         this.input_);
+  }
+
+  private composeResponseReceived_(response: ComposeResponse) {
     this.result_ = response.result || 'error';
     this.loading_ = false;
     this.requestUpdateScroll();
