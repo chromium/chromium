@@ -1,0 +1,3 @@
+@view-transitions {
+  navigation-trigger: cross-document-same-origin;
+}

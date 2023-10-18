@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
-#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 
 namespace blink {
 
@@ -125,7 +124,6 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
     AddCounterStyleRules(rule_set);
     AddPositionFallbackRules(rule_set);
     AddFontFeatureValuesRules(rule_set);
-    AddViewTransitionsRules(rule_set);
   }
 }
 
@@ -351,38 +349,6 @@ void ScopedStyleResolver::AddFontFeatureValuesRules(const RuleSet& rule_set) {
       }
     }
   }
-}
-
-void ScopedStyleResolver::AddViewTransitionsRules(const RuleSet& rule_set) {
-  // Not clear what should happen for @view-transitions inside a shadow
-  // tree. Ignore it for now.
-  if (!GetTreeScope().RootNode().IsDocumentNode()) {
-    return;
-  }
-
-  if (rule_set.ViewTransitionsRules().empty()) {
-    return;
-  }
-
-  // TODO(https://crbug.com/1463966): Need to collect and resolve multiple
-  // rules. Last one wins for now.
-
-  StyleRuleViewTransitions* style_rule =
-      rule_set.ViewTransitionsRules().back().Get();
-  CHECK(style_rule);
-
-  bool cross_document_enabled = false;
-
-  // TODO(https://crbug.com/1463966): This will likely need to change to a
-  // CSSValueList if we want to support multiple tokens as a trigger.
-  if (const CSSValue* value = style_rule->GetNavigationTrigger()) {
-    cross_document_enabled = To<CSSIdentifierValue>(value)->GetValueID() ==
-                             CSSValueID::kCrossDocumentSameOrigin;
-  }
-
-  Document& document = GetTreeScope().GetDocument();
-  ViewTransitionSupplement::From(document)->OnViewTransitionsStyleUpdated(
-      cross_document_enabled);
 }
 
 StyleRulePositionFallback* ScopedStyleResolver::PositionFallbackForName(

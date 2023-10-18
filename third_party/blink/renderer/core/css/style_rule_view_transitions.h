@@ -23,9 +23,13 @@ class CORE_EXPORT StyleRuleViewTransitions : public StyleRuleBase {
     return MakeGarbageCollected<StyleRuleViewTransitions>(*this);
   }
 
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
+  Member<const CascadeLayer> layer_;
   Member<const CSSValue> navigation_trigger_;
 };
 

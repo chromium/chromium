@@ -272,6 +272,7 @@ void ViewTransitionSupplement::OnMetaTagChanged(
 
 void ViewTransitionSupplement::OnViewTransitionsStyleUpdated(
     bool cross_document_enabled) {
+  CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   // TODO(https://crbug.com/1463966): Remove meta tag opt-in - ignore the case
   // where both are specified for now.
 
@@ -291,7 +292,7 @@ void ViewTransitionSupplement::WillInsertBody() {
   auto* document = GetSupplementable();
   CHECK(document);
 
-  // Update actives styles will compute the @view-transitions
+  // Update active styles will compute the @view-transitions
   // navigation-trigger opt in.
   // TODO(https://crbug.com/1463966): This is probably a bit of a heavy hammer.
   // In the long term, we probably don't want to make this decision at

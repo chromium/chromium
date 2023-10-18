@@ -117,7 +117,6 @@ class CORE_EXPORT ScopedStyleResolver final
       const StyleRuleKeyframes* new_rule,
       const StyleRuleKeyframes* existing_rule) const;
   void AddPositionFallbackRules(const RuleSet&);
-  void AddViewTransitionsRules(const RuleSet&);
 
   CounterStyleMap& EnsureCounterStyleMap();
 

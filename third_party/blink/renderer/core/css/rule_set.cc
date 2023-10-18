@@ -713,8 +713,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       AddCounterStyleRule(counter_style_rule);
     } else if (auto* view_transitions_rule =
                    DynamicTo<StyleRuleViewTransitions>(rule)) {
-      // TODO(https://crbug.com/1463966): Handle cascade layers for
-      // @view-transitions.
+      view_transitions_rule->SetCascadeLayer(cascade_layer);
       AddViewTransitionsRule(view_transitions_rule);
     } else if (auto* position_fallback_rule =
                    DynamicTo<StyleRulePositionFallback>(rule)) {

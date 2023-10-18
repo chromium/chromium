@@ -28,6 +28,7 @@ const CSSValue* StyleRuleViewTransitions::GetNavigationTrigger() const {
 
 void StyleRuleViewTransitions::TraceAfterDispatch(
     blink::Visitor* visitor) const {
+  visitor->Trace(layer_);
   visitor->Trace(navigation_trigger_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }

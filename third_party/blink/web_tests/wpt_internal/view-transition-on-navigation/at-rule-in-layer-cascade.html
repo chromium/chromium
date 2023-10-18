@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<title>View Transitions: @view-transitions cascaldes correclty with layers.</title>
+<link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
+<link rel="author" href="mailto:bokan@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+@layer inertA, inertB, active;
+
+@layer inertA {
+  @view-transitions {
+    navigation-trigger: none;
+  }
+}
+@layer active {
+  @view-transitions {
+    navigation-trigger: cross-document-same-origin;
+  }
+}
+@layer inertB {
+  @view-transitions {
+    navigation-trigger: none;
+  }
+}
+</style>
+<script>
+const params = new URLSearchParams(location.search);
+const is_new_page = params.has('new');
+
+if (!is_new_page) {
+  onload = () => requestAnimationFrame(() => requestAnimationFrame(() => {
+      location.replace(location.href + '?new');
+  }));
+} else {
+  promise_test(() => {
+    return new Promise((resolve) => {
+        addEventListener('pagereveal', resolve);
+    }).then(event => {
+        assert_not_equals(event.viewTransition, null,
+            "ViewTransition must be triggered.");
+    });
+  });
+}
+</script>
