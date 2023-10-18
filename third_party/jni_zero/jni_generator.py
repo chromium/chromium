@@ -25,10 +25,6 @@ _BUILD_ANDROID_GYP = os.path.join(_CHROMIUM_SRC, 'build', 'android', 'gyp')
 # (if set); item 2 is system libraries.
 sys.path.insert(1, _BUILD_ANDROID_GYP)
 
-from util import build_utils
-import action_helpers  # build_utils adds //build to sys.path.
-import zip_helpers  # build_utils adds //build to sys.path.
-
 from codegen import placeholder_gen_jni_java
 from codegen import proxy_impl_java
 import common
@@ -917,7 +913,7 @@ def _ParseClassFiles(jar_file, class_files, args):
 
 
 def _CreateSrcJar(srcjar_path, gen_jni_class, jni_objs, *, script_name):
-  with action_helpers.atomic_output(srcjar_path) as f:
+  with common.atomic_output(srcjar_path) as f:
     with zipfile.ZipFile(f, 'w') as srcjar:
       for jni_obj in jni_objs:
         if not jni_obj.proxy_natives:
@@ -926,20 +922,20 @@ def _CreateSrcJar(srcjar_path, gen_jni_class, jni_objs, *, script_name):
                                            gen_jni_class=gen_jni_class,
                                            script_name=script_name)
         zip_path = f'{jni_obj.java_class.class_without_prefix.full_name_with_slashes}Jni.java'
-        zip_helpers.add_to_zip_hermetic(srcjar, zip_path, data=content)
+        common.add_to_zip_hermetic(srcjar, zip_path, data=content)
 
       content = placeholder_gen_jni_java.Generate(jni_objs,
                                                   gen_jni_class=gen_jni_class,
                                                   script_name=script_name)
       zip_path = f'{gen_jni_class.full_name_with_slashes}.java'
-      zip_helpers.add_to_zip_hermetic(srcjar, zip_path, data=content)
+      common.add_to_zip_hermetic(srcjar, zip_path, data=content)
 
 
 def _WriteHeaders(jni_objs, output_names, output_dir):
   for jni_obj, header_name in zip(jni_objs, output_names):
     output_file = os.path.join(output_dir, header_name)
     content = jni_obj.GetContent()
-    with action_helpers.atomic_output(output_file, 'w') as f:
+    with common.atomic_output(output_file, 'w') as f:
       f.write(content)
 
 

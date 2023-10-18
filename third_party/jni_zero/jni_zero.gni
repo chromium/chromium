@@ -55,11 +55,6 @@ template("_invoke_jni_zero") {
       inputs = []
     }
     inputs += rebase_path([
-                            "../../build/action_helpers.py",
-                            "../../build/android/gyp/util/__init__.py",
-                            "../../build/android/gyp/util/build_utils.py",
-                            "../../build/gn_helpers.py",
-                            "../../build/zip_helpers.py",
                             "codegen/placeholder_gen_jni_java.py",
                             "codegen/proxy_impl_java.py",
                             "common.py",

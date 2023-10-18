@@ -8,6 +8,8 @@ import functools
 import hashlib
 import multiprocessing
 import os
+import pathlib
+import posixpath
 import re
 import string
 import sys
@@ -19,9 +21,6 @@ import jni_generator
 import parse
 import proxy
 
-from util import build_utils
-import action_helpers  # build_utils adds //build to sys.path.
-import zip_helpers
 
 # All but FULL_CLASS_NAME, which is used only for sorting.
 MERGEABLE_KEYS = [
@@ -112,12 +111,12 @@ def _Generate(options, native_sources, java_sources):
     combined_dict['HEADER_GUARD'] = header_guard
     combined_dict['NAMESPACE'] = options.namespace or ''
     header_content = CreateFromDict(options, combined_dict)
-    with action_helpers.atomic_output(options.header_path, mode='w') as f:
+    with common.atomic_output(options.header_path, mode='w') as f:
       f.write(header_content)
 
   stub_methods_string = ''.join(d['STUBS'] for d in stub_dicts)
 
-  with action_helpers.atomic_output(options.srcjar_path) as f:
+  with common.atomic_output(options.srcjar_path) as f:
     with zipfile.ZipFile(f, 'w') as srcjar:
       if options.use_proxy_hash or options.enable_jni_multiplexing:
         gen_jni_class = short_gen_jni_class
@@ -126,12 +125,12 @@ def _Generate(options, native_sources, java_sources):
 
       if options.use_proxy_hash or options.enable_jni_multiplexing:
         # J/N.java
-        zip_helpers.add_to_zip_hermetic(
+        common.add_to_zip_hermetic(
             srcjar,
             f'{short_gen_jni_class.full_name_with_slashes}.java',
             data=CreateProxyJavaFromDict(options, gen_jni_class, combined_dict))
         # org/jni_zero/GEN_JNI.java
-        zip_helpers.add_to_zip_hermetic(
+        common.add_to_zip_hermetic(
             srcjar,
             f'{full_gen_jni_class.full_name_with_slashes}.java',
             data=CreateProxyJavaFromDict(options,
@@ -141,7 +140,7 @@ def _Generate(options, native_sources, java_sources):
                                          forwarding=True))
       else:
         # org/jni_zero/GEN_JNI.java
-        zip_helpers.add_to_zip_hermetic(
+        common.add_to_zip_hermetic(
             srcjar,
             f'{full_gen_jni_class.full_name_with_slashes}.java',
             data=CreateProxyJavaFromDict(options,
@@ -886,6 +885,28 @@ def _ParseSourceList(path):
     return sorted(set(f.read().splitlines()))
 
 
+def _write_depfile(depfile_path, first_gn_output, inputs):
+  def _process_path(path):
+    assert not os.path.isabs(path), f'Found abs path in depfile: {path}'
+    if os.path.sep != posixpath.sep:
+      path = str(pathlib.Path(path).as_posix())
+    assert '\\' not in path, f'Found \\ in depfile: {path}'
+    return path.replace(' ', '\\ ')
+
+  sb = []
+  sb.append(_process_path(first_gn_output))
+  if inputs:
+    # Sort and uniquify to ensure file is hermetic.
+    # One path per line to keep it human readable.
+    sb.append(': \\\n ')
+    sb.append(' \\\n '.join(sorted(_process_path(p) for p in set(inputs))))
+  else:
+    sb.append(': ')
+  sb.append('\n')
+
+  pathlib.Path(depfile_path).write_text(''.join(sb))
+
+
 def main(parser, args):
   if not args.enable_proxy_mocks and args.require_mocks:
     parser.error('--require-mocks requires --enable-proxy-mocks.')
@@ -914,4 +935,4 @@ def main(parser, args):
     all_inputs = native_sources + java_sources + [args.java_sources_file]
     if args.native_sources_file:
       all_inputs.append(args.native_sources_file)
-    action_helpers.write_depfile(args.depfile, args.srcjar_path, all_inputs)
+    _write_depfile(args.depfile, args.srcjar_path, all_inputs)
