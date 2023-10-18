@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/linux_util.h"
 #include "base/process/process_iterator.h"
@@ -248,9 +249,11 @@ base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
       normalized_name[index++] = c;
   }
   normalized_name[index] = 0;
-  return GetDownloadsFolder().AppendASCII(
-      base::StringPrintf("overview_tracing_%s_%" PRId64 ".json",
-                         normalized_name, Now().since_origin().InSeconds()));
+
+  const std::string time =
+      base::UnlocalizedTimeFormatWithPattern(Now(), "yyyy-MM-dd_HH-mm-ss");
+  return GetDownloadsFolder().AppendASCII(base::StringPrintf(
+      "overview_tracing_%s_%s.json", normalized_name, time.c_str()));
 }
 
 ArcGraphicsTracingHandler::ArcGraphicsTracingHandler()
