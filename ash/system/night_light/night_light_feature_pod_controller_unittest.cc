@@ -119,7 +119,7 @@ TEST_P(NightLightFeaturePodControllerTest, Toggle) {
   NightLightControllerImpl* controller = Shell::Get()->night_light_controller();
   // Check that the feature pod button and its label reflects the default
   // Night light off without any auto scheduling.
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   EXPECT_FALSE(IsButtonToggled());
   EXPECT_EQ(ScheduleType::kNone, controller->GetScheduleType());
   EXPECT_EQ(
@@ -129,7 +129,7 @@ TEST_P(NightLightFeaturePodControllerTest, Toggle) {
   // Toggling the button should enable night light and update the button label
   // correctly and maintaining no scheduling.
   PressIcon();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   EXPECT_TRUE(IsButtonToggled());
   EXPECT_EQ(ScheduleType::kNone, controller->GetScheduleType());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE),
@@ -154,10 +154,10 @@ TEST_P(NightLightFeaturePodControllerTest, SunsetToSunrise) {
 
   // Pressing the night light button should switch the status but keep
   // sunset-to-sunrise scheduling.
-  bool enabled = controller->GetEnabled();
+  bool enabled = controller->IsNightLightEnabled();
   PressIcon();
   EXPECT_EQ(ScheduleType::kSunsetToSunrise, controller->GetScheduleType());
-  EXPECT_EQ(!enabled, controller->GetEnabled());
+  EXPECT_EQ(!enabled, controller->IsNightLightEnabled());
   EXPECT_EQ(!enabled, IsButtonToggled());
   EXPECT_EQ(!enabled ? sublabel_on : sublabel_off, GetButtonLabelText());
 
@@ -165,7 +165,7 @@ TEST_P(NightLightFeaturePodControllerTest, SunsetToSunrise) {
   // sunset-to-sunrise scheduling.
   PressIcon();
   EXPECT_EQ(ScheduleType::kSunsetToSunrise, controller->GetScheduleType());
-  EXPECT_EQ(enabled, controller->GetEnabled());
+  EXPECT_EQ(enabled, controller->IsNightLightEnabled());
   EXPECT_EQ(enabled, IsButtonToggled());
   EXPECT_EQ(enabled ? sublabel_on : sublabel_off, GetButtonLabelText());
 }
@@ -197,10 +197,10 @@ TEST_P(NightLightFeaturePodControllerTest, Custom) {
 
   // Pressing the night light button should switch the status and update the
   // label but keep the custom scheduling.
-  bool enabled = controller->GetEnabled();
+  bool enabled = controller->IsNightLightEnabled();
   PressIcon();
   EXPECT_EQ(ScheduleType::kCustom, controller->GetScheduleType());
-  EXPECT_EQ(!enabled, controller->GetEnabled());
+  EXPECT_EQ(!enabled, controller->IsNightLightEnabled());
   EXPECT_EQ(!enabled, IsButtonToggled());
   EXPECT_EQ(!enabled ? sublabel_on : sublabel_off, GetButtonLabelText());
 
@@ -208,7 +208,7 @@ TEST_P(NightLightFeaturePodControllerTest, Custom) {
   // label but keep the custom scheduling.
   PressIcon();
   EXPECT_EQ(ScheduleType::kCustom, controller->GetScheduleType());
-  EXPECT_EQ(enabled, controller->GetEnabled());
+  EXPECT_EQ(enabled, controller->IsNightLightEnabled());
   EXPECT_EQ(enabled, IsButtonToggled());
   EXPECT_EQ(enabled ? sublabel_on : sublabel_off, GetButtonLabelText());
 }

@@ -48,7 +48,7 @@ UnifiedBrightnessView::UnifiedBrightnessView(
       return;
     }
 
-    const bool toggled = night_light_controller_->GetEnabled();
+    const bool toggled = night_light_controller_->IsNightLightEnabled();
     night_light_button_ = AddChildView(std::make_unique<IconButton>(
         base::BindRepeating(&UnifiedBrightnessView::OnNightLightButtonPressed,
                             base::Unretained(this)),
@@ -141,7 +141,7 @@ void UnifiedBrightnessView::OnNightLightButtonPressed() {
 void UnifiedBrightnessView::UpdateNightLightButton() {
   night_light_button_->SetEnabled(
       TrayPopupUtils::CanShowNightLightFeatureTile());
-  const bool toggled = night_light_controller_->GetEnabled();
+  const bool toggled = night_light_controller_->IsNightLightEnabled();
 
   // Sets `night_light_button_` toggle state to update its icon, icon color,
   // and background color.

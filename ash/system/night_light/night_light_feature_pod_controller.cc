@@ -85,12 +85,12 @@ QsFeatureCatalogName NightLightFeaturePodController::GetCatalogName() {
 void NightLightFeaturePodController::OnIconPressed() {
   TrackToggleUMA(/*target_toggle_state=*/!Shell::Get()
                      ->night_light_controller()
-                     ->GetEnabled());
+                     ->IsNightLightEnabled());
 
   Shell::Get()->night_light_controller()->Toggle();
   Update();
 
-  if (Shell::Get()->night_light_controller()->GetEnabled()) {
+  if (Shell::Get()->night_light_controller()->IsNightLightEnabled()) {
     base::RecordAction(
         base::UserMetricsAction("StatusArea_NightLight_Enabled"));
   } else {
@@ -131,7 +131,7 @@ void NightLightFeaturePodController::Refresh() {
 
 const std::u16string NightLightFeaturePodController::GetPodSubLabel() {
   auto* controller = Shell::Get()->night_light_controller();
-  const bool is_enabled = controller->GetEnabled();
+  const bool is_enabled = controller->IsNightLightEnabled();
   const ScheduleType schedule_type = controller->GetScheduleType();
   std::u16string sublabel;
   switch (schedule_type) {
@@ -177,7 +177,7 @@ void NightLightFeaturePodController::Update() {
 
 void NightLightFeaturePodController::UpdateButton() {
   auto* controller = Shell::Get()->night_light_controller();
-  const bool is_enabled = controller->GetEnabled();
+  const bool is_enabled = controller->IsNightLightEnabled();
   button_->SetToggled(is_enabled);
   button_->SetSubLabel(GetPodSubLabel());
 
@@ -190,7 +190,7 @@ void NightLightFeaturePodController::UpdateButton() {
 
 void NightLightFeaturePodController::UpdateTile() {
   auto* controller = Shell::Get()->night_light_controller();
-  const bool is_enabled = controller->GetEnabled();
+  const bool is_enabled = controller->IsNightLightEnabled();
   tile_->SetToggled(is_enabled);
   tile_->SetSubLabel(GetPodSubLabel());
 

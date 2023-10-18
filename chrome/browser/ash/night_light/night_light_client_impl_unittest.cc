@@ -54,7 +54,7 @@ class FakeNightLightController : public ash::NightLightController {
     ++position_pushes_num_;
   }
 
-  bool GetEnabled() const override { return false; }
+  bool IsNightLightEnabled() const override { return false; }
 
   void NotifyScheduleTypeChanged(ScheduleType type) {
     for (auto& observer : observers_) {

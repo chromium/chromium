@@ -181,7 +181,7 @@ class ASH_EXPORT NightLightControllerImpl
 
   // ash::NightLightController:
   void SetCurrentGeoposition(const SimpleGeoposition& position) override;
-  bool GetEnabled() const override;
+  bool IsNightLightEnabled() const override;
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendDone(base::TimeDelta sleep_duration) override;

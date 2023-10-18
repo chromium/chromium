@@ -631,7 +631,7 @@ void NightLightControllerImpl::SetCustomEndTime(TimeOfDay end_time) {
 }
 
 void NightLightControllerImpl::Toggle() {
-  SetEnabled(!GetEnabled(), AnimationDuration::kShort);
+  SetEnabled(!IsNightLightEnabled(), AnimationDuration::kShort);
 }
 
 void NightLightControllerImpl::OnDisplayConfigurationChanged() {
@@ -642,7 +642,8 @@ void NightLightControllerImpl::OnHostInitialized(aura::WindowTreeHost* host) {
   // This newly initialized |host| could be of a newly added display, or of a
   // newly created mirroring display (either for mirroring or unified). we need
   // to apply the current temperature immediately without animation.
-  ApplyTemperatureToHost(host, GetEnabled() ? GetColorTemperature() : 0.0f);
+  ApplyTemperatureToHost(host,
+                         IsNightLightEnabled() ? GetColorTemperature() : 0.0f);
 }
 
 void NightLightControllerImpl::OnActiveUserPrefServiceChanged(
@@ -705,7 +706,7 @@ void NightLightControllerImpl::SetCurrentGeoposition(
   Refresh(/*did_schedule_change=*/true, keep_manual_toggles_during_schedules);
 }
 
-bool NightLightControllerImpl::GetEnabled() const {
+bool NightLightControllerImpl::IsNightLightEnabled() const {
   return active_user_pref_service_ &&
          active_user_pref_service_->GetBoolean(prefs::kNightLightEnabled);
 }
@@ -799,7 +800,7 @@ bool NightLightControllerImpl::MaybeRestoreSchedule() {
     return false;
 
   VLOG(1) << "Restoring a previous schedule.";
-  DCHECK_NE(GetEnabled(), target_state.target_status);
+  DCHECK_NE(IsNightLightEnabled(), target_state.target_status);
   ScheduleNextToggle(target_state.target_time - delegate_->GetNow());
   return true;
 }
@@ -818,7 +819,7 @@ bool NightLightControllerImpl::UserHasEverDismissedAutoNightLightNotification()
 
 void NightLightControllerImpl::ShowAutoNightLightNotification() {
   DCHECK(features::IsAutoNightLightEnabled());
-  DCHECK(GetEnabled());
+  DCHECK(IsNightLightEnabled());
   DCHECK(!UserHasEverDismissedAutoNightLightNotification());
   DCHECK_EQ(ScheduleType::kSunsetToSunrise, GetScheduleType());
 
@@ -900,7 +901,8 @@ void NightLightControllerImpl::StoreCachedGeoposition(
 
 void NightLightControllerImpl::RefreshDisplaysTemperature(
     float color_temperature) {
-  const float new_temperature = GetEnabled() ? color_temperature : 0.0f;
+  const float new_temperature =
+      IsNightLightEnabled() ? color_temperature : 0.0f;
   temperature_animation_->AnimateToNewValue(
       new_temperature, animation_duration_ == AnimationDuration::kShort
                            ? kManualAnimationDuration
@@ -915,7 +917,8 @@ void NightLightControllerImpl::RefreshDisplaysTemperature(
 
 void NightLightControllerImpl::ReapplyColorTemperatures() {
   DCHECK(temperature_animation_);
-  const float target_temperature = GetEnabled() ? GetColorTemperature() : 0.0f;
+  const float target_temperature =
+      IsNightLightEnabled() ? GetColorTemperature() : 0.0f;
   if (temperature_animation_->is_animating()) {
     // Do not interrupt an on-going animation towards the same target value.
     if (temperature_animation_->target_temperature() == target_temperature)
@@ -981,7 +984,7 @@ void NightLightControllerImpl::InitFromUserPrefs() {
 
 void NightLightControllerImpl::NotifyStatusChanged() {
   for (auto& observer : observers_)
-    observer.OnNightLightEnabledChanged(GetEnabled());
+    observer.OnNightLightEnabledChanged(IsNightLightEnabled());
 }
 
 void NightLightControllerImpl::NotifyClientWithScheduleChange() {
@@ -990,7 +993,7 @@ void NightLightControllerImpl::NotifyClientWithScheduleChange() {
 }
 
 void NightLightControllerImpl::OnEnabledPrefChanged() {
-  const bool enabled = GetEnabled();
+  const bool enabled = IsNightLightEnabled();
   VLOG(1) << "Enable state changed. New state: " << enabled << ".";
   DCHECK(active_user_pref_service_);
 
@@ -1178,7 +1181,7 @@ void NightLightControllerImpl::RefreshScheduleTimer(
   DCHECK_GE(start_time, now);
   DCHECK_GE(end_time, now);
 
-  if (did_schedule_change && enable_now != GetEnabled()) {
+  if (did_schedule_change && enable_now != IsNightLightEnabled()) {
     // If the change in the schedule introduces a change in the status, then
     // calling SetEnabled() is all we need, since it will trigger a change in
     // the user prefs to which we will respond by calling Refresh(). This will
@@ -1196,14 +1199,14 @@ void NightLightControllerImpl::RefreshScheduleTimer(
   // wish and maintain the current status that they desire, but we schedule the
   // status to be toggled according to the time that corresponds with the
   // opposite status of the current one.
-  ScheduleNextToggle(GetEnabled() ? end_time - now : start_time - now);
+  ScheduleNextToggle(IsNightLightEnabled() ? end_time - now : start_time - now);
   RefreshDisplaysTemperature(GetColorTemperature());
 }
 
 void NightLightControllerImpl::ScheduleNextToggle(base::TimeDelta delay) {
   DCHECK(active_user_pref_service_);
 
-  const bool new_status = !GetEnabled();
+  const bool new_status = !IsNightLightEnabled();
   const base::Time target_time = delegate_->GetNow() + delay;
 
   per_user_schedule_target_state_[active_user_pref_service_] =

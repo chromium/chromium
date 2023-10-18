@@ -38,7 +38,7 @@ class ASH_PUBLIC_EXPORT NightLightController {
   virtual void SetCurrentGeoposition(const SimpleGeoposition& position) = 0;
 
   // Whether Night Light is enabled.
-  virtual bool GetEnabled() const = 0;
+  virtual bool IsNightLightEnabled() const = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

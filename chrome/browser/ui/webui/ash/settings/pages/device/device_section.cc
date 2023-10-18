@@ -1043,7 +1043,7 @@ DeviceSection::DeviceSection(Profile* profile,
   if (night_light_controller) {
     NightLightController::GetInstance()->AddObserver(this);
     OnNightLightEnabledChanged(
-        NightLightController::GetInstance()->GetEnabled());
+        NightLightController::GetInstance()->IsNightLightEnabled());
   }
 }
 
@@ -1557,7 +1557,7 @@ void DeviceSection::OnGetDisplayLayoutInfo(
   }
 
   // Night Light on settings.
-  if (NightLightController::GetInstance()->GetEnabled()) {
+  if (NightLightController::GetInstance()->IsNightLightEnabled()) {
     updater.AddSearchTags(GetDisplayNightLightOnSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetDisplayNightLightOnSearchConcepts());

@@ -277,14 +277,14 @@ TEST_F(NightLightTest, TestToggle) {
   TestObserver observer;
   NightLightControllerImpl* controller = GetController();
   SetNightLightEnabled(false);
-  ASSERT_FALSE(controller->GetEnabled());
+  ASSERT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   controller->Toggle();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   EXPECT_TRUE(observer.status());
   TestCompositorsTemperature(GetController()->GetColorTemperature());
   controller->Toggle();
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   EXPECT_FALSE(observer.status());
   TestCompositorsTemperature(0.0f);
 }
@@ -296,7 +296,7 @@ TEST_F(NightLightTest, TestSetTemperature) {
   TestObserver observer;
   NightLightControllerImpl* controller = GetController();
   SetNightLightEnabled(false);
-  ASSERT_FALSE(controller->GetEnabled());
+  ASSERT_FALSE(controller->IsNightLightEnabled());
 
   // Setting the temperature while NightLight is disabled only changes the
   // color temperature field, but root layers temperatures are not affected, nor
@@ -309,7 +309,7 @@ TEST_F(NightLightTest, TestSetTemperature) {
   // When NightLight is enabled, temperature changes actually affect the root
   // layers temperatures.
   SetNightLightEnabled(true);
-  ASSERT_TRUE(controller->GetEnabled());
+  ASSERT_TRUE(controller->IsNightLightEnabled());
   const float temperature2 = 0.7f;
   controller->SetColorTemperature(temperature2);
   EXPECT_EQ(temperature2, controller->GetColorTemperature());
@@ -320,7 +320,7 @@ TEST_F(NightLightTest, TestSetTemperature) {
   // 0.0f. Observers only receive an enabled status change notification; no
   // temperature change notification.
   SetNightLightEnabled(false);
-  ASSERT_FALSE(controller->GetEnabled());
+  ASSERT_FALSE(controller->IsNightLightEnabled());
   EXPECT_FALSE(observer.status());
   EXPECT_EQ(temperature2, controller->GetColorTemperature());
   TestCompositorsTemperature(0.0f);
@@ -328,7 +328,7 @@ TEST_F(NightLightTest, TestSetTemperature) {
   // When re-enabled, the stored temperature is re-applied.
   SetNightLightEnabled(true);
   EXPECT_TRUE(observer.status());
-  ASSERT_TRUE(controller->GetEnabled());
+  ASSERT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(temperature2);
 }
 
@@ -336,7 +336,7 @@ TEST_F(NightLightTest, TestNightLightWithDisplayConfigurationChanges) {
   // Start with one display and enable NightLight.
   NightLightControllerImpl* controller = GetController();
   SetNightLightEnabled(true);
-  ASSERT_TRUE(controller->GetEnabled());
+  ASSERT_TRUE(controller->IsNightLightEnabled());
   const float temperature = 0.2f;
   controller->SetColorTemperature(temperature);
   EXPECT_EQ(temperature, controller->GetColorTemperature());
@@ -389,7 +389,7 @@ TEST_F(NightLightTest, TestUserSwitchAndSettingsPersistence) {
   // Test start with user1 logged in.
   NightLightControllerImpl* controller = GetController();
   SetNightLightEnabled(true);
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   const float user1_temperature = 0.8f;
   controller->SetColorTemperature(user1_temperature);
   EXPECT_EQ(user1_temperature, controller->GetColorTemperature());
@@ -397,7 +397,7 @@ TEST_F(NightLightTest, TestUserSwitchAndSettingsPersistence) {
 
   // Switch to user 2, and expect NightLight to be disabled.
   SwitchActiveUser(kUser2Email);
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   // Changing user_2's color temperature shouldn't affect user_1's settings.
   const float user2_temperature = 0.2f;
   user2_pref_service()->SetDouble(prefs::kNightLightTemperature,
@@ -410,7 +410,7 @@ TEST_F(NightLightTest, TestUserSwitchAndSettingsPersistence) {
   // Switch back to user 1, to find NightLight is still enabled, and the same
   // user's color temperature are re-applied.
   SwitchActiveUser(kUser1Email);
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   EXPECT_EQ(user1_temperature, controller->GetColorTemperature());
   TestCompositorsTemperature(user1_temperature);
 }
@@ -421,7 +421,7 @@ TEST_F(NightLightTest, TestOutsidePreferencesChangesAreApplied) {
   // Test start with user1 logged in.
   NightLightControllerImpl* controller = GetController();
   user1_pref_service()->SetBoolean(prefs::kNightLightEnabled, true);
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   const float temperature1 = 0.65f;
   user1_pref_service()->SetDouble(prefs::kNightLightTemperature, temperature1);
   EXPECT_EQ(temperature1, controller->GetColorTemperature());
@@ -431,7 +431,7 @@ TEST_F(NightLightTest, TestOutsidePreferencesChangesAreApplied) {
   EXPECT_EQ(temperature2, controller->GetColorTemperature());
   TestCompositorsTemperature(temperature2);
   user1_pref_service()->SetBoolean(prefs::kNightLightEnabled, false);
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
 }
 
 // Tests transitioning from kNone to kCustom and back to kNone schedule types.
@@ -452,14 +452,14 @@ TEST_F(NightLightTest, TestScheduleNoneToCustomTransition) {
   //
   // Even though "Now" is inside the NightLight interval, nothing should change,
   // since the schedule type is "none".
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
 
   // Now change the schedule type to custom, NightLight should turn on
   // immediately with a short animation duration, and the timer should be
   // running with a delay of exactly 2 hours scheduling the end.
   controller->SetScheduleType(ScheduleType::kCustom);
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kShort,
             controller->last_animation_duration());
@@ -469,7 +469,7 @@ TEST_F(NightLightTest, TestScheduleNoneToCustomTransition) {
   // If the user changes the schedule type to "none", the NightLight status
   // should not change, but the timer should not be running.
   controller->SetScheduleType(ScheduleType::kNone);
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
   EXPECT_FALSE(controller->timer()->IsRunning());
 }
@@ -482,7 +482,7 @@ TEST_F(NightLightTest, TestCustomScheduleReachingEndTime) {
   controller->SetCustomStartTime(TimeOfDay(15 * 60));
   controller->SetCustomEndTime(TimeOfDay(20 * 60));
   controller->SetScheduleType(ScheduleType::kCustom);
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
 
   // Simulate reaching the end time by triggering the timer's user task. Make
@@ -496,7 +496,7 @@ TEST_F(NightLightTest, TestCustomScheduleReachingEndTime) {
   // Now is 8:00 PM.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));
   controller->timer()->FireNow();
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kLong,
             controller->last_animation_duration());
@@ -521,7 +521,7 @@ TEST_F(NightLightTest, TestExplicitUserTogglesWhileScheduleIsActive) {
   controller->SetCustomStartTime(TimeOfDay(15 * 60));
   controller->SetCustomEndTime(TimeOfDay(20 * 60));
   controller->SetScheduleType(ScheduleType::kCustom);
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
 
   // What happens if the user manually turns NightLight on while the schedule
@@ -530,7 +530,7 @@ TEST_F(NightLightTest, TestExplicitUserTogglesWhileScheduleIsActive) {
   // button must override any automatic schedule, and should be performed with
   // the short animation duration.
   controller->Toggle();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kShort,
             controller->last_animation_duration());
@@ -542,7 +542,7 @@ TEST_F(NightLightTest, TestExplicitUserTogglesWhileScheduleIsActive) {
   // Manually turning it back off should also be respected, and this time the
   // start is scheduled at 3:00 PM tomorrow after 19 hours from "now" (8:00 PM).
   controller->Toggle();
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kShort,
             controller->last_animation_duration());
@@ -570,7 +570,7 @@ TEST_F(NightLightTest, TestChangingStartTimesThatDontChangeTheStatus) {
   // to kCustom, shouldn't affect the status. Validate the timer is running with
   // a 2-hour delay.
   controller->SetScheduleType(ScheduleType::kCustom);
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::Hours(2), controller->timer()->GetCurrentDelay());
@@ -578,7 +578,7 @@ TEST_F(NightLightTest, TestChangingStartTimesThatDontChangeTheStatus) {
   // Change the start time in such a way that doesn't change the status, but
   // despite that, confirm that schedule has been updated.
   controller->SetCustomStartTime(TimeOfDay(19 * 60));  // 7:00 PM.
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::Hours(3), controller->timer()->GetCurrentDelay());
@@ -586,7 +586,7 @@ TEST_F(NightLightTest, TestChangingStartTimesThatDontChangeTheStatus) {
   // Changing the end time in a similar fashion to the above and expect no
   // change.
   controller->SetCustomEndTime(TimeOfDay(23 * 60));  // 11:00 PM.
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::Hours(3), controller->timer()->GetCurrentDelay());
@@ -611,7 +611,7 @@ TEST_F(NightLightTest, TestSunsetSunrise) {
   // Custom times should have no effect when the schedule type is sunset to
   // sunrise.
   controller->SetScheduleType(ScheduleType::kSunsetToSunrise);
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::Hours(4), controller->timer()->GetCurrentDelay());
@@ -619,7 +619,7 @@ TEST_F(NightLightTest, TestSunsetSunrise) {
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
   controller->timer()->FireNow();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kLong,
             controller->last_animation_duration());
@@ -630,7 +630,7 @@ TEST_F(NightLightTest, TestSunsetSunrise) {
   // Simulate reaching sunrise.
   delegate()->SetFakeNow(TimeOfDay(5 * 60));  // Now is 5:00 AM.
   controller->timer()->FireNow();
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kLong,
             controller->last_animation_duration());
@@ -656,7 +656,7 @@ TEST_F(NightLightTest, TestSunsetSunriseGeoposition) {
 
   // Expect that timer is running and the start is scheduled after 4 hours.
   controller->SetScheduleType(ScheduleType::kSunsetToSunrise);
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::Hours(4), controller->timer()->GetCurrentDelay());
@@ -664,7 +664,7 @@ TEST_F(NightLightTest, TestSunsetSunriseGeoposition) {
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
   controller->timer()->FireNow();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kLong,
             controller->last_animation_duration());
@@ -685,7 +685,7 @@ TEST_F(NightLightTest, TestSunsetSunriseGeoposition) {
 
   // Expect that the scheduled end delay has been updated, and the status hasn't
   // changed.
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
   EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::Hours(7), controller->timer()->GetCurrentDelay());
@@ -693,7 +693,7 @@ TEST_F(NightLightTest, TestSunsetSunriseGeoposition) {
   // Simulate reaching sunrise.
   delegate()->SetFakeNow(TimeOfDay(3 * 60));  // Now is 5:00 AM.
   controller->timer()->FireNow();
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kLong,
             controller->last_animation_duration());
@@ -737,7 +737,7 @@ TEST_F(NightLightTest, DISABLED_TestCustomScheduleGeopositionChanges) {
 
   // Expect that timer is running and is scheduled at next custom start time.
   controller->SetScheduleType(ScheduleType::kCustom);
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::Minutes(time_diff(fake_now, kCustom_Start)),
@@ -758,7 +758,7 @@ TEST_F(NightLightTest, DISABLED_TestCustomScheduleGeopositionChanges) {
 
   // Expect the controller to enter night light mode and  the scheduled end
   // delay has been updated.
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kShort,
             controller->last_animation_duration());
@@ -774,7 +774,7 @@ TEST_F(NightLightTest, DISABLED_TestCustomScheduleGeopositionChanges) {
 
   controller->SetCurrentGeoposition(
       SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kShort,
             controller->last_animation_duration());
@@ -898,7 +898,7 @@ TEST_F(NightLightTest, TestCustomScheduleOnResume) {
   controller->SetCustomEndTime(TimeOfDay(22 * 60));
   controller->SetScheduleType(ScheduleType::kCustom);
 
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_TRUE(controller->timer()->IsRunning());
   // NightLight should start in 2 hours.
@@ -909,7 +909,7 @@ TEST_F(NightLightTest, TestCustomScheduleOnResume) {
   delegate()->SetFakeNow(TimeOfDay(19 * 60));
   controller->SuspendDone(base::TimeDelta::Max());
 
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.4f);
   EXPECT_TRUE(controller->timer()->IsRunning());
   // NightLight should end in 3 hours.
@@ -939,7 +939,7 @@ TEST_F(NightLightTest, TestCustomScheduleInvertedStartAndEndTimesCase1) {
   controller->SetCustomEndTime(TimeOfDay(6 * 60));
   controller->SetScheduleType(ScheduleType::kCustom);
 
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.4f);
   EXPECT_TRUE(controller->timer()->IsRunning());
   // NightLight should end in two hours.
@@ -964,7 +964,7 @@ TEST_F(NightLightTest, TestCustomScheduleInvertedStartAndEndTimesCase2) {
   controller->SetCustomEndTime(TimeOfDay(4 * 60));
   controller->SetScheduleType(ScheduleType::kCustom);
 
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_TRUE(controller->timer()->IsRunning());
   // NightLight should start in 15 hours.
@@ -989,7 +989,7 @@ TEST_F(NightLightTest, TestCustomScheduleInvertedStartAndEndTimesCase3) {
   controller->SetCustomEndTime(TimeOfDay(4 * 60));
   controller->SetScheduleType(ScheduleType::kCustom);
 
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   TestCompositorsTemperature(0.4f);
   EXPECT_TRUE(controller->timer()->IsRunning());
   // NightLight should end in 5 hours.
@@ -1112,7 +1112,7 @@ TEST_F(NightLightTest, MultiUserManualStatusToggleWithSchedules) {
   // enabled.
   auto verify_night_light_state = [controller](bool expected_status,
                                                float user_temperature) {
-    EXPECT_EQ(expected_status, controller->GetEnabled());
+    EXPECT_EQ(expected_status, controller->IsNightLightEnabled());
     TestCompositorsTemperature(expected_status ? user_temperature : 0.0f);
   };
 
@@ -1178,12 +1178,12 @@ TEST_F(NightLightTest, ManualStatusToggleCanPersistAfterResumeFromSuspend) {
   controller->SetCustomStartTime(MakeTimeOfDay(3, kPM));
   controller->SetCustomEndTime(MakeTimeOfDay(8, kPM));
   controller->SetScheduleType(ScheduleType::kCustom);
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
 
   // Toggle the status manually and expect that NightLight is scheduled to
   // turn back off at 8:00 PM.
   controller->Toggle();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::Hours(9), controller->timer()->GetCurrentDelay());
 
@@ -1191,18 +1191,18 @@ TEST_F(NightLightTest, ManualStatusToggleCanPersistAfterResumeFromSuspend) {
   // custom schedule). However, the manual toggle to on should be kept.
   delegate()->SetFakeNow(MakeTimeOfDay(2, kPM));
   controller->SuspendDone(base::TimeDelta{});
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
 
   // Suspend again and resume at 5:00 PM (which is within the user's custom
   // schedule). The schedule should be applied normally.
   delegate()->SetFakeNow(MakeTimeOfDay(5, kPM));
   controller->SuspendDone(base::TimeDelta{});
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
 
   // Suspend and resume at 9:00 PM and expect NightLight to be off.
   delegate()->SetFakeNow(MakeTimeOfDay(9, kPM));
   controller->SuspendDone(base::TimeDelta{});
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
 }
 
 // Fixture for testing behavior of Night Light when displays support hardware
@@ -1638,7 +1638,7 @@ TEST_F(AutoNightLightTest, Notification) {
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
   controller->timer()->FireNow();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   auto* notification = controller->GetAutoNightLightNotificationForTesting();
   ASSERT_TRUE(notification);
   ASSERT_TRUE(notification->delegate());
@@ -1649,13 +1649,13 @@ TEST_F(AutoNightLightTest, Notification) {
   notification->delegate()->Click(absl::nullopt, absl::nullopt);
   controller->SetEnabled(false,
                          NightLightControllerImpl::AnimationDuration::kShort);
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());
 
   // Simulate reaching next sunset. The notification should no longer show.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
   controller->timer()->FireNow();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());
 }
 
@@ -1671,7 +1671,7 @@ TEST_F(AutoNightLightTest, DismissNotificationOnTurningOff) {
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(17 * 60));  // Now is 5:00 PM.
   controller->timer()->FireNow();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   auto* notification = controller->GetAutoNightLightNotificationForTesting();
   ASSERT_TRUE(notification);
   ASSERT_TRUE(notification->delegate());
@@ -1682,14 +1682,14 @@ TEST_F(AutoNightLightTest, DismissNotificationOnTurningOff) {
   // should not affect kAutoNightLightNotificationDismissed.
   controller->SetCurrentGeoposition(
       SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());
 
   // Simulate reaching next sunset. The notification should still show, since it
   // was never dismissed by the user.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
   controller->timer()->FireNow();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   EXPECT_TRUE(controller->GetAutoNightLightNotificationForTesting());
 }
 TEST_F(AutoNightLightTest, CannotDisableNotificationWhenSessionIsBlocked) {
@@ -1700,7 +1700,7 @@ TEST_F(AutoNightLightTest, CannotDisableNotificationWhenSessionIsBlocked) {
   NightLightControllerImpl* controller = GetController();
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
   controller->timer()->FireNow();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   auto* notification = controller->GetAutoNightLightNotificationForTesting();
   ASSERT_TRUE(notification);
   ASSERT_TRUE(notification->delegate());
@@ -1720,23 +1720,23 @@ TEST_F(AutoNightLightTest, OverriddenByUser) {
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
   controller->timer()->FireNow();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());
 }
 
 TEST_F(AutoNightLightTest, NoNotificationWhenManuallyEnabledFromSettings) {
   NightLightControllerImpl* controller = GetController();
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   user1_pref_service()->SetBoolean(prefs::kNightLightEnabled, true);
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());
 }
 
 TEST_F(AutoNightLightTest, NoNotificationWhenManuallyEnabledFromSystemMenu) {
   NightLightControllerImpl* controller = GetController();
-  EXPECT_FALSE(controller->GetEnabled());
+  EXPECT_FALSE(controller->IsNightLightEnabled());
   controller->Toggle();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());
 }
 
@@ -1761,7 +1761,7 @@ class AutoNightLightOnFirstLogin : public AutoNightLightTest {
 
 TEST_F(AutoNightLightOnFirstLogin, NotifyOnFirstLogin) {
   NightLightControllerImpl* controller = GetController();
-  EXPECT_TRUE(controller->GetEnabled());
+  EXPECT_TRUE(controller->IsNightLightEnabled());
   EXPECT_TRUE(controller->GetAutoNightLightNotificationForTesting());
 }
 
