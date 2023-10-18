@@ -12,6 +12,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version",
           "--gpu-vendor-id",
           "10de",
           "--gpu-device-id",

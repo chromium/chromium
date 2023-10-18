@@ -950,6 +950,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         '-v',
         '--stable-jobs',
         '--extra-browser-args=%s' % ' '.join(extra_browser_args),
+        '--enforce-browser-version',
     ] + args
     result['args'] = self.maybe_fixup_args_array(
         self.substitute_gpu_args(tester_config, result, args))

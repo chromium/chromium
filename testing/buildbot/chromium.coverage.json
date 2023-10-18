@@ -24666,6 +24666,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -28932,6 +28933,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],

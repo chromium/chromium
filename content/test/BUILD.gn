@@ -930,6 +930,7 @@ group("webgpu_cts_scripts") {
 group("telemetry_gpu_common_data") {
   testonly = true
   data = [
+    "//chrome/VERSION",
     "//content/test/data/gpu/",
     "//content/test/gpu/gpu_path_util/",
     "//content/test/gpu/gpu_tests/",

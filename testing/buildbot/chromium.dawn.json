@@ -11,7 +11,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -149,6 +150,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -187,6 +189,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
@@ -229,7 +232,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -367,6 +371,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -405,6 +410,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
@@ -548,6 +554,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -586,6 +593,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
@@ -729,6 +737,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -767,6 +776,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
@@ -1214,6 +1224,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -1249,6 +1260,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -1347,6 +1359,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -1384,6 +1397,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -1721,6 +1735,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -1756,6 +1771,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -1853,6 +1869,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -1890,6 +1907,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -2226,6 +2244,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -2261,6 +2280,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -2359,6 +2379,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -2396,6 +2417,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -2733,6 +2755,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -2768,6 +2791,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -2865,6 +2889,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -2902,6 +2927,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -3262,6 +3288,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -3300,6 +3327,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -3404,6 +3432,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -3444,6 +3473,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -3807,6 +3837,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -3845,6 +3876,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -3949,6 +3981,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -3989,6 +4022,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -4354,6 +4388,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -4392,6 +4427,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -4496,6 +4532,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -4536,6 +4573,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -4877,6 +4915,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -4913,6 +4952,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -5011,6 +5051,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -5049,6 +5090,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -5091,7 +5133,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5127,7 +5170,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5480,6 +5524,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -5518,6 +5563,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -5622,6 +5668,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -5662,6 +5709,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -6003,6 +6051,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -6039,6 +6088,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -6137,6 +6187,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -6175,6 +6226,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -6515,6 +6567,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -6912,6 +6965,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -7333,6 +7387,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-dxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
@@ -7371,6 +7426,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-dxc",
           "--use-webgpu-power-preference=default-high-performance",
@@ -7410,6 +7466,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -7507,6 +7564,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -7898,6 +7956,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-dxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -7936,6 +7995,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-dxc",
           "--use-webgpu-power-preference=default-high-performance",
@@ -7975,6 +8035,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -8011,6 +8072,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -8109,6 +8171,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -8147,6 +8210,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -8189,7 +8253,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -8542,6 +8607,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-dxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
@@ -8580,6 +8646,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-dxc",
           "--use-webgpu-power-preference=default-high-performance",
@@ -8619,6 +8686,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -8716,6 +8784,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -9107,6 +9176,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-dxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -9145,6 +9215,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-dxc",
           "--use-webgpu-power-preference=default-high-performance",
@@ -9184,6 +9255,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -9220,6 +9292,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -9318,6 +9391,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -9356,6 +9430,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -9695,6 +9770,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -9790,6 +9866,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -10126,6 +10203,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -10221,6 +10299,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -10259,6 +10338,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
@@ -10301,7 +10381,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10630,6 +10711,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -10725,6 +10807,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -11061,6 +11144,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -11156,6 +11240,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--use-webgpu-power-preference=default-high-performance",
@@ -11194,6 +11279,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",

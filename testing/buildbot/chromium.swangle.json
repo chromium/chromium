@@ -12,6 +12,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough",
+          "--enforce-browser-version",
           "--xvfb",
           "--jobs=4"
         ],
@@ -736,6 +737,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough",
+          "--enforce-browser-version",
           "--xvfb",
           "--jobs=4"
         ],
@@ -773,6 +775,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough",
+          "--enforce-browser-version",
           "--xvfb",
           "--jobs=4"
         ],
