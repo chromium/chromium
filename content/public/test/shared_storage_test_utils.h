@@ -40,8 +40,6 @@ std::string GetSharedStorageSelectURLDisabledMessage();
 
 std::string GetSharedStorageAddModuleDisabledMessage();
 
-void SetBypassIsSharedStorageAllowed(bool allow);
-
 size_t GetAttachedSharedStorageWorkletHostsCount(
     StoragePartition* storage_partition);
 

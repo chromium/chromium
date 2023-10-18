@@ -75,12 +75,6 @@ const char kSharedStorageWorkletExpiredMessage[] =
     "The sharedStorage worklet cannot execute further operations because the "
     "previous operation did not include the option \'keepAlive: true\'.";
 
-// static
-bool& SharedStorageDocumentServiceImpl::
-    GetBypassIsSharedStorageAllowedForTesting() {
-  return GetBypassIsSharedStorageAllowed();
-}
-
 SharedStorageDocumentServiceImpl::~SharedStorageDocumentServiceImpl() {
   GetSharedStorageWorkletHostManager()->OnDocumentServiceDestroyed(this);
 }
@@ -265,7 +259,7 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     return;
   }
 
-  if (!IsSharedStorageAllowed()) {
+  if (!IsSharedStorageSelectURLAllowed()) {
     std::move(callback).Run(
         /*success=*/false,
         /*error_message=*/kSharedStorageSelectURLDisabledMessage,
@@ -411,12 +405,6 @@ SharedStorageDocumentServiceImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-// static
-bool& SharedStorageDocumentServiceImpl::GetBypassIsSharedStorageAllowed() {
-  static bool should_bypass = false;
-  return should_bypass;
-}
-
 SharedStorageDocumentServiceImpl::SharedStorageDocumentServiceImpl(
     RenderFrameHost* rfh)
     : DocumentUserData<SharedStorageDocumentServiceImpl>(rfh),
@@ -458,9 +446,6 @@ SharedStorageDocumentServiceImpl::GetSharedStorageWorkletHostManager() {
 }
 
 bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowed() {
-  if (GetBypassIsSharedStorageAllowed())
-    return true;
-
   // Will trigger a call to
   // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
   // reporting purposes.
@@ -470,10 +455,6 @@ bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowed() {
 }
 
 bool SharedStorageDocumentServiceImpl::IsSharedStorageSelectURLAllowed() {
-  if (GetBypassIsSharedStorageAllowed()) {
-    return true;
-  }
-
   // Will trigger a call to
   // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
   // reporting purposes.
@@ -487,10 +468,6 @@ bool SharedStorageDocumentServiceImpl::IsSharedStorageSelectURLAllowed() {
 }
 
 bool SharedStorageDocumentServiceImpl::IsSharedStorageAddModuleAllowed() {
-  if (GetBypassIsSharedStorageAllowed()) {
-    return true;
-  }
-
   // Will trigger a call to
   // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
   // reporting purposes.

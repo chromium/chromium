@@ -118,11 +118,6 @@ std::string GetSharedStorageAddModuleDisabledMessage() {
   return kSharedStorageAddModuleDisabledMessage;
 }
 
-void SetBypassIsSharedStorageAllowed(bool allow) {
-  SharedStorageDocumentServiceImpl::
-      GetBypassIsSharedStorageAllowedForTesting() = allow;
-}
-
 size_t GetAttachedSharedStorageWorkletHostsCount(
     StoragePartition* storage_partition) {
   SharedStorageWorkletHostManager* manager =
