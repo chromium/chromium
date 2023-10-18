@@ -180,12 +180,13 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
     // Remote update always win in case of conflict, because bridge takes care
     // of reapplying pending local changes after processing the remote update.
     entity_->RecordForcedRemoteUpdate(updates[0], /*trimmed_specifics=*/{});
-    error = bridge_->ApplyIncrementalSyncChanges(std::move(updates[0].entity));
   } else if (!entity_->MatchesData(updates[0].entity)) {
     // Inform the bridge of the new or updated data.
     entity_->RecordAcceptedRemoteUpdate(updates[0], /*trimmed_specifics=*/{});
-    error = bridge_->ApplyIncrementalSyncChanges(std::move(updates[0].entity));
   }
+  LogNonReflectionUpdateFreshnessToUma(NIGORI,
+                                       updates[0].entity.modification_time);
+  error = bridge_->ApplyIncrementalSyncChanges(std::move(updates[0].entity));
 
   if (error) {
     ReportError(*error);
