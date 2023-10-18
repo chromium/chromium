@@ -32,6 +32,7 @@ build_webui_tests("build") {
     "downloads_page_test.ts",
     "dropdown_menu_test.ts",
     "extension_controlled_indicator_test.ts",
+    "file_system_site_details_test.ts",
     "file_system_site_entry_test.ts",
     "file_system_site_entry_item_test.ts",
     "file_system_site_list_test.ts",

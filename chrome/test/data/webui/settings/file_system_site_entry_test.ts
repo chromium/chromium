@@ -7,13 +7,18 @@ import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FileSystemGrant, FileSystemSiteEntryElement, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FileSystemGrant, FileSystemSiteEntryElement, OriginFileSystemGrants, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 // clang-format on
 suite('FileSystemSettings_EnablePersistentPermissions', function() {
   let testElement: FileSystemSiteEntryElement;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  const kTestOrigin: string = 'https://a.com/';
 
   suiteSetup(function() {
     CrSettingsPrefs.setInitialized();
@@ -23,80 +28,52 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
     });
   });
 
-  // Initialize the file-system-site-list element.
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     testElement = new FileSystemSiteEntryElement();
     document.body.appendChild(testElement);
+
+    // Initialize the file-system-site-list.
+    const filePath: string = 'a/b';
+    const TEST_FILE_SYSTEM_FILE_WRITE_GRANT: FileSystemGrant = {
+      origin: kTestOrigin,
+      filePath: filePath,
+      displayName: filePath,
+      isDirectory: false,
+    };
+    const FILE_SYSTEM_GRANTS: OriginFileSystemGrants = {
+      origin: kTestOrigin,
+      viewGrants: [],
+      editGrants: [TEST_FILE_SYSTEM_FILE_WRITE_GRANT],
+    };
+    testElement.grantsPerOrigin = FILE_SYSTEM_GRANTS;
+    flush();
   });
 
-  test('FileSystemSiteListEntriesPopulated', function() {
-    const origin: string = 'https://a.com/';
-    const filePath1: string = 'a/b';
-    const filePath2: string = 'a/b/c';
-    const filePath3: string = 'e/f';
-    const directoryFilePath1: string = 'g/h/';
-    const directoryFilePath2: string = 'i/';
+  test('FileSystemSiteListEntries_RevokeAllGrants', async function() {
+    const removeGrantsButton =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#removeGrants');
+    assertTrue(!!removeGrantsButton);
 
-    const TEST_FILE_SYSTEM_FILE_WRITE_GRANT1: FileSystemGrant = {
-      origin: origin,
-      filePath: filePath1,
-      displayName: filePath1,
-      isDirectory: false,
-    };
-    const TEST_FILE_SYSTEM_FILE_WRITE_GRANT2: FileSystemGrant = {
-      origin: origin,
-      filePath: filePath2,
-      displayName: filePath2,
-      isDirectory: false,
-    };
-    const TEST_FILE_SYSTEM_FILE_READ_GRANT: FileSystemGrant = {
-      origin: origin,
-      filePath: filePath3,
-      displayName: filePath3,
-      isDirectory: false,
-    };
-    const TEST_FILE_SYSTEM_DIRECTORY_READ_GRANT: FileSystemGrant = {
-      origin: origin,
-      filePath: directoryFilePath1,
-      displayName: directoryFilePath1,
-      isDirectory: true,
-    };
-    const TEST_FILE_SYSTEM_DIRECTORY_WRITE_GRANT: FileSystemGrant = {
-      origin: origin,
-      filePath: directoryFilePath2,
-      displayName: directoryFilePath2,
-      isDirectory: true,
-    };
-    const TEST_FILE_SYSTEM_GRANTS_PER_ORIGIN: OriginFileSystemGrants = {
-      origin: origin,
-      viewGrants: [
-        TEST_FILE_SYSTEM_DIRECTORY_READ_GRANT,
-        TEST_FILE_SYSTEM_FILE_READ_GRANT,
-      ],
-      editGrants: [
-        TEST_FILE_SYSTEM_DIRECTORY_WRITE_GRANT,
-        TEST_FILE_SYSTEM_FILE_WRITE_GRANT1,
-        TEST_FILE_SYSTEM_FILE_WRITE_GRANT2,
-      ],
-    };
-    testElement.grantsPerOrigin = TEST_FILE_SYSTEM_GRANTS_PER_ORIGIN;
-    flush();
+    const whenFired = eventToPromise('revoke-grants', testElement);
+    removeGrantsButton.click();
+    const permissionRemovedEvent = await whenFired;
+    const {origin} = permissionRemovedEvent.detail;
+    assertEquals(origin, kTestOrigin);
+  });
 
-    // The dropdown button opens the dropdown list.
-    testElement.$.dropdownButton.click();
-    const collapseChild = testElement.$.collapseChild;
-
-    assertTrue(collapseChild!.opened);
-    flush();
-
-    // Ensure that the `collapseChild` element is populated as expected.
+  test('FileSystemSiteListEntries_NavigateToSiteDetails', function() {
+    const navigateToSiteDetailsForOriginButton =
+        testElement.shadowRoot!.querySelector<HTMLElement>(
+            '#fileSystemSiteDetails');
+    assertTrue(!!navigateToSiteDetailsForOriginButton);
+    navigateToSiteDetailsForOriginButton.click();
     assertEquals(
-        5,
-        collapseChild!.querySelectorAll('file-system-site-entry-item').length);
-
-    // The dropdown button closes the dropdown list if tapped when opened.
-    testElement.$.dropdownButton.click();
-    assertFalse(collapseChild!.opened);
+        Router.getInstance().getCurrentRoute().path,
+        routes.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS.path);
+    assertEquals(
+        Router.getInstance().getQueryParameters().get('site'), kTestOrigin);
   });
 });

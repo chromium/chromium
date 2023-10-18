@@ -1006,6 +1006,13 @@
           </template>
         </settings-subpage>
       </template>
+      <template is="dom-if" route-path="/content/filesystem/siteDetails"
+          no-search>
+        <settings-subpage page-title="[[pageTitle]]">
+          <file-system-site-details page-title="{{pageTitle}}">
+          </file-system-site-details>
+        </settings-subpage>
+      </template>
       <template is="dom-if" route-path="/content/hidDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsHidDevices}"
           learn-more-url="$i18n{chooserHidOverviewUrl}">

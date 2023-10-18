@@ -30,6 +30,7 @@ import './privacy_page/security_page.js';
 import './safety_hub/safety_hub_page.js';
 import './safety_hub/safety_hub_entry_point.js';
 import './site_settings/all_sites.js';
+import './site_settings/file_system_site_details.js';
 import './site_settings/file_system_site_entry.js';
 import './site_settings/file_system_site_entry_item.js';
 import './site_settings/file_system_site_list.js';
@@ -214,6 +215,7 @@ export {ChooserExceptionListElement} from './site_settings/chooser_exception_lis
 export {ChooserExceptionListEntryElement} from './site_settings/chooser_exception_list_entry.js';
 export {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, CookiesExceptionType, SettingsState, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SortMethod} from './site_settings/constants.js';
 export {SettingsEditExceptionDialogElement} from './site_settings/edit_exception_dialog.js';
+export {FileSystemSiteDetailsElement} from './site_settings/file_system_site_details.js';
 export {FileSystemSiteEntryElement} from './site_settings/file_system_site_entry.js';
 export {FileSystemSiteEntryItemElement} from './site_settings/file_system_site_entry_item.js';
 export {FileSystemSiteListElement} from './site_settings/file_system_site_list.js';
