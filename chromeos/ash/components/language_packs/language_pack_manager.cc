@@ -460,12 +460,10 @@ void LanguagePackManager::OnDlcStateChanged(
 }
 
 LanguagePackManager::LanguagePackManager() {
-  DlcserviceClient::Get()->AddObserver(this);
+  obs_.Observe(DlcserviceClient::Get());
 }
 
-LanguagePackManager::~LanguagePackManager() {
-  DlcserviceClient::Get()->RemoveObserver(this);
-}
+LanguagePackManager::~LanguagePackManager() {}
 
 void LanguagePackManager::ResetForTesting() {
   observers_.Clear();

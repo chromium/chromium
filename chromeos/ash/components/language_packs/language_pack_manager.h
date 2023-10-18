@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -262,6 +263,8 @@ class LanguagePackManager : public DlcserviceClient::Observer {
                               const dlcservice::DlcState& dlc_state);
 
   base::ObserverList<Observer> observers_;
+  base::ScopedObservation<DlcserviceClient, DlcserviceClient::Observer> obs_{
+      this};
 };
 
 }  // namespace ash::language_packs
