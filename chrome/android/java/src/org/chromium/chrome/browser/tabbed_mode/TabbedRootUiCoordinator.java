@@ -493,8 +493,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         return isShowingStartSurfaceHomepage();
                     }
                 },
-                mCompositorViewHolderSupplier.get()::addTouchEventObserver,
-                mCompositorViewHolderSupplier.get()::removeTouchEventObserver, mLayoutManager);
+                () -> mCompositorViewHolderSupplier.get(),
+                mLayoutManager);
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
 
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {

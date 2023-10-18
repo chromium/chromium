@@ -189,16 +189,19 @@ public class CompositorViewHolderUnitTest {
                 (inMotion) -> eventSequence.add(EventSource.IN_MOTION));
         // This touch observer is used as a proxy for when ViewGroup#dispatchTouchEvent is called,
         // which is when the touch is propagated to children.
-        mCompositorViewHolder.addTouchEventObserver(new TouchEventObserver() {
-            @Override
-            public boolean shouldInterceptTouchEvent(MotionEvent e) {
-                return false;
-            }
-            @Override
-            public void handleTouchEvent(MotionEvent e) {
-                eventSequence.add(EventSource.TOUCH_EVENT_OBSERVER);
-            }
-        });
+        mCompositorViewHolder.addTouchEventObserver(
+                new TouchEventObserver() {
+                    @Override
+                    public boolean onInterceptTouchEvent(MotionEvent e) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean dispatchTouchEvent(MotionEvent e) {
+                        eventSequence.add(EventSource.TOUCH_EVENT_OBSERVER);
+                        return false;
+                    }
+                });
         return eventSequence;
     }
 
@@ -569,7 +572,8 @@ public class CompositorViewHolderUnitTest {
         verify(mLayoutManager)
                 .onInterceptMotionEvent(MOTION_ACTION_HOVER_ENTER, false, EventType.HOVER);
         Assert.assertTrue(
-                "#onInterceptHoverEvent should return true if the LayoutManager intercepts the event.",
+                "#onInterceptHoverEvent should return true if the LayoutManager intercepts the"
+                        + " event.",
                 intercepted);
     }
 

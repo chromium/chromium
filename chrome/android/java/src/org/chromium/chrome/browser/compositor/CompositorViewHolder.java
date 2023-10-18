@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
+import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.prefs.PrefService;
@@ -99,14 +100,18 @@ import java.util.Set;
 /**
  * This class holds a {@link CompositorView}. This level of indirection is needed to benefit from
  * the {@link android.view.ViewGroup#onInterceptTouchEvent(android.view.MotionEvent)} capability on
- * available on {@link android.view.ViewGroup}s.
- * This class also holds the {@link LayoutManagerImpl} responsible to describe the items to be
- * drawn by the UI compositor on the native side.
+ * available on {@link android.view.ViewGroup}s. This class also holds the {@link LayoutManagerImpl}
+ * responsible to describe the items to be drawn by the UI compositor on the native side.
  */
 public class CompositorViewHolder extends FrameLayout
-        implements LayoutManagerHost, LayoutRenderHost, Invalidator.Host,
-                   BrowserControlsStateProvider.Observer, ChromeAccessibilityUtil.Observer,
-                   TabObscuringHandler.Observer, ViewGroup.OnHierarchyChangeListener {
+        implements LayoutManagerHost,
+                LayoutRenderHost,
+                Invalidator.Host,
+                TouchEventProvider,
+                BrowserControlsStateProvider.Observer,
+                ChromeAccessibilityUtil.Observer,
+                TabObscuringHandler.Observer,
+                ViewGroup.OnHierarchyChangeListener {
     private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;
     private static final MutableFlagWithSafeDefault sDeferKeepScreenOnFlag =
             new MutableFlagWithSafeDefault(
@@ -655,18 +660,14 @@ public class CompositorViewHolder extends FrameLayout
         return mInvalidator;
     }
 
-    /**
-     * Add observer that needs to listen and process touch events.
-     * @param o {@link TouchEventObserver} object.
-     */
+    // TouchEventProvider implementation.
+
+    @Override
     public void addTouchEventObserver(TouchEventObserver o) {
         mTouchEventObservers.addObserver(o);
     }
 
-    /**
-     * Remove observer that needs to listen and process touch events.
-     * @param o {@link TouchEventObserver} object.
-     */
+    @Override
     public void removeTouchEventObserver(TouchEventObserver o) {
         mTouchEventObservers.removeObserver(o);
     }
@@ -675,7 +676,7 @@ public class CompositorViewHolder extends FrameLayout
     public boolean onInterceptTouchEvent(MotionEvent e) {
         super.onInterceptTouchEvent(e);
         for (TouchEventObserver o : mTouchEventObservers) {
-            if (o.shouldInterceptTouchEvent(e)) return true;
+            if (o.onInterceptTouchEvent(e)) return true;
         }
 
         if (mLayoutManager == null) return false;
@@ -687,6 +688,9 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         super.onTouchEvent(e);
+        for (TouchEventObserver o : mTouchEventObservers) {
+            if (o.onTouchEvent(e)) return true;
+        }
 
         boolean consumed = mLayoutManager != null && mLayoutManager.onTouchEvent(e);
         mEventOffsetHandler.onTouchEvent(e);
@@ -765,7 +769,9 @@ public class CompositorViewHolder extends FrameLayout
         assert e != null : "The motion event dispatched shouldn't be null!";
         updateLastActiveTouchEvent(e);
         updateIsInGesture(e);
-        for (TouchEventObserver o : mTouchEventObservers) o.handleTouchEvent(e);
+        for (TouchEventObserver o : mTouchEventObservers) {
+            if (o.dispatchTouchEvent(e)) return true;
+        }
 
         // This is where input events go from android through native to the web content. This
         // process is latency sensitive. Ideally observers that might be expensive, such as
