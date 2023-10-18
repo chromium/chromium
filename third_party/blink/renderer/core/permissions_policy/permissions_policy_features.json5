@@ -405,7 +405,6 @@
       name: "Unload",
       permissions_policy_name: "unload",
       feature_default: "EnableForAll",
-      depends_on: ["PermissionsPolicyUnload"],
     },
     {
       name: "VerticalScroll",

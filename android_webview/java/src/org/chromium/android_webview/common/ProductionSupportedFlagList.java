@@ -147,8 +147,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.USER_AGENT_CLIENT_HINT,
                 "Enables user-agent client hints in WebView."),
         Flag.baseFeature(
-                BlinkFeatures.PERMISSIONS_POLICY_UNLOAD, "Enables unload as a Permissions-Policy."),
-        Flag.baseFeature(
                 "DefaultPassthroughCommandDecoder", "Use the passthrough GLES2 command decoder."),
         Flag.baseFeature(
                 GpuFeatures.WEBVIEW_VULKAN,

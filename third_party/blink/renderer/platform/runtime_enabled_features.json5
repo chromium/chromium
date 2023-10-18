@@ -2947,12 +2947,6 @@
       status: "stable",
       base_feature: "none",
     },
-    // See https://crbug.com/1324111
-    {
-      name: "PermissionsPolicyUnload",
-      origin_trial_feature_name: "PermissionsPolicyUnload",
-      status: "stable",
-    },
     {
       name: "PermissionsRequestRevoke",
       status: "experimental",
