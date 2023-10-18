@@ -67,11 +67,11 @@ static_assert(sizeof(raw_ptr<std::string>) == sizeof(std::string*),
     !BUILDFLAG(RAW_PTR_ZERO_ON_MOVE) && !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 // |is_trivially_copyable| assertion means that arrays/vectors of raw_ptr can
 // be copied by memcpy.
-static_assert(std::is_trivially_copyable<raw_ptr<void>>::value,
+static_assert(std::is_trivially_copyable_v<raw_ptr<void>>,
               "raw_ptr should be trivially copyable");
-static_assert(std::is_trivially_copyable<raw_ptr<int>>::value,
+static_assert(std::is_trivially_copyable_v<raw_ptr<int>>,
               "raw_ptr should be trivially copyable");
-static_assert(std::is_trivially_copyable<raw_ptr<std::string>>::value,
+static_assert(std::is_trivially_copyable_v<raw_ptr<std::string>>,
               "raw_ptr should be trivially copyable");
 #endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // !BUILDFLAG(USE_ASAN_UNOWNED_PTR) &&
@@ -95,13 +95,12 @@ static_assert(std::is_trivially_copyable<raw_ptr<std::string>>::value,
 //     constructor of 'TraceValue' is implicitly deleted because variant field
 //     'as_pointer' has a non-trivial default constructor
 //       raw_ptr<const void> as_pointer;
-static_assert(std::is_trivially_default_constructible<raw_ptr<void>>::value,
+static_assert(std::is_trivially_default_constructible_v<raw_ptr<void>>,
               "raw_ptr should be trivially default constructible");
-static_assert(std::is_trivially_default_constructible<raw_ptr<int>>::value,
+static_assert(std::is_trivially_default_constructible_v<raw_ptr<int>>,
               "raw_ptr should be trivially default constructible");
-static_assert(
-    std::is_trivially_default_constructible<raw_ptr<std::string>>::value,
-    "raw_ptr should be trivially default constructible");
+static_assert(std::is_trivially_default_constructible_v<raw_ptr<std::string>>,
+              "raw_ptr should be trivially default constructible");
 #endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // !BUILDFLAG(USE_ASAN_UNOWNED_PTR) &&
         // !BUILDFLAG(USE_HOOKABLE_RAW_PTR) &&
@@ -846,14 +845,12 @@ TEST_F(RawPtrTest, UpcastNotConvertible) {
   class Base {};
   class Derived : private Base {};
   class Unrelated {};
-  EXPECT_FALSE((std::is_convertible<raw_ptr<Derived>, raw_ptr<Base>>::value));
-  EXPECT_FALSE((std::is_convertible<raw_ptr<Unrelated>, raw_ptr<Base>>::value));
-  EXPECT_FALSE((std::is_convertible<raw_ptr<Unrelated>, raw_ptr<void>>::value));
-  EXPECT_FALSE((std::is_convertible<raw_ptr<void>, raw_ptr<Unrelated>>::value));
-  EXPECT_FALSE(
-      (std::is_convertible<raw_ptr<int64_t>, raw_ptr<int32_t>>::value));
-  EXPECT_FALSE(
-      (std::is_convertible<raw_ptr<int16_t>, raw_ptr<int32_t>>::value));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<Derived>, raw_ptr<Base>>));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<Unrelated>, raw_ptr<Base>>));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<Unrelated>, raw_ptr<void>>));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<void>, raw_ptr<Unrelated>>));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<int64_t>, raw_ptr<int32_t>>));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<int16_t>, raw_ptr<int32_t>>));
 }
 
 TEST_F(RawPtrTest, UpcastPerformance) {

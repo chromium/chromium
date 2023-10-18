@@ -47,7 +47,7 @@ class RandomGenerator {
 
 // Note: this is redundant, since the anonymous union is incompatible with a
 // non-trivial default destructor. Not meant to be destructed anyway.
-static_assert(std::is_trivially_destructible<RandomGenerator>::value, "");
+static_assert(std::is_trivially_destructible_v<RandomGenerator>, "");
 
 namespace {
 

@@ -56,8 +56,8 @@ struct IsValueInRangeFastOp<
     Dst,
     Src,
     typename std::enable_if<
-        std::is_integral<Dst>::value && std::is_integral<Src>::value &&
-        std::is_signed<Dst>::value && std::is_signed<Src>::value &&
+        std::is_integral_v<Dst> && std::is_integral_v<Src> &&
+        std::is_signed_v<Dst> && std::is_signed_v<Src> &&
         !IsTypeInRangeForNumericType<Dst, Src>::value>::type> {
   static constexpr bool is_supported = true;
 
@@ -74,8 +74,8 @@ struct IsValueInRangeFastOp<
     Dst,
     Src,
     typename std::enable_if<
-        std::is_integral<Dst>::value && std::is_integral<Src>::value &&
-        !std::is_signed<Dst>::value && std::is_signed<Src>::value &&
+        std::is_integral_v<Dst> && std::is_integral_v<Src> &&
+        !std::is_signed_v<Dst> && std::is_signed_v<Src> &&
         !IsTypeInRangeForNumericType<Dst, Src>::value>::type> {
   static constexpr bool is_supported = true;
 
@@ -146,7 +146,7 @@ constexpr Dst saturated_cast_impl(Src value, RangeCheck constraint) {
              ? (!constraint.IsUnderflowFlagSet() ? static_cast<Dst>(value)
                                                  : S<Dst>::Underflow())
              // Skip this check for integral Src, which cannot be NaN.
-             : (std::is_integral<Src>::value || !constraint.IsUnderflowFlagSet()
+             : (std::is_integral_v<Src> || !constraint.IsUnderflowFlagSet()
                     ? S<Dst>::Overflow()
                     : S<Dst>::NaN());
 }
@@ -164,12 +164,11 @@ struct SaturateFastOp {
 };
 
 template <typename Dst, typename Src>
-struct SaturateFastOp<
-    Dst,
-    Src,
-    typename std::enable_if<std::is_integral<Src>::value &&
-                            std::is_integral<Dst>::value &&
-                            SaturateFastAsmOp<Dst, Src>::is_supported>::type> {
+struct SaturateFastOp<Dst,
+                      Src,
+                      typename std::enable_if<
+                          std::is_integral_v<Src> && std::is_integral_v<Dst> &&
+                          SaturateFastAsmOp<Dst, Src>::is_supported>::type> {
   static constexpr bool is_supported = true;
   static constexpr Dst Do(Src value) {
     return SaturateFastAsmOp<Dst, Src>::Do(value);
@@ -177,12 +176,11 @@ struct SaturateFastOp<
 };
 
 template <typename Dst, typename Src>
-struct SaturateFastOp<
-    Dst,
-    Src,
-    typename std::enable_if<std::is_integral<Src>::value &&
-                            std::is_integral<Dst>::value &&
-                            !SaturateFastAsmOp<Dst, Src>::is_supported>::type> {
+struct SaturateFastOp<Dst,
+                      Src,
+                      typename std::enable_if<
+                          std::is_integral_v<Src> && std::is_integral_v<Dst> &&
+                          !SaturateFastAsmOp<Dst, Src>::is_supported>::type> {
   static constexpr bool is_supported = true;
   static constexpr Dst Do(Src value) {
     // The exact order of the following is structured to hit the correct
@@ -224,7 +222,7 @@ template <typename Dst, typename Src>
 constexpr Dst strict_cast(Src value) {
   using SrcType = typename UnderlyingType<Src>::type;
   static_assert(UnderlyingType<Src>::is_numeric, "Argument must be numeric.");
-  static_assert(std::is_arithmetic<Dst>::value, "Result must be numeric.");
+  static_assert(std::is_arithmetic_v<Dst>, "Result must be numeric.");
 
   // If you got here from a compiler error, it's because you tried to assign
   // from a source type to a destination type that has insufficient range.
@@ -354,22 +352,22 @@ using SizeT = StrictNumeric<size_t>;
 // versions.
 template <typename Dst = int,
           typename Src,
-          typename = std::enable_if_t<std::is_integral<Dst>::value &&
-                                      std::is_floating_point<Src>::value>>
+          typename = std::enable_if_t<std::is_integral_v<Dst> &&
+                                      std::is_floating_point_v<Src>>>
 Dst ClampFloor(Src value) {
   return saturated_cast<Dst>(std::floor(value));
 }
 template <typename Dst = int,
           typename Src,
-          typename = std::enable_if_t<std::is_integral<Dst>::value &&
-                                      std::is_floating_point<Src>::value>>
+          typename = std::enable_if_t<std::is_integral_v<Dst> &&
+                                      std::is_floating_point_v<Src>>>
 Dst ClampCeil(Src value) {
   return saturated_cast<Dst>(std::ceil(value));
 }
 template <typename Dst = int,
           typename Src,
-          typename = std::enable_if_t<std::is_integral<Dst>::value &&
-                                      std::is_floating_point<Src>::value>>
+          typename = std::enable_if_t<std::is_integral_v<Dst> &&
+                                      std::is_floating_point_v<Src>>>
 Dst ClampRound(Src value) {
   const Src rounded =
       (value >= 0.0f) ? std::floor(value + 0.5f) : std::ceil(value - 0.5f);
