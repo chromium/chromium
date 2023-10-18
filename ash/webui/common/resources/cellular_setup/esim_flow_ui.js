@@ -547,7 +547,7 @@ Polymer({
       enableForwardBtn, cancelButtonStateIfEnabled, isInstalling) {
     this.forwardButtonLabel = this.i18n('next');
     let backBtnState = ButtonState.HIDDEN;
-    if (this.profilesFound_()) {
+    if (this.profilesFound_() && !this.smdsSupportEnabled_) {
       backBtnState = isInstalling ? ButtonState.DISABLED : ButtonState.ENABLED;
     }
     return {
@@ -567,8 +567,12 @@ Polymer({
   generateButtonStateForConfirmationPage_(
       enableForwardBtn, cancelButtonStateIfEnabled, isInstalling) {
     this.forwardButtonLabel = this.i18n('confirm');
+    let backBtnState = isInstalling ? ButtonState.DISABLED : ButtonState.ENABLED;
+    if (this.smdsSupportEnabled_) {
+      backBtnState = ButtonState.HIDDEN;
+    }
     return {
-      backward: isInstalling ? ButtonState.DISABLED : ButtonState.ENABLED,
+      backward: backBtnState,
       cancel: cancelButtonStateIfEnabled,
       forward: enableForwardBtn ? ButtonState.ENABLED : ButtonState.DISABLED,
     };
