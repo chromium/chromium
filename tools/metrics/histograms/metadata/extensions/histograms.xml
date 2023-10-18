@@ -4220,7 +4220,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result"
-    enum="ServiceWorkerStatusCode" expires_after="never">
+    enum="ServiceWorkerExternalRequestResult" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->
 
   <owner>jlulejian@chromium.org</owner>
