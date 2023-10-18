@@ -263,6 +263,11 @@ const char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
 const char kIosSaveToPhotosDefaultGaiaId[] =
     "ios.save_to_photos.default_gaia_id";
 
+// Bool preference containing whether to skip the account picker when the user
+// saves an image to Google Photos.
+const char kIosSaveToPhotosSkipAccountPicker[] =
+    "ios.save_to_photos.skip_account_picker";
+
 // Time preference containing the last run time of the Safety Check (via
 // Settings).
 const char kIosSettingsSafetyCheckLastRunTime[] =

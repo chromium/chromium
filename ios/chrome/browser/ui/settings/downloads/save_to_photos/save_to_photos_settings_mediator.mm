@@ -37,14 +37,6 @@
   signin::IdentityManager* _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
-
-  // Data for the identity presented as default. The data which is presented
-  // will only be updated if it has not been initialized or if there is an
-  // identity that is saved in preferences.
-  UIImage* _presentedIdentityAvatar;
-  NSString* _presentedIdentityGaiaID;
-  NSString* _presentedIdentityEmail;
-  NSString* _presentedIdentityName;
 }
 
 #pragma mark - Initialization
@@ -71,6 +63,8 @@
     _prefServiceObserver = std::make_unique<PrefObserverBridge>(self);
     _prefServiceObserver->ObserveChangesForPreference(
         prefs::kIosSaveToPhotosDefaultGaiaId, _prefChangeRegistrar.get());
+    _prefServiceObserver->ObserveChangesForPreference(
+        prefs::kIosSaveToPhotosSkipAccountPicker, _prefChangeRegistrar.get());
 
     _identityManager = identityManager;
     _identityManagerObserver =
@@ -110,12 +104,14 @@
 #pragma mark - SaveToPhotosSettingsMutator
 
 - (void)setSelectedIdentityGaiaID:(NSString*)gaiaID {
-  if (gaiaID == nil) {
-    _prefService->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
-  } else {
-    _prefService->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
-                            base::SysNSStringToUTF8(gaiaID).c_str());
-  }
+  CHECK(gaiaID);
+  _prefService->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
+                          base::SysNSStringToUTF8(gaiaID));
+}
+
+- (void)setAskWhichAccountToUseEveryTime:(BOOL)askEveryTime {
+  _prefService->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
+                           !askEveryTime);
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver
@@ -131,9 +127,6 @@
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName != prefs::kIosSaveToPhotosDefaultGaiaId) {
-    return;
-  }
   [self updateConsumers];
 }
 
@@ -176,21 +169,16 @@
     return;
   }
 
-  BOOL askEveryTimeSwitchOn = savedIdentity == nil;
-  if (!_presentedIdentityGaiaID || !askEveryTimeSwitchOn) {
-    _presentedIdentityAvatar =
-        _accountManagerService->GetIdentityAvatarWithIdentity(
-            selectedIdentity, IdentityAvatarSize::TableViewIcon);
-    _presentedIdentityName = selectedIdentity.userFullName;
-    _presentedIdentityEmail = selectedIdentity.userEmail;
-    _presentedIdentityGaiaID = selectedIdentity.gaiaID;
-  }
-
+  BOOL askEveryTimeSwitchOn =
+      !_prefService->GetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker);
   [self.accountConfirmationConsumer
-      setIdentityButtonAvatar:_presentedIdentityAvatar
-                         name:_presentedIdentityName
-                        email:_presentedIdentityEmail
-                       gaiaID:_presentedIdentityGaiaID
+      setIdentityButtonAvatar:_accountManagerService
+                                  ->GetIdentityAvatarWithIdentity(
+                                      selectedIdentity,
+                                      IdentityAvatarSize::TableViewIcon)
+                         name:selectedIdentity.userFullName
+                        email:selectedIdentity.userEmail
+                       gaiaID:selectedIdentity.gaiaID
          askEveryTimeSwitchOn:askEveryTimeSwitchOn];
 
   // Update secondary consumer with the list of accounts on the device and which
@@ -208,7 +196,7 @@
     configurator.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
         systemIdentity, IdentityAvatarSize::TableViewIcon);
     configurator.selected =
-        [systemIdentity.gaiaID isEqual:savedIdentity.gaiaID];
+        [systemIdentity.gaiaID isEqual:selectedIdentity.gaiaID];
     [identityItemConfigurators addObject:configurator];
   }
   [self.accountSelectionConsumer

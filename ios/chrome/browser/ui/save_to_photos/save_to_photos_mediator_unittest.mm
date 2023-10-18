@@ -223,8 +223,9 @@ TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefaultAccountInPrefs) {
   SignIn();
 
   // This test assumes there is no default account memorized for Save to Photos.
-  browser_state_->GetPrefs()->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
-                                        "");
+  browser_state_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
+  browser_state_->GetPrefs()->ClearPref(
+      prefs::kIosSaveToPhotosSkipAccountPicker);
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
@@ -256,7 +257,8 @@ TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefaultAccountInPrefs) {
         EXPECT_NSEQ(expected_ask_every_time_switch_label_text,
                     configuration.askEveryTimeSwitchLabelText);
         return YES;
-      }]]);
+      }]
+                        selectedIdentity:nil]);
 
   // Start the mediator and run until the image has been fetched and
   // processed by the mediator.
@@ -276,10 +278,13 @@ TEST_F(SaveToPhotosMediatorTest,
   // The feature requires the user being signed-in.
   SignIn();
 
-  // This test assumes there is no default account memorized for Save to Photos.
+  // This test assumes there is a default account memorized for Save to Photos
+  // and that the user opted-in skipping the account picker.
   browser_state_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
       base::SysNSStringToUTF8(fake_identity_.gaiaID).c_str());
+  browser_state_->GetPrefs()->SetBoolean(
+      prefs::kIosSaveToPhotosSkipAccountPicker, true);
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();

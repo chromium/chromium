@@ -589,6 +589,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preferences related to Save to Photos settings.
   registry->RegisterStringPref(prefs::kIosSaveToPhotosDefaultGaiaId,
                                std::string());
+  registry->RegisterBooleanPref(prefs::kIosSaveToPhotosSkipAccountPicker,
+                                false);
 
   // Preferences related to parcel tracking.
   registry->RegisterBooleanPref(

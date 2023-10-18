@@ -9,6 +9,7 @@
 
 @class AccountPickerConfiguration;
 @protocol AccountPickerCoordinatorDelegate;
+@protocol SystemIdentity;
 
 // Presents a bottom sheet that lets the user pick or add an account on the
 // device to perform some action.
@@ -19,6 +20,9 @@
 // View controller presented by the coordinator. Can be used to present a view
 // on top of the account picker e.g. the AddAccountSigninCoordinator's view.
 @property(nonatomic, readonly) UIViewController* viewController;
+
+// The identity currently presented as selected.
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 
 // Inits the coordinator.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController

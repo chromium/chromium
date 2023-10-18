@@ -140,12 +140,12 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
       SaveToPhotosAccountPickerActions::kSelectedIdentity);
   [self.delegate hideAccountPicker];
 
-  // Memorize the account that was picked if the user does not want to be asked
-  // every time.
-  if (!askEveryTime) {
-    _prefService->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
-                            base::SysNSStringToUTF8(identity.gaiaID));
-  }
+  // Memorize the account that was picked and whether to ask which account to
+  // use every time.
+  _prefService->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
+                          base::SysNSStringToUTF8(identity.gaiaID));
+  _prefService->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
+                           !askEveryTime);
 
   _identity = identity;
 }
@@ -208,10 +208,12 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
       _prefService->GetString(prefs::kIosSaveToPhotosDefaultGaiaId);
   id<SystemIdentity> defaultIdentity =
       _accountManagerService->GetIdentityWithGaiaID(defaultGaiaId);
+  bool skipAccountPicker =
+      _prefService->GetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker);
 
   // If the user has already selected a default account to save images to
-  // Photos, use that default.
-  if (defaultIdentity) {
+  // Photos and opted to skip the account picker, use that default.
+  if (skipAccountPicker && defaultIdentity) {
     _identity = defaultIdentity;
     base::UmaHistogramEnumeration(kSaveToPhotosAccountPickerActionsHistogram,
                                   SaveToPhotosAccountPickerActions::kSkipped);
@@ -220,8 +222,9 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
   }
 
   // If the memorized account is not found on the device, unmemorize it.
-  if (!defaultGaiaId.empty()) {
+  if (skipAccountPicker) {
     _prefService->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
+    _prefService->ClearPref(prefs::kIosSaveToPhotosSkipAccountPicker);
   }
 
   // If no default account can be used, present the account picker instead.
@@ -238,7 +241,8 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
       l10n_util::GetNSString(IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_SUBMIT);
   configuration.askEveryTimeSwitchLabelText = l10n_util::GetNSString(
       IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME);
-  [self.delegate showAccountPickerWithConfiguration:configuration];
+  [self.delegate showAccountPickerWithConfiguration:configuration
+                                   selectedIdentity:defaultIdentity];
 }
 
 // Once the destination account is known, tries to upload the image using the

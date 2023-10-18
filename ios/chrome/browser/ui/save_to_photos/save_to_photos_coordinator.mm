@@ -100,13 +100,20 @@
 #pragma mark - SaveToPhotosMediatorDelegate
 
 - (void)showAccountPickerWithConfiguration:
-    (AccountPickerConfiguration*)configuration {
+            (AccountPickerConfiguration*)configuration
+                          selectedIdentity:
+                              (id<SystemIdentity>)selectedIdentity {
   _accountPickerCoordinator = [[AccountPickerCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                    configuration:configuration];
   _accountPickerCoordinator.delegate = self;
   [_accountPickerCoordinator start];
+  if (selectedIdentity) {
+    // If the mediator does not want to override the selected identity, leave
+    // the one presented by default by the account picker.
+    _accountPickerCoordinator.selectedIdentity = selectedIdentity;
+  }
 }
 
 - (void)hideAccountPicker {
