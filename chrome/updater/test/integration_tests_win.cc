@@ -1901,28 +1901,27 @@ void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install) {
   static constexpr char kManifestFormat[] =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<response protocol=\"3.0\">\n"
-      "  <systemrequirements platform=\"win\"/>\n"
-      "  <app appid=\"%ls\" status=\"ok\">\n"
-      "    <updatecheck status=\"ok\">\n"
-      "      <manifest version=\"%s\">\n"
-      "        <packages>\n"
-      "          <package hash_sha256=\"sha256hash_foobar\"\n"
-      "            name=\"%s\" required=\"true\" size=\"%" PRId64
-      "\"/>\n"
-      "        </packages>\n"
-      "        <actions>\n"
-      "          <action event=\"install\"\n"
-      "            run=\"%s\"/>\n"
-      "        </actions>\n"
-      "      </manifest>\n"
-      "    </updatecheck>\n"
-      "    <data index=\"verboselogging\" name=\"install\" status=\"ok\">\n"
-      "      {\"distribution\": { \"verbose_logging\": true}}\n"
-      "    </data>\n"
-      "  </app>\n"
-      "</response>\n";
+      R"(<?xml version="1.0" encoding="UTF-8"?>
+<response protocol="3.0">
+  <systemrequirements platform="win"/>
+  <app appid="%ls" status="ok">
+    <updatecheck status="ok">
+      <manifest version="%s">
+        <packages>
+          <package hash_sha256="sha256hash_foobar"
+            name="%s" required="true" size="%)" PRId64 R"("/>
+        </packages>
+        <actions>
+          <action event="install"
+            run="%s"/>
+        </actions>
+      </manifest>
+    </updatecheck>
+    <data index="verboselogging" name="install" status="ok">
+      {"distribution": { "verbose_logging": true}}
+    </data>
+  </app>
+</response>)";
   RunOfflineInstallWithManifest(scope, is_legacy_install, is_silent_install,
                                 kManifestFormat,
                                 IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE, true);
@@ -1932,28 +1931,27 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,
                                      bool is_silent_install) {
   static constexpr char kManifestFormat[] =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<response protocol=\"3.0\">\n"
-      "  <systemrequirements platform=\"minix\"/>\n"
-      "  <app appid=\"%ls\" status=\"ok\">\n"
-      "    <updatecheck status=\"ok\">\n"
-      "      <manifest version=\"%s\">\n"
-      "        <packages>\n"
-      "          <package hash_sha256=\"sha256hash_foobar\"\n"
-      "            name=\"%s\" required=\"true\" size=\"%" PRId64
-      "\"/>\n"
-      "        </packages>\n"
-      "        <actions>\n"
-      "          <action event=\"install\"\n"
-      "            run=\"%s\"/>\n"
-      "        </actions>\n"
-      "      </manifest>\n"
-      "    </updatecheck>\n"
-      "    <data index=\"verboselogging\" name=\"install\" status=\"ok\">\n"
-      "      {\"distribution\": { \"verbose_logging\": true}}\n"
-      "    </data>\n"
-      "  </app>\n"
-      "</response>\n";
+      R"(<?xml version="1.0" encoding="UTF-8"?>
+<response protocol="3.0">
+  <systemrequirements platform="minix"/>
+  <app appid="%ls" status="ok">
+    <updatecheck status="ok">
+      <manifest version="%s">
+        <packages>
+          <package hash_sha256="sha256hash_foobar"
+            name="%s" required="true" size="%)" PRId64 R"("/>
+        </packages>
+        <actions>
+          <action event="install"
+            run="%s"/>
+        </actions>
+      </manifest>
+    </updatecheck>
+    <data index="verboselogging" name="install" status="ok">
+      {"distribution": { "verbose_logging": true}}
+    </data>
+  </app>
+</response>)";
   RunOfflineInstallWithManifest(scope, is_legacy_install, is_silent_install,
                                 kManifestFormat,
                                 IDS_INSTALL_OS_NOT_SUPPORTED_BASE, false);

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -168,8 +169,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  void LoadURL(const char* touch_action_url) {
-    const GURL data_url(touch_action_url);
+  void LoadURL(std::string_view touch_action_url) {
+    const GURL data_url(std::move(touch_action_url));
     EXPECT_TRUE(NavigateToURL(shell(), data_url));
 
     RenderWidgetHostImpl* host = GetWidgetHost();

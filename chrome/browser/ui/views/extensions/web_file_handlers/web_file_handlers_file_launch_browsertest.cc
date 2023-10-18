@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -123,7 +124,7 @@ class WebFileHandlersFileLaunchBrowserTest
 
   // Load an extension with a few extra files for testing multiple-clients.
   const extensions::Extension* WriteCustomDirForFileHandlingExtension(
-      const std::string& manifest,
+      std::string_view manifest,
       const base::flat_map<std::string, std::string>& files) {
     extension_dir_.WriteManifest(manifest);
     for (const auto& [name, content] : files) {

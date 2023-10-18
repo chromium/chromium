@@ -189,14 +189,11 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
-  std::string script = base::StringPrintf(
-      R"(
-      (async () => {
+  std::string script =
+      R"((async () => {
         await chrome.scripting.executeScript(
           {target: {tabId: %d}, files: ['test.js']})
-      })();
-    )",
-      tab_id);
+      })();)";
   BackgroundScriptExecutor::ExecuteScriptAsync(
       profile(), extension->id(), base::StringPrintf(script.c_str(), tab_id));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -338,14 +335,11 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlApiTest, ExecuteScript) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
-  std::string script = base::StringPrintf(
-      R"(
-      (async () => {
+  std::string script =
+      R"((async () => {
         await chrome.scripting.executeScript(
           {target: {tabId: %d}, files: ['content.js']})
-      })();
-    )",
-      tab_id);
+      })();)";
   BackgroundScriptExecutor::ExecuteScriptAsync(
       profile(), extension->id(), base::StringPrintf(script.c_str(), tab_id));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();

@@ -264,14 +264,9 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
 
     // Expected bubble status string. This will include the progress as well.
     // If empty, use the expected_status_msg.
-    // \xE2\x80\xA2 refers to the UTF8 encoding for the unicode symbol
-    // 0x2022 "•" bullet, used as the separator in Download Bubble
-    // \xE2\x80\xA6 refers to the UTF8 encoding for the unicode symbol
-    // 0x2026 "…" HORIZONTAL ELLIPSIS
     std::string expected_bubble_status_msg;
   } kTestCases[] = {
-      {download::DOWNLOAD_INTERRUPT_REASON_NONE, "1/2 B",
-       "1/2 B \xE2\x80\xA2 Resuming\xE2\x80\xA6"},
+      {download::DOWNLOAD_INTERRUPT_REASON_NONE, "1/2 B", "1/2 B • Resuming…"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, "%s - Download error",
        "Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED,
@@ -293,7 +288,7 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE,
        "%s - Already downloaded", "Already downloaded"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
-       "%s - System busy", "Couldn\xE2\x80\x99t finish download"},
+       "%s - System busy", "Couldn’t finish download"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
        "%s - Download error", "Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, "%s - Network error",
@@ -303,33 +298,33 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
        "%s - Network disconnected", "Check internet connection"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
-       "%s - Server unavailable", "Site wasn\xE2\x80\x99t available"},
+       "%s - Server unavailable", "Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
        "%s - Network error", "Check internet connection"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED, "%s - Server problem",
-       "Site wasn\xE2\x80\x99t available"},
+       "Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
        "%s - Download error", "Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT, "%s - No file",
-       "File wasn\xE2\x80\x99t available on site"},
+       "File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED,
-       "%s - Needs authorization", "File wasn\xE2\x80\x99t available on site"},
+       "%s - Needs authorization", "File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM,
-       "%s - Bad certificate", "Site wasn\xE2\x80\x99t available"},
+       "%s - Bad certificate", "Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN, "%s - Forbidden",
-       "File wasn\xE2\x80\x99t available on site"},
+       "File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE,
-       "%s - Server unreachable", "Site wasn\xE2\x80\x99t available"},
+       "%s - Server unreachable", "Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
-       "%s - File incomplete", "Couldn\xE2\x80\x99t finish download"},
+       "%s - File incomplete", "Couldn’t finish download"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT,
        "%s - Download error", "Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED, "Canceled",
        "Canceled"},
       {download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN, "%s - Shutdown",
-       "Couldn\xE2\x80\x99t finish download"},
+       "Couldn’t finish download"},
       {download::DOWNLOAD_INTERRUPT_REASON_CRASH, "%s - Crash",
-       "Couldn\xE2\x80\x99t finish download"},
+       "Couldn’t finish download"},
   };
   static_assert(kInterruptReasonCount == std::size(kTestCases),
                 "interrupt reason mismatch");

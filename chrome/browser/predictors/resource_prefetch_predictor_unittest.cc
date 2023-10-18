@@ -913,9 +913,8 @@ TEST_P(ResourcePrefetchPredictorPreconnectToRedirectTargetTest,
   EXPECT_FALSE(
       predictor_->PredictPreconnectOrigins(main_frame_url, prediction.get()));
 
-  const char* cdn_origin = "https://cdn%d.google.com";
-  auto gen_origin = [cdn_origin](int n) {
-    return base::StringPrintf(cdn_origin, n);
+  auto gen_origin = [](int n) {
+    return base::StringPrintf("https://cdn%d.google.com", n);
   };
 
   // Add origins associated with the main frame host.
@@ -1011,9 +1010,8 @@ TEST_F(ResourcePrefetchPredictorTest,
   EXPECT_FALSE(
       predictor_->PredictPreconnectOrigins(main_frame_url, prediction.get()));
 
-  const char* cdn_origin = "https://cdn%d.google.com";
-  auto gen_origin = [cdn_origin](int n) {
-    return base::StringPrintf(cdn_origin, n);
+  auto gen_origin = [](int n) {
+    return base::StringPrintf("https://cdn%d.google.com", n);
   };
 
   // Add origins associated with the main frame host.
