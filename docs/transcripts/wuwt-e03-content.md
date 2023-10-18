@@ -16,12 +16,14 @@ special guest, John, who not only is a Content owner, but actually split the
 codebase to create the Content layer.
 
 Notes:
+
 - https://docs.google.com/document/d/1EJnG5gK8rQwHkdZTKl8vIwx9oScP8TaKBgwzBafIh9M/edit
 
 Links:
-- [//content/README.md](https://crsrc.org/c/content/README.md)
-- [//content/public/README.md](https://crsrc.org/c/content/public/README.md)
-- [What's Up With Pointers](https://www.youtube.com/watch?v=MpwbWSEDfjM)
+
+- [//content/README.md]
+- [//content/public/README.md]
+- [What's Up With Pointers]
 
 ---
 
@@ -51,7 +53,7 @@ the content layer. Can you tell us what that is?
 responsible for the multiprocess sandbox implementation of our platform.
 
 01:24 SHARON: And another term that I had heard a lot tossed around before I
-really understood what was going on was the content public API. So is that the
+really understood what was going on was the content/public API. So is that the
 same as the content layer, or is that different?
 
 01:36 JOHN: It's part of it. So the content component is very large, and so,
@@ -65,10 +67,10 @@ of history of how we came up with it? And also, maybe why it's called content?
 02:02 JOHN: Sure. The history is - in the beginning, Chrome, like all software
 projects begins nice and easy to understand. But over time, as you add a lot
 more features to go from zero users to billions of users, it becomes harder to
-understand. Small files, small classes become much larger small functions kind
+understand. Small files, small classes become much larger; small functions kind
 of get numerous hooks to talk to every feature, because they want to know when
-something happens. And so, this idea started that let's separate the product.
-Things that make Google Chrome what it is from the platform, which is what any
+something happens. And so, this idea started that let's separate the product -
+things that make Google Chrome what it is - from the platform, which is what any
 browser, any minimal browser doing the latest HTML specs would need to
 implement them in a sandbox, a multiprocess way. And so, content was the lower
 part, and that's how it started.
@@ -76,12 +78,12 @@ part, and that's how it started.
 02:58 SHARON: How did we get the name content?
 
 02:58 JOHN: The name is like a pun. And when we started Chrome, one of the
-ideas was, we'll focus on content and not Chrome, and so, the browser will get
+ideas was, we'll focus on content and not chrome, and so, the browser will get
 out of the way. Chrome is a term used to refer to all the user interface parts
-of the browser. And so, we said, it's going to be content and not Chrome. And
+of the browser. And so, we said, it's going to be content and not chrome. And
 so, when you open Chrome, you just see a very small UI. Most of what you see is
 the content. And so, when we split the directory, it was originally called
-Source Chrome, and so, the content part, that's the pun. That's where it came
+src/chrome, and so, the content part, that's the pun. That's where it came
 from.
 
 03:34 SHARON: That's fun. Earlier, you mentioned embedders of content. Can you
@@ -90,7 +92,7 @@ excited about this episode, because I was working on a team where we were
 embedders of content for a long time. Well over a year, and it took me a long
 time to really understand what that was. Because, as you mentioned now,
 Chrome's grown a lot. You work on a very specific thing understanding these
-more general concepts of what is content? What is a content embedder are less
+more general concepts of what is content, what is a content embedder, are less
 important to what you do day-to-day. But can you tell us what an embedder of
 content is?
 
@@ -101,13 +103,13 @@ had was just one embedder. It was Chrome. But then, right away, we were like,
 you know what? It would be nice for people who work on content and not the
 feature part to build a smaller binary. It builds faster. It debugs faster,
 runs faster. And so, we built this minimal example also to other people called
-content shell. And then, we started running tests against that, and that was
+`content_shell`. And then, we started running tests against that, and that was
 the first - or the second embedder of content. And then since then, what was
 unexpected, what we started for code health reasons turned out to be very
 useful for other projects to restart - or start building their browser from.
-And so, things like Android webview, which was using its own fork of web kit,
+And so, things like Android webview, which was using its own fork of WebKit,
 then started using content. That was one first-party example. But then, other
-projects came along. Things like Electron and content-embedded framework, all
+projects came along. Things like Electron and \[Chromium\] Embedded Framework, all
 started building not just products on top of it, but other frameworks.
 
 05:30 SHARON: That was really surprising to learn about, because it seems
@@ -122,8 +124,8 @@ their value add, working on that code. So it's better for them to use something
 else.
 
 06:11 SHARON: That makes sense. You also mentioned that Chrome is dependent on
-content. And when I first started working on Chrome as an intern, I had - it
-told to me so many times because I couldn't remember that Chrome can depend on
+content. And when I first started working on Chrome as an intern, I had it
+told to me so many times, because I couldn't remember, that Chrome can depend on
 content, but not the other way around. So can you tell us a bit about this
 layering, and why it's there?
 
@@ -131,7 +133,7 @@ layering, and why it's there?
 content, often what we mean, you embed content. You embed content in everything
 that sits below it in the layer tree. So that includes things like Blink, our
 rendering engine. V8, our JavaScript Engine. Net, our networking library, and
-so on. And there's also you can talk to the content public APIs, but also,
+so on. And there's also you can talk to the content/public APIs, but also,
 sometimes, you talk to the Blink API and the files, and V8, and so on.
 
 07:07 SHARON: So you have this many layer API or product? And, at the bottom,
@@ -139,26 +141,26 @@ we have things like Net, Blink, and those probably have dependencies on them
 that I don't know about. And on top of that, we have content, and then, on top
 of that, we have Chrome?
 
-07:23 JOHN: Right. And so, Chrome as an embedder content can include directory
-in the content public API. But since content can have multiple embedders, it
+07:23 JOHN: Right. And so, Chrome as an embedder of content can include directory
+in the content/public API. But since content can have multiple embedders, it
 can't include Chrome. If content reached out directly to Chrome, then other
 people wouldn't be able to use it. Because if you try to bring in this code, it
-includes files from a directory that you're not using. So, instead, the content
-public API, it has APIs going two different directions. One direction is going
+includes files from a directory that you're not using. So, instead, the content/public
+API, it has APIs going two different directions. One direction is going
 into content, and then, one direction are these abstract interfaces that go out
 from content. And any embedder has to implement them. And so, these usually end
 up in terms like client or delegate. And these are implemented by Chrome, and
 that's how content is able to call back to it. But then, any other, of course,
 product or embedder can also implement these same interfaces.
 
-08:23 SHARON: You mentioned link and also some things called delegate and
+08:23 SHARON: You mentioned Blink and also some things called delegate and
 whatever. So we have a lot of things called something something host in
 content. Can you talk a bit about what the relationship between content and
 Blink is? Because there's a lot of mirroring in terms of how they might be set
 up, and how they relate to each other.
 
-08:37 JOHN: So Blink was the rendering engine that originally started as Web
-Kit. And we forked, and we named it Blink a number of years ago. And that did
+08:37 JOHN: So Blink was the rendering engine that originally started as WebKit.
+And we forked, and we named it Blink a number of years ago. And that did
 not have any concept of processes. So it was something that you call it in one
 process, and it does its job. And you give it whatever data it needs, and it
 gives you back the rendered data. And you can poke at it or whatever you want
@@ -191,10 +193,10 @@ that's where we often have the host suffix. So it'd be like a class for -
 
 11:11 SHARON: Can you give an example of -
 
-11:11 JOHN: Yes. So, for example, every renderer process has a class in content
-browser called render process host. And then, every tab object in Blink will
-have this class called render view, and then, in content browser, it will have
-this class called render view host.
+11:11 JOHN: Yes. So, for example, every renderer process has a class in content/browser
+called `RenderProcessHost`. And then, every tab object in Blink will
+have this class called `RenderView`, and then, in content/browser, it will have
+this class called `RenderViewHost`.
 
 11:36 SHARON: Those are classes that, depending on what you work on, you might
 see pop up quite a bit. And there's a lot of them. They're all called render
@@ -224,12 +226,12 @@ obviously doesn't know about the IPCs from other layers, and so, it's possible
 that it could be an embedder of content that has security vulnerability in
 their own Mojo calls. And so, content doesn't know about them, so it can't do
 anything about them. You could write insecure code in content. You can also
-write in secure code in an embedder, and if someone finds a vulnerability - so
+write insecure code in an embedder, and if someone finds a vulnerability - so
 let's say someone finds a vulnerability in Blink, and maybe they're only
 running their code in a minimal content shell. Maybe they can't find any other
 Mojo calls that they can abuse to be able to get access to the browser process.
 But maybe someone else, an embedder, is a more full-featured browser. It has
-more IPC service, and that could be more of an attack surface for that - to
+more IPC surface, and that could be more of an attack surface for that - to
 start with that Blink vulnerability and then to hop into the browser process.
 
 14:38 SHARON: And if you gain control of the browser process, that's a very
@@ -249,19 +251,19 @@ often how someone will do that. They'll be working on a feature in the browser,
 and everything works great. But then, they'll be like, I just need something
 from Blink. But it's not there. And so, sometimes, they'll have to add an IPC
 between processes, and that might interact. They'll be like, how do I get it?
-It's in Blink. It's in the render view class. so I need an interface that talks
-between each render view host and each render view. And that's how they might
-get - well, that would be how they get interaction with the multiprocessor part
+It's in Blink. It's in the `RenderView` class. so I need an interface that talks
+between each `RenderViewHost` and each `RenderView`. And that's how they might
+get - well, that would be how they get interaction with the multiprocess part
 of it. But if someone is just working on something only in a browser process,
 they might still be trying to get information about the current tab. And that's
-represented by a web content's class and content. So they'll look in content
-public browser, and they'll see web contents. And there will be a lot of
+represented by a `WebContents` class in content. So they'll look in
+content/public/browser, and they'll see `WebContents`. And there will be a lot of
 interfaces that hang off it. So they'll be looking at it, going through a trail
 of interfaces and classes to be able to get more information on what's going on
 in the current tab.
 
-16:29 SHARON: Can you give us a quick overview of the Web Content class?
-Because it is one, massive, and two, called something like web contents. Which
+16:29 SHARON: Can you give us a quick overview of the `WebContents` class?
+Because it is one, massive, and two, called something like `WebContents`. Which
 suggests it's important because content plus the web, and it's also something
 you see all over the place. So can you just give us a quick overview of what
 that class does? What it's for? What it represents?
@@ -269,21 +271,21 @@ that class does? What it's for? What it represents?
 16:46 JOHN: Yes. Things now are a lot more complicated than before, but if you
 go back in a time machine and see how these things started, you can roughly
 think in initial Chrome. Every tab had a class to represent the content in that
-tab, and that was called web contents. And then, it was called web contents
+tab, and that was called `WebContents`. And then, it was called `WebContents`
 because we had other classes. We used to be able to put native stuff in a tab.
-And so, that would be called tab contents. But that's gone now, and we just
-have web contents. So that's where the name comes from. And then even, for
-example, there was render process host, which I mentioned earlier. And then,
-each tab, each web contents roughly translate into one render process. And so,
-now, it's a bit more complicated. There are examples where you can have web
-contents inside of web contents, and that's more esoteric that most people
-don't have to deal with. And then, so that's what web contents is for. It will
+And so, that would be called `TabContents`. But that's gone now, and we just
+have `WebContents`. So that's where the name comes from. And then even, for
+example, there was `RenderProcessHost`, which I mentioned earlier. And then,
+each tab, each `WebContents` roughly translate into one render process. And so,
+now, it's a bit more complicated. There are examples where you can have
+`WebContents` inside of `WebContents`, and that's more esoteric that most people
+don't have to deal with. And then, so that's what `WebContents` is for. It will
 do things like take input and feed it to the page. Every time there's a
-permission prompt, you usually go through that. If a page wants to access to a
-microphone, or video, and so on. It keeps track of this navigation going on.
+permission prompt, you usually go through that. If a page wants access to a
+microphone, or video, and so on. It keeps track if there's navigation going on.
 What's the current URL? What's the pending URL? It uses other classes to drive
 all that stuff as you send out the network request and get it back. And that's
-not inside of web contents itself, but it's driven by other helper classes.
+not inside of `WebContents` itself, but it's driven by other helper classes.
 
 18:28 SHARON: I tend to think of content as being the home of navigation, which
 I think is a decent way to think about it and also is maybe biased because of
@@ -300,14 +302,14 @@ in Chrome? And where does that happen?
 
 19:32 JOHN: So that happens all over the code, but there's a few critical
 directories. If you look at net at a low level, a lot of IETF - and some
-aspects will be implemented there at that layer. Either net or in the network
+web specs will be implemented there at that layer. Either net or in the network
 service, which is a code that runs inside the network process. Then you've got
 V8, of course, our JavaScript engine, and that has to follow the ECMAScript
 standards. And then, there's a lot of the platform standards. Either some of
 them only don't need multiple processes to be - to implement them, so they'll
 just be completely inside Blink. But some of them require multiple processes,
 things that need access to devices and so on. And so, that implementation will
-be split across Blink and content browser. But then, how do you ensure that,
+be split across Blink and content/browser. But then, how do you ensure that,
 not only do you implement this correctly, but also that you don't regress it?
 So there's a whole slew of tests. There's the Blink tests, which used to be
 called the layout tests. And those run across the simple, simple test cases for
@@ -335,21 +337,21 @@ broke a small number of tests.
 
 22:06 SHARON: For sure, and it's a good example of why we have all these tests,
 is to make sure things don't break. So that is pretty much all the questions I
-have written down. Is there anything else generally content layer, content
-public API-ish related that is interesting that maybe we didn't get a chance to
+have written down. Is there anything else generally content layer, content/public
+API-ish related that is interesting that maybe we didn't get a chance to
 cover?
 
 22:31 JOHN: Yes. The most common questions is people will be like, well, does
 this belong in content or not? So I can have a chance to point people towards
-their README files and content/README that describes what's supposed to go in
-or not. And then, there's also a content/public/README that describes the
+their README files and [//content/README.md] that describes what's supposed to go in
+or not. And then, there's also a [//content/public/README.md] that describes the
 guidelines we have for the API to make it consistent.
 
 22:59 SHARON: I've definitely seen those questions before. You're updating one
-of the content public APIs. Does this belong? While we're here, can you give us
+of the content/public APIs. Does this belong? While we're here, can you give us
 a quick breakdown heuristic of what things generally would belong in the
-content public API versus you put it up for review, and the reviewer's like,
-no. This does not belong in content public?
+content/public API versus you put it up for review, and the reviewer's like,
+no. This does not belong in content/public?
 
 23:24 JOHN: So sometimes, for example, for convenience, maybe the Chrome layer
 wants to call other parts of Chrome layer, but they don't have a direct
@@ -357,7 +359,7 @@ connection. Or maybe a Chrome layer wants to talk to a different component. And
 so, they'll be like, we'll add something to the content API, and then, that
 way, Chrome can talk to this other part of Chrome or this other component
 through content as a shortcut. We don't allow that, and the reason for that is
-anybody who's gone through the content public directory, it's already huge. And
+anybody who's gone through the content/public directory, it's already huge. And
 so, we feel that if Chrome wants to talk to Chrome or to another layer, they
 should have their own API to each other directly instead of hopping through
 content. Just because the content API's already very large, very complex, hard
@@ -373,7 +375,7 @@ want to generally avoid those?
 
 24:45 JOHN: Well, yes. test-only methods, we try really hard - not just for the
 public API, but inside, because we don't want to bloat the binary. But we do
-have content public tests, which is - gives you a lot more leeway to poke at
+have content/public/test, which is - gives you a lot more leeway to poke at
 things in your browser test, for example, or your unit tests. Another thing is,
 we also have guidelines for how the API should be. We don't have, really,
 concrete classes. It's mostly abstract interfaces. And so, there's a bunch of
@@ -381,7 +383,7 @@ rules there, and they're all listed in content/public/README. Just so people
 know the guidelines we have for interfaces there.
 
 25:28 SHARON: On the Chrome binary point, how much is the size of the binary
-dependent on the size of the content public API? Is that a big part of the
+dependent on the size of the content/public API? Is that a big part of the
 binary, or is it small enough where, sure, we want to keep it from being
 unnecessarily large but not too much of an issue?
 
@@ -392,12 +394,12 @@ layer, you're not going to be a small binary. You'll just start off in the 30
 megabyte range or 40 megabyte range once you put everything together.
 
 26:12 SHARON: And I guess that's something you have to be more conscious of if
-you're working in content versus another directory even in Chrome. is that you
+you're working in content versus another directory even in Chrome, is that you
 have to be wary of your dependencies more so than anywhere else. Not only for
 Chrome, but also, any other embedders who might want to use content.
 
 26:31 JOHN: Yes. And so, for example, if someone's trying to add something in
-Chrome, we also ask, does this have to be in content? Of can this be part of
+Chrome, we also ask, does this have to be in content? Or can this be part of
 Chrome, so that not every embedder has to pay that cost if they don't need it?
 Maybe we'll have an interface, and the embedder can plug the data in through
 that way but still not have it in content. Another problem, of course, with
@@ -413,9 +415,9 @@ layer, the API?
 27:28 JOHN: Well, it's always changing. It's not static, driven by the needs of
 the product. And so, you look at big changes happening today like MPArch to
 support various use cases that we didn't have, or we never thought about
-initially. And that's where the web contents, inside web content, some of that
+initially. And that's where the `WebContents` inside `WebContents`, some of that
 comes in. There are big changes like banning, for example, pointers and
-replacing them with a raw pointer. So we can try to address some of the
+replacing them with a `raw_ptr`. So we can try to address some of the
 security problems we have with Use-After-Frees. So that's where, when you look
 at the content code or the Chrome code in general, too, you might see a little
 bit different than that average C++ project that you see. You'll be like, I'm
@@ -486,3 +488,7 @@ Blink, I'm just like -
 32:44 JOHN: Same. I've been on it for a long time. I don't touch Blink.
 
 32:50 SHARON: Yes. Yes.
+
+[//content/README.md]: https://crsrc.org/c/content/README.md
+[//content/public/README.md]: https://crsrc.org/c/content/public/README.md
+[What's Up With Pointers]: https://www.youtube.com/watch?v=MpwbWSEDfjM
