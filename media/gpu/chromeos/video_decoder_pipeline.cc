@@ -1027,6 +1027,20 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     }
   }
 
+  // TODO(jkardatzke): Remove this when we have protected content rendering on
+  // ARM working. This is temporary so that video will actually decode on HWDRM
+  // ARM devices during development (even though it won't be visible).
+#if BUILDFLAG(USE_V4L2_CODEC) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  if (use_protected) {
+    for (const auto& candidate : candidates) {
+      if (candidate.fourcc == Fourcc(Fourcc::MM21)) {
+        LOG(WARNING) << "Forcing MM21 format for V4L2 protected content";
+        viable_candidate = candidate;
+      }
+    }
+  }
+#endif
+
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_VAAPI)
   // Linux should always use a custom allocator (to allocate buffers using
   // libva) and a PlatformVideoFramePool.
