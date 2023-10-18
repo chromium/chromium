@@ -91,6 +91,10 @@ namespace network_time {
 class NetworkTimeTracker;
 }
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 namespace policy {
 class ChromeBrowserPolicyConnector;
 class PolicyService;
@@ -274,6 +278,10 @@ class BrowserProcess {
   // icon.
   virtual UsbSystemTrayIcon* usb_system_tray_icon() = 0;
 #endif
+
+  // Obtain the browser instance of OSCryptAsync, which should be used for data
+  // encryption.
+  virtual os_crypt_async::OSCryptAsync* os_crypt_async() = 0;
 
   virtual BuildState* GetBuildState() = 0;
 };

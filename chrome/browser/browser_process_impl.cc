@@ -105,6 +105,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 #include "components/network_time/network_time_tracker.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/permissions/permissions_client.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/json_pref_store.h"
@@ -1011,6 +1012,11 @@ UsbSystemTrayIcon* BrowserProcessImpl::usb_system_tray_icon() {
 }
 #endif
 
+os_crypt_async::OSCryptAsync* BrowserProcessImpl::os_crypt_async() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return os_crypt_async_.get();
+}
+
 BuildState* BrowserProcessImpl::GetBuildState() {
 #if !BUILDFLAG(IS_ANDROID)
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1261,6 +1267,17 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   } else {
     breadcrumbs::DeleteBreadcrumbFiles(user_data_dir);
   }
+
+  // For now, initialize OSCryptAsync with no providers. This delegates all
+  // encryption operations to OSCrypt.
+  // TODO(crbug.com/1373092): Add providers behind features, as support for them
+  // is added.
+  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
+      std::vector<
+          std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>());
+
+  // Trigger async initialization of OSCrypt key providers.
+  std::ignore = os_crypt_async_->GetInstance(base::DoNothing());
 }
 
 void BrowserProcessImpl::CreateIconManager() {

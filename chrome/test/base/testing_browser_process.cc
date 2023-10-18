@@ -32,6 +32,7 @@
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/metrics/metrics_service.h"
 #include "components/network_time/network_time_tracker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/permissions/permissions_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
@@ -140,7 +141,8 @@ void TestingBrowserProcess::TearDownAndDeleteInstance() {
 
 TestingBrowserProcess::TestingBrowserProcess()
     : app_locale_("en"),
-      platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()) {
+      platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()),
+      os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {
   // TestingBrowserProcess is used in unit_tests which sets this up through
   // content::UnitTestTestSuite but also through other test binaries which don't
   // use that test suite in which case we have to set it up.
@@ -515,6 +517,10 @@ UsbSystemTrayIcon* TestingBrowserProcess::usb_system_tray_icon() {
   return usb_system_tray_icon_.get();
 }
 #endif
+
+os_crypt_async::OSCryptAsync* TestingBrowserProcess::os_crypt_async() {
+  return os_crypt_async_.get();
+}
 
 BuildState* TestingBrowserProcess::GetBuildState() {
 #if !BUILDFLAG(IS_ANDROID)

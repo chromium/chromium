@@ -58,6 +58,10 @@ class TestNetworkConnectionTracker;
 class TestNetworkQualityTracker;
 }
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 namespace policy {
 class PolicyService;
 }
@@ -157,6 +161,7 @@ class TestingBrowserProcess : public BrowserProcess {
   HidSystemTrayIcon* hid_system_tray_icon() override;
   UsbSystemTrayIcon* usb_system_tray_icon() override;
 #endif
+  os_crypt_async::OSCryptAsync* os_crypt_async() override;
   BuildState* GetBuildState() override;
 
   // Set the local state for tests. Consumer is responsible for cleaning it up
@@ -262,6 +267,7 @@ class TestingBrowserProcess : public BrowserProcess {
 #endif
 
   std::unique_ptr<StatusTray> status_tray_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 // RAII (resource acquisition is initialization) for TestingBrowserProcess.

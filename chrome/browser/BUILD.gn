@@ -2300,6 +2300,7 @@ static_library("browser") {
     "//components/optimization_guide/optimization_guide_internals/webui",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
+    "//components/os_crypt/async/browser",
     "//components/os_crypt/sync",
     "//components/page_image_service",
     "//components/page_info/core:proto",
