@@ -26,12 +26,6 @@ namespace web_app {
 WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
     : SyncTest(test_type) {
   std::vector<base::test::FeatureRef> disabled_features;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/1357905): Update test driver to work with new UI.
-  disabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Disable Lacros, so that Web Apps get synced in the Ash browser.
   // TODO(crbug.com/1462253): Also test with Lacros flags enabled.

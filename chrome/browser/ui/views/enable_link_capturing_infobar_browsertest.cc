@@ -134,7 +134,7 @@ class EnableLinkCapturingInfobarBrowserTest
   }
 
   testing::AssertionResult ClickIntentPickerAndWaitForBubble() {
-    base::test::TestFuture<void> future;
+    base::test::TestFuture<bool> future;
     auto* tab_helper =
         IntentPickerTabHelper::FromWebContents(GetActiveWebContents(browser()));
     tab_helper->SetIconUpdateCallbackForTesting(
