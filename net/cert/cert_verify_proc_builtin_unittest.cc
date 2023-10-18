@@ -12,8 +12,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/crl_set.h"
@@ -158,8 +160,6 @@ class BlockingTrustStore : public TrustStore {
 
 class CertVerifyProcBuiltinTest : public ::testing::Test {
  public:
-  // CertVerifyProcBuiltinTest() {}
-
   void SetUp() override {
     cert_net_fetcher_ = base::MakeRefCounted<CertNetFetcherURLRequest>();
     auto mock_system_trust_store = std::make_unique<MockSystemTrustStore>();
@@ -794,5 +794,103 @@ TEST_F(CertVerifyProcBuiltinTest,
   // verification.
   EXPECT_THAT(error, IsOk());
 }
+
+class CertVerifyProcBuiltinIterationTest
+    : public CertVerifyProcBuiltinTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CertVerifyProcBuiltinIterationTest() {
+    if (new_iteration_limit()) {
+      feature_list_.InitAndEnableFeature(
+          features::kNewCertPathBuilderIterationLimit);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kNewCertPathBuilderIterationLimit);
+    }
+  }
+
+  bool new_iteration_limit() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(CertVerifyProcBuiltinIterationTest, IterationLimit) {
+  // Create a chain which will require many iterations in the path builder.
+  std::vector<std::unique_ptr<CertBuilder>> builders =
+      CertBuilder::CreateSimpleChain(6);
+
+  base::Time not_before = base::Time::Now() - base::Days(1);
+  base::Time not_after = base::Time::Now() + base::Days(1);
+  for (auto& builder : builders) {
+    builder->SetValidity(not_before, not_after);
+  }
+
+  // Generate certificates, making two versions of each intermediate.
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+  for (size_t i = 1; i < builders.size(); i++) {
+    intermediates.push_back(builders[i]->DupCertBuffer());
+    builders[i]->SetValidity(not_before, not_after + base::Seconds(1));
+    intermediates.push_back(builders[i]->DupCertBuffer());
+  }
+
+  // The above alone is enough to make the path builder explore many paths, but
+  // it will always return the best path it has found, so the error will be the
+  // same. Instead, arrange for all those paths to be invalid (untrusted root),
+  // and add a separate chain that is valid.
+  CertBuilder root_ok(/*orig_cert=*/builders[2]->GetCertBuffer(),
+                      /*issuer=*/nullptr);
+  CertBuilder intermediate_ok(/*orig_cert=*/builders[1]->GetCertBuffer(),
+                              /*issuer=*/&root_ok);
+  // Using the old intermediate as a template does not preserve the subject,
+  // SKID, or key.
+  intermediate_ok.SetSubjectTLV(
+      base::as_bytes(base::make_span(builders[1]->GetSubject())));
+  intermediate_ok.SetKey(bssl::UpRef(builders[1]->GetKey()));
+  intermediate_ok.SetSubjectKeyIdentifier(
+      builders[1]->GetSubjectKeyIdentifier());
+  // Make the valid intermediate older than the invalid ones, so that it is
+  // explored last.
+  intermediate_ok.SetValidity(not_before - base::Seconds(10),
+                              not_after - base::Seconds(10));
+  intermediates.push_back(intermediate_ok.DupCertBuffer());
+
+  // Verify the chain.
+  ScopedTestRoot scoped_root(root_ok.GetX509Certificate().get());
+  scoped_refptr<X509Certificate> chain = X509Certificate::CreateFromBuffer(
+      builders[0]->DupCertBuffer(), std::move(intermediates));
+  ASSERT_TRUE(chain.get());
+
+  RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
+  int flags = 0;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", flags, CertificateList(),
+         &verify_result, &verify_net_log_source, callback.callback());
+  int error = callback.WaitForResult();
+
+  auto events = net_log_observer.GetEntriesForSource(verify_net_log_source);
+  auto event = base::ranges::find_if(events, [](const NetLogEntry& e) {
+    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT &&
+           e.phase == NetLogEventPhase::END;
+  });
+  ASSERT_NE(event, events.end());
+
+  if (new_iteration_limit()) {
+    // The path builder gives up before it finishes all the invalid paths.
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    EXPECT_EQ(true, event->params.FindBool("exceeded_iteration_limit"));
+  } else {
+    // After exploring many dead ends, the path builder finds the valid path.
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(event->params.Find("exceeded_iteration_limit"));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(NewLimit,
+                         CertVerifyProcBuiltinIterationTest,
+                         testing::Bool());
 
 }  // namespace net

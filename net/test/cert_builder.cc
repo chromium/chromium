@@ -1049,14 +1049,12 @@ void CertBuilder::Invalidate() {
 
 void CertBuilder::GenerateECKey() {
   auto private_key = crypto::ECPrivateKey::Create();
-  key_ = bssl::UpRef(private_key->key());
-  Invalidate();
+  SetKey(bssl::UpRef(private_key->key()));
 }
 
 void CertBuilder::GenerateRSAKey() {
   auto private_key = crypto::RSAPrivateKey::Create(2048);
-  key_ = bssl::UpRef(private_key->key());
-  Invalidate();
+  SetKey(bssl::UpRef(private_key->key()));
 }
 
 bool CertBuilder::UseKeyFromFile(const base::FilePath& key_file) {
@@ -1064,9 +1062,13 @@ bool CertBuilder::UseKeyFromFile(const base::FilePath& key_file) {
       key_util::LoadEVP_PKEYFromPEM(key_file));
   if (!private_key)
     return false;
-  key_ = std::move(private_key);
-  Invalidate();
+  SetKey(std::move(private_key));
   return true;
+}
+
+void CertBuilder::SetKey(bssl::UniquePtr<EVP_PKEY> key) {
+  key_ = std::move(key);
+  Invalidate();
 }
 
 void CertBuilder::GenerateSubjectKeyIdentifier() {

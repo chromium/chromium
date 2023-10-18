@@ -478,6 +478,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSpdyHeadersToHttpResponseVerifyCorrectness);
 // Enables receiving ECN bit by sockets in Chrome.
 NET_EXPORT BASE_DECLARE_FEATURE(kReceiveEcn);
 
+NET_EXPORT BASE_DECLARE_FEATURE(kNewCertPathBuilderIterationLimit);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

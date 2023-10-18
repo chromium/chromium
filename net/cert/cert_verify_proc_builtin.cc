@@ -8,12 +8,14 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_status_flags.h"
@@ -46,8 +48,10 @@ namespace net {
 namespace {
 
 // Very conservative iteration count limit.
-// TODO(https://crbug.com/634470): Make this smaller.
+// TODO(https://crbug.com/634470): Remove this in favor of
+// kPathBuilderIterationLimitNew.
 constexpr uint32_t kPathBuilderIterationLimit = 25000;
+constexpr uint32_t kPathBuilderIterationLimitNew = 20;
 
 constexpr base::TimeDelta kMaxVerificationTime = base::Seconds(60);
 
@@ -622,7 +626,12 @@ CertPathBuilder::Result TryBuildPath(
     }
   }
 
-  path_builder.SetIterationLimit(kPathBuilderIterationLimit);
+  if (base::FeatureList::IsEnabled(
+          features::kNewCertPathBuilderIterationLimit)) {
+    path_builder.SetIterationLimit(kPathBuilderIterationLimitNew);
+  } else {
+    path_builder.SetIterationLimit(kPathBuilderIterationLimit);
+  }
 
   return path_builder.Run();
 }
