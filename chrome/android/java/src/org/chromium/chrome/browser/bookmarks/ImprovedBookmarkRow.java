@@ -29,7 +29,8 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListU
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** Common logic for improved bookmark and folder rows. */
-public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout {
+public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
+        implements CancelableAnimator {
     /**
      * The base duration of the settling animation of the sheet. 218 ms is a spec for material
      * design (this is the minimum time a user is guaranteed to pay attention to something).
@@ -54,6 +55,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout {
     // 3-dot menu which displays contextual actions.
     private ListMenuButton mMoreButton;
     private ImageView mEndImageView;
+    private @Nullable ViewPropertyAnimator mFadeAnimator;
 
     private boolean mDragEnabled;
     private boolean mBookmarkIdEditable;
@@ -85,6 +87,14 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout {
     /** Constructor for inflating from XML. */
     public ImprovedBookmarkRow(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    public void cancelAnimation() {
+        if (mFadeAnimator != null) {
+            mFadeAnimator.cancel();
+            mFadeAnimator = null;
+        }
     }
 
     void setStartImageRoundedCornerOutlineProvider(boolean isVisual) {
@@ -140,17 +150,16 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout {
     }
 
     void setStartIconDrawable(@Nullable Drawable drawable) {
+        cancelAnimation();
+
         mStartImageView.setImageDrawable(drawable);
         // No need to fade-in a null drawable.
         if (drawable == null) return;
 
         mStartImageView.setAlpha(0f);
 
-        // Using a local variable to facilitate testing.
-        ViewPropertyAnimator anim = mStartImageView.animate();
-        anim.setDuration(BASE_ANIMATION_DURATION_MS);
-        anim.alpha(1f);
-        anim.start();
+        mFadeAnimator = mStartImageView.animate().setDuration(BASE_ANIMATION_DURATION_MS).alpha(1f);
+        mFadeAnimator.start();
     }
 
     void setStartIconTint(ColorStateList tint) {

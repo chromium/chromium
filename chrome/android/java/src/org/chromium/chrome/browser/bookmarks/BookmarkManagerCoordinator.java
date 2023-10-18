@@ -73,6 +73,21 @@ public class BookmarkManagerCoordinator
         }
     };
 
+    private final class DragAndCancelAdapter extends DragReorderableRecyclerViewAdapter {
+        DragAndCancelAdapter(Context context, ModelList modelList) {
+            super(context, modelList);
+        }
+
+        @Override
+        public boolean onFailedToRecycleView(@NonNull ViewHolder holder) {
+            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                    && holder.itemView instanceof CancelableAnimator cancelable) {
+                cancelable.cancelAnimation();
+            }
+            return super.onFailedToRecycleView(holder);
+        }
+    }
+
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
     private final ViewGroup mMainView;
@@ -132,7 +147,7 @@ public class BookmarkManagerCoordinator
 
         ModelList modelList = new ModelList();
         DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
-                new DragReorderableRecyclerViewAdapter(context, modelList);
+                new DragAndCancelAdapter(context, modelList);
         mRecyclerView =
                 mSelectableListLayout.initializeRecyclerView(dragReorderableRecyclerViewAdapter);
 
@@ -228,7 +243,7 @@ public class BookmarkManagerCoordinator
                 mMediator.getDraggabilityProvider());
         dragReorderableRecyclerViewAdapter.registerDraggableType(
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
-                this::buildCompactImprovedBookmarkRow,
+                this::buildVisualImprovedBookmarkRow,
                 ImprovedBookmarkRowViewBinder::bind,
                 (viewHolder, itemTouchHelper) -> {},
                 mMediator.getDraggabilityProvider());
