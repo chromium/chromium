@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -72,7 +74,8 @@ class PasswordCounterDelegateBridge
   password_manager::PasswordCounter counter_;
 };
 
-@interface FormInputAccessoryMediator () <FormActivityObserver,
+@interface FormInputAccessoryMediator () <BooleanObserver,
+                                          FormActivityObserver,
                                           FormInputAccessoryViewDelegate,
                                           CRWWebStateObserver,
                                           PasswordCounterObserver,
@@ -151,6 +154,9 @@ class PasswordCounterDelegateBridge
 
   // If YES `_lastSeenParams` is valid.
   BOOL _hasLastSeenParams;
+
+  // Pref tracking if bottom omnibox is enabled.
+  PrefBackedBoolean* _bottomOmniboxEnabled;
 }
 
 - (instancetype)
@@ -267,6 +273,9 @@ class PasswordCounterDelegateBridge
     _webStateListObserver.reset();
     _webStateList = nullptr;
   }
+  [_bottomOmniboxEnabled stop];
+  [_bottomOmniboxEnabled setObserver:nil];
+  _bottomOmniboxEnabled = nil;
 }
 
 - (void)detachFromWebState {
@@ -372,6 +381,11 @@ class PasswordCounterDelegateBridge
   return ChromiumAccessoryViewTextData();
 }
 
+- (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
+    (FormInputAccessoryView*)sender {
+  [self.formNavigationHandler closeKeyboardWithOmniboxTypingShield];
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateWasShown:(web::WebState*)webState {
@@ -446,6 +460,22 @@ class PasswordCounterDelegateBridge
   [_currentProvider inputAccessoryViewControllerDidReset];
   _currentProvider = currentProvider;
   _currentProvider.formInputNavigator = self.formNavigationHandler;
+}
+
+- (void)setPrefService:(PrefService*)prefService {
+  _prefService = prefService;
+  if (IsBottomOmniboxSteadyStateEnabled() && _prefService) {
+    _bottomOmniboxEnabled =
+        [[PrefBackedBoolean alloc] initWithPrefService:_prefService
+                                              prefName:prefs::kBottomOmnibox];
+    [_bottomOmniboxEnabled setObserver:self];
+    // Initialize to the current value.
+    [self booleanDidChange:_bottomOmniboxEnabled];
+  } else {
+    [_bottomOmniboxEnabled stop];
+    [_bottomOmniboxEnabled setObserver:nil];
+    _bottomOmniboxEnabled = nil;
+  }
 }
 
 #pragma mark - Private
@@ -576,6 +606,15 @@ class PasswordCounterDelegateBridge
 // Handle applicationDidEnterBackground NSNotification.
 - (void)applicationDidEnterBackground:(NSNotification*)notification {
   [self.handler resetFormInputView];
+}
+
+#pragma mark - Boolean Observer
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  if (observableBoolean == _bottomOmniboxEnabled) {
+    CHECK(IsBottomOmniboxSteadyStateEnabled());
+    [self.consumer newOmniboxPositionIsBottom:_bottomOmniboxEnabled.value];
+  }
 }
 
 #pragma mark - FormSuggestionClient

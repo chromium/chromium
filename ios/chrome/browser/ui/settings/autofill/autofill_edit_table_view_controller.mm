@@ -130,6 +130,11 @@
   return ChromiumAccessoryViewTextData();
 }
 
+- (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
+    (FormInputAccessoryView*)sender {
+  NOTREACHED() << "The typing shield should only be present on web";
+}
+
 #pragma mark - Helper methods
 
 // Returns the cell containing `textField`.

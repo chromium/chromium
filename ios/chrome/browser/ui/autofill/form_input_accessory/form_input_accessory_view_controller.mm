@@ -10,10 +10,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/branding/branding_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/features.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_view.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -50,7 +53,10 @@
 
 @end
 
-@implementation FormInputAccessoryViewController
+@implementation FormInputAccessoryViewController {
+  // Is the preferred omnibox position at the bottom.
+  BOOL _isBottomOmnibox;
+}
 
 @synthesize addressButtonHidden = _addressButtonHidden;
 @synthesize creditCardButtonHidden = _creditCardButtonHidden;
@@ -117,6 +123,13 @@
   return base::apple::ObjCCastStrict<FormInputAccessoryView>(self.view);
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    [self updateOmniboxTypingShieldVisibility];
+  }
+}
+
 #pragma mark - Public
 
 - (void)lockManualFallbackView {
@@ -135,6 +148,11 @@
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
   [self announceVoiceOverMessageIfNeeded:[suggestions count]];
+}
+
+- (void)newOmniboxPositionIsBottom:(BOOL)isBottomOmnibox {
+  _isBottomOmnibox = isBottomOmnibox;
+  [self updateOmniboxTypingShieldVisibility];
 }
 
 #pragma mark - Getter
@@ -255,6 +273,19 @@
                                     suggestionsVoiceOverMessage);
   }
   self.lastAnnouncedFieldId = _currentFieldId;
+}
+
+- (void)updateOmniboxTypingShieldVisibility {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  const BOOL shouldShowTypingShield =
+      _isBottomOmnibox && IsSplitToolbarMode(self.traitCollection);
+  const CGFloat typingShieldHeight =
+      shouldShowTypingShield
+          ? ToolbarCollapsedHeight(
+                self.traitCollection.preferredContentSizeCategory)
+          : 0.0;
+  [[self formInputAccessoryView]
+      setOmniboxTypingShieldHeight:typingShieldHeight];
 }
 
 #pragma mark - ManualFillAccessoryViewControllerDelegate

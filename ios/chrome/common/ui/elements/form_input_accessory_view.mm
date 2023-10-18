@@ -55,7 +55,15 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
 
 @end
 
-@implementation FormInputAccessoryView
+@implementation FormInputAccessoryView {
+  // Transparent view on the top edge to let the keyboard know about the
+  // omnibox.
+  UIButton* _omniboxTypingShield;
+  // Height constraint used to show/hide the `omniboxTypingShield`.
+  NSLayoutConstraint* _omniboxTypingShieldHeightConstraint;
+  // View containing the leading and trailing buttons.
+  UIView* _contentView;
+}
 
 #pragma mark - Public
 
@@ -78,6 +86,11 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
           navigationDelegate:delegate];
 }
 
+- (void)setOmniboxTypingShieldHeight:(CGFloat)typingShieldHeight {
+  _omniboxTypingShieldHeightConstraint.constant = typingShieldHeight;
+  [self layoutIfNeeded];
+}
+
 #pragma mark - UIInputViewAudioFeedback
 
 - (BOOL)enableInputClicksWhenVisible {
@@ -98,6 +111,10 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
   [self.delegate formInputAccessoryViewDidTapPreviousButton:self];
 }
 
+- (void)omniboxTypingShieldTapped {
+  [self.delegate fromInputAccessoryViewDidTapOmniboxTypingShield:self];
+}
+
 // Sets up the view with the given `leadingView`. If `delegate` is not nil,
 // navigation controls are shown on the right and use `delegate` for actions.
 // Else navigation controls are replaced with `customTrailingView`. If none of
@@ -109,6 +126,22 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
   DCHECK(!self.subviews.count);  // This should only be called once.
 
   self.accessibilityIdentifier = kFormInputAccessoryViewAccessibilityID;
+  self.translatesAutoresizingMaskIntoConstraints = NO;
+  self.backgroundColor = UIColor.clearColor;
+  self.opaque = NO;
+
+  _contentView = [[UIView alloc] init];
+  _contentView.translatesAutoresizingMaskIntoConstraints = NO;
+  _contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  [self addSubview:_contentView];
+  AddSameConstraintsToSides(
+      self, _contentView,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  // Lower the top constraint as the omniboxTypingShield can be above it.
+  NSLayoutConstraint* topConstraint =
+      [self.topAnchor constraintEqualToAnchor:_contentView.topAnchor];
+  topConstraint.priority = UILayoutPriorityRequired - 1;
+  topConstraint.active = YES;
 
   leadingView = leadingView ?: [[UIView alloc] init];
   self.leadingView = leadingView;
@@ -125,41 +158,39 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
   // If there is no trailing view, set the leading view as the only view and
   // return early.
   if (!trailingView) {
-    [self addSubview:leadingView];
-    AddSameConstraints(self, leadingView);
+    [_contentView addSubview:leadingView];
+    AddSameConstraints(_contentView, leadingView);
     return;
   }
 
-  self.translatesAutoresizingMaskIntoConstraints = NO;
   UIView* leadingViewContainer = [[UIView alloc] init];
   leadingViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addSubview:leadingViewContainer];
+  [_contentView addSubview:leadingViewContainer];
   [leadingViewContainer addSubview:leadingView];
   AddSameConstraints(leadingViewContainer, leadingView);
 
   trailingView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:trailingView];
 
-  NSLayoutConstraint* defaultHeightConstraint =
-      [self.heightAnchor constraintEqualToConstant:kDefaultAccessoryHeight];
+  NSLayoutConstraint* defaultHeightConstraint = [_contentView.heightAnchor
+      constraintEqualToConstant:kDefaultAccessoryHeight];
   defaultHeightConstraint.priority = UILayoutPriorityDefaultHigh;
 
   id<LayoutGuideProvider> layoutGuide = self.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
     defaultHeightConstraint,
-    [leadingViewContainer.topAnchor constraintEqualToAnchor:self.topAnchor],
+    [leadingViewContainer.topAnchor
+        constraintEqualToAnchor:_contentView.topAnchor],
     [leadingViewContainer.bottomAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
     [leadingViewContainer.leadingAnchor
         constraintEqualToAnchor:layoutGuide.leadingAnchor],
     [trailingView.trailingAnchor
         constraintEqualToAnchor:layoutGuide.trailingAnchor],
-    [trailingView.topAnchor constraintEqualToAnchor:self.topAnchor],
+    [trailingView.topAnchor constraintEqualToAnchor:_contentView.topAnchor],
     [trailingView.bottomAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
   ]];
-
-  self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   // Gradient view to disolve the leading view's end.
   UIView* gradientView = [[GradientView alloc]
@@ -173,20 +204,20 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
   if (base::i18n::IsRTL()) {
     gradientView.transform = CGAffineTransformMakeRotation(M_PI);
   }
-  [self insertSubview:gradientView belowSubview:trailingView];
+  [_contentView insertSubview:gradientView belowSubview:trailingView];
 
   UIView* topGrayLine = [[UIView alloc] init];
   topGrayLine.backgroundColor = [UIColor colorNamed:kGrey50Color];
   topGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addSubview:topGrayLine];
+  [_contentView addSubview:topGrayLine];
 
   UIView* bottomGrayLine = [[UIView alloc] init];
   bottomGrayLine.backgroundColor = [UIColor colorNamed:kGrey50Color];
   bottomGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addSubview:bottomGrayLine];
+  [_contentView addSubview:bottomGrayLine];
 
   [NSLayoutConstraint activateConstraints:@[
-    [topGrayLine.topAnchor constraintEqualToAnchor:self.topAnchor],
+    [topGrayLine.topAnchor constraintEqualToAnchor:_contentView.topAnchor],
     [topGrayLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
     [topGrayLine.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
     [topGrayLine.heightAnchor
@@ -210,6 +241,8 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
     [leadingViewContainer.trailingAnchor
         constraintEqualToAnchor:trailingView.leadingAnchor],
   ]];
+
+  [self createOmniboxTypingShield];
 }
 
 // Returns a view that shows navigation buttons.
@@ -258,6 +291,32 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
       initWithArrangedSubviews:@[ previousButton, nextButton, closeButton ]];
   navigationView.spacing = ManualFillNavigationItemSpacing;
   return navigationView;
+}
+
+- (void)createOmniboxTypingShield {
+  if (!_omniboxTypingShield) {
+    CHECK(_contentView);
+    _omniboxTypingShield = [[UIButton alloc] init];
+    _omniboxTypingShield.translatesAutoresizingMaskIntoConstraints = NO;
+    _omniboxTypingShield.backgroundColor = UIColor.clearColor;
+    _omniboxTypingShield.isAccessibilityElement = NO;
+    _omniboxTypingShield.opaque = NO;
+    [self addSubview:_omniboxTypingShield];
+
+    AddSameConstraintsToSides(
+        self, _omniboxTypingShield,
+        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+    _omniboxTypingShieldHeightConstraint =
+        [_omniboxTypingShield.heightAnchor constraintEqualToConstant:0];
+    [NSLayoutConstraint activateConstraints:@[
+      _omniboxTypingShieldHeightConstraint,
+      [_omniboxTypingShield.bottomAnchor
+          constraintEqualToAnchor:_contentView.topAnchor]
+    ]];
+    [_omniboxTypingShield addTarget:self
+                             action:@selector(omniboxTypingShieldTapped)
+                   forControlEvents:UIControlEventTouchUpInside];
+  }
 }
 
 @end

@@ -45,6 +45,10 @@
 // And form navigation buttons on iPhone (iPad already includes those).
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions;
 
+// Preferred omnibox position was updated. `isBottomOmnibox`: whether the new
+// position is bottom omnibox.
+- (void)newOmniboxPositionIsBottom:(BOOL)isBottomOmnibox;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_INPUT_ACCESSORY_CONSUMER_H_

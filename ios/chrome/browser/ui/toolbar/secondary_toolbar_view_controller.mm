@@ -64,6 +64,16 @@
   [super collapsedToolbarButtonTapped];
 
   if ([self.view.locationBarKeyboardConstraint isActive]) {
+    // When the bottom omnibox is collapsed above the keyboard, it's positioned
+    // behind an `omniboxTypingShield` (transparent view) in the
+    // `formInputAccessoryView`. This allow the keyboard to know about the size
+    // of the omnibox (crbug.com/1490601).
+    // When voice over is off, tapping the collapsed bottom omnibox interacts
+    // with the `omniboxTypingShield`. The logic to dismiss the keyboard is
+    // handled in `formInputAccessoryViewHandler`. However, the typing shield
+    // has `isAccessibilityElement` equals NO to let the user interact with the
+    // omnibox on voice over. In this mode, logic to dismiss the keyboard is
+    // handled here in `SecondaryToolbarViewController`.
     CHECK(IsBottomOmniboxSteadyStateEnabled());
     CHECK([self hasOmnibox]);
     UIResponder* responder = GetFirstResponder();

@@ -139,7 +139,7 @@ UIView* SecondaryToolbarLocationBarContainerView(
     // in view controller.
     _locationBarKeyboardConstraint = [newSuperview.keyboardLayoutGuide.topAnchor
         constraintGreaterThanOrEqualToAnchor:self.locationBarContainer
-                                                 .bottomAnchor];
+                                                 .topAnchor];
   }
 }
 

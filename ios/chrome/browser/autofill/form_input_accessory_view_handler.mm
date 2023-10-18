@@ -225,6 +225,14 @@ NSArray* FindDescendantToolbarItemsForActionName(
   [self closeKeyboardLoggingButtonPressed];
 }
 
+- (void)closeKeyboardWithOmniboxTypingShield {
+  if (_webState) {
+    UIView* view = _webState->GetView();
+    CHECK(view);
+    [view endEditing:YES];
+  }
+}
+
 - (void)selectPreviousElementWithButtonPress {
   [self selectPreviousElementLoggingButtonPressed];
 }
