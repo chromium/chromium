@@ -7,6 +7,7 @@ package org.chromium.chrome.features.start_surface;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.SystemClock;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -1095,6 +1096,11 @@ public class StartSurfaceCoordinator implements StartSurface {
                 : getPixelSize(R.dimen.tasks_surface_location_bar_url_button_start_margin);
         // realLensButtonStartMargin is 0;
 
+        float fakeSearchTextSize = mIsSurfacePolishEnabled
+            ? getTextSizeFromDimen(R.dimen.location_bar_url_text_size_polish)
+            : getTextSizeFromDimen(R.dimen.location_bar_url_text_size);
+        float realSearchTextSize = getTextSizeFromDimen(R.dimen.location_bar_url_text_size);
+
         TasksView tasksView = mTasksSurface != null ? (TasksView) mTasksSurface.getView() : mView;
 
         mOffsetChangedListenerToGenerateScrollEvents = (appBarLayout, verticalOffset) -> {
@@ -1150,7 +1156,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                             ? realTranslationX * expansionFraction
                             : 0,
                     (int) (fakeButtonSize + (realButtonSize - fakeButtonSize) * expansionFraction),
-                    (int) (fakeLensButtonStartMargin * (1 - expansionFraction)), fakeHeight);
+                    (int) (fakeLensButtonStartMargin * (1 - expansionFraction)), fakeHeight,
+                fakeSearchTextSize + (realSearchTextSize - fakeSearchTextSize) * expansionFraction);
 
             if(mIsSurfacePolishEnabled && scrolledHeight > appBarLayout.getHeight()){
                 ViewUtils.requestLayout(appBarLayout,
@@ -1162,6 +1169,23 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     private int getPixelSize(int id) {
         return mActivity.getResources().getDimensionPixelSize(id);
+    }
+
+    /**
+     * Gets the text size based on a dimension resource. The return value is in SP.
+     * @param id The resource ID of the dimension value.
+     */
+    private float getTextSizeFromDimen(int id) {
+        TypedValue typedValue = new TypedValue();
+        Resources resources = mActivity.getResources();
+        resources.getValue(id, typedValue, true);
+
+        if (typedValue.type == TypedValue.TYPE_DIMENSION &&
+            (typedValue.data & TypedValue.COMPLEX_UNIT_MASK) == TypedValue.COMPLEX_UNIT_SP) {
+            return TypedValue.complexToFloat(typedValue.data);
+        }
+
+        return -1;
     }
 
     public void initializeMVTiles() {
