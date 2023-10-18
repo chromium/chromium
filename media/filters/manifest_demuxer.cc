@@ -421,6 +421,14 @@ void ManifestDemuxer::SetGroupStartTimestamp(base::StringPiece role,
                                                          time);
 }
 
+void ManifestDemuxer::SetEndOfStream() {
+  chunk_demuxer_->MarkEndOfStream(PIPELINE_OK);
+}
+
+void ManifestDemuxer::UnsetEndOfStream() {
+  chunk_demuxer_->UnmarkEndOfStream();
+}
+
 ChunkDemuxer* ManifestDemuxer::GetChunkDemuxerForTesting() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   return chunk_demuxer_.get();

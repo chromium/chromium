@@ -104,6 +104,8 @@ class MEDIA_EXPORT HlsVodRendition : public HlsRendition {
   // Fetch segments in order always.
   std::vector<SegmentInfo>::iterator fetch_queue_;
 
+  bool set_stream_end_ = false;
+
   bool is_stopped_for_shutdown_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);

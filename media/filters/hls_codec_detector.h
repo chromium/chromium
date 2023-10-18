@@ -24,20 +24,30 @@ class MEDIA_EXPORT HlsCodecDetector {
     std::string container;
     std::string codecs;
   };
-
   using CodecCallback = HlsDemuxerStatusCb<ContainerAndCodecs>;
+  virtual ~HlsCodecDetector() = 0;
 
-  ~HlsCodecDetector();
+  virtual void DetermineContainerAndCodec(
+      std::unique_ptr<HlsDataSourceStream> stream,
+      CodecCallback cb) = 0;
+  virtual void DetermineContainerOnly(
+      std::unique_ptr<HlsDataSourceStream> stream,
+      CodecCallback cb) = 0;
+};
+
+class MEDIA_EXPORT HlsCodecDetectorImpl : public HlsCodecDetector {
+ public:
+  ~HlsCodecDetectorImpl() override;
 
   // The HlsRenditionHost owns the only implementation of HlsCodecDetector
   // and uses it only on a single thread, where it is also deleted. Keeping
   // a raw pointer to that HlsRenditionHost is therefore safe.
-  HlsCodecDetector(MediaLog* media_log, HlsRenditionHost* rendition_host_);
+  HlsCodecDetectorImpl(MediaLog* media_log, HlsRenditionHost* rendition_host_);
 
   void DetermineContainerAndCodec(std::unique_ptr<HlsDataSourceStream> stream,
-                                  CodecCallback cb);
+                                  CodecCallback cb) override;
   void DetermineContainerOnly(std::unique_ptr<HlsDataSourceStream> stream,
-                              CodecCallback cb);
+                              CodecCallback cb) override;
 
  private:
   void OnStreamFetched(bool container_only,
@@ -60,7 +70,7 @@ class MEDIA_EXPORT HlsCodecDetector {
   raw_ptr<HlsRenditionHost> rendition_host_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<HlsCodecDetector> weak_factory_{this};
+  base::WeakPtrFactory<HlsCodecDetectorImpl> weak_factory_{this};
 };
 
 }  // namespace media

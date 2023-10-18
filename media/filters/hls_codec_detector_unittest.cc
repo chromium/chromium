@@ -39,8 +39,8 @@ class HlsCodecDetectorTest : public testing::Test {
   HlsCodecDetectorTest()
       : media_log_(std::make_unique<NiceMock<media::MockMediaLog>>()),
         mock_hrh_(std::make_unique<media::MockHlsRenditionHost>()),
-        detector_(std::make_unique<HlsCodecDetector>(media_log_.get(),
-                                                     mock_hrh_.get())) {}
+        detector_(std::make_unique<HlsCodecDetectorImpl>(media_log_.get(),
+                                                         mock_hrh_.get())) {}
 
   ~HlsCodecDetectorTest() override { task_environment_.RunUntilIdle(); }
 

@@ -27,6 +27,14 @@ const std::string kInvalidMediaPlaylist =
     "#This Wont Parse!\n"
     "#EXT-X-ENDLIST\n";
 
+const std::string kShortMediaPlaylist =
+    "#EXTM3U\n"
+    "#EXT-X-TARGETDURATION:10\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/first.ts\n"
+    "#EXT-X-ENDLIST\n";
+
 const std::string kSimpleMediaPlaylist =
     "#EXTM3U\n"
     "#EXT-X-TARGETDURATION:10\n"
@@ -152,6 +160,7 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
   std::unique_ptr<MockHlsDataSourceProvider> mock_dsp_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<HlsManifestDemuxerEngine> engine_;
+  std::unique_ptr<MockCodecDetector> mock_detector_;
 
   MOCK_METHOD(void, MockInitComplete, (PipelineStatus status), ());
 
@@ -165,7 +174,7 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
  public:
   HlsManifestDemuxerEngineTest()
       : media_log_(std::make_unique<NiceMock<media::MockMediaLog>>()),
-        mock_mdeh_(std::make_unique<MockManifestDemuxerEngineHost>()),
+        mock_mdeh_(std::make_unique<NiceMock<MockManifestDemuxerEngineHost>>()),
         mock_dsp_(std::make_unique<StrictMock<MockHlsDataSourceProvider>>()) {
     ON_CALL(*mock_mdeh_, AddRole(_, _, _)).WillByDefault(Return(true));
     ON_CALL(*mock_mdeh_, GetBufferedRanges(_))
@@ -179,6 +188,8 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     engine_ = std::make_unique<HlsManifestDemuxerEngine>(
         std::move(dsp), base::SingleThreadTaskRunner::GetCurrentDefault(),
         GURL("http://media.example.com/manifest.m3u8"), media_log_.get());
+
+    mock_detector_ = std::make_unique<StrictMock<MockCodecDetector>>();
   }
 
   void InitializeEngine() {
@@ -186,6 +197,14 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
         mock_mdeh_.get(),
         base::BindOnce(&HlsManifestDemuxerEngineTest::MockInitComplete,
                        base::Unretained(this)));
+  }
+
+  void InitializeEngineWithMockDetector() {
+    engine_->InitializeWithMockCodecDetectorForTesting(
+        mock_mdeh_.get(),
+        base::BindOnce(&HlsManifestDemuxerEngineTest::MockInitComplete,
+                       base::Unretained(this)),
+        std::move(mock_detector_));
   }
 
   ~HlsManifestDemuxerEngineTest() override {
@@ -382,6 +401,80 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
       base::Seconds(0), 0.0, base::BindOnce([](base::TimeDelta r) {
         EXPECT_THAT(r, CloseTo(base::Seconds(7), base::Milliseconds(1)));
       }));
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
+  // All the expectations set during the initialization process.
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
+  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
+                                   "avc1.420000, mp4a.40.05"));
+  EXPECT_CALL(*mock_mdeh_, SetDuration(9.009));
+  HlsCodecDetector::ContainerAndCodecs mock_response = {
+      "video/mp2t", "avc1.420000, mp4a.40.05"};
+  EXPECT_CALL(*mock_detector_, DetermineContainerAndCodec(_, _))
+      .WillOnce(RunOnceCallback<1>(mock_response));
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+
+  // We can't use `BindUrlToDataSource` here, since it can't re-create streams
+  // like we need it to. The network requests are in order:
+  // - manifest.m3u8 - main manifest
+  // - first.ts      - request for the first few bytes to do codec detection
+  // - first.ts      - request for chunks of data to add to ChunkDemuxer
+  EXPECT_CALL(*mock_dsp_,
+              ReadFromUrl(GURL("http://media.example.com/manifest.m3u8"), _, _))
+      .WillOnce(RunOnceCallback<2>(
+          StringHlsDataSourceStreamFactory::CreateStream(kShortMediaPlaylist)));
+  EXPECT_CALL(*mock_dsp_,
+              ReadFromUrl(GURL("http://media.example.com/first.ts"), _, _))
+      .WillOnce(
+          RunOnceCallback<2>(StringHlsDataSourceStreamFactory::CreateStream(
+              "hey, this isn't a bitstream!")))
+      .WillOnce(
+          RunOnceCallback<2>(StringHlsDataSourceStreamFactory::CreateStream(
+              "do I look like a video to you?")));
+
+  // `GetBufferedRanges` gets called many times during this process:
+  // - HlsVodRendition::CheckState (1) => empty ranges, nothing loaded.
+  // - HlsVodRendition::OnSegmentData (1) => populated by AppendAndParseData
+  // - HlsVodRendition::CheckState (2) => still has data
+  Ranges<base::TimeDelta> populated_ranges;
+  populated_ranges.Add(base::Seconds(0), base::Seconds(5));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
+      .WillOnce(Return(Ranges<base::TimeDelta>()))
+      .WillOnce(Return(populated_ranges))
+      .WillOnce(Return(populated_ranges));
+
+  // The first call to `OnTimeUpdate` should trigger the append function,
+  // and our data was 30 characters long.
+  EXPECT_CALL(*mock_mdeh_,
+              AppendAndParseData("primary", base::Seconds(0), _, _, _, 30))
+      .WillOnce(Return(true));
+
+  // Finally, and EndOfStream call happens:
+  EXPECT_CALL(*mock_mdeh_, SetEndOfStream());
+
+  // And then teardown:
+  EXPECT_CALL(*mock_mdeh_, RemoveRole(base::StringPiece("primary")));
+
+  // Setup with a mock codec detector - this will set all the roles, duration,
+  // modes, and also make a request for the manifest and the first segment.
+  InitializeEngineWithMockDetector();
+  task_environment_.RunUntilIdle();
+
+  // For the first state check, there should be empty ranges, which triggers
+  // `HlsVodRendition::FetchNext`, which should request the data from first.ts
+  // add its content, and then return.
+  engine_->OnTimeUpdate(base::Seconds(0), 1.0, base::DoNothing());
+  task_environment_.RunUntilIdle();
+
+  // For the second state check, there are no more segments, no pending segment,
+  // and there are loaded ranges, so HlsVodRendition will report an EndOfStream.
+  engine_->OnTimeUpdate(base::Seconds(6), 1.0, base::DoNothing());
+  task_environment_.RunUntilIdle();
+
+  // Expectations on teardown.
+  ASSERT_TRUE(engine_->IsSeekable());
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace media

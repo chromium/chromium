@@ -68,6 +68,10 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
 
   // Test helpers.
   void AddRenditionForTesting(std::unique_ptr<HlsRendition> test_rendition);
+  void InitializeWithMockCodecDetectorForTesting(
+      ManifestDemuxerEngineHost* host,
+      PipelineStatusCallback cb,
+      std::unique_ptr<HlsCodecDetector> codec_detector);
 
  private:
   struct PlaylistParseInfo {
@@ -164,6 +168,11 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                                    std::unique_ptr<MediaTracks> tracks);
   void ContinueSeekInternal(base::TimeDelta time,
                             ManifestDemuxer::SeekCallback cb);
+
+  void InitializeWithCodecDetector(
+      ManifestDemuxerEngineHost* host,
+      PipelineStatusCallback status_cb,
+      std::unique_ptr<HlsCodecDetector> codec_detector);
 
   base::SequenceBound<HlsDataSourceProvider> data_source_provider_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
