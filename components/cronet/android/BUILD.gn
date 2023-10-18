@@ -969,6 +969,8 @@ shared_library("cronet_tests") {
 android_resources("cronet_test_apk_resources") {
   testonly = true
   sources = [
+    # TODO(crbug/1489244): Modify quicroot.pem to become a build time copy of
+    # net/data/ssl/certificates/cronet-quic-chain.pem.
     "test/res/raw/quicroot.pem",
     "test/res/values/strings.xml",
     "test/res/xml/network_security_config.xml",
