@@ -43,6 +43,7 @@
 #include "base/containers/queue.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"  // nogncheck crbug.com/1125897
+#include "components/services/screen_ai/public/test/fake_screen_ai_annotator.h"
 #include "components/services/screen_ai/screen_ai_ax_tree_serializer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -236,59 +237,6 @@ void WaitForThreadTasks() {
   run_loop.Run();
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-class FakeScreenAIAnnotator : public screen_ai::mojom::ScreenAIAnnotator {
- public:
-  explicit FakeScreenAIAnnotator(bool create_empty_result)
-      : create_empty_result_(create_empty_result) {}
-  FakeScreenAIAnnotator(const FakeScreenAIAnnotator&) = delete;
-  FakeScreenAIAnnotator& operator=(const FakeScreenAIAnnotator&) = delete;
-  ~FakeScreenAIAnnotator() override = default;
-
-  void PerformOcrAndReturnAXTreeUpdate(
-      const ::SkBitmap& image,
-      PerformOcrAndReturnAXTreeUpdateCallback callback) override {
-    ui::AXTreeUpdate update;
-    if (!create_empty_result_) {
-      update.root_id = next_node_id_;
-      ui::AXNodeData node;
-      node.id = next_node_id_;
-      node.role = ax::mojom::Role::kStaticText;
-      node.SetNameChecked("Testing");
-      update.nodes = {node};
-      --next_node_id_;
-    }
-    std::move(callback).Run(update);
-  }
-
-  void ExtractSemanticLayout(const ::SkBitmap& image,
-                             const ::ui::AXTreeID& parent_tree_id,
-                             ExtractSemanticLayoutCallback callback) override {
-    ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
-    std::move(callback).Run(tree_id);
-  }
-
-  void PerformOcrAndReturnAnnotation(
-      const ::SkBitmap& image,
-      PerformOcrAndReturnAnnotationCallback callback) override {
-    auto annotation = screen_ai::mojom::VisualAnnotation::New();
-    std::move(callback).Run(std::move(annotation));
-  }
-
-  mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
-  BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
- private:
-  mojo::Receiver<screen_ai::mojom::ScreenAIAnnotator> receiver_{this};
-  const bool create_empty_result_;
-  // A negative ID for ui::AXNodeID needs to start from -2 as using -1 for this
-  // node id is still incorrectly treated as invalid.
-  ui::AXNodeID next_node_id_ = -2;
-};
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
 class TestPdfAccessibilityTree : public PdfAccessibilityTree {
  public:
   TestPdfAccessibilityTree(
@@ -314,15 +262,15 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
 
   void CreateFakeOCRService(bool create_empty_result) {
     CreateOcrService();
-    fake_annotator_ =
-        std::make_unique<FakeScreenAIAnnotator>(create_empty_result);
+    fake_annotator_ = std::make_unique<screen_ai::test::FakeScreenAIAnnotator>(
+        create_empty_result);
     ocr_service_for_testing()->SetScreenAIAnnotatorForTesting(
         fake_annotator_->BindNewPipeAndPassRemote());
   }
 
  private:
   std::vector<std::vector<ui::AXTreeUpdate>> tree_updates_;
-  std::unique_ptr<FakeScreenAIAnnotator> fake_annotator_;
+  std::unique_ptr<screen_ai::test::FakeScreenAIAnnotator> fake_annotator_;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 };
 
