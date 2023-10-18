@@ -1687,6 +1687,8 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
           media_session::mojom::MediaSessionAction::kEnterPictureInPicture)) {
     actions.insert(
         media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
+    actions.insert(
+        media_session::mojom::MediaSessionAction::kExitPictureInPicture);
   }
 
   if (base::FeatureList::IsEnabled(

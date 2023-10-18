@@ -170,7 +170,8 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         *content::MediaSession::Get(web_contents));
     observer.WaitForExpectedActions(
         {MediaSessionAction::kEnterPictureInPicture,
-         MediaSessionAction::kEnterAutoPictureInPicture});
+         MediaSessionAction::kEnterAutoPictureInPicture,
+         MediaSessionAction::kExitPictureInPicture});
   }
 
   void WaitForMediaSessionActionUnregistered(

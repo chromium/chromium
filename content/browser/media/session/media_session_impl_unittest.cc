@@ -778,8 +778,9 @@ TEST_F(MediaSessionImplTest, RaiseActivatesWebContents) {
 TEST_F(MediaSessionImplTest,
        RegisteredEnterPictureInPictureExposesAutoPictureInPicture) {
   // When the website has registered for 'enterpictureinpicture',
-  // MediaSessionImpl should expose both kEnterPictureInPicture and
-  // kEnterAutoPictureInPicture to the internal MediaSession service.
+  // MediaSessionImpl should expose the kEnterPictureInPicture,
+  // kEnterAutoPictureInPicture, and kExitPictureInPicture to the internal
+  // MediaSession service.
   StartNewPlayer();
   media_session::test::MockMediaSessionMojoObserver observer(
       *GetMediaSession());
@@ -793,6 +794,9 @@ TEST_F(MediaSessionImplTest,
   EXPECT_TRUE(base::Contains(
       observer.actions(),
       media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture));
+  EXPECT_TRUE(base::Contains(
+      observer.actions(),
+      media_session::mojom::MediaSessionAction::kExitPictureInPicture));
 }
 
 TEST_F(MediaSessionImplTest, SessionInfoDontHideMetadataByDefault) {
