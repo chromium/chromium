@@ -1049,6 +1049,7 @@ public class FakeUrlRequestTest {
         assertThat(e)
                 .hasMessageThat()
                 .isEqualTo("onReadSucceeded() called when not awaiting a read result; in state: 2");
+        request.cancel();
     }
 
     @Test
@@ -1088,6 +1089,7 @@ public class FakeUrlRequestTest {
         assertThat(e)
                 .hasMessageThat()
                 .isEqualTo("onRewindSucceeded() called when not awaiting a rewind; in state: 2");
+        request.cancel();
     }
 
     @Test
