@@ -17,6 +17,7 @@
 #include "content/public/test/mock_policy_container_host.h"
 #include "content/public/test/mock_render_thread.h"
 #include "content/public/test/policy_container_utils.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -271,8 +272,10 @@ void TestRenderFrame::Navigate(
       blink::mojom::ControllerServiceWorkerInfoPtr(),
       blink::mojom::ServiceWorkerContainerInfoForClientPtr(),
       /*subresource_proxying_loader_factory=*/mojo::NullRemote(),
-      /*keep_alive_loader_factory=*/mojo::NullRemote(), blink::DocumentToken(),
-      base::UnguessableToken::Create(), blink::ParsedPermissionsPolicy(),
+      /*keep_alive_loader_factory=*/mojo::NullRemote(),
+      /*fetch_later_loader_factory=*/mojo::NullAssociatedRemote(),
+      blink::DocumentToken(), base::UnguessableToken::Create(),
+      blink::ParsedPermissionsPolicy(),
       blink::mojom::PolicyContainer::New(
           blink::mojom::PolicyContainerPolicies::New(),
           mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote()),

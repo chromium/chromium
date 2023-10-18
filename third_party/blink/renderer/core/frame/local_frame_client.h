@@ -54,6 +54,7 @@
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
@@ -372,6 +373,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
   virtual std::unique_ptr<URLLoader> CreateURLLoaderForTesting() = 0;
+  virtual blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() = 0;
 
   virtual void AnnotatedRegionsChanged() = 0;
 

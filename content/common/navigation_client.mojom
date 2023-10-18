@@ -18,6 +18,7 @@ import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/loader/code_cache.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/loader/fetch_later.mojom";
 import "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom";
 import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
@@ -256,6 +257,10 @@ interface NavigationClient {
   // the browser process.
   // See https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
   //
+  // |fetch_later_loader_factory| is used to handle fetchLater() requests via
+  // the browser process. See
+  // https://docs.google.com/document/d/1U8XSnICPY3j-fjzG35UVm6zjwL6LvX6ETU3T8WrzLyQ
+  //
   // For automation driver-initiated navigations over the devtools protocol,
   // |devtools_navigation_token_| is used to tag the navigation. This navigation
   // token is then sent into the renderer and lands on the DocumentLoader. That
@@ -284,6 +289,7 @@ interface NavigationClient {
       blink.mojom.ServiceWorkerContainerInfoForClient? container_info,
       pending_remote<network.mojom.URLLoaderFactory>? subresource_proxying_loader_factory,
       pending_remote<network.mojom.URLLoaderFactory>? keep_alive_loader_factory,
+      pending_associated_remote<blink.mojom.FetchLaterLoaderFactory>? fetch_later_loader_factory,
       blink.mojom.DocumentToken document_token,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
       array<blink.mojom.ParsedPermissionsPolicyDeclaration>? permissions_policy,

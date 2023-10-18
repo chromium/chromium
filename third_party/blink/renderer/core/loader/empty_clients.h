@@ -463,6 +463,10 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
     return base::MakeRefCounted<EmptyWebWorkerFetchContext>();
   }
 
+  blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() override {
+    return nullptr;
+  }
+
  protected:
   // Not owned
   WebTextCheckClient* text_check_client_;

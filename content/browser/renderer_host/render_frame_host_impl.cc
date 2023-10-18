@@ -10501,16 +10501,30 @@ void RenderFrameHostImpl::CommitNavigation(
     // specified.
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory;
-    if (blink::features::IsKeepAliveURLLoaderServiceEnabled() &&
-        subresource_proxying_factory_bundle) {
+    if (subresource_proxying_factory_bundle &&
+        base::FeatureList::IsEnabled(
+            blink::features::kKeepAliveInBrowserMigration)) {
       // Also setting up URLLoaderFactory for keepalive using the same loader
       // factories.
       GetStoragePartition()->GetKeepAliveURLLoaderService()->BindFactory(
           keep_alive_loader_factory.InitWithNewPipeAndPassReceiver(),
           subresource_proxying_factory_bundle,
           navigation_request->GetPolicyContainerHost());
-      navigation_request->SetSubresourceProxyingFactoryBundle(
-          subresource_proxying_factory_bundle);
+    }
+    // Set up the fetchlater loader factory. It is used to proxy FetchLater
+    // requests via the browser process.
+    // See
+    // https://docs.google.com/document/d/1U8XSnICPY3j-fjzG35UVm6zjwL6LvX6ETU3T8WrzLyQ/edit
+    mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
+        fetch_later_loader_factory;
+    if (subresource_proxying_factory_bundle &&
+        base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI)) {
+      GetStoragePartition()
+          ->GetKeepAliveURLLoaderService()
+          ->BindFetchLaterLoaderFactory(
+              fetch_later_loader_factory.InitWithNewEndpointAndPassReceiver(),
+              subresource_proxying_factory_bundle,
+              navigation_request->GetPolicyContainerHost());
     }
 
     mojom::NavigationClient* navigation_client =
@@ -10571,7 +10585,8 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(subresource_overrides), std::move(controller),
         std::move(container_info),
         std::move(subresource_proxying_loader_factory_for_renderer),
-        std::move(keep_alive_loader_factory), std::move(resource_cache_remote),
+        std::move(keep_alive_loader_factory),
+        std::move(fetch_later_loader_factory), std::move(resource_cache_remote),
         manifest_policy, std::move(policy_container), *document_token,
         devtools_navigation_token);
     navigation_request->frame_tree_node()
@@ -13105,8 +13120,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
     document_associated_data_->set_devtools_navigation_token(
         navigation_request->devtools_navigation_token());
-    document_associated_data_->set_subresource_proxying_factory_bundle(
-        navigation_request->TakeSubresourceProxyingFactoryBundle());
 
     const absl::optional<FencedFrameProperties>& fenced_frame_properties =
         navigation_request->ComputeFencedFrameProperties();
@@ -13598,6 +13611,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
         subresource_proxying_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory,
+    mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
+        fetch_later_loader_factory,
     mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache_remote,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
@@ -13716,7 +13731,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller), std::move(container_info),
       std::move(subresource_proxying_loader_factory),
-      std::move(keep_alive_loader_factory), document_token,
+      std::move(keep_alive_loader_factory),
+      std::move(fetch_later_loader_factory), document_token,
       devtools_navigation_token, permissions_policy,
       std::move(policy_container), std::move(code_cache_host),
       std::move(resource_cache_remote), std::move(cookie_manager_info),
@@ -15931,17 +15947,6 @@ void RenderFrameHostImpl::BindFileBackedBlobFactory(
         receiver) {
   FileBackedBlobFactoryImpl::CreateForCurrentDocument(this,
                                                       std::move(receiver));
-}
-
-void RenderFrameHostImpl::BindFetchLaterLoaderFactory(
-    mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
-        receiver) {
-  GetStoragePartition()
-      ->GetKeepAliveURLLoaderService()
-      ->BindFetchLaterLoaderFactory(
-          std::move(receiver),
-          document_associated_data_->subresource_proxying_factory_bundle(),
-          policy_container_host());
 }
 
 bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()

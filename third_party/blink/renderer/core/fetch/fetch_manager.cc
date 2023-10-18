@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
@@ -1477,6 +1478,14 @@ FetchLaterManager::FetchLaterManager(ExecutionContext* ec)
   // TODO(crbug.com/1356128): FetchLater API is only supported in Document.
   // Supporting it in workers is blocked by keepalive in browser migration.
   CHECK(ec->IsWindow());
+}
+
+blink::ChildURLLoaderFactoryBundle* FetchLaterManager::GetFactory() {
+  // Do nothing if context is detached.
+  if (!DomWindow()) {
+    return nullptr;
+  }
+  return DomWindow()->GetFrame()->Client()->GetLoaderFactoryBundle();
 }
 
 void FetchLaterManager::ContextDestroyed() {

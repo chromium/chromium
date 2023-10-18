@@ -3042,20 +3042,6 @@ NavigationRequest::TakePolicyContainerHost() {
   return host;
 }
 
-void NavigationRequest::SetSubresourceProxyingFactoryBundle(
-    scoped_refptr<network::SharedURLLoaderFactory>
-        subresource_proxying_factory_bundle) {
-  DCHECK_GE(state_, READY_TO_COMMIT);
-  subresource_proxying_factory_bundle_ =
-      std::move(subresource_proxying_factory_bundle);
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-NavigationRequest::TakeSubresourceProxyingFactoryBundle() {
-  DCHECK_GE(state_, READY_TO_COMMIT);
-  return std::move(subresource_proxying_factory_bundle_);
-}
-
 void NavigationRequest::CreateCoepReporter(
     StoragePartition* storage_partition) {
   DCHECK(!isolation_info_for_subresources_.IsEmpty());

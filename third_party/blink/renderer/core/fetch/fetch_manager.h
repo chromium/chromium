@@ -9,14 +9,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/loader/fetch_later.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
 namespace blink {
 
@@ -80,6 +80,10 @@ class CORE_EXPORT FetchLaterManager final
   // Using the `TaskType::kNetworkingUnfreezable` as deferred requests need to
   // work when ExecutionContext is in BackForwardCache/frozen.
   static constexpr TaskType kTaskType = TaskType::kNetworkingUnfreezable;
+
+  // Returns a pointer to the wrapper that provides FetchLaterLoaderFactory.
+  // Returns nullptr if the context is detached.
+  blink::ChildURLLoaderFactoryBundle* GetFactory();
 
   // Removes a loader from `deferred_loaders_`.
   void OnDeferredLoaderFinished(DeferredLoader*);

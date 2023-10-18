@@ -232,6 +232,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   std::unique_ptr<URLLoader> CreateURLLoaderForTesting() override;
 
+  blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() override;
+
   blink::BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
 
   AssociatedInterfaceProvider* GetRemoteNavigationAssociatedInterfaces()
