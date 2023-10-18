@@ -2351,26 +2351,6 @@
             ]
         }
     ],
-    "BetterUpdateChipsStudy": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithFinishUpdate",
-                    "params": {
-                        "UpdateTextOptionNumber": "1"
-                    },
-                    "enable_features": [
-                        "UpdateTextOptions"
-                    ]
-                }
-            ]
-        }
-    ],
     "BiometricAuthPwdFillAndroid": [
         {
             "platforms": [

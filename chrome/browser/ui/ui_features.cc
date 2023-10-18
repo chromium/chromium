@@ -300,11 +300,11 @@ BASE_FEATURE(kTopChromeWebUIUsesSpareRenderer,
 // button, menu item and confirmation dialog.
 BASE_FEATURE(kUpdateTextOptions,
              "UpdateTextOptions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Used to present different flavors of update strings in browser app menu
 // button.
 const base::FeatureParam<int> kUpdateTextOptionNumber{
-    &kUpdateTextOptions, "UpdateTextOptionNumber", 1};
+    &kUpdateTextOptions, "UpdateTextOptionNumber", 2};
 #endif
 
 // This enables enables persistence of a WebContents in a 1-to-1 association
