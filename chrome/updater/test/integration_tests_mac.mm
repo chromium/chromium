@@ -383,13 +383,29 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
       }
     }
     all_policies[base::SysUTF8ToNSString(app_id)] = app_policies;
-  }
 
-  CFPreferencesSetValue(CFSTR("updatePolicies"),
-                        base::apple::NSToCFPtrCast(all_policies), domain,
-                        kCFPreferencesAnyUser, kCFPreferencesCurrentHost);
+    NSURL* const managed_preferences_url = base::apple::FilePathToNSURL(
+        GetLibraryFolderPath(UpdaterScope::kSystem)
+            ->AppendASCII("Managed Preferences")
+            .AppendASCII("com.google.Keystone.plist"));
+    ASSERT_TRUE([[NSDictionary dictionaryWithObject:all_policies
+                                             forKey:@"updatePolicies"]
+        writeToURL:managed_preferences_url
+        atomically:YES])
+        << "Failed to write " << managed_preferences_url;
+  }
   ASSERT_TRUE(CFPreferencesSynchronize(domain, kCFPreferencesAnyUser,
                                        kCFPreferencesCurrentHost));
+
+  // Force flushing preferences cache by killing the defaults server.
+  base::Process process = base::LaunchProcess({"killall", "cfprefsd"}, {});
+  if (!process.IsValid()) {
+    VLOG(2) << "Failed to launch the process to refresh preferences.";
+  }
+  int exit_code = -1;
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                             &exit_code));
+  EXPECT_EQ(0, exit_code);
 }
 
 }  // namespace updater::test
