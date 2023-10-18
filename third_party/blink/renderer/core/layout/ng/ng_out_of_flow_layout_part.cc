@@ -1854,12 +1854,10 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
     }
   }
 
-  const LogicalRect unclamped_available_rect =
-      ComputeOutOfFlowAvailableRect(node_info.node, node_info.constraint_space,
-                                    insets, node_info.static_position);
-
-  const LogicalSize computed_available_size =
-      unclamped_available_rect.size.ClampNegativeToZero();
+  const InsetModifiedContainingBlock imcb = ComputeInsetModifiedContainingBlock(
+      node_info.node, node_info.constraint_space.AvailableSize(), insets,
+      node_info.static_position, container_writing_direction,
+      candidate_writing_direction);
 
   const BoxStrut border_padding =
       ComputeBorders(node_info.constraint_space, node_info.node) +
@@ -1868,18 +1866,17 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
   absl::optional<LogicalSize> replaced_size;
   if (node_info.node.IsReplaced()) {
     replaced_size = ComputeReplacedSize(
-        node_info.node, node_info.constraint_space, border_padding,
-        computed_available_size, ReplacedSizeMode::kNormal, anchor_evaluator);
+        node_info.node, node_info.constraint_space, border_padding, imcb.Size(),
+        ReplacedSizeMode::kNormal, anchor_evaluator);
   }
 
   OffsetInfo offset_info;
   NGLogicalOutOfFlowDimensions& node_dimensions = offset_info.node_dimensions;
   offset_info.inline_size_depends_on_min_max_sizes =
       ComputeOutOfFlowInlineDimensions(
-          node_info.node, candidate_style, node_info.constraint_space, insets,
-          border_padding, node_info.static_position, computed_available_size,
-          replaced_size, container_writing_direction, anchor_evaluator,
-          &node_dimensions);
+          node_info.node, candidate_style, node_info.constraint_space, imcb,
+          border_padding, replaced_size, container_writing_direction,
+          anchor_evaluator, &node_dimensions);
 
   const absl::optional<LogicalRect> additional_fallback_bounds =
       try_fit_available_space
@@ -1887,15 +1884,20 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
           : absl::nullopt;
 
   // Calculate the inline scroll offset range where the inline dimension fits.
+  absl::optional<InsetModifiedContainingBlock> imcb_for_position_fallback;
   absl::optional<LayoutUnit> inline_scroll_min;
   absl::optional<LayoutUnit> inline_scroll_max;
   absl::optional<LayoutUnit> additional_inline_scroll_min;
   absl::optional<LayoutUnit> additional_inline_scroll_max;
   if (try_fit_available_space) {
+    imcb_for_position_fallback = ComputeIMCBForPositionFallback(
+        node_info.constraint_space.AvailableSize(), insets,
+        node_info.static_position, container_writing_direction,
+        candidate_writing_direction);
     if (!CalculateNonOverflowingRangeInOneAxis(
             insets.inline_start, insets.inline_end,
-            unclamped_available_rect.offset.inline_offset,
-            unclamped_available_rect.InlineEndOffset(),
+            imcb_for_position_fallback->inline_start,
+            imcb_for_position_fallback->InlineEndOffset(),
             node_dimensions.MarginBoxInlineStart(),
             node_dimensions.MarginBoxInlineEnd(),
             additional_fallback_bounds.has_value()
@@ -1916,10 +1918,9 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
   // our min/max sizes, only run if needed.
   if (node_dimensions.size.block_size == kIndefiniteSize) {
     offset_info.initial_layout_result = ComputeOutOfFlowBlockDimensions(
-        node_info.node, candidate_style, node_info.constraint_space, insets,
-        border_padding, node_info.static_position, computed_available_size,
-        replaced_size, container_writing_direction, anchor_evaluator,
-        &node_dimensions);
+        node_info.node, candidate_style, node_info.constraint_space, imcb,
+        border_padding, replaced_size, container_writing_direction,
+        anchor_evaluator, &node_dimensions);
   }
 
   // Calculate the block scroll offset range where the block dimension fits.
@@ -1930,8 +1931,8 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
   if (try_fit_available_space) {
     if (!CalculateNonOverflowingRangeInOneAxis(
             insets.block_start, insets.block_end,
-            unclamped_available_rect.offset.block_offset,
-            unclamped_available_rect.BlockEndOffset(),
+            imcb_for_position_fallback->block_start,
+            imcb_for_position_fallback->BlockEndOffset(),
             node_dimensions.MarginBoxBlockStart(),
             node_dimensions.MarginBoxBlockEnd(),
             additional_fallback_bounds.has_value()

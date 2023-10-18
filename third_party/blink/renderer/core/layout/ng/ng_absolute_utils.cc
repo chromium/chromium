@@ -19,132 +19,140 @@ namespace blink {
 
 namespace {
 
-enum AxisEdge { kStart, kCenter, kEnd };
-
-inline AxisEdge GetStaticPositionEdge(
+inline InsetModifiedContainingBlock::InsetBias GetStaticPositionInsetBias(
     LogicalStaticPosition::InlineEdge inline_edge) {
+  using InsetBias = InsetModifiedContainingBlock::InsetBias;
   switch (inline_edge) {
     case LogicalStaticPosition::InlineEdge::kInlineStart:
-      return kStart;
+      return InsetBias::kStart;
     case LogicalStaticPosition::InlineEdge::kInlineCenter:
-      return kCenter;
+      return InsetBias::kEqual;
     case LogicalStaticPosition::InlineEdge::kInlineEnd:
-      return kEnd;
+      return InsetBias::kEnd;
   }
 }
 
-inline AxisEdge GetStaticPositionEdge(
+inline InsetModifiedContainingBlock::InsetBias GetStaticPositionInsetBias(
     LogicalStaticPosition::BlockEdge block_edge) {
+  using InsetBias = InsetModifiedContainingBlock::InsetBias;
   switch (block_edge) {
     case LogicalStaticPosition::BlockEdge::kBlockStart:
-      return kStart;
+      return InsetBias::kStart;
     case LogicalStaticPosition::BlockEdge::kBlockCenter:
-      return kCenter;
+      return InsetBias::kEqual;
     case LogicalStaticPosition::BlockEdge::kBlockEnd:
-      return kEnd;
+      return InsetBias::kEnd;
   }
 }
 
-inline LayoutUnit StaticPositionStartInset(AxisEdge edge,
-                                           LayoutUnit static_position_offset,
-                                           LayoutUnit size) {
-  switch (edge) {
-    case kStart:
-      return static_position_offset;
-    case kCenter:
-      return static_position_offset - (size / 2);
-    case kEnd:
-      return static_position_offset - size;
-  }
-}
-
-inline LayoutUnit StaticPositionEndInset(AxisEdge edge,
-                                         LayoutUnit static_position_offset,
-                                         LayoutUnit available_size,
-                                         LayoutUnit size) {
-  switch (edge) {
-    case kStart:
-      return available_size - static_position_offset - size;
-    case kCenter:
-      return available_size - static_position_offset - (size / 2);
-    case kEnd:
-      return available_size - static_position_offset;
-  }
-}
-
-// Computes the available-space as an (offset, size) pair, accounting for insets
-// and the static-position.
-std::pair<LayoutUnit, LayoutUnit> ComputeAvailableSpaceInOneAxis(
+// Computes the inset modified containing block in one axis, accounting for
+// insets and the static-position.
+void ComputeUnclampedIMCBInOneAxis(
     const LayoutUnit available_size,
     const absl::optional<LayoutUnit>& inset_start,
     const absl::optional<LayoutUnit>& inset_end,
     const LayoutUnit static_position_offset,
-    AxisEdge static_position_edge) {
+    InsetModifiedContainingBlock::InsetBias static_position_inset_bias,
+    bool start_side_matches_containing_block,
+    LayoutUnit* imcb_start_out,
+    LayoutUnit* imcb_end_out,
+    InsetModifiedContainingBlock::InsetBias* imcb_inset_bias_out) {
   DCHECK_NE(available_size, kIndefiniteSize);
-  LayoutUnit computed_offset;
-  LayoutUnit computed_available_size;
-
   if (!inset_start && !inset_end) {
     // If both our insets are auto, the available-space is defined by the
     // static-position.
-    switch (static_position_edge) {
-      case kStart:
+    switch (static_position_inset_bias) {
+      case InsetModifiedContainingBlock::InsetBias::kStart:
         // The available-space for the start static-position "grows" towards the
         // end edge.
         // |      *----------->|
-        computed_offset = static_position_offset;
-        computed_available_size = available_size - static_position_offset;
+        *imcb_start_out = static_position_offset;
+        *imcb_end_out = LayoutUnit();
         break;
-      case kCenter: {
+      case InsetModifiedContainingBlock::InsetBias::kEqual: {
         // The available-space for the center static-position "grows" towards
         // both edges (equally), and stops when it hits the first one.
         // |<-----*----->      |
-        LayoutUnit half_computed_available_size = std::min(
+        LayoutUnit half_imcb_size = std::min(
             static_position_offset, available_size - static_position_offset);
-        computed_offset = static_position_offset - half_computed_available_size;
-        computed_available_size = 2 * half_computed_available_size;
+        *imcb_start_out = static_position_offset - half_imcb_size;
+        *imcb_end_out =
+            available_size - static_position_offset - half_imcb_size;
         break;
       }
-      case kEnd:
+      case InsetModifiedContainingBlock::InsetBias::kEnd:
         // The available-space for the end static-position "grows" towards the
         // start edge.
         // |<-----*            |
-        computed_offset = LayoutUnit();
-        computed_available_size = static_position_offset;
+        *imcb_end_out = available_size - static_position_offset;
+        *imcb_start_out = LayoutUnit();
         break;
     }
+    *imcb_inset_bias_out = static_position_inset_bias;
   } else {
-    // Otherwise we just subtract the insets.
-    computed_available_size = available_size -
-                              inset_start.value_or(LayoutUnit()) -
-                              inset_end.value_or(LayoutUnit());
-    computed_offset = inset_start.value_or(LayoutUnit());
-  }
+    // Otherwise we just resolve auto to 0.
+    *imcb_start_out = inset_start.value_or(LayoutUnit());
+    *imcb_end_out = inset_end.value_or(LayoutUnit());
 
-  return std::make_pair(computed_offset, computed_available_size);
+    if (!inset_start.has_value() || !inset_end.has_value()) {
+      // In the case that only one inset is auto, that is the weaker inset;
+      *imcb_inset_bias_out =
+          inset_start.has_value()
+              ? InsetModifiedContainingBlock::InsetBias::kStart
+              : InsetModifiedContainingBlock::InsetBias::kEnd;
+    } else {
+      // Otherwise the weaker inset is the inset of the end edge (where end is
+      // interpreted relative to the writing mode of the containing block).
+      *imcb_inset_bias_out =
+          start_side_matches_containing_block
+              ? InsetModifiedContainingBlock::InsetBias::kStart
+              : InsetModifiedContainingBlock::InsetBias::kEnd;
+    }
+  }
 }
 
-// Computes the insets, and margins if necessary.
-// https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
-// https://www.w3.org/TR/css-position-3/#abs-non-replaced-height
-void ComputeInsets(const LayoutUnit margin_percentage_resolution_size,
-                   const LayoutUnit available_size,
-                   const LayoutUnit computed_available_size,
-                   const Length& margin_start_length,
-                   const Length& margin_end_length,
-                   absl::optional<LayoutUnit> inset_start,
-                   absl::optional<LayoutUnit> inset_end,
-                   const LayoutUnit static_position_offset,
-                   AxisEdge static_position_edge,
-                   bool is_start_dominant,
-                   bool is_block_direction,
-                   LayoutUnit size,
-                   LayoutUnit* inset_start_out,
-                   LayoutUnit* inset_end_out,
-                   LayoutUnit* margin_start_out,
-                   LayoutUnit* margin_end_out) {
-  DCHECK_NE(available_size, kIndefiniteSize);
+InsetModifiedContainingBlock ComputeUnclampedIMCB(
+    const LogicalSize& available_size,
+    const NGLogicalOutOfFlowInsets& insets,
+    const LogicalStaticPosition& static_position,
+    const WritingDirectionMode& container_writing_direction,
+    const WritingDirectionMode& self_writing_direction) {
+  InsetModifiedContainingBlock imcb;
+  imcb.available_size = available_size;
 
+  // Determines if the "start" sides of margins match.
+  const LogicalToLogical start_sides_match(
+      container_writing_direction, self_writing_direction,
+      /* inline_start */ true, /* inline_end */ false,
+      /* block_start */ true, /* block_end */ false);
+
+  ComputeUnclampedIMCBInOneAxis(
+      available_size.inline_size, insets.inline_start, insets.inline_end,
+      static_position.offset.inline_offset,
+      GetStaticPositionInsetBias(static_position.inline_edge),
+      start_sides_match.InlineStart(), &imcb.inline_start, &imcb.inline_end,
+      &imcb.inline_inset_bias);
+  ComputeUnclampedIMCBInOneAxis(
+      available_size.block_size, insets.block_start, insets.block_end,
+      static_position.offset.block_offset,
+      GetStaticPositionInsetBias(static_position.block_edge),
+      start_sides_match.BlockStart(), &imcb.block_start, &imcb.block_end,
+      &imcb.block_inset_bias);
+  return imcb;
+}
+
+// Absolutize margin values to pixels and resolve any auto margins.
+// https://drafts.csswg.org/css-position-3/#abspos-margins
+void ComputeMargins(const LayoutUnit margin_percentage_resolution_size,
+                    const LayoutUnit imcb_size,
+                    const Length& margin_start_length,
+                    const Length& margin_end_length,
+                    const LayoutUnit size,
+                    bool has_auto_inset,
+                    bool is_start_dominant,
+                    bool is_block_direction,
+                    LayoutUnit* margin_start_out,
+                    LayoutUnit* margin_end_out) {
   absl::optional<LayoutUnit> margin_start;
   if (!margin_start_length.IsAuto()) {
     margin_start = MinimumValueForLength(margin_start_length,
@@ -157,14 +165,13 @@ void ComputeInsets(const LayoutUnit margin_percentage_resolution_size,
   }
 
   // Solving the equation:
-  // |inset_start| + |margin_start| + |size| + |margin_end| + |inset_end| =
-  // |available_size|
-  if (inset_start && inset_end) {
+  // |margin_start| + |size| + |margin_end| = |imcb_size|
+  if (!has_auto_inset) {
     // "If left, right, and width are not auto:"
     // Compute margins.
-    LayoutUnit free_space = computed_available_size - size -
-                            margin_start.value_or(LayoutUnit()) -
-                            margin_end.value_or(LayoutUnit());
+    const LayoutUnit free_space = imcb_size - size -
+                                  margin_start.value_or(LayoutUnit()) -
+                                  margin_end.value_or(LayoutUnit());
 
     if (!margin_start && !margin_end) {
       // When both margins are auto.
@@ -185,46 +192,59 @@ void ComputeInsets(const LayoutUnit margin_percentage_resolution_size,
       margin_start = free_space;
     } else if (!margin_end) {
       margin_end = free_space;
-    } else {
-      // Are the values over-constrained? Relax the end.
-      if (is_start_dominant) {
-        inset_end = *inset_end + free_space;
-      } else {
-        inset_start = *inset_start + free_space;
-      }
     }
   }
 
   // Set any unknown margins.
-  if (!margin_start)
-    margin_start = LayoutUnit();
-  if (!margin_end)
-    margin_end = LayoutUnit();
+  *margin_start_out = margin_start.value_or(LayoutUnit());
+  *margin_end_out = margin_end.value_or(LayoutUnit());
+}
 
-  if (!inset_start && !inset_end) {
-    LayoutUnit margin_size = size + *margin_start + *margin_end;
-    if (is_start_dominant) {
-      inset_start = StaticPositionStartInset(
-          static_position_edge, static_position_offset, margin_size);
-    } else {
-      inset_end =
-          StaticPositionEndInset(static_position_edge, static_position_offset,
-                                 available_size, margin_size);
-    }
+void ResizeIMCBInOneAxis(
+    LayoutUnit& inset_start,
+    LayoutUnit& inset_end,
+    const InsetModifiedContainingBlock::InsetBias& inset_bias,
+    const LayoutUnit& amount) {
+  switch (inset_bias) {
+    case InsetModifiedContainingBlock::InsetBias::kStart:
+      inset_end += amount;
+      break;
+    case InsetModifiedContainingBlock::InsetBias::kEnd:
+      inset_start += amount;
+      break;
+    case InsetModifiedContainingBlock::InsetBias::kEqual:
+      inset_start += amount / 2;
+      inset_end += amount / 2;
+      break;
   }
+}
 
-  if (!inset_start) {
-    inset_start =
-        available_size - size - *inset_end - *margin_start - *margin_end;
-  } else if (!inset_end) {
-    inset_end =
-        available_size - size - *inset_start - *margin_start - *margin_end;
-  }
+// Align the margin box within the inset-modified containing block as defined by
+// its self-alignment properties.
+// https://drafts.csswg.org/css-position-3/#abspos-layout
+void ComputeInsets(
+    const LayoutUnit available_size,
+    const LayoutUnit passed_imcb_start,
+    const LayoutUnit passed_imcb_end,
+    const InsetModifiedContainingBlock::InsetBias& imcb_inset_bias,
+    const LayoutUnit margin_start,
+    const LayoutUnit margin_end,
+    const LayoutUnit size,
+    LayoutUnit* inset_start_out,
+    LayoutUnit* inset_end_out) {
+  DCHECK_NE(available_size, kIndefiniteSize);
+  LayoutUnit imcb_start = passed_imcb_start;
+  LayoutUnit imcb_end = passed_imcb_end;
+  const LayoutUnit free_space =
+      available_size - imcb_start - imcb_end - margin_start - margin_end - size;
 
-  *inset_start_out = *inset_start + *margin_start;
-  *inset_end_out = *inset_end + *margin_end;
-  *margin_start_out = *margin_start;
-  *margin_end_out = *margin_end;
+  // Move the weaker inset edge to consume all the free space, so that:
+  // `imcb_start` + `margin_start` + `size` + `margin_end` + `imcb_end` =
+  // `available_size`
+  ResizeIMCBInOneAxis(imcb_start, imcb_end, imcb_inset_bias, free_space);
+
+  *inset_start_out = imcb_start + margin_start;
+  *inset_end_out = imcb_end + margin_end;
 }
 
 bool CanComputeBlockSizeWithoutLayout(const NGBlockNode& node) {
@@ -304,57 +324,68 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
           insets.BlockEnd()};
 }
 
-LogicalRect ComputeOutOfFlowAvailableRect(
-    const NGBlockNode& node,
-    const NGConstraintSpace& space,
-    const NGLogicalOutOfFlowInsets& insets,
-    const LogicalStaticPosition& static_position) {
-  return ComputeOutOfFlowAvailableRect(node, space.AvailableSize(), insets,
-                                       static_position);
-}
-
-LogicalRect ComputeOutOfFlowAvailableRect(
+InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
     const NGBlockNode& node,
     const LogicalSize& available_size,
     const NGLogicalOutOfFlowInsets& insets,
-    const LogicalStaticPosition& static_position) {
-  LayoutUnit inline_offset, inline_size;
-  std::tie(inline_offset, inline_size) = ComputeAvailableSpaceInOneAxis(
-      available_size.inline_size, insets.inline_start, insets.inline_end,
-      static_position.offset.inline_offset,
-      GetStaticPositionEdge(static_position.inline_edge));
-  LayoutUnit block_offset, block_size;
-  std::tie(block_offset, block_size) = ComputeAvailableSpaceInOneAxis(
-      available_size.block_size, insets.block_start, insets.block_end,
-      static_position.offset.block_offset,
-      GetStaticPositionEdge(static_position.block_edge));
-  return LogicalRect(inline_offset, block_offset, inline_size, block_size);
+    const LogicalStaticPosition& static_position,
+    const WritingDirectionMode& container_writing_direction,
+    const WritingDirectionMode& self_writing_direction) {
+  InsetModifiedContainingBlock imcb =
+      ComputeUnclampedIMCB(available_size, insets, static_position,
+                           container_writing_direction, self_writing_direction);
+  // Clamp any negative size to 0.
+  if (imcb.InlineSize() < LayoutUnit()) {
+    ResizeIMCBInOneAxis(imcb.inline_start, imcb.inline_end,
+                        imcb.inline_inset_bias, imcb.InlineSize());
+  }
+  if (imcb.BlockSize() < LayoutUnit()) {
+    ResizeIMCBInOneAxis(imcb.block_start, imcb.block_end, imcb.block_inset_bias,
+                        imcb.BlockSize());
+  }
+  if (node.IsTable()) {
+    // Tables should not be larger than the container.
+    if (imcb.InlineSize() > available_size.inline_size) {
+      ResizeIMCBInOneAxis(imcb.inline_start, imcb.inline_end,
+                          imcb.inline_inset_bias,
+                          imcb.InlineSize() - available_size.inline_size);
+    }
+    if (imcb.BlockSize() > available_size.block_size) {
+      ResizeIMCBInOneAxis(imcb.block_start, imcb.block_end,
+                          imcb.block_inset_bias,
+                          imcb.BlockSize() - available_size.block_size);
+    }
+  }
+  return imcb;
+}
+
+InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
+    const LogicalSize& available_size,
+    const NGLogicalOutOfFlowInsets& insets,
+    const LogicalStaticPosition& static_position,
+    const WritingDirectionMode& container_writing_direction,
+    const WritingDirectionMode& self_writing_direction) {
+  return ComputeUnclampedIMCB(available_size, insets, static_position,
+                              container_writing_direction,
+                              self_writing_direction);
 }
 
 bool ComputeOutOfFlowInlineDimensions(
     const NGBlockNode& node,
     const ComputedStyle& style,
     const NGConstraintSpace& space,
-    const NGLogicalOutOfFlowInsets& insets,
+    const InsetModifiedContainingBlock& imcb,
     const BoxStrut& border_padding,
-    const LogicalStaticPosition& static_position,
-    LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     const Length::AnchorEvaluator* anchor_evaluator,
     NGLogicalOutOfFlowDimensions* dimensions) {
   DCHECK(dimensions);
-  bool depends_on_min_max_sizes = false;
+  DCHECK_GE(imcb.InlineSize(), LayoutUnit());
 
-  const bool is_table = node.IsTable();
+  bool depends_on_min_max_sizes = false;
   const bool can_compute_block_size_without_layout =
       CanComputeBlockSizeWithoutLayout(node);
-
-  if (is_table) {
-    computed_available_size.inline_size = std::min(
-        computed_available_size.inline_size, space.AvailableSize().inline_size);
-    DCHECK_GE(computed_available_size.inline_size, LayoutUnit());
-  }
 
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     DCHECK(!node.IsReplaced());
@@ -369,11 +400,10 @@ bool ComputeOutOfFlowInlineDimensions(
 
     // Compute our block-size if we haven't already.
     if (dimensions->size.block_size == kIndefiniteSize) {
-      ComputeOutOfFlowBlockDimensions(
-          node, style, space, insets, border_padding, static_position,
-          computed_available_size,
-          /* replaced_size */ absl::nullopt, container_writing_direction,
-          anchor_evaluator, dimensions);
+      ComputeOutOfFlowBlockDimensions(node, style, space, imcb, border_padding,
+                                      /* replaced_size */ absl::nullopt,
+                                      container_writing_direction,
+                                      anchor_evaluator, dimensions);
     }
 
     // Create a new space, setting the fixed block-size.
@@ -388,6 +418,9 @@ bool ComputeOutOfFlowInlineDimensions(
                                    builder.ToConstraintSpace());
   };
 
+  const bool has_auto_inline_inset =
+      style.LogicalInlineStart().IsAuto() || style.LogicalInlineEnd().IsAuto();
+
   LayoutUnit inline_size;
   if (replaced_size) {
     DCHECK(node.IsReplaced());
@@ -396,12 +429,11 @@ bool ComputeOutOfFlowInlineDimensions(
     Length main_inline_length = style.LogicalWidth();
     Length min_inline_length = style.LogicalMinWidth();
 
-    const bool stretch_inline_size = !style.LogicalInlineStart().IsAuto() &&
-                                     !style.LogicalInlineEnd().IsAuto();
+    const bool stretch_inline_size = !has_auto_inline_inset;
 
     // Determine how "auto" should resolve.
     if (main_inline_length.IsAuto()) {
-      if (is_table) {
+      if (node.IsTable()) {
         // Tables always shrink-to-fit.
         main_inline_length = Length::FitContent();
       } else if (!style.AspectRatio().IsAuto() &&
@@ -427,32 +459,35 @@ bool ComputeOutOfFlowInlineDimensions(
 
     LayoutUnit main_inline_size = ResolveMainInlineLength(
         space, style, border_padding, MinMaxSizesFunc, main_inline_length,
-        computed_available_size.inline_size, anchor_evaluator);
+        imcb.InlineSize(), anchor_evaluator);
     MinMaxSizes min_max_inline_sizes = ComputeMinMaxInlineSizes(
         space, node, border_padding, MinMaxSizesFunc, &min_inline_length,
-        computed_available_size.inline_size, anchor_evaluator);
+        imcb.InlineSize(), anchor_evaluator);
 
     inline_size = min_max_inline_sizes.ClampSizeToMinAndMax(main_inline_size);
   }
 
   dimensions->size.inline_size = inline_size;
 
-  // Determines if the "start" sides match.
-  const bool is_start_dominant =
+  // Determines if the "start" sides of margins match.
+  const bool is_margin_start_dominant =
       LogicalToLogical(container_writing_direction, style.GetWritingDirection(),
                        /* inline_start */ true, /* inline_end */ false,
                        /* block_start */ true, /* block_end */ false)
           .InlineStart();
 
-  ComputeInsets(
-      space.PercentageResolutionInlineSizeForParentWritingMode(),
-      space.AvailableSize().inline_size, computed_available_size.inline_size,
-      style.MarginStart(), style.MarginEnd(), insets.inline_start,
-      insets.inline_end, static_position.offset.inline_offset,
-      GetStaticPositionEdge(static_position.inline_edge), is_start_dominant,
-      false /* is_block_direction */, inline_size,
-      &dimensions->inset.inline_start, &dimensions->inset.inline_end,
-      &dimensions->margins.inline_start, &dimensions->margins.inline_end);
+  ComputeMargins(space.PercentageResolutionInlineSizeForParentWritingMode(),
+                 imcb.InlineSize(), style.MarginStart(), style.MarginEnd(),
+                 inline_size, has_auto_inline_inset, is_margin_start_dominant,
+                 false /* is_block_direction */,
+                 &dimensions->margins.inline_start,
+                 &dimensions->margins.inline_end);
+
+  ComputeInsets(space.AvailableSize().inline_size, imcb.inline_start,
+                imcb.inline_end, imcb.inline_inset_bias,
+                dimensions->margins.inline_start,
+                dimensions->margins.inline_end, inline_size,
+                &dimensions->inset.inline_start, &dimensions->inset.inline_end);
 
   return depends_on_min_max_sizes;
 }
@@ -461,28 +496,21 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGBlockNode& node,
     const ComputedStyle& style,
     const NGConstraintSpace& space,
-    const NGLogicalOutOfFlowInsets& insets,
+    const InsetModifiedContainingBlock& imcb,
     const BoxStrut& border_padding,
-    const LogicalStaticPosition& static_position,
-    LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     const Length::AnchorEvaluator* anchor_evaluator,
     NGLogicalOutOfFlowDimensions* dimensions) {
   DCHECK(dimensions);
+  DCHECK_GE(imcb.BlockSize(), LayoutUnit());
+
+  const bool is_table = node.IsTable();
 
   const NGLayoutResult* result = nullptr;
 
-  const bool is_table = node.IsTable();
-  if (is_table) {
-    computed_available_size.block_size = std::min(
-        computed_available_size.block_size, space.AvailableSize().block_size);
-    DCHECK_GE(computed_available_size.block_size, LayoutUnit());
-  }
-
   MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizes(
-      space, style, border_padding, computed_available_size.block_size,
-      anchor_evaluator);
+      space, style, border_padding, imcb.Size().block_size, anchor_evaluator);
 
   auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
     DCHECK(!node.IsReplaced());
@@ -516,6 +544,9 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
         .BlockSize();
   };
 
+  const bool has_auto_block_inset =
+      style.LogicalTop().IsAuto() || style.LogicalBottom().IsAuto();
+
   LayoutUnit block_size;
   if (replaced_size) {
     DCHECK(node.IsReplaced());
@@ -523,8 +554,7 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
   } else {
     Length main_block_length = style.LogicalHeight();
 
-    const bool stretch_block_size =
-        !style.LogicalTop().IsAuto() && !style.LogicalBottom().IsAuto();
+    const bool stretch_block_size = !has_auto_block_inset;
 
     // Determine how "auto" should resolve.
     if (main_block_length.IsAuto()) {
@@ -542,7 +572,7 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
 
     LayoutUnit main_block_size = ResolveMainBlockLength(
         space, style, border_padding, main_block_length, IntrinsicBlockSizeFunc,
-        computed_available_size.block_size, anchor_evaluator);
+        imcb.BlockSize(), anchor_evaluator);
 
     // Manually resolve any intrinsic/content min/max block-sizes.
     // TODO(crbug.com/1135207): |ComputeMinMaxBlockSizes()| should handle this.
@@ -562,22 +592,25 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
 
   dimensions->size.block_size = block_size;
 
-  // Determines if the "start" sides match.
-  const bool is_start_dominant =
+  // Determines if the "start" sides of margins match.
+  const bool is_margin_start_dominant =
       LogicalToLogical(container_writing_direction, style.GetWritingDirection(),
                        /* inline_start */ true, /* inline_end */ false,
                        /* block_start */ true, /* block_end */ false)
           .BlockStart();
 
-  ComputeInsets(
-      space.PercentageResolutionInlineSizeForParentWritingMode(),
-      space.AvailableSize().block_size, computed_available_size.block_size,
-      style.MarginBefore(), style.MarginAfter(), insets.block_start,
-      insets.block_end, static_position.offset.block_offset,
-      GetStaticPositionEdge(static_position.block_edge), is_start_dominant,
-      true /* is_block_direction */, block_size, &dimensions->inset.block_start,
-      &dimensions->inset.block_end, &dimensions->margins.block_start,
-      &dimensions->margins.block_end);
+  ComputeMargins(space.PercentageResolutionInlineSizeForParentWritingMode(),
+                 imcb.BlockSize(), style.MarginBefore(), style.MarginAfter(),
+                 block_size, has_auto_block_inset, is_margin_start_dominant,
+                 true /* is_block_direction */,
+                 &dimensions->margins.block_start,
+                 &dimensions->margins.block_end);
+
+  ComputeInsets(space.AvailableSize().block_size, imcb.block_start,
+                imcb.block_end, imcb.block_inset_bias,
+                dimensions->margins.block_start, dimensions->margins.block_end,
+                block_size, &dimensions->inset.block_start,
+                &dimensions->inset.block_end);
 
   return result;
 }
