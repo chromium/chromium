@@ -12,7 +12,10 @@ build_webui("build") {
     "images/icon.svg",
   ]
 
-  web_component_files = [ "app.ts" ]
+  web_component_files = [
+    "app.ts",
+    "error_dialog.ts",
+  ]
 
   non_web_component_files = [ "browser_proxy.ts" ]
 
@@ -25,6 +28,8 @@ build_webui("build") {
     "//chrome/browser/ash/borealis:borealis_installer_types_mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/borealis_installer:mojo_bindings_ts__generator",
   ]
+
+  icons_html_files = [ "borealis_installer_icons.html" ]
 
   ts_composite = true
 

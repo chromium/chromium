@@ -17,7 +17,10 @@ ts_library("build_ts") {
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
   ]
-  in_files = [ "borealis_installer_app_test.ts" ]
+  in_files = [
+    "borealis_installer_app_test.ts",
+    "borealis_installer_error_dialog_test.ts",
+  ]
   deps = [
     "../..:build_ts",
     "//chrome/browser/resources/chromeos/borealis_installer:build_ts",

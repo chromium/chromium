@@ -1,7 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
+import './error_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
@@ -15,13 +15,21 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './app.html.js';
 import {PageCallbackRouter} from './borealis_installer.mojom-webui.js';
+import {InstallResult} from './borealis_types.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
+import type {BorealisInstallerErrorDialogElement} from './error_dialog.js';
 
 const State = {
   WELCOME: 'welcome',
   INSTALLING: 'installing',
   COMPLETED: 'completed',
 };
+
+export interface BorealisInstallerAppElement {
+  $: {
+    errorDialog: BorealisInstallerErrorDialogElement,
+  };
+}
 
 /**
  * @fileoverview
@@ -50,11 +58,19 @@ export class BorealisInstallerAppElement extends PolymerElement {
   private state: string;
   private installerProgress: number;
   private progressLabel: string;
+  private canceling: boolean = false;
 
   constructor() {
     super();
     this.listenerIds = [];
     this.router = BrowserProxy.getInstance().callbackRouter;
+  }
+
+  override ready() {
+    super.ready();
+    this.addEventListener('retry', this.onErrorRetry);
+    this.addEventListener('cancel', this.onErrorCancel);
+    this.addEventListener('storage', this.onOpenStorage);
   }
 
   override connectedCallback() {
@@ -65,9 +81,10 @@ export class BorealisInstallerAppElement extends PolymerElement {
               this.installerProgress = progressFraction * 100;
               this.progressLabel = progressLabel;
             }),
-        this.router.onInstallFinished.addListener(() => {
-          this.state = State.COMPLETED;
-        }),
+        this.router.onInstallFinished.addListener(
+            (installResult: InstallResult) => {
+              this.handleInstallResult(installResult);
+            }),
         // Called when the user closes the installer (e.g. from the window bar)
         this.router.requestClose.addListener(() => {
           this.cancelAndClose();
@@ -77,6 +94,32 @@ export class BorealisInstallerAppElement extends PolymerElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.listenerIds.forEach(id => this.router.removeListener(id));
+  }
+
+  private onErrorRetry() {
+    this.startInstall();
+  }
+
+  private onErrorCancel() {
+    this.cancelAndClose();
+  }
+
+  private onOpenStorage() {
+    BrowserProxy.getInstance().handler.openStoragePage();
+    this.cancelAndClose();
+  }
+
+  private handleInstallResult(installResult: InstallResult) {
+    switch (installResult) {
+      case InstallResult.kSuccess:
+        this.state = State.COMPLETED;
+        break;
+      case InstallResult.kCancelled:
+        this.cancelAndClose();
+        break;
+      default:
+        this.$.errorDialog.show(installResult);
+    }
   }
 
   protected eq(value1: any, value2: any): boolean {
@@ -132,6 +175,10 @@ export class BorealisInstallerAppElement extends PolymerElement {
   }
 
   cancelAndClose(): void {
+    if (this.canceling) {
+      return;
+    }
+    this.canceling = true;
     switch (this.state) {
       case State.INSTALLING:
         BrowserProxy.getInstance().handler.cancelInstall();
