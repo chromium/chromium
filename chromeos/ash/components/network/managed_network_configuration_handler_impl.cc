@@ -10,7 +10,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -702,6 +704,11 @@ void ManagedNetworkConfigurationHandlerImpl::set_ui_proxy_config_service(
   ui_proxy_config_service_ = ui_proxy_config_service;
 }
 
+void ManagedNetworkConfigurationHandlerImpl::set_user_prefs(
+    PrefService* user_prefs) {
+  user_prefs_ = user_prefs;
+}
+
 void ManagedNetworkConfigurationHandlerImpl::OnProfileAdded(
     const NetworkProfile& profile) {
   VLOG(1) << "Adding profile: " << profile.ToDebugString();
@@ -1056,6 +1063,25 @@ bool ManagedNetworkConfigurationHandlerImpl::
   return FindGlobalPolicyBool(::onc::global_network_config::
                                   kUserCreatedNetworkConfigurationsAreEphemeral)
       .value_or(false);
+}
+
+bool ManagedNetworkConfigurationHandlerImpl::IsProhibitedFromConfiguringVpn()
+    const {
+  if (!user_prefs_ ||
+      !user_prefs_->FindPreference(arc::prefs::kAlwaysOnVpnPackage) ||
+      !user_prefs_->FindPreference(arc::prefs::kAlwaysOnVpnLockdown) ||
+      !user_prefs_->FindPreference(prefs::kVpnConfigAllowed)) {
+    return false;
+  }
+
+  // When an admin Activate Always ON VPN for all user traffic with an Android
+  // VPN, arc::prefs::kAlwaysOnVpnPackage will be non empty, and
+  // arc::prefs::kAlwaysOnVpnLockdown will be true. If additionally, the admin
+  // prohibits users from disconnecting from a VPN manually,
+  // prefs::kVpnConfigAllowed becomes false. See go/test-cros-vpn-policies.
+  return !user_prefs_->GetString(arc::prefs::kAlwaysOnVpnPackage).empty() &&
+         user_prefs_->GetBoolean(arc::prefs::kAlwaysOnVpnLockdown) &&
+         !user_prefs_->GetBoolean(prefs::kVpnConfigAllowed);
 }
 
 std::vector<std::string>

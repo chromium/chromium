@@ -6,7 +6,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -237,6 +239,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
         network_handler->hotspot_controller());
     managed_network_configuration_handler_->set_ui_proxy_config_service(
         ui_proxy_config_service_.get());
+    managed_network_configuration_handler_->set_user_prefs(&user_prefs_);
     managed_network_configuration_handler_->AddObserver(&policy_observer_);
     cellular_policy_handler_->Init(
         cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
@@ -400,6 +403,17 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   void FastForwardAutoConnectWaiting() {
     task_environment_.FastForwardBy(
         CellularConnectionHandler::kWaitingForAutoConnectTimeout);
+  }
+
+  void SetArcAlwaysOnUserPrefs(std::string package_name,
+                               bool lockdown,
+                               bool vpn_configured_allowed = false) {
+    user_prefs_.SetUserPref(arc::prefs::kAlwaysOnVpnPackage,
+                            base::Value(package_name));
+    user_prefs_.SetUserPref(arc::prefs::kAlwaysOnVpnLockdown,
+                            base::Value(lockdown));
+    user_prefs_.SetUserPref(prefs::kVpnConfigAllowed,
+                            base::Value(vpn_configured_allowed));
   }
 
   ProhibitedTechnologiesHandler* prohibited_technologies_handler() {
@@ -2392,6 +2406,26 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
   ASSERT_TRUE(dictionary_after_pref.has_value());
   ASSERT_NE(dictionary_before_pref, dictionary_after_pref);
   ASSERT_EQ(*policy_after_pref, "Direct");
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest, IsProhibitedFromConfiguringVpn) {
+  arc::prefs::RegisterProfilePrefs(user_prefs_.registry());
+  user_prefs_.registry()->RegisterBooleanPref(prefs::kVpnConfigAllowed, true);
+
+  for (const std::string& package_name : {"", "package_name"}) {
+    for (const bool lockdown : {true, false}) {
+      for (const bool vpn_configure_allowed : {true, false}) {
+        SetArcAlwaysOnUserPrefs(package_name, lockdown, vpn_configure_allowed);
+        if (package_name.empty() || !lockdown || vpn_configure_allowed) {
+          EXPECT_FALSE(managed_network_configuration_handler_
+                           ->IsProhibitedFromConfiguringVpn());
+          continue;
+        }
+        EXPECT_TRUE(managed_network_configuration_handler_
+                        ->IsProhibitedFromConfiguringVpn());
+      }
+    }
+  }
 }
 
 }  // namespace ash

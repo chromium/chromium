@@ -6,7 +6,9 @@
 
 #include <tuple>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -210,6 +212,21 @@ std::string CreateApnShillDict() {
   test_apn_data.onc_ip_type = ::onc::cellular_apn::kIpTypeIpv4;
   test_apn_data.onc_apn_types.emplace_back(kCellularTestApnTypes1);
   return test_apn_data.AsApnShillDict();
+}
+
+mojom::ConfigPropertiesPtr CreateFakeVpnConfig(std::string name,
+                                               std::string host,
+                                               mojom::VpnType type) {
+  auto vpn = mojom::VPNConfigProperties::New();
+  vpn->host = host;
+  vpn->type = mojom::VpnTypeConfig::New();
+  vpn->type->value = type;
+
+  auto config = mojom::ConfigProperties::New();
+  config->name = name;
+  config->type_config =
+      mojom::NetworkTypeConfigProperties::NewVpn(std::move(vpn));
+  return config;
 }
 
 bool OncApnHasId(const base::Value::Dict& apn) {
@@ -774,6 +791,17 @@ class CrosNetworkConfigTest : public testing::Test {
   void SetAlwaysOnVpn(mojom::AlwaysOnVpnPropertiesPtr properties) {
     cros_network_config()->SetAlwaysOnVpn(std::move(properties));
     base::RunLoop().RunUntilIdle();
+  }
+
+  void SetArcAlwaysOnUserPrefs(std::string package_name,
+                               bool lockdown,
+                               bool vpn_configured_allowed = false) {
+    user_prefs_.SetUserPref(arc::prefs::kAlwaysOnVpnPackage,
+                            base::Value(package_name));
+    user_prefs_.SetUserPref(arc::prefs::kAlwaysOnVpnLockdown,
+                            base::Value(lockdown));
+    user_prefs_.SetUserPref(prefs::kVpnConfigAllowed,
+                            base::Value(vpn_configured_allowed));
   }
 
   std::vector<std::string> GetSupportedVpnTypes() {
@@ -4009,6 +4037,27 @@ TEST_F(CrosNetworkConfigTest, SetAlwaysOnVpn) {
   EXPECT_EQ(vpn_path(), helper()->GetProfileStringProperty(
                             helper()->ProfilePathUser(),
                             shill::kAlwaysOnVpnServiceProperty));
+}
+
+TEST_F(CrosNetworkConfigTest, IsProhibitedFromConfiguringVpn) {
+  arc::prefs::RegisterProfilePrefs(user_prefs_.registry());
+  user_prefs_.registry()->RegisterBooleanPref(prefs::kVpnConfigAllowed, true);
+
+  for (const std::string& package_name : {"", "package_name"}) {
+    for (const bool lockdown : {true, false}) {
+      for (const bool vpn_configure_allowed : {true, false}) {
+        SetArcAlwaysOnUserPrefs(package_name, lockdown, vpn_configure_allowed);
+        const std::string guid = ConfigureNetwork(
+            CreateFakeVpnConfig("name", "host", mojom::VpnType::kArc),
+            /*shared=*/true);
+        if (package_name.empty() || !lockdown || vpn_configure_allowed) {
+          EXPECT_FALSE(guid.empty());
+          continue;
+        }
+        EXPECT_TRUE(guid.empty());
+      }
+    }
+  }
 }
 
 TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithIntegerType) {

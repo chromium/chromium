@@ -63,7 +63,11 @@ specific_include_rules = {
  "ui_proxy_config_service_unittest.cc": [
     "+components/sync_preferences/testing_pref_service_syncable.h"
   ],
+ "managed_network_configuration_handler_impl.cc": [
+    "+ash/components/arc/arc_prefs.h"
+ ],
  "managed_network_configuration_handler_unittest.cc": [
+    "+ash/components/arc/arc_prefs.h",
     "+components/sync_preferences/testing_pref_service_syncable.h"
   ],
  "cellular_policy_handler_unittest.cc": [

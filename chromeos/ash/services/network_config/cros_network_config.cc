@@ -84,6 +84,8 @@ const char kErrorAccessToSharedConfig[] = "Error.CannotChangeSharedConfig";
 const char kErrorInvalidONCConfiguration[] = "Error.InvalidONCConfiguration";
 const char kErrorNetworkUnavailable[] = "Error.NetworkUnavailable";
 const char kErrorNotReady[] = "Error.NotReady";
+const char kErrorUserIsProhibitedFromConfiguringVpn[] =
+    "Error.UserIsProhibitedFromConfiguringVpn";
 
 // Default traffic counter reset day.
 const int kDefaultResetDay = 1;
@@ -2651,6 +2653,13 @@ void CrosNetworkConfig::ConfigureNetwork(mojom::ConfigPropertiesPtr properties,
     NET_LOG(ERROR)
         << "Attempt to set unshared configuration from non primary user";
     std::move(callback).Run(/*guid=*/absl::nullopt, kErrorAccessToSharedConfig);
+    return;
+  }
+
+  if (properties->type_config->is_vpn() &&
+      network_configuration_handler_->IsProhibitedFromConfiguringVpn()) {
+    std::move(callback).Run(/*guid=*/absl::nullopt,
+                            kErrorUserIsProhibitedFromConfiguringVpn);
     return;
   }
 

@@ -110,6 +110,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
   MOCK_CONST_METHOD0(AllowOnlyPolicyWiFiToConnect, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyWiFiToConnectIfAvailable, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyNetworksToAutoconnect, bool());
+  MOCK_CONST_METHOD0(IsProhibitedFromConfiguringVpn, bool());
   MOCK_CONST_METHOD0(RecommendedValuesAreEphemeral, bool());
   MOCK_CONST_METHOD0(UserCreatedNetworkConfigurationsAreEphemeral, bool());
   MOCK_CONST_METHOD0(GetAllowTextMessages, PolicyTextMessageSuppressionState());
