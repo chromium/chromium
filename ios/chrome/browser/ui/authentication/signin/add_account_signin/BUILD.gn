@@ -25,6 +25,7 @@ source_set("add_account_signin") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity_manager",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ui/base",
   ]
