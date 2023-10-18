@@ -213,8 +213,7 @@ TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevel_ExternalClearKey) {
                                       kExternalClearKeyKeySystem);
 }
 
-// See https://crbug.com/1370782.
-TEST_F(MediaDrmBridgeTest, DISABLED_Provision_Widevine) {
+TEST_F(MediaDrmBridgeTest, Provision_Widevine) {
   // Only test this if Widevine is supported. Otherwise
   // CreateWithoutSessionSupport() will return null and it can't be tested.
   if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {
