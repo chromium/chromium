@@ -115,4 +115,31 @@ TEST_F(MetricTest, MakeInconsistentIfNotLoggedWithWhenLoggedWithWrongValue) {
   ASSERT_EQ(metric_.state, MetricState::kWrongValueLogged);
 }
 
+class CloudOpenMetricsTest : public testing::Test {
+ public:
+  CloudOpenMetricsTest() = default;
+
+ protected:
+  base::HistogramTester histogram_;
+};
+
+// Tests that the TaskResult companion metric is set correctly when TaskResult
+// is logged.
+TEST_F(CloudOpenMetricsTest, TaskResultLogged) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kOpened);
+  }
+  histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricStateMetricName,
+                                MetricState::kCorrectlyLogged, 1);
+}
+
+// Tests that the TaskResult companion metric is set correctly when TaskResult
+// is not logged.
+TEST_F(CloudOpenMetricsTest, TaskResultNotLogged) {
+  { CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive); }
+  histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricStateMetricName,
+                                MetricState::kIncorrectlyNotLogged, 1);
+}
+
 }  // namespace ash::cloud_upload

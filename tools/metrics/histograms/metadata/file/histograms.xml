@@ -986,6 +986,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.Errors.{CloudProvider}.MetricState"
+    enum="MetricState" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The state of the FileBrowser.OfficeFiles.Errors.{CloudProvider} metric.
+  </summary>
+  <token key="CloudProvider" variants="CloudProvider"/>
+</histogram>
+
 <histogram
     name="FileBrowser.OfficeFiles.FileHandler.{RootType}.{ConnectionStatus}"
     enum="OfficeFileHandler" expires_after="M124">
@@ -1235,6 +1245,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="FileBrowser.OfficeFiles.Open.IOTaskError.{CloudProvider}.{Transfer}.MetricState"
+    enum="MetricState" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The state of the
+    FileBrowser.OfficeFiles.Open.IOTaskError.{CloudProvider}.{Transfer} metric.
+  </summary>
+  <token key="CloudProvider" variants="CloudProvider"/>
+  <token key="Transfer">
+    <variant name="Copy"
+        summary="The files have been copied to {CloudProvider}"/>
+    <variant name="Move"
+        summary="The files have been moved to {CloudProvider}"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.Open.SourceVolume.{CloudProvider}"
     enum="OfficeFilesSourceVolume" expires_after="M124">
   <owner>austinct@chromium.org</owner>
@@ -1256,6 +1284,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="FileBrowser.OfficeFiles.Open.SourceVolume.{CloudProvider}.MetricState"
+    enum="MetricState" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The state of the FileBrowser.OfficeFiles.Open.SourceVolume.{CloudProvider}
+    metric.
+  </summary>
+  <token key="CloudProvider" variants="CloudProvider"/>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.Open.TransferRequired.{CloudProvider}"
     enum="OfficeFilesTransferRequired" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
@@ -1267,6 +1307,18 @@ chromium-metrics-reviews@google.com.
   <token key="CloudProvider" variants="CloudProvider"/>
 </histogram>
 
+<histogram
+    name="FileBrowser.OfficeFiles.Open.TransferRequired.{CloudProvider}.MetricState"
+    enum="MetricState" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The state of the
+    FileBrowser.OfficeFiles.Open.TransferRequired.{CloudProvider} metric.
+  </summary>
+  <token key="CloudProvider" variants="CloudProvider"/>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.Open.UploadResult.{CloudProvider}"
     enum="OfficeFilesUploadResult" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
@@ -1274,6 +1326,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Chrome OS File Browser: Records the upload result of the &quot;upload and
     open&quot; workflow for Office files.
+  </summary>
+  <token key="CloudProvider" variants="CloudProvider"/>
+</histogram>
+
+<histogram
+    name="FileBrowser.OfficeFiles.Open.UploadResult.{CloudProvider}.MetricState"
+    enum="MetricState" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The state of the FileBrowser.OfficeFiles.Open.UploadResult.{CloudProvider}
+    metric.
   </summary>
   <token key="CloudProvider" variants="CloudProvider"/>
 </histogram>
@@ -1336,6 +1400,17 @@ chromium-metrics-reviews@google.com.
     <variant name="OneDrive"
         summary="The task is for Microsoft OneDrive/Office"/>
   </token>
+</histogram>
+
+<histogram
+    name="FileBrowser.OfficeFiles.TaskResult.{CloudProvider}.MetricState"
+    enum="MetricState" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The state of the FileBrowser.OfficeFiles.TaskResult.{CloudProvider} metric.
+  </summary>
+  <token key="CloudProvider" variants="CloudProvider"/>
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.UseOutsideDrive"

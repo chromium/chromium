@@ -97,6 +97,16 @@ CloudOpenMetrics::~CloudOpenMetrics() {
     ExpectNotLogged(transfer_required_);
     ExpectNotLogged(upload_result_);
   }
+
+  // TODO(cassycc): Log the rest of the companion metrics once the rest of the
+  // consistency checks have been implemented.
+  if (google_drive) {
+    base::UmaHistogramEnumeration(kGoogleDriveTaskResultMetricStateMetricName,
+                                  task_result_.state);
+  } else {
+    base::UmaHistogramEnumeration(kOneDriveTaskResultMetricStateMetricName,
+                                  task_result_.state);
+  }
 }
 
 void CloudOpenMetrics::LogCopyError(base::File::Error value) {

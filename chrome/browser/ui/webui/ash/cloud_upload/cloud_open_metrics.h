@@ -13,17 +13,18 @@ namespace ash::cloud_upload {
 
 enum class MetricState {
   // Not logged and it shouldn’t have been.
-  kCorrectlyNotLogged,
+  kCorrectlyNotLogged = 0,
   // Logged when it should have been.
-  kCorrectlyLogged,
+  kCorrectlyLogged = 1,
   // Not logged when it should have been.
-  kIncorrectlyNotLogged,
+  kIncorrectlyNotLogged = 2,
   // Logged when it shouldn’t have been.
-  kIncorrectlyLogged,
+  kIncorrectlyLogged = 3,
   // Logged more than once.
-  kIncorrectlyLoggedMultipleTimes,
+  kIncorrectlyLoggedMultipleTimes = 4,
   // An unexpected value was logged.
-  kWrongValueLogged,
+  kWrongValueLogged = 5,
+  kMaxValue = kWrongValueLogged,
 };
 
 // Represents a metric identified by `metric_name` that logs value of type

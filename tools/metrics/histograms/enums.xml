@@ -73070,6 +73070,15 @@ Called by update_use_counter_css.py.-->
   <int value="9" label="Exceeded allocated time for background task"/>
 </enum>
 
+<enum name="MetricState">
+  <int value="0" label="Correctly not logged"/>
+  <int value="1" label="Correctly logged"/>
+  <int value="2" label="Incorrectly not logged"/>
+  <int value="3" label="Incorrectly logged"/>
+  <int value="4" label="Incorrectly logged multiple times"/>
+  <int value="5" label="Wrong value logged"/>
+</enum>
+
 <enum name="MhtmlGenerationFinalSaveStatus">
   <int value="0" label="Success"/>
   <int value="1" label="File closing error"/>
