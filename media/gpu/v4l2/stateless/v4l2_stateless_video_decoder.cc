@@ -202,6 +202,11 @@ bool V4L2StatelessVideoDecoder::CreateInputQueue(VideoCodecProfile profile,
   const VideoCodec codec = VideoCodecProfileToVideoCodec(profile);
   input_queue_ = InputQueue::Create(device_, codec, resolution);
 
+  if (input_queue_) {
+    input_queue_->PrepareBuffers();
+    input_queue_->StartStreaming();
+  }
+
   return !!input_queue_;
 }
 

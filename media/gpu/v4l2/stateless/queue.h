@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_V4L2_STATELESS_QUEUE_H_
 #define MEDIA_GPU_V4L2_STATELESS_QUEUE_H_
 
+#include <set>
+
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
@@ -23,12 +25,30 @@ class MEDIA_GPU_EXPORT BaseQueue {
             BufferType buffer_type,
             MemoryType memory_type);
   BaseQueue& operator=(const BaseQueue&);
-  ~BaseQueue();
+  virtual ~BaseQueue() = 0;
+
+  virtual bool PrepareBuffers() = 0;
+  bool DeallocateBuffers();
+  bool StartStreaming();
+  bool StopStreaming();
+
+ protected:
+  bool AllocateBuffers(uint32_t num_planes);
+  virtual std::string Description() = 0;
 
   scoped_refptr<StatelessDevice> device_;
   const BufferType buffer_type_;
   const MemoryType memory_type_;
   uint32_t num_planes_;
+  std::vector<Buffer> buffers_;
+
+  // Ordered set of free buffers. Because it is ordered the same index
+  // will be used more often than if it was a ring buffer. Using a set
+  // enforces the elements be unique.
+  std::set<uint32_t> free_buffer_indices_;
+
+ private:
+  virtual uint32_t BufferMinimumCount() = 0;
 };
 
 class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
@@ -39,9 +59,12 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
       const gfx::Size resolution);
 
   InputQueue(scoped_refptr<StatelessDevice> device, VideoCodec codec);
+  bool PrepareBuffers() override;
 
  private:
   bool SetupFormat(const gfx::Size resolution);
+  std::string Description() override;
+  uint32_t BufferMinimumCount() override;
 
   VideoCodec codec_;
 };
