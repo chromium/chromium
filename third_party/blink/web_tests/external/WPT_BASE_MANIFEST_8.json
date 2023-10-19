@@ -284476,16 +284476,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "23fe421c963d9b934729bbbd0fb131f6568df20c",
-     []
-    ],
-    "mtime.json": [
-     "1ec942df7fea5b4b5955b8d12b727a52a0b1d558",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -581876,6 +581866,13 @@
        ],
        "iframe-loading-lazy-base-url-2.html": [
         "8782f3d315e47b2937f3e09154f63f1f7eb0cfbf",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-base-url-3.html": [
+        "611221d8014dcac289bf0fde361c792872ce3e89",
         [
          null,
          {}
