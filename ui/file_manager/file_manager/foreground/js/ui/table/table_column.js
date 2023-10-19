@@ -100,57 +100,66 @@ export class TableColumn extends EventTarget {
    * The column id.
    * @type {string}
    */
-  TableColumn.prototype.id;
-  Object.defineProperty(
-      TableColumn.prototype, 'id', getPropertyDescriptor('id'));
+// @ts-ignore: error TS2565: Property 'id' is used before being assigned.
+TableColumn.prototype.id;
+Object.defineProperty(TableColumn.prototype, 'id', getPropertyDescriptor('id'));
 
-  /**
-   * The column name
-   * @type {string}
-   */
-  TableColumn.prototype.name;
-  Object.defineProperty(
-      TableColumn.prototype, 'name', getPropertyDescriptor('name'));
+/**
+ * The column name
+ * @type {string}
+ */
+// @ts-ignore: error TS2565: Property 'name' is used before being assigned.
+TableColumn.prototype.name;
+Object.defineProperty(
+    TableColumn.prototype, 'name', getPropertyDescriptor('name'));
 
-  /**
-   * The column visibility.
-   * @type {boolean}
-   */
-  TableColumn.prototype.visible;
-  Object.defineProperty(
-      TableColumn.prototype, 'visible', getPropertyDescriptor('visible'));
+/**
+ * The column visibility.
+ * @type {boolean}
+ */
+// @ts-ignore: error TS2565: Property 'visible' is used before being assigned.
+TableColumn.prototype.visible;
+Object.defineProperty(
+    TableColumn.prototype, 'visible', getPropertyDescriptor('visible'));
 
-  /**
-   * True if the column is aligned to end.
-   * @type {boolean}
-   */
-  TableColumn.prototype.endAlign;
-  Object.defineProperty(
-      TableColumn.prototype, 'endAlign', getPropertyDescriptor('endAlign'));
+/**
+ * True if the column is aligned to end.
+ * @type {boolean}
+ */
+// @ts-ignore: error TS2565: Property 'endAlign' is used before being assigned.
+TableColumn.prototype.endAlign;
+Object.defineProperty(
+    TableColumn.prototype, 'endAlign', getPropertyDescriptor('endAlign'));
 
-  /**
-   * The column render function.
-   * @type {function(*, string, Element): HTMLElement}
-   */
-  TableColumn.prototype.renderFunction;
-  Object.defineProperty(
-      TableColumn.prototype, 'renderFunction',
-      getPropertyDescriptor('renderFunction'));
+/**
+ * The column render function.
+ * @type {function(*, string, Element): HTMLElement}
+ */
+// @ts-ignore: error TS2565: Property 'renderFunction' is used before being
+// assigned.
+TableColumn.prototype.renderFunction;
+Object.defineProperty(
+    TableColumn.prototype, 'renderFunction',
+    getPropertyDescriptor('renderFunction'));
 
-  /**
-   * The column header render function.
-   * @type {function(Element):Node}
-   */
-  TableColumn.prototype.headerRenderFunction;
-  Object.defineProperty(
-      TableColumn.prototype, 'headerRenderFunction',
-      getPropertyDescriptor('headerRenderFunction'));
+/**
+ * The column header render function.
+ * @type {function(Element):Node}
+ */
+// @ts-ignore: error TS2565: Property 'headerRenderFunction' is used before
+// being assigned.
+TableColumn.prototype.headerRenderFunction;
+Object.defineProperty(
+    TableColumn.prototype, 'headerRenderFunction',
+    getPropertyDescriptor('headerRenderFunction'));
 
-  /**
-   * Default sorting order for the column ('asc' or 'desc').
-   * @type {string}
-   */
-  TableColumn.prototype.defaultOrder;
-  Object.defineProperty(
-      TableColumn.prototype, 'defaultOrder',
-      getPropertyDescriptor('defaultOrder'));
+/**
+ * Default sorting order for the column ('asc' or 'desc').
+ * @type {string}
+ */
+// @ts-ignore: error TS2565: Property 'defaultOrder' is used before being
+// assigned.
+TableColumn.prototype.defaultOrder;
+Object.defineProperty(
+    TableColumn.prototype, 'defaultOrder',
+    getPropertyDescriptor('defaultOrder'));

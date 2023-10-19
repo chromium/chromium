@@ -56,10 +56,7 @@ js_library("entries_changed_event") {
 }
 
 js_library("entry_location") {
-  deps = [
-    ":volume_info",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-  ]
+  deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types" ]
 }
 
 js_library("exif_entry") {
@@ -87,19 +84,6 @@ js_library("volume_manager") {
   deps = [
     ":entry_location",
     ":files_app_entry_interfaces",
-    ":volume_info",
-    ":volume_info_list",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
-}
-
-js_library("volume_info") {
-  deps = [
-    ":files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-  ]
-}
-
-js_library("volume_info_list") {
-  deps = [ ":volume_info" ]
 }

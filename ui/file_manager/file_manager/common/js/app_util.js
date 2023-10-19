@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {VolumeManager} from '../../externs/volume_manager.js';
-
 import {storage} from './storage.js';
 
 const appUtil = {};
@@ -12,11 +10,15 @@ const appUtil = {};
  * Save app launch data to the local storage.
  */
 appUtil.saveAppState = () => {
+  // @ts-ignore: error TS2339: Property 'appState' does not exist on type
+  // 'Window & typeof globalThis'.
   if (!window.appState) {
     return;
   }
   const items = {};
 
+  // @ts-ignore: error TS2339: Property 'appState' does not exist on type
+  // 'Window & typeof globalThis'.
   items[window.appID] = JSON.stringify(window.appState);
   storage.local.setAsync(items);
 };
@@ -30,11 +32,17 @@ appUtil.saveAppState = () => {
  *     value is left unchanged.
  */
 appUtil.updateAppState = (currentDirectoryURL, selectionURL) => {
+  // @ts-ignore: error TS2339: Property 'appState' does not exist on type
+  // 'Window & typeof globalThis'.
   window.appState = window.appState || {};
   if (currentDirectoryURL !== null) {
+    // @ts-ignore: error TS2339: Property 'appState' does not exist on type
+    // 'Window & typeof globalThis'.
     window.appState.currentDirectoryURL = currentDirectoryURL;
   }
   if (selectionURL !== null) {
+    // @ts-ignore: error TS2339: Property 'appState' does not exist on type
+    // 'Window & typeof globalThis'.
     window.appState.selectionURL = selectionURL;
   }
   appUtil.saveAppState();

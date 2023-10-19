@@ -46,6 +46,8 @@ export class MetadataCacheSet extends EventTarget {
       const item = this.items_.get(urls[i]);
       const requestedNames = item ? item.createRequests(names) : names;
       if (requestedNames.length) {
+        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+        // undefined' is not assignable to parameter of type 'FileSystemEntry'.
         requests.push(new MetadataRequest(entries[i], requestedNames));
       }
     }
@@ -60,12 +62,14 @@ export class MetadataCacheSet extends EventTarget {
   startRequests(requestId, requests) {
     for (let i = 0; i < requests.length; i++) {
       const request = requests[i];
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       const url = requests[i].entry['cachedUrl'] || requests[i].entry.toURL();
       let item = this.items_.get(url);
       if (!item) {
         item = new MetadataCacheItem();
         this.items_.set(url, item);
       }
+      // @ts-ignore: error TS18048: 'request' is possibly 'undefined'.
       item.startRequests(requestId, request.names);
     }
   }
@@ -99,8 +103,14 @@ export class MetadataCacheSet extends EventTarget {
     }
 
     const event = new Event('update');
+    // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+    // 'Event'.
     event.entries = changedEntries;
+    // @ts-ignore: error TS2339: Property 'entriesMap' does not exist on type
+    // 'Event'.
     event.entriesMap = entriesMap;
+    // @ts-ignore: error TS2339: Property 'names' does not exist on type
+    // 'Event'.
     event.names = new Set(names);
     this.dispatchEvent(event);
     return true;

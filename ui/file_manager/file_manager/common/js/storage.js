@@ -18,11 +18,15 @@ export const storage = {};
  * current clients of `onChanged` don't need it.
  */
 class StorageChangeTracker {
+  // @ts-ignore: error TS7006: Parameter 'storageNamespace' implicitly has an
+  // 'any' type.
   constructor(storageNamespace) {
     /**
      * Storage onChanged event listeners for the current window.
      * @private @type {!Array<OnChangedListener>}
      * */
+    // @ts-ignore: error TS7008: Member 'listeners_' implicitly has an 'any[]'
+    // type.
     this.listeners_ = [];
 
     /**
@@ -46,7 +50,7 @@ class StorageChangeTracker {
 
   /**
    * Adds an onChanged event listener for the current window.
-   * @param {function(!Object<string, !ValueChanged>, string)} callback
+   * @param {function(!Object<string, !ValueChanged>, string):void} callback
    */
   addListener(callback) {
     this.listeners_.push(callback);
@@ -73,6 +77,7 @@ class StorageChangeTracker {
    * Process localStorage `storage` event and notify listeners_.
    * @private
    */
+  // @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
   onStorageEvent_(event) {
     if (!event.key) {
       return;
@@ -83,15 +88,21 @@ class StorageChangeTracker {
     const changedKeys = {};
 
     try {
+      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+      // expression of type 'string' can't be used to index type '{}'.
       changedKeys[key] = {newValue: JSON.parse(newValue)};
     } catch (error) {
       console.warn(
           `Failed to JSON parse localStorage value from key: "${key}" ` +
               `returning the raw value.`,
           error);
+      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+      // expression of type 'string' can't be used to index type '{}'.
       changedKeys[key] = {newValue};
     }
 
+    // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
+    // parameter of type '{ [x: string]: ValueChanged; }'.
     this.notifyLocally_(changedKeys);
   }
 
@@ -126,12 +137,14 @@ class StorageAreaImpl {
   /**
    * Gets values of |keys| and return them in the callback.
    * @param {string|!Array<string>} keys
-   * @param {!function(!Object)} callback
+   * @param {!function(!Object):void} callback
    */
   get(keys, callback) {
     const keyList = Array.isArray(keys) ? keys : [keys];
     const result = {};
     for (const key of keyList) {
+      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+      // expression of type 'string' can't be used to index type '{}'.
       result[key] = this.getValue_(key);
     }
     callback(result);
@@ -161,6 +174,8 @@ class StorageAreaImpl {
    * @returns {!Promise<!Object<string, *>>}
    */
   async getAsync(keys) {
+    // @ts-ignore: error TS6133: 'reject' is declared but its value is never
+    // read.
     return new Promise((resolve, reject) => {
       this.get(keys, (values) => {
         resolve(values);
@@ -191,6 +206,8 @@ class StorageAreaImpl {
    * @returns {!Promise<void>}
    */
   async setAsync(items) {
+    // @ts-ignore: error TS6133: 'reject' is declared but its value is never
+    // read.
     return new Promise((resolve, reject) => {
       this.set(items, () => {
         resolve();
@@ -226,6 +243,8 @@ class StorageAreaImpl {
   notifyChange_(keys) {
     const values = {};
     for (const k of keys) {
+      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+      // expression of type 'string' can't be used to index type '{}'.
       values[k] = this.getValue_(k);
     }
 
@@ -248,8 +267,10 @@ class StorageAreaImpl {
 storage.local = new StorageAreaImpl('local');
 
 /**
- * @typedef {function(!Object<string, !ValueChanged>, string)}
+ * @typedef {function(!Object<string, !ValueChanged>, string):void}
  */
+// @ts-ignore: error TS7005: Variable 'OnChangedListener' implicitly has an
+// 'any' type.
 export let OnChangedListener;
 
 /**
@@ -257,6 +278,8 @@ export let OnChangedListener;
  *    newValue: *,
  * }}
  */
+// @ts-ignore: error TS7005: Variable 'ValueChanged' implicitly has an 'any'
+// type.
 export let ValueChanged;
 
 /**
@@ -264,8 +287,10 @@ export let ValueChanged;
  * resetForTesting().
  *
  * @type {{
- *   addListener: function(OnChangedListener),
- *   resetForTesting: function(),
+ *   addListener: function(OnChangedListener):void,
+ *   resetForTesting: function():void,
  * }}
  */
+// @ts-ignore: error TS2341: Property 'getStorageChangeTracker_' is private and
+// only accessible within class 'StorageAreaImpl'.
 storage.onChanged = storage.local.getStorageChangeTracker_();

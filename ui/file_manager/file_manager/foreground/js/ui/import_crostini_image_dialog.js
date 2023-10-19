@@ -22,6 +22,7 @@ export class ImportCrostiniImageDialog extends ConfirmDialog {
     super(parentNode);
     super.setOkLabel(str('IMPORT_CROSTINI_IMAGE_DIALOG_OK_LABEL'));
 
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.container.classList.add('files-ng');
   }
 

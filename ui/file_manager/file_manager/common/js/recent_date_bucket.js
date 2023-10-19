@@ -81,6 +81,8 @@ export function getTranslationKeyForDateBucket(dateBucket) {
       'RECENT_TIME_HEADING_OLDER',
     ],
   ]);
+  // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable to
+  // type 'string'.
   return DATE_BUCKET_TO_TRANSLATION_KEY_MAP.get(dateBucket);
 }
 

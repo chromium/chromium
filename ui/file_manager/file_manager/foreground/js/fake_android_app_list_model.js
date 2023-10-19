@@ -43,6 +43,9 @@ export function createFakeAndroidAppListModel(appNames) {
      *     |index|-th picker app.
      */
     item(index) {
+      // @ts-ignore: error TS2322: Type '{ name: string | undefined;
+      // packageName: string; activityName: string; } | undefined' is not
+      // assignable to type 'AndroidApp'.
       return this.apps_[index];
     }
   }

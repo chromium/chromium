@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
-import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {EntryLocation} from '../../externs/entry_location.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {FileOperationManagerImpl} from './file_operation_manager.js';
 import {fileOperationUtil} from './file_operation_util.js';
@@ -28,32 +27,16 @@ class FakeVolumeManager {
   }
   /**
    * Return fake location info.
-   * @param {!Entry} entry
+   * @param {!Entry} _entry
    * @return {?EntryLocation}
    */
-  getLocationInfo(entry) {
+  getLocationInfo(_entry) {
     return /** @type {!EntryLocation} */ ({
       rootType: 'downloads',
       volumeInfo:
           {volumeType: 'downloads', label: 'Downloads', remoteMountPath: ''},
     });
   }
-}
-
-/**
- * Returns file system of the url.
- * @param {!Array<!MockFileSystem>} fileSystems
- * @param {string} url
- * @return {!MockFileSystem}
- */
-function getFileSystemForURL(fileSystems, url) {
-  for (let i = 0; i < fileSystems.length; i++) {
-    if (new RegExp('^filesystem:' + fileSystems[i].name + '/').test(url)) {
-      return fileSystems[i];
-    }
-  }
-
-  throw new Error('Unexpected url: ' + url);
 }
 
 /**
@@ -66,7 +49,7 @@ const DIRECTORY_SIZE = -1;
 /**
  * Creates test file system.
  * @param {string} id File system Id.
- * @param {Object<number>} entries Map of entry paths and their size.
+ * @param {Record<string, number>} entries Map of entry paths and their size.
  *     If the entry size is DIRECTORY_SIZE, the entry is a directory.
  * @return {!MockFileSystem}
  */
@@ -86,16 +69,19 @@ function createTestFileSystem(id, entries) {
 
 /**
  * Placeholder for mocked volume manager.
- * @type {(FakeVolumeManager|{getVolumeInfo: function()}?)}
+ * @type {(FakeVolumeManager|{getVolumeInfo: function():void}?)}
  */
 let volumeManager;
 
 /**
  * Provide VolumeManager.getInstance() for FileOperationManager using mocked
  * volume manager instance.
- * @return {Promise}
+ * @return {Promise<VolumeManager>}
  */
 volumeManagerFactory.getInstance = () => {
+  // @ts-ignore: error TS2322: Type 'Promise<FakeVolumeManager | {
+  // getVolumeInfo: () => void; } | null>' is not assignable to type
+  // 'Promise<VolumeManager>'.
   return Promise.resolve(volumeManager);
 };
 
@@ -107,7 +93,7 @@ let fileOperationManager;
 
 /**
  * Tests the fileOperationUtil.resolvePath function.
- * @param {function(boolean)} callback Callback to be passed true on error.
+ * @param {function(boolean):void} callback Callback to be passed true on error.
  */
 export function testResolvePath(callback) {
   const fileSystem = createTestFileSystem('testVolume', {
@@ -151,7 +137,7 @@ export function testResolvePath(callback) {
 
 /**
  * Tests the fileOperationUtil.deduplicatePath
- * @param {function(boolean)} callback Callback to be passed true on error.
+ * @param {function(boolean):void} callback Callback to be passed true on error.
  */
 export function testDeduplicatePath(callback) {
   const fileSystem1 = createTestFileSystem('testVolume', {'/': DIRECTORY_SIZE});
@@ -194,11 +180,14 @@ export function testDeduplicatePath(callback) {
     existingPathPromise,
     moreExistingPathPromise,
   ]);
+  // @ts-ignore: error TS2345: Argument of type 'Promise<[void, void, void]>' is
+  // not assignable to parameter of type 'Promise<void>'.
   reportPromise(testPromise, callback);
 }
 
 /**
  * Test writeFile() with file dragged from browser.
+ * @param {()=>void} done
  */
 export async function testWriteFile(done) {
   const fileSystem = createTestFileSystem('testVolume', {
@@ -210,6 +199,8 @@ export async function testWriteFile(done) {
   await fileOperationManager.writeFile(
       file, /** @type {!DirectoryEntry} */ (fileSystem.entries['/testdir']));
   const writtenEntry = fileSystem.entries['/testdir/browserfile'];
+  // @ts-ignore: error TS2339: Property 'content' does not exist on type
+  // 'FileSystemEntry'.
   assertEquals('content', await writtenEntry.content.text());
   done();
 }

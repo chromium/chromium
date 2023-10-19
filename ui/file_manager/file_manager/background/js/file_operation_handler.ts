@@ -25,8 +25,7 @@ export class FileOperationHandler {
       event: chrome.fileManagerPrivate.ProgressStatus) {
     const taskId = String(event.taskId);
     let newItem = false;
-    let item: ProgressCenterItem|null =
-        this.progressCenter_.getItemById(taskId);
+    let item = this.progressCenter_.getItemById(taskId);
     if (!item) {
       item = new ProgressCenterItem();
       newItem = true;

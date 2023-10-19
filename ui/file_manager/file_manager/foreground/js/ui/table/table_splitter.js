@@ -20,6 +20,8 @@ import {Table} from './table.js';
 /**
  * Creates a new table splitter element.
  */
+// @ts-ignore: error TS2507: Type '(arg0?: Object | undefined) => Element' is
+// not a constructor function type.
 export class TableSplitter extends Splitter {
   /**
    * @param {Object=} opt_propertyBag Optional properties.
@@ -31,6 +33,8 @@ export class TableSplitter extends Splitter {
 
     /** @private @type {Table} */
     this.table_;
+    // @ts-ignore: error TS2339: Property 'table' does not exist on type
+    // 'Object'.
     this.table = (opt_propertyBag && opt_propertyBag.table) || null;
 
     /** @private @type {number} */
@@ -60,8 +64,12 @@ export class TableSplitter extends Splitter {
     icon.setAttribute('tabindex', '-1');
     icon.setAttribute('aria-hidden', 'true');
     icon.classList.add('splitter-icon');
+    // @ts-ignore: error TS2339: Property 'appendChild' does not exist on type
+    // 'TableSplitter'.
     this.appendChild(icon);
 
+    // @ts-ignore: error TS2339: Property 'classList' does not exist on type
+    // 'TableSplitter'.
     this.classList.add('table-header-splitter');
   }
 
@@ -70,13 +78,20 @@ export class TableSplitter extends Splitter {
    * Saves starting width of the column and changes the cursor.
    * @override
    */
+  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
+  // '@override' tag because its containing class 'TableSplitter' does not
+  // extend another class.
   handleSplitterDragStart() {
     const cm = this.table_.columnModel;
+    // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on type
+    // 'TableSplitter'.
     this.ownerDocument.documentElement.classList.add('col-resize');
 
     this.columnWidth_ = cm.getWidth(this.columnIndex);
     this.nextColumnWidth_ = cm.getWidth(this.columnIndex + 1);
 
+    // @ts-ignore: error TS2339: Property 'handleSplitterDragStart' does not
+    // exist on type 'TableColumnModel'.
     this.table_.columnModel.handleSplitterDragStart();
   }
 
@@ -84,8 +99,13 @@ export class TableSplitter extends Splitter {
    * Handles spliter moves. Sets new width of the column.
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'deltaX' implicitly has an 'any' type.
   handleSplitterDragMove(deltaX) {
+    // @ts-ignore: error TS2339: Property 'setWidthAndKeepTotal' does not exist
+    // on type 'TableColumnModel'.
     if (this.table_.columnModel.setWidthAndKeepTotal) {
+      // @ts-ignore: error TS2339: Property 'setWidthAndKeepTotal' does not
+      // exist on type 'TableColumnModel'.
       this.table_.columnModel.setWidthAndKeepTotal(
           this.columnIndex, this.columnWidth_ + deltaX, true);
     }
@@ -95,9 +115,18 @@ export class TableSplitter extends Splitter {
    * Handles end of the splitter dragging. Restores cursor.
    * @override
    */
+  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
+  // '@override' tag because its containing class 'TableSplitter' does not
+  // extend another class.
   handleSplitterDragEnd() {
+    // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on type
+    // 'TableSplitter'.
     this.ownerDocument.documentElement.classList.remove('col-resize');
+    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
+    // parameter of type 'EventTarget'.
     dispatchSimpleEvent(this, 'column-resize-end', /*bubbles=*/ true);
+    // @ts-ignore: error TS2339: Property 'handleSplitterDragEnd' does not exist
+    // on type 'TableColumnModel'.
     this.table_.columnModel.handleSplitterDragEnd();
   }
 }
@@ -106,6 +135,8 @@ export class TableSplitter extends Splitter {
  * The column index.
  * @type {number}
  */
+// @ts-ignore: error TS2565: Property 'columnIndex' is used before being
+// assigned.
 TableSplitter.prototype.columnIndex;
 Object.defineProperty(
     TableSplitter.prototype, 'columnIndex',

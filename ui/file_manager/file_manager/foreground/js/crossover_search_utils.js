@@ -27,6 +27,7 @@ crossoverSearchUtils.findQueryMatchedDirectoryEntry =
   for (let i = 0; i < navListModel.length; i++) {
     const item = navListModel.item(i);
     let dirEntry;
+    // @ts-ignore: error TS18048: 'item' is possibly 'undefined'.
     switch (item.type) {
       case NavigationModelItemType.ENTRY_LIST:  // My files, Removable, etc.
         dirEntry = /** @type {NavigationModelFakeItem} */
@@ -44,20 +45,32 @@ crossoverSearchUtils.findQueryMatchedDirectoryEntry =
     }
 
     let isMatchedEntryFound;
+    // @ts-ignore: error TS7006: Parameter 'entries' implicitly has an 'any'
+    // type.
     function entriesCallback(entries) {
       isMatchedEntryFound = true;
     }
+    // @ts-ignore: error TS7006: Parameter 'error' implicitly has an 'any' type.
     function errorCallback(error) {
       console.warn(error.stack || error);
     }
 
+    // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry' is not
+    // assignable to parameter of type 'FileSystemDirectoryEntry |
+    // FilesAppEntry'.
     const scanner = dirModel.createScannerFactory(dirEntry, searchQuery)();
     await new Promise(
+        // @ts-ignore: error TS2345: Argument of type '(value: any) => void' is
+        // not assignable to parameter of type '() => any'.
         resolve => scanner.scan(entriesCallback, resolve, errorCallback));
     if (isMatchedEntryFound) {
+      // @ts-ignore: error TS2322: Type 'FileSystemEntry' is not assignable to
+      // type 'FileSystemDirectoryEntry'.
       return dirEntry;
     }
   }
+  // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+  // 'FileSystemDirectoryEntry'.
   return null;
 };
 

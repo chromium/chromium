@@ -22,7 +22,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 import type {FilesTooltip} from '../elements/files_tooltip.js';
 
-import {CommandHandler} from './file_manager_commands.js';
+import {CommandHandler, DeleteCommand} from './file_manager_commands.js';
 import {FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
 import {MetadataItem} from './metadata/metadata_item.js';
@@ -56,7 +56,7 @@ export class QuickViewController {
   /**
    * Current selection of selectionHandler.
    */
-  private entries_: Array<Entry|FileEntry> = [];
+  private entries_: Entry[] = [];
 
   /**
    * The tasks for the current entry shown in quick view.
@@ -305,8 +305,9 @@ export class QuickViewController {
     this.checkSelectMode_ = this.fileListSelectionModel_.getCheckSelectMode();
 
     // Delete the entry if the entry can be deleted.
-    CommandHandler.getCommand('delete').deleteEntries(
-        [entry], this.fileManager_, /*permanentlyDelete=*/ false,
+    const deleteCommand = CommandHandler.getCommand('delete') as DeleteCommand;
+    deleteCommand.deleteEntries(
+        [entry!], this.fileManager_, /*permanentlyDelete=*/ false,
         this.deleteConfirmDialog_);
   }
 
@@ -314,7 +315,7 @@ export class QuickViewController {
    * Returns true if the entry can be deleted.
    */
   private async canDeleteEntry_(entry: Entry) {
-    const deleteCommand = CommandHandler.getCommand('delete');
+    const deleteCommand = CommandHandler.getCommand('delete') as DeleteCommand;
     return deleteCommand.canDeleteEntries([entry], this.fileManager_);
   }
 

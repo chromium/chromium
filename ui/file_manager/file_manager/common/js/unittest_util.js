@@ -12,6 +12,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert
  * @param {!Array<!FileEntry>} actual
  */
 export function assertFileEntryListEquals(expected, actual) {
+  // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
   const entryToPath = entry => {
     assertTrue(entry.isFile);
     return entry.fullPath;
@@ -29,6 +30,7 @@ export function assertFileEntryListEquals(expected, actual) {
 export function assertFileEntryPathsEqual(expectedPaths, fileEntries) {
   assertEquals(expectedPaths.length, fileEntries.length);
 
+  // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
   const entryToPath = entry => {
     assertTrue(entry.isFile);
     return entry.fullPath;
@@ -57,7 +59,7 @@ export function assertFileEntryPathsEqual(expectedPaths, fileEntries) {
  */
 export class TestCallRecorder {
   constructor() {
-    /** @private @type {!Array<!Arguments>} */
+    /** @private @type {!Array<!*>} */
     this.calls_ = [];
 
     /**
@@ -65,7 +67,7 @@ export class TestCallRecorder {
      * return the same object. This is necessary as some clients may make use
      * of object equality.
      *
-     * @type {function(*)}
+     * @type {function(*):void}
      */
     this.callback = this.recordArguments_.bind(this);
   }
@@ -90,7 +92,7 @@ export class TestCallRecorder {
   }
 
   /**
-   * @return {?Arguments} Returns the {@code Arguments} for the last call,
+   * @return {?Array<*>} Returns the {@code Arguments} for the last call,
    *    or null if the recorder hasn't been called.
    */
   getLastArguments() {
@@ -100,7 +102,7 @@ export class TestCallRecorder {
 
   /**
    * @param {number} index Index of which args to return.
-   * @return {?Arguments} Returns the {@code Arguments} for the call specified
+   * @return {?Array<*>} Returns the {@code Arguments} for the call specified
    *    by indexed.
    */
   getArguments(index) {
@@ -113,16 +115,20 @@ export class TestCallRecorder {
  * in unit test.
  *
  * @param {!HTMLElement} element
- * @return {!Promise}
+ * @return {!Promise<void>}
  */
 export async function waitForElementUpdate(element) {
   // For LitElement we explicitly await the internal updateComplete promise.
+  // @ts-ignore: error TS2339: Property 'updateComplete' does not exist on type
+  // 'HTMLElement'.
   if (element.updateComplete && element.updateComplete.then) {
+    // @ts-ignore: error TS2339: Property 'updateComplete' does not exist on
+    // type 'HTMLElement'.
     await element.updateComplete;
     // Wait for nested LitElements to finish rendering. Assumes that all nested
     // elements' render() complete in microtasks.
     return new Promise(resolve => setTimeout(resolve, 0));
   }
   // For others, wait for the next animation frame.
-  return new Promise(resolve => window.requestAnimationFrame(resolve));
+  return new Promise(resolve => window.requestAnimationFrame(() => resolve()));
 }

@@ -16,7 +16,6 @@ import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../../externs/background/file_operation_manager.js';
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {PropStatus, SearchData, SearchLocation, State} from '../../../externs/ts/state.js';
-import {VolumeInfo} from '../../../externs/volume_info.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {getStore} from '../../../state/store.js';
 import {constants} from '../constants.js';
@@ -51,7 +50,11 @@ const DirectoryItemTreeBaseMethods = {};
  * @this {(DirectoryItem|DirectoryTree)}
  */
 DirectoryItemTreeBaseMethods.getItemByEntry = function(entry) {
+  // @ts-ignore: error TS2339: Property 'items' does not exist on type
+  // 'DirectoryItem | DirectoryTree'.
   for (let i = 0; i < this.items.length; i++) {
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryItem | DirectoryTree'.
     const item = this.items[i];
     if (!item.entry) {
       continue;
@@ -83,6 +86,8 @@ DirectoryItemTreeBaseMethods.getItemByEntry = function(entry) {
       return item.getItemByEntry(entry);
     }
   }
+  // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+  // 'DirectoryItem'.
   return null;
 };
 
@@ -96,7 +101,11 @@ DirectoryItemTreeBaseMethods.getItemByEntry = function(entry) {
  * @this {(DirectoryItem|VolumeItem|DirectoryTree)}
  */
 DirectoryItemTreeBaseMethods.searchAndSelectByEntry = async function(entry) {
+  // @ts-ignore: error TS2339: Property 'items' does not exist on type
+  // 'DirectoryItem | DirectoryTree | VolumeItem'.
   for (let i = 0; i < this.items.length; i++) {
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryItem | DirectoryTree | VolumeItem'.
     const item = this.items[i];
     if (!item.entry) {
       continue;
@@ -136,6 +145,8 @@ DirectoryItemTreeBaseMethods.searchAndSelectByEntry = async function(entry) {
  */
 DirectoryItemTreeBaseMethods.recordUMASelectedEntry =
     (e, rootType, isRootEntry) => {
+      // @ts-ignore: error TS2339: Property 'classList' does not exist on type
+      // 'EventTarget'.
       const expandIconSelected = e.target.classList.contains('expand-icon');
       let metricName = 'Location.OnEntrySelected.TopLevel';
       if (!expandIconSelected && isRootEntry) {
@@ -191,6 +202,8 @@ directorytree.createRowElementContent = (id) => {
  * @param {number} depth Indent depth (>=0).
  */
 directorytree.styleRowElementDepth = (item, depth) => {
+  // @ts-ignore: error TS2339: Property 'rowElement' does not exist on type
+  // 'TreeItem'.
   const fileRowElement = item.rowElement.firstElementChild;
 
   const indent = depth * (util.isJellyEnabled() ? 20 : 22);
@@ -223,6 +236,8 @@ class FilesTreeItem extends TreeItem {
     this.parentTree_ = tree;
 
     const innerHTML = directorytree.createRowElementContent(id);
+    // @ts-ignore: error TS2339: Property 'rowElement' does not exist on type
+    // 'FilesTreeItem'.
     this.rowElement.innerHTML =
         sanitizeInnerHtml(innerHTML, {attrs: ['class', 'id']});
     this.label = label;
@@ -233,7 +248,11 @@ class FilesTreeItem extends TreeItem {
    * @type {!HTMLElement}
    * @override
    */
+  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
+  // '@override' tag because it is not declared in the base class 'TreeItem'.
   get labelElement() {
+    // @ts-ignore: error TS2339: Property 'rowElement' does not exist on type
+    // 'FilesTreeItem'.
     return this.rowElement.querySelector('.label');
   }
 
@@ -254,11 +273,19 @@ class FilesTreeItem extends TreeItem {
    * @param {Event} e Click event.
    * @override
    */
+  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
+  // '@override' tag because it is not declared in the base class 'TreeItem'.
   handleClick(e) {
+    // @ts-ignore: error TS2339: Property 'handleClick' does not exist on type
+    // 'TreeItem'.
     super.handleClick(e);
+    // @ts-ignore: error TS2339: Property 'button' does not exist on type
+    // 'Event'.
     if (e.button === 2) {
       return;
     }
+    // @ts-ignore: error TS2339: Property 'classList' does not exist on type
+    // 'EventTarget'.
     if (e.target.classList.contains('expand-icon')) {
       return;
     }
@@ -306,6 +333,8 @@ export class DirectoryItem extends FilesTreeItem {
     this.hasChildren = false;
 
     // @type {!Array<Entry>} Filled after updateSubDirectories read entries.
+    // @ts-ignore: error TS7008: Member 'entries_' implicitly has an 'any[]'
+    // type.
     this.entries_ = [];
 
     // @type {function()=} onMetadataUpdated_ bound to |this| used to listen
@@ -323,6 +352,8 @@ export class DirectoryItem extends FilesTreeItem {
    * @type {DirectoryEntry|Object}
    */
   get entry() {
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type 'Object |
+    // FileSystemDirectoryEntry'.
     return null;
   }
 
@@ -334,6 +365,9 @@ export class DirectoryItem extends FilesTreeItem {
     let rootType = null;
 
     if (this.entry) {
+      // @ts-ignore: error TS2345: Argument of type 'Object |
+      // FileSystemDirectoryEntry' is not assignable to parameter of type
+      // 'FileSystemEntry | FilesAppEntry'.
       const root = this.parentTree_.volumeManager.getLocationInfo(this.entry);
       rootType = root ? root.rootType : null;
     }
@@ -347,6 +381,8 @@ export class DirectoryItem extends FilesTreeItem {
    */
   get insideMyDrive() {
     const rootType = this.rootType;
+    // @ts-ignore: error TS2322: Type 'string | boolean | null' is not
+    // assignable to type 'boolean'.
     return rootType && (rootType === VolumeManagerCommon.RootType.DRIVE);
   }
 
@@ -356,6 +392,8 @@ export class DirectoryItem extends FilesTreeItem {
    */
   get insideComputers() {
     const rootType = this.rootType;
+    // @ts-ignore: error TS2322: Type 'string | boolean | null' is not
+    // assignable to type 'boolean'.
     return rootType &&
         (rootType === VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
          rootType === VolumeManagerCommon.RootType.COMPUTER);
@@ -366,6 +404,8 @@ export class DirectoryItem extends FilesTreeItem {
    * @type {!boolean}
    */
   get insideDrive() {
+    // @ts-ignore: error TS2345: Argument of type '{ rootType: string | null; }'
+    // is not assignable to parameter of type 'FileData'.
     return isEntryInsideDrive({rootType: this.rootType});
   }
 
@@ -390,6 +430,8 @@ export class DirectoryItem extends FilesTreeItem {
     }
 
     const updateableProperties = ['shared', 'isMachineRoot', 'isExternalMedia'];
+    // @ts-ignore: error TS2339: Property 'names' does not exist on type
+    // 'Event'.
     if (!updateableProperties.some((prop) => event.names.has(prop))) {
       return;
     }
@@ -397,8 +439,12 @@ export class DirectoryItem extends FilesTreeItem {
     let index = 0;
     while (this.entries_[index]) {
       const childEntry = this.entries_[index];
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DirectoryItem'.
       const childElement = this.items[index];
 
+      // @ts-ignore: error TS2339: Property 'entriesMap' does not exist on type
+      // 'Event'.
       if (event.entriesMap.has(childEntry.toURL())) {
         childElement.updateDriveSpecificIcons();
       }
@@ -423,13 +469,20 @@ export class DirectoryItem extends FilesTreeItem {
 
     while (this.entries_[index]) {
       const currentEntry = this.entries_[index];
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DirectoryItem'.
       const currentElement = this.items[index];
-      const label = util.getEntryLabel(
-                        tree.volumeManager_.getLocationInfo(currentEntry),
-                        currentEntry) ||
+      const label =
+          util.getEntryLabel(
+              // @ts-ignore: error TS2345: Argument of type 'EntryLocation |
+              // null' is not assignable to parameter of type 'EntryLocation'.
+              tree.volumeManager_.getLocationInfo(currentEntry),
+              currentEntry) ||
           '';
 
 
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DirectoryItem'.
       if (index >= this.items.length) {
         // If currentEntry carries its navigationModel we generate an item
         // accordingly. Used for Crostini when displayed within My Files.
@@ -440,6 +493,8 @@ export class DirectoryItem extends FilesTreeItem {
           item = new SubDirectoryItem(
               label, currentEntry, this, tree, !!currentEntry.disabled);
         }
+        // @ts-ignore: error TS2339: Property 'add' does not exist on type
+        // 'DirectoryItem'.
         this.add(item);
         index++;
       } else if (util.isSameEntry(currentEntry, currentElement.entry)) {
@@ -467,6 +522,8 @@ export class DirectoryItem extends FilesTreeItem {
           item = new SubDirectoryItem(
               label, currentEntry, this, tree, !!currentEntry.disabled);
         }
+        // @ts-ignore: error TS2339: Property 'addAt' does not exist on type
+        // 'DirectoryItem'.
         this.addAt(item, index);
         index++;
       } else if (currentEntry.toURL() > currentElement.entry.toURL()) {
@@ -475,6 +532,8 @@ export class DirectoryItem extends FilesTreeItem {
     }
 
     let removedChild;
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryItem'.
     while (removedChild = this.items[index]) {
       this.remove(removedChild);
     }
@@ -515,6 +574,8 @@ export class DirectoryItem extends FilesTreeItem {
    * @param {boolean=} opt_unused Unused.
    * @override
    */
+  // @ts-ignore: error TS6133: 'opt_unused' is declared but its value is never
+  // read.
   scrollIntoViewIfNeeded(opt_unused) {}
 
   /**
@@ -526,7 +587,10 @@ export class DirectoryItem extends FilesTreeItem {
    * @override
    */
   remove(child) {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.lastElementChild.removeChild(/** @type {!TreeItem} */ (child));
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryItem'.
     if (this.items.length == 0) {
       this.hasChildren = false;
     }
@@ -539,6 +603,7 @@ export class DirectoryItem extends FilesTreeItem {
   clearHasChildren() {
     const rowItem = this.firstElementChild;
     this.removeAttribute('has-children');
+    // @ts-ignore: error TS18047: 'rowItem' is possibly 'null'.
     rowItem.removeAttribute('has-children');
   }
 
@@ -595,7 +660,11 @@ export class DirectoryItem extends FilesTreeItem {
       // to update recursively when items expand this proactively
       // collapses all children to avoid having to traverse large
       // parts of the tree when reopened.
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DirectoryItem'.
       for (let i = 0; i < this.items.length; i++) {
+        // @ts-ignore: error TS2339: Property 'items' does not exist on type
+        // 'DirectoryItem'.
         const item = this.items[i];
 
         if (item.expanded) {
@@ -622,6 +691,8 @@ export class DirectoryItem extends FilesTreeItem {
 
     // If this is DriveVolumeItem, the UMA has already been recorded.
     if (!(this instanceof DriveVolumeItem)) {
+      // @ts-ignore: error TS2339: Property 'tree' does not exist on type
+      // 'DirectoryItem'.
       const location = this.tree.volumeManager.getLocationInfo(this.entry);
       DirectoryItemTreeBaseMethods.recordUMASelectedEntry.call(
           this, e, location.rootType, location.isRootEntry);
@@ -646,20 +717,32 @@ export class DirectoryItem extends FilesTreeItem {
    * @param {function()=} opt_errorCallback Callback called on error.
    */
   updateSubDirectories(recursive, opt_successCallback, opt_errorCallback) {
+    // @ts-ignore: error TS2339: Property 'createReader' does not exist on type
+    // 'Object | FileSystemDirectoryEntry'.
     if (!this.entry || this.disabled || this.entry.createReader === undefined) {
       opt_errorCallback && opt_errorCallback();
       return;
     }
+    // @ts-ignore: error TS7006: Parameter 'entries' implicitly has an 'any'
+    // type.
     const onSuccess = (entries) => {
       this.entries_ = entries;
       this.updateSubElementsFromList(recursive);
       opt_successCallback && opt_successCallback();
     };
+    // @ts-ignore: error TS2339: Property 'createReader' does not exist on type
+    // 'Object | FileSystemDirectoryEntry'.
     const reader = this.entry.createReader();
+    // @ts-ignore: error TS7034: Variable 'entries' implicitly has type 'any[]'
+    // in some locations where its type cannot be determined.
     const entries = [];
     const readEntry = () => {
+      // @ts-ignore: error TS7006: Parameter 'results' implicitly has an 'any'
+      // type.
       reader.readEntries((results) => {
         if (!results.length) {
+          // @ts-ignore: error TS7005: Variable 'entries' implicitly has an
+          // 'any[]' type.
           onSuccess(this.sortEntries(entries));
           return;
         }
@@ -680,14 +763,20 @@ export class DirectoryItem extends FilesTreeItem {
    * @override
    */
   updateExpandIcon() {
+    // @ts-ignore: error TS2339: Property 'createReader' does not exist on type
+    // 'Object | FileSystemDirectoryEntry'.
     if (!this.entry || this.disabled || this.entry.createReader === undefined) {
       this.hasChildren = false;
       return;
     }
 
+    // @ts-ignore: error TS2339: Property 'createReader' does not exist on type
+    // 'Object | FileSystemDirectoryEntry'.
     const reader = this.entry.createReader();
 
     const readEntry = () => {
+      // @ts-ignore: error TS7006: Parameter 'results' implicitly has an 'any'
+      // type.
       reader.readEntries((results) => {
         if (!results.length) {
           // Reached the end without any directory;
@@ -721,13 +810,20 @@ export class DirectoryItem extends FilesTreeItem {
    *     directory.
    */
   updateItemByEntry(changedDirectoryEntry) {
+    // @ts-ignore: error TS2345: Argument of type 'Object |
+    // FileSystemDirectoryEntry' is not assignable to parameter of type
+    // 'FileSystemEntry | FilesAppEntry | null | undefined'.
     if (util.isSameEntry(changedDirectoryEntry, this.entry)) {
       this.updateSubDirectories(false /* recursive */);
       return;
     }
 
     // Traverse the entire subtree to find the changed element.
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryItem'.
     for (let i = 0; i < this.items.length; i++) {
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DirectoryItem'.
       const item = this.items[i];
       if (!item.entry) {
         continue;
@@ -752,6 +848,9 @@ export class DirectoryItem extends FilesTreeItem {
    * @return {!Promise<void>}
    */
   async selectByEntry(entry) {
+    // @ts-ignore: error TS2345: Argument of type 'Object |
+    // FileSystemDirectoryEntry' is not assignable to parameter of type
+    // 'FileSystemEntry | FilesAppEntry | null | undefined'.
     if (util.isSameEntry(entry, this.entry)) {
       this.selected = true;
       return;
@@ -763,6 +862,10 @@ export class DirectoryItem extends FilesTreeItem {
 
     // If the entry doesn't exist, updates sub directories and tries again.
     await new Promise(
+        // @ts-ignore: error TS2345: Argument of type '(opt_successCallback?:
+        // (() => any) | undefined, opt_errorCallback?: (() => any) | undefined)
+        // => void' is not assignable to parameter of type '(resolve: (value:
+        // any) => void, reject: (reason?: any) => void) => void'.
         this.updateSubDirectories.bind(this, false /* recursive */));
     await this.searchAndSelectByEntry(entry);
   }
@@ -780,6 +883,9 @@ export class DirectoryItem extends FilesTreeItem {
    */
   activate() {
     if (this.entry) {
+      // @ts-ignore: error TS2345: Argument of type 'Object |
+      // FileSystemDirectoryEntry' is not assignable to parameter of type
+      // 'FileSystemDirectoryEntry | FilesAppDirEntry'.
       this.parentTree_.directoryModel.activateDirectoryEntry(this.entry);
     }
   }
@@ -829,9 +935,11 @@ export class DirectoryItem extends FilesTreeItem {
 
     // Add the eject button as the last element of the tree row content.
     const label = rowElement.querySelector('.label');
+    // @ts-ignore: error TS18047: 'label.parentElement' is possibly 'null'.
     label.parentElement.appendChild(ejectButton);
 
     // Ensure the eject icon shows when the directory tree is too narrow.
+    // @ts-ignore: error TS18047: 'label' is possibly 'null'.
     label.setAttribute('style', 'margin-inline-end: 2px; min-width: 0;');
   }
 
@@ -873,6 +981,8 @@ export class SubDirectoryItem extends DirectoryItem {
     this.dirEntry_ = dirEntry;
     this.entry = dirEntry;
     this.disabled = disabled;
+    // @ts-ignore: error TS2339: Property 'delayExpansion' does not exist on
+    // type 'DirectoryItem | DirectoryTree | ShortcutItem'.
     this.delayExpansion = parentDirItem.delayExpansion;
 
     if (this.delayExpansion) {
@@ -882,40 +992,55 @@ export class SubDirectoryItem extends DirectoryItem {
 
     // Sets up icons of the item.
     const icon = this.querySelector('.icon');
+    // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
     icon.classList.add('item-icon');
 
     // Add volume-dependent attributes / icon.
     const location = tree.volumeManager.getLocationInfo(this.entry);
     if (location && location.rootType && location.isRootEntry) {
+      // @ts-ignore: error TS2339: Property 'iconName' does not exist on type
+      // 'FileSystemDirectoryEntry'.
       const iconOverride = this.entry.iconName;
       if (iconOverride) {
+        // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
         icon.setAttribute('volume-type-icon', iconOverride);
       } else {
+        // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
         icon.setAttribute('volume-type-icon', location.rootType);
       }
       if (window.IN_TEST && location.volumeInfo) {
         this.setAttribute(
             'volume-type-for-testing', location.volumeInfo.volumeType);
+        // @ts-ignore: error TS2345: Argument of type 'string | undefined' is
+        // not assignable to parameter of type 'string'.
         this.setAttribute('drive-label', location.volumeInfo.driveLabel);
       }
     } else {
       const rootType = location && location.rootType ? location.rootType : null;
+      // @ts-ignore: error TS2345: Argument of type 'string | null' is not
+      // assignable to parameter of type 'string | undefined'.
       const iconOverride = FileType.getIconOverrides(dirEntry, rootType);
       // Add Downloads icon as volume so current test code passes with
       // MyFilesVolume flag enabled and disabled.
       if (iconOverride) {
+        // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
         icon.setAttribute('volume-type-icon', iconOverride);
       }
+      // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
       icon.setAttribute('file-type-icon', iconOverride || 'folder');
       this.updateDriveSpecificIcons();
     }
 
     // Setup the item context menu.
     if (tree.contextMenuForSubitems) {
+      // @ts-ignore: error TS2341: Property 'setContextMenu_' is private and
+      // only accessible within class 'DirectoryItem'.
       this.setContextMenu_(tree.contextMenuForSubitems);
     }
 
     // Update this directory's expansion icon to reflect if it has children.
+    // @ts-ignore: error TS2339: Property 'expanded' does not exist on type
+    // 'DirectoryItem | DirectoryTree | ShortcutItem'.
     if (!this.delayExpansion && parentDirItem.expanded) {
       this.updateExpandIcon();
     }
@@ -930,14 +1055,17 @@ export class SubDirectoryItem extends DirectoryItem {
         [this.dirEntry_], ['shared', 'isMachineRoot', 'isExternalMedia']);
 
     const icon = this.querySelector('.icon');
+    // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
     icon.classList.toggle('shared', !!(metadata[0] && metadata[0].shared));
 
     if (metadata[0] && metadata[0].isMachineRoot) {
+      // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
       icon.setAttribute(
           'volume-type-icon', VolumeManagerCommon.RootType.COMPUTER);
     }
 
     if (metadata[0] && metadata[0].isExternalMedia) {
+      // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
       icon.setAttribute(
           'volume-type-icon', VolumeManagerCommon.RootType.EXTERNAL_MEDIA);
     }
@@ -946,6 +1074,9 @@ export class SubDirectoryItem extends DirectoryItem {
   /**
    * The DirectoryEntry corresponding to this DirectoryItem.
    */
+  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
+  // '@override' tag because it overrides a member in the base class
+  // 'DirectoryItem'.
   get entry() {
     return this.dirEntry_;
   }
@@ -953,6 +1084,9 @@ export class SubDirectoryItem extends DirectoryItem {
   /**
    * Sets the DirectoryEntry corresponding to this DirectoryItem.
    */
+  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
+  // '@override' tag because it overrides a member in the base class
+  // 'DirectoryItem'.
   set entry(value) {
     this.dirEntry_ = value;
 
@@ -987,29 +1121,45 @@ export class EntryListItem extends DirectoryItem {
     this.disabled = modelItem.disabled;
 
     if (rootType === VolumeManagerCommon.RootType.REMOVABLE) {
+      // @ts-ignore: error TS2339: Property 'rowElement' does not exist on type
+      // 'EntryListItem'.
       this.setupEjectButton_(this.rowElement, modelItem.label);
 
       // For removable add menus for roots to be able to unmount, format, etc.
       if (tree.contextMenuForRootItems) {
+        // @ts-ignore: error TS2341: Property 'setContextMenu_' is private and
+        // only accessible within class 'DirectoryItem'.
         this.setContextMenu_(tree.contextMenuForRootItems);
       }
     } else {
       // For MyFiles allow normal file operations menus.
       if (tree.contextMenuForSubitems) {
+        // @ts-ignore: error TS2341: Property 'setContextMenu_' is private and
+        // only accessible within class 'DirectoryItem'.
         this.setContextMenu_(tree.contextMenuForSubitems);
       }
     }
 
     const icon = this.querySelector('.icon');
+    // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
     icon.classList.add('item-icon');
+    // @ts-ignore: error TS2339: Property 'iconName' does not exist on type
+    // 'FileSystemDirectoryEntry'.
     if (this.entry && this.entry.iconName) {
+      // @ts-ignore: error TS2339: Property 'iconName' does not exist on type
+      // 'FileSystemDirectoryEntry'.
       icon.setAttribute('root-type-icon', this.entry.iconName);
     } else {
+      // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
       icon.setAttribute('root-type-icon', rootType);
     }
 
+    // @ts-ignore: error TS2339: Property 'volumeInfo' does not exist on type
+    // 'FileSystemDirectoryEntry'.
     if (window.IN_TEST && this.entry && this.entry.volumeInfo) {
       this.setAttribute(
+          // @ts-ignore: error TS2339: Property 'volumeInfo' does not exist on
+          // type 'FileSystemDirectoryEntry'.
           'volume-type-for-testing', this.entry.volumeInfo.volumeType);
     }
 
@@ -1028,6 +1178,9 @@ export class EntryListItem extends DirectoryItem {
    * @param {!Array<!Entry>} entries Entries to be sorted.
    * @returns {!Array<!Entry>}
    */
+  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
+  // '@override' tag because it overrides a member in the base class
+  // 'DirectoryItem'.
   sortEntries(entries) {
     if (!entries.length) {
       return [];
@@ -1041,8 +1194,13 @@ export class EntryListItem extends DirectoryItem {
     // Use locationInfo from first entry because it only compare within the same
     // volume.
     const locationInfo =
+        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+        // undefined' is not assignable to parameter of type 'FileSystemEntry |
+        // FilesAppEntry'.
         this.parentTree_.volumeManager_.getLocationInfo(entries[0]);
     const compareFunction = util.compareLabelAndGroupBottomEntries(
+        // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+        // type 'FileSystemDirectoryEntry'.
         locationInfo, this.entry.getUIChildren());
 
     const filter = this.fileFilter_.filter.bind(this.fileFilter_);
@@ -1056,27 +1214,37 @@ export class EntryListItem extends DirectoryItem {
    * @param {function()=} opt_successCallback Callback called on success.
    * @param {function()=} opt_errorCallback Callback called on error.
    */
+  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
+  // '@override' tag because it overrides a member in the base class
+  // 'DirectoryItem'.
   updateSubDirectories(recursive, opt_successCallback, opt_errorCallback) {
     if (!this.entry || this.entry.createReader === undefined) {
       opt_errorCallback && opt_errorCallback();
       return;
     }
     this.entries_ = [];
+    // @ts-ignore: error TS7006: Parameter 'entries' implicitly has an 'any'
+    // type.
     const onSuccess = (entries) => {
       this.entries_ = entries;
       this.updateSubElementsFromList(recursive);
       opt_successCallback && opt_successCallback();
     };
     const reader = this.entry.createReader();
+    // @ts-ignore: error TS7034: Variable 'entries' implicitly has type 'any[]'
+    // in some locations where its type cannot be determined.
     const entries = [];
     const readEntry = () => {
       reader.readEntries((results) => {
         if (!results.length) {
+          // @ts-ignore: error TS7005: Variable 'entries' implicitly has an
+          // 'any[]' type.
           onSuccess(this.sortEntries(entries));
           return;
         }
         for (let i = 0; i < results.length; i++) {
           const entry = results[i];
+          // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
           if (entry.isDirectory) {
             entries.push(entry);
           }
@@ -1093,6 +1261,9 @@ export class EntryListItem extends DirectoryItem {
    * @override
    */
   get entry() {
+    // @ts-ignore: error TS2739: Type 'FilesAppEntry' is missing the following
+    // properties from type 'FileSystemDirectoryEntry': createReader,
+    // getDirectory, getFile, removeRecursively
     return this.dirEntry_;
   }
 
@@ -1100,6 +1271,9 @@ export class EntryListItem extends DirectoryItem {
    * @type {!NavigationModelVolumeItem}
    */
   get modelItem() {
+    // @ts-ignore: error TS2739: Type 'NavigationModelFakeItem' is missing the
+    // following properties from type 'NavigationModelVolumeItem': volumeInfo_,
+    // volumeInfo
     return this.modelItem_;
   }
 }
@@ -1137,9 +1311,13 @@ class VolumeItem extends DirectoryItem {
     if (window.IN_TEST) {
       this.setAttribute('volume-type-for-testing', this.volumeInfo_.volumeType);
       this.setAttribute('dir-type', 'VolumeItem');
+      // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+      // assignable to parameter of type 'string'.
       this.setAttribute('drive-label', this.volumeInfo_.driveLabel);
     }
 
+    // @ts-ignore: error TS2345: Argument of type 'Element | null' is not
+    // assignable to parameter of type 'Element'.
     this.setupIcon_(this.querySelector('.icon'), this.volumeInfo_);
     if (util.isOneDrive(modelItem.volumeInfo)) {
       this.toggleAttribute('one-drive', true);
@@ -1153,12 +1331,18 @@ class VolumeItem extends DirectoryItem {
         modelItem.volumeInfo_.source === VolumeManagerCommon.Source.FILE) {
       // This placeholder is added to allow to put textbox before eject button
       // while executing renaming action on external drive.
+      // @ts-ignore: error TS2339: Property 'rowElement' does not exist on type
+      // 'VolumeItem'.
       this.setupRenamePlaceholder_(this.rowElement);
+      // @ts-ignore: error TS2339: Property 'rowElement' does not exist on type
+      // 'VolumeItem'.
       this.setupEjectButton_(this.rowElement, modelItem.label);
     }
 
     // Sets up context menu of the item.
     if (tree.contextMenuForRootItems) {
+      // @ts-ignore: error TS2341: Property 'setContextMenu_' is private and
+      // only accessible within class 'DirectoryItem'.
       this.setContextMenu_(tree.contextMenuForRootItems);
     }
 
@@ -1174,6 +1358,8 @@ class VolumeItem extends DirectoryItem {
         modelItem.volumeInfo_.volumeType !==
             VolumeManagerCommon.VolumeType.SMB) {
       this.volumeInfo_.resolveDisplayRoot(
+          // @ts-ignore: error TS6133: 'displayRoot' is declared but its value
+          // is never read.
           (displayRoot) => {
             this.resolved_ = true;
             this.updateSubDirectories(false /* recursive */);
@@ -1189,6 +1375,8 @@ class VolumeItem extends DirectoryItem {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'opt_errorCallback' implicitly has an
+  // 'any' type.
   updateSubDirectories(recursive, opt_successCallback, opt_errorCallback) {
     if (!this.resolved_) {
       return;
@@ -1211,6 +1399,7 @@ class VolumeItem extends DirectoryItem {
    */
   activate() {
     const directoryModel = this.parentTree_.directoryModel;
+    // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
     const onEntryResolved = (entry) => {
       this.resolved_ = true;
       // Changes directory to the model item's root directory if needed.
@@ -1231,7 +1420,8 @@ class VolumeItem extends DirectoryItem {
   /**
    * Set up icon of this volume item.
    * @param {Element} icon Icon element to be setup.
-   * @param {VolumeInfo} volumeInfo VolumeInfo determines the icon type.
+   * @param {import('../../../externs/volume_info.js').VolumeInfo} volumeInfo
+   *     VolumeInfo determines the icon type.
    * @private
    */
   setupIcon_(icon, volumeInfo) {
@@ -1274,6 +1464,7 @@ class VolumeItem extends DirectoryItem {
   setupRenamePlaceholder_(rowElement) {
     const placeholder = document.createElement('span');
     placeholder.className = 'rename-placeholder';
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     rowElement.querySelector('.label').insertAdjacentElement(
         'afterend', placeholder);
   }
@@ -1288,7 +1479,7 @@ class VolumeItem extends DirectoryItem {
   }
 
   /**
-   * @type {!VolumeInfo}
+   * @type {!import('../../../externs/volume_info.js').VolumeInfo}
    */
   get volumeInfo() {
     return this.volumeInfo_;
@@ -1335,6 +1526,8 @@ export class DriveVolumeItem extends VolumeItem {
   handleClick(e) {
     super.handleClick(e);
 
+    // @ts-ignore: error TS2345: Argument of type 'EventTarget | null' is not
+    // assignable to parameter of type 'EventTarget'.
     this.selectDisplayRoot_(e.target);
 
     DirectoryItemTreeBaseMethods.recordUMASelectedEntry.call(
@@ -1360,12 +1553,21 @@ export class DriveVolumeItem extends VolumeItem {
       const sharedDriveGrandRoot = this.volumeInfo_.sharedDriveDisplayRoot;
       if (!sharedDriveGrandRoot) {
         // Shared Drive is disabled.
+        // @ts-ignore: error TS2810: Expected 1 argument, but got 0. 'new
+        // Promise()' needs a JSDoc hint to produce a 'resolve' that can be
+        // called without arguments.
         resolve();
         return;
       }
 
+      // @ts-ignore: error TS7034: Variable 'index' implicitly has type 'any' in
+      // some locations where its type cannot be determined.
       let index;
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DriveVolumeItem'.
       for (let i = 0; i < this.items.length; i++) {
+        // @ts-ignore: error TS2339: Property 'items' does not exist on type
+        // 'DriveVolumeItem'.
         const entry = this.items[i] && this.items[i].entry;
         if (entry && util.isSameEntry(entry, sharedDriveGrandRoot)) {
           index = i;
@@ -1378,29 +1580,47 @@ export class DriveVolumeItem extends VolumeItem {
         recordSmallCount('TeamDrivesCount', results.length);
         // Only create grand root if there is at least 1 child/result.
         if (results.length) {
+          // @ts-ignore: error TS7005: Variable 'index' implicitly has an 'any'
+          // type.
           if (index !== undefined) {
+            // @ts-ignore: error TS7005: Variable 'index' implicitly has an
+            // 'any' type.
             this.items[index].hidden = false;
+            // @ts-ignore: error TS7005: Variable 'index' implicitly has an
+            // 'any' type.
             resolve(this.items[index]);
             return;
           }
 
           // Create if it doesn't exist yet.
           const label = util.getEntryLabel(
+                            // @ts-ignore: error TS2345: Argument of type
+                            // 'EntryLocation | null' is not assignable to
+                            // parameter of type 'EntryLocation'.
                             this.parentTree_.volumeManager_.getLocationInfo(
                                 sharedDriveGrandRoot),
                             sharedDriveGrandRoot) ||
               '';
           const item = new SubDirectoryItem(
               label, sharedDriveGrandRoot, this, this.parentTree_);
+          // @ts-ignore: error TS2339: Property 'addAt' does not exist on type
+          // 'DriveVolumeItem'.
           this.addAt(item, 1);
           item.updateExpandIcon();
           resolve(item);
           return;
         } else {
           // When there is no team drive, the grand root should be removed.
+          // @ts-ignore: error TS2339: Property 'items' does not exist on type
+          // 'DriveVolumeItem'.
           if (index && this.items[index].parentItem) {
+            // @ts-ignore: error TS2339: Property 'items' does not exist on type
+            // 'DriveVolumeItem'.
             this.items[index].parentItem.remove(this.items[index]);
           }
+          // @ts-ignore: error TS2810: Expected 1 argument, but got 0. 'new
+          // Promise()' needs a JSDoc hint to produce a 'resolve' that can be
+          // called without arguments.
           resolve();
           return;
         }
@@ -1426,12 +1646,21 @@ export class DriveVolumeItem extends VolumeItem {
       const computerGrandRoot = this.volumeInfo_.computersDisplayRoot;
       if (!computerGrandRoot) {
         // Computer is disabled.
+        // @ts-ignore: error TS2810: Expected 1 argument, but got 0. 'new
+        // Promise()' needs a JSDoc hint to produce a 'resolve' that can be
+        // called without arguments.
         resolve();
         return;
       }
 
+      // @ts-ignore: error TS7034: Variable 'index' implicitly has type 'any' in
+      // some locations where its type cannot be determined.
       let index;
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DriveVolumeItem'.
       for (let i = 0; i < this.items.length; i++) {
+        // @ts-ignore: error TS2339: Property 'items' does not exist on type
+        // 'DriveVolumeItem'.
         const entry = this.items[i] && this.items[i].entry;
         if (entry && util.isSameEntry(entry, computerGrandRoot)) {
           index = i;
@@ -1444,14 +1673,23 @@ export class DriveVolumeItem extends VolumeItem {
         recordSmallCount('ComputersCount', results.length);
         // Only create grand root if there is at least 1 child/result.
         if (results.length) {
+          // @ts-ignore: error TS7005: Variable 'index' implicitly has an 'any'
+          // type.
           if (index !== undefined) {
+            // @ts-ignore: error TS7005: Variable 'index' implicitly has an
+            // 'any' type.
             this.items[index].hidden = false;
+            // @ts-ignore: error TS7005: Variable 'index' implicitly has an
+            // 'any' type.
             resolve(this.items[index]);
             return;
           }
 
           // Create if it doesn't exist yet.
           const label = util.getEntryLabel(
+                            // @ts-ignore: error TS2345: Argument of type
+                            // 'EntryLocation | null' is not assignable to
+                            // parameter of type 'EntryLocation'.
                             this.parentTree_.volumeManager_.getLocationInfo(
                                 computerGrandRoot),
                             computerGrandRoot) ||
@@ -1462,15 +1700,24 @@ export class DriveVolumeItem extends VolumeItem {
           // computersIndexPosition_() helper function will work out the correct
           // index to place "Computers" at.
           const position = this.computersIndexPosition_();
+          // @ts-ignore: error TS2339: Property 'addAt' does not exist on type
+          // 'DriveVolumeItem'.
           this.addAt(item, position);
           item.updateExpandIcon();
           resolve(item);
           return;
         } else {
           // When there is no computer, the grand root should be removed.
+          // @ts-ignore: error TS2339: Property 'items' does not exist on type
+          // 'DriveVolumeItem'.
           if (index && this.items[index].parentItem) {
+            // @ts-ignore: error TS2339: Property 'items' does not exist on type
+            // 'DriveVolumeItem'.
             this.items[index].parentItem.remove(this.items[index]);
           }
+          // @ts-ignore: error TS2810: Expected 1 argument, but got 0. 'new
+          // Promise()' needs a JSDoc hint to produce a 'resolve' that can be
+          // called without arguments.
           resolve();
           return;
         }
@@ -1492,6 +1739,8 @@ export class DriveVolumeItem extends VolumeItem {
    * @param {EventTarget} target The event target.
    */
   selectDisplayRoot_(target) {
+    // @ts-ignore: error TS2339: Property 'classList' does not exist on type
+    // 'EventTarget'.
     if (!target.classList.contains('expand-icon')) {
       // If the Drive volume is clicked, select one of the children instead of
       // this item itself.
@@ -1511,6 +1760,8 @@ export class DriveVolumeItem extends VolumeItem {
    * @param {boolean} recursive True if the update is recursively.
    * @override
    */
+  // @ts-ignore: error TS6133: 'recursive' is declared but its value is never
+  // read.
   updateSubDirectories(recursive) {
     if (!this.entry || this.hasChildren || this.disabled) {
       return;
@@ -1530,17 +1781,22 @@ export class DriveVolumeItem extends VolumeItem {
 
     // Drive volume has children including fake entries (offline, recent, ...)
     const fakeEntries = [];
+    // @ts-ignore: error TS2341: Property 'fakeEntriesVisible_' is private and
+    // only accessible within class 'DirectoryTree'.
     if (this.parentTree_.fakeEntriesVisible_) {
       for (const key in this.volumeInfo_.fakeEntries) {
         fakeEntries.push(this.volumeInfo_.fakeEntries[key]);
       }
       // This list is sorted by URL on purpose.
       fakeEntries.sort((a, b) => {
+        // @ts-ignore: error TS18048: 'b' is possibly 'undefined'.
         if (a.toURL() === b.toURL()) {
           return 0;
         }
+        // @ts-ignore: error TS18048: 'a' is possibly 'undefined'.
         return b.toURL() > a.toURL() ? 1 : -1;
       });
+      // @ts-ignore: error TS2769: No overload matches this call.
       entries = entries.concat(fakeEntries);
     }
 
@@ -1554,10 +1810,21 @@ export class DriveVolumeItem extends VolumeItem {
       } else {
         const label =
             util.getEntryLabel(
+                // @ts-ignore: error TS2345: Argument of type
+                // 'FileSystemDirectoryEntry | undefined' is not assignable to
+                // parameter of type 'FileSystemEntry | FilesAppEntry'.
                 this.parentTree_.volumeManager_.getLocationInfo(entry),
+                // @ts-ignore: error TS2345: Argument of type
+                // 'FileSystemDirectoryEntry | undefined' is not assignable to
+                // parameter of type 'FileSystemEntry | FilesAppEntry'.
                 entry) ||
             '';
+        // @ts-ignore: error TS2345: Argument of type 'FileSystemDirectoryEntry
+        // | undefined' is not assignable to parameter of type
+        // 'FileSystemDirectoryEntry'.
         const item = new SubDirectoryItem(label, entry, this, this.parentTree_);
+        // @ts-ignore: error TS2339: Property 'add' does not exist on type
+        // 'DriveVolumeItem'.
         this.add(item);
         item.updateSubDirectories(false);
       }
@@ -1600,8 +1867,12 @@ export class DriveVolumeItem extends VolumeItem {
 
     // NOTE: It's possible that the DriveVolumeItem hasn't populated its
     // children yet.
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DriveVolumeItem'.
     if (this.items[0]) {
       // Must be under "My Drive", which is always the first item.
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DriveVolumeItem'.
       this.items[0].updateItemByEntry(changedDirectoryEntry);
     }
   }
@@ -1629,7 +1900,11 @@ export class DriveVolumeItem extends VolumeItem {
     // - Computers (if the user has any)
     // So if the user has team drives we want index position 2, otherwise index
     // position 1.
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DriveVolumeItem'.
     for (let i = 0; i < this.items.length; i++) {
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DriveVolumeItem'.
       const item = this.items[i];
       if (!item.entry) {
         continue;
@@ -1642,11 +1917,23 @@ export class DriveVolumeItem extends VolumeItem {
   }
 
   // Overrides the property 'expanded' to prevent Drive volume from shrinking.
+  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
+  // '@override' tag because it overrides a member in the base class
+  // 'VolumeItem'.
   get expanded() {
+    // @ts-ignore: error TS2684: The 'this' context of type '(() => any) |
+    // undefined' is not assignable to method's 'this' of type '(this: this) =>
+    // any'.
     return Object.getOwnPropertyDescriptor(TreeItem.prototype, 'expanded')
         .get.call(this);
   }
+  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
+  // '@override' tag because it overrides a member in the base class
+  // 'VolumeItem'.
   set expanded(b) {
+    // @ts-ignore: error TS2684: The 'this' context of type '((v: any) => void)
+    // | undefined' is not assignable to method's 'this' of type '(this: this,
+    // args_0: any) => void'.
     Object.getOwnPropertyDescriptor(TreeItem.prototype, 'expanded')
         .set.call(this, b);
     // When Google Drive is expanded while it is selected, select the My Drive.
@@ -1684,7 +1971,9 @@ export class ShortcutItem extends FilesTreeItem {
     this.disabled = modelItem.disabled;
 
     const icon = this.querySelector('.icon');
+    // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
     icon.classList.add('item-icon');
+    // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
     icon.setAttribute('volume-type-icon', 'shortcut');
 
     if (tree.contextMenuForRootItems) {
@@ -1700,6 +1989,7 @@ export class ShortcutItem extends FilesTreeItem {
    *     for. Can be a fake.
    * @return {boolean} True if the parent item is found.
    */
+  // @ts-ignore: error TS6133: 'entry' is declared but its value is never read.
   searchAndSelectByEntry(entry) {
     // Always false as shortcuts have no children.
     return false;
@@ -1715,6 +2005,8 @@ export class ShortcutItem extends FilesTreeItem {
     super.handleClick(e);
 
     // Do not activate with right click.
+    // @ts-ignore: error TS2339: Property 'button' does not exist on type
+    // 'Event'.
     if (e.button === 2) {
       return;
     }
@@ -1722,6 +2014,8 @@ export class ShortcutItem extends FilesTreeItem {
     // Resets file selection when a volume is clicked.
     this.parentTree_.directoryModel.clearSelection();
 
+    // @ts-ignore: error TS2339: Property 'tree' does not exist on type
+    // 'ShortcutItem'.
     const location = this.tree.volumeManager.getLocationInfo(this.entry);
     DirectoryItemTreeBaseMethods.recordUMASelectedEntry.call(
         this, e, location.rootType, location.isRootEntry);
@@ -1752,6 +2046,7 @@ export class ShortcutItem extends FilesTreeItem {
    */
   activate() {
     const directoryModel = this.parentTree_.directoryModel;
+    // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
     const onEntryResolved = (entry) => {
       // Changes directory to the model item's root directory if needed.
       if (!util.isSameEntry(directoryModel.getCurrentDirEntry(), entry)) {
@@ -1782,6 +2077,9 @@ export class ShortcutItem extends FilesTreeItem {
    * @type {!NavigationModelVolumeItem}
    */
   get modelItem() {
+    // @ts-ignore: error TS2739: Type 'NavigationModelShortcutItem' is missing
+    // the following properties from type 'NavigationModelVolumeItem':
+    // volumeInfo_, volumeInfo
     return this.modelItem_;
   }
 }
@@ -1811,16 +2109,19 @@ class AndroidAppItem extends FilesTreeItem {
     this.disabled = modelItem.disabled;
 
     const icon = this.querySelector('.icon');
+    // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
     icon.classList.add('item-icon');
 
     if (modelItem.androidApp.iconSet) {
       const backgroundImage =
           util.iconSetToCSSBackgroundImageValue(modelItem.androidApp.iconSet);
       if (backgroundImage !== 'none') {
+        // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
         icon.setAttribute('style', 'background-image: ' + backgroundImage);
       }
     }
 
+    // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
     icon.setAttribute('use-generic-provided-icon', '');
 
     // Use aria-describedby attribute to let ChromeVox users know that the link
@@ -1837,6 +2138,8 @@ class AndroidAppItem extends FilesTreeItem {
     externalLinkIcon.appendChild(ironIcon);
 
     // Add the external-link as the last element of the tree row content.
+    // @ts-ignore: error TS2339: Property 'rowElement' does not exist on type
+    // 'AndroidAppItem'.
     const label = this.rowElement.querySelector('.label');
     label.parentElement.appendChild(externalLinkIcon);
 
@@ -1850,6 +2153,7 @@ class AndroidAppItem extends FilesTreeItem {
    * @param {Event} e Click event.
    * @override
    */
+  // @ts-ignore: error TS6133: 'e' is declared but its value is never read.
   handleClick(e) {
     chrome.fileManagerPrivate.selectAndroidPickerApp(
         this.modelItem_.androidApp, () => {
@@ -1891,17 +2195,29 @@ export class FakeItem extends FilesTreeItem {
     this.disabled = modelItem.disabled;
 
     const icon = this.querySelector('.icon');
+    // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
     icon.classList.add('item-icon');
+    // @ts-ignore: error TS2339: Property 'iconName' does not exist on type
+    // 'FilesAppEntry'.
     if (this.entry && this.entry.iconName) {
+      // @ts-ignore: error TS2339: Property 'iconName' does not exist on type
+      // 'FilesAppEntry'.
       icon.setAttribute('root-type-icon', this.entry.iconName);
     } else {
+      // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
       icon.setAttribute('root-type-icon', rootType);
     }
 
     if (util.isRecentRootType(rootType)) {
+      // @ts-ignore: error TS2339: Property 'fileCategory' does not exist on
+      // type 'FilesAppEntry'.
       if (this.dirEntry_.fileCategory) {
+        // @ts-ignore: error TS2339: Property 'fileType' does not exist on type
+        // 'FilesAppEntry'.
         icon.setAttribute('recent-file-type', this.dirEntry_.fileType);
       } else {  // Recent tab scroll fix: crbug.com/1027973.
+        // @ts-ignore: error TS2339: Property 'scrollIntoViewIfNeeded' does not
+        // exist on type 'HTMLElement'.
         this.labelElement.scrollIntoViewIfNeeded = () => {
           this.scrollIntoView(true);
         };
@@ -1917,6 +2233,7 @@ export class FakeItem extends FilesTreeItem {
    * @param {!DirectoryEntry|!FilesAppDirEntry} entry
    * @return {boolean} True if the parent item is found.
    */
+  // @ts-ignore: error TS6133: 'entry' is declared but its value is never read.
   searchAndSelectByEntry(entry) {
     return false;
   }
@@ -1924,6 +2241,7 @@ export class FakeItem extends FilesTreeItem {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
   handleClick(e) {
     super.handleClick(e);
 
@@ -1945,6 +2263,9 @@ export class FakeItem extends FilesTreeItem {
    * @override
    */
   activate() {
+    // @ts-ignore: error TS2345: Argument of type 'FilesAppEntry' is not
+    // assignable to parameter of type 'FileSystemDirectoryEntry |
+    // FilesAppDirEntry'.
     this.parentTree_.directoryModel.activateDirectoryEntry(this.entry);
   }
 
@@ -1952,6 +2273,8 @@ export class FakeItem extends FilesTreeItem {
    * FakeItem doesn't really have sub-directories, it's defined here only to
    * have the same API of other Items on this file.
    */
+  // @ts-ignore: error TS7006: Parameter 'opt_errorCallback' implicitly has an
+  // 'any' type.
   updateSubDirectories(recursive, opt_successCallback, opt_errorCallback) {
     return opt_successCallback && opt_successCallback();
   }
@@ -1972,6 +2295,8 @@ export class FakeItem extends FilesTreeItem {
    * @type {!NavigationModelVolumeItem}
    */
   get modelItem() {
+    // @ts-ignore: error TS2322: Type 'NavigationModelFakeItem' is not
+    // assignable to type 'NavigationModelVolumeItem'.
     return this.modelItem_;
   }
 }
@@ -1994,26 +2319,40 @@ export class DirectoryTree extends Tree {
     this.lastActiveItem_ = null;
 
     /** @type {NavigationListModel} */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'NavigationListModel'.
     this.dataModel_ = null;
 
     /** @type {number} */
     this.sequence_ = 0;
 
     /** @type {DirectoryModel} */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'DirectoryModel'.
     this.directoryModel_ = null;
 
     /** @type {VolumeManager} this is set in decorate() */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'VolumeManager'.
     this.volumeManager_ = null;
 
     /** @type {MetadataModel} */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'MetadataModel'.
     this.metadataModel_ = null;
 
     /** @type {FileFilter} */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'FileFilter'.
     this.fileFilter_ = null;
 
+    // @ts-ignore: error TS7014: Function type, which lacks return-type
+    // annotation, implicitly has an 'any' return type.
     /** @type {?function(*)} */
     this.onListContentChangedBound_ = null;
 
+    // @ts-ignore: error TS7014: Function type, which lacks return-type
+    // annotation, implicitly has an 'any' return type.
     /** @type {?function(!chrome.fileManagerPrivate.FileWatchEvent)} */
     this.privateOnDirectoryChangedBound_ = null;
   }
@@ -2031,8 +2370,12 @@ export class DirectoryTree extends Tree {
    * @param {boolean} fakeEntriesVisible True if it should show the fakeEntries.
    */
   decorateDirectoryTree(
+      // @ts-ignore: error TS6133: 'fileOperationManager' is declared but its
+      // value is never read.
       directoryModel, volumeManager, metadataModel, fileOperationManager,
       fakeEntriesVisible) {
+    // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
+    // 'Tree'.
     Tree.prototype.decorate.call(this);
 
     this.sequence_ = 0;
@@ -2050,6 +2393,8 @@ export class DirectoryTree extends Tree {
     this.addEventListener(
         'scroll', this.onTreeScrollEvent_.bind(this), {passive: true});
 
+    // @ts-ignore: error TS6133: 'event' is declared but its value is never
+    // read.
     this.addEventListener('click', (event) => {
       // Chromevox triggers |click| without switching focus, we force the focus
       // here so we can handle further keyboard/mouse events to expand/collapse
@@ -2078,6 +2423,8 @@ export class DirectoryTree extends Tree {
     // becoming active and inactive. We use this to hide or show the highlight
     // of the active item in the directory tree.
     /** @type {!SearchData|undefined} */
+    // @ts-ignore: error TS2739: Type '{}' is missing the following properties
+    // from type 'SearchData': status, query, options
     this.cachedSearchState_ = {};
 
     /**
@@ -2125,9 +2472,14 @@ export class DirectoryTree extends Tree {
       this.dataModel.refreshNavigationItems();
       // Remove ODFS volumes from the directoryTree so that they get redrawn
       // with the right attributes.
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DirectoryTree'.
       for (let i = 0; i < this.items.length; ++i) {
+        // @ts-ignore: error TS2339: Property 'items' does not exist on type
+        // 'DirectoryTree'.
         const treeItem = this.items[i];
         if (util.isOneDrive(treeItem.modelItem.volumeInfo)) {
+          // @ts-ignore: error TS2554: Expected 0 arguments, but got 1.
           this.remove(treeItem);
           // Decrement to account for the removed item.
           --i;
@@ -2138,10 +2490,12 @@ export class DirectoryTree extends Tree {
     }
   }
 
+  // @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
   onMouseOver_(event) {
     this.maybeShowToolTip(event);
   }
 
+  // @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
   maybeShowToolTip(event) {
     const target = event.composedPath()[0];
     if (!target) {
@@ -2171,7 +2525,11 @@ export class DirectoryTree extends Tree {
     parentItem.expanded = true;
 
     // If new directory is already added to the tree, just select it.
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryItem'.
     for (let i = 0; i < parentItem.items.length; i++) {
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DirectoryItem'.
       const item = parentItem.items[i];
       if (util.isSameEntry(item.entry, newDirectory)) {
         this.selectedItem = item;
@@ -2184,11 +2542,17 @@ export class DirectoryTree extends Tree {
         new SubDirectoryItem(newDirectory.name, newDirectory, parentItem, this);
 
     let addAt = 0;
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryItem'.
     while (addAt < parentItem.items.length &&
+           // @ts-ignore: error TS2339: Property 'items' does not exist on type
+           // 'DirectoryItem'.
            util.compareName(parentItem.items[addAt].entry, newDirectory) < 0) {
       addAt++;
     }
 
+    // @ts-ignore: error TS2339: Property 'addAt' does not exist on type
+    // 'DirectoryItem'.
     parentItem.addAt(newDirectoryItem, addAt);
     this.selectedItem = newDirectoryItem;
   }
@@ -2203,20 +2567,30 @@ export class DirectoryTree extends Tree {
   updateSubElementsFromList(recursive) {
     // First, current items which is not included in the dataModel should be
     // removed.
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryTree'.
     for (let i = 0; i < this.items.length;) {
       let found = false;
       for (let j = 0; j < this.dataModel.length; j++) {
         // Comparison by references, which is safe here, as model items are long
         // living.
+        // @ts-ignore: error TS2339: Property 'items' does not exist on type
+        // 'DirectoryTree'.
         if (this.items[i].modelItem === this.dataModel.item(j)) {
           found = true;
           break;
         }
       }
       if (!found) {
+        // @ts-ignore: error TS2339: Property 'items' does not exist on type
+        // 'DirectoryTree'.
         if (this.items[i].selected) {
+          // @ts-ignore: error TS2339: Property 'items' does not exist on type
+          // 'DirectoryTree'.
           this.items[i].selected = false;
         }
+        // @ts-ignore: error TS2339: Property 'items' does not exist on type
+        // 'DirectoryTree'.
         this.remove(this.items[i]);
       } else {
         i++;
@@ -2228,9 +2602,14 @@ export class DirectoryTree extends Tree {
     let itemIndex = 0;
     // Initialize with first item's section so the first root doesn't get a
     // divider line at the top.
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     let previousSection = this.dataModel.item(modelIndex).section;
     while (modelIndex < this.dataModel.length) {
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DirectoryTree'.
       const currentItem = this.items[itemIndex];
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DirectoryTree'.
       if (itemIndex < this.items.length &&
           currentItem.modelItem === this.dataModel.item(modelIndex)) {
         const modelItem = currentItem.modelItem;
@@ -2251,6 +2630,8 @@ export class DirectoryTree extends Tree {
         if (modelItem) {
           const item = DirectoryTree.createDirectoryItem(modelItem, this);
           if (item) {
+            // @ts-ignore: error TS2339: Property 'addAt' does not exist on type
+            // 'DirectoryTree'.
             this.addAt(item, itemIndex);
             if (previousSection !== modelItem.section) {
               item.setAttribute('section-start', modelItem.section);
@@ -2274,9 +2655,13 @@ export class DirectoryTree extends Tree {
    */
   async searchAndSelectByEntry(entry) {
     // If the |entry| is same as one of volumes or shortcuts, select it.
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryTree'.
     for (let i = 0; i < this.items.length; i++) {
       // Skips the Drive root volume. For Drive entries, one of children of
       // Drive root or shortcuts should be selected.
+      // @ts-ignore: error TS2339: Property 'items' does not exist on type
+      // 'DirectoryTree'.
       const item = this.items[i];
       if (item instanceof DriveVolumeItem) {
         continue;
@@ -2335,11 +2720,17 @@ export class DirectoryTree extends Tree {
    * @return {boolean} True if one of the volume items is selected.
    */
   activateByIndex(index) {
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryTree'.
     if (index < 0 || index >= this.items.length) {
       return false;
     }
 
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryTree'.
     this.items[index].selected = true;
+    // @ts-ignore: error TS2339: Property 'items' does not exist on type
+    // 'DirectoryTree'.
     this.items[index].activate();
     return true;
   }
@@ -2400,14 +2791,24 @@ export class DirectoryTree extends Tree {
    * @private
    */
   updateTreeByEntry_(entry) {
+    // @ts-ignore: error TS2339: Property 'getDirectory' does not exist on type
+    // 'FileSystemEntry'.
     entry.getDirectory(
         entry.fullPath, {create: false},
         () => {
           // If entry exists.
           // e.g. /a/b is deleted while watching /a.
+          // @ts-ignore: error TS2339: Property 'items' does not exist on type
+          // 'DirectoryTree'.
           for (let i = 0; i < this.items.length; i++) {
+            // @ts-ignore: error TS2339: Property 'items' does not exist on type
+            // 'DirectoryTree'.
             if (this.items[i] instanceof VolumeItem ||
+                // @ts-ignore: error TS2339: Property 'items' does not exist on
+                // type 'DirectoryTree'.
                 this.items[i] instanceof EntryListItem) {
+              // @ts-ignore: error TS2339: Property 'items' does not exist on
+              // type 'DirectoryTree'.
               this.items[i].updateItemByEntry(entry);
             }
           }
@@ -2421,6 +2822,8 @@ export class DirectoryTree extends Tree {
               (parentEntry) => {
                 this.updateTreeByEntry_(parentEntry);
               },
+              // @ts-ignore: error TS6133: 'error' is declared but its value is
+              // never read.
               (error) => {
                 // If it fails to get parent, update the subtree by volume.
                 // e.g. /a/b is deleted while watching /a/b/c. getParent of
@@ -2434,9 +2837,17 @@ export class DirectoryTree extends Tree {
                   return;
                 }
 
+                // @ts-ignore: error TS2339: Property 'items' does not exist on
+                // type 'DirectoryTree'.
                 for (let i = 0; i < this.items.length; i++) {
+                  // @ts-ignore: error TS2339: Property 'items' does not exist
+                  // on type 'DirectoryTree'.
                   if (this.items[i] instanceof VolumeItem &&
+                      // @ts-ignore: error TS2339: Property 'items' does not
+                      // exist on type 'DirectoryTree'.
                       this.items[i].volumeInfo === volumeInfo) {
+                    // @ts-ignore: error TS2339: Property 'items' does not exist
+                    // on type 'DirectoryTree'.
                     this.items[i].updateSubDirectories(true /* recursive */);
                   }
                 }
@@ -2455,6 +2866,8 @@ export class DirectoryTree extends Tree {
     // search is active, the search closes and  attempts to restore last active
     // item, unless we clear it.
     this.lastActiveItem_ = null;
+    // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on type
+    // 'Event'.
     await this.selectByEntry(event.newDirEntry);
 
     // Update style of the current item as inactive.
@@ -2502,9 +2915,13 @@ export class DirectoryTree extends Tree {
     if (active) {
       this.activeItem_.setAttribute(
           'aria-description', str('CURRENT_DIRECTORY_LABEL'));
+      // @ts-ignore: error TS2339: Property 'rowElement' does not exist on type
+      // 'DirectoryItem'.
       this.activeItem_.rowElement.setAttribute('active', '');
     } else {
       this.activeItem_.removeAttribute('aria-description');
+      // @ts-ignore: error TS2339: Property 'rowElement' does not exist on type
+      // 'DirectoryItem'.
       this.activeItem_.rowElement.removeAttribute('active');
     }
     return true;
@@ -2575,6 +2992,7 @@ export class DirectoryTree extends Tree {
   /**
    * @param {boolean} value Not used.
    */
+  // @ts-ignore: error TS6133: 'value' is declared but its value is never read.
   set expanded(value) {}
 
   /**
@@ -2634,6 +3052,8 @@ export class DirectoryTree extends Tree {
 DirectoryTree.decorate =
     (el, directoryModel, volumeManager, metadataModel, fileOperationManager,
      fakeEntriesVisible) => {
+      // @ts-ignore: error TS2339: Property '__proto__' does not exist on type
+      // 'HTMLElement'.
       el.__proto__ = DirectoryTree.prototype;
       el.setAttribute('files-ng', '');
       Object.freeze(directorytree);
@@ -2642,22 +3062,30 @@ DirectoryTree.decorate =
           directoryModel, volumeManager, metadataModel, fileOperationManager,
           fakeEntriesVisible);
 
+      // @ts-ignore: error TS2339: Property 'rowElementDepthStyleHandler' does
+      // not exist on type 'HTMLElement'.
       el.rowElementDepthStyleHandler = directorytree.styleRowElementDepth;
     };
 
 /** @type {?Menu} */
+// @ts-ignore: error TS2565: Property 'contextMenuForSubitems' is used before
+// being assigned.
 DirectoryTree.prototype.contextMenuForSubitems;
 Object.defineProperty(
     DirectoryTree.prototype, 'contextMenuForSubitems',
     getPropertyDescriptor('contextMenuForSubitems', PropertyKind.JS));
 
 /** @type {?Menu} */
+// @ts-ignore: error TS2565: Property 'contextMenuForRootItems' is used before
+// being assigned.
 DirectoryTree.prototype.contextMenuForRootItems;
 Object.defineProperty(
     DirectoryTree.prototype, 'contextMenuForRootItems',
     getPropertyDescriptor('contextMenuForRootItems', PropertyKind.JS));
 
 /** @type {?Menu} */
+// @ts-ignore: error TS2565: Property 'disabledContextMenu' is used before being
+// assigned.
 DirectoryTree.prototype.disabledContextMenu;
 Object.defineProperty(
     DirectoryTree.prototype, 'disabledContextMenu',
@@ -2682,30 +3110,36 @@ DirectoryTree.createDirectoryItem = (modelItem, tree) => {
       } else {
         return new VolumeItem(volumeModelItem, tree);
       }
+      // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.SHORTCUT:
       return new ShortcutItem(
           /** @type {!NavigationModelShortcutItem} */ (modelItem), tree);
+      // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.RECENT:
       return new FakeItem(
           VolumeManagerCommon.RootType.RECENT,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
+      // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.CROSTINI:
       return new FakeItem(
           VolumeManagerCommon.RootType.CROSTINI,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
+      // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.GUEST_OS:
       return new FakeItem(
           VolumeManagerCommon.RootType.GUEST_OS,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
+      // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.DRIVE:
       return new FakeItem(
           VolumeManagerCommon.RootType.DRIVE,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
+      // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.ENTRY_LIST:
       const rootType = modelItem.section === NavigationSection.REMOVABLE ?
@@ -2714,16 +3148,20 @@ DirectoryTree.createDirectoryItem = (modelItem, tree) => {
       return new EntryListItem(
           rootType,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
+      // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.ANDROID_APP:
       return new AndroidAppItem(
           /** @type {!NavigationModelAndroidAppItem} */ (modelItem), tree);
+      // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.TRASH:
       return new EntryListItem(
           VolumeManagerCommon.RootType.TRASH,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
+      // @ts-ignore: error TS7027: Unreachable code detected.
       break;
   }
   assertNotReached(`No DirectoryItem model: "${modelItem.type}"`);
+  return /** @type {TreeItem} */ ({});
 };

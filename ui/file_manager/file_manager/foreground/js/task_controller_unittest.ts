@@ -16,7 +16,7 @@ import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {PropStatus, State} from '../../externs/ts/state.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {setUpFileManagerOnWindow} from '../../state/for_tests.js';
@@ -166,7 +166,7 @@ export function testExecuteEntryTask(callback: () => void) {
       MockFileEntry.create(fileSystem, '/test.png');
   const taskController = createTaskController(selectionHandler);
 
-  const testEntry = /** @type {FileEntry} */ (fileSystem.entries['/test.png']);
+  const testEntry = fileSystem.entries['/test.png'] as Entry;
   taskController.executeEntryTask(testEntry);
 
   reportPromise(

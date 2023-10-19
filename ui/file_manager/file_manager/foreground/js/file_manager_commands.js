@@ -20,7 +20,6 @@ import {NudgeType} from '../../containers/nudge_container.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {State} from '../../externs/ts/state.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {readSubDirectories} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
@@ -51,6 +50,8 @@ export class FilesCommand {
    * @param {!CommandHandlerDeps} fileManager CommandHandlerDeps.
    * @abstract
    */
+  // @ts-ignore: error TS6133: 'fileManager' is declared but its value is never
+  // read.
   execute(event, fileManager) {}
 
   /**
@@ -59,7 +60,11 @@ export class FilesCommand {
    * @param {!Event} event Can execute event.
    * @param {!CommandHandlerDeps} fileManager CommandHandlerDeps.
    */
+  // @ts-ignore: error TS6133: 'fileManager' is declared but its value is never
+  // read.
   canExecute(event, fileManager) {
+    // @ts-ignore: error TS2339: Property 'canExecute' does not exist on type
+    // 'Event'.
     event.canExecute = true;
   }
 }
@@ -87,6 +92,8 @@ CommandUtil.SharingActionElementId = {
  * @return {!chrome.fileManagerPrivate.SharesheetLaunchSource}
  */
 CommandUtil.getSharesheetLaunchSource = event => {
+  // @ts-ignore: error TS2339: Property 'id' does not exist on type
+  // 'EventTarget'.
   const id = event.target.id;
   switch (id) {
     case CommandUtil.SharingActionElementId.CONTEXT_MENU:
@@ -109,6 +116,8 @@ CommandUtil.getSharesheetLaunchSource = event => {
  */
 CommandUtil.getCommandEntry = (fileManager, element) => {
   const entries = CommandUtil.getCommandEntries(fileManager, element);
+  // @ts-ignore: error TS2322: Type 'FileSystemEntry | null | undefined' is not
+  // assignable to type 'FileSystemEntry | FakeEntry'.
   return entries.length === 0 ? null : entries[0];
 };
 
@@ -116,18 +125,26 @@ CommandUtil.getCommandEntry = (fileManager, element) => {
  * Extracts entries on which command event was dispatched.
  *
  * @param {!CommandHandlerDeps} fileManager
- * @param {EventTarget} element Element which is the command event's target.
+ * @param {?EventTarget} element Element which is the command event's target.
  * @return {!Array<!Entry>} Entries of the found node.
  */
 CommandUtil.getCommandEntries = (fileManager, element) => {
   // DirectoryItem has "entry" attribute.
+  // @ts-ignore: error TS2339: Property 'entry' does not exist on type
+  // 'EventTarget'.
   if (element && element.entry) {
+    // @ts-ignore: error TS2339: Property 'entry' does not exist on type
+    // 'EventTarget'.
     return [element.entry];
   }
 
   // DirectoryTree has the focused item.
   const focusedItem = getFocusedTreeItem(element);
+  // @ts-ignore: error TS2339: Property 'entry' does not exist on type
+  // 'XfTreeItem | DirectoryItem'.
   if (focusedItem?.entry) {
+    // @ts-ignore: error TS2339: Property 'entry' does not exist on type
+    // 'XfTreeItem | DirectoryItem'.
     return [focusedItem.entry];
   }
 
@@ -135,14 +152,22 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
   // (e.g. the eject button).
   if (util.isNewDirectoryTreeEnabled()) {
     // Handle eject button in the new directory tree.
+    // @ts-ignore: error TS2339: Property 'classList' does not exist on type
+    // 'EventTarget'.
     if (element.classList.contains('root-eject')) {
+      // @ts-ignore: error TS2339: Property 'closest' does not exist on type
+      // 'EventTarget'.
       const treeItem = element.closest('xf-tree-item');
       if (treeItem?.entry) {
         return [treeItem.entry];
       }
     }
   } else {
+    // @ts-ignore: error TS18047: 'fileManager.ui.directoryTree' is possibly
+    // 'null'.
     if (fileManager.ui.directoryTree.contains(/** @type {Node} */ (element))) {
+      // @ts-ignore: error TS2339: Property 'closest' does not exist on type
+      // 'EventTarget'.
       const treeItem = element.closest('.tree-item');
       if (treeItem && treeItem.entry) {
         return [treeItem.entry];
@@ -151,9 +176,14 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
   }
 
   // File list (List).
+  // @ts-ignore: error TS2339: Property 'selectedItems' does not exist on type
+  // 'EventTarget'.
   if (element.selectedItems && element.selectedItems.length) {
+    // @ts-ignore: error TS2339: Property 'selectedItems' does not exist on type
+    // 'EventTarget'.
     const entries = element.selectedItems;
     // Check if it is Entry or not by checking for toURL().
+    // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
     return entries.filter(entry => ('toURL' in entry));
   }
 
@@ -163,14 +193,22 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
   }
 
   // Context Menu: redirect to the element the context menu is displayed for.
+  // @ts-ignore: error TS2339: Property 'contextElement' does not exist on type
+  // 'EventTarget'.
   if (element.contextElement) {
+    // @ts-ignore: error TS2339: Property 'contextElement' does not exist on
+    // type 'EventTarget'.
     return CommandUtil.getCommandEntries(fileManager, element.contextElement);
   }
 
   // Context Menu Item: redirect to the element the context menu is displayed
   // for.
+  // @ts-ignore: error TS2339: Property 'parentElement' does not exist on type
+  // 'EventTarget'.
   if (element.parentElement.contextElement) {
     return CommandUtil.getCommandEntries(
+        // @ts-ignore: error TS2339: Property 'parentElement' does not exist on
+        // type 'EventTarget'.
         fileManager, element.parentElement.contextElement);
   }
 
@@ -187,15 +225,28 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
  */
 CommandUtil.getParentEntry = (element, directoryModel) => {
   const focusedItem = getFocusedTreeItem(element);
+  // @ts-ignore: error TS2339: Property 'parentItem' does not exist on type
+  // 'XfTreeItem | DirectoryItem'.
   if (focusedItem?.parentItem?.entry) {
     // DirectoryTree has the focused item.
+    // @ts-ignore: error TS2339: Property 'parentItem' does not exist on type
+    // 'XfTreeItem | DirectoryItem'.
     return focusedItem.parentItem.entry;
+    // @ts-ignore: error TS2339: Property 'parentItem' does not exist on type
+    // 'EventTarget'.
   } else if (element.parentItem?.entry) {
     // DirectoryItem has parentItem.
+    // @ts-ignore: error TS2339: Property 'parentItem' does not exist on type
+    // 'EventTarget'.
     return element.parentItem.entry;
   } else if (element instanceof List) {
+    // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry |
+    // FilesAppDirEntry | null' is not assignable to type
+    // 'FileSystemDirectoryEntry | FilesAppEntry'.
     return directoryModel ? directoryModel.getCurrentDirEntry() : null;
   } else {
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'FileSystemDirectoryEntry | FilesAppEntry'.
     return null;
   }
 };
@@ -207,13 +258,19 @@ CommandUtil.getParentEntry = (element, directoryModel) => {
  *
  * @param {EventTarget} element
  * @param {!CommandHandlerDeps} fileManager
- * @return {VolumeInfo}
+ * @return {import('../../externs/volume_info.js').VolumeInfo}
  */
 CommandUtil.getElementVolumeInfo = (element, fileManager) => {
+  // @ts-ignore: error TS2339: Property 'volumeInfo' does not exist on type
+  // 'EventTarget'.
   if (element.volumeInfo) {
+    // @ts-ignore: error TS2339: Property 'volumeInfo' does not exist on type
+    // 'EventTarget'.
     return element.volumeInfo;
   }
   const entry = CommandUtil.getCommandEntry(fileManager, element);
+  // @ts-ignore: error TS2322: Type 'VolumeInfo | null' is not assignable to
+  // type 'VolumeInfo'.
   return entry && fileManager.volumeManager.getVolumeInfo(entry);
 };
 
@@ -229,7 +286,11 @@ CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly =
     (event, fileManager) => {
       const enabled = fileManager.directoryModel.isOnDrive() &&
           !isModal(fileManager.dialogType);
+      // @ts-ignore: error TS2339: Property 'canExecute' does not exist on type
+      // 'Event'.
       event.canExecute = enabled;
+      // @ts-ignore: error TS2339: Property 'command' does not exist on type
+      // 'Event'.
       event.command.setHidden(!enabled);
     };
 
@@ -244,8 +305,11 @@ CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly =
 CommandUtil.forceDefaultHandler = (node, commandId) => {
   const doc = node.ownerDocument;
   const command = /** @type {!Command} */ (
+      // @ts-ignore: error TS18047: 'doc' is possibly 'null'.
       doc.body.querySelector('command[id="' + commandId + '"]'));
   node.addEventListener('keydown', e => {
+    // @ts-ignore: error TS2339: Property 'matchesEvent' does not exist on type
+    // 'Command'.
     if (command.matchesEvent(e)) {
       // Prevent CommandManager of handling it and leave it
       // for the default handler.
@@ -253,17 +317,27 @@ CommandUtil.forceDefaultHandler = (node, commandId) => {
     }
   });
   node.addEventListener('command', event => {
+    // @ts-ignore: error TS2339: Property 'command' does not exist on type
+    // 'Event'.
     if (event.command.id !== commandId) {
       return;
     }
+    // @ts-ignore: error TS2339: Property 'command' does not exist on type
+    // 'Event'.
     document.execCommand(event.command.id);
     event.cancelBubble = true;
   });
   node.addEventListener('canExecute', event => {
+    // @ts-ignore: error TS2339: Property 'command' does not exist on type
+    // 'Event'.
     if (event.command.id !== commandId || event.target !== node) {
       return;
     }
+    // @ts-ignore: error TS2339: Property 'command' does not exist on type
+    // 'Event'.
     event.canExecute = document.queryCommandEnabled(event.command.id);
+    // @ts-ignore: error TS2339: Property 'command' does not exist on type
+    // 'Event'.
     event.command.setHidden(false);
   });
 };
@@ -275,6 +349,8 @@ CommandUtil.forceDefaultHandler = (node, commandId) => {
  */
 CommandUtil.createVolumeSwitchCommand = index =>
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         if (util.isNewDirectoryTreeEnabled()) {
           const items = fileManager.ui.directoryTree.items;
@@ -288,6 +364,8 @@ CommandUtil.createVolumeSwitchCommand = index =>
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         event.canExecute =
             index > 0 && index <= fileManager.ui.directoryTree.items.length;
@@ -307,6 +385,7 @@ CommandUtil.getOnlyOneSelectedDirectory = selection => {
   if (selection.totalCount !== 1) {
     return null;
   }
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   if (!selection.entries[0].isDirectory) {
     return null;
   }
@@ -334,6 +413,7 @@ CommandUtil.isRootEntry = (volumeManager, entry) => {
  * @return {boolean} Ture if the event was triggered by the selection menu
  * button.
  */
+// @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
 CommandUtil.isFromSelectionMenu = event => {
   return event.target.id == 'selection-menu-button';
 };
@@ -401,6 +481,8 @@ CommandUtil.hasCapability = (fileManager, entries, capability) => {
   // TODO(crbug.com/849999): Store restrictions instead of capabilities.
   const metadata = fileManager.metadataModel.getCache(entries, [capability]);
   return metadata.length === entries.length &&
+      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+      // expression of type 'string' can't be used to index type 'MetadataItem'.
       metadata.every(item => item[capability] !== false);
 };
 
@@ -415,6 +497,7 @@ CommandUtil.shouldIgnoreEvents = function(doc) {
   // Do not handle commands, when a dialog is shown. Do not use querySelector
   // as it's much slower, and this method is executed often.
   const dialogs = doc.getElementsByClassName('cr-dialog-container');
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   if (dialogs.length !== 0 && dialogs[0].classList.contains('shown')) {
     return true;
   }
@@ -435,6 +518,9 @@ CommandUtil.isDriveEntries = (entries, volumeManager) => {
     return false;
   }
 
+  // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | FilesAppEntry
+  // | undefined' is not assignable to parameter of type 'FileSystemEntry |
+  // FilesAppEntry'.
   const volumeInfo = volumeManager.getVolumeInfo(entries[0]);
   if (!volumeInfo) {
     return false;
@@ -500,9 +586,13 @@ CommandUtil.isOnTrashRoot = fileManager => {
  */
 CommandUtil.getEventEntry = (event, fileManager) => {
   let entry;
+  // @ts-ignore: error TS18047: 'fileManager.ui.directoryTree' is possibly
+  // 'null'.
   if (fileManager.ui.directoryTree.contains(
           /** @type {Node} */ (event.target))) {
     // The command is executed from the directory tree context menu.
+    // @ts-ignore: error TS2345: Argument of type 'EventTarget | null' is not
+    // assignable to parameter of type 'EventTarget'.
     entry = CommandUtil.getCommandEntry(fileManager, event.target);
   } else {
     // The command is executed from the gear menu.
@@ -554,6 +644,8 @@ export class CommandHandler {
    * @param {!CommandHandlerDeps} fileManager Classes |CommandHandler| depends.
    * @param {!FileSelectionHandler} selectionHandler
    */
+  // @ts-ignore: error TS6133: 'selectionHandler' is declared but its value is
+  // never read.
   constructor(fileManager, selectionHandler) {
     /**
      * CommandHandlerDeps.
@@ -563,7 +655,7 @@ export class CommandHandler {
 
     /**
      * Command elements.
-     * @private @const @type {Object<Command>}
+     * @private @const @type {Record<string, Command>}
      */
     this.commands_ = {};
 
@@ -574,9 +666,14 @@ export class CommandHandler {
     const commands = fileManager.document.querySelectorAll('command');
 
     for (let i = 0; i < commands.length; i++) {
+      // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
+      // 'typeof Command'.
       if (Command.decorate) {
+        // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
+        // 'typeof Command'.
         Command.decorate(commands[i]);
       }
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       this.commands_[commands[i].id] = commands[i];
     }
 
@@ -595,6 +692,7 @@ export class CommandHandler {
   /** @param {!Event} event */
   onContextMenuShow_(event) {
     this.lastFocusedElement_ = document.activeElement;
+    // @ts-ignore: error TS2339: Property 'menu' does not exist on type 'Event'.
     const menu = event.menu;
     // Set focus asynchronously to give time for menu "show" event to finish and
     // have all items set up before focusing.
@@ -606,10 +704,13 @@ export class CommandHandler {
   }
 
   /** @param {!Event} event */
+  // @ts-ignore: error TS6133: 'event' is declared but its value is never read.
   onContextMenuHide_(event) {
     if (this.lastFocusedElement_) {
       const activeElement = document.activeElement;
       if (activeElement && activeElement.tagName === 'BODY') {
+        // @ts-ignore: error TS2339: Property 'focus' does not exist on type
+        // 'Element'.
         this.lastFocusedElement_.focus();
       }
       this.lastFocusedElement_ = null;
@@ -625,7 +726,10 @@ export class CommandHandler {
     if (CommandUtil.shouldIgnoreEvents(assert(this.fileManager_.document))) {
       return;
     }
+    // @ts-ignore: error TS2339: Property 'command' does not exist on type
+    // 'Event'.
     const handler = CommandHandler.COMMANDS_[event.command.id];
+    // @ts-ignore: error TS18048: 'handler' is possibly 'undefined'.
     handler.execute.call(
         /** @type {FilesCommand} */ (handler), event, this.fileManager_);
   }
@@ -639,7 +743,10 @@ export class CommandHandler {
     if (CommandUtil.shouldIgnoreEvents(assert(this.fileManager_.document))) {
       return;
     }
+    // @ts-ignore: error TS2339: Property 'command' does not exist on type
+    // 'Event'.
     const handler = CommandHandler.COMMANDS_[event.command.id];
+    // @ts-ignore: error TS18048: 'handler' is possibly 'undefined'.
     handler.canExecute.call(
         /** @type {FilesCommand} */ (handler), event, this.fileManager_);
   }
@@ -650,6 +757,9 @@ export class CommandHandler {
    * @public
    */
   static getCommand(name) {
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type 'typeof
+    // COMMANDS_'.
     return CommandHandler.COMMANDS_[name];
   }
 }
@@ -658,6 +768,8 @@ export class CommandHandler {
  * Supported disk file system types for renaming.
  * @private @const @type {!Array<!VolumeManagerCommon.FileSystemType>}
  */
+// @ts-ignore: error TS2341: Property 'RENAME_DISK_FILE_SYSTEM_SUPPORT_' is
+// private and only accessible within class 'CommandHandler'.
 CommandHandler.RENAME_DISK_FILE_SYSTEM_SUPPORT_ = [
   VolumeManagerCommon.FileSystemType.EXFAT,
   VolumeManagerCommon.FileSystemType.VFAT,
@@ -753,13 +865,17 @@ CommandHandler.recordMenuItemSelected = menuItem => {
 
 /**
  * Commands.
- * @private @const @type {Object<FilesCommand>}
+ * @private @const @type {Record<string, FilesCommand>}
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_ = {};
 
 /**
  * Unmounts external drive.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
   /**
    * @param {!Event} event Command event.
@@ -781,6 +897,8 @@ CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
     // Find volumes to unmount.
     let volumes = [];
     let label = '';
+    // @ts-ignore: error TS2345: Argument of type 'EventTarget | null' is not
+    // assignable to parameter of type 'EventTarget'.
     const entry = CommandUtil.getCommandEntry(fileManager, event.target);
     if (entry instanceof EntryList) {
       // The element is a group of removable partitions.
@@ -789,11 +907,15 @@ CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
         return;
       }
       // Add child partitions to the list of volumes to be unmounted.
+      // @ts-ignore: error TS2339: Property 'volumeInfo' does not exist on type
+      // 'FileSystemEntry | FilesAppEntry'.
       volumes = entry.getUIChildren().map(child => child.volumeInfo);
       label = entry.label || '';
     } else {
       // The element is a removable volume with no partitions.
       const volumeInfo =
+          // @ts-ignore: error TS2345: Argument of type 'EventTarget | null' is
+          // not assignable to parameter of type 'EventTarget'.
           CommandUtil.getElementVolumeInfo(event.target, fileManager);
       if (!volumeInfo) {
         errorCallback();
@@ -820,11 +942,15 @@ CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
     fileManager.ui.speakA11yMessage(strf('A11Y_VOLUME_EJECT', label));
   }
 
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     this.executeImpl_(event, fileManager);
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const volumeInfo =
         CommandUtil.getElementVolumeInfo(event.target, fileManager);
@@ -864,7 +990,11 @@ CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
 /**
  * Formats external drive.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['format'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     const directoryModel = fileManager.directoryModel;
     let root;
@@ -890,6 +1020,8 @@ CommandHandler.COMMANDS_['format'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const directoryModel = fileManager.directoryModel;
     let root;
@@ -936,17 +1068,24 @@ CommandHandler.COMMANDS_['format'] = new (class extends FilesCommand {
 /**
  * Deletes removable device partition, creates single partition and formats it.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['erase-device'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     const root = CommandUtil.getEventEntry(event, fileManager);
 
     if (root && root instanceof EntryList) {
+      // @ts-ignore: error TS2304: Cannot find name 'FilesFormatDialog'.
       /** @type {FilesFormatDialog} */ (fileManager.ui.formatDialog)
           .showEraseModal(root);
     }
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     if (!util.isSinglePartitionFormatEnabled()) {
       event.canExecute = false;
@@ -976,6 +1115,8 @@ CommandHandler.COMMANDS_['erase-device'] = new (class extends FilesCommand {
 /**
  * Initiates new folder creation.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
   constructor() {
     super();
@@ -987,14 +1128,22 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
     this.busy_ = false;
   }
 
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     if (CommandUtil.isOnTrashRoot(fileManager)) {
       return;
     }
+    // @ts-ignore: error TS7034: Variable 'targetDirectory' implicitly has type
+    // 'any' in some locations where its type cannot be determined.
     let targetDirectory;
+    // @ts-ignore: error TS7034: Variable 'executedFromDirectoryTree' implicitly
+    // has type 'any' in some locations where its type cannot be determined.
     let executedFromDirectoryTree;
 
     if (isDirectoryTree(event.target)) {
+      // @ts-ignore: error TS2339: Property 'entry' does not exist on type
+      // 'XfTreeItem | DirectoryItem'.
       targetDirectory = getFocusedTreeItem(event.target)?.entry;
       executedFromDirectoryTree = true;
     } else if (isDirectoryTreeItem(event.target)) {
@@ -1009,24 +1158,36 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
     const listContainer = fileManager.ui.listContainer;
     this.busy_ = true;
 
+    // @ts-ignore: error TS7006: Parameter 'newName' implicitly has an 'any'
+    // type.
     this.generateNewDirectoryName_(targetDirectory).then((newName) => {
+      // @ts-ignore: error TS7005: Variable 'executedFromDirectoryTree'
+      // implicitly has an 'any' type.
       if (!executedFromDirectoryTree) {
         listContainer.startBatchUpdates();
       }
 
       return new Promise(
+                 // @ts-ignore: error TS7005: Variable 'targetDirectory'
+                 // implicitly has an 'any' type.
                  targetDirectory.getDirectory.bind(
+                     // @ts-ignore: error TS7005: Variable 'targetDirectory'
+                     // implicitly has an 'any' type.
                      targetDirectory, newName, {create: true, exclusive: true}))
           .then(
               (newDirectory) => {
                 recordUserAction('CreateNewFolder');
 
                 // Select new directory and start rename operation.
+                // @ts-ignore: error TS7005: Variable
+                // 'executedFromDirectoryTree' implicitly has an 'any' type.
                 if (executedFromDirectoryTree) {
                   if (util.isNewDirectoryTreeEnabled()) {
                     // After new directory is created on parent directory, we
                     // need to trigger a re-read for the parent directory to the
                     // store.
+                    // @ts-ignore: error TS7005: Variable 'targetDirectory'
+                    // implicitly has an 'any' type.
                     getStore().dispatch(readSubDirectories(targetDirectory));
                     fileManager.ui.directoryTreeContainer
                         .renameItemWithKeyWhenRendered(newDirectory.toURL());
@@ -1035,6 +1196,8 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
                         /** @type {DirectoryTree} */ (
                             fileManager.ui.directoryTree);
                     directoryTree.updateAndSelectNewDirectory(
+                        // @ts-ignore: error TS7005: Variable 'targetDirectory'
+                        // implicitly has an 'any' type.
                         targetDirectory, newDirectory);
                     fileManager.directoryTreeNamingController.attachAndStart(
                         assert(directoryTree.selectedItem), false, null);
@@ -1047,6 +1210,8 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
                         fileManager.namingController.initiateRename();
                         this.busy_ = false;
                       })
+                      // @ts-ignore: error TS7006: Parameter 'error' implicitly
+                      // has an 'any' type.
                       .catch(error => {
                         listContainer.endBatchUpdates();
                         this.busy_ = false;
@@ -1055,6 +1220,8 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
                 }
               },
               (error) => {
+                // @ts-ignore: error TS7005: Variable
+                // 'executedFromDirectoryTree' implicitly has an 'any' type.
                 if (!executedFromDirectoryTree) {
                   listContainer.endBatchUpdates();
                 }
@@ -1076,6 +1243,9 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
    * @param {number=} opt_index
    * @private
    */
+  // @ts-ignore: error TS7023: 'generateNewDirectoryName_' implicitly has return
+  // type 'any' because it does not have a return type annotation and is
+  // referenced directly or indirectly in one of its return expressions.
   generateNewDirectoryName_(parentDirectory, opt_index) {
     const index = opt_index || 0;
 
@@ -1085,6 +1255,8 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
 
     return new Promise(parentDirectory.getDirectory.bind(
                            parentDirectory, newName, {create: false}))
+        // @ts-ignore: error TS6133: 'newEntry' is declared but its value is
+        // never read.
         .then(newEntry => {
           return this.generateNewDirectoryName_(parentDirectory, index + 1);
         })
@@ -1094,6 +1266,8 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     if (CommandUtil.isOnTrashRoot(fileManager)) {
       event.canExecute = false;
@@ -1125,6 +1299,8 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
     } else {
       // If blank space was clicked and current volume is non-interactive,
       // remove new-folder command.
+      // @ts-ignore: error TS2367: This comparison appears to be unintentional
+      // because the types 'FileSystemEntry[]' and 'number' have no overlap.
       if (entries == 0 &&
           !CommandUtil.currentVolumeIsInteractive(fileManager)) {
         event.canExecute = false;
@@ -1149,7 +1325,11 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
 /**
  * Initiates new window creation.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['new-window'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     fileManager.launchFileManager({
       currentDirectoryURL: fileManager.getCurrentDirectoryEntry() &&
@@ -1158,19 +1338,27 @@ CommandHandler.COMMANDS_['new-window'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     event.canExecute = fileManager.getCurrentDirectoryEntry() &&
         (fileManager.dialogType === DialogType.FULL_PAGE);
   }
 })();
 
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['select-all'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     fileManager.directoryModel.getFileListSelection().setCheckSelectMode(true);
     fileManager.directoryModel.getFileListSelection().selectAll();
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     // Check we can select multiple items.
     const multipleSelect =
@@ -1179,14 +1367,20 @@ CommandHandler.COMMANDS_['select-all'] = new (class extends FilesCommand {
     const inputElementActive =
         document.activeElement instanceof HTMLInputElement ||
         document.activeElement instanceof HTMLTextAreaElement ||
+        // @ts-ignore: error TS18047: 'document.activeElement' is possibly
+        // 'null'.
         document.activeElement.tagName.toLowerCase() === 'cr-input';
     event.canExecute = multipleSelect && !inputElementActive &&
         fileManager.directoryModel.getFileList().length > 0;
   }
 })();
 
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['toggle-hidden-files'] =
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         const visible = !fileManager.fileFilter.isHiddenFilesVisible();
         fileManager.fileFilter.setHiddenFilesVisible(visible);
@@ -1201,8 +1395,12 @@ CommandHandler.COMMANDS_['toggle-hidden-files'] =
  * Toggles visibility of top-level Android folders which are not visible by
  * default.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['toggle-hidden-android-folders'] =
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         const visible = !fileManager.fileFilter.isAllAndroidFoldersVisible();
         fileManager.fileFilter.setAllAndroidFoldersVisible(visible);
@@ -1214,6 +1412,8 @@ CommandHandler.COMMANDS_['toggle-hidden-android-folders'] =
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         const hasAndroidFilesVolumeInfo =
             !!fileManager.volumeManager.getCurrentProfileVolumeInfo(
@@ -1234,8 +1434,12 @@ CommandHandler.COMMANDS_['toggle-hidden-android-folders'] =
 /**
  * Toggles drive sync settings.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['drive-sync-settings'] =
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         const nowDriveSyncEnabledOnMeteredNetwork =
             fileManager.ui.gearMenu.syncButton.hasAttribute('checked');
@@ -1251,19 +1455,28 @@ CommandHandler.COMMANDS_['drive-sync-settings'] =
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         event.canExecute = fileManager.directoryModel.isOnDrive();
         event.command.setHidden(!event.canExecute);
       }
     })();
 
+
 /**
  * Delete / Move to Trash command.
- * @private @const @type {FilesCommand}
  */
-CommandHandler.deleteCommand_ = new (class extends FilesCommand {
+export class DeleteCommand extends FilesCommand {
+  /**
+   * @param {Event} event
+   * @param {!CommandHandlerDeps} fileManager
+   * @override
+   */
   execute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    // @ts-ignore: error TS2339: Property 'command' does not exist on type
+    // 'Event'.
     const permanentlyDelete = event.command.id === 'delete';
 
     // Execute might be called without a call of canExecute method, e.g.,
@@ -1273,6 +1486,8 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
 
@@ -1357,7 +1572,9 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
     }
 
     const dialogDoneCallback = () => {
+      // @ts-ignore: error TS18047: 'dialog' is possibly 'null'.
       dialog.doneCallback && dialog.doneCallback();
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       document.querySelector('files-tooltip').hideTooltip();
     };
 
@@ -1379,10 +1596,13 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
     // filesystems version of trash).
     if (deleteIsForever(entries, fileManager.volumeManager)) {
       const title = entries.length === 1 ?
+          // @ts-ignore: error TS2555: Expected at least 2 arguments, but got 1.
           strf('CONFIRM_PERMANENTLY_DELETE_ONE_TITLE') :
+          // @ts-ignore: error TS2555: Expected at least 2 arguments, but got 1.
           strf('CONFIRM_PERMANENTLY_DELETE_SOME_TITLE');
 
       const message = entries.length === 1 ?
+          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           strf('CONFIRM_PERMANENTLY_DELETE_ONE_DESC', entries[0].name) :
           strf('CONFIRM_PERMANENTLY_DELETE_SOME_DESC', entries.length);
 
@@ -1392,9 +1612,12 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
     }
 
     const deleteMessage = entries.length === 1 ?
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         strf('CONFIRM_DELETE_ONE', entries[0].name) :
         strf('CONFIRM_DELETE_SOME', entries.length);
     dialog.setOkLabel(str('DELETE_BUTTON_LABEL'));
+    // @ts-ignore: error TS2345: Argument of type 'null' is not assignable to
+    // parameter of type 'Function | undefined'.
     dialog.show(deleteMessage, deleteAction, cancelAction, null);
   }
 
@@ -1447,10 +1670,15 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
           util.isNonModifiable(fileManager.volumeManager, entry);
     });
   }
-})();
+}
 
-CommandHandler.COMMANDS_['delete'] = CommandHandler.deleteCommand_;
-CommandHandler.COMMANDS_['move-to-trash'] = CommandHandler.deleteCommand_;
+const deleteCommand = new DeleteCommand();
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
+CommandHandler.COMMANDS_['delete'] = deleteCommand;
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
+CommandHandler.COMMANDS_['move-to-trash'] = deleteCommand;
 
 /**
  * Restores selected files from trash.
@@ -1459,12 +1687,18 @@ CommandHandler.COMMANDS_['move-to-trash'] = CommandHandler.deleteCommand_;
  * for explanation of why FilesAppEntry cannot extend Entry.
  */
 CommandHandler
+    // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only
+    // accessible within class 'CommandHandler'.
     .COMMANDS_['restore-from-trash'] = new (class extends FilesCommand {
   /** @private */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   async execute_(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
 
     const infoEntries = [];
+    // @ts-ignore: error TS7034: Variable 'failedParents' implicitly has type
+    // 'any[]' in some locations where its type cannot be determined.
     const failedParents = [];
     for (const e of entries) {
       const entry = /** @type {!TrashEntry} */ (e);
@@ -1487,6 +1721,7 @@ CommandHandler
             RestoreFailedUMA, RestoreFailedType.SINGLE_ITEM,
             RestoreFailedTypesUMA);
         fileManager.ui.alertDialog.show(
+            // @ts-ignore: error TS2532: Object is possibly 'undefined'.
             strf('CANT_RESTORE_SINGLE_ITEM', failedParents[0].parentName));
         return;
       }
@@ -1494,6 +1729,8 @@ CommandHandler
       // parent removed.
       if (failedParents.length > 1 && infoEntries.length === 0) {
         const isParentFolderSame = failedParents.every(
+            // @ts-ignore: error TS7005: Variable 'failedParents' implicitly has
+            // an 'any[]' type.
             p => p.parentName === failedParents[0].parentName);
         // All the items were from the same parent folder.
         if (isParentFolderSame) {
@@ -1502,6 +1739,7 @@ CommandHandler
               RestoreFailedTypesUMA);
           fileManager.ui.alertDialog.show(strf(
               'CANT_RESTORE_MULTIPLE_ITEMS_SAME_PARENTS',
+              // @ts-ignore: error TS2532: Object is possibly 'undefined'.
               failedParents[0].parentName));
           return;
         }
@@ -1528,11 +1766,15 @@ CommandHandler
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     this.execute_(event, fileManager);
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
 
@@ -1560,6 +1802,7 @@ CommandHandler
                   entry, volumeManager);
               resolve({
                 exists: false,
+                // @ts-ignore: error TS2532: Object is possibly 'undefined'.
                 parentName: components[components.length - 2].name,
               });
               return;
@@ -1573,7 +1816,11 @@ CommandHandler
 /**
  * Empties (permanently deletes all) files from trash.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['empty-trash'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     fileManager.ui.emptyTrashConfirmDialog.showWithTitle(
         str('CONFIRM_EMPTY_TRASH_TITLE'), str('CONFIRM_EMPTY_TRASH_DESC'),
@@ -1585,8 +1832,12 @@ CommandHandler.COMMANDS_['empty-trash'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined'
+    // is not assignable to parameter of type 'FileSystemEntry | FilesAppEntry'.
     const isTrashRoot = entries.length === 1 && util.isTrashRoot(entries[0]) &&
         fileManager.trashEnabled;
     event.canExecute = isTrashRoot || CommandUtil.isOnTrashRoot(fileManager);
@@ -1597,7 +1848,11 @@ CommandHandler.COMMANDS_['empty-trash'] = new (class extends FilesCommand {
 /**
  * Pastes files from clipboard.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['paste'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     if (CommandUtil.isOnTrashRoot(fileManager)) {
       return;
@@ -1606,6 +1861,8 @@ CommandHandler.COMMANDS_['paste'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     if (CommandUtil.isOnTrashRoot(fileManager)) {
       event.canExecute = false;
@@ -1632,6 +1889,8 @@ CommandHandler.COMMANDS_['paste'] = new (class extends FilesCommand {
       event.command.setHidden(true);
       return;
     } else if (
+        // @ts-ignore: error TS2367: This comparison appears to be unintentional
+        // because the types 'FileSystemEntry[]' and 'number' have no overlap.
         entries == 0 && !CommandUtil.currentVolumeIsInteractive(fileManager)) {
       // If blank space was clicked and current volume is non-interactive,
       // remove paste command.
@@ -1646,13 +1905,19 @@ CommandHandler.COMMANDS_['paste'] = new (class extends FilesCommand {
  * Pastes files from clipboard. This is basically same as 'paste'.
  * This command is used for always showing the Paste command to gear menu.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['paste-into-current-folder'] =
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         fileManager.document.execCommand('paste');
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         const fileTransferController = fileManager.fileTransferController;
 
@@ -1665,16 +1930,24 @@ CommandHandler.COMMANDS_['paste-into-current-folder'] =
 /**
  * Pastes files from clipboard into the selected folder.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['paste-into-folder'] =
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         if (CommandUtil.isOnTrashRoot(fileManager)) {
           return;
         }
         const entries =
             CommandUtil.getCommandEntries(fileManager, event.target);
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         if (entries.length !== 1 || !entries[0].isDirectory ||
             !CommandUtil.shouldShowMenuItemsForEntry(
+                // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+                // undefined' is not assignable to parameter of type
+                // 'FileSystemEntry | FakeEntry'.
                 fileManager.volumeManager, entries[0])) {
           return;
         }
@@ -1682,6 +1955,8 @@ CommandHandler.COMMANDS_['paste-into-folder'] =
         // This handler tweaks the Event object for 'paste' event so that
         // the FileTransferController can distinguish this 'paste-into-folder'
         // command and know the destination directory.
+        // @ts-ignore: error TS7006: Parameter 'inEvent' implicitly has an 'any'
+        // type.
         const handler = inEvent => {
           inEvent.destDirectory = entries[0];
         };
@@ -1691,6 +1966,8 @@ CommandHandler.COMMANDS_['paste-into-folder'] =
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         if (CommandUtil.isOnTrashRoot(fileManager)) {
           event.canExecute = false;
@@ -1701,8 +1978,12 @@ CommandHandler.COMMANDS_['paste-into-folder'] =
             CommandUtil.getCommandEntries(fileManager, event.target);
 
         // Show this item only when one directory is selected.
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         if (entries.length !== 1 || !entries[0].isDirectory ||
             !CommandUtil.shouldShowMenuItemsForEntry(
+                // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+                // undefined' is not assignable to parameter of type
+                // 'FileSystemEntry | FakeEntry'.
                 fileManager.volumeManager, entries[0])) {
           event.canExecute = false;
           event.command.setHidden(true);
@@ -1722,7 +2003,11 @@ CommandHandler.COMMANDS_['paste-into-folder'] =
  * Cut/Copy command.
  * @private @const @type {FilesCommand}
  */
+// @ts-ignore: error TS2341: Property 'cutCopyCommand_' is private and only
+// accessible within class 'CommandHandler'.
 CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     if (CommandUtil.isOnTrashRoot(fileManager)) {
       return;
@@ -1734,6 +2019,8 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const fileTransferController = fileManager.fileTransferController;
 
@@ -1763,7 +2050,11 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
       let entry;
       if (target.entry) {
         entry = target.entry;
+        // @ts-ignore: error TS2339: Property 'entry' does not exist on type
+        // 'XfTreeItem | DirectoryItem'.
       } else if (getFocusedTreeItem(target)?.entry) {
+        // @ts-ignore: error TS2339: Property 'entry' does not exist on type
+        // 'XfTreeItem | DirectoryItem'.
         entry = getFocusedTreeItem(target).entry;
       } else {
         return false;
@@ -1816,6 +2107,8 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
 
       // If blank space was clicked and current volume is non-interactive,
       // remove cut/copy command.
+      // @ts-ignore: error TS2367: This comparison appears to be unintentional
+      // because the types 'FileSystemEntry[]' and 'number' have no overlap.
       if (entries == 0 &&
           !CommandUtil.currentVolumeIsInteractive(fileManager)) {
         command.setHidden(true);
@@ -1842,13 +2135,21 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
   }
 })();
 
+// @ts-ignore: error TS2341: Property 'cutCopyCommand_' is private and only
+// accessible within class 'CommandHandler'.
 CommandHandler.COMMANDS_['cut'] = CommandHandler.cutCopyCommand_;
+// @ts-ignore: error TS2341: Property 'cutCopyCommand_' is private and only
+// accessible within class 'CommandHandler'.
 CommandHandler.COMMANDS_['copy'] = CommandHandler.cutCopyCommand_;
 
 /**
  * Initiates file renaming.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     const entry = CommandUtil.getCommandEntry(fileManager, event.target);
     if (util.isNonModifiable(fileManager.volumeManager, entry)) {
@@ -1885,6 +2186,8 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     // Block fusebox volumes in SelectFileAsh (Lacros) file picker mode.
     if (fileManager.volumeManager.getFuseBoxOnlyFilterEnabled()) {
@@ -1924,6 +2227,9 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
               location.rootType === VolumeManagerCommon.RootType.REMOVABLE;
           event.canExecute = removable && writable &&
               volumeInfo.diskFileSystemType &&
+              // @ts-ignore: error TS2341: Property
+              // 'RENAME_DISK_FILE_SYSTEM_SUPPORT_' is private and only
+              // accessible within class 'CommandHandler'.
               CommandHandler.RENAME_DISK_FILE_SYSTEM_SUPPORT_.indexOf(
                   volumeInfo.diskFileSystemType) > -1;
           event.command.setHidden(!removable);
@@ -1939,6 +2245,9 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
     const entries = CommandUtil.getCommandEntries(fileManager, renameTarget);
     if (entries.length === 0 ||
         !CommandUtil.shouldShowMenuItemsForEntry(
+            // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+            // undefined' is not assignable to parameter of type
+            // 'FileSystemEntry | FakeEntry'.
             fileManager.volumeManager, entries[0]) ||
         entries.some(
             util.isNonModifiable.bind(null, fileManager.volumeManager))) {
@@ -1954,6 +2263,8 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
         null;
     const volumeIsNotReadOnly = !!locationInfo && !locationInfo.isReadOnly;
     // ARC doesn't support rename for now. http://b/232152680
+    // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined'
+    // is not assignable to parameter of type 'FileSystemEntry | null'.
     const isRecentArcEntry = VolumeManagerCommon.isRecentArcEntry(entries[0]);
     event.canExecute = entries.length === 1 && volumeIsNotReadOnly &&
         !isRecentArcEntry &&
@@ -1965,12 +2276,18 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
 /**
  * Opens settings/files sub page.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['files-settings'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     chrome.fileManagerPrivate.openSettingsSubpage('files');
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     event.canExecute = true;
   }
@@ -1979,7 +2296,11 @@ CommandHandler.COMMANDS_['files-settings'] = new (class extends FilesCommand {
 /**
  * Opens drive help.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['volume-help'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     if (fileManager.directoryModel.isOnDrive()) {
       util.visitURL(str('GOOGLE_DRIVE_HELP_URL'));
@@ -1993,6 +2314,8 @@ CommandHandler.COMMANDS_['volume-help'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     // Hides the help menu in modal dialog mode. It does not make much sense
     // because after all, users cannot view the help without closing, and
@@ -2008,7 +2331,11 @@ CommandHandler.COMMANDS_['volume-help'] = new (class extends FilesCommand {
 /**
  * Opens the send feedback window.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['send-feedback'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     chrome.fileManagerPrivate.sendFeedback();
   }
@@ -2017,8 +2344,12 @@ CommandHandler.COMMANDS_['send-feedback'] = new (class extends FilesCommand {
 /**
  * Opens drive buy-more-space url.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['drive-buy-more-space'] =
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         util.visitURL(str('GOOGLE_DRIVE_BUY_STORAGE_URL'));
         CommandHandler.recordMenuItemSelected(
@@ -2026,6 +2357,8 @@ CommandHandler.COMMANDS_['drive-buy-more-space'] =
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly(
             event, fileManager);
@@ -2035,8 +2368,12 @@ CommandHandler.COMMANDS_['drive-buy-more-space'] =
 /**
  * Opens drive.google.com.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['drive-go-to-drive'] =
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         util.visitURL(str('GOOGLE_DRIVE_ROOT_URL'));
         CommandHandler.recordMenuItemSelected(
@@ -2044,6 +2381,8 @@ CommandHandler.COMMANDS_['drive-go-to-drive'] =
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly(
             event, fileManager);
@@ -2053,12 +2392,18 @@ CommandHandler.COMMANDS_['drive-go-to-drive'] =
 /**
  * Opens a file with default task.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['default-task'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     fileManager.taskController.executeDefaultTask();
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     event.canExecute = fileManager.taskController.canExecuteDefaultTask();
     event.command.setHidden(fileManager.taskController.shouldHideDefaultTask());
@@ -2068,14 +2413,22 @@ CommandHandler.COMMANDS_['default-task'] = new (class extends FilesCommand {
 /**
  * Displays "open with" dialog for current selection.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['open-with'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     console.assert(
+        // @ts-ignore: error TS2345: Argument of type 'string' is not assignable
+        // to parameter of type 'boolean | undefined'.
         `open-with command doesn't execute, ` +
         `instead it only opens the sub-menu`);
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const canExecute = fileManager.taskController.canExecuteOpenActions();
     event.canExecute = canExecute;
@@ -2086,66 +2439,80 @@ CommandHandler.COMMANDS_['open-with'] = new (class extends FilesCommand {
 /**
  * Invoke Sharesheet.
  */
-CommandHandler.COMMANDS_['invoke-sharesheet'] =
-    new (class extends FilesCommand {
-      execute(event, fileManager) {
-        if (CommandUtil.isOnTrashRoot(fileManager)) {
-          return;
-        }
-        const entries = fileManager.selectionHandler.selection.entries;
-        const launchSource = CommandUtil.getSharesheetLaunchSource(event);
-        const dlpSourceUrls =
-            fileManager.metadataModel.getCache(entries, ['sourceUrl'])
-                .map(m => m.sourceUrl || '');
-        chrome.fileManagerPrivate.invokeSharesheet(
-            entries.map(e => util.unwrapEntry(e)), launchSource, dlpSourceUrls,
-            () => {
-              if (chrome.runtime.lastError) {
-                console.warn(chrome.runtime.lastError.message);
-                return;
-              }
-            });
-      }
+CommandHandler
+    // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only
+    // accessible within class 'CommandHandler'.
+    .COMMANDS_['invoke-sharesheet'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
+  execute(event, fileManager) {
+    if (CommandUtil.isOnTrashRoot(fileManager)) {
+      return;
+    }
+    const entries = fileManager.selectionHandler.selection.entries;
+    const launchSource = CommandUtil.getSharesheetLaunchSource(event);
+    const dlpSourceUrls = fileManager.metadataModel
+                              .getCache(entries, ['sourceUrl'])
+                              // @ts-ignore: error TS7006: Parameter 'm'
+                              // implicitly has an 'any' type.
+                              .map(m => m.sourceUrl || '');
+    chrome.fileManagerPrivate.invokeSharesheet(
+        // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
+        entries.map(e => util.unwrapEntry(e)), launchSource, dlpSourceUrls,
+        () => {
+          if (chrome.runtime.lastError) {
+            console.warn(chrome.runtime.lastError.message);
+            return;
+          }
+        });
+  }
 
-      /** @override */
-      canExecute(event, fileManager) {
-        if (CommandUtil.isOnTrashRoot(fileManager)) {
-          event.canExecute = false;
-          event.command.setHidden(true);
-          return;
-        }
-        const entries = fileManager.selectionHandler.selection.entries;
+  /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
+  canExecute(event, fileManager) {
+    if (CommandUtil.isOnTrashRoot(fileManager)) {
+      event.canExecute = false;
+      event.command.setHidden(true);
+      return;
+    }
+    const entries = fileManager.selectionHandler.selection.entries;
 
-        if (!entries || entries.length === 0 ||
-            (entries.some(entry => entry.isDirectory) &&
-             (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager) ||
-              entries.length > 1))) {
-          event.canExecute = false;
-          event.command.setHidden(true);
-          event.command.disabled = true;
-          return;
-        }
+    if (!entries || entries.length === 0 ||
+        // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any'
+        // type.
+        (entries.some(entry => entry.isDirectory) &&
+         (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager) ||
+          entries.length > 1))) {
+      event.canExecute = false;
+      event.command.setHidden(true);
+      event.command.disabled = true;
+      return;
+    }
 
-        event.canExecute = true;
-        // In the case where changing focus to action bar elements, it is safe
-        // to keep the command enabled if it was visible before, because there
-        // should be no change to the selected entries.
-        event.command.disabled = !fileManager.ui.actionbar.contains(
-            /** @type {Node} */ (event.target));
+    event.canExecute = true;
+    // In the case where changing focus to action bar elements, it is safe
+    // to keep the command enabled if it was visible before, because there
+    // should be no change to the selected entries.
+    event.command.disabled = !fileManager.ui.actionbar.contains(
+        /** @type {Node} */ (event.target));
 
-        chrome.fileManagerPrivate.sharesheetHasTargets(
-            entries.map(e => util.unwrapEntry(e)), hasTargets => {
-              if (chrome.runtime.lastError) {
-                console.warn(chrome.runtime.lastError.message);
-                return;
-              }
-              event.command.setHidden(!hasTargets);
-              event.canExecute = hasTargets;
-              event.command.disabled = !hasTargets;
-            });
-      }
-    })();
+    chrome.fileManagerPrivate.sharesheetHasTargets(
+        // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
+        entries.map(e => util.unwrapEntry(e)), hasTargets => {
+          if (chrome.runtime.lastError) {
+            console.warn(chrome.runtime.lastError.message);
+            return;
+          }
+          event.command.setHidden(!hasTargets);
+          event.canExecute = hasTargets;
+          event.command.disabled = !hasTargets;
+        });
+  }
+})();
 
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['toggle-holding-space'] =
     new (class extends FilesCommand {
       constructor() {
@@ -2160,6 +2527,8 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         if (this.addsItems_ === undefined) {
           return;
@@ -2168,6 +2537,8 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
         // Filter out entries from unsupported volumes.
         const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
         const entries =
+            // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an
+            // 'any' type.
             fileManager.selectionHandler.selection.entries.filter(entry => {
               const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
               return volumeInfo &&
@@ -2188,6 +2559,8 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         const command = event.command;
 
@@ -2205,6 +2578,8 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
 
         // Filter out entries from unsupported volumes.
         const entries =
+            // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an
+            // 'any' type.
             fileManager.selectionHandler.selection.entries.filter(entry => {
               const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
               return volumeInfo &&
@@ -2238,14 +2613,23 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
           console.warn('Error getting holding space state', e);
         }
         if (!state) {
+          // @ts-ignore: error TS2551: Property 'setHidden' does not exist on
+          // type 'Command'. Did you mean 'hidden'?
           command.setHidden(true);
           return;
         }
 
         const itemsSet = {};
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type '{}'.
         state.itemUrls.forEach((item) => itemsSet[item] = true);
 
+        // @ts-ignore: error TS2345: Argument of type '(FileSystemEntry |
+        // FilesAppEntry)[]' is not assignable to parameter of type
+        // 'FileSystemEntry[]'.
         const selectedUrls = util.entriesToURLs(entries);
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type '{}'.
         this.addsItems_ = selectedUrls.some(url => !itemsSet[url]);
 
         command.label = this.addsItems_ ?
@@ -2257,8 +2641,12 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
 /**
  * Opens containing folder of the focused file.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['go-to-file-location'] =
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         const entries =
             CommandUtil.getCommandEntries(fileManager, event.target);
@@ -2267,11 +2655,15 @@ CommandHandler.COMMANDS_['go-to-file-location'] =
         }
 
         const components = PathComponent.computeComponentsFromEntry(
+            // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+            // undefined' is not assignable to parameter of type
+            // 'FileSystemEntry | FilesAppEntry'.
             entries[0], fileManager.volumeManager);
         // Entries in file list table should always have its containing folder.
         // (i.e. Its path have at least two components: its parent and itself.)
         assert(components.length >= 2);
         const parentComponent = components[components.length - 2];
+        // @ts-ignore: error TS18048: 'parentComponent' is possibly 'undefined'.
         parentComponent.resolveEntry().then(entry => {
           if (entry && entry.isDirectory) {
             fileManager.directoryModel.changeDirectoryEntry(
@@ -2281,6 +2673,8 @@ CommandHandler.COMMANDS_['go-to-file-location'] =
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         // Available in Recents, Audio, Images, and Videos.
         if (!util.isRecentRootType(
@@ -2301,13 +2695,19 @@ CommandHandler.COMMANDS_['go-to-file-location'] =
 /**
  * Displays QuickView for current selection.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['get-info'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     // 'get-info' command is executed by 'command' event handler in
     // QuickViewController.
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     // QuickViewModel refers the file selection instead of event target.
     const entries = fileManager.getSelection().entries;
@@ -2325,8 +2725,12 @@ CommandHandler.COMMANDS_['get-info'] = new (class extends FilesCommand {
 /**
  * Displays the Data Leak Prevention (DLP) Restriction details.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['dlp-restriction-details'] =
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       async executeImpl_(event, fileManager) {
         const entries = fileManager.getSelection().entries;
 
@@ -2346,11 +2750,15 @@ CommandHandler.COMMANDS_['dlp-restriction-details'] =
         }
       }
 
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         this.executeImpl_(event, fileManager);
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         if (!util.isDlpEnabled()) {
           event.canExecute = false;
@@ -2383,7 +2791,11 @@ CommandHandler.COMMANDS_['dlp-restriction-details'] =
 /**
  * Focuses search input box.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['search'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     // If the current root is Trash we do nothing on search command. Preventing
     // it from execution (in canExecute) does not work correctly, as then chrome
@@ -2399,6 +2811,8 @@ CommandHandler.COMMANDS_['search'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     event.canExecute = !fileManager.namingController.isRenamingInProgress();
   }
@@ -2407,34 +2821,58 @@ CommandHandler.COMMANDS_['search'] = new (class extends FilesCommand {
 /**
  * Activates the n-th volume.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['volume-switch-1'] =
     CommandUtil.createVolumeSwitchCommand(1);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['volume-switch-2'] =
     CommandUtil.createVolumeSwitchCommand(2);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['volume-switch-3'] =
     CommandUtil.createVolumeSwitchCommand(3);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['volume-switch-4'] =
     CommandUtil.createVolumeSwitchCommand(4);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['volume-switch-5'] =
     CommandUtil.createVolumeSwitchCommand(5);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['volume-switch-6'] =
     CommandUtil.createVolumeSwitchCommand(6);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['volume-switch-7'] =
     CommandUtil.createVolumeSwitchCommand(7);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['volume-switch-8'] =
     CommandUtil.createVolumeSwitchCommand(8);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['volume-switch-9'] =
     CommandUtil.createVolumeSwitchCommand(9);
 
 /**
  * Flips 'available offline' flag on the file.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     const entries = fileManager.getSelection().entries;
     const actionsController = fileManager.actionsController;
 
     actionsController.getActionsForEntries(entries).then(
+        // @ts-ignore: error TS7006: Parameter 'actionsModel' implicitly has an
+        // 'any' type.
         (/** ?ActionsModel */ actionsModel) => {
           if (!actionsModel) {
             return;
@@ -2455,6 +2893,8 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const entries = fileManager.getSelection().entries;
     const command = event.command;
@@ -2471,6 +2911,7 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
     // automatically.
     if (util.isDriveFsBulkPinningEnabled()) {
       const state = /** @type {State} */ (getStore().getState());
+      // @ts-ignore: error TS18048: 'state.preferences' is possibly 'undefined'.
       const bulkPinningPref = state.preferences.driveFsBulkPinningEnabled;
       if (bulkPinningPref && CommandUtil.isOnlyMyDriveEntries(entries, state)) {
         command.setHidden(true);
@@ -2481,6 +2922,8 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
 
     command.setHidden(false);
 
+    // @ts-ignore: error TS7006: Parameter 'actionsModel' implicitly has an
+    // 'any' type.
     function canExecutePinned_(/** ?ActionsModel */ actionsModel) {
       if (!actionsModel) {
         return;
@@ -2516,7 +2959,11 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
 /**
  * Extracts content of ZIP files in the current selection.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['extract-all'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     if (CommandUtil.isOnTrashRoot(fileManager)) {
       return;
@@ -2538,6 +2985,8 @@ CommandHandler.COMMANDS_['extract-all'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const dirEntry = fileManager.getCurrentDirectoryEntry();
     const selection = fileManager.getSelection();
@@ -2565,7 +3014,11 @@ CommandHandler.COMMANDS_['extract-all'] = new (class extends FilesCommand {
 /**
  * Creates ZIP file for current selection.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['zip-selection'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     if (CommandUtil.isOnTrashRoot(fileManager)) {
       return;
@@ -2585,6 +3038,8 @@ CommandHandler.COMMANDS_['zip-selection'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     if (CommandUtil.isOnTrashRoot(fileManager)) {
       event.canExecute = false;
@@ -2623,6 +3078,8 @@ CommandHandler.COMMANDS_['zip-selection'] = new (class extends FilesCommand {
         fileManager.metadataModel
             .getCache(selection.entries, ['contentMimeType'])
             .some(
+                // @ts-ignore: error TS7006: Parameter 'i' implicitly has an
+                // 'any' type.
                 (metadata, i) => FileType.isEncrypted(
                     selection.entries[i], metadata.contentMimeType));
 
@@ -2635,12 +3092,18 @@ CommandHandler.COMMANDS_['zip-selection'] = new (class extends FilesCommand {
 /**
  * Shows the share dialog for the current selection (single only).
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['share'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     const actionsController = fileManager.actionsController;
 
     fileManager.actionsController.getActionsForEntries(entries).then(
+        // @ts-ignore: error TS7006: Parameter 'actionsModel' implicitly has an
+        // 'any' type.
         (/** ?ActionsModel */ actionsModel) => {
           if (!actionsModel) {
             return;
@@ -2654,6 +3117,8 @@ CommandHandler.COMMANDS_['share'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     const command = event.command;
@@ -2667,6 +3132,8 @@ CommandHandler.COMMANDS_['share'] = new (class extends FilesCommand {
 
     command.setHidden(false);
 
+    // @ts-ignore: error TS7006: Parameter 'actionsModel' implicitly has an
+    // 'any' type.
     function canExecuteShare_(/** ?ActionsModel */ actionsModel) {
       if (!actionsModel) {
         return;
@@ -2695,12 +3162,18 @@ CommandHandler.COMMANDS_['share'] = new (class extends FilesCommand {
 /**
  * Opens the file in Drive for the user to manage sharing permissions etc.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['manage-in-drive'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     const actionsController = fileManager.actionsController;
 
     fileManager.actionsController.getActionsForEntries(entries).then(
+        // @ts-ignore: error TS7006: Parameter 'actionsModel' implicitly has an
+        // 'any' type.
         (/** ?ActionsModel */ actionsModel) => {
           if (!actionsModel) {
             return;
@@ -2714,6 +3187,8 @@ CommandHandler.COMMANDS_['manage-in-drive'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     const command = event.command;
@@ -2727,6 +3202,8 @@ CommandHandler.COMMANDS_['manage-in-drive'] = new (class extends FilesCommand {
 
     command.setHidden(false);
 
+    // @ts-ignore: error TS7006: Parameter 'actionsModel' implicitly has an
+    // 'any' type.
     function canExecuteManageInDrive_(/** ?ActionsModel */ actionsModel) {
       if (!actionsModel) {
         return;
@@ -2758,8 +3235,12 @@ CommandHandler.COMMANDS_['manage-in-drive'] = new (class extends FilesCommand {
 /**
  * Opens the Manage MirrorSync dialog if the flag is enabled.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['manage-mirrorsync'] =
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         chrome.fileManagerPrivate.openManageSyncSettings();
       }
@@ -2767,6 +3248,8 @@ CommandHandler.COMMANDS_['manage-mirrorsync'] =
       /**
        * @override
        */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         // MirrorSync is only available to sync local directories, only show the
         // folder when navigated to a local directory.
@@ -2828,6 +3311,8 @@ class GuestOsShareCommand extends FilesCommand {
     }
   }
 
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     const entry = CommandUtil.getCommandEntry(fileManager, event.target);
     if (!entry || !entry.isDirectory) {
@@ -2840,6 +3325,8 @@ class GuestOsShareCommand extends FilesCommand {
     const share = () => {
       // Always persist shares via right-click > Share with Linux.
       chrome.fileManagerPrivate.sharePathsWithCrostini(
+          // @ts-ignore: error TS2322: Type 'FileSystemEntry | FilesAppEntry' is
+          // not assignable to type 'FileSystemEntry'.
           this.vmName_, [util.unwrapEntry(entry)], true /* persist */, () => {
             if (chrome.runtime.lastError) {
               console.warn(
@@ -2862,6 +3349,7 @@ class GuestOsShareCommand extends FilesCommand {
     // Non-Drive volume roots are always '/'.
     if (entry.fullPath == '/') {
       fileManager.ui.confirmDialog.showHtml(
+          // @ts-ignore: error TS2555: Expected at least 2 arguments, but got 1.
           strf(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`),
           strf(
               `SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}`,
@@ -2877,7 +3365,9 @@ class GuestOsShareCommand extends FilesCommand {
       // Computers Grand Root.  Do not show for roots of a single Shared
       // Drive or Computer.
       fileManager.ui.confirmDialog.showHtml(
+          // @ts-ignore: error TS2555: Expected at least 2 arguments, but got 1.
           strf(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`),
+          // @ts-ignore: error TS2555: Expected at least 2 arguments, but got 1.
           strf(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_DRIVE`), share,
           () => {});
     } else {
@@ -2888,9 +3378,12 @@ class GuestOsShareCommand extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     // Must be single directory not already shared.
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     event.canExecute = entries.length === 1 && entries[0].isDirectory &&
         !fileManager.crostini.isPathShared(this.vmName_, entries[0]) &&
         fileManager.crostini.canSharePath(
@@ -2917,12 +3410,16 @@ class GuestOsManagingSharingGearCommand extends FilesCommand {
     this.settingsPath_ = settingsPath;
     this.manageUma_ = manageUma;
   }
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     chrome.fileManagerPrivate.openSettingsSubpage(this.settingsPath_);
     CommandHandler.recordMenuItemSelected(this.manageUma_);
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     event.canExecute = fileManager.crostini.isEnabled(this.vmName_);
     event.command.setHidden(!event.canExecute);
@@ -2947,14 +3444,19 @@ class GuestOsManagingSharingCommand extends FilesCommand {
     this.settingsPath_ = settingsPath;
     this.manageUma_ = manageUma;
   }
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     chrome.fileManagerPrivate.openSettingsSubpage(this.settingsPath_);
     CommandHandler.recordMenuItemSelected(this.manageUma_);
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     event.canExecute = entries.length === 1 && entries[0].isDirectory &&
         fileManager.crostini.isPathShared(this.vmName_, entries[0]);
     event.command.setHidden(!event.canExecute);
@@ -2965,40 +3467,58 @@ const crostiniSettings = 'crostini/sharedPaths';
 const pluginVmSettings = 'app-management/pluginVm/sharedPaths';
 const bruschettaSettings = 'bruschetta/sharedPaths';
 
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['share-with-linux'] = new GuestOsShareCommand(
     constants.DEFAULT_CROSTINI_VM, 'CROSTINI', crostiniSettings,
     CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING_TOAST,
     CommandHandler.MenuCommandsForUMA.SHARE_WITH_LINUX);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['share-with-plugin-vm'] = new GuestOsShareCommand(
     constants.PLUGIN_VM, 'PLUGIN_VM', pluginVmSettings,
     CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING_TOAST,
     CommandHandler.MenuCommandsForUMA.SHARE_WITH_PLUGIN_VM);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['share-with-bruschetta'] = new GuestOsShareCommand(
     constants.DEFAULT_BRUSCHETTA_VM, 'BRUSCHETTA', bruschettaSettings,
     CommandHandler.MenuCommandsForUMA.MANAGE_BRUSCHETTA_SHARING_TOAST,
     CommandHandler.MenuCommandsForUMA.SHARE_WITH_BRUSCHETTA);
 
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['manage-linux-sharing-gear'] =
     new GuestOsManagingSharingGearCommand(
         constants.DEFAULT_CROSTINI_VM, crostiniSettings,
         CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['manage-plugin-vm-sharing-gear'] =
     new GuestOsManagingSharingGearCommand(
         constants.PLUGIN_VM, pluginVmSettings,
         CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['manage-bruschetta-sharing-gear'] =
     new GuestOsManagingSharingGearCommand(
         constants.DEFAULT_BRUSCHETTA_VM, bruschettaSettings,
         CommandHandler.MenuCommandsForUMA.MANAGE_BRUSCHETTA_SHARING);
 
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['manage-linux-sharing'] =
     new GuestOsManagingSharingCommand(
         constants.DEFAULT_CROSTINI_VM, crostiniSettings,
         CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['manage-plugin-vm-sharing'] =
     new GuestOsManagingSharingCommand(
         constants.PLUGIN_VM, pluginVmSettings,
         CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['manage-bruschetta-sharing'] =
     new GuestOsManagingSharingCommand(
         constants.DEFAULT_BRUSCHETTA_VM, bruschettaSettings,
@@ -3007,12 +3527,18 @@ CommandHandler.COMMANDS_['manage-bruschetta-sharing'] =
 /**
  * Creates a shortcut of the selected folder (single only).
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['pin-folder'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     const actionsController = fileManager.actionsController;
 
     fileManager.actionsController.getActionsForEntries(entries).then(
+        // @ts-ignore: error TS7006: Parameter 'actionsModel' implicitly has an
+        // 'any' type.
         (/** ?ActionsModel */ actionsModel) => {
           if (!actionsModel) {
             return;
@@ -3026,6 +3552,8 @@ CommandHandler.COMMANDS_['pin-folder'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     const command = event.command;
@@ -3039,6 +3567,8 @@ CommandHandler.COMMANDS_['pin-folder'] = new (class extends FilesCommand {
 
     command.setHidden(false);
 
+    // @ts-ignore: error TS7006: Parameter 'actionsModel' implicitly has an
+    // 'any' type.
     function canExecuteCreateShortcut_(/** ?ActionsModel */ actionsModel) {
       if (!actionsModel) {
         return;
@@ -3069,12 +3599,18 @@ CommandHandler.COMMANDS_['pin-folder'] = new (class extends FilesCommand {
 /**
  * Removes the folder shortcut.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['unpin-folder'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     const actionsController = fileManager.actionsController;
 
     fileManager.actionsController.getActionsForEntries(entries).then(
+        // @ts-ignore: error TS7006: Parameter 'actionsModel' implicitly has an
+        // 'any' type.
         (/** ?ActionsModel */ actionsModel) => {
           if (!actionsModel) {
             return;
@@ -3088,6 +3624,8 @@ CommandHandler.COMMANDS_['unpin-folder'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     const command = event.command;
@@ -3101,6 +3639,8 @@ CommandHandler.COMMANDS_['unpin-folder'] = new (class extends FilesCommand {
 
     command.setHidden(false);
 
+    // @ts-ignore: error TS7006: Parameter 'actionsModel' implicitly has an
+    // 'any' type.
     function canExecuteRemoveShortcut_(/** ?ActionsModel */ actionsModel) {
       if (!actionsModel) {
         return;
@@ -3131,7 +3671,11 @@ CommandHandler.COMMANDS_['unpin-folder'] = new (class extends FilesCommand {
 /**
  * Zoom in to the Files app.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['zoom-in'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     chrome.fileManagerPrivate.zoom(
         chrome.fileManagerPrivate.ZoomOperationType.IN);
@@ -3141,7 +3685,11 @@ CommandHandler.COMMANDS_['zoom-in'] = new (class extends FilesCommand {
 /**
  * Zoom out from the Files app.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['zoom-out'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     chrome.fileManagerPrivate.zoom(
         chrome.fileManagerPrivate.ZoomOperationType.OUT);
@@ -3151,7 +3699,11 @@ CommandHandler.COMMANDS_['zoom-out'] = new (class extends FilesCommand {
 /**
  * Reset the zoom factor.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['zoom-reset'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     chrome.fileManagerPrivate.zoom(
         chrome.fileManagerPrivate.ZoomOperationType.RESET);
@@ -3161,7 +3713,11 @@ CommandHandler.COMMANDS_['zoom-reset'] = new (class extends FilesCommand {
 /**
  * Sort the file list by name (in ascending order).
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['sort-by-name'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     if (fileManager.directoryModel.getFileList()) {
       fileManager.directoryModel.getFileList().sort('name', 'asc');
@@ -3174,7 +3730,11 @@ CommandHandler.COMMANDS_['sort-by-name'] = new (class extends FilesCommand {
 /**
  * Sort the file list by size (in descending order).
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['sort-by-size'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     if (fileManager.directoryModel.getFileList()) {
       fileManager.directoryModel.getFileList().sort('size', 'desc');
@@ -3187,7 +3747,11 @@ CommandHandler.COMMANDS_['sort-by-size'] = new (class extends FilesCommand {
 /**
  * Sort the file list by type (in ascending order).
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['sort-by-type'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     if (fileManager.directoryModel.getFileList()) {
       fileManager.directoryModel.getFileList().sort('type', 'asc');
@@ -3200,7 +3764,11 @@ CommandHandler.COMMANDS_['sort-by-type'] = new (class extends FilesCommand {
 /**
  * Sort the file list by date-modified (in descending order).
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['sort-by-date'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     if (fileManager.directoryModel.getFileList()) {
       fileManager.directoryModel.getFileList().sort('modificationTime', 'desc');
@@ -3213,7 +3781,11 @@ CommandHandler.COMMANDS_['sort-by-date'] = new (class extends FilesCommand {
 /**
  * Open inspector for foreground page.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['inspect-normal'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     chrome.fileManagerPrivate.openInspector(
         chrome.fileManagerPrivate.InspectionType.NORMAL);
@@ -3223,7 +3795,11 @@ CommandHandler.COMMANDS_['inspect-normal'] = new (class extends FilesCommand {
 /**
  * Open inspector for foreground page and bring focus to the console.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['inspect-console'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     chrome.fileManagerPrivate.openInspector(
         chrome.fileManagerPrivate.InspectionType.CONSOLE);
@@ -3233,7 +3809,11 @@ CommandHandler.COMMANDS_['inspect-console'] = new (class extends FilesCommand {
 /**
  * Open inspector for foreground page in inspect element mode.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['inspect-element'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     chrome.fileManagerPrivate.openInspector(
         chrome.fileManagerPrivate.InspectionType.ELEMENT);
@@ -3243,7 +3823,11 @@ CommandHandler.COMMANDS_['inspect-element'] = new (class extends FilesCommand {
 /**
  * Opens the gear menu.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['open-gear-menu'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     fileManager.ui.gearButton.showMenu(true);
   }
@@ -3252,7 +3836,11 @@ CommandHandler.COMMANDS_['open-gear-menu'] = new (class extends FilesCommand {
 /**
  * Focus the first button visible on action bar (at the top).
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['focus-action-bar'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     fileManager.ui.actionbar
         .querySelector('button:not([hidden]), cr-button:not([hidden])')
@@ -3263,7 +3851,11 @@ CommandHandler.COMMANDS_['focus-action-bar'] = new (class extends FilesCommand {
 /**
  * Handle back button.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['browser-back'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     // TODO(fukino): It should be better to minimize Files app only when there
     // is no back stack, and otherwise use BrowserBack for history navigation.
@@ -3276,7 +3868,11 @@ CommandHandler.COMMANDS_['browser-back'] = new (class extends FilesCommand {
 /**
  * Configures the currently selected volume.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['configure'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     const volumeInfo =
         CommandUtil.getElementVolumeInfo(event.target, fileManager);
@@ -3286,6 +3882,8 @@ CommandHandler.COMMANDS_['configure'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const volumeInfo =
         CommandUtil.getElementVolumeInfo(event.target, fileManager);
@@ -3297,13 +3895,19 @@ CommandHandler.COMMANDS_['configure'] = new (class extends FilesCommand {
 /**
  * Refreshes the currently selected directory.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['refresh'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     fileManager.directoryModel.rescan(true /* refresh */);
     fileManager.spinnerController.blink();
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     const currentDirEntry = fileManager.directoryModel.getCurrentDirEntry();
     const volumeInfo = currentDirEntry &&
@@ -3318,7 +3922,11 @@ CommandHandler.COMMANDS_['refresh'] = new (class extends FilesCommand {
 /**
  * Sets the system wallpaper to the selected file.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['set-wallpaper'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     if (CommandUtil.isOnTrashRoot(fileManager)) {
       return;
@@ -3341,9 +3949,13 @@ CommandHandler.COMMANDS_['set-wallpaper'] = new (class extends FilesCommand {
         })
         .then((/** @type {!ArrayBuffer} */ arrayBuffer) => {
           return new Promise((resolve, reject) => {
+            // @ts-ignore: error TS2339: Property 'wallpaper' does not exist on
+            // type 'typeof chrome'.
             chrome.wallpaper.setWallpaper(
                 {
                   data: arrayBuffer,
+                  // @ts-ignore: error TS2339: Property 'wallpaper' does not
+                  // exist on type 'typeof chrome'.
                   layout: chrome.wallpaper.WallpaperLayout.CENTER_CROPPED,
                   filename: 'wallpaper',
                 },
@@ -3363,6 +3975,8 @@ CommandHandler.COMMANDS_['set-wallpaper'] = new (class extends FilesCommand {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     if (CommandUtil.isOnTrashRoot(fileManager)) {
       event.canExecute = false;
@@ -3390,12 +4004,18 @@ CommandHandler.COMMANDS_['set-wallpaper'] = new (class extends FilesCommand {
 /**
  * Opens settings/storage sub page.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['volume-storage'] = new (class extends FilesCommand {
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   execute(event, fileManager) {
     chrome.fileManagerPrivate.openSettingsSubpage('storage');
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
+  // type.
   canExecute(event, fileManager) {
     event.canExecute = false;
     const currentVolumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
@@ -3424,13 +4044,19 @@ CommandHandler.COMMANDS_['volume-storage'] = new (class extends FilesCommand {
 /**
  * Opens "providers menu" to allow users to use providers/FSPs.
  */
+// @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
+// within class 'CommandHandler'.
 CommandHandler.COMMANDS_['show-providers-submenu'] =
     new (class extends FilesCommand {
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       execute(event, fileManager) {
         fileManager.ui.gearButton.showSubMenu();
       }
 
       /** @override */
+      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+      // 'any' type.
       canExecute(event, fileManager) {
         if (fileManager.dialogType !== DialogType.FULL_PAGE) {
           event.canExecute = false;

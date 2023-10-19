@@ -146,6 +146,8 @@ export class ByteReader {
   static readBase64(dataView, pos, size, opt_end) {
     ByteReader.validateRead(pos, size, opt_end || dataView.byteLength);
 
+    // @ts-ignore: error TS7034: Variable 'rv' implicitly has type 'any[]' in
+    // some locations where its type cannot be determined.
     const rv = [];
     const chars = [];
     let padding = 0;
@@ -170,6 +172,7 @@ export class ByteReader {
       chars[1] = ByteReader.base64Alphabet_[(bits >> 12) & 63];
       chars[0] = ByteReader.base64Alphabet_[(bits >> 18) & 63];
 
+      // @ts-ignore: error TS7005: Variable 'rv' implicitly has an 'any[]' type.
       rv.push.apply(rv, chars);
     }
 
@@ -208,6 +211,9 @@ export class ByteReader {
     };
 
     const prefix = ByteReader.readString(dataView, pos, 2, opt_end);
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type '{ '\u0089P':
+    // string; ÿØ: string; BM: string; GI: string; }'.
     const mime = prefixToMime[prefix] ||
         dataView.getUint16(pos, false).toString(16);  // For debugging.
 
@@ -303,10 +309,13 @@ export class ByteReader {
 
       default:
         throw new Error('Invalid width: ' + width);
+        // @ts-ignore: error TS7027: Unreachable code detected.
         break;
     }
 
     this.validateRead(width, opt_end);
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type 'DataView'.
     const rv = this.view_[method](this.pos_, this.littleEndian_);
     this.pos_ += width;
     return rv;
@@ -402,6 +411,8 @@ export class ByteReader {
         this.view_.buffer, this.view_.byteOffset + this.pos_, size);
     this.pos_ += size;
 
+    // @ts-ignore: error TS2322: Type 'any[] | Uint8Array' is not assignable to
+    // type 'any[]'.
     return slice;
   }
 
@@ -484,6 +495,8 @@ export class ByteReader {
    * Undo a previous seekPush.
    */
   popSeek() {
+    // @ts-ignore: error TS2345: Argument of type 'number | undefined' is not
+    // assignable to parameter of type 'number'.
     this.seek(this.seekStack_.pop());
   }
 
@@ -529,6 +542,8 @@ ByteReader.SEEK_END = 2;
 /**
  * @private @const @type {Array<string>}
  */
+// @ts-ignore: error TS2341: Property 'base64Alphabet_' is private and only
+// accessible within class 'ByteReader'.
 ByteReader.base64Alphabet_ =
     ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/')
         .split('');

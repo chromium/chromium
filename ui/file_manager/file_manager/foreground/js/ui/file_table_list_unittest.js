@@ -33,6 +33,8 @@ let a11y;
 export function setUp() {
   // Setup mock components.
   volumeManager = new MockVolumeManager();
+  // @ts-ignore: error TS2322: Type 'MockMetadataModel' is not assignable to
+  // type 'MetadataModel'.
   metadataModel = new MockMetadataModel({});
 
   const a11Messages = [];
@@ -108,6 +110,10 @@ export function testMultipleSelectionWithKeyboard() {
   // Overwrite the selectionModel of the FileTable class (since events
   // would be handled by cr.ui.ListSelectionModel otherwise).
   const sm = new FileListSelectionModel();
+  // @ts-ignore: error TS2352: Conversion of type 'HTMLElement' to type
+  // 'FileTable' may be a mistake because neither type sufficiently overlaps
+  // with the other. If this was intentional, convert the expression to
+  // 'unknown' first.
   const table = /** @type {FileTable} */ (element);
   table.selectionModel = sm;
 
@@ -119,17 +125,26 @@ export function testMultipleSelectionWithKeyboard() {
   ];
   const dataModel = new FileListModel(metadataModel);
   dataModel.splice(0, 0, ...entries);
+  // @ts-ignore: error TS2339: Property 'list' does not exist on type
+  // 'HTMLElement'.
   const tableList = /** @type {FileTableList} */ (element.list);
   tableList.dataModel = dataModel;
   tableList.redraw();
   tableList.focus();
 
   // Grab all the elements in the file list.
+  // @ts-ignore: error TS2339: Property 'items' does not exist on type
+  // 'FileTableList'.
   const listItem0 = tableList.items[0];
+  // @ts-ignore: error TS2339: Property 'items' does not exist on type
+  // 'FileTableList'.
   const listItem1 = tableList.items[1];
+  // @ts-ignore: error TS2339: Property 'items' does not exist on type
+  // 'FileTableList'.
   const listItem2 = tableList.items[2];
 
   // Assert file table list |item| selection state.
+  // @ts-ignore: error TS7006: Parameter 'item' implicitly has an 'any' type.
   function assertItemIsSelected(item, selected = true) {
     if (selected) {
       assertTrue(item.hasAttribute('selected'));
@@ -141,6 +156,7 @@ export function testMultipleSelectionWithKeyboard() {
   }
 
   // Assert file table list |item| focus/lead state.
+  // @ts-ignore: error TS7006: Parameter 'item' implicitly has an 'any' type.
   function assertItemIsTheLead(item, lead = true) {
     if (lead) {
       assertEquals('lead', item.getAttribute('lead'));
@@ -214,17 +230,25 @@ export function testMultipleSelectionWithKeyboard() {
   // But there should be no selected items anymore.
   assertFalse(sm.getCheckSelectMode());
   assertEquals(0, sm.selectedIndexes.length);
+  // @ts-ignore: error TS2339: Property 'items' does not exist on type
+  // 'FileTableList'.
   for (let i = 0; i < tableList.items.length; i++) {
     if (i !== 2) {
       // Item 2 should have focus.
       assertFalse(
+          // @ts-ignore: error TS2339: Property 'items' does not exist on type
+          // 'FileTableList'.
           tableList.items[i].hasAttribute('lead'),
           'item ' + i + ' should not have focus');
     }
     assertEquals(
+        // @ts-ignore: error TS2339: Property 'items' does not exist on type
+        // 'FileTableList'.
         'false', tableList.items[i].getAttribute('aria-selected'),
         'item ' + i + ' should have aria-selected=false');
     assertFalse(
+        // @ts-ignore: error TS2339: Property 'items' does not exist on type
+        // 'FileTableList'.
         tableList.items[i].hasAttribute('selected'),
         'item ' + i + ' should not have selected attr');
   }
@@ -238,6 +262,10 @@ export function testKeyboardOperations() {
   // Overwrite the selectionModel of the FileTable class (since events
   // would be handled by cr.ui.ListSelectionModel otherwise).
   const sm = new FileListSelectionModel();
+  // @ts-ignore: error TS2352: Conversion of type 'HTMLElement' to type
+  // 'FileTable' may be a mistake because neither type sufficiently overlaps
+  // with the other. If this was intentional, convert the expression to
+  // 'unknown' first.
   const table = /** @type {FileTable} */ (element);
   table.selectionModel = sm;
 
@@ -249,6 +277,8 @@ export function testKeyboardOperations() {
   ];
   const dataModel = new FileListModel(metadataModel);
   dataModel.splice(0, 0, ...entries);
+  // @ts-ignore: error TS2339: Property 'list' does not exist on type
+  // 'HTMLElement'.
   const tableList = /** @type {FileTableList} */ (element.list);
   tableList.dataModel = dataModel;
   tableList.redraw();
@@ -329,10 +359,14 @@ function setupFileTableList() {
   // Disable group by.
   dataModel.shouldShowGroupHeading = () => false;
   dataModel.splice(0, 0, ...entries);
+  // @ts-ignore: error TS2339: Property 'list' does not exist on type
+  // 'HTMLElement'.
   const tableList = /** @type {FileTableList} */ (element.list);
   tableList.dataModel = dataModel;
   // Mock item size.
   /** @suppress {accessControls} modify protected method in test. */
+  // @ts-ignore: error TS2339: Property 'getDefaultItemHeight_' does not exist
+  // on type 'FileTableList'.
   tableList.getDefaultItemHeight_ = () => ITEM_HEIGHT;
   tableList.getGroupHeadingHeight_ = () => GROUP_HEADING_HEIGHT;
   return tableList;
@@ -379,6 +413,8 @@ export function testGetItemTop() {
   }
 
   // Enable group by.
+  // @ts-ignore: error TS2345: Argument of type 'ArrayDataModel' is not
+  // assignable to parameter of type 'FileListModel'.
   enableGroupByForDataModel(tableList.dataModel);
   // Item 0 is in group #1/today, nothing is above it.
   assertEquals(tableList.getItemTop(0), 0);
@@ -421,6 +457,8 @@ export function testGetAfterFillerHeight() {
   }
 
   // Enable group by.
+  // @ts-ignore: error TS2345: Argument of type 'ArrayDataModel' is not
+  // assignable to parameter of type 'FileListModel'.
   enableGroupByForDataModel(tableList.dataModel);
   // A special case handled in file_table.js.
   assertEquals(tableList.getAfterFillerHeight(0), 1);
@@ -490,6 +528,8 @@ export function testGetIndexForListOffset() {
   assertEquals(tableList.getIndexForListOffset_(400), 10);
 
   // Enable group by.
+  // @ts-ignore: error TS2345: Argument of type 'ArrayDataModel' is not
+  // assignable to parameter of type 'FileListModel'.
   enableGroupByForDataModel(tableList.dataModel);
   // index      height      total height
   // -----------------------------------
@@ -544,6 +584,8 @@ export function testGetHitElements() {
   assertArrayEquals(tableList.getHitElements(-1, 240, -1, 100), [5, 6, 7, 8]);
 
   // Enable group by.
+  // @ts-ignore: error TS2345: Argument of type 'ArrayDataModel' is not
+  // assignable to parameter of type 'FileListModel'.
   enableGroupByForDataModel(tableList.dataModel);
   // index      height      total height
   // -----------------------------------

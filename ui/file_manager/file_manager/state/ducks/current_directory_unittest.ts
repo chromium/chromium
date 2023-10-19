@@ -50,7 +50,7 @@ function changeSelection(store: Store, entries: Entry[]) {
 
 export function testChangeDirectoryFromEmpty() {
   const store = setupStore();
-  const dir1 = fileSystem.entries['/dir-1'];
+  const dir1 = fileSystem.entries['/dir-1'] as DirectoryEntry;
   // The current directory starts empty.
   assertTrue(store.getState().currentDirectory?.key === undefined);
 
@@ -98,9 +98,9 @@ export function testChangeDirectoryFromEmpty() {
 
 export function testChangeDirectoryTwice() {
   const store = setupStore();
-  const dir2 = fileSystem.entries['/dir-2'];
-  const subDir = fileSystem.entries['/dir-2/sub-dir'];
-  const dir1 = fileSystem.entries['/dir-1'];
+  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
+  const subDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const dir1 = fileSystem.entries['/dir-1'] as DirectoryEntry;
   cd(store, dir2);
   updateContent(store, [subDir]);
   changeSelection(store, [subDir]);
@@ -137,9 +137,9 @@ export function testChangeDirectoryTwice() {
 
 export function testChangeSelection() {
   const store = setupStore();
-  const dir2 = fileSystem.entries['/dir-2'];
-  const subDir = fileSystem.entries['/dir-2/sub-dir'];
-  const file = fileSystem.entries['/dir-2/file.txt'];
+  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
+  const subDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const file = fileSystem.entries['/dir-2/file.txt'] as DirectoryEntry;
   cd(store, dir2);
   updateContent(store, [subDir, file]);
   changeSelection(store, [subDir]);
@@ -189,9 +189,9 @@ export function testChangeSelection() {
 
 export function testChangeDirectoryContent() {
   const store = setupStore();
-  const dir2 = fileSystem.entries['/dir-2'];
-  const subDir = fileSystem.entries['/dir-2/sub-dir'];
-  const file = fileSystem.entries['/dir-2/file.txt'];
+  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
+  const subDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const file = fileSystem.entries['/dir-2/file.txt']!;
   cd(store, dir2);
 
   const want: CurrentDirectory = {
@@ -263,9 +263,9 @@ export function testChangeDirectoryContent() {
 
 export function testComputeHasDlpDisabledFiles() {
   const store = setupStore();
-  const dir2 = fileSystem.entries['/dir-2'];
-  const subDir = fileSystem.entries['/dir-2/sub-dir'];
-  const file = fileSystem.entries['/dir-2/file.txt'];
+  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
+  const subDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const file = fileSystem.entries['/dir-2/file.txt']!;
   cd(store, dir2);
   updateContent(store, [subDir, file]);
 
@@ -336,9 +336,9 @@ const fakeFileTasks: chrome.fileManagerPrivate.FileTask = {
 
 export async function testFetchTasks(done: () => void) {
   const store = setupStore();
-  const dir2 = fileSystem.entries['/dir-2'];
-  const subDir = fileSystem.entries['/dir-2/sub-dir'];
-  const file = fileSystem.entries['/dir-2/file.txt'];
+  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
+  const subDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const file = fileSystem.entries['/dir-2/file.txt']!;
   cd(store, dir2);
   changeSelection(store, [subDir, file]);
 

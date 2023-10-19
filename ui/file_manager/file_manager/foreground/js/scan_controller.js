@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
-import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {Store} from '../../externs/ts/store.js';
 import {updateDirectoryContent} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';
 
@@ -38,6 +36,7 @@ export class ScanController {
     /** @private @const @type {!FileSelectionHandler} */
     this.selectionHandler_ = selectionHandler;
 
+    // @ts-ignore: error TS2304: Cannot find name 'Store'.
     /** @private @const @type {!Store} */
     this.store_ = getStore();
 
@@ -54,7 +53,7 @@ export class ScanController {
     this.scanUpdatedTimer_ = 0;
 
     /**
-     * @private @type {?function()}
+     * @private @type {?function():void}
      */
     this.spinnerHideCallback_ = null;
 

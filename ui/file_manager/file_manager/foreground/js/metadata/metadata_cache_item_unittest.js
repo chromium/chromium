@@ -124,7 +124,7 @@ export function testMetadataCacheItemError() {
   item.storeProperties(1, metadataWithError);
   const property = item.get(['contentThumbnailUrl']);
   assertEquals(undefined, property.contentThumbnailUrl);
-  assertEquals('Error', property.contentThumbnailUrlError.message);
+  assertEquals('Error', property.contentThumbnailUrlError?.message);
 }
 
 export function testMetadataCacheItemErrorShouldNotFetchedDirectly() {

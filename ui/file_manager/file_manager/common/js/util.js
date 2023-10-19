@@ -8,13 +8,12 @@
  * which allows finer-grained control over introducing dependencies.
  */
 
-import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {State} from '../../externs/ts/state.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {constants} from '../../foreground/js/constants.js';
 import {getStore} from '../../state/store.js';
@@ -78,6 +77,7 @@ Object.freeze(util.FileErrorLocalizedName);
  * @return {string} Translated file error string.
  */
 util.getFileErrorString = name => {
+  // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index type.
   const error = util.FileErrorLocalizedName[name] || 'FILE_ERROR_GENERIC';
   return loadTimeData.getString(error);
 };
@@ -104,12 +104,13 @@ Object.freeze(util.FileError);
 /**
  * Remove a file or a directory.
  * @param {Entry} entry The entry to remove.
- * @param {function()} onSuccess The success callback.
- * @param {function(DOMError)} onError The error callback.
+ * @param {function():void} onSuccess The success callback.
+ * @param {function(DOMError):void} onError The error callback.
  */
 util.removeFileOrDirectory = (entry, onSuccess, onError) => {
   if (entry.isDirectory) {
-    entry.removeRecursively(onSuccess, onError);
+    /** @type {!DirectoryEntry} */ (entry).removeRecursively(
+        onSuccess, onError);
   } else {
     entry.remove(onSuccess, onError);
   }
@@ -145,30 +146,39 @@ util.bytesToString = (bytes, addedPrecision = 0) => {
   ];
 
   // Rounding with precision.
+  // @ts-ignore: error TS7006: Parameter 'decimals' implicitly has an 'any'
+  // type.
   const round = (value, decimals) => {
     const scale = Math.pow(10, decimals);
     return Math.round(value * scale) / scale;
   };
 
+  // @ts-ignore: error TS7006: Parameter 'u' implicitly has an 'any' type.
   const str = (n, u) => {
     return strf(u, n.toLocaleString());
   };
 
+  // @ts-ignore: error TS7006: Parameter 'u' implicitly has an 'any' type.
   const fmt = (s, u) => {
     const rounded = round(bytes / s, 1 + addedPrecision);
     return str(rounded, u);
   };
 
   // Less than 1KB is displayed like '80 bytes'.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   if (bytes < STEPS[1]) {
     return str(bytes, UNITS[0]);
   }
 
   // Up to 1MB is displayed as rounded up number of KBs, or with the desired
   // number of precision digits.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   if (bytes < STEPS[2]) {
-    const rounded = addedPrecision ? round(bytes / STEPS[1], addedPrecision) :
-                                     Math.ceil(bytes / STEPS[1]);
+    const rounded = addedPrecision ?
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
+        round(bytes / STEPS[1], addedPrecision) :
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
+        Math.ceil(bytes / STEPS[1]);
     return str(rounded, UNITS[1]);
   }
 
@@ -177,6 +187,7 @@ util.bytesToString = (bytes, addedPrecision = 0) => {
   let i;
 
   for (i = 2 /* MB */; i < UNITS.length - 1; i++) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     if (bytes < STEPS[i + 1]) {
       return fmt(STEPS[i], UNITS[i]);
     }
@@ -193,7 +204,7 @@ util.bytesToString = (bytes, addedPrecision = 0) => {
 util.extractFilePath = url => {
   const match =
       /^filesystem:[\w-]*:\/\/[\w-]*\/(external|persistent|temporary)(\/.*)$/
-          .exec(url);
+          .exec(url || '');
   const path = match && match[2];
   if (!path) {
     return null;
@@ -229,7 +240,10 @@ export function str(id) {
  * @param {...*} var_args The values to replace into the string.
  * @return {string} The translated string with replaced values.
  */
+// @ts-ignore: error TS6133: 'var_args' is declared but its value is never read.
 export function strf(id, var_args) {
+  // @ts-ignore: error TS2345: Argument of type 'IArguments' is not assignable
+  // to parameter of type '[id: string, ...args: (string | number)[]]'.
   return loadTimeData.getStringF.apply(loadTimeData, arguments);
 }
 
@@ -241,6 +255,8 @@ util.strf = strf;
  *     select folder dialog. False otherwise.
  */
 util.runningInBrowser = () => {
+  // @ts-ignore: error TS2339: Property 'appID' does not exist on type 'Window &
+  // typeof globalThis'.
   return !window.appID;
 };
 
@@ -295,6 +311,8 @@ Object.freeze(util.EntryChangedKind);
 util.isFakeEntry = entry => {
   return (
       entry.getParent === undefined ||
+      // @ts-ignore: error TS2339: Property 'isNativeType' does not exist on
+      // type 'FileSystemEntry | FilesAppEntry'.
       (entry.isNativeType !== undefined && !entry.isNativeType));
 };
 
@@ -355,7 +373,7 @@ util.getTeamDriveName = entry => {
   if (tree.length < 3) {
     return '';
   }
-  return tree[2];
+  return tree[2] || '';
 };
 
 /**
@@ -373,6 +391,8 @@ util.isRecentRootType = rootType => {
  * @returns {boolean}
  */
 util.isRecentRoot = entry => {
+  // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
+  // 'FileSystemEntry | FilesAppEntry'.
   return util.isFakeEntry(entry) && util.isRecentRootType(entry.rootType);
 };
 
@@ -421,6 +441,8 @@ util.isTrashRootType = rootType => {
  * @returns {boolean}
  */
 util.isTrashRoot = entry => {
+  // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
+  // 'FileSystemEntry | FilesAppEntry'.
   return entry.fullPath === '/' && util.isTrashRootType(entry.rootType);
 };
 
@@ -430,6 +452,8 @@ util.isTrashRoot = entry => {
  * @returns {boolean}
  */
 util.isTrashEntry = entry => {
+  // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
+  // 'FileSystemEntry | FilesAppEntry'.
   return entry.fullPath !== '/' && util.isTrashRootType(entry.rootType);
 };
 
@@ -635,6 +659,8 @@ util.isDescendantEntry = (ancestorEntry, childEntry) => {
     // VolumeEntry has to check to root entry descendant entry.
     const nativeEntry = entryList.getNativeEntry();
     if (nativeEntry &&
+        // @ts-ignore: error TS2345: Argument of type 'FileSystem | null' is not
+        // assignable to parameter of type 'FileSystem'.
         util.isSameFileSystem(nativeEntry.filesystem, childEntry.filesystem)) {
       return util.isDescendantEntry(
           /** @type {!DirectoryEntry} */ (nativeEntry), childEntry);
@@ -647,6 +673,8 @@ util.isDescendantEntry = (ancestorEntry, childEntry) => {
 
       // root entry might not be resolved yet.
       const volumeEntry =
+          // @ts-ignore: error TS2339: Property 'getNativeEntry' does not exist
+          // on type 'FileSystemEntry | FilesAppEntry'.
           /** @type {DirectoryEntry} */ (ancestorChild.getNativeEntry());
       return volumeEntry &&
           (util.isSameEntry(volumeEntry, childEntry) ||
@@ -654,6 +682,8 @@ util.isDescendantEntry = (ancestorEntry, childEntry) => {
     });
   }
 
+  // @ts-ignore: error TS2345: Argument of type 'FileSystem | null' is not
+  // assignable to parameter of type 'FileSystem'.
   if (!util.isSameFileSystem(ancestorEntry.filesystem, childEntry.filesystem)) {
     return false;
   }
@@ -677,6 +707,8 @@ util.isDescendantEntry = (ancestorEntry, childEntry) => {
  * The last URL with visitURL().
  * @private @type {string}
  */
+// @ts-ignore: error TS7034: Variable 'lastVisitedURL' implicitly has type 'any'
+// in some locations where its type cannot be determined.
 let lastVisitedURL;
 
 /**
@@ -700,6 +732,8 @@ util.visitURL = url => {
  * @return {string} The last URL visited.
  */
 util.getLastVisitedURL = () => {
+  // @ts-ignore: error TS7005: Variable 'lastVisitedURL' implicitly has an 'any'
+  // type.
   return lastVisitedURL;
 };
 
@@ -722,6 +756,9 @@ util.entriesToURLs = entries => {
     // When building file_manager_base.js, cachedUrl is not referred other than
     // here. Thus closure compiler raises an error if we refer the property like
     // entry.cachedUrl.
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type '"cachedUrl"' can't be used to index type
+    // 'FileSystemEntry'.
     return entry['cachedUrl'] || entry.toURL();
   });
 };
@@ -732,7 +769,11 @@ util.entriesToURLs = entries => {
  * @param {Array<string>} urls Input array of URLs.
  * @param {function(!Array<!Entry>, !Array<!URL>)=} opt_callback Completion
  *     callback with array of success Entries and failure URLs.
- * @return {Promise} Promise fulfilled with the object that has entries property
+ * TODO: Add interface for the return object type.
+ * @return {Promise<*>} Promise fulfilled with the object that has entries
+property
+// @ts-ignore: error TS2314: Generic type 'Promise<T>' requires 1 type
+argument(s).
  *     and failureUrls property. The promise is never rejected.
  */
 util.URLsToEntries = (urls, opt_callback) => {
@@ -742,6 +783,8 @@ util.URLsToEntries = (urls, opt_callback) => {
             entry => {
               return {entry: entry};
             },
+            // @ts-ignore: error TS6133: 'failureUrl' is declared but its value
+            // is never read.
             failureUrl => {
               // Not an error. Possibly, the file is not accessible anymore.
               console.warn('Failed to resolve the file with url: ' + url + '.');
@@ -752,10 +795,16 @@ util.URLsToEntries = (urls, opt_callback) => {
     const entries = [];
     const failureUrls = [];
     for (let i = 0; i < results.length; i++) {
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       if ('entry' in results[i]) {
+        // @ts-ignore: error TS2339: Property 'entry' does not exist on type '{
+        // entry: FileSystemEntry; } | { failureUrl: string; }'.
         entries.push(results[i].entry);
       }
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       if ('failureUrl' in results[i]) {
+        // @ts-ignore: error TS2339: Property 'failureUrl' does not exist on
+        // type '{ entry: FileSystemEntry; } | { failureUrl: string; }'.
         failureUrls.push(results[i].failureUrl);
       }
     }
@@ -801,7 +850,11 @@ util.urlToEntry = url => {
  */
 util.isTeleported = window => {
   return new Promise(onFulfilled => {
+    // @ts-ignore: error TS2339: Property 'chrome' does not exist on type
+    // 'Window'.
     window.chrome.fileManagerPrivate.getProfiles(
+        // @ts-ignore: error TS7006: Parameter 'displayedId' implicitly has an
+        // 'any' type.
         (profiles, currentId, displayedId) => {
           onFulfilled(currentId !== displayedId);
         });
@@ -815,6 +868,8 @@ util.isTeleported = window => {
  * @param {string} message Test message to send.
  */
 util.testSendMessage = message => {
+  // @ts-ignore: error TS2339: Property 'chrome' does not exist on type
+  // 'Window'.
   const test = chrome.test || window.top.chrome.test;
   if (test) {
     test.sendMessage(message);
@@ -1055,8 +1110,10 @@ util.checkAPIError = () => {
 /**
  * Makes a promise which will be fulfilled |ms| milliseconds later.
  * @param {number} ms The delay in milliseconds.
- * @return {!Promise}
+ * @return {!Promise<void>}
  */
+// @ts-ignore: error TS2314: Generic type 'Promise<T>' requires 1 type
+// argument(s).
 util.delay = ms => {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
@@ -1066,13 +1123,17 @@ util.delay = ms => {
 /**
  * Makes a promise which will be rejected if the given |promise| is not resolved
  * or rejected for |ms| milliseconds.
- * @param {!Promise} promise A promise which needs to be timed out.
+ * @param {!Promise<*>} promise A promise which needs to be timed out.
  * @param {number} ms Delay for the timeout in milliseconds.
  * @param {string=} opt_message Error message for the timeout.
- * @return {!Promise} A promise which can be rejected by timeout.
+// @ts-ignore: error TS2314: Generic type 'Promise<T>' requires 1 type
+argument(s).
+ * @return {!Promise<*>} A promise which can be rejected by timeout.
  */
 util.timeoutPromise = (promise, ms, opt_message) => {
   return Promise.race([
+    // @ts-ignore: error TS2314: Generic type 'Promise<T>' requires 1 type
+    // argument(s).
     promise,
     util.delay(ms).then(() => {
       throw new Error(opt_message || 'Operation timed out.');
@@ -1210,11 +1271,11 @@ util.isNewDirectoryTreeEnabled = () => {
 /**
  * Retrieves all entries inside the given |rootEntry|.
  * @param {!DirectoryEntry} rootEntry
- * @param {function(!Array<!Entry>)} entriesCallback Called when some chunk of
- *     entries are read. This can be called a couple of times until the
+ * @param {function(!Array<!Entry>):void} entriesCallback Called when some chunk
+ *     of entries are read. This can be called a couple of times until the
  *     completion.
- * @param {function()} successCallback Called when the read is completed.
- * @param {function(DOMError)} errorCallback Called when an error occurs.
+ * @param {function():void} successCallback Called when the read is completed.
+ * @param {function(DOMError):void} errorCallback Called when an error occurs.
  * @param {function():boolean} shouldStop Callback to check if the read process
  *     should stop or not. When this callback is called and it returns true,
  *     the remaining recursive reads will be aborted.
@@ -1226,12 +1287,16 @@ util.readEntriesRecursively =
     (rootEntry, entriesCallback, successCallback, errorCallback, shouldStop,
      opt_maxDepth) => {
       let numRunningTasks = 0;
+      // @ts-ignore: error TS7034: Variable 'error' implicitly has type 'any' in
+      // some locations where its type cannot be determined.
       let error = null;
       const maxDepth = opt_maxDepth === undefined ? -1 : opt_maxDepth;
       const maybeRunCallback = () => {
         if (numRunningTasks === 0) {
           if (shouldStop()) {
             errorCallback(createDOMError(util.FileError.ABORT_ERR));
+            // @ts-ignore: error TS7005: Variable 'error' implicitly has an
+            // 'any' type.
           } else if (error) {
             errorCallback(error);
           } else {
@@ -1239,15 +1304,25 @@ util.readEntriesRecursively =
           }
         }
       };
+      // @ts-ignore: error TS7006: Parameter 'depth' implicitly has an 'any'
+      // type.
       const processEntry = (entry, depth) => {
+        // @ts-ignore: error TS7006: Parameter 'fileError' implicitly has an
+        // 'any' type.
         const onError = fileError => {
+          // @ts-ignore: error TS7005: Variable 'error' implicitly has an 'any'
+          // type.
           if (!error) {
             error = fileError;
           }
           numRunningTasks--;
           maybeRunCallback();
         };
+        // @ts-ignore: error TS7006: Parameter 'entries' implicitly has an 'any'
+        // type.
         const onSuccess = entries => {
+          // @ts-ignore: error TS7005: Variable 'error' implicitly has an 'any'
+          // type.
           if (shouldStop() || error || entries.length === 0) {
             numRunningTasks--;
             maybeRunCallback();
@@ -1277,15 +1352,22 @@ util.readEntriesRecursively =
  * https://chromium.googlesource.com/chromiumos/platform/tast-tests
  *
  * Get all entries for the given volume.
- * @param {!VolumeInfo} volumeInfo
- * @return {!Promise<Object<Entry>>} all entries keyed by fullPath.
+ * @param {!import('../../externs/volume_info.js').VolumeInfo} volumeInfo
+ * @return {!Promise<Record<string, Entry>>} all entries keyed by fullPath.
  */
 util.getEntries = volumeInfo => {
   const root = volumeInfo.fileSystem.root;
   return new Promise((resolve, reject) => {
     const allEntries = {'/': root};
+    // @ts-ignore: error TS7006: Parameter 'someEntries' implicitly has an 'any'
+    // type.
     function entriesCallback(someEntries) {
+      // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any'
+      // type.
       someEntries.forEach(entry => {
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'any' can't be used to index type '{ '/':
+        // FileSystemDirectoryEntry; }'.
         allEntries[entry.fullPath] = entry;
       });
     }
@@ -1360,6 +1442,8 @@ util.unwrapEntry = entry => {
     return entry;
   }
 
+  // @ts-ignore: error TS2339: Property 'getNativeEntry' does not exist on type
+  // 'FileSystemEntry | FilesAppEntry'.
   const nativeEntry = entry.getNativeEntry && entry.getNativeEntry();
   if (nativeEntry) {
     return nativeEntry;
@@ -1439,8 +1523,12 @@ util.isSameVolume = (entries, volumeManager) => {
     if (!entries[i]) {
       return false;
     }
+    // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+    // FilesAppEntry | undefined' is not assignable to parameter of type
+    // 'FileSystemEntry | FilesAppEntry'.
     const volumeInfoToCompare = volumeManager.getVolumeInfo(assert(entries[i]));
     if (!volumeInfoToCompare ||
+        // @ts-ignore: error TS18047: 'volumeInfo' is possibly 'null'.
         volumeInfoToCompare.volumeId !== volumeInfo.volumeId) {
       return false;
     }
@@ -1545,7 +1633,7 @@ util.isNullOrUndefined = (value) => value === null || value === undefined;
 util.isOneDriveId = (providerId) => providerId === constants.ODFS_EXTENSION_ID;
 
 /**
- * @param {?VolumeInfo} volumeInfo
+ * @param {?import('../../externs/volume_info.js').VolumeInfo} volumeInfo
  * @return {boolean}
  */
 util.isOneDrive = (volumeInfo) => {
@@ -1555,7 +1643,7 @@ util.isOneDrive = (volumeInfo) => {
 /**
  * Returns the ODFS root as an Entry. Request the actions of this
  * Entry to get ODFS metadata.
- * @param {VolumeInfo} odfsVolumeInfo
+ * @param {import('../../externs/volume_info.js').VolumeInfo} odfsVolumeInfo
  * @return {Entry|FilesAppEntry}
  */
 util.getODFSMetadataQueryEntry = (odfsVolumeInfo) => {
@@ -1565,7 +1653,7 @@ util.getODFSMetadataQueryEntry = (odfsVolumeInfo) => {
 /**
  * Return true if the volume with |volumeInfo| is an
  * interactive volume.
- * @param {VolumeInfo} volumeInfo
+ * @param {import('../../externs/volume_info.js').VolumeInfo} volumeInfo
  * @return {boolean}
  */
 util.isInteractiveVolume = (volumeInfo) => {

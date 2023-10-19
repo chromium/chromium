@@ -10,10 +10,11 @@ import {MetadataParser} from './metadata_parser.js';
 export class FunctionSequence {
   /**
    * @param {string} name Name of the function.
-   * @param {Array} steps Array of functions to invoke in sequence.
+   * @param {Array<Function>} steps Array of functions to invoke in sequence.
    * @param {MetadataParser} logger Logger object.
-   * @param {function()} callback Callback to invoke on success.
-   * @param {function(string)} failureCallback Callback to invoke on failure.
+   * @param {function():void} callback Callback to invoke on success.
+   * @param {function(string):void} failureCallback Callback to invoke on
+   *     failure.
    */
   constructor(name, steps, logger, callback, failureCallback) {
     // Private variables hidden in closure
@@ -36,7 +37,7 @@ export class FunctionSequence {
   /**
    * Sets new callback
    *
-   * @param {function()} callback New callback to call on succeed.
+   * @param {function():void} callback New callback to call on succeed.
    */
   setCallback(callback) {
     this.callback_ = callback;
@@ -45,7 +46,8 @@ export class FunctionSequence {
   /**
    * Sets new error callback
    *
-   * @param {function(string)} failureCallback New callback to call on failure.
+   * @param {function(string):void} failureCallback New callback to call on
+   *     failure.
    */
   setFailureCallback(failureCallback) {
     this.failureCallback_ = failureCallback;
@@ -61,7 +63,7 @@ export class FunctionSequence {
    */
   onError_(err) {
     this.logger.vlog(
-        'Failed step: ' + this.steps_[this.currentStepIdx_].name + ': ' + err);
+        'Failed step: ' + this.steps_[this.currentStepIdx_]?.name + ': ' + err);
     if (!this.failed_) {
       this.failed_ = true;
       this.failureCallback_(err);
@@ -87,9 +89,11 @@ export class FunctionSequence {
    * This method should not be used externally. In external
    * cases should be used nextStep function, which is defined in closure and
    * thus has access to internal variables of functionsequence.
-   * @param {...} var_args Arguments to be passed to the next step.
+   * @param {...*} var_args Arguments to be passed to the next step.
    * @private
    */
+  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
+  // read.
   nextStep_(var_args) {
     if (this.failed_) {
       return;
@@ -97,14 +101,17 @@ export class FunctionSequence {
 
     if (++this.currentStepIdx_ >= this.steps_.length) {
       this.logger.vlog('Sequence ended');
+      // @ts-ignore: error TS2345: Argument of type 'IArguments' is not
+      // assignable to parameter of type '[]'.
       this.callback_.apply(this, arguments);
     } else {
       this.logger.vlog(
           'Attempting to start step [' +
-          this.steps_[this.currentStepIdx_].name + ']');
+          this.steps_[this.currentStepIdx_]?.name + ']');
       try {
-        this.steps_[this.currentStepIdx_].apply(this, arguments);
+        this.steps_[this.currentStepIdx_]?.apply(this, arguments);
       } catch (e) {
+        // @ts-ignore: error TS18046: 'e' is of type 'unknown'.
         this.onError(e.toString());
       }
     }
@@ -113,8 +120,10 @@ export class FunctionSequence {
   /**
    * This function should be called only once on start, so start sequence
    * pipeline
-   * @param {...} var_args Arguments to be passed to the first step.
+   * @param {...*} var_args Arguments to be passed to the first step.
    */
+  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
+  // read.
   start(var_args) {
     if (this.started) {
       throw new Error('"Start" method of FunctionSequence was called twice');
@@ -124,6 +133,8 @@ export class FunctionSequence {
         'Starting sequence with ' + arguments.length + ' arguments');
 
     this.started = true;
+    // @ts-ignore: error TS2345: Argument of type 'IArguments' is not assignable
+    // to parameter of type 'any[]'.
     this.nextStep.apply(this, arguments);
   }
 
@@ -131,8 +142,9 @@ export class FunctionSequence {
    * Add Function object mimics to FunctionSequence
    * @private
    * @param {*} obj Object.
-   * @param {Array} args Arguments.
+   * @param {Array<*>} args Arguments.
    */
+  // @ts-ignore: error TS6133: 'obj' is declared but its value is never read.
   apply_(obj, args) {
     this.start.apply(this, args);
   }

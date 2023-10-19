@@ -9,7 +9,6 @@ import {FileExtensionType, FileType} from '../../common/js/file_type.js';
 import {getRecentDateBucket, getTranslationKeyForDateBucket} from '../../common/js/recent_date_bucket.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {EntryLocation} from '../../externs/entry_location.js';
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {MetadataModel} from './metadata/metadata_model.js';
@@ -27,6 +26,7 @@ const FIELDS_SUPPORT_GROUP_BY = new Set([
  * group value can only be one of them.
  * @typedef {!chrome.fileManagerPrivate.RecentDateBucket|boolean}
  */
+// @ts-ignore: error TS7005: Variable 'GroupValue' implicitly has an 'any' type.
 export let GroupValue;
 
 /**
@@ -43,6 +43,8 @@ export let GroupValue;
  *   label: string,
  * }}
  */
+// @ts-ignore: error TS7005: Variable 'GroupHeader' implicitly has an 'any'
+// type.
 export let GroupHeader;
 
 /**
@@ -116,11 +118,11 @@ export class FileListModel extends ArrayDataModel {
      */
     this.useModificationByMeTime_ = false;
 
-    /** @private @type {VolumeManager} The volume manager. */
+    /** @private @type {?VolumeManager} The volume manager. */
     this.volumeManager_ = null;
 
     /**
-     * @private @type {EntryLocation} Used to get the label for entries when
+     * @private @type {?EntryLocation} Used to get the label for entries when
      *     sorting by label.
      */
     this.locationInfo_ = null;
@@ -143,6 +145,9 @@ export class FileListModel extends ArrayDataModel {
      */
     this.groupBySnapshot_ =
         Array.from(FIELDS_SUPPORT_GROUP_BY).reduce((acc, field) => {
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'string' can't be used to index type
+          // '{}'.
           acc[field] = {
             sortDirection: 'asc',
             groups: [],
@@ -186,10 +191,11 @@ export class FileListModel extends ArrayDataModel {
    * Called before a sort happens so that you may fetch additional data
    * required for the sort.
    * @param {string} field Sort field.
-   * @param {function()} callback The function to invoke when preparation
+   * @param {function():void} callback The function to invoke when preparation
    *     is complete.
    * @override
    */
+  // @ts-ignore: error TS6133: 'field' is declared but its value is never read.
   prepareSort(field, callback) {
     // Starts the actual sorting immediately as we don't need any preparation to
     // sort the file list and we want to start actual sorting as soon as
@@ -210,14 +216,18 @@ export class FileListModel extends ArrayDataModel {
    * @param {number} index The index of the item to update.
    * @param {number} deleteCount The number of items to remove.
    * @param {...*} var_args The items to add.
-   * @return {!Array} An array with the removed items.
+   * @return {!Array<*>} An array with the removed items.
    * @override
    */
+  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
+  // read.
   splice(index, deleteCount, var_args) {
     const insertPos = Math.max(0, Math.min(index, this.indexes_.length));
     deleteCount = Math.min(deleteCount, this.indexes_.length - insertPos);
 
     for (let i = insertPos; i < insertPos + deleteCount; i++) {
+      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+      // type.
       this.onRemoveEntryFromList_(this.array_[this.indexes_[i]]);
     }
     for (let i = 2; i < arguments.length; i++) {
@@ -226,10 +236,17 @@ export class FileListModel extends ArrayDataModel {
 
     // Prepare a comparison function to sort the list.
     let comp = null;
+    // @ts-ignore: error TS2339: Property 'field' does not exist on type
+    // 'Object'.
     if (this.sortStatus.field && this.compareFunctions_) {
+      // @ts-ignore: error TS2339: Property 'field' does not exist on type
+      // 'Object'.
       const compareFunction = this.compareFunctions_[this.sortStatus.field];
       if (compareFunction) {
+        // @ts-ignore: error TS2339: Property 'direction' does not exist on type
+        // 'Object'.
         const dirMultiplier = this.sortStatus.direction === 'desc' ? -1 : 1;
+        // @ts-ignore: error TS7006: Parameter 'b' implicitly has an 'any' type.
         comp = (a, b) => {
           return compareFunction(a, b) * dirMultiplier;
         };
@@ -251,6 +268,8 @@ export class FileListModel extends ArrayDataModel {
     const deletedItems = [];
     const currentItems = [];
     for (let i = 0; i < this.indexes_.length; i++) {
+      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+      // type.
       const item = this.array_[this.indexes_[i]];
       if (insertPos <= i && i < insertPos + deleteCount) {
         deletedItems.push(item);
@@ -267,7 +286,10 @@ export class FileListModel extends ArrayDataModel {
     }
 
     // Merge the list of existing item and the list of new items.
+    // @ts-ignore: error TS7008: Member 'indexes_' implicitly has an 'any[]'
+    // type.
     this.indexes_ = [];
+    // @ts-ignore: error TS7008: Member 'array_' implicitly has an 'any[]' type.
     this.array_ = [];
     let p = 0;
     let q = 0;
@@ -313,6 +335,8 @@ export class FileListModel extends ArrayDataModel {
     let spliceIndex = insertPos;
     if (arguments.length > 2) {
       for (let i = 0; i < this.indexes_.length; i++) {
+        // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+        // type.
         if (this.array_[this.indexes_[i]] === arguments[2]) {
           spliceIndex = i;
           break;
@@ -324,8 +348,14 @@ export class FileListModel extends ArrayDataModel {
     this.dispatchPermutedEvent_(permutation);
     // TODO(arv): Maybe unify splice and change events?
     const spliceEvent = new Event('splice');
+    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
+    // 'Event'.
     spliceEvent.removed = deletedItems;
+    // @ts-ignore: error TS2339: Property 'added' does not exist on type
+    // 'Event'.
     spliceEvent.added = Array.prototype.slice.call(arguments, 2);
+    // @ts-ignore: error TS2339: Property 'index' does not exist on type
+    // 'Event'.
     spliceEvent.index = spliceIndex;
     this.dispatchEvent(spliceEvent);
 
@@ -337,10 +367,17 @@ export class FileListModel extends ArrayDataModel {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'newItem' implicitly has an 'any' type.
   replaceItem(oldItem, newItem) {
+    // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | null' is
+    // not assignable to parameter of type 'FileSystemEntry'.
     this.onRemoveEntryFromList_(/** @type {?Entry} */ (oldItem));
+    // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | null' is
+    // not assignable to parameter of type 'FileSystemEntry'.
     this.onAddEntryToList_(/** @type {?Entry} */ (newItem));
 
+    // @ts-ignore: error TS2345: Argument of type 'IArguments' is not assignable
+    // to parameter of type '[oldItem: any, newItem: any]'.
     ArrayDataModel.prototype.replaceItem.apply(this, arguments);
   }
 
@@ -390,6 +427,7 @@ export class FileListModel extends ArrayDataModel {
     }
 
     const mimeType =
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
             .contentMimeType;
     if (FileType.isImage(entry, mimeType) || FileType.isRaw(entry, mimeType)) {
@@ -410,6 +448,7 @@ export class FileListModel extends ArrayDataModel {
     }
 
     const mimeType =
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
             .contentMimeType;
     if (FileType.isImage(entry, mimeType) || FileType.isRaw(entry, mimeType)) {
@@ -451,6 +490,8 @@ export class FileListModel extends ArrayDataModel {
       return a.isDirectory === this.isDescendingOrder_ ? 1 : -1;
     }
 
+    // @ts-ignore: error TS2345: Argument of type 'EntryLocation | null' is not
+    // assignable to parameter of type 'EntryLocation'.
     return util.compareLabel(this.locationInfo_, a, b);
   }
 
@@ -469,7 +510,11 @@ export class FileListModel extends ArrayDataModel {
 
     const properties = this.metadataModel_.getCache(
         [a, b], ['modificationTime', 'modificationByMeTime']);
+    // @ts-ignore: error TS2345: Argument of type 'MetadataItem | undefined' is
+    // not assignable to parameter of type 'Object'.
     const aTime = this.getMtime_(properties[0]);
+    // @ts-ignore: error TS2345: Argument of type 'MetadataItem | undefined' is
+    // not assignable to parameter of type 'Object'.
     const bTime = this.getMtime_(properties[1]);
 
     if (aTime > bTime) {
@@ -493,9 +538,13 @@ export class FileListModel extends ArrayDataModel {
    */
   getMtime_(properties) {
     if (this.useModificationByMeTime_) {
+      // @ts-ignore: error TS2339: Property 'modificationTime' does not exist on
+      // type 'Object'.
       return properties.modificationByMeTime || properties.modificationTime ||
           0;
     }
+    // @ts-ignore: error TS2339: Property 'modificationTime' does not exist on
+    // type 'Object'.
     return properties.modificationTime || 0;
   }
 
@@ -513,7 +562,9 @@ export class FileListModel extends ArrayDataModel {
     }
 
     const properties = this.metadataModel_.getCache([a, b], ['size']);
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     const aSize = properties[0].size || 0;
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     const bSize = properties[1].size || 0;
 
     return aSize !== bSize ? aSize - bSize : util.compareName(a, b);
@@ -535,8 +586,10 @@ export class FileListModel extends ArrayDataModel {
     const properties =
         this.metadataModel_.getCache([a, b], ['contentMimeType']);
     const aType = FileListModel.getFileTypeString(
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         FileType.getType(a, properties[0].contentMimeType));
     const bType = FileListModel.getFileTypeString(
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         FileType.getType(b, properties[1].contentMimeType));
 
     const result = util.collator.compare(aType, bType);
@@ -568,6 +621,8 @@ export class FileListModel extends ArrayDataModel {
    */
   set groupByField(field) {
     this.groupByField_ = field;
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type '{}'.
     if (!field || this.groupBySnapshot_[field].groups.length === 0) {
       this.updateGroupBySnapshot_();
     }
@@ -584,6 +639,8 @@ export class FileListModel extends ArrayDataModel {
     // GroupBy modification time is only valid when the current sort field is
     // modification time.
     if (this.groupByField_ === GROUP_BY_FIELD_MODIFICATION_TIME) {
+      // @ts-ignore: error TS2339: Property 'field' does not exist on type
+      // 'Object'.
       return this.sortStatus.field === this.groupByField_;
     }
     return FIELDS_SUPPORT_GROUP_BY.has(this.groupByField_);
@@ -599,6 +656,8 @@ export class FileListModel extends ArrayDataModel {
     const properties = this.metadataModel_.getCache(
         [item], ['modificationTime', 'modificationByMeTime']);
     return getRecentDateBucket(
+        // @ts-ignore: error TS2345: Argument of type 'MetadataItem | undefined'
+        // is not assignable to parameter of type 'Object'.
         new Date(this.getMtime_(properties[0])), new Date(now));
   }
 
@@ -641,7 +700,10 @@ export class FileListModel extends ArrayDataModel {
     }
     assert(this.groupByField_);
     /** @type {!GroupBySnapshot} */
+    // @ts-ignore: error TS2538: Type 'null' cannot be used as an index type.
     const snapshot = this.groupBySnapshot_[this.groupByField_];
+    // @ts-ignore: error TS2339: Property 'direction' does not exist on type
+    // 'Object'.
     snapshot.sortDirection = this.sortStatus.direction;
     snapshot.groups = [];
 
@@ -657,6 +719,7 @@ export class FileListModel extends ArrayDataModel {
       }
       if (prevItemGroup !== curItemGroup) {
         if (i > 0) {
+          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           snapshot.groups[snapshot.groups.length - 1].endIndex = i - 1;
         }
         snapshot.groups.push({
@@ -670,6 +733,7 @@ export class FileListModel extends ArrayDataModel {
     }
     if (snapshot.groups.length > 0) {
       // The last element is always the end of the last group.
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       snapshot.groups[snapshot.groups.length - 1].endIndex = this.length - 1;
     }
   }
@@ -694,8 +758,11 @@ export class FileListModel extends ArrayDataModel {
     }
     assert(this.groupByField_);
     /** @type {GroupBySnapshot} */
+    // @ts-ignore: error TS2538: Type 'null' cannot be used as an index type.
     const snapshot = this.groupBySnapshot_[this.groupByField_];
     if (this.groupByField_ === GROUP_BY_FIELD_MODIFICATION_TIME) {
+      // @ts-ignore: error TS2339: Property 'direction' does not exist on type
+      // 'Object'.
       if (this.sortStatus.direction === snapshot.sortDirection) {
         return snapshot.groups;
       }

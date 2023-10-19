@@ -40,7 +40,7 @@ export class FileTableList extends TableList {
     // To silence closure compiler.
     super();
     /*
-     * @type {?function(number, number)}
+     * @type {?function(number, number):void}
      */
     this.onMergeItems_ = null;
 
@@ -56,7 +56,9 @@ export class FileTableList extends TableList {
   }
 
   /**
-   * @param {function(number, number)} onMergeItems callback called from
+   * @param {function(number, number):void} onMergeItems callback called from
+// @ts-ignore: error TS7014: Function type, which lacks return-type annotation,
+implicitly has an 'any' return type.
    *     |mergeItems| with the parameters |beginIndex| and |endIndex|.
    */
   setOnMergeItems(onMergeItems) {
@@ -65,7 +67,11 @@ export class FileTableList extends TableList {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'endIndex' implicitly has an 'any'
+  // type.
   mergeItems(beginIndex, endIndex) {
+    // @ts-ignore: error TS2339: Property 'mergeItems' does not exist on type
+    // 'TableList'.
     super.mergeItems(beginIndex, endIndex);
 
     const fileListModel = /** @type {FileListModel} */ (this.dataModel);
@@ -92,6 +98,7 @@ export class FileTableList extends TableList {
         // For first item in each group, we add a title div before the element.
         const title = document.createElement('div');
         title.setAttribute('role', 'heading');
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         title.innerText = startIndexToGroupLabel.get(i).label;
         title.classList.add(
             'group-heading', `group-by-${fileListModel.groupByField}`);
@@ -105,12 +112,15 @@ export class FileTableList extends TableList {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'sm' implicitly has an 'any' type.
   createSelectionController(sm) {
     return new FileListSelectionController(assert(sm), this);
   }
 
   /** @return {A11yAnnounce} */
   get a11y() {
+    // @ts-ignore: error TS2339: Property 'a11y' does not exist on type
+    // 'Element'.
     return this.table.a11y;
   }
 
@@ -119,6 +129,8 @@ export class FileTableList extends TableList {
    * @return {string}
    */
   getItemLabel(index) {
+    // @ts-ignore: error TS2339: Property 'getItemLabel' does not exist on type
+    // 'Element'.
     return this.table.getItemLabel(index);
   }
 
@@ -168,13 +180,18 @@ export class FileTableList extends TableList {
    * consider the potential group headings included in these items.
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'offset' implicitly has an 'any' type.
   getIndexForListOffset_(offset) {
     const fileListModel = /** @type {FileListModel} */ (this.dataModel);
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
+    // @ts-ignore: error TS2339: Property 'getDefaultItemHeight_' does not exist
+    // on type 'FileTableList'.
     const itemHeight = this.getDefaultItemHeight_();
 
     // Without heading the original logic suffices.
     if (groupBySnapshot.length === 0 || !itemHeight) {
+      // @ts-ignore: error TS2339: Property 'getIndexForListOffset_' does not
+      // exist on type 'TableList'.
       return super.getIndexForListOffset_(offset);
     }
 
@@ -213,7 +230,10 @@ export class FileTableList extends TableList {
    * of list.js.
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
   getItemTop(index) {
+    // @ts-ignore: error TS2339: Property 'getDefaultItemHeight_' does not exist
+    // on type 'FileTableList'.
     const itemHeight = this.getDefaultItemHeight_();
     const countOfGroupHeadings = this.getGroupHeadingCountBeforeIndex_(index);
     return index * itemHeight +
@@ -227,11 +247,15 @@ export class FileTableList extends TableList {
    * group heading heights included in these items.
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'lastIndex' implicitly has an 'any'
+  // type.
   getAfterFillerHeight(lastIndex) {
     if (lastIndex === 0) {
       // A special case handled in the parent class, delegate it back to parent.
       return super.getAfterFillerHeight(lastIndex);
     }
+    // @ts-ignore: error TS2339: Property 'getDefaultItemHeight_' does not exist
+    // on type 'FileTableList'.
     const itemHeight = this.getDefaultItemHeight_();
     const countOfGroupHeadings =
         this.getGroupHeadingCountAfterIndex_(lastIndex);
@@ -246,8 +270,12 @@ export class FileTableList extends TableList {
    * @return {boolean} True if the mouse is over an element in the list, False
    *     if it is in the background.
    */
+  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
+  // '@override' tag because it overrides a member in the base class
+  // 'TableList'.
   hasDragHitElement(event) {
     const pos = DragSelector.getScrolledPosition(this, event);
+    // @ts-ignore: error TS2339: Property 'y' does not exist on type 'Object'.
     return this.getHitElements(pos.x, pos.y).length !== 0;
   }
 
@@ -261,6 +289,8 @@ export class FileTableList extends TableList {
    * @param {number=} opt_height Height of the coordinate.
    * @return {!Array<number>} Index list of hit elements.
    */
+  // @ts-ignore: error TS6133: 'opt_width' is declared but its value is never
+  // read.
   getHitElements(x, y, opt_width, opt_height) {
     const fileListModel = /** @type {FileListModel} */ (this.dataModel);
     const groupBySnapshot =
@@ -273,6 +303,8 @@ export class FileTableList extends TableList {
     const startHeight = y;
     const endHeight = y + (opt_height || 0);
     for (let i = 0; i < this.selectionModel.length; i++) {
+      // @ts-ignore: error TS2339: Property 'getHeightsForIndex' does not exist
+      // on type 'FileTableList'.
       const itemMetrics = this.getHeightsForIndex(i);
       // For group start item, we need to explicitly add group height because
       // its top doesn't take that into consideration. (check notes in
@@ -292,7 +324,11 @@ export class FileTableList extends TableList {
  * @param {!TableList} self A table list element.
  */
 FileTableList.decorate = self => {
+  // @ts-ignore: error TS2339: Property '__proto__' does not exist on type
+  // 'TableList'.
   self.__proto__ = FileTableList.prototype;
+  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+  // parameter of type 'string'.
   self.setAttribute('aria-multiselectable', true);
   self.setAttribute('aria-describedby', 'more-actions-info');
   /** @type {FileTableList} */ (self).onMergeItems_ = null;
@@ -301,6 +337,9 @@ FileTableList.decorate = self => {
 /**
  * Selection controller for the file table list.
  */
+// @ts-ignore: error TS2417: Class static side 'typeof
+// FileListSelectionController' incorrectly extends base class static side
+// 'typeof ListSelectionController'.
 class FileListSelectionController extends ListSelectionController {
   /**
    * @param {!ListSelectionModel} selectionModel The selection model to
@@ -318,11 +357,13 @@ class FileListSelectionController extends ListSelectionController {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
   handlePointerDownUp(e, index) {
     filelist.handlePointerDownUp.call(this, e, index);
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
   handleTouchEvents(e, index) {
     if (this.tapHandler_.handleTouchEvents(
             assert(e), index, filelist.handleTap.bind(this))) {
@@ -334,6 +375,7 @@ class FileListSelectionController extends ListSelectionController {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
   handleKeyDown(e) {
     filelist.handleKeyDown.call(this, e);
   }
@@ -357,6 +399,8 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
   // The metadata may not yet be ready. In that case, the list item will be
   // updated when the metadata is ready via updateListItemsMetadata. For files
   // not on an external backend, externalProps is not available.
+  // @ts-ignore: error TS2322: Type 'FileSystemEntry | FilesAppEntry' is not
+  // assignable to type 'FileSystemEntry'.
   const externalProps = metadataModel.getCache([entry], [
     'hosted',
     'availableOffline',
@@ -375,6 +419,8 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
     'syncCompletedTime',
   ])[0];
   filelist.updateListItemExternalProps(
+      // @ts-ignore: error TS2345: Argument of type 'MetadataItem | undefined'
+      // is not assignable to parameter of type 'MetadataItem'.
       li, entry, externalProps, util.isTeamDriveRoot(entry));
 
   // Overriding the default role 'list' to 'listbox' for better
@@ -435,6 +481,8 @@ filelist.isDlpBlocked = (entry, metadataModel, volumeManager) => {
     return true;
   }
   const metadata =
+      // @ts-ignore: error TS2322: Type 'FileSystemEntry | FilesAppEntry' is not
+      // assignable to type 'FileSystemEntry'.
       metadataModel.getCache([entry], ['isRestrictedForDestination'])[0];
   if (metadata && !!metadata.isRestrictedForDestination) {
     return true;
@@ -498,6 +546,8 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
  * @param {MetadataItem} externalProps Metadata.
  */
 filelist.updateListItemExternalProps =
+    // @ts-ignore: error TS7006: Parameter 'isTeamDriveRoot' implicitly has an
+    // 'any' type.
     (li, entry, externalProps, isTeamDriveRoot) => {
       if (li.classList.contains('file')) {
         li.classList.toggle('dim-hosted', !!externalProps.hosted);
@@ -519,6 +569,8 @@ filelist.updateListItemExternalProps =
       if (!iconDiv) {
         return;
       }
+      // @ts-ignore: error TS2339: Property 'style' does not exist on type
+      // 'Element'.
       iconDiv.style.backgroundImage = '';
 
       if (li.classList.contains('directory')) {
@@ -560,6 +612,8 @@ filelist.handleTap = function(e, index, eventType) {
     if (index === -1) {
       // Two-finger tap outside the list should be handled here because it does
       // not produce mousedown/click events.
+      // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+      // 'ListSelectionController'.
       this.filesView.a11y.speakA11yMessage(str('SELECTION_ALL_ENTRIES'));
       sm.unselectAll();
     } else {
@@ -574,6 +628,8 @@ filelist.handleTap = function(e, index, eventType) {
         sm.beginChange();
         sm.selectedIndex = index;
         sm.endChange();
+        // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+        // 'ListSelectionController'.
         const name = this.filesView.getItemLabel(index);
       }
     }
@@ -593,20 +649,32 @@ filelist.handleTap = function(e, index, eventType) {
   // Revert to click handling for single tap on the checkmark or rename input.
   // Single tap on the item checkmark should toggle select the item.
   // Single tap on rename input should focus on input.
+  // @ts-ignore: error TS2339: Property 'classList' does not exist on type
+  // 'EventTarget'.
   const isCheckmark = e.target.classList.contains('detail-checkmark') ||
+      // @ts-ignore: error TS2339: Property 'classList' does not exist on type
+      // 'EventTarget'.
       e.target.classList.contains('detail-icon');
+  // @ts-ignore: error TS2339: Property 'localName' does not exist on type
+  // 'EventTarget'.
   const isRename = e.target.localName === 'input';
   if (eventType === FileTapHandler.TapEvent.TAP && (isCheckmark || isRename)) {
     return false;
   }
 
+  // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
+  // 'Event'.
   if (sm.multiple && sm.getCheckSelectMode() && isTap && !e.shiftKey) {
     // toggle item selection. Equivalent to mouse click on checkbox.
     sm.beginChange();
 
+    // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+    // 'ListSelectionController'.
     const name = this.filesView.getItemLabel(index);
     const msgId = sm.getIndexSelected(index) ? 'SELECTION_ADD_SINGLE_ENTRY' :
                                                'SELECTION_REMOVE_SINGLE_ENTRY';
+    // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+    // 'ListSelectionController'.
     this.filesView.a11y.speakA11yMessage(strf(msgId, name));
 
     sm.setIndexSelected(index, !sm.getIndexSelected(index));
@@ -623,6 +691,8 @@ filelist.handleTap = function(e, index, eventType) {
       sm.unselectAll();
       sm.setCheckSelectMode(true);
     }
+    // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+    // 'ListSelectionController'.
     const name = this.filesView.getItemLabel(index);
     sm.setIndexSelected(index, true);
     sm.leadIndex = index;
@@ -636,6 +706,8 @@ filelist.handleTap = function(e, index, eventType) {
     // Select the item, so that MainWindowComponent will execute action of it.
     sm.beginChange();
     sm.unselectAll();
+    // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+    // 'ListSelectionController'.
     const name = this.filesView.getItemLabel(index);
     sm.setIndexSelected(index, true);
     sm.leadIndex = index;
@@ -672,22 +744,34 @@ filelist.handlePointerDownUp = function(e, index) {
   const anchorIndex = sm.anchorIndex;
   const isDown = (e.type === 'mousedown');
 
+  // @ts-ignore: error TS2339: Property 'classList' does not exist on type
+  // 'EventTarget'.
   const isTargetCheckmark = e.target.classList.contains('detail-checkmark') ||
+      // @ts-ignore: error TS2339: Property 'classList' does not exist on type
+      // 'EventTarget'.
       e.target.classList.contains('checkmark');
   // If multiple selection is allowed and the checkmark is clicked without
   // modifiers(Ctrl/Shift), the click should toggle the item's selection.
   // (i.e. same behavior as Ctrl+Click)
   const isClickOnCheckmark =
+      // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
+      // 'Event'.
       (isTargetCheckmark && sm.multiple && index !== -1 && !e.shiftKey &&
+       // @ts-ignore: error TS2339: Property 'button' does not exist on type
+       // 'Event'.
        !e.ctrlKey && e.button === 0);
 
   sm.beginChange();
 
   if (index === -1) {
+    // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+    // 'ListSelectionController'.
     this.filesView.a11y.speakA11yMessage(str('SELECTION_CANCELLATION'));
     sm.leadIndex = sm.anchorIndex = -1;
     sm.unselectAll();
   } else {
+    // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
+    // 'Event'.
     if (sm.multiple && (e.ctrlKey || isClickOnCheckmark) && !e.shiftKey) {
       // Selection is handled at mouseUp.
       if (!isDown) {
@@ -705,15 +789,21 @@ filelist.handlePointerDownUp = function(e, index) {
         sm.setCheckSelectMode(true);
 
         // Toggle the current one and make it anchor index.
+        // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+        // 'ListSelectionController'.
         const name = this.filesView.getItemLabel(index);
         const msgId = sm.getIndexSelected(index) ?
             'SELECTION_REMOVE_SINGLE_ENTRY' :
             'SELECTION_ADD_SINGLE_ENTRY';
+        // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+        // 'ListSelectionController'.
         this.filesView.a11y.speakA11yMessage(strf(msgId, name));
         sm.setIndexSelected(index, !sm.getIndexSelected(index));
         sm.leadIndex = index;
         sm.anchorIndex = index;
       }
+      // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
+      // 'Event'.
     } else if (e.shiftKey && anchorIndex !== -1 && anchorIndex !== index) {
       // Shift is done in mousedown.
       if (isDown) {
@@ -721,18 +811,28 @@ filelist.handlePointerDownUp = function(e, index) {
         sm.leadIndex = index;
         if (sm.multiple) {
           sm.selectRange(anchorIndex, index);
+          // @ts-ignore: error TS2339: Property 'filesView' does not exist on
+          // type 'ListSelectionController'.
           const nameStart = this.filesView.getItemLabel(anchorIndex);
+          // @ts-ignore: error TS2339: Property 'filesView' does not exist on
+          // type 'ListSelectionController'.
           const nameEnd = this.filesView.getItemLabel(index);
           const count = Math.abs(index - anchorIndex) + 1;
           const msg = strf('SELECTION_ADD_RANGE', count, nameStart, nameEnd);
+          // @ts-ignore: error TS2339: Property 'filesView' does not exist on
+          // type 'ListSelectionController'.
           this.filesView.a11y.speakA11yMessage(msg);
         } else {
+          // @ts-ignore: error TS2339: Property 'filesView' does not exist on
+          // type 'ListSelectionController'.
           const name = this.filesView.getItemLabel(index);
           sm.setIndexSelected(index, true);
         }
       }
     } else {
       // Right click for a context menu needs to not clear the selection.
+      // @ts-ignore: error TS2339: Property 'button' does not exist on type
+      // 'Event'.
       const isRightClick = e.button === 2;
 
       // If the index is selected this is handled in mouseup.
@@ -751,6 +851,8 @@ filelist.handlePointerDownUp = function(e, index) {
         // This event handler is called for mouseup and mousedown, let's
         // announce the selection only in one of them.
         if (isDown) {
+          // @ts-ignore: error TS2339: Property 'filesView' does not exist on
+          // type 'ListSelectionController'.
           const name = this.filesView.getItemLabel(index);
         }
         sm.selectedIndex = index;
@@ -775,19 +877,27 @@ filelist.handlePointerDownUp = function(e, index) {
  *     FileGridSelectionController.
  */
 filelist.handleKeyDown = function(e) {
+  // @ts-ignore: error TS2339: Property 'tagName' does not exist on type
+  // 'EventTarget'.
   const tagName = e.target.tagName;
 
   // If focus is in an input field of some kind, only handle navigation keys
   // that aren't likely to conflict with input interaction (e.g., text
   // editing, or changing the value of a checkbox or select).
   if (tagName === 'INPUT') {
+    // @ts-ignore: error TS2339: Property 'type' does not exist on type
+    // 'EventTarget'.
     const inputType = e.target.type;
     // Just protect space (for toggling) for checkbox and radio.
     if (inputType === 'checkbox' || inputType === 'radio') {
+      // @ts-ignore: error TS2339: Property 'key' does not exist on type
+      // 'Event'.
       if (e.key === ' ') {
         return;
       }
       // Protect all but the most basic navigation commands in anything else.
+      // @ts-ignore: error TS2339: Property 'key' does not exist on type
+      // 'Event'.
     } else if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') {
       return;
     }
@@ -807,8 +917,13 @@ filelist.handleKeyDown = function(e) {
 
   // Ctrl/Meta+A. Use keyCode=65 to use the same shortcut key regardless of
   // keyboard layout.
+  // @ts-ignore: error TS2339: Property 'key' does not exist on type 'Event'.
   const pressedKeyA = e.keyCode === 65 || e.key === 'a';
+  // @ts-ignore: error TS2339: Property 'ctrlKey' does not exist on type
+  // 'Event'.
   if (sm.multiple && pressedKeyA && e.ctrlKey) {
+    // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+    // 'ListSelectionController'.
     this.filesView.a11y.speakA11yMessage(str('SELECTION_ALL_ENTRIES'));
     sm.setCheckSelectMode(true);
     sm.selectAll();
@@ -817,7 +932,11 @@ filelist.handleKeyDown = function(e) {
   }
 
   // Esc
+  // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
+  // 'Event'.
   if (e.key === 'Escape' && !e.ctrlKey && !e.shiftKey) {
+    // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+    // 'ListSelectionController'.
     this.filesView.a11y.speakA11yMessage(str('SELECTION_CANCELLATION'));
     sm.unselectAll();
     e.preventDefault();
@@ -826,9 +945,12 @@ filelist.handleKeyDown = function(e) {
 
   // Space: Note ChromeOS and ChromeOS on Linux can generate KeyDown Space
   // events differently the |key| attribute might be set to 'Unidentified'.
+  // @ts-ignore: error TS2339: Property 'key' does not exist on type 'Event'.
   if (e.code === 'Space' || e.key === ' ') {
     if (leadIndex !== -1) {
       const selected = sm.getIndexSelected(leadIndex);
+      // @ts-ignore: error TS2339: Property 'ctrlKey' does not exist on type
+      // 'Event'.
       if (e.ctrlKey) {
         sm.beginChange();
 
@@ -839,15 +961,23 @@ filelist.handleKeyDown = function(e) {
           // It needs to go back/forth to trigger the 'change' event.
           sm.setIndexSelected(leadIndex, false);
           sm.setIndexSelected(leadIndex, true);
+          // @ts-ignore: error TS2339: Property 'filesView' does not exist on
+          // type 'ListSelectionController'.
           const name = this.filesView.getItemLabel(leadIndex);
+          // @ts-ignore: error TS2339: Property 'filesView' does not exist on
+          // type 'ListSelectionController'.
           this.filesView.a11y.speakA11yMessage(
               strf('SELECTION_SINGLE_ENTRY', name));
         } else {
           // Toggle the current one and make it anchor index.
           sm.setIndexSelected(leadIndex, !selected);
+          // @ts-ignore: error TS2339: Property 'filesView' does not exist on
+          // type 'ListSelectionController'.
           const name = this.filesView.getItemLabel(leadIndex);
           const msgId = selected ? 'SELECTION_REMOVE_SINGLE_ENTRY' :
                                    'SELECTION_ADD_SINGLE_ENTRY';
+          // @ts-ignore: error TS2339: Property 'filesView' does not exist on
+          // type 'ListSelectionController'.
           this.filesView.a11y.speakA11yMessage(strf(msgId, name));
         }
 
@@ -864,6 +994,7 @@ filelist.handleKeyDown = function(e) {
     }
   }
 
+  // @ts-ignore: error TS2339: Property 'key' does not exist on type 'Event'.
   switch (e.key) {
     case 'Home':
       newIndex = this.getFirstIndex();
@@ -897,23 +1028,35 @@ filelist.handleKeyDown = function(e) {
     sm.beginChange();
 
     sm.leadIndex = newIndex;
+    // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
+    // 'Event'.
     if (e.shiftKey) {
       const anchorIndex = sm.anchorIndex;
       if (sm.multiple) {
         sm.unselectAll();
       }
       if (anchorIndex === -1) {
+        // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+        // 'ListSelectionController'.
         const name = this.filesView.getItemLabel(newIndex);
         sm.setIndexSelected(newIndex, true);
         sm.anchorIndex = newIndex;
       } else {
+        // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+        // 'ListSelectionController'.
         const nameStart = this.filesView.getItemLabel(anchorIndex);
+        // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+        // 'ListSelectionController'.
         const nameEnd = this.filesView.getItemLabel(newIndex);
         const count = Math.abs(newIndex - anchorIndex) + 1;
         const msg = strf('SELECTION_ADD_RANGE', count, nameStart, nameEnd);
+        // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+        // 'ListSelectionController'.
         this.filesView.a11y.speakA11yMessage(msg);
         sm.selectRange(anchorIndex, newIndex);
       }
+      // @ts-ignore: error TS2339: Property 'ctrlKey' does not exist on type
+      // 'Event'.
     } else if (e.ctrlKey) {
       // While Ctrl is being held, only leadIndex and anchorIndex are moved.
       sm.anchorIndex = newIndex;
@@ -925,6 +1068,8 @@ filelist.handleKeyDown = function(e) {
       if (sm.multiple) {
         sm.unselectAll();
       }
+      // @ts-ignore: error TS2339: Property 'filesView' does not exist on type
+      // 'ListSelectionController'.
       const name = this.filesView.getItemLabel(newIndex);
       sm.setIndexSelected(newIndex, true);
       sm.anchorIndex = newIndex;
@@ -945,6 +1090,8 @@ filelist.handleKeyDown = function(e) {
 filelist.focusParentList = event => {
   let element = event.target;
   while (element && !(element instanceof List)) {
+    // @ts-ignore: error TS2339: Property 'parentElement' does not exist on type
+    // 'EventTarget'.
     element = element.parentElement;
   }
   if (element) {
@@ -976,6 +1123,8 @@ filelist.updateCacheItemInlineStatus =
         'syncCompletedTime',
       ])[0];
 
+      // @ts-ignore: error TS2345: Argument of type 'MetadataItem | undefined'
+      // is not assignable to parameter of type 'MetadataItem | null'.
       filelist.updateInlineStatus(restoredItem, metadata);
     };
 
@@ -994,6 +1143,8 @@ filelist.updateInlineStatus = (li, metadata) => {
   const {
     pinned,
     availableOffline,
+    // @ts-ignore: error TS2339: Property 'canPin' does not exist on type
+    // 'MetadataItem'.
     canPin,
     progress,
     syncStatus,
@@ -1018,6 +1169,7 @@ filelist.updateInlineStatus = (li, metadata) => {
     let actualProgress = progress;
     // Force sync status as completed if it has been less than 300ms since the
     // file has completed syncing.
+    // @ts-ignore: error TS18048: 'syncCompletedTime' is possibly 'undefined'.
     if (Date.now() - syncCompletedTime < 300) {
       actualSyncStatus = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
       actualProgress = 1;

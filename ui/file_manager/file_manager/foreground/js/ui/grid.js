@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {define as crUiDefine} from '../../../common/js/ui.js';
 import {decorate} from '../../../common/js/cr_ui.js';
 
@@ -10,7 +9,6 @@ import {ListSelectionModel} from './list_selection_model.js';
 import {ListSelectionController} from './list_selection_controller.js';
 import {List} from './list.js';
 import {ListItem} from './list_item.js';
-// clang-format on
 
 /**
  * @fileoverview This implements a grid control. Grid contains a bunch of
@@ -24,7 +22,12 @@ import {ListItem} from './list_item.js';
  */
 export function createGridItem(dataItem) {
   const el = document.createElement('li');
+  // @ts-ignore: error TS2339: Property 'dataItem' does not exist on type
+  // 'HTMLLIElement'.
   el.dataItem = dataItem;
+  // @ts-ignore: error TS2740: Type 'HTMLLIElement' is missing the following
+  // properties from type 'GridItem': dataItem, decorate, listIndex_, label, and
+  // 3 more.
   return decorate(el, ListItem);
 }
 
@@ -41,7 +44,11 @@ export class GridItem extends ListItem {
   /**
    * Called when an element is decorated as a grid item.
    */
+  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
+  // '@override' tag because it overrides a member in the base class 'ListItem'.
   decorate() {
+    // @ts-ignore: error TS2345: Argument of type 'IArguments' is not assignable
+    // to parameter of type '[]'.
     ListItem.prototype.decorate.apply(this, arguments);
     this.textContent = this.dataItem;
   }
@@ -53,6 +60,7 @@ export class GridItem extends ListItem {
  * @constructor
  * @extends {List}
  */
+// @ts-ignore: error TS8022: JSDoc '@extends' is not attached to a class.
 export const Grid = crUiDefine('grid');
 
 Grid.prototype = {
@@ -94,6 +102,11 @@ Grid.prototype = {
    */
   getColumnCount_() {
     // Size comes here with margin already collapsed.
+    // @ts-ignore: error TS2339: Property 'getDefaultItemSize_' does not exist
+    // on type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+    // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     const size = this.getDefaultItemSize_();
 
     if (!size) {
@@ -110,18 +123,33 @@ Grid.prototype = {
       return 0;
     }
 
+    // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type '{
+    // __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+    // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     const itemCount = this.dataModel ? this.dataModel.length : 0;
     if (!itemCount) {
       return 0;
     }
 
     const columns = Math.floor(
+        // @ts-ignore: error TS2339: Property 'horizontalPadding_' does not
+        // exist on type '{ __proto__: List; columns_: number; itemConstructor_:
+        // (arg0: any) => GridItem; fixedHeight: boolean; getColumnCount_():
+        // number; updateMetrics_(): void; columns: number; ... 8 more ...;
+        // redraw(): void; }'.
         (this.clientWidthWithoutScrollbar_ - this.horizontalPadding_) / width);
     if (!columns) {
       return 0;
     }
 
     const rows = Math.ceil(itemCount / columns);
+    // @ts-ignore: error TS2339: Property 'clientHeight_' does not exist on type
+    // '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+    // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     if (rows * height <= this.clientHeight_) {
       // Content fits within the client area (no scrollbar required).
       return columns;
@@ -130,6 +158,11 @@ Grid.prototype = {
     // If the content doesn't fit within the client area, the number of
     // columns should be calculated with consideration for scrollbar's width.
     return Math.floor(
+        // @ts-ignore: error TS2339: Property 'horizontalPadding_' does not
+        // exist on type '{ __proto__: List; columns_: number; itemConstructor_:
+        // (arg0: any) => GridItem; fixedHeight: boolean; getColumnCount_():
+        // number; updateMetrics_(): void; columns: number; ... 8 more ...;
+        // redraw(): void; }'.
         (this.clientWidthWithScrollbar_ - this.horizontalPadding_) / width);
   },
 
@@ -139,46 +172,161 @@ Grid.prototype = {
    */
   updateMetrics_() {
     // Check changings that may affect number of columns.
+    // @ts-ignore: error TS2339: Property 'offsetWidth' does not exist on type
+    // '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+    // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     const offsetWidth = this.offsetWidth;
+    // @ts-ignore: error TS2339: Property 'offsetHeight' does not exist on type
+    // '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+    // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     const offsetHeight = this.offsetHeight;
+    // @ts-ignore: error TS2345: Argument of type '{ __proto__: List; columns_:
+    // number; itemConstructor_: (arg0: any) => GridItem; fixedHeight: boolean;
+    // getColumnCount_(): number; updateMetrics_(): void; columns: number; ... 8
+    // more ...; redraw(): void; }' is not assignable to parameter of type
+    // 'Element'.
     const style = window.getComputedStyle(this);
     const overflowY = style.overflowY;
     const horizontalPadding =
         parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
 
+    // @ts-ignore: error TS2339: Property 'lastOffsetWidth_' does not exist on
+    // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any)
+    // => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     if (this.lastOffsetWidth_ === offsetWidth &&
+        // @ts-ignore: error TS2339: Property 'lastOverflowY' does not exist on
+        // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+        // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+        // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+        // void; }'.
         this.lastOverflowY === overflowY &&
+        // @ts-ignore: error TS2339: Property 'horizontalPadding_' does not
+        // exist on type '{ __proto__: List; columns_: number; itemConstructor_:
+        // (arg0: any) => GridItem; fixedHeight: boolean; getColumnCount_():
+        // number; updateMetrics_(): void; columns: number; ... 8 more ...;
+        // redraw(): void; }'.
         this.horizontalPadding_ === horizontalPadding) {
+      // @ts-ignore: error TS2339: Property 'lastOffsetHeight_' does not exist
+      // on type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+      // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+      // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+      // void; }'.
       this.lastOffsetHeight_ = offsetHeight;
       return;
     }
 
+    // @ts-ignore: error TS2339: Property 'lastOffsetWidth_' does not exist on
+    // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any)
+    // => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     this.lastOffsetWidth_ = offsetWidth;
+    // @ts-ignore: error TS2339: Property 'lastOffsetHeight_' does not exist on
+    // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any)
+    // => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     this.lastOffsetHeight_ = offsetHeight;
+    // @ts-ignore: error TS2339: Property 'lastOverflowY' does not exist on type
+    // '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+    // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     this.lastOverflowY = overflowY;
+    // @ts-ignore: error TS2339: Property 'horizontalPadding_' does not exist on
+    // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any)
+    // => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     this.horizontalPadding_ = horizontalPadding;
     this.columns_ = 0;
 
     if (overflowY === 'auto' && offsetWidth > 0) {
       // Column number may depend on whether scrollbar is present or not.
+      // @ts-ignore: error TS2339: Property 'clientWidth' does not exist on type
+      // '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+      // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+      // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+      // void; }'.
       const originalClientWidth = this.clientWidth;
       // At first make sure there is no scrollbar and calculate clientWidth
       // (triggers reflow).
+      // @ts-ignore: error TS2339: Property 'style' does not exist on type '{
+      // __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+      // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+      // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+      // void; }'.
       this.style.overflowY = 'hidden';
+      // @ts-ignore: error TS2339: Property 'clientWidth' does not exist on type
+      // '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+      // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+      // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+      // void; }'.
       this.clientWidthWithoutScrollbar_ = this.clientWidth;
+      // @ts-ignore: error TS2339: Property 'clientHeight' does not exist on
+      // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+      // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+      // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+      // void; }'.
       this.clientHeight_ = this.clientHeight;
+      // @ts-ignore: error TS2339: Property 'clientWidth' does not exist on type
+      // '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+      // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+      // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+      // void; }'.
       if (this.clientWidth !== originalClientWidth) {
         // If clientWidth changed then previously scrollbar was shown.
+        // @ts-ignore: error TS2339: Property 'clientWidthWithScrollbar_' does
+        // not exist on type '{ __proto__: List; columns_: number;
+        // itemConstructor_: (arg0: any) => GridItem; fixedHeight: boolean;
+        // getColumnCount_(): number; updateMetrics_(): void; columns: number;
+        // ... 8 more ...; redraw(): void; }'.
         this.clientWidthWithScrollbar_ = originalClientWidth;
       } else {
         // Show scrollbar and recalculate clientWidth (triggers reflow).
+        // @ts-ignore: error TS2339: Property 'style' does not exist on type '{
+        // __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+        // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+        // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+        // void; }'.
         this.style.overflowY = 'scroll';
+        // @ts-ignore: error TS2339: Property 'clientWidth' does not exist on
+        // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+        // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+        // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+        // void; }'.
         this.clientWidthWithScrollbar_ = this.clientWidth;
       }
+      // @ts-ignore: error TS2339: Property 'style' does not exist on type '{
+      // __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+      // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+      // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+      // void; }'.
       this.style.overflowY = '';
     } else {
+      // @ts-ignore: error TS2339: Property 'clientWidthWithScrollbar_' does not
+      // exist on type '{ __proto__: List; columns_: number; itemConstructor_:
+      // (arg0: any) => GridItem; fixedHeight: boolean; getColumnCount_():
+      // number; updateMetrics_(): void; columns: number; ... 8 more ...;
+      // redraw(): void; }'.
       this.clientWidthWithoutScrollbar_ = this.clientWidthWithScrollbar_ =
+          // @ts-ignore: error TS2339: Property 'clientWidth' does not exist on
+          // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+          // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+          // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+          // void; }'.
           this.clientWidth;
+      // @ts-ignore: error TS2339: Property 'clientHeight' does not exist on
+      // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+      // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+      // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+      // void; }'.
       this.clientHeight_ = this.clientHeight;
     }
   },
@@ -208,6 +356,11 @@ Grid.prototype = {
    * @override
    */
   getItemTop(index) {
+    // @ts-ignore: error TS2339: Property 'getDefaultItemHeight_' does not exist
+    // on type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+    // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     return Math.floor(index / this.columns) * this.getDefaultItemHeight_();
   },
 
@@ -238,6 +391,9 @@ Grid.prototype = {
    * @override
    */
   createSelectionController(sm) {
+    // @ts-ignore: error TS2740: Type 'GridSelectionController' is missing the
+    // following properties from type 'ListSelectionController': selectionModel,
+    // getNextIndex, getPreviousIndex, getFirstIndex, and 4 more.
     return new GridSelectionController(sm, this);
   },
 
@@ -250,16 +406,46 @@ Grid.prototype = {
    * @override
    */
   getItemsInViewPort(scrollTop, clientHeight) {
+    // @ts-ignore: error TS2339: Property 'getDefaultItemHeight_' does not exist
+    // on type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+    // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     const itemHeight = this.getDefaultItemHeight_();
     const firstIndex =
+        // @ts-ignore: error TS2339: Property 'getIndexForListOffset_' does not
+        // exist on type '{ __proto__: List; columns_: number; itemConstructor_:
+        // (arg0: any) => GridItem; fixedHeight: boolean; getColumnCount_():
+        // number; updateMetrics_(): void; columns: number; ... 8 more ...;
+        // redraw(): void; }'.
         this.autoExpands ? 0 : this.getIndexForListOffset_(scrollTop);
     const columns = this.columns;
+    // @ts-ignore: error TS2339: Property 'autoExpands' does not exist on type
+    // '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+    // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     let count = this.autoExpands ?
+        // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type
+        // '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any)
+        // => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+        // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+        // void; }'.
         this.dataModel.length :
         Math.max(
             columns * (Math.ceil(clientHeight / itemHeight) + 1),
+            // @ts-ignore: error TS2339: Property 'countItemsInRange_' does not
+            // exist on type '{ __proto__: List; columns_: number;
+            // itemConstructor_: (arg0: any) => GridItem; fixedHeight: boolean;
+            // getColumnCount_(): number; updateMetrics_(): void; columns:
+            // number; ... 8 more ...; redraw(): void; }'.
             this.countItemsInRange_(firstIndex, scrollTop + clientHeight));
     count = columns * Math.ceil(count / columns);
+    // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type '{
+    // __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+    // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     count = Math.min(count, this.dataModel.length - firstIndex);
     return {first: firstIndex, length: count, last: firstIndex + count - 1};
   },
@@ -272,15 +458,32 @@ Grid.prototype = {
    * @override
    */
   mergeItems(firstIndex, lastIndex) {
+    // @ts-ignore: error TS2339: Property 'mergeItems' does not exist on type
+    // 'List'.
     List.prototype.mergeItems.call(this, firstIndex, lastIndex);
 
+    // @ts-ignore: error TS2339: Property 'afterFiller_' does not exist on type
+    // '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+    // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     const afterFiller = this.afterFiller_;
     const columns = this.columns;
 
+    // @ts-ignore: error TS2339: Property 'beforeFiller_' does not exist on type
+    // '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+    // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     for (let item = this.beforeFiller_.nextSibling; item !== afterFiller;) {
       const next = item.nextSibling;
       if (isSpacer(item)) {
         // Spacer found on a place it mustn't be.
+        // @ts-ignore: error TS2339: Property 'removeChild' does not exist on
+        // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+        // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+        // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+        // void; }'.
         this.removeChild(item);
         item = next;
         continue;
@@ -297,8 +500,18 @@ Grid.prototype = {
           item = next.nextSibling;
         } else {
           // Insert spacer.
+          // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist
+          // on type '{ __proto__: List; columns_: number; itemConstructor_:
+          // (arg0: any) => GridItem; fixedHeight: boolean; getColumnCount_():
+          // number; updateMetrics_(): void; columns: number; ... 8 more ...;
+          // redraw(): void; }'.
           const spacer = this.ownerDocument.createElement('div');
           spacer.className = 'spacer';
+          // @ts-ignore: error TS2339: Property 'insertBefore' does not exist on
+          // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+          // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+          // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+          // void; }'.
           this.insertBefore(spacer, next);
           item = next;
         }
@@ -307,6 +520,7 @@ Grid.prototype = {
       }
     }
 
+    // @ts-ignore: error TS7006: Parameter 'child' implicitly has an 'any' type.
     function isSpacer(child) {
       return child.classList.contains('spacer') &&
           child !== afterFiller;  // Must not be removed.
@@ -321,9 +535,19 @@ Grid.prototype = {
    */
   getAfterFillerHeight(lastIndex) {
     const columns = this.columns;
+    // @ts-ignore: error TS2339: Property 'getDefaultItemHeight_' does not exist
+    // on type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+    // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     const itemHeight = this.getDefaultItemHeight_();
     // We calculate the row of last item, and the row of last shown item.
     // The difference is the number of rows not shown.
+    // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type '{
+    // __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+    // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     const afterRows = Math.floor((this.dataModel.length - 1) / columns) -
         Math.floor((lastIndex - 1) / columns);
     return afterRows * itemHeight;
@@ -337,18 +561,37 @@ Grid.prototype = {
   isItem(child) {
     // Non-items are before-, afterFiller and spacers added in mergeItems.
     return child.nodeType === Node.ELEMENT_NODE &&
+        // @ts-ignore: error TS2339: Property 'classList' does not exist on type
+        // 'Node'.
         !child.classList.contains('spacer');
   },
 
   redraw() {
     this.updateMetrics_();
+    // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type '{
+    // __proto__: List; columns_: number; itemConstructor_: (arg0: any) =>
+    // GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     const itemCount = this.dataModel ? this.dataModel.length : 0;
+    // @ts-ignore: error TS2339: Property 'lastItemCount_' does not exist on
+    // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0: any)
+    // => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+    // updateMetrics_(): void; columns: number; ... 8 more ...; redraw(): void;
+    // }'.
     if (this.lastItemCount_ !== itemCount) {
+      // @ts-ignore: error TS2339: Property 'lastItemCount_' does not exist on
+      // type '{ __proto__: List; columns_: number; itemConstructor_: (arg0:
+      // any) => GridItem; fixedHeight: boolean; getColumnCount_(): number;
+      // updateMetrics_(): void; columns: number; ... 8 more ...; redraw():
+      // void; }'.
       this.lastItemCount_ = itemCount;
       // Force recalculation.
       this.columns_ = 0;
     }
 
+    // @ts-ignore: error TS2339: Property 'redraw' does not exist on type
+    // 'List'.
     List.prototype.redraw.call(this);
   },
 };
@@ -361,6 +604,7 @@ Grid.prototype = {
  * @constructor
  * @extends {ListSelectionController}
  */
+// @ts-ignore: error TS8022: JSDoc '@extends' is not attached to a class.
 export function GridSelectionController(selectionModel, grid) {
   this.selectionModel_ = selectionModel;
   this.grid_ = grid;
@@ -378,8 +622,14 @@ GridSelectionController.prototype = {
    * @return {boolean} True if accessibility is enabled.
    */
   isAccessibilityEnabled() {
+    // @ts-ignore: error TS2339: Property 'cvox' does not exist on type 'Window
+    // & typeof globalThis'.
     return window.cvox && window.cvox.Api &&
+        // @ts-ignore: error TS2339: Property 'cvox' does not exist on type
+        // 'Window & typeof globalThis'.
         window.cvox.Api.isChromeVoxActive &&
+        // @ts-ignore: error TS2339: Property 'cvox' does not exist on type
+        // 'Window & typeof globalThis'.
         window.cvox.Api.isChromeVoxActive();
   },
 
@@ -393,10 +643,14 @@ GridSelectionController.prototype = {
     if (this.isAccessibilityEnabled()) {
       return this.getIndexAfter(index);
     }
+    // @ts-ignore: error TS2339: Property 'getLastIndex' does not exist on type
+    // 'GridSelectionController'.
     const last = this.getLastIndex();
     if (index === last) {
       return -1;
     }
+    // @ts-ignore: error TS2339: Property 'columns' does not exist on type
+    // 'Grid'.
     index += this.grid_.columns;
     return Math.min(index, last);
   },
@@ -414,6 +668,8 @@ GridSelectionController.prototype = {
     if (index === 0) {
       return -1;
     }
+    // @ts-ignore: error TS2339: Property 'columns' does not exist on type
+    // 'Grid'.
     index -= this.grid_.columns;
     return Math.max(index, 0);
   },
@@ -435,6 +691,8 @@ GridSelectionController.prototype = {
    * @override
    */
   getIndexAfter(index) {
+    // @ts-ignore: error TS2339: Property 'getLastIndex' does not exist on type
+    // 'GridSelectionController'.
     if (index === this.getLastIndex()) {
       return -1;
     }

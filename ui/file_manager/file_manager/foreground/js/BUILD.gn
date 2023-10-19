@@ -14,15 +14,6 @@ visibility = [
   "//ui/file_manager/file_manager/test/*",
 ]
 
-group("closure_compile") {
-  testonly = true
-  visibility += [ "//ui/file_manager:closure_compile" ]
-  deps = [
-    ":closure_compile_jsmodules",
-    ":js_test_type_check",
-  ]
-}
-
 group("js_modules") {
   deps = [
     ":actions_controller",
@@ -71,71 +62,6 @@ group("js_modules") {
     ":task_history",
     ":thumbnail_loader",
     ":toolbar_controller",
-  ]
-}
-
-js_type_check("closure_compile_jsmodules") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "language_in=ECMASCRIPT_2020",
-                    "js_module_root=gen/ui/file_manager/tsc/",
-                    "js_module_root=gen/ui/file_manager/",
-                    "js_module_root=" +
-                        rebase_path("//ui/file_manager/", root_build_dir),
-                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
-                    "hide_warnings_for=gen/ui/file_manager/tsc/",
-                  ]
-
-  deps = [
-    ":actions_controller",
-    ":actions_model",
-    ":android_app_list_model",
-    ":app_state_controller",
-    ":constants",
-    ":crossover_search_utils",
-    ":crostini_controller",
-    ":deferred_elements",
-    ":dialog_action_controller",
-    ":directory_contents",
-    ":directory_model",
-    ":directory_tree_naming_controller",
-    ":elements_importer",
-    ":empty_folder_controller",
-    ":fake_android_app_list_model",
-    ":fake_file_selection_handler",
-    ":file_list_model",
-    ":file_manager",
-    ":file_manager_commands",
-    ":file_rename",
-    ":file_selection",
-    ":file_type_filters_controller",
-    ":file_watcher",
-    ":folder_shortcuts_data_model",
-    ":gear_menu_controller",
-    ":guest_os_controller",
-    ":holding_space_util",
-    ":launch_param",
-    ":list_thumbnail_loader",
-    ":main_window_component",
-    ":metadata_update_controller",
-    ":mock_directory_model",
-    ":mock_folder_shortcut_data_model",
-    ":mock_navigation_list_model",
-    ":mock_thumbnail_loader",
-    ":naming_controller",
-    ":navigation_list_model",
-    ":navigation_uma",
-    ":path_component",
-    ":providers_model",
-    ":scan_controller",
-    ":selection_menu_controller",
-    ":sort_menu_controller",
-    ":spinner_controller",
-    ":task_history",
-    ":thumbnail_loader",
-    ":toolbar_controller",
-    "//ui/file_manager:js_from_ts",
   ]
 }
 
@@ -215,7 +141,6 @@ js_library("mock_directory_model") {
     "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_info",
   ]
 }
 
@@ -330,7 +255,6 @@ js_unittest("directory_contents_unittest") {
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entry_location",
-    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
@@ -354,7 +278,6 @@ js_library("directory_model") {
     "//ui/file_manager/file_manager/externs:entries_changed_event",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:foreground_window",
-    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
     "//ui/file_manager/file_manager/externs/ts:state",
@@ -390,7 +313,6 @@ js_library("directory_tree_naming_controller") {
     "ui:directory_tree",
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/foreground/js:file_rename",
   ]
 }
@@ -562,7 +484,6 @@ js_library("file_manager_commands") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:command_handler_deps",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
   externs_list = [
@@ -775,7 +696,6 @@ js_library("navigation_list_model") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
@@ -816,7 +736,6 @@ js_unittest("path_component_unittest") {
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
   ]
 }
 
@@ -929,41 +848,6 @@ js_library("toolbar_controller") {
     "//ui/file_manager/file_manager/externs/ts:state",
     "//ui/file_manager/file_manager/externs/ts:store",
   ]
-}
-
-js_test_type_check("js_test_type_check") {
-  is_polymer3 = true
-  deps = [
-    ":actions_model_unittest",
-    ":directory_contents_unittest",
-    ":directory_model_unittest",
-    ":empty_folder_controller_unittest",
-    ":file_list_model_unittest",
-    ":file_manager_commands_unittest",
-    ":file_type_filters_controller_unittest",
-    ":list_thumbnail_loader_unittest",
-    ":navigation_list_model_unittest",
-    ":path_component_unittest",
-    ":providers_model_unittest",
-    ":spinner_controller_unittest",
-    ":thumbnail_loader_unittest",
-  ]
-
-  closure_flags = strict_error_checking_closure_args + [
-                    "language_in=ECMASCRIPT_2020",
-                    "generate_exports=false",
-                    "js_module_root=gen/ui/file_manager/tsc/",
-                    "js_module_root=./gen/ui/file_manager",
-                    "js_module_root=" +
-                        rebase_path("//ui/file_manager/", root_build_dir),
-                    "jscomp_off=duplicate",
-                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
-                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
-                    "hide_warnings_for=third_party/",
-                    "hide_warnings_for=gen/ui/file_manager/tsc/",
-                  ]
-  extra_deps = [ "//ui/file_manager:js_from_ts" ]
 }
 
 # Root directory for the foreground bundle.

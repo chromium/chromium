@@ -22,6 +22,9 @@ export class FilesSpinner extends HTMLElement {
    * DOM connected: set aria attributes.
    */
   connectedCallback() {
+    if (!this.shadowRoot) {
+      return;
+    }
     const host = /** @type {!HTMLElement} */ (this.shadowRoot.host);
 
     host.setAttribute('role', 'progressbar');

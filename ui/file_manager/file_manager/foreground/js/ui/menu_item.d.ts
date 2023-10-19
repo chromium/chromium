@@ -4,4 +4,5 @@
 
 export class MenuItem extends HTMLElement {
   disabled: boolean;
+  checkable: boolean;
 }

@@ -21,7 +21,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {FileTasks as StoreFileTasks} from '../../externs/ts/state.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
 import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';

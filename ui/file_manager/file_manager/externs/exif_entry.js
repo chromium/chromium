@@ -9,4 +9,5 @@ import {Exif} from '../foreground/js/metadata/exif_constants.js';
  * @typedef {{id:!Exif.Tag, format:number, componentCount:number,
  *     value:(undefined|*)}}
  */
+// @ts-ignore: error TS7005: Variable 'ExifEntry' implicitly has an 'any' type.
 export let ExifEntry;

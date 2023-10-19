@@ -91,12 +91,18 @@ export class CommandHandlerDeps {
     this.trashEnabled;
   }
 
+  // @ts-ignore: error TS2355: A function whose declared type is neither 'void'
+  // nor 'any' must return a value.
   /** @return {DirectoryEntry|FilesAppEntry} */
   getCurrentDirectoryEntry() {}
 
+  // @ts-ignore: error TS2355: A function whose declared type is neither 'void'
+  // nor 'any' must return a value.
   /** @return {FileSelection} */
   getSelection() {}
 
   /** @param {!FilesAppState=} appState App state. */
+  // @ts-ignore: error TS6133: 'appState' is declared but its value is never
+  // read.
   launchFileManager(appState) {}
 }

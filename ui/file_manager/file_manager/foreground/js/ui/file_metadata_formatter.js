@@ -32,10 +32,18 @@ export class FileMetadataFormatter extends EventTarget {
       minute: 'numeric',
     };
     if (use12hourClock) {
+      // @ts-ignore: error TS2551: Property 'hour12' does not exist on type '{
+      // hour: string; minute: string; }'. Did you mean 'hour'?
       options['hour12'] = true;
     } else {
+      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+      // expression of type '"hourCycle"' can't be used to index type '{ hour:
+      // string; minute: string; }'.
       options['hourCycle'] = 'h23';
     }
+    // @ts-ignore: error TS2345: Argument of type '{ hour: string; minute:
+    // string; }' is not assignable to parameter of type
+    // 'DateTimeFormatOptions'.
     this.timeFormatter_ = new Intl.DateTimeFormat(locale, options);
     const dateOptions = {
       year: 'numeric',
@@ -45,11 +53,20 @@ export class FileMetadataFormatter extends EventTarget {
       minute: 'numeric',
     };
     if (use12hourClock) {
+      // @ts-ignore: error TS2551: Property 'hour12' does not exist on type '{
+      // year: string; month: string; day: string; hour: string; minute: string;
+      // }'. Did you mean 'hour'?
       dateOptions['hour12'] = true;
     } else {
+      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+      // expression of type '"hourCycle"' can't be used to index type '{ year:
+      // string; month: string; day: string; hour: string; minute: string; }'.
       dateOptions['hourCycle'] = 'h23';
     }
 
+    // @ts-ignore: error TS2345: Argument of type '{ year: string; month:
+    // string; day: string; hour: string; minute: string; }' is not assignable
+    // to parameter of type 'DateTimeFormatOptions'.
     this.dateFormatter_ = new Intl.DateTimeFormat(locale, dateOptions);
     dispatchSimpleEvent(this, 'date-time-format-changed');
   }
@@ -83,11 +100,18 @@ export class FileMetadataFormatter extends EventTarget {
       // In case of 'Invalid Date'.
       return '--';
     } else if (
+        // @ts-ignore: error TS2365: Operator '<' cannot be applied to types
+        // 'Date' and 'number'.
         modTime >= today && modTime < today.getTime() + MILLISECONDS_IN_DAY) {
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       return strf('TIME_TODAY', this.timeFormatter_.format(modTime));
+      // @ts-ignore: error TS2362: The left-hand side of an arithmetic operation
+      // must be of type 'any', 'number', 'bigint' or an enum type.
     } else if (modTime >= today - MILLISECONDS_IN_DAY && modTime < today) {
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       return strf('TIME_YESTERDAY', this.timeFormatter_.format(modTime));
     } else {
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       return this.dateFormatter_.format(modTime);
     }
   }

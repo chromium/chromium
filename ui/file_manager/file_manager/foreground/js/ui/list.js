@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {getPropertyDescriptor, PropertyKind, dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
@@ -11,7 +10,6 @@ import {define as crUiDefine} from '../../../common/js/ui.js';
 import {ListSelectionModel} from './list_selection_model.js';
 import {ListSelectionController} from './list_selection_controller.js';
 import {ListItem, createListItem} from './list_item.js';
-// clang-format on
 
 /**
  * @fileoverview This implements a list control.
@@ -28,6 +26,7 @@ import {ListItem, createListItem} from './list_item.js';
  *    width: number
  *  }}
  */
+// @ts-ignore: error TS7005: Variable 'Size' implicitly has an 'any' type.
 export let Size;
 
 /**
@@ -39,7 +38,11 @@ export let Size;
  */
 function inViewport(el, e) {
   const rect = el.getBoundingClientRect();
+  // @ts-ignore: error TS2339: Property 'clientX' does not exist on type
+  // 'Event'.
   const x = e.clientX;
+  // @ts-ignore: error TS2339: Property 'clientY' does not exist on type
+  // 'Event'.
   const y = e.clientY;
   return x >= rect.left + el.clientLeft &&
       x < rect.left + el.clientLeft + el.clientWidth &&
@@ -47,6 +50,7 @@ function inViewport(el, e) {
       y < rect.top + el.clientTop + el.clientHeight;
 }
 
+// @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
 function getComputedStyle(el) {
   return el.ownerDocument.defaultView.getComputedStyle(el);
 }
@@ -57,6 +61,7 @@ function getComputedStyle(el) {
  * @constructor
  * @extends {HTMLUListElement}
  */
+// @ts-ignore: error TS8022: JSDoc '@extends' is not attached to a class.
 export const List = crUiDefine('list');
 
 List.prototype = {
@@ -113,6 +118,11 @@ List.prototype = {
   set itemConstructor(func) {
     if (func !== this.itemConstructor_) {
       this.itemConstructor_ = func;
+      // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.cachedItems_ = {};
       this.redraw();
     }
@@ -129,32 +139,94 @@ List.prototype = {
       return;
     }
 
+    // @ts-ignore: error TS2551: Property 'boundHandleDataModelPermuted_' does
+    // not exist on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'. Did you mean
+    // 'handleDataModelPermuted_'?
     if (!this.boundHandleDataModelPermuted_) {
+      // @ts-ignore: error TS2551: Property 'boundHandleDataModelPermuted_' does
+      // not exist on type '{ __proto__: HTMLUListElement; measured_: Size |
+      // null; autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+      // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'. Did you mean
+      // 'handleDataModelPermuted_'?
       this.boundHandleDataModelPermuted_ =
           this.handleDataModelPermuted_.bind(this);
+      // @ts-ignore: error TS2551: Property 'boundHandleDataModelChange_' does
+      // not exist on type '{ __proto__: HTMLUListElement; measured_: Size |
+      // null; autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+      // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'. Did you mean
+      // 'handleDataModelChange_'?
       this.boundHandleDataModelChange_ = this.handleDataModelChange_.bind(this);
     }
 
     if (this.dataModel_) {
+      // @ts-ignore: error TS2339: Property 'removeEventListener' does not exist
+      // on type 'never'.
       this.dataModel_.removeEventListener(
+          // @ts-ignore: error TS2551: Property 'boundHandleDataModelPermuted_'
+          // does not exist on type '{ __proto__: HTMLUListElement; measured_:
+          // Size | null; autoExpands_: boolean; fixedHeight_: boolean;
+          // remainingSpace_: boolean; itemConstructor_: (arg0: any) =>
+          // ListItem; ... 56 more ...; startDragSelection(event: Event): void;
+          // }'. Did you mean 'handleDataModelPermuted_'?
           'permuted', this.boundHandleDataModelPermuted_);
+      // @ts-ignore: error TS2339: Property 'removeEventListener' does not exist
+      // on type 'never'.
       this.dataModel_.removeEventListener(
+          // @ts-ignore: error TS2551: Property 'boundHandleDataModelChange_'
+          // does not exist on type '{ __proto__: HTMLUListElement; measured_:
+          // Size | null; autoExpands_: boolean; fixedHeight_: boolean;
+          // remainingSpace_: boolean; itemConstructor_: (arg0: any) =>
+          // ListItem; ... 56 more ...; startDragSelection(event: Event): void;
+          // }'. Did you mean 'handleDataModelChange_'?
           'change', this.boundHandleDataModelChange_);
     }
 
     this.dataModel_ = dataModel;
 
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.cachedItems_ = {};
+    // @ts-ignore: error TS2339: Property 'cachedItemHeights_' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.cachedItemHeights_ = {};
     this.selectionModel.clear();
     if (dataModel) {
+      // @ts-ignore: error TS2339: Property 'length' does not exist on type
+      // 'never'.
       this.selectionModel.adjustLength(dataModel.length);
     }
 
     if (this.dataModel_) {
+      // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+      // type 'never'.
       this.dataModel_.addEventListener(
+          // @ts-ignore: error TS2551: Property 'boundHandleDataModelPermuted_'
+          // does not exist on type '{ __proto__: HTMLUListElement; measured_:
+          // Size | null; autoExpands_: boolean; fixedHeight_: boolean;
+          // remainingSpace_: boolean; itemConstructor_: (arg0: any) =>
+          // ListItem; ... 56 more ...; startDragSelection(event: Event): void;
+          // }'. Did you mean 'handleDataModelPermuted_'?
           'permuted', this.boundHandleDataModelPermuted_);
+      // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+      // type 'never'.
       this.dataModel_.addEventListener(
+          // @ts-ignore: error TS2551: Property 'boundHandleDataModelChange_'
+          // does not exist on type '{ __proto__: HTMLUListElement; measured_:
+          // Size | null; autoExpands_: boolean; fixedHeight_: boolean;
+          // remainingSpace_: boolean; itemConstructor_: (arg0: any) =>
+          // ListItem; ... 56 more ...; startDragSelection(event: Event): void;
+          // }'. Did you mean 'handleDataModelChange_'?
           'change', this.boundHandleDataModelChange_);
     }
 
@@ -176,6 +248,7 @@ List.prototype = {
    * Cached item for measuring the default item size by measureItem().
    * @type {ListItem}
    */
+  // @ts-ignore: error TS2322: Type 'null' is not assignable to type 'ListItem'.
   cachedMeasuredItem_: null,
 
   /**
@@ -183,29 +256,95 @@ List.prototype = {
    * @type {ListSelectionModel}
    */
   get selectionModel() {
+    // @ts-ignore: error TS2551: Property 'selectionModel_' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'. Did you mean
+    // 'selectionModel'?
     return this.selectionModel_;
   },
   set selectionModel(sm) {
+    // @ts-ignore: error TS2551: Property 'selectionModel_' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'. Did you mean
+    // 'selectionModel'?
     const oldSm = this.selectionModel_;
     if (oldSm === sm) {
       return;
     }
 
+    // @ts-ignore: error TS2551: Property 'boundHandleOnChange_' does not exist
+    // on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'. Did you mean
+    // 'handleOnChange_'?
     if (!this.boundHandleOnChange_) {
+      // @ts-ignore: error TS2551: Property 'boundHandleOnChange_' does not
+      // exist on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'. Did you mean
+      // 'handleOnChange_'?
       this.boundHandleOnChange_ = this.handleOnChange_.bind(this);
+      // @ts-ignore: error TS2551: Property 'boundHandleLeadChange_' does not
+      // exist on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'. Did you mean
+      // 'handleLeadChange'?
       this.boundHandleLeadChange_ = this.handleLeadChange.bind(this);
     }
 
     if (oldSm) {
+      // @ts-ignore: error TS2551: Property 'boundHandleOnChange_' does not
+      // exist on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'. Did you mean
+      // 'handleOnChange_'?
       oldSm.removeEventListener('change', this.boundHandleOnChange_);
+      // @ts-ignore: error TS2551: Property 'boundHandleLeadChange_' does not
+      // exist on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'. Did you mean
+      // 'handleLeadChange'?
       oldSm.removeEventListener('leadIndexChange', this.boundHandleLeadChange_);
     }
 
+    // @ts-ignore: error TS2551: Property 'selectionModel_' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'. Did you mean
+    // 'selectionModel'?
     this.selectionModel_ = sm;
+    // @ts-ignore: error TS2551: Property 'selectionController_' does not exist
+    // on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'. Did you mean
+    // 'createSelectionController'?
     this.selectionController_ = this.createSelectionController(sm);
 
     if (sm) {
+      // @ts-ignore: error TS2551: Property 'boundHandleOnChange_' does not
+      // exist on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'. Did you mean
+      // 'handleOnChange_'?
       sm.addEventListener('change', this.boundHandleOnChange_);
+      // @ts-ignore: error TS2551: Property 'boundHandleLeadChange_' does not
+      // exist on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'. Did you mean
+      // 'handleLeadChange'?
       sm.addEventListener('leadIndexChange', this.boundHandleLeadChange_);
     }
   },
@@ -249,6 +388,8 @@ List.prototype = {
     if (dataModel) {
       const index = this.selectionModel.selectedIndex;
       if (index !== -1) {
+        // @ts-ignore: error TS2339: Property 'item' does not exist on type
+        // 'never'.
         return dataModel.item(index);
       }
     }
@@ -257,6 +398,7 @@ List.prototype = {
   set selectedItem(selectedItem) {
     const dataModel = this.dataModel;
     if (dataModel) {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       const index = this.dataModel.indexOf(selectedItem);
       this.selectionModel.selectedIndex = index;
     }
@@ -271,6 +413,8 @@ List.prototype = {
     const dataModel = this.dataModel;
     if (dataModel) {
       return indexes.map(function(i) {
+        // @ts-ignore: error TS2339: Property 'item' does not exist on type
+        // 'never'.
         return dataModel.item(i);
       });
     }
@@ -282,6 +426,11 @@ List.prototype = {
    * @type {HTMLCollection}
    */
   get items() {
+    // @ts-ignore: error TS2339: Property 'children' does not exist on type '{
+    // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     return Array.prototype.filter.call(this.children, this.isItem, this);
   },
 
@@ -293,6 +442,11 @@ List.prototype = {
    */
   isItem(child) {
     return child.nodeType === Node.ELEMENT_NODE &&
+        // @ts-ignore: error TS2339: Property 'afterFiller_' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         child !== this.beforeFiller_ && child !== this.afterFiller_;
   },
 
@@ -323,33 +477,145 @@ List.prototype = {
    */
   decorate() {
     // Add fillers.
+    // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.beforeFiller_ = this.ownerDocument.createElement('div');
+    // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.afterFiller_ = this.ownerDocument.createElement('div');
+    // @ts-ignore: error TS2339: Property 'beforeFiller_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.beforeFiller_.className = 'spacer';
+    // @ts-ignore: error TS2339: Property 'afterFiller_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.afterFiller_.className = 'spacer';
+    // @ts-ignore: error TS2339: Property 'textContent' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.textContent = '';
+    // @ts-ignore: error TS2339: Property 'beforeFiller_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.appendChild(this.beforeFiller_);
+    // @ts-ignore: error TS2339: Property 'afterFiller_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.appendChild(this.afterFiller_);
 
+    // @ts-ignore: error TS2339: Property 'length' does not exist on type
+    // 'never'.
     const length = this.dataModel ? this.dataModel.length : 0;
     this.selectionModel = new ListSelectionModel(length);
 
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('dblclick', this.handleDoubleClick_);
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('mousedown', handleMouseDown);
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('dragstart', handleDragStart, true);
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('mouseup', this.handlePointerDownUp_);
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('keydown', this.handleKeyDown);
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('focus', this.handleElementFocus_, true);
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('blur', this.handleElementBlur_, true);
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('scroll', this.handleScroll.bind(this));
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('touchstart', this.handleTouchEvents_);
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('touchmove', this.handleTouchEvents_);
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('touchend', this.handleTouchEvents_);
+    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.addEventListener('touchcancel', this.handleTouchEvents_);
+    // @ts-ignore: error TS2339: Property 'setAttribute' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.setAttribute('role', 'list');
 
     // Make list focusable
+    // @ts-ignore: error TS2339: Property 'hasAttribute' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (!this.hasAttribute('tabindex')) {
+      // @ts-ignore: error TS2339: Property 'tabIndex' does not exist on type '{
+      // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.tabIndex = 0;
     }
   },
@@ -382,13 +648,28 @@ List.prototype = {
       return this.getDefaultItemHeight_();
     }
 
+    // @ts-ignore: error TS2339: Property 'cachedItemHeights_' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (this.cachedItemHeights_[index]) {
+      // @ts-ignore: error TS2339: Property 'cachedItemHeights_' does not exist
+      // on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       return this.cachedItemHeights_[index];
     }
 
     const item = this.getListItemByIndex(index);
     if (item) {
       const h = this.measureItemHeight_(item);
+      // @ts-ignore: error TS2339: Property 'cachedItemHeights_' does not exist
+      // on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.cachedItemHeights_[index] = h;
       return h;
     }
@@ -418,6 +699,8 @@ List.prototype = {
    */
   measureItem(opt_item) {
     const dataModel = this.dataModel;
+    // @ts-ignore: error TS2339: Property 'length' does not exist on type
+    // 'never'.
     if (!dataModel || !dataModel.length) {
       return {
         height: 0,
@@ -429,9 +712,16 @@ List.prototype = {
       };
     }
     const item = opt_item || this.cachedMeasuredItem_ ||
+        // @ts-ignore: error TS2339: Property 'item' does not exist on type
+        // 'never'.
         this.createItem(dataModel.item(0));
     if (!opt_item) {
       this.cachedMeasuredItem_ = item;
+      // @ts-ignore: error TS2339: Property 'appendChild' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.appendChild(item);
     }
 
@@ -466,6 +756,11 @@ List.prototype = {
     w += mh;
 
     if (!opt_item) {
+      // @ts-ignore: error TS2339: Property 'removeChild' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.removeChild(item);
     }
     return {
@@ -484,6 +779,11 @@ List.prototype = {
    * @private
    */
   handleDoubleClick_(e) {
+    // @ts-ignore: error TS2339: Property 'disabled' does not exist on type '{
+    // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (this.disabled) {
       return;
     }
@@ -510,6 +810,11 @@ List.prototype = {
    * @private
    */
   handlePointerDownUp_(e) {
+    // @ts-ignore: error TS2339: Property 'disabled' does not exist on type '{
+    // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (this.disabled) {
       return;
     }
@@ -518,8 +823,15 @@ List.prototype = {
 
     // If the target was this element we need to make sure that the user did
     // not click on a border or a scrollbar.
+    // @ts-ignore: error TS2367: This comparison appears to be unintentional
+    // because the types 'HTMLElement' and '{ __proto__: HTMLUListElement;
+    // measured_: Size | null; autoExpands_: boolean; fixedHeight_: boolean;
+    // remainingSpace_: boolean; itemConstructor_: (arg0: any) => ListItem; ...
+    // 56 more ...; startDragSelection(event: Event): void; }' have no overlap.
     if (target === this) {
       if (inViewport(target, e)) {
+        // @ts-ignore: error TS2339: Property 'selectionController_' does not
+        // exist on type 'never'.
         this.selectionController_.handlePointerDownUp(e, -1);
       }
       return;
@@ -530,7 +842,15 @@ List.prototype = {
       return;
     }
 
+    // @ts-ignore: error TS2345: Argument of type 'HTMLElement' is not
+    // assignable to parameter of type 'HTMLLIElement'.
     const index = this.getIndexOfListItem(target);
+    // @ts-ignore: error TS2551: Property 'selectionController_' does not exist
+    // on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'. Did you mean
+    // 'createSelectionController'?
     this.selectionController_.handlePointerDownUp(e, index);
   },
 
@@ -540,8 +860,21 @@ List.prototype = {
    * @param {Event} e The focus event.
    * @private
    */
+  // @ts-ignore: error TS6133: 'e' is declared but its value is never read.
   handleElementFocus_(e) {
+    // @ts-ignore: error TS2551: Property 'hasElementFocus' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'. Did you mean
+    // 'handleElementFocus_'?
     if (!this.hasElementFocus) {
+      // @ts-ignore: error TS2551: Property 'hasElementFocus' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'. Did you mean
+      // 'handleElementFocus_'?
       this.hasElementFocus = true;
     }
   },
@@ -557,7 +890,15 @@ List.prototype = {
    * Node.prototype.contains() will be fixed.
    */
   handleElementBlur_(e) {
+    // @ts-ignore: error TS2339: Property 'relatedTarget' does not exist on type
+    // 'Event'.
     if (!this.contains(e.relatedTarget)) {
+      // @ts-ignore: error TS2551: Property 'hasElementFocus' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'. Did you mean
+      // 'handleElementFocus_'?
       this.hasElementFocus = false;
     }
   },
@@ -570,10 +911,19 @@ List.prototype = {
    */
   getListItemAncestor(element) {
     let container = element;
+    // @ts-ignore: error TS2367: This comparison appears to be unintentional
+    // because the types 'ParentNode | null' and '{ __proto__: HTMLUListElement;
+    // measured_: Size | null; autoExpands_: boolean; fixedHeight_: boolean;
+    // remainingSpace_: boolean; itemConstructor_: (arg0: any) => ListItem; ...
+    // 56 more ...; startDragSelection(event: Event): void; }' have no overlap.
     while (container && container.parentNode !== this) {
+      // @ts-ignore: error TS2322: Type 'ParentNode | null' is not assignable to
+      // type 'HTMLElement'.
       container = container.parentNode;
     }
 
+    // @ts-ignore: error TS2322: Type 'HTMLLIElement | null' is not assignable
+    // to type 'HTMLLIElement'.
     return (container instanceof HTMLLIElement ? container : null);
   },
 
@@ -582,7 +932,18 @@ List.prototype = {
    * @param {Event} e The keydown event.
    */
   handleKeyDown(e) {
+    // @ts-ignore: error TS2339: Property 'disabled' does not exist on type '{
+    // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (!this.disabled) {
+      // @ts-ignore: error TS2551: Property 'selectionController_' does not
+      // exist on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'. Did you mean
+      // 'createSelectionController'?
       this.selectionController_.handleKeyDown(e);
     }
   },
@@ -591,6 +952,7 @@ List.prototype = {
    * Handle a scroll event.
    * @param {Event} e The scroll event.
    */
+  // @ts-ignore: error TS6133: 'e' is declared but its value is never read.
   handleScroll(e) {
     requestAnimationFrame(this.redraw.bind(this));
   },
@@ -601,18 +963,30 @@ List.prototype = {
    * @private
    */
   handleTouchEvents_(e) {
+    // @ts-ignore: error TS2339: Property 'disabled' does not exist on type '{
+    // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (this.disabled) {
       return;
     }
 
     let target = /** @type {HTMLElement} */ (e.target);
 
+    // @ts-ignore: error TS2367: This comparison appears to be unintentional
+    // because the types 'HTMLElement' and '{ __proto__: HTMLUListElement;
+    // measured_: Size | null; autoExpands_: boolean; fixedHeight_: boolean;
+    // remainingSpace_: boolean; itemConstructor_: (arg0: any) => ListItem; ...
+    // 56 more ...; startDragSelection(event: Event): void; }' have no overlap.
     if (target === this) {
       // Unlike the mouse events, we don't check if the touch is inside the
       // viewport because of these reasons:
       // - The scrollbars do not interact with touch.
       // - touch* events are not sent to this element when tapping or
       //   dragging window borders by touch.
+      // @ts-ignore: error TS2339: Property 'selectionController_' does not
+      // exist on type 'never'.
       this.selectionController_.handleTouchEvents(e, -1);
       return;
     }
@@ -622,7 +996,15 @@ List.prototype = {
       return;
     }
 
+    // @ts-ignore: error TS2345: Argument of type 'HTMLElement' is not
+    // assignable to parameter of type 'HTMLLIElement'.
     const index = this.getIndexOfListItem(target);
+    // @ts-ignore: error TS2551: Property 'selectionController_' does not exist
+    // on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'. Did you mean
+    // 'createSelectionController'?
     this.selectionController_.handleTouchEvents(e, index);
   },
 
@@ -633,13 +1015,19 @@ List.prototype = {
    * @private
    */
   handleOnChange_(ce) {
+    // @ts-ignore: error TS7006: Parameter 'change' implicitly has an 'any'
+    // type.
     ce.changes.forEach(function(change) {
+      // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+      // does not have a type annotation.
       const listItem = this.getListItemByIndex(change.index);
       if (listItem) {
         listItem.selected = change.selected;
         listItem.setAttribute('aria-selected', listItem.selected);
         if (change.selected) {
           listItem.setAttribute('aria-posinset', change.index + 1);
+          // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because
+          // it does not have a type annotation.
           listItem.setAttribute('aria-setsize', this.dataModel.length);
         } else {
           listItem.removeAttribute('aria-posinset');
@@ -648,6 +1036,11 @@ List.prototype = {
       }
     }, this);
 
+    // @ts-ignore: error TS2345: Argument of type '{ __proto__:
+    // HTMLUListElement; measured_: Size | null; autoExpands_: boolean;
+    // fixedHeight_: boolean; remainingSpace_: boolean; itemConstructor_: (arg0:
+    // any) => ListItem; ... 56 more ...; startDragSelection(event: Event):
+    // void; }' is not assignable to parameter of type 'EventTarget'.
     dispatchSimpleEvent(this, 'change');
   },
 
@@ -658,20 +1051,37 @@ List.prototype = {
    */
   handleLeadChange(e) {
     let element;
+    // @ts-ignore: error TS2339: Property 'oldValue' does not exist on type
+    // 'Event'.
     if (e.oldValue !== -1) {
+      // @ts-ignore: error TS2339: Property 'oldValue' does not exist on type
+      // 'Event'.
       if ((element = this.getListItemByIndex(e.oldValue))) {
         element.lead = false;
       }
     }
 
+    // @ts-ignore: error TS2339: Property 'newValue' does not exist on type
+    // 'Event'.
     if (e.newValue !== -1) {
+      // @ts-ignore: error TS2339: Property 'newValue' does not exist on type
+      // 'Event'.
       if ((element = this.getListItemByIndex(e.newValue))) {
         element.lead = true;
       }
+      // @ts-ignore: error TS2339: Property 'newValue' does not exist on type
+      // 'Event'.
       if (e.oldValue !== e.newValue) {
         if (element) {
+          // @ts-ignore: error TS2339: Property 'setAttribute' does not exist on
+          // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+          // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+          // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more
+          // ...; startDragSelection(event: Event): void; }'.
           this.setAttribute('aria-activedescendant', element.id);
         }
+        // @ts-ignore: error TS2339: Property 'newValue' does not exist on type
+        // 'Event'.
         this.scrollIndexIntoView(e.newValue);
         // If the lead item has a different height than other items, then we
         // may run into a problem that requires a second attempt to scroll
@@ -685,10 +1095,17 @@ List.prototype = {
         // not the most elegant solution, but no others seem obvious.
         const self = this;
         window.setTimeout(function() {
+          // @ts-ignore: error TS2339: Property 'newValue' does not exist on
+          // type 'Event'.
           self.scrollIndexIntoView(e.newValue);
         }, 0);
       }
     } else {
+      // @ts-ignore: error TS2339: Property 'removeAttribute' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.removeAttribute('aria-activedescendant');
     }
   },
@@ -706,40 +1123,113 @@ List.prototype = {
    */
   handleDataModelPermuted_(e) {
     const newCachedItems = {};
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     for (const index in this.cachedItems_) {
+      // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
+      // 'Event'.
       if (e.permutation[index] !== -1) {
+        // @ts-ignore: error TS2339: Property 'permutation' does not exist on
+        // type 'Event'.
         const newIndex = e.permutation[index];
+        // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         newCachedItems[newIndex] = this.cachedItems_[index];
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'any' can't be used to index type '{}'.
         newCachedItems[newIndex].listIndex = newIndex;
       }
     }
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.cachedItems_ = newCachedItems;
+    // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.pinnedItem_ = null;
 
     const newCachedItemHeights = {};
+    // @ts-ignore: error TS2339: Property 'cachedItemHeights_' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     for (const index in this.cachedItemHeights_) {
+      // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
+      // 'Event'.
       if (e.permutation[index] !== -1) {
+        // @ts-ignore: error TS2339: Property 'permutation' does not exist on
+        // type 'Event'.
         newCachedItemHeights[e.permutation[index]] =
+            // @ts-ignore: error TS2339: Property 'cachedItemHeights_' does not
+            // exist on type '{ __proto__: HTMLUListElement; measured_: Size |
+            // null; autoExpands_: boolean; fixedHeight_: boolean;
+            // remainingSpace_: boolean; itemConstructor_: (arg0: any) =>
+            // ListItem; ... 56 more ...; startDragSelection(event: Event):
+            // void; }'.
             this.cachedItemHeights_[index];
       }
     }
+    // @ts-ignore: error TS2339: Property 'cachedItemHeights_' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.cachedItemHeights_ = newCachedItemHeights;
 
     this.startBatchUpdates();
 
     const sm = this.selectionModel;
+    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
+    // 'Event'.
     sm.adjustLength(e.newLength);
+    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
+    // 'Event'.
     sm.adjustToReordering(e.permutation);
 
     this.endBatchUpdates();
   },
 
+  // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
   handleDataModelChange_(e) {
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     delete this.cachedItems_[e.index];
+    // @ts-ignore: error TS2339: Property 'cachedItemHeights_' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     delete this.cachedItemHeights_[e.index];
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'ListItem'.
     this.cachedMeasuredItem_ = null;
 
+    // @ts-ignore: error TS2339: Property 'firstIndex_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (e.index >= this.firstIndex_ &&
+        // @ts-ignore: error TS2339: Property 'lastIndex_' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         (e.index < this.lastIndex_ || this.remainingSpace_)) {
       this.redraw();
     }
@@ -786,13 +1276,25 @@ List.prototype = {
    */
   scrollIndexIntoView(index) {
     const dataModel = this.dataModel;
+    // @ts-ignore: error TS2339: Property 'length' does not exist on type
+    // 'never'.
     if (!dataModel || index < 0 || index >= dataModel.length) {
       return;
     }
 
     const itemHeight = this.getItemHeightByIndex_(index);
+    // @ts-ignore: error TS2339: Property 'scrollTop' does not exist on type '{
+    // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     const scrollTop = this.scrollTop;
     const top = this.getItemTop(index);
+    // @ts-ignore: error TS2339: Property 'clientHeight' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     const clientHeight = this.clientHeight;
 
     const cs = getComputedStyle(this);
@@ -803,10 +1305,20 @@ List.prototype = {
     const self = this;
     // Function to adjust the tops of viewport and row.
     function scrollToAdjustTop() {
+      // @ts-ignore: error TS2339: Property 'scrollTop' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       self.scrollTop = top;
     }
     // Function to adjust the bottoms of viewport and row.
     function scrollToAdjustBottom() {
+      // @ts-ignore: error TS2339: Property 'scrollTop' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       self.scrollTop = top + itemHeight - availableHeight;
     }
 
@@ -837,6 +1349,11 @@ List.prototype = {
     if (el) {
       return el.getBoundingClientRect();
     }
+    // @ts-ignore: error TS2339: Property 'getBoundingClientRect' does not exist
+    // on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     return this.getBoundingClientRect();
   },
 
@@ -849,9 +1366,13 @@ List.prototype = {
   getListItem(value) {
     const dataModel = this.dataModel;
     if (dataModel) {
+      // @ts-ignore: error TS2339: Property 'indexOf' does not exist on type
+      // 'never'.
       const index = dataModel.indexOf(value);
       return this.getListItemByIndex(index);
     }
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'ListItem'.
     return null;
   },
 
@@ -861,6 +1382,11 @@ List.prototype = {
    * @return {ListItem} The found list item or null if not found.
    */
   getListItemByIndex(index) {
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     return this.cachedItems_[index] || null;
   },
 
@@ -870,7 +1396,14 @@ List.prototype = {
    * @return {number} The index of the list item, or -1 if not found.
    */
   getIndexOfListItem(item) {
+    // @ts-ignore: error TS2339: Property 'listIndex' does not exist on type
+    // 'HTMLLIElement'.
     const index = item.listIndex;
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (this.cachedItems_[index] === item) {
       return index;
     }
@@ -926,6 +1459,7 @@ List.prototype = {
   getIndexForListOffset_(offset) {
     const itemHeight = this.getDefaultItemHeight_();
     if (!itemHeight) {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       return this.dataModel.length;
     }
 
@@ -935,16 +1469,20 @@ List.prototype = {
 
     // If offset exceeds the height of list.
     let lastHeight = 0;
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     if (this.dataModel.length) {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       const h = this.getHeightsForIndex(this.dataModel.length - 1);
       lastHeight = h.top + h.height;
     }
     if (lastHeight < offset) {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       return this.dataModel.length;
     }
 
     // Estimates index.
     let estimatedIndex =
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         Math.min(Math.floor(offset / itemHeight), this.dataModel.length - 1);
     const isIncrementing = this.getItemTop(estimatedIndex) < offset;
 
@@ -959,6 +1497,7 @@ List.prototype = {
       }
 
       isIncrementing ? ++estimatedIndex : --estimatedIndex;
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
     } while (0 < estimatedIndex && estimatedIndex < this.dataModel.length);
 
     return estimatedIndex;
@@ -988,7 +1527,9 @@ List.prototype = {
     if (this.autoExpands_) {
       return {
         first: 0,
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         length: this.dataModel.length,
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         last: this.dataModel.length,
       };
     } else {
@@ -1017,31 +1558,68 @@ List.prototype = {
     let currentIndex = firstIndex;
 
     function insert() {
+      // @ts-ignore: error TS18047: 'dataModel' is possibly 'null'.
       const dataItem = dataModel.item(currentIndex);
+      // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       const cachedCurrentItem = self.cachedItems_[currentIndex];
       if (cachedCurrentItem) {
         // Emit synthetic event with cached item that is about to be restored.
+        // @ts-ignore: error TS2339: Property 'dispatchEvent' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         self.dispatchEvent(new CustomEvent('cachedItemRestored', {
           detail: cachedCurrentItem,
         }));
       }
       const newItem = cachedCurrentItem || self.createItem(dataItem);
       newItem.listIndex = currentIndex;
+      // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       self.cachedItems_[currentIndex] = newItem;
+      // @ts-ignore: error TS7005: Variable 'item' implicitly has an 'any' type.
       self.insertBefore(newItem, item);
       currentIndex++;
     }
 
     function remove() {
+      // @ts-ignore: error TS7005: Variable 'item' implicitly has an 'any' type.
       const next = item.nextSibling;
+      // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       if (item !== self.pinnedItem_) {
+        // @ts-ignore: error TS7005: Variable 'item' implicitly has an 'any'
+        // type.
         self.removeChild(item);
       }
       item = next;
     }
 
+    // @ts-ignore: error TS7034: Variable 'item' implicitly has type 'any' in
+    // some locations where its type cannot be determined.
     let item;
+    // @ts-ignore: error TS2339: Property 'beforeFiller_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     for (item = this.beforeFiller_.nextSibling;
+         // @ts-ignore: error TS2339: Property 'afterFiller_' does not exist on
+         // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+         // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+         // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+         // startDragSelection(event: Event): void; }'.
          item !== this.afterFiller_ && currentIndex < lastIndex;) {
       if (!this.isItem(item)) {
         item = item.nextSibling;
@@ -1049,9 +1627,19 @@ List.prototype = {
       }
 
       const index = item.listIndex;
+      // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       if (this.cachedItems_[index] !== item || index < currentIndex) {
         remove();
       } else if (index === currentIndex) {
+        // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         this.cachedItems_[currentIndex] = item;
         item = item.nextSibling;
         currentIndex++;
@@ -1060,6 +1648,11 @@ List.prototype = {
       }
     }
 
+    // @ts-ignore: error TS2339: Property 'afterFiller_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     while (item !== this.afterFiller_) {
       if (this.isItem(item)) {
         remove();
@@ -1068,11 +1661,36 @@ List.prototype = {
       }
     }
 
+    // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (this.pinnedItem_) {
+      // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       const index = this.pinnedItem_.listIndex;
+      // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.pinnedItem_.hidden = index < firstIndex || index >= lastIndex;
+      // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.cachedItems_[index] = this.pinnedItem_;
       if (index >= lastIndex) {
+        // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         item = this.pinnedItem_;
       }  // Insert new items before this one.
     }
@@ -1088,7 +1706,13 @@ List.prototype = {
   ensureAllItemSizesInCache() {
     const measuringIndexes = [];
     const isElementAppended = [];
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     for (let y = 0; y < this.dataModel.length; y++) {
+      // @ts-ignore: error TS2339: Property 'cachedItemHeights_' does not exist
+      // on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       if (!this.cachedItemHeights_[y]) {
         measuringIndexes.push(y);
         isElementAppended.push(false);
@@ -1099,17 +1723,33 @@ List.prototype = {
     // Adds temporary elements.
     for (let y = 0; y < measuringIndexes.length; y++) {
       const index = measuringIndexes[y];
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       const dataItem = this.dataModel.item(index);
+      // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       const listItem = this.cachedItems_[index] || this.createItem(dataItem);
       listItem.listIndex = index;
 
       // If |listItems| is not on the list, appends it to the list and sets
       // the flag.
       if (!listItem.parentNode) {
+        // @ts-ignore: error TS2339: Property 'appendChild' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         this.appendChild(listItem);
         isElementAppended[y] = true;
       }
 
+      // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.cachedItems_[index] = listItem;
       measuringItems.push(listItem);
     }
@@ -1118,6 +1758,11 @@ List.prototype = {
     // performance reducing.
     for (let y = 0; y < measuringIndexes.length; y++) {
       const index = measuringIndexes[y];
+      // @ts-ignore: error TS2339: Property 'cachedItemHeights_' does not exist
+      // on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.cachedItemHeights_[index] =
           this.measureItemHeight_(measuringItems[y]);
     }
@@ -1126,6 +1771,11 @@ List.prototype = {
     for (let y = 0; y < measuringIndexes.length; y++) {
       // If the list item has been appended above, removes it.
       if (isElementAppended[y]) {
+        // @ts-ignore: error TS2339: Property 'removeChild' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         this.removeChild(measuringItems[y]);
       }
     }
@@ -1139,10 +1789,12 @@ List.prototype = {
   getAfterFillerHeight(lastIndex) {
     if (this.fixedHeight_) {
       const itemHeight = this.getDefaultItemHeight_();
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       return (this.dataModel.length - lastIndex) * itemHeight;
     }
 
     let height = 0;
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     for (let i = lastIndex; i < this.dataModel.length; i++) {
       height += this.getItemHeightByIndex_(i);
     }
@@ -1158,17 +1810,52 @@ List.prototype = {
     }
 
     const dataModel = this.dataModel;
+    // @ts-ignore: error TS2339: Property 'clientHeight' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (!dataModel || !this.autoExpands_ && this.clientHeight === 0) {
+      // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.cachedItems_ = {};
+      // @ts-ignore: error TS2339: Property 'firstIndex_' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.firstIndex_ = 0;
+      // @ts-ignore: error TS2339: Property 'lastIndex_' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.lastIndex_ = 0;
+      // @ts-ignore: error TS2339: Property 'clientHeight' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.remainingSpace_ = this.clientHeight !== 0;
       this.mergeItems(0, 0);
       return;
     }
 
     // Save the previous positions before any manipulation of elements.
+    // @ts-ignore: error TS2339: Property 'scrollTop' does not exist on type '{
+    // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     const scrollTop = this.scrollTop;
+    // @ts-ignore: error TS2339: Property 'clientHeight' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     const clientHeight = this.clientHeight;
 
     // Store all the item sizes into the cache in advance, to prevent
@@ -1177,13 +1864,19 @@ List.prototype = {
       this.ensureAllItemSizesInCache();
     }
 
+    // @ts-ignore: error TS6133: 'autoExpands' is declared but its value is
+    // never read.
     const autoExpands = this.autoExpands_;
 
     const itemsInViewPort = this.getItemsInViewPort(scrollTop, clientHeight);
     // Draws the hidden rows just above/below the viewport to prevent
     // flashing in scroll.
     const firstIndex =
+        // @ts-ignore: error TS2339: Property 'length' does not exist on type
+        // 'never'.
         Math.max(0, Math.min(dataModel.length - 1, itemsInViewPort.first - 1));
+    // @ts-ignore: error TS2339: Property 'length' does not exist on type
+    // 'never'.
     const lastIndex = Math.min(itemsInViewPort.last + 1, dataModel.length);
 
     const beforeFillerHeight =
@@ -1191,6 +1884,11 @@ List.prototype = {
     const afterFillerHeight =
         this.autoExpands ? 0 : this.getAfterFillerHeight(lastIndex);
 
+    // @ts-ignore: error TS2339: Property 'beforeFiller_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.beforeFiller_.style.height = beforeFillerHeight + 'px';
 
     const sm = this.selectionModel;
@@ -1199,48 +1897,140 @@ List.prototype = {
     // If the pinned item is hidden and it is not the lead item, then remove
     // it from cache. Note, that we restore the hidden status to false, since
     // the item is still in cache, and may be reused.
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (this.pinnedItem_ && this.pinnedItem_ !== this.cachedItems_[leadIndex]) {
+      // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       if (this.pinnedItem_.hidden) {
+        // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         this.removeChild(this.pinnedItem_);
+        // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         this.pinnedItem_.hidden = false;
       }
+      // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.pinnedItem_ = undefined;
     }
 
     this.mergeItems(firstIndex, lastIndex);
 
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (!this.pinnedItem_ && this.cachedItems_[leadIndex] &&
+        // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         this.cachedItems_[leadIndex].parentNode === this) {
+      // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.pinnedItem_ = this.cachedItems_[leadIndex];
     }
 
+    // @ts-ignore: error TS2339: Property 'afterFiller_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.afterFiller_.style.height = afterFillerHeight + 'px';
 
     // Restores the number of pixels scrolled, since it might be changed while
     // DOM operations.
+    // @ts-ignore: error TS2339: Property 'scrollTop' does not exist on type '{
+    // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.scrollTop = scrollTop;
 
     // We don't set the lead or selected properties until after adding all
     // items, in case they force relayout in response to these events.
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (leadIndex !== -1 && this.cachedItems_[leadIndex]) {
+      // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.cachedItems_[leadIndex].lead = true;
     }
     for (let y = firstIndex; y < lastIndex; y++) {
+      // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       if (sm.getIndexSelected(y) !== this.cachedItems_[y].selected) {
+        // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         this.cachedItems_[y].selected = !this.cachedItems_[y].selected;
       }
     }
 
+    // @ts-ignore: error TS2339: Property 'firstIndex_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.firstIndex_ = firstIndex;
+    // @ts-ignore: error TS2339: Property 'lastIndex_' does not exist on type '{
+    // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.lastIndex_ = lastIndex;
 
+    // @ts-ignore: error TS2339: Property 'length' does not exist on type
+    // 'never'.
     this.remainingSpace_ = itemsInViewPort.last > dataModel.length;
 
     // Mesurings must be placed after adding all the elements, to prevent
     // performance reducing.
     if (!this.fixedHeight_) {
       for (let y = firstIndex; y < lastIndex; y++) {
+        // @ts-ignore: error TS2339: Property 'cachedItemHeights_' does not
+        // exist on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         this.cachedItemHeights_[y] =
+            // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist
+            // on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+            // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+            // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more
+            // ...; startDragSelection(event: Event): void; }'.
             this.measureItemHeight_(this.cachedItems_[y]);
       }
     }
@@ -1257,9 +2047,19 @@ List.prototype = {
    * @param {ListItem} leadItem Already existing lead item.
    */
   restoreLeadItem(leadItem) {
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     delete this.cachedItems_[leadItem.listIndex];
 
     leadItem.listIndex = this.selectionModel.leadIndex;
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.pinnedItem_ = this.cachedItems_[leadItem.listIndex] = leadItem;
   },
 
@@ -1267,7 +2067,17 @@ List.prototype = {
    * Invalidates list by removing cached items.
    */
   invalidate() {
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.cachedItems_ = {};
+    // @ts-ignore: error TS2339: Property 'cachedItemSized_' does not exist on
+    // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.cachedItemSized_ = {};
   },
 
@@ -1276,8 +2086,23 @@ List.prototype = {
    * @param {number} index The row index to redraw.
    */
   redrawItem(index) {
+    // @ts-ignore: error TS2339: Property 'firstIndex_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (index >= this.firstIndex_ &&
+        // @ts-ignore: error TS2339: Property 'lastIndex_' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         (index < this.lastIndex_ || this.remainingSpace_)) {
+      // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       delete this.cachedItems_[index];
       this.redraw();
     }
@@ -1288,6 +2113,7 @@ List.prototype = {
    * event.
    * @param {number} index The index of the activated item.
    */
+  // @ts-ignore: error TS6133: 'index' is declared but its value is never read.
   activateItemAtIndex(index) {},
 
   /**
@@ -1304,16 +2130,44 @@ List.prototype = {
   ensureLeadItemExists() {
     const index = this.selectionModel.leadIndex;
     if (index < 0) {
+      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+      // 'ListItem'.
       return null;
     }
+    // @ts-ignore: error TS2339: Property 'cachedItems_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     const cachedItems = this.cachedItems_ || {};
 
     const item =
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         cachedItems[index] || this.createItem(this.dataModel.item(index));
+    // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (this.pinnedItem_ !== item && this.pinnedItem_ &&
+        // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on
+        // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+        // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_:
+        // boolean; itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+        // startDragSelection(event: Event): void; }'.
         this.pinnedItem_.hidden) {
+      // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on type
+      // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+      // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.removeChild(this.pinnedItem_);
     }
+    // @ts-ignore: error TS2339: Property 'pinnedItem_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.pinnedItem_ = item;
     cachedItems[index] = item;
     item.listIndex = index;
@@ -1327,9 +2181,24 @@ List.prototype = {
 
     // Item will get to the right place in redraw. Choose place to insert
     // reducing items reinsertion.
+    // @ts-ignore: error TS2339: Property 'firstIndex_' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     if (index <= this.firstIndex_) {
+      // @ts-ignore: error TS2339: Property 'beforeFiller_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.insertBefore(item, this.beforeFiller_.nextSibling);
     } else {
+      // @ts-ignore: error TS2339: Property 'afterFiller_' does not exist on
+      // type '{ __proto__: HTMLUListElement; measured_: Size | null;
+      // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+      // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+      // startDragSelection(event: Event): void; }'.
       this.insertBefore(item, this.afterFiller_);
     }
     this.redraw();
@@ -1344,14 +2213,36 @@ List.prototype = {
     event.preventDefault();
     const border = document.createElement('div');
     border.className = 'drag-selection-border';
+    // @ts-ignore: error TS2339: Property 'getBoundingClientRect' does not exist
+    // on type '{ __proto__: HTMLUListElement; measured_: Size | null;
+    // autoExpands_: boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     const rect = this.getBoundingClientRect();
+    // @ts-ignore: error TS2339: Property 'scrollLeft' does not exist on type '{
+    // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     const startX = event.clientX - rect.left + this.scrollLeft;
+    // @ts-ignore: error TS2339: Property 'scrollTop' does not exist on type '{
+    // __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     const startY = event.clientY - rect.top + this.scrollTop;
     border.style.left = startX + 'px';
     border.style.top = startY + 'px';
+    // @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
     const onMouseMove = function(event) {
+      // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+      // does not have a type annotation.
       const inRect = this.getBoundingClientRect();
+      // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+      // does not have a type annotation.
       const x = event.clientX - inRect.left + this.scrollLeft;
+      // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+      // does not have a type annotation.
       const y = event.clientY - inRect.top + this.scrollTop;
       border.style.left = Math.min(startX, x) + 'px';
       border.style.top = Math.min(startY, y) + 'px';
@@ -1359,12 +2250,19 @@ List.prototype = {
       border.style.height = Math.abs(startY - y) + 'px';
     }.bind(this);
     const onMouseUp = function() {
+      // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+      // does not have a type annotation.
       this.removeChild(border);
       document.removeEventListener('mousemove', onMouseMove, true);
       document.removeEventListener('mouseup', onMouseUp, true);
     }.bind(this);
     document.addEventListener('mousemove', onMouseMove, true);
     document.addEventListener('mouseup', onMouseUp, true);
+    // @ts-ignore: error TS2339: Property 'appendChild' does not exist on type
+    // '{ __proto__: HTMLUListElement; measured_: Size | null; autoExpands_:
+    // boolean; fixedHeight_: boolean; remainingSpace_: boolean;
+    // itemConstructor_: (arg0: any) => ListItem; ... 56 more ...;
+    // startDragSelection(event: Event): void; }'.
     this.appendChild(border);
   },
 };
@@ -1394,10 +2292,15 @@ Object.defineProperty(
  */
 function handleMouseDown(e) {
   const target = /** @type {!HTMLElement} */ (e.target);
+  // @ts-ignore: error TS2339: Property 'getListItemAncestor' does not exist on
+  // type 'List'.
   const listItem = this.getListItemAncestor(target);
   const wasSelected = listItem && listItem.selected;
+  // @ts-ignore: error TS2339: Property 'handlePointerDownUp_' does not exist on
+  // type 'List'.
   this.handlePointerDownUp_(e);
 
+  // @ts-ignore: error TS2339: Property 'button' does not exist on type 'Event'.
   if (e.defaultPrevented || e.button !== 0) {
     return;
   }
@@ -1428,19 +2331,29 @@ function handleMouseDown(e) {
  */
 function handleDragStart(e) {
   e = /** @type {MouseEvent} */ (e);
+  // @ts-ignore: error TS2339: Property 'clientY' does not exist on type
+  // 'Event'.
   const element = e.target.ownerDocument.elementFromPoint(e.clientX, e.clientY);
+  // @ts-ignore: error TS2339: Property 'getListItemAncestor' does not exist on
+  // type 'List'.
   const listItem = this.getListItemAncestor(element);
   if (!listItem) {
     return;
   }
 
+  // @ts-ignore: error TS2339: Property 'getIndexOfListItem' does not exist on
+  // type 'List'.
   const index = this.getIndexOfListItem(listItem);
   if (index === -1) {
     return;
   }
 
+  // @ts-ignore: error TS2339: Property 'selectionModel_' does not exist on type
+  // 'List'.
   const isAlreadySelected = this.selectionModel_.getIndexSelected(index);
   if (!isAlreadySelected) {
+    // @ts-ignore: error TS2339: Property 'selectionModel_' does not exist on
+    // type 'List'.
     this.selectionModel_.selectedIndex = index;
   }
 }
@@ -1454,7 +2367,11 @@ function handleDragStart(e) {
  */
 function containsFocusableElement(start, root) {
   for (let element = start; element && element !== root;
+       // @ts-ignore: error TS2322: Type 'HTMLElement | null' is not assignable
+       // to type 'Element'.
        element = element.parentElement) {
+    // @ts-ignore: error TS2339: Property 'disabled' does not exist on type
+    // 'Element'.
     if (element.tabIndex >= 0 && !element.disabled) {
       return true;
     }

@@ -119,6 +119,8 @@ export class ProvidersModel {
           reject(chrome.runtime.lastError.message);
           return;
         }
+        // @ts-ignore: error TS7034: Variable 'results' implicitly has type
+        // 'any[]' in some locations where its type cannot be determined.
         const results = [];
         providers.forEach(provider => {
           results.push(new ProvidersModelItem(
@@ -126,6 +128,8 @@ export class ProvidersModel {
               provider.configurable, provider.watchable,
               provider.multipleMounts, provider.source));
         });
+        // @ts-ignore: error TS7005: Variable 'results' implicitly has an
+        // 'any[]' type.
         fulfill(results);
       });
     });
@@ -140,6 +144,8 @@ export class ProvidersModel {
       for (let i = 0; i < this.volumeManager_.volumeInfoList.length; i++) {
         const volumeInfo = this.volumeManager_.volumeInfoList.item(i);
         if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.PROVIDED) {
+          // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an
+          // index type.
           mountedProviders[volumeInfo.providerId] = true;
         }
       }
@@ -148,6 +154,9 @@ export class ProvidersModel {
         // handlers are mounted when a device is inserted. Only network file
         // systems are mounted manually by user via a menu.
         return item.source === 'network' &&
+            // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+            // because expression of type 'string' can't be used to index type
+            // '{}'.
             (!mountedProviders[item.providerId] || item.multipleMounts);
       });
     });

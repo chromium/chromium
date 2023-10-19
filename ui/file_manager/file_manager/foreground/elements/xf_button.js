@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cros_components/button/button.js';
-
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {Button} from 'chrome://resources/cros_components/button/button.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {util} from '../../common/js/util.js';
 
 const htmlTemplate = html`{__html_template__}`;
@@ -31,7 +31,6 @@ export class PanelButton extends HTMLElement {
 
   /**
    * Registers this instance to listen to these attribute changes.
-   * @private
    */
   static get observedAttributes() {
     return [
@@ -44,19 +43,18 @@ export class PanelButton extends HTMLElement {
    * @param {string} name Attribute that's changed.
    * @param {?string} oldValue Old value of the attribute.
    * @param {?string} newValue New value of the attribute.
-   * @private
    */
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) {
       return;
     }
-    /** @type {Element} */
-    const iconButton = this.shadowRoot.querySelector('cr-icon-button');
+    /** @type {?Element} */
+    const iconButton = this.shadowRoot?.querySelector('cr-icon-button') ?? null;
     if (name === 'data-category') {
       switch (newValue) {
         case 'collapse':
         case 'expand':
-          iconButton.setAttribute('iron-icon', 'cr:expand-less');
+          iconButton?.setAttribute('iron-icon', 'cr:expand-less');
           break;
       }
     }
@@ -67,11 +65,18 @@ export class PanelButton extends HTMLElement {
    * @param {string} text The text to use on the extra button.
    */
   setExtraButtonText(text) {
+    if (!this.shadowRoot) {
+      return;
+    }
     if (util.isCrosComponentsEnabled()) {
-      const extraButton = this.shadowRoot.querySelector('#extra-button-jelly');
+      const extraButton =
+          /** @type {!Button} */ (
+              queryRequiredElement('#extra-button-jelly', this.shadowRoot));
       extraButton.label = text;
     } else {
-      const extraButton = this.shadowRoot.querySelector('#extra-button');
+      const extraButton =
+          /** @type {!CrButtonElement} */ (
+              queryRequiredElement('#extra-button', this.shadowRoot));
       extraButton.innerText = text;
     }
   }

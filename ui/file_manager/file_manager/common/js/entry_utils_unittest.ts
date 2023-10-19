@@ -40,16 +40,16 @@ export function testInsideMyDriveAndInsideDrive() {
 
   // Convert entry into FileData.
   const driveRootFileData = convertEntryToFileData(driveRootEntryList);
-  const myDrivesFileData = convertEntryToFileData(driveFs.entries['/root']);
+  const myDrivesFileData = convertEntryToFileData(driveFs.entries['/root']!);
   const teamDrivesFileData =
-      convertEntryToFileData(driveFs.entries['/team_drives']);
+      convertEntryToFileData(driveFs.entries['/team_drives']!);
   const computersFileData =
-      convertEntryToFileData(driveFs.entries['/Computers']);
-  const myFilesFileData = convertEntryToFileData(myFilesFs.entries['/']);
+      convertEntryToFileData(driveFs.entries['/Computers']!);
+  const myFilesFileData = convertEntryToFileData(myFilesFs.entries['/']!);
   const myFilesFolder1FileData =
-      convertEntryToFileData(myFilesFs.entries['/folder1']);
+      convertEntryToFileData(myFilesFs.entries['/folder1']!);
   const myDrivesFolder1FileData =
-      convertEntryToFileData(driveFs.entries['/root/folder1']);
+      convertEntryToFileData(driveFs.entries['/root/folder1']!);
 
   // insideMyDrive
   assertFalse(isEntryInsideMyDrive(driveRootFileData), 'Drive root');

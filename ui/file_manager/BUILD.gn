@@ -45,29 +45,10 @@ group("closure_compile") {
   testonly = true
 
   deps = [
-    "file_manager/background/js:closure_compile",
-    "file_manager/common/js:closure_compile",
-    "file_manager/foreground/elements:closure_compile",
-    "file_manager/foreground/js:closure_compile",
-    "file_manager/foreground/js/metadata:closure_compile",
-    "file_manager/foreground/js/ui:closure_compile",
     "image_loader:closure_compile",
     "integration_tests:closure_compile",
     "integration_tests/file_manager:closure_compile",
     "integration_tests/file_manager/page_objects:closure_compile",
-  ]
-}
-
-group("unit_test_data") {
-  testonly = true
-  deps = [
-    "file_manager/background/js:js_test_type_check",
-    "file_manager/common/js:js_test_type_check",
-    "file_manager/foreground/elements:js_test_type_check",
-    "file_manager/foreground/js:js_test_type_check",
-    "file_manager/foreground/js/metadata:js_test_type_check",
-    "file_manager/foreground/js/ui:js_test_type_check",
-    "image_loader:js_test_type_check",
   ]
 }
 
@@ -86,7 +67,7 @@ preprocess_if_expr("preprocess_static") {
     out_folder = preprocess_folder
   }
 
-  in_files = static_js_files
+  in_files = static_js_files + unittest_files
 
   deps = [
     "//ui/file_manager/file_manager/background/js:js_modules",
@@ -266,12 +247,14 @@ ts_library("test_build_ts") {
   tsconfig_base = "tsconfig_base.json"
   enable_source_maps = false
 
-  in_files =
-      ts_test_files + [ "file_manager/externs/test/file_manager_private.js" ]
+  in_files = unittest_files + ts_test_files +
+             [ "file_manager/externs/test/file_manager_private.js" ]
 
   manifest_excludes = [ "file_manager/externs/test/file_manager_private.js" ]
 
   path_mappings = [
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/*|preprocessed/image_loader/*",
+
     # for chai_assert.js.
     "chrome://webui-test/chromeos/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
@@ -303,6 +286,7 @@ ts_library("test_build_ts") {
     ":copy_definitions_to_preprocess",
     ":copy_fmp_test",
     ":generate_definitions",
+    ":preprocess_static",
   ]
   if (enable_webui_inline_sourcemaps) {
     extra_deps += [ ":create_source_maps_copy_ts" ]
@@ -496,7 +480,7 @@ generate_grd("build_tests_grdp") {
   out_grd = "$target_gen_dir/tests_resources.grdp"
 
   input_files_base_dir = rebase_path(".", "//")
-  input_files = unittest_files
+  input_files = unittest_harness
 }
 
 # GRD for the actual application files that are processed by TS compiler.

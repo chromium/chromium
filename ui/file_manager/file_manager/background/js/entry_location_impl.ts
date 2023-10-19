@@ -5,7 +5,7 @@
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 
 // To avoid the import being elided, closure requires this name here because of
 // the @implements.

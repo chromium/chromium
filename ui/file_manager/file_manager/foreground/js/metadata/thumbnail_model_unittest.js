@@ -36,8 +36,14 @@ const imageTransformation = {
   rotate90: 2,
 };
 
+// @ts-ignore: error TS7034: Variable 'metadata' implicitly has type 'any' in
+// some locations where its type cannot be determined.
 let metadata;
+// @ts-ignore: error TS6133: 'contentMetadata' is declared but its value is
+// never read.
 let contentMetadata;
+// @ts-ignore: error TS7034: Variable 'thumbnailModel' implicitly has type 'any'
+// in some locations where its type cannot be determined.
 let thumbnailModel;
 
 export function setUp() {
@@ -51,10 +57,14 @@ export function setUp() {
   metadata.contentImageTransform = imageTransformation;
 
   thumbnailModel = new ThumbnailModel(/** @type {!MetadataModel} */ ({
+    // @ts-ignore: error TS6133: 'entries' is declared but its value is never
+    // read.
     get: function(entries, names) {
       const result = new MetadataItem();
       for (let i = 0; i < names.length; i++) {
         const name = names[i];
+        // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+        // type.
         result[name] = metadata[name];
       }
       return Promise.resolve([result]);
@@ -62,8 +72,11 @@ export function setUp() {
   }));
 }
 
+/** @param {()=>void} callback */
 export function testThumbnailModelGetBasic(callback) {
   reportPromise(
+      // @ts-ignore: error TS7006: Parameter 'results' implicitly has an 'any'
+      // type.
       thumbnailModel.get([imageEntry]).then(results => {
         assertEquals(1, results.length);
         assertEquals(
@@ -80,9 +93,13 @@ export function testThumbnailModelGetBasic(callback) {
       callback);
 }
 
+/** @param {()=>void} callback */
 export function testThumbnailModelGetNotPresent(callback) {
+  // @ts-ignore: error TS7005: Variable 'metadata' implicitly has an 'any' type.
   metadata.present = false;
   reportPromise(
+      // @ts-ignore: error TS7006: Parameter 'results' implicitly has an 'any'
+      // type.
       thumbnailModel.get([imageEntry]).then(results => {
         assertEquals(1, results.length);
         assertEquals(
@@ -99,8 +116,11 @@ export function testThumbnailModelGetNotPresent(callback) {
       callback);
 }
 
+/** @param {()=>void} callback */
 export function testThumbnailModelGetNonImage(callback) {
   reportPromise(
+      // @ts-ignore: error TS7006: Parameter 'results' implicitly has an 'any'
+      // type.
       thumbnailModel.get([nonImageEntry]).then(results => {
         assertEquals(1, results.length);
         assertEquals(

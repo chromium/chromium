@@ -25,21 +25,21 @@ export class ProgressCenterPanel {
     /**
      * Items that are progressing, or completed.
      * Key is item ID.
-     * @private @type {!Object<ProgressCenterItem>}
+     * @private @type {!Record<string, ProgressCenterItem>}
      */
     this.items_ = {};
 
     /**
      * Callback to be called with the ID of the progress item when the cancel
      * button is clicked.
-     * @type {?function(string)}
+     * @type {?function(string):void}
      */
     this.cancelCallback = null;
 
     /**
      * Callback to be called with the ID of the error item when user pressed
      * dismiss button of it.
-     * @type {?function(string)}
+     * @type {?function(string):void}
      */
     this.dismissErrorItemCallback = null;
 
@@ -71,6 +71,8 @@ export class ProgressCenterPanel {
    */
   generateSourceString_(item, info) {
     info = info || {};
+    // @ts-ignore: error TS2339: Property 'count' does not exist on type
+    // 'Object'.
     const {source, destination, count} = info;
     switch (item.state) {
       case ProgressItemState.SCANNING:
@@ -157,10 +159,13 @@ export class ProgressCenterPanel {
    */
   generatePrimaryString_(item, info) {
     info = info || {};
+    // @ts-ignore: error TS2339: Property 'count' does not exist on type
+    // 'Object'.
     const {source, destination, count} = info;
     const hasDestination = this.isNonEmptyString_(destination);
     switch (item.state) {
       case ProgressItemState.SCANNING:
+        // @ts-ignore: error TS7029: Fallthrough case in switch.
       case ProgressItemState.PROGRESSING:
         // Source and primary string are the same for missing destination.
         if (!hasDestination) {
@@ -268,18 +273,23 @@ export class ProgressCenterPanel {
     }
     return '';
 
+    // @ts-ignore: error TS7006: Parameter 'destination' implicitly has an 'any'
+    // type.
     function getStrForMoveWithDestination(item, source, destination) {
       return item.isDestinationDrive ?
           strf('PREPARING_FILE_NAME_MY_DRIVE', source, destination) :
           strf('MOVE_FILE_NAME_LONG', source, destination);
     }
 
+    // @ts-ignore: error TS7006: Parameter 'destination' implicitly has an 'any'
+    // type.
     function getStrForCopyWithDestination(item, source, destination) {
       return item.isDestinationDrive ?
           strf('PREPARING_FILE_NAME_MY_DRIVE', source, destination) :
           strf('COPY_FILE_NAME_LONG', source, destination);
     }
 
+    // @ts-ignore: error TS7006: Parameter 'item' implicitly has an 'any' type.
     function getStrForPolicyError(item) {
       if (!item.policyError) {
         console.warn('Policy error must be supplied');
@@ -447,6 +457,8 @@ export class ProgressCenterPanel {
         panelItem = this.feedbackHost_.createPanelItem(item.id);
         // Show the panel only for long running operations.
         setTimeout(() => {
+          // @ts-ignore: error TS2345: Argument of type 'PanelItem | null' is
+          // not assignable to parameter of type 'PanelItem'.
           this.feedbackHost_.attachPanelItem(panelItem);
         }, this.PENDING_TIME_MS_);
         if (item.type === ProgressItemType.FORMAT) {
@@ -465,6 +477,8 @@ export class ProgressCenterPanel {
         };
       }
 
+      // @ts-ignore: error TS2345: Argument of type 'Object | null' is not
+      // assignable to parameter of type 'Object'.
       const primaryText = this.generatePrimaryString_(item, panelItem.userData);
       panelItem.secondaryText = this.generateSecondaryString_(item);
       panelItem.primaryText = primaryText;
@@ -472,6 +486,8 @@ export class ProgressCenterPanel {
 
       // Certain visual signals have the functionality to display an extra
       // button with an arbitrary callback.
+      // @ts-ignore: error TS7034: Variable 'extraButton' implicitly has type
+      // 'any' in some locations where its type cannot be determined.
       let extraButton = null;
 
       // On progress panels, make the cancel button aria-label more useful.
@@ -484,22 +500,33 @@ export class ProgressCenterPanel {
           if (item.dismissCallback) {
             item.dismissCallback();
           }
+          // @ts-ignore: error TS2345: Argument of type 'PanelItem | null' is
+          // not assignable to parameter of type 'PanelItem'.
           this.feedbackHost_.removePanelItem(panelItem);
+          // @ts-ignore: error TS2721: Cannot invoke an object which is possibly
+          // 'null'.
           this.dismissErrorItemCallback(item.id);
         } else if (
+            // @ts-ignore: error TS7005: Variable 'extraButton' implicitly has
+            // an 'any' type.
             signal === 'extra-button' && extraButton && extraButton.callback) {
           extraButton.callback();
+          // @ts-ignore: error TS2345: Argument of type 'PanelItem | null' is
+          // not assignable to parameter of type 'PanelItem'.
           this.feedbackHost_.removePanelItem(panelItem);
           // The extra-button currently acts as a dismissal to invoke the
           // dismiss and error item callbacks as well.
           if (item.dismissCallback) {
             item.dismissCallback();
           }
+          // @ts-ignore: error TS2721: Cannot invoke an object which is possibly
+          // 'null'.
           this.dismissErrorItemCallback(item.id);
         }
       };
       panelItem.progress = item.progressRateInPercent.toString();
       switch (item.state) {
+          // @ts-ignore: error TS7029: Fallthrough case in switch.
         case ProgressItemState.COMPLETED:
           // Create a completed panel for copies, moves, deletes and formats.
           if (item.type === ProgressItemType.COPY ||
@@ -514,6 +541,8 @@ export class ProgressCenterPanel {
             const donePanelItem = this.feedbackHost_.addPanelItem(item.id);
             if (item.extraButton.has(ProgressItemState.COMPLETED)) {
               extraButton = item.extraButton.get(ProgressItemState.COMPLETED);
+              // @ts-ignore: error TS18048: 'extraButton' is possibly
+              // 'undefined'.
               donePanelItem.dataset.extraButtonText = extraButton.text;
             }
             donePanelItem.id = item.id;
@@ -526,12 +555,20 @@ export class ProgressCenterPanel {
             donePanelItem.signalCallback = (signal) => {
               if (signal === 'dismiss') {
                 this.feedbackHost_.removePanelItem(donePanelItem);
+                // @ts-ignore: error TS7053: Element implicitly has an 'any'
+                // type because expression of type 'string' can't be used to
+                // index type '{}'.
                 delete this.items_[donePanelItem.id];
               } else if (
+                  // @ts-ignore: error TS7005: Variable 'extraButton' implicitly
+                  // has an 'any' type.
                   signal === 'extra-button' && extraButton &&
                   extraButton.callback) {
                 extraButton.callback();
                 this.feedbackHost_.removePanelItem(donePanelItem);
+                // @ts-ignore: error TS7053: Element implicitly has an 'any'
+                // type because expression of type 'string' can't be used to
+                // index type '{}'.
                 delete this.items_[donePanelItem.id];
               }
             };
@@ -539,6 +576,9 @@ export class ProgressCenterPanel {
             // before the timer fires, as removePanelItem handles that case.
             setTimeout(() => {
               this.feedbackHost_.removePanelItem(donePanelItem);
+              // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+              // because expression of type 'string' can't be used to index type
+              // '{}'.
               delete this.items_[donePanelItem.id];
             }, this.TIMEOUT_TO_REMOVE_MS_);
           }
@@ -550,6 +590,7 @@ export class ProgressCenterPanel {
         case ProgressItemState.PAUSED:
           if (item.extraButton.has(ProgressItemState.PAUSED)) {
             extraButton = item.extraButton.get(ProgressItemState.PAUSED);
+            // @ts-ignore: error TS18048: 'extraButton' is possibly 'undefined'.
             panelItem.dataset.extraButtonText = extraButton.text;
           }
           panelItem.panelType = panelItem.panelTypeInfo;
@@ -558,6 +599,7 @@ export class ProgressCenterPanel {
         case ProgressItemState.ERROR:
           if (item.extraButton.has(ProgressItemState.ERROR)) {
             extraButton = item.extraButton.get(ProgressItemState.ERROR);
+            // @ts-ignore: error TS18048: 'extraButton' is possibly 'undefined'.
             panelItem.dataset.extraButtonText = extraButton.text;
           }
           panelItem.panelType = panelItem.panelTypeError;
@@ -577,6 +619,8 @@ export class ProgressCenterPanel {
   updateItemState_(item) {
     // Compares the current state and the new state to check if the update is
     // valid or not.
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type '{}'.
     const previousItem = this.items_[item.id];
     switch (item.state) {
       case ProgressItemState.ERROR:
@@ -586,6 +630,8 @@ export class ProgressCenterPanel {
              previousItem.state !== ProgressItemState.SCANNING)) {
           return;
         }
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type '{}'.
         this.items_[item.id] = item.clone();
         break;
 
@@ -596,6 +642,8 @@ export class ProgressCenterPanel {
              previousItem.state !== ProgressItemState.PROGRESSING)) {
           return;
         }
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type '{}'.
         this.items_[item.id] = item.clone();
         break;
 
@@ -606,6 +654,8 @@ export class ProgressCenterPanel {
              previousItem.state !== ProgressItemState.SCANNING)) {
           return;
         }
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type '{}'.
         delete this.items_[item.id];
         break;
 
@@ -614,10 +664,14 @@ export class ProgressCenterPanel {
         // except when DLP files restrictions are enabled as well. In this case,
         // DLP may pause the IOTask to show a warning and the panel item is
         // dismissed when the user proceeds or cancels.
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type '{}'.
         this.items_[item.id] = item.clone();
         break;
 
       default:
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type '{}'.
         if (this.items_[item.id] == null) {
           console.warn(
               'ProgressCenterItem not updated: ${item.id} state: ${item.state}');
@@ -634,6 +688,8 @@ export class ProgressCenterPanel {
     this.updateItemState_(item);
 
     // Update an open view item.
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type '{}'.
     const newItem = this.items_[item.id] || null;
     this.updateFeedbackPanelItem(item, newItem);
   }
@@ -643,6 +699,8 @@ export class ProgressCenterPanel {
    * @param {string} id Item id.
    */
   dismissErrorItem(id) {
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type '{}'.
     delete this.items_[id];
   }
 }

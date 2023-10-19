@@ -55,6 +55,8 @@ export class PathComponent {
    * @param {!Entry|!FilesAppEntry} entry An entry.
    * @return {!Array<!PathComponent>} Components.
    */
+  // @ts-ignore: error TS7006: Parameter 'volumeManager' implicitly has an 'any'
+  // type.
   static computeComponentsFromEntry(entry, volumeManager) {
     /**
      * Replace the root directory name at the end of a url.
@@ -71,10 +73,14 @@ export class PathComponent {
       return url.slice(0, url.length - '/root'.length) + newRoot;
     };
 
+    // @ts-ignore: error TS7034: Variable 'components' implicitly has type
+    // 'any[]' in some locations where its type cannot be determined.
     const components = [];
     const locationInfo = volumeManager.getLocationInfo(entry);
 
     if (!locationInfo) {
+      // @ts-ignore: error TS7005: Variable 'components' implicitly has an
+      // 'any[]' type.
       return components;
     }
 
@@ -160,6 +166,8 @@ export class PathComponent {
     // Add directory components to the target path.
     const paths = relativePath.split('/');
     for (let i = 0; i < paths.length; i++) {
+      // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+      // assignable to parameter of type 'string | number | boolean'.
       currentUrl += '/' + encodeURIComponent(paths[i]);
       let path = paths[i];
       if (i === 0 &&
@@ -174,6 +182,8 @@ export class PathComponent {
           path = str('CAMERA_DIRECTORY_LABEL');
         }
       }
+      // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+      // assignable to parameter of type 'string'.
       components.push(new PathComponent(path, currentUrl));
     }
 

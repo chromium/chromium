@@ -12,6 +12,8 @@ export class MetadataParserLogger {
      * Individual parsers also take this as their default verbosity setting.
      * @public @type {boolean}
      */
+    // @ts-ignore: error TS2339: Property 'verbose' does not exist on type
+    // 'MetadataParserLogger'.
     this.verbose;
   }
 
@@ -21,6 +23,8 @@ export class MetadataParserLogger {
    * No other messages relating to the failed operation should be sent.
    * @param {...(Object|string)} var_args Arguments.
    */
+  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
+  // read.
   error(var_args) {}
 
   /**
@@ -29,19 +33,25 @@ export class MetadataParserLogger {
    * Callers must not parse log messages for control flow.
    * @param {...(Object|string)} var_args Arguments.
    */
+  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
+  // read.
   log(var_args) {}
 
   /**
    * Send a log message to the caller only if this.verbose is true.
    * @param {...(Object|string)} var_args Arguments.
    */
+  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
+  // read.
   vlog(var_args) {}
 }
 
 /**
  * @param {string} url
- * @param {function(!Entry)} successCallback
- * @param {function(!FileError)=} opt_errorCallback
+ * @param {function(!Entry):void} successCallback
+ * @param {function(!FileError):void=} opt_errorCallback
  */
 export const webkitResolveLocalFileSystemURL = function(
+    // @ts-ignore: error TS6133: 'opt_errorCallback' is declared but its value
+    // is never read.
     url, successCallback, opt_errorCallback) {};

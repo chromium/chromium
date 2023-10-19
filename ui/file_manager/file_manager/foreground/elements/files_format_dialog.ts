@@ -24,7 +24,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 import {validateExternalDriveName} from '../js/file_rename.js';
 
 import {getTemplate} from './files_format_dialog.html.js';

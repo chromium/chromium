@@ -60,6 +60,7 @@ export class MpegParser extends MetadataParser {
    * @return {Object} Root of the parser tree.
    */
   static createRootParser(metadata) {
+    // @ts-ignore: error TS7006: Parameter 'name' implicitly has an 'any' type.
     function findParentAtom(atom, name) {
       for (;;) {
         atom = atom.parent;
@@ -72,40 +73,58 @@ export class MpegParser extends MetadataParser {
       }
     }
 
+    // @ts-ignore: error TS7006: Parameter 'atom' implicitly has an 'any' type.
     function parseFtyp(br, atom) {
+      // @ts-ignore: error TS2339: Property 'brand' does not exist on type
+      // 'Object'.
       metadata.brand = br.readString(4, atom.end);
     }
 
+    // @ts-ignore: error TS7006: Parameter 'atom' implicitly has an 'any' type.
     function parseMvhd(br, atom) {
       const version = br.readScalar(4, false, atom.end);
       const offset = (version == 0) ? 8 : 16;
       br.seek(offset, ByteReader.SEEK_CUR);
       const timescale = br.readScalar(4, false, atom.end);
       const duration = br.readScalar(4, false, atom.end);
+      // @ts-ignore: error TS2339: Property 'duration' does not exist on type
+      // 'Object'.
       metadata.duration = duration / timescale;
     }
 
+    // @ts-ignore: error TS7006: Parameter 'atom' implicitly has an 'any' type.
     function parseHdlr(br, atom) {
       br.seek(8, ByteReader.SEEK_CUR);
       findParentAtom(atom, 'trak').trackType = br.readString(4, atom.end);
     }
 
+    // @ts-ignore: error TS7006: Parameter 'atom' implicitly has an 'any' type.
     function parseStsd(br, atom) {
       const track = findParentAtom(atom, 'trak');
       if (track && track.trackType == 'vide') {
         br.seek(40, ByteReader.SEEK_CUR);
+        // @ts-ignore: error TS2339: Property 'width' does not exist on type
+        // 'Object'.
         metadata.width = br.readScalar(2, false, atom.end);
+        // @ts-ignore: error TS2339: Property 'height' does not exist on type
+        // 'Object'.
         metadata.height = br.readScalar(2, false, atom.end);
       }
     }
 
+    // @ts-ignore: error TS7006: Parameter 'atom' implicitly has an 'any' type.
     function parseDataString(name, br, atom) {
       br.seek(8, ByteReader.SEEK_CUR);
+      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+      // expression of type 'any' can't be used to index type 'Object'.
       metadata[name] = br.readString(atom.end - br.tell(), atom.end);
     }
 
+    // @ts-ignore: error TS7006: Parameter 'atom' implicitly has an 'any' type.
     function parseCovr(br, atom) {
       br.seek(8, ByteReader.SEEK_CUR);
+      // @ts-ignore: error TS2339: Property 'thumbnailURL' does not exist on
+      // type 'Object'.
       metadata.thumbnailURL = br.readImage(atom.end - br.tell(), atom.end);
     }
 
@@ -146,8 +165,8 @@ export class MpegParser extends MetadataParser {
   /**
    * @param {File} file File.
    * @param {Object} metadata Metadata.
-   * @param {function(Object)} callback Success callback.
-   * @param {function((ProgressEvent|string))} onError Error callback.
+   * @param {function(Object):void} callback Success callback.
+   * @param {function((ProgressEvent|string)):void} onError Error callback.
    */
   parse(file, metadata, callback, onError) {
     const rootParser = MpegParser.createRootParser(metadata);
@@ -159,14 +178,18 @@ export class MpegParser extends MetadataParser {
   }
 
   /**
-   * @param {function(ByteReader, Object)|Object} parser Parser tree node.
+   * @param {function(ByteReader, Object):void|Object} parser Parser tree node.
    * @param {ByteReader} br ByteReader instance.
    * @param {Object} atom Atom descriptor.
    * @param {number} filePos File position of the atom start.
    */
   applyParser(parser, br, atom, filePos) {
     if (this.verbose) {
+      // @ts-ignore: error TS2339: Property 'name' does not exist on type
+      // 'Object'.
       let path = atom.name;
+      // @ts-ignore: error TS2339: Property 'parent' does not exist on type
+      // 'Object'.
       for (let p = atom.parent; p && p.name; p = p.parent) {
         path = p.name + '.' + path;
       }
@@ -180,20 +203,30 @@ export class MpegParser extends MetadataParser {
         action = 'recursing';
       }
 
+      // @ts-ignore: error TS2339: Property 'start' does not exist on type
+      // 'Object'.
       const start = atom.start - MpegParser.HEADER_SIZE;
       this.vlog(
           path + ': ' +
+              // @ts-ignore: error TS2339: Property 'end' does not exist on type
+              // 'Object'.
               '@' + (filePos + start) + ':' + (atom.end - start),
           action);
     }
 
     if (parser) {
       if (parser instanceof Function) {
+        // @ts-ignore: error TS2339: Property 'start' does not exist on type
+        // 'Object'.
         br.pushSeek(atom.start);
         parser(br, atom);
         br.popSeek();
       } else {
+        // @ts-ignore: error TS2339: Property 'versioned' does not exist on type
+        // 'Object'.
         if (parser.versioned) {
+          // @ts-ignore: error TS2339: Property 'start' does not exist on type
+          // 'Object'.
           atom.start += 4;
         }
         this.parseMpegAtomsInRange(parser, br, atom, filePos);
@@ -202,25 +235,35 @@ export class MpegParser extends MetadataParser {
   }
 
   /**
-   * @param {function(ByteReader, Object)|Object} parser Parser tree node.
+   * @param {function(ByteReader, Object):void|Object} parser Parser tree node.
    * @param {ByteReader} br ByteReader instance.
    * @param {Object} parentAtom Parent atom descriptor.
    * @param {number} filePos File position of the atom start.
    */
   parseMpegAtomsInRange(parser, br, parentAtom, filePos) {
     let count = 0;
+    // @ts-ignore: error TS2339: Property 'end' does not exist on type 'Object'.
     for (let offset = parentAtom.start; offset != parentAtom.end;) {
       if (count++ > 100) {
         // Most likely we are looping through a corrupt file.
         throw new Error(
+            // @ts-ignore: error TS2339: Property 'name' does not exist on type
+            // 'Object'.
             'too many child atoms in ' + parentAtom.name + ' @' + offset);
       }
 
       br.seek(offset);
+      // @ts-ignore: error TS2339: Property 'end' does not exist on type
+      // 'Object'.
       const size = MpegParser.readAtomSize(br, parentAtom.end);
+      // @ts-ignore: error TS2339: Property 'end' does not exist on type
+      // 'Object'.
       const name = MpegParser.readAtomName(br, parentAtom.end);
 
       this.applyParser(
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'string' can't be used to index type
+          // 'Object | ((arg0: ByteReader, arg1: Object) => any)'.
           parser[name], br, {
             start: offset + MpegParser.HEADER_SIZE,
             end: offset + size,
@@ -239,13 +282,15 @@ export class MpegParser extends MetadataParser {
    * @param {number} filePos Start position in the file.
    * @param {number} size Atom size.
    * @param {string?} name Atom name.
-   * @param {function((ProgressEvent|string))} onError Error callback.
-   * @param {function()} onSuccess Success callback.
+   * @param {function((ProgressEvent|string)):void} onError Error callback.
+   * @param {function():void} onSuccess Success callback.
    */
   requestRead(rootParser, file, filePos, size, name, onError, onSuccess) {
     const self = this;
     const reader = new FileReader();
     reader.onerror = onError;
+    // @ts-ignore: error TS6133: 'event' is declared but its value is never
+    // read.
     reader.onload = event => {
       self.processTopLevelAtom(
           /** @type {ArrayBuffer} */ (reader.result), rootParser, file, filePos,
@@ -262,8 +307,8 @@ export class MpegParser extends MetadataParser {
    * @param {number} filePos Start position in the file.
    * @param {number} size Atom size.
    * @param {string?} name Atom name.
-   * @param {function((ProgressEvent|string))} onError Error callback.
-   * @param {function()} onSuccess Success callback.
+   * @param {function((ProgressEvent|string)):void} onError Error callback.
+   * @param {function():void} onSuccess Success callback.
    */
   processTopLevelAtom(
       buf, rootParser, file, filePos, size, name, onError, onSuccess) {
@@ -286,6 +331,9 @@ export class MpegParser extends MetadataParser {
       // Process the top level atom.
       if (name) {  // name is null only the first time.
         this.applyParser(
+            // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+            // because expression of type 'string' can't be used to index type
+            // 'Object'.
             rootParser[name], br, {start: 0, end: atomEnd, name: name},
             filePos);
       }
@@ -301,6 +349,9 @@ export class MpegParser extends MetadataParser {
 
         // If we do not have a parser for the next atom, skip the content and
         // read only the header (the one after the next).
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type
+        // 'Object'.
         if (!rootParser[nextName]) {
           filePos += nextSize - MpegParser.HEADER_SIZE;
           nextSize = MpegParser.HEADER_SIZE;
@@ -314,6 +365,7 @@ export class MpegParser extends MetadataParser {
         onSuccess();
       }
     } catch (e) {
+      // @ts-ignore: error TS18046: 'e' is of type 'unknown'.
       onError(e.toString());
     }
   }

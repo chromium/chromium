@@ -20,6 +20,8 @@ export class DlpMetadataProvider extends MetadataProvider {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'requests' implicitly has an 'any'
+  // type.
   async get(requests) {
     if (!util.isDlpEnabled()) {
       return requests.map(() => new MetadataItem());
@@ -31,6 +33,7 @@ export class DlpMetadataProvider extends MetadataProvider {
 
     // Filter out fake entries before fetching the metadata.
     const entries =
+        // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
         requests.map(r => r.entry).filter(e => !util.isFakeEntry(e));
 
     if (!entries.length) {
@@ -52,9 +55,12 @@ export class DlpMetadataProvider extends MetadataProvider {
         // Check if this entry was filtered, and if not, add the retrieved
         // metadata.
         if (!util.isFakeEntry(requests[i].entry)) {
+          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           item.isDlpRestricted = dlpMetadataList[j].isDlpRestricted;
+          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           item.sourceUrl = dlpMetadataList[j].sourceUrl;
           item.isRestrictedForDestination =
+              // @ts-ignore: error TS2532: Object is possibly 'undefined'.
               dlpMetadataList[j].isRestrictedForDestination;
           j++;
         }

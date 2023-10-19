@@ -21,8 +21,14 @@ export function testPush() {
   let count = 0;
   m.addEventListener('splice', function(e) {
     count++;
+    // @ts-ignore: error TS2339: Property 'index' does not exist on type
+    // 'Event'.
     assertEquals(3, e.index);
+    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
+    // 'Event'.
     assertArrayEquals([], e.removed);
+    // @ts-ignore: error TS2339: Property 'added' does not exist on type
+    // 'Event'.
     assertArrayEquals([3, 4], e.added);
   });
 
@@ -34,6 +40,7 @@ export function testPush() {
 }
 
 export function testSplice() {
+  // @ts-ignore: error TS7006: Parameter 'args' implicitly has an 'any' type.
   function compare(array, args) {
     const m = new ArrayDataModel(array.slice());
     const expected = array.slice();
@@ -53,18 +60,24 @@ export function testSplice() {
 }
 
 export function testPermutation() {
+  // @ts-ignore: error TS7006: Parameter 'spliceArgs' implicitly has an 'any'
+  // type.
   function doTest(sourceArray, spliceArgs) {
     const m = new ArrayDataModel(sourceArray.slice());
     let permutation;
     m.addEventListener('permuted', function(event) {
+      // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
+      // 'Event'.
       permutation = event.permutation;
     });
     m.splice.apply(m, spliceArgs);
     let deleted = 0;
     for (let i = 0; i < sourceArray.length; i++) {
+      // @ts-ignore: error TS18048: 'permutation' is possibly 'undefined'.
       if (permutation[i] === -1) {
         deleted++;
       } else {
+        // @ts-ignore: error TS18048: 'permutation' is possibly 'undefined'.
         assertEquals(sourceArray[i], m.item(permutation[i]));
       }
     }
@@ -81,11 +94,17 @@ export function testPermutation() {
 
 export function testUpdateIndexes() {
   const m = new ArrayDataModel([1, 2, 3]);
+  // @ts-ignore: error TS7034: Variable 'changedIndexes' implicitly has type
+  // 'any[]' in some locations where its type cannot be determined.
   const changedIndexes = [];
   m.addEventListener('change', function(event) {
+    // @ts-ignore: error TS2339: Property 'index' does not exist on type
+    // 'Event'.
     changedIndexes.push(event.index);
   });
   m.updateIndexes([0, 1, 2]);
+  // @ts-ignore: error TS7005: Variable 'changedIndexes' implicitly has an
+  // 'any[]' type.
   assertArrayEquals([0, 1, 2], changedIndexes);
 }
 
@@ -94,9 +113,13 @@ export function testReplaceItem() {
   let permutation = null;
   let changeIndex;
   m.addEventListener('permuted', function(event) {
+    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
+    // 'Event'.
     permutation = event.permutation;
   });
   m.addEventListener('change', function(event) {
+    // @ts-ignore: error TS2339: Property 'index' does not exist on type
+    // 'Event'.
     changeIndex = event.index;
   });
   m.replaceItem(2, 4);
