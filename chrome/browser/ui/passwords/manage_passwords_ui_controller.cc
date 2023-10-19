@@ -260,12 +260,11 @@ void ManagePasswordsUIController::OnAutomaticPasswordSave(
   if (base::FeatureList::IsEnabled(
           password_manager::features::
               kNewConfirmationBubbleForGeneratedPasswords)) {
-    auto ui_state =
+    passwords_data_.OnSubmittedGeneratedPassword(
         form_manager->GetPendingCredentials().username_value.empty()
             ? password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE
-            : password_manager::ui::CONFIRMATION_STATE;
-    passwords_data_.OnSubmittedGeneratedPassword(ui_state,
-                                                 std::move(form_manager));
+            : password_manager::ui::CONFIRMATION_STATE,
+        std::move(form_manager));
   } else {
     passwords_data_.OnAutomaticPasswordSave(std::move(form_manager));
   }

@@ -240,16 +240,16 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_TRUE(IsBubbleShowing());
   PasswordBubbleViewBase::CloseCurrentBubble();
   content::RunAllPendingInMessageLoop();
+  // Re-opening should count as manual.
   ExecuteManagePasswordsCommand();
   EXPECT_TRUE(IsBubbleShowing());
 
   std::unique_ptr<base::HistogramSamples> samples(
       GetSamples(kDisplayDispositionMetric));
-  EXPECT_EQ(2, samples->GetCount(metrics_util::AUTOMATIC_ADD_USERNAME_BUBBLE));
-  EXPECT_EQ(0, samples->GetCount(metrics_util::MANUAL_WITH_PASSWORD_PENDING));
-  EXPECT_EQ(0, samples->GetCount(metrics_util::MANUAL_MANAGE_PASSWORDS));
-  EXPECT_EQ(0, samples->GetCount(
+  EXPECT_EQ(1, samples->GetCount(
                    metrics_util::AUTOMATIC_GENERATED_PASSWORD_CONFIRMATION));
+  EXPECT_EQ(0, samples->GetCount(metrics_util::MANUAL_WITH_PASSWORD_PENDING));
+  EXPECT_EQ(1, samples->GetCount(metrics_util::MANUAL_MANAGE_PASSWORDS));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnClick) {
