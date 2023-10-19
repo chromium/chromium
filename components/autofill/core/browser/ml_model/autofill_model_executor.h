@@ -7,24 +7,31 @@
 
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
-#include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/core/base_model_executor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
-// Implements BaseModelExecutor to execute models with FormData input and
-// std::vector<ServerFieldType> output. The executor only supports at most
-// `kMaxNumberOfFields`. When calling the executor with a larger form,
-// predictions are only returned for the first `kMaxNumberOfFields` many fields.
+// The executor maps its inputs into TFLite's tensor format and converts the
+// model output's tensor representation back. See `ModelInput` and `ModelOutput`
+// for descriptions of the inputs and outputs.
+// The executor supports at most `kMaxNumberOfFields`. When calling the executor
+// with a larger form, predictions are only returned for the first
+// `kMaxNumberOfFields` many fields.
 class AutofillModelExecutor
-    : public optimization_guide::BaseModelExecutor<std::vector<ServerFieldType>,
-                                                   const FormData&> {
+    : public optimization_guide::BaseModelExecutor<
+          std::vector<ServerFieldType>,
+          const std::vector<
+              std::array<AutofillModelVectorizer::TokenId,
+                         AutofillModelVectorizer::kOutputSequenceLength>>&> {
  public:
-  using ModelInput = FormData;
+  // A vectorized representation of the form's labels. Each element of the
+  // vector corresponds to a vectorized label. See `AutofillModelVectorizer`,
+  using ModelInput =
+      std::vector<std::array<AutofillModelVectorizer::TokenId,
+                             AutofillModelVectorizer::kOutputSequenceLength>>;
   using ModelOutput = std::vector<ServerFieldType>;
 
   AutofillModelExecutor();
@@ -98,15 +105,10 @@ class AutofillModelExecutor
   static constexpr size_t kMaxNumberOfFields = 20;
 
   // optimization_guide::BaseModelExecutor:
-  // This function must be called on a background thread.
-  // It initializes the vectorizer by reading the dictionary file
-  // which can't be done on the UI thread.
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   const ModelInput& input) override;
   absl::optional<ModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
-
-  std::unique_ptr<AutofillModelVectorizer> vectorizer_;
 
   // Stores the number of fields in the given to 'Preprocess()' FormData if it
   // is less than `kMaxNumberOfFields`. It will be used in `Postprocess()` to

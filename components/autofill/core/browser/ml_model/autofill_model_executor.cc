@@ -7,13 +7,10 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
-#include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/form_data.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
 
 namespace autofill {
@@ -25,17 +22,11 @@ bool AutofillModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const ModelInput& input) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillModelPredictions));
-  if (!vectorizer_) {
-    vectorizer_ =
-        AutofillModelVectorizer::CreateVectorizer(base::FilePath::FromASCII(
-            features::kAutofillModelDictionaryFilePath.Get()));
-    CHECK(vectorizer_);
-  }
   CHECK_EQ(2u, input_tensors.size());
   CHECK_EQ(kTfLiteFloat32, input_tensors[0]->type);
   CHECK_EQ(kTfLiteBool, input_tensors[1]->type);
   CHECK_EQ(fields_count_, 0u);
-  fields_count_ = std::min(input.fields.size(), kMaxNumberOfFields);
+  fields_count_ = std::min(input.size(), kMaxNumberOfFields);
   // `input_tensors[0]` is a 3D vector. The first dimension is used for
   // batching, which the ML model declares with size 1 so only one form
   // is consumed at a time. The second and third dimensions hold the
@@ -54,17 +45,16 @@ bool AutofillModelExecutor::Preprocess(
     std::vector<std::vector<float>> vectorized_input(kMaxNumberOfFields,
                                                      empty_field);
 
-    for (size_t i = 0; i < fields_count_; i++) {
-      auto token_ids = vectorizer_->Vectorize(input.fields[i].label);
-      base::ranges::transform(token_ids, vectorized_input[i].begin(),
+    for (size_t i = 0; i < fields_count_; ++i) {
+      base::ranges::transform(input[i], vectorized_input[i].begin(),
                               [](AutofillModelVectorizer::TokenId token_id) {
                                 return token_id.value();
                               });
     }
     // Populate tensors with the vectorized field labels.
-    for (size_t i = 0; i < kMaxNumberOfFields; i++) {
+    for (size_t i = 0; i < kMaxNumberOfFields; ++i) {
       for (size_t j = 0; j < AutofillModelVectorizer::kOutputSequenceLength;
-           j++) {
+           ++j) {
         tflite::GetTensorData<float>(input_tensors[0])
             [i * AutofillModelVectorizer::kOutputSequenceLength + j] =
                 vectorized_input[i][j];
@@ -78,7 +68,7 @@ bool AutofillModelExecutor::Preprocess(
   // in this index or not.
   {
     CHECK_EQ(input_tensors[1]->dims->size, 2);
-    for (size_t i = 0; i < kMaxNumberOfFields; i++) {
+    for (size_t i = 0; i < kMaxNumberOfFields; ++i) {
       tflite::GetTensorData<bool>(input_tensors[1])[i] = i < fields_count_;
     }
   }
@@ -101,9 +91,9 @@ AutofillModelExecutor::Postprocess(
            static_cast<int>(kSupportedFieldTypes.size()));
 
   ModelOutput model_predictions(fields_count_);
-  for (size_t i = 0; i < fields_count_; i++) {
+  for (size_t i = 0; i < fields_count_; ++i) {
     std::vector<float> output(kSupportedFieldTypes.size());
-    for (size_t j = 0; j < kSupportedFieldTypes.size(); j++) {
+    for (size_t j = 0; j < kSupportedFieldTypes.size(); ++j) {
       output[j] = tflite::GetTensorData<float>(
           output_tensors[0])[i * kSupportedFieldTypes.size() + j];
     }

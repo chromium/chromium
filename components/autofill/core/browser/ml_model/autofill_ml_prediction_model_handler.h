@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
@@ -49,6 +50,30 @@ class AutofillMlPredictionModelHandler
       std::vector<std::unique_ptr<FormStructure>> forms,
       base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
           callback);
+
+  // optimization_guide::ModelHandler:
+  void OnModelUpdated(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override;
+
+ private:
+  // Initializes the `vectorizer_`. This happens asynchronously, since it needs
+  // to read the dictionary from a file.
+  // TODO(crbug.com/1465926): Use model metadata and do it synchronously.
+  void InitializeVectorizer();
+
+  // Encodes the `form` into the `ModelInput` representation understood by the
+  // `AutofillModelExecutor`. This is done by vectorizing the labels of the
+  // form's fields using the `vectorizer_`.
+  AutofillModelExecutor::ModelInput VectorizeForm(
+      const FormStructure& form) const;
+
+  // Initialized once the model is loaded.
+  std::unique_ptr<AutofillModelVectorizer> vectorizer_;
+
+  base::WeakPtrFactory<AutofillMlPredictionModelHandler> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace autofill

@@ -8,11 +8,14 @@
 
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
-#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 
@@ -43,15 +46,14 @@ AutofillMlPredictionModelHandler::~AutofillMlPredictionModelHandler() = default;
 void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
     std::unique_ptr<FormStructure> form_structure,
     base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback) {
-  if (!ModelAvailable()) {
+  if (!ModelAvailable() || !vectorizer_) {
     // No model, no predictions.
     std::move(callback).Run(std::move(form_structure));
     return;
   }
 
-  // TODO(crbug.com/1465926): Remove `ToFormData()` as it creates a new copy
-  // of the FormData.
-  AutofillModelExecutor::ModelInput form_data = form_structure->ToFormData();
+  AutofillModelExecutor::ModelInput vectorized_input =
+      VectorizeForm(*form_structure);
   ExecuteModelWithInput(
       base::BindOnce(
           [](std::unique_ptr<FormStructure> form_structure,
@@ -68,7 +70,7 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
             std::move(callback).Run(std::move(form_structure));
           },
           std::move(form_structure), std::move(callback)),
-      std::move(form_data));
+      std::move(vectorized_input));
 }
 
 void AutofillMlPredictionModelHandler::GetModelPredictionsForForms(
@@ -80,6 +82,53 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForms(
   for (std::unique_ptr<FormStructure>& form : forms) {
     GetModelPredictionsForForm(std::move(form), barrier_callback);
   }
+}
+
+void AutofillMlPredictionModelHandler::OnModelUpdated(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
+  CHECK_EQ(optimization_target,
+           optimization_guide::proto::OptimizationTarget::
+               OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
+  optimization_guide::ModelHandler<AutofillModelExecutor::ModelOutput,
+                                   const AutofillModelExecutor::ModelInput&>::
+      OnModelUpdated(optimization_target, model_info);
+  if (!model_info.has_value()) {
+    // The model was unloaded.
+    return;
+  }
+  // The model was loaded or updated.
+  InitializeVectorizer();
+}
+
+void AutofillMlPredictionModelHandler::InitializeVectorizer() {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce([] {
+        return AutofillModelVectorizer::CreateVectorizer(
+            base::FilePath::FromASCII(
+                features::kAutofillModelDictionaryFilePath.Get()));
+      }),
+      base::BindOnce(
+          [](base::WeakPtr<AutofillMlPredictionModelHandler> handler,
+             std::unique_ptr<AutofillModelVectorizer> vectorizer) {
+            if (handler) {
+              CHECK(vectorizer);
+              handler->vectorizer_ = std::move(vectorizer);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+AutofillModelExecutor::ModelInput
+AutofillMlPredictionModelHandler::VectorizeForm(
+    const FormStructure& form) const {
+  CHECK(vectorizer_);
+  AutofillModelExecutor::ModelInput vectorized_form(form.fields().size());
+  for (size_t i = 0; i < form.field_count(); ++i) {
+    vectorized_form[i] = vectorizer_->Vectorize(form.field(i)->label);
+  }
+  return vectorized_form;
 }
 
 }  // namespace autofill
