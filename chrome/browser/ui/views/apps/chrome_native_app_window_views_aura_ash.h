@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_AURA_ASH_H_
 
 #include <memory>
-#include <vector>
 
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/window_state.h"
@@ -144,6 +143,9 @@ class ChromeNativeAppWindowViewsAuraAsh
                                const void* key,
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
+
+  // views::View
+  void AddedToWidget() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
