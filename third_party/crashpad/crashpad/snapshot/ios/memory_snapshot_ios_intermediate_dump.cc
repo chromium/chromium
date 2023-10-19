@@ -14,6 +14,8 @@
 
 #include "snapshot/ios/memory_snapshot_ios_intermediate_dump.h"
 
+#include "base/check_op.h"
+
 namespace crashpad {
 namespace internal {
 

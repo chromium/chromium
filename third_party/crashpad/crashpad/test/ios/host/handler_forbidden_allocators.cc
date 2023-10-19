@@ -17,9 +17,11 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <malloc/malloc.h>
 #include <pthread.h>
+
 #include <limits>
 
 #include "base/apple/mach_logging.h"
+#include "base/check_op.h"
 #include "client/crashpad_client.h"
 #include "util/ios/raw_logging.h"
 

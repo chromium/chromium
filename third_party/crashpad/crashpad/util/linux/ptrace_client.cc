@@ -21,6 +21,7 @@
 #include <iterator>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "util/file/file_io.h"

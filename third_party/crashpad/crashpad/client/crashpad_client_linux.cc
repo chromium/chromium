@@ -30,6 +30,7 @@
 
 #include <atomic>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"

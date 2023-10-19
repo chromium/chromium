@@ -24,6 +24,7 @@
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
 #include "base/apple/scoped_mach_vm.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "snapshot/mac/mach_o_image_reader.h"

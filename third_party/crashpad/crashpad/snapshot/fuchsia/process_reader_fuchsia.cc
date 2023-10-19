@@ -18,6 +18,7 @@
 #include <link.h>
 #include <zircon/syscalls.h>
 
+#include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "util/fuchsia/koid_utilities.h"

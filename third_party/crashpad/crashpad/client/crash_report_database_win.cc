@@ -25,6 +25,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/utf_string_conversions.h"

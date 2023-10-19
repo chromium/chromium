@@ -16,6 +16,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "util/file/file_writer.h"
 #include "util/numeric/safe_assignment.h"
