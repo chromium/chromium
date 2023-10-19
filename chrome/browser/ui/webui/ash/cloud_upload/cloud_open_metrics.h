@@ -203,6 +203,7 @@ class CloudOpenMetrics {
   void ExpectLoggedWith(Metric<MetricType>& metric,
                         const std::vector<MetricType>& values);
 
+  bool inconsistency_found_ = false;
   CloudProvider cloud_provider_;
   Metric<base::File::Error> copy_error_;
   Metric<base::File::Error> move_error_;

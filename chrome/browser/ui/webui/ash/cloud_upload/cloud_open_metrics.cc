@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
 namespace ash::cloud_upload {
@@ -213,6 +214,10 @@ CloudOpenMetrics::~CloudOpenMetrics() {
     base::UmaHistogramEnumeration(kOneDriveUploadResultMetricStateMetricName,
                                   upload_result_.state);
   }
+
+  if (inconsistency_found_) {
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 void CloudOpenMetrics::LogCopyError(base::File::Error value) {
@@ -269,26 +274,19 @@ template <typename MetricType>
 void CloudOpenMetrics::PrintDebugInformationIfInconsistent(
     Metric<MetricType>& metric,
     bool destructor) {
-  switch (metric.state) {
-    case MetricState::kCorrectlyNotLogged:
-    case MetricState::kCorrectlyLogged:
-      // Consistent state.
-      return;
-    case MetricState::kIncorrectlyLoggedMultipleTimes:
-      // TODO(cassycc): Log old vs new value as this information cannot be
-      // derived.
-      if (destructor) {
-        // This inconsistency is detected during the cloud upload flow and
-        // should not be re-detected in the destructor.
-        return;
-      }
-      [[fallthrough]];
-    case MetricState::kIncorrectlyNotLogged:
-    case MetricState::kIncorrectlyLogged:
-    case MetricState::kWrongValueLogged:
-      LOG(ERROR) << "Inconsistent metric found: " << metric;
-      break;
+  if (metric.state == MetricState::kCorrectlyNotLogged ||
+      metric.state == MetricState::kCorrectlyLogged) {
+    // Consistent state.
+    return;
   }
+  if (destructor &&
+      metric.state == MetricState::kIncorrectlyLoggedMultipleTimes) {
+    // This inconsistency is detected during the cloud upload flow and
+    // should not be re-detected in the destructor.
+    return;
+  }
+  inconsistency_found_ = true;
+  LOG(ERROR) << "Inconsistent metric found: " << metric;
   PrintMetrics();
 }
 
