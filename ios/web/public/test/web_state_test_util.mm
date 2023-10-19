@@ -32,6 +32,12 @@ using base::test::ios::kWaitForPageLoadTimeout;
 namespace web {
 namespace test {
 
+// Returns a callback that return `value` when invoked.
+template <typename T>
+base::OnceCallback<T()> ReturnValueOnce(T&& value) {
+  return base::BindOnce([](T value) { return value; }, std::forward<T>(value));
+}
+
 id ExecuteJavaScript(NSString* script, web::WebState* web_state) {
   __block id execution_result = nil;
   __block bool execution_completed = false;
@@ -212,13 +218,8 @@ std::unique_ptr<WebState> CreateUnrealizedWebStateWithItems(
 
   std::unique_ptr<WebState> web_state = WebState::CreateWithStorage(
       browser_state, WebStateID::NewUnique(), std::move(metadata),
-      base::BindOnce(
-          [](proto::WebStateStorage storage,
-             proto::WebStateStorage& out_storage) {
-            out_storage = std::move(storage);
-          },
-          std::move(storage)),
-      base::BindOnce([]() -> NSData* { return nil; }));
+      ReturnValueOnce(std::move(storage)), ReturnValueOnce<NSData*>(nil));
+
   DCHECK(!web_state->IsRealized());
   return web_state;
 }

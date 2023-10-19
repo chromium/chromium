@@ -148,6 +148,12 @@ NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
   return ns_dictionary;
 }
 
+// Returns a callback that return `value` when invoked.
+template <typename T>
+base::OnceCallback<T()> ReturnValueOnce(T&& value) {
+  return base::BindOnce([](T value) { return value; }, std::forward<T>(value));
+}
+
 // A WebStateUserData to hold a reference to a corresponding CWVWebView.
 class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
  public:
@@ -240,13 +246,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   DCHECK(web::features::UseSessionSerializationOptimizations());
   return web::WebState::CreateWithStorage(
       browserState, self.webStateID, _storage.metadata(),
-      base::BindOnce(^(web::proto::WebStateStorage& storage) {
-        // Capturing `self` is fine since the WebState will either be
-        // deleted before the current object (since they have the same
-        // owner), or the block will be destroyed after invocation.
-        storage = std::move(self->_storage);
-      }),
-      base::BindOnce([]() -> NSData* { return nil; }));
+      ReturnValueOnce(std::move(_storage)), ReturnValueOnce<NSData*>(nil));
 }
 
 - (const web::proto::WebStateStorage&)storage {

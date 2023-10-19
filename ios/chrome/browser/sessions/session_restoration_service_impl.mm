@@ -48,10 +48,11 @@ void DeleteUnknownContent(const base::FilePath& path,
 }
 
 // Loads WebState storage from `web_state_dir` into `storage`.
-void LoadWebStateStorage(const base::FilePath& path,
-                         web::proto::WebStateStorage& storage) {
+web::proto::WebStateStorage LoadWebStateStorage(const base::FilePath& path) {
+  web::proto::WebStateStorage storage;
   bool success = ios::sessions::ParseProto(path, storage);
   DCHECK(success);
+  return storage;
 }
 
 // Loads Webstate native session from `web_state_dir`. It is okay if the file

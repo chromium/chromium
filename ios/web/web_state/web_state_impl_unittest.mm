@@ -66,6 +66,12 @@ using base::test::ios::kWaitForPageLoadTimeout;
 namespace web {
 namespace {
 
+// Returns a callback that return `value` when invoked.
+template <typename T>
+base::OnceCallback<T()> ReturnValueOnce(T&& value) {
+  return base::BindOnce([](T value) { return value; }, std::forward<T>(value));
+}
+
 // Test observer to check that the GlobalWebStateObserver methods are called as
 // expected.
 class TestGlobalWebStateObserver : public GlobalWebStateObserver {
@@ -853,15 +859,9 @@ TEST_F(WebStateImplTest, UncommittedRestoreSessionOptimisedStorage) {
   active_page->set_page_title("Title");
   active_page->set_page_url(url.spec());
 
-  WebStateImpl web_state =
-      WebStateImpl(GetBrowserState(), web::WebStateID::NewUnique(), metadata,
-                   base::BindOnce(
-                       [](proto::WebStateStorage storage,
-                          proto::WebStateStorage& inner_storage) {
-                         inner_storage = storage;
-                       },
-                       std::move(storage)),
-                   base::BindOnce([]() -> NSData* { return nil; }));
+  WebStateImpl web_state = WebStateImpl(
+      GetBrowserState(), web::WebStateID::NewUnique(), metadata,
+      ReturnValueOnce(std::move(storage)), ReturnValueOnce<NSData*>(nil));
 
   // Check that the title and url are correct.
   ASSERT_FALSE(web_state.IsRealized());

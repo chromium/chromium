@@ -71,6 +71,14 @@ NSData* FetchSessionDataBlob(base::WeakPtr<WebState> weak_web_state) {
   return GetWebClient()->FetchSessionFromCache(web_state);
 }
 
+// Serializes the `session_storage` to proto::WebStateStorage.
+web::proto::WebStateStorage SessionStorageToProto(
+    CRWSessionStorage* session_storage) {
+  web::proto::WebStateStorage storage;
+  [session_storage serializeToProto:storage];
+  return storage;
+}
+
 // Key used to store an empty base::SupportsUserData::Data to all WebStateImpl
 // instances. Used by WebStateImpl::FromWebState(...) to assert the pointer is
 // pointing to a WebStateImpl instance and not another sub-class of WebState.
@@ -121,9 +129,7 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
   saved_ = std::make_unique<SerializedData>(
       this, params.browser_state, session_storage.stableIdentifier,
       session_storage.uniqueIdentifier, std::move(metadata),
-      base::BindOnce(^(proto::WebStateStorage& inner_storage) {
-        [session_storage serializeToProto:inner_storage];
-      }),
+      base::BindOnce(&SessionStorageToProto, session_storage),
       base::BindOnce(&FetchSessionDataBlob, GetWeakPtr()));
   saved_->SetSessionStorage(session_storage);
 
@@ -463,8 +469,7 @@ WebState* WebStateImpl::ForceRealized() {
     std::unique_ptr<SerializedData> saved = std::move(saved_);
 
     // Load the storage from disk.
-    proto::WebStateStorage storage;
-    saved->TakeStorageLoader().Run(storage);
+    proto::WebStateStorage storage = saved->TakeStorageLoader().Run();
 
     // Perform the initialisation of the RealizedWebState. No outside
     // code should be able to observe the WebStateImpl with both `saved_`
