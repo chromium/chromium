@@ -4201,6 +4201,39 @@ if (enable_java_templates) {
         if (!defined(deps)) {
           deps = []
         }
+        if (is_cronet_build) {
+          _abs_deps = []
+          if (defined(invoker.deps)) {
+            foreach(dep, invoker.deps) {
+              _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
+            }
+          }
+          if (defined(invoker.public_deps)) {
+            foreach(dep, invoker.public_deps) {
+              _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
+            }
+          }
+          if (defined(invoker.srcjar_deps)) {
+            foreach(dep, invoker.srcjar_deps) {
+              _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
+            }
+          }
+          _abs_path_source_files = []
+          if (defined(invoker.sources)) {
+            foreach(source_file, invoker.sources) {
+              _abs_path_source_files +=
+                  [ get_path_info(source_file, "abspath") ]
+            }
+          }
+
+          # See crbug/1449896 for more details about the metadata fields
+          # and why they are added.
+          metadata = {
+            source_files = _abs_path_source_files
+            all_deps = _abs_deps
+            target_type = [ _type ]
+          }
+        }
         if (!defined(public_deps)) {
           public_deps = []
         }
