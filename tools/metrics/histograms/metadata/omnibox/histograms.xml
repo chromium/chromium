@@ -1684,7 +1684,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.setText.TruncatedTooMuch" units="boolean"
+<histogram name="Omnibox.setText.TruncatedTooMuch" enum="Boolean"
     expires_after="2023-12-24">
   <owner>peilinwang@google.com</owner>
   <owner>woa-performance-bugs+jank@google.com</owner>
