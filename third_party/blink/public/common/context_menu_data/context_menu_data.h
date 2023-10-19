@@ -39,7 +39,6 @@
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
-#include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -167,27 +166,12 @@ struct ContextMenuData {
   // TextFragmentAnchor.
   bool opened_from_highlight = false;
 
-  // The type of the form control element on which the context menu is invoked,
-  // if any.
-  std::optional<mojom::FormControlType> form_control_type;
+  // The form's renderer id if the context menu is triggered on the form.
+  absl::optional<uint64_t> form_renderer_id;
 
-  // Indicates whether the context menu is invoked on a non-form,
-  // non-form-control element that is contenteditable. Thus, it is mutually
-  // exclusive with `form_control_type`.
-  // TODO(crbug.com/1427131): Only true if AutofillUseDomNodeIdForRendererId
-  // is enabled.
-  bool is_content_editable_for_autofill = false;
-
-  // Identifies the element the context menu was invoked on if either
-  // `form_control_type` is engaged or `is_content_editable_for_autofill` is
-  // true.
-  // See `autofill::FieldRendererId` for the semantics of renderer IDs.
-  uint64_t field_renderer_id = 0;
-
-  // Identifies form to which the field identified by `field_renderer_id` is
-  // associated.
-  // See `autofill::FormRendererId` for the semantics of renderer IDs.
-  uint64_t form_renderer_id = 0;
+  // The field's renderer id if the context menu is triggered on an input
+  // field or a textarea field.
+  absl::optional<uint64_t> field_renderer_id;
 
   ContextMenuData()
       : media_type(blink::mojom::ContextMenuDataMediaType::kNone),

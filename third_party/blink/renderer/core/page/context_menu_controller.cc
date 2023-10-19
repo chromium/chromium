@@ -151,38 +151,6 @@ void SetInputFieldsData(Element* element, ContextMenuData& data) {
   }
 }
 
-void SetAutofillData(Node* node, ContextMenuData& data) {
-  if (auto* form_control = DynamicTo<HTMLFormControlElement>(node)) {
-    data.form_control_type = form_control->FormControlType();
-    data.field_renderer_id = base::FeatureList::IsEnabled(
-                                 features::kAutofillUseDomNodeIdForRendererId)
-                                 ? form_control->GetDomNodeId()
-                                 : form_control->UniqueRendererFormControlId();
-    if (auto* form = form_control->Form()) {
-      data.form_renderer_id = base::FeatureList::IsEnabled(
-                                  features::kAutofillUseDomNodeIdForRendererId)
-                                  ? form->GetDomNodeId()
-                                  : form->UniqueRendererFormId();
-    } else {
-      data.form_renderer_id = 0;
-    }
-  }
-  if (auto* html_element = DynamicTo<HTMLElement>(node)) {
-    ContentEditableType content_editable =
-        html_element->contentEditableNormalized();
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillUseDomNodeIdForRendererId)) {
-      data.is_content_editable_for_autofill =
-          (content_editable == ContentEditableType::kPlaintextOnly ||
-           content_editable == ContentEditableType::kContentEditable) &&
-          !DynamicTo<HTMLFormElement>(node) &&
-          !DynamicTo<HTMLFormControlElement>(node);
-      data.field_renderer_id = html_element->GetDomNodeId();
-      data.form_renderer_id = html_element->GetDomNodeId();
-    }
-  }
-}
-
 // Returns true if node or any of its ancestors have a context menu event
 // listener. Uses already_visited_nodes to track nodes which have already
 // been checked across multiple calls to this function, which could cause
@@ -214,6 +182,29 @@ uint32_t EnumToBitmask(enumType outcome) {
   return 1 << static_cast<uint8_t>(outcome);
 }
 
+absl::optional<uint64_t> GetFormRendererId(HitTestResult& result) {
+  if (auto* text_control_element =
+          DynamicTo<TextControlElement>(result.InnerNode())) {
+    if (text_control_element->Form() != nullptr) {
+      return (base::FeatureList::IsEnabled(
+                 features::kAutofillUseDomNodeIdForRendererId))
+                 ? text_control_element->Form()->GetDomNodeId()
+                 : text_control_element->Form()->UniqueRendererFormId();
+    }
+  }
+  return absl::nullopt;
+}
+
+absl::optional<uint64_t> GetFieldRendererId(HitTestResult& result) {
+  if (auto* text_control_element =
+          DynamicTo<TextControlElement>(result.InnerNode())) {
+    return (base::FeatureList::IsEnabled(
+               features::kAutofillUseDomNodeIdForRendererId))
+               ? text_control_element->GetDomNodeId()
+               : text_control_element->UniqueRendererFormControlId();
+  }
+  return absl::nullopt;
+}
 }  // namespace
 
 ContextMenuController::ContextMenuController(Page* page) : page_(page) {}
@@ -843,8 +834,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   SetInputFieldsData(result.InnerElement(), data);
   data.selection_rect = ComputeSelectionRect(selected_frame);
   data.source_type = source_type;
-
-  SetAutofillData(result.InnerNode(), data);
+  data.form_renderer_id = GetFormRendererId(result);
+  data.field_renderer_id = GetFieldRendererId(result);
 
   const bool from_touch = source_type == kMenuSourceTouch ||
                           source_type == kMenuSourceLongPress ||
