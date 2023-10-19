@@ -136,6 +136,7 @@ class RenderFrameHostImpl;
 class RenderFrameMetadataProviderImpl;
 class RenderFrameProxyHost;
 class RenderWidgetHost;
+class RenderWidgetHostImpl;
 class RenderWidgetHostView;
 class ScopedAllowRendererCrashes;
 class ToRenderFrameHost;
@@ -1519,9 +1520,9 @@ class InputEventAckWaiter : public RenderWidgetHost::InputEventObserver {
                        const blink::WebInputEvent& event) override;
 
  private:
-  raw_ptr<RenderWidgetHost> render_widget_host_;
+  base::WeakPtr<RenderWidgetHostImpl> render_widget_host_;
   InputEventAckPredicate predicate_;
-  bool event_received_;
+  bool event_received_ = false;
   base::OnceClosure quit_closure_;
 };
 
