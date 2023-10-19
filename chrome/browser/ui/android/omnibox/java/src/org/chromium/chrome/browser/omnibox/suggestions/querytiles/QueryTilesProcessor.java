@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
@@ -64,8 +65,7 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     @Override
     public int getMinimumCarouselItemViewHeight() {
-        // TODO(crbug/1490333): identify correct height.
-        return 0;
+        return mContext.getResources().getDimensionPixelSize(R.dimen.query_tile_view_height);
     }
 
     @Override

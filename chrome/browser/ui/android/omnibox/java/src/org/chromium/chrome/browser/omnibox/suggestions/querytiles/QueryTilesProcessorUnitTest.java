@@ -13,6 +13,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.ContextThemeWrapper;
+import android.view.View;
 
 import org.junit.After;
 import org.junit.Before;
@@ -86,7 +87,11 @@ public class QueryTilesProcessorUnitTest {
 
     @Test
     public void getMinimumCarouselItemViewHeight() {
-        assertEquals(0, mProcessor.getMinimumCarouselItemViewHeight());
+        var view = new QueryTileView(mContext);
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE, View.MeasureSpec.AT_MOST),
+                View.MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE, View.MeasureSpec.AT_MOST));
+        assertEquals(view.getMeasuredHeight(), mProcessor.getMinimumCarouselItemViewHeight());
     }
 
     @Test

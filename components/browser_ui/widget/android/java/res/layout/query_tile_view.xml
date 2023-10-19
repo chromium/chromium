@@ -7,8 +7,8 @@ found in the LICENSE file.
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="86dp"
-    android:layout_height="86dp"
+    android:layout_width="@dimen/query_tile_view_width"
+    android:layout_height="@dimen/query_tile_view_height"
     android:orientation="vertical">
 
     <org.chromium.components.browser_ui.widget.RoundedCornerImageView
