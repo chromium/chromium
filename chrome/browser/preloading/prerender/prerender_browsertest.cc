@@ -207,6 +207,47 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   TestPrerenderAndActivateInNewTab("clickSameSiteLink();", false);
 }
 
+// Tests main frame navigation on a prerendered page in a new tab.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameNavigation_InNewTab) {
+  base::HistogramTester histogram_tester;
+  std::string link_click_script = "clickSameSiteNewWindowLink();";
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/prerender/simple_links.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
+  content::TestNavigationObserver nav_observer(prerender_url);
+  nav_observer.StartWatchingNewWebContents();
+  prerender_helper().AddPrerendersAsync({prerender_url},
+                                        /*eagerness=*/absl::nullopt, "_blank");
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(nav_observer.last_navigation_url(), prerender_url);
+  int host_id = prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Navigate a prerendered page to another page.
+  GURL navigation_url =
+      embedded_test_server()->GetURL("/prerender/empty.html?navigated");
+  prerender_helper().NavigatePrerenderedPage(host_id, navigation_url);
+
+  auto* prerender_web_contents =
+      content::WebContents::FromFrameTreeNodeId(host_id);
+
+  // Activate.
+  content::test::PrerenderHostObserver prerender_observer(
+      *prerender_web_contents, host_id);
+  EXPECT_TRUE(ExecJs(GetActiveWebContents(), link_click_script));
+  prerender_observer.WaitForActivation();
+  EXPECT_EQ(prerender_web_contents->GetLastCommittedURL(), navigation_url);
+  EXPECT_EQ(prerender_web_contents->GetVisibleURL(), navigation_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      kFinalStatusActivated, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderTriggeredByEmbedderAndActivate) {
   base::HistogramTester histogram_tester;

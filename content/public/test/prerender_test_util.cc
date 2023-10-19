@@ -432,21 +432,22 @@ void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,
                                                   const GURL& gurl) {
   TRACE_EVENT("test", "PrerenderTestHelper::NavigatePrerenderedPage", "host_id",
               host_id, "url", gurl);
-  auto* prerender_host = GetPrerenderHostById(GetWebContents(), host_id);
+
+  // Take RenderFrameHost corresponding to the main frame of the prerendered
+  // page.
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  auto* prerender_host = GetPrerenderHostById(prerender_web_contents, host_id);
   ASSERT_NE(prerender_host, nullptr);
   RenderFrameHostImpl* prerender_render_frame_host =
       prerender_host->GetPrerenderedMainFrameHost();
-  // Ignore the result of ExecJs().
+
+  // Navigate the RenderFrameHost to the URL.
   //
-  // Navigation from the prerendered page could cancel prerendering and
-  // destroy the prerendered frame before ExecJs() gets a result from that.
-  // This results in execution failure even when the execution succeeded. See
-  // https://crbug.com/1186584 for details.
-  //
-  // This part will drastically be modified by the MPArch, so we take the
-  // approach just to ignore it instead of fixing the timing issue. When
-  // ExecJs() actually fails, the remaining test steps should fail, so it
-  // should be safe to ignore it.
+  // Ignore the result of ExecJs() to avoid unexpected execution failure.
+  // Navigation from the prerendered page could cancel prerendering and destroy
+  // the prerendered frame before ExecJs() gets a result from that. This results
+  // in execution failure even when the execution succeeded.
+  // See https://crbug.com/1186584 for details.
   std::ignore =
       ExecJs(prerender_render_frame_host, JsReplace("location = $1", gurl));
 }
