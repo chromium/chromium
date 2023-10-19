@@ -285,6 +285,10 @@ different settings listed above, including different link settings and -j
 values? Have you asked on the chromium-dev mailing list to see if your build is
 slower than expected for your machine's specifications?
 
+If you suspect that Defender is slowing your build then you can try Microsoft's
+[Performance analyzer for Microsoft Defender Antivirus](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/tune-performance-defender-antivirus?view=o365-worldwide)
+to investigate in detail.
+
 The next step is to gather some data. If you set the ``NINJA_SUMMARIZE_BUILD``
 environment variable to 1 then ``autoninja`` will do three things. First, it
 will set the [NINJA_STATUS](https://ninja-build.org/manual.html#_environment_variables)
