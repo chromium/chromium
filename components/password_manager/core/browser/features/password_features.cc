@@ -68,7 +68,7 @@ BASE_FEATURE(kFillOnAccountSelect,
 // Enables new confirmation bubble flow if generated password was used in a
 // form.
 BASE_FEATURE(kNewConfirmationBubbleForGeneratedPasswords,
-             "kNewConfirmationBubbleForGeneratedPasswords",
+             "NewConfirmationBubbleForGeneratedPasswords",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
