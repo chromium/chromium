@@ -744,4 +744,27 @@ TEST(TransformOperationsTest, OutOfRangePercentage) {
     EXPECT_TRUE(std::isfinite(mat.ColMajorData(i)));
 }
 
+TEST(TranformOperationsTest, DisallowBlockSizeDependent_Disallowed) {
+  TransformOperations from_ops;
+  TransformOperations to_ops;
+  from_ops.Operations().push_back(TranslateTransformOperation::Create(
+      Length::Percent(50), Length::Fixed(20), TransformOperation::kTranslate));
+  to_ops.Operations().push_back(
+      ScaleTransformOperation::Create(2, 2, TransformOperation::kScale));
+
+  const wtf_size_t matching_prefix_length = 0;
+  const double progress = 0.8;
+
+  TransformOperations blended_ops = to_ops.Blend(
+      from_ops, progress,
+      TransformOperations::BoxSizeDependentMatrixBlending::kDisallow);
+  EXPECT_EQ(blended_ops, to_ops);
+
+  scoped_refptr<TransformOperation> blended_op =
+      to_ops.BlendRemainingByUsingMatrixInterpolation(
+          from_ops, matching_prefix_length, progress,
+          TransformOperations::BoxSizeDependentMatrixBlending::kDisallow);
+  EXPECT_EQ(blended_op, nullptr);
+}
+
 }  // namespace blink
