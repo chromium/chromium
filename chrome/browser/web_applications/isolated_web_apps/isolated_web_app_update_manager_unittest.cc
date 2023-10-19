@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -158,13 +159,16 @@ class ScopedNaClBrowserDelegate {
 };
 #endif  // BUILDFLAG(ENABLE_NACL)
 
+// TODO(b/304691179): Rely less on `RunUntilIdle` and more on concrete events in
+// all of these tests.
 class IsolatedWebAppUpdateManagerTest : public WebAppTest {
  public:
   explicit IsolatedWebAppUpdateManagerTest(
       const base::flat_map<base::test::FeatureRef, bool>& feature_states =
-          {{features::kIsolatedWebApps, true}})
-      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory(),
-                   base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+          {{features::kIsolatedWebApps, true}},
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT)
+      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory(), time_source) {
     scoped_feature_list_.InitWithFeatureStates(feature_states);
   }
 
@@ -177,12 +181,15 @@ class IsolatedWebAppUpdateManagerTest : public WebAppTest {
   }
 
   void TearDown() override {
-    // TODO(b/299074540): Without this line, subsequent tests are unable to use
-    // `test::UninstallWebApp`, which will hang forever. This has something to
-    // do with the combination of `MOCK_TIME` and NaCl, because the code ends up
-    // hanging forever in `PnaclTranslationCache::DoomEntriesBetween`. A simple
-    // `FastForwardBy` here seems to alleviate this issue.
-    task_environment()->FastForwardBy(TestTimeouts::tiny_timeout());
+    if (task_environment()->UsesMockTime()) {
+      // TODO(b/299074540): Without this line, subsequent tests are unable to
+      // use `test::UninstallWebApp`, which will hang forever. This has
+      // something to do with the combination of `MOCK_TIME` and NaCl, because
+      // the code ends up hanging forever in
+      // `PnaclTranslationCache::DoomEntriesBetween`. A simple `FastForwardBy`
+      // here seems to alleviate this issue.
+      task_environment()->FastForwardBy(TestTimeouts::tiny_timeout());
+    }
 
     WebAppTest::TearDown();
   }
@@ -293,6 +300,13 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
 
 class IsolatedWebAppUpdateManagerUpdateTest
     : public IsolatedWebAppUpdateManagerTest {
+ public:
+  explicit IsolatedWebAppUpdateManagerUpdateTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT)
+      : IsolatedWebAppUpdateManagerTest({{features::kIsolatedWebApps, true}},
+                                        time_source) {}
+
  protected:
   struct IwaInfo {
     IwaInfo(web_package::WebBundleSigner::KeyPair key_pair,
@@ -475,8 +489,16 @@ class IsolatedWebAppUpdateManagerUpdateTest
   absl::optional<IwaInfo> iwa_info2_;
 };
 
+class IsolatedWebAppUpdateManagerUpdateMockTimeTest
+    : public IsolatedWebAppUpdateManagerUpdateTest {
+ public:
+  IsolatedWebAppUpdateManagerUpdateMockTimeTest()
+      : IsolatedWebAppUpdateManagerUpdateTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        DiscoversAndPreparesUpdateOfPolicyInstalledApps) {
   IsolatedWebAppUrlInfo non_installed_url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
@@ -518,7 +540,6 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
        {dev_proxy_url_info, "https://example.com/update_manifest.json"}});
 
   task_environment()->FastForwardBy(base::Hours(5));
-  // TODO(b/304691179): Rely less on `RunUntilIdle` and more on concrete events.
   task_environment()->RunUntilIdle();
 
   EXPECT_THAT(
@@ -545,7 +566,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
       ->Shutdown();
 }
 
-TEST_F(IsolatedWebAppUpdateManagerUpdateTest, DiscoverUpdatesNow) {
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
       WebApp::IsolationData(iwa_info1_->installed_location,
@@ -607,7 +628,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
 
   SetIwaForceInstallPolicy(
       {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()}});
-  task_environment()->FastForwardBy(base::Hours(5));
+  update_manager().DiscoverUpdatesNow();
   task_environment()->RunUntilIdle();
 
   EXPECT_THAT(
@@ -657,43 +678,46 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   SetIwaForceInstallPolicy(
       {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()},
        {iwa_info2_->url_info, iwa_info2_->update_manifest_url.spec()}});
-  task_environment()->FastForwardBy(base::Hours(5));
+  update_manager().DiscoverUpdatesNow();
   task_environment()->RunUntilIdle();
 
-  auto update_discovery_log = UpdateDiscoveryLog();
-  auto update_apply_log = UpdateApplyLog();
+  {
+    auto update_discovery_log = UpdateDiscoveryLog();
+    auto update_apply_log = UpdateApplyLog();
 
-  EXPECT_THAT(
-      update_discovery_log,
-      UnorderedElementsAre(
-          IsDict(DictionaryHasValue(
-              "result",
-              base::Value("Success::kUpdateFoundAndDryRunSuccessful"))),
-          IsDict(DictionaryHasValue(
-              "result",
-              base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
+    EXPECT_THAT(
+        update_discovery_log,
+        UnorderedElementsAre(
+            IsDict(DictionaryHasValue(
+                "result",
+                base::Value("Success::kUpdateFoundAndDryRunSuccessful"))),
+            IsDict(DictionaryHasValue(
+                "result",
+                base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
 
-  EXPECT_THAT(
-      update_apply_log,
-      UnorderedElementsAre(
-          IsDict(DictionaryHasValue("result", base::Value("Success"))),
-          IsDict(DictionaryHasValue("result", base::Value("Success")))));
+    EXPECT_THAT(
+        update_apply_log,
+        UnorderedElementsAre(
+            IsDict(DictionaryHasValue("result", base::Value("Success"))),
+            IsDict(DictionaryHasValue("result", base::Value("Success")))));
 
-  std::vector<base::Value*> times(
-      {update_discovery_log[0].GetDict().Find("start_time"),
-       update_discovery_log[0].GetDict().Find("end_time"),
-       update_apply_log[0].GetDict().Find("start_time"),
-       update_apply_log[0].GetDict().Find("end_time"),
+    std::vector<base::Value*> times(
+        {update_discovery_log[0].GetDict().Find("start_time"),
+         update_discovery_log[0].GetDict().Find("end_time"),
+         update_apply_log[0].GetDict().Find("start_time"),
+         update_apply_log[0].GetDict().Find("end_time"),
 
-       update_discovery_log[1].GetDict().Find("start_time"),
-       update_discovery_log[1].GetDict().Find("end_time"),
-       update_apply_log[1].GetDict().Find("start_time"),
-       update_apply_log[1].GetDict().Find("end_time")});
-  EXPECT_THAT(base::ranges::is_sorted(
-                  times, {},
-                  [](base::Value* value) { return *base::ValueToTime(value); }),
-              IsTrue())
-      << base::JoinString(ToVector(times, &base::Value::DebugString), ", ");
+         update_discovery_log[1].GetDict().Find("start_time"),
+         update_discovery_log[1].GetDict().Find("end_time"),
+         update_apply_log[1].GetDict().Find("start_time"),
+         update_apply_log[1].GetDict().Find("end_time")});
+    EXPECT_THAT(base::ranges::is_sorted(times, {},
+                                        [](base::Value* value) {
+                                          return *base::ValueToTime(value);
+                                        }),
+                IsTrue())
+        << base::JoinString(ToVector(times, &base::Value::DebugString), "");
+  }
 
   EXPECT_THAT(
       fake_provider().registrar_unsafe().GetAppById(
@@ -729,7 +753,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   SetIwaForceInstallPolicy(
       {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()},
        {iwa_info2_->url_info, iwa_info2_->update_manifest_url.spec()}});
-  task_environment()->FastForwardBy(base::Hours(5));
+  update_manager().DiscoverUpdatesNow();
+  task_environment()->RunUntilIdle();
 
   // Wait for the update discovery task of either app 1 or app 2 to request the
   // update manifest (which task starts first is undefined).
@@ -775,7 +800,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
 
   SetIwaForceInstallPolicy(
       {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()}});
-  task_environment()->FastForwardBy(base::Hours(5));
+  update_manager().DiscoverUpdatesNow();
   task_environment()->RunUntilIdle();
 
   EXPECT_THAT(
@@ -791,6 +816,12 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
   EXPECT_THAT(UpdateApplyWaiters(), IsEmpty());
   EXPECT_THAT(UpdateApplyTasks(), IsEmpty());
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
+
+  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
+  fake_provider().Shutdown();
+  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
+      ->Shutdown();
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
@@ -810,7 +841,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   SetIwaForceInstallPolicy(
       {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()},
        {iwa_info2_->url_info, iwa_info2_->update_manifest_url.spec()}});
-  task_environment()->FastForwardBy(base::Hours(5));
+  update_manager().DiscoverUpdatesNow();
   task_environment()->RunUntilIdle();
 
   EXPECT_THAT(

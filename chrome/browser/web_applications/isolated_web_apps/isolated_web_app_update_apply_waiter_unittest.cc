@@ -80,7 +80,8 @@ TEST_F(IsolatedWebAppUpdateApplyWaiterTest, AwaitsWindowsClosed) {
   EXPECT_EQ(CountProfileKeepAlives(profile()), 2ul);
 }
 
-TEST_F(IsolatedWebAppUpdateApplyWaiterTest, NeverSynchronouslyCallsCallback) {
+TEST_F(IsolatedWebAppUpdateApplyWaiterTest,
+       SynchronouslyCallsCallbackWhenWindowsAlreadyClosed) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   ui_manager().SetNumWindowsForApp(url_info_.app_id(), 0);
@@ -89,14 +90,14 @@ TEST_F(IsolatedWebAppUpdateApplyWaiterTest, NeverSynchronouslyCallsCallback) {
                                          fake_provider().ui_manager());
 
   base::MockRepeatingCallback<void(webapps::AppId)> callback;
-  EXPECT_CALL(callback, Run(url_info_.app_id()));
+  EXPECT_CALL(callback, Run(url_info_.app_id())).Times(0);
   ui_manager().SetOnNotifyOnAllAppWindowsClosedCallback(callback.Get());
 
   base::test::TestFuture<std::unique_ptr<ScopedKeepAlive>,
                          std::unique_ptr<ScopedProfileKeepAlive>>
       future;
   waiter.Wait(profile(), future.GetCallback());
-  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.IsReady());
   auto [keep_alive, profile_keep_alive] = future.Take();
 }
 
