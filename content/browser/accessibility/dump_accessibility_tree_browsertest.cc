@@ -3040,8 +3040,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("select-follows-focus-multiselect.html"));
 }
 
-// Flaky on Android - crbug.com/1286650
-#if BUILDFLAG(IS_ANDROID)
+// Flaky on Android and Fuchsia - crbug.com/1286650, crbug.com/1491059
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_AccessibilitySelectList DISABLED_AccessibilitySelectList
 #else
 #define MAYBE_AccessibilitySelectList AccessibilitySelectList
