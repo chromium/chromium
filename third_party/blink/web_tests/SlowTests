@@ -1453,6 +1453,7 @@ crbug.com/1404951 [ Mac11 Release ] external/wpt/credential-management/fedcm-ifr
 crbug.com/1404951 [ Mac12 Release ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
 crbug.com/1404951 [ Mac13 Release ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
 crbug.com/1404951 [ Release Win ] external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
+crbug.com/1494119 virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
 
 # Slow because it contains thousands of subtests
 crbug.com/1423483 [ Debug Mac13-arm64 ] external/wpt/css/css-color/parsing/color-computed-hsl.html [ Slow ]
