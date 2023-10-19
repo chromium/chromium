@@ -17,12 +17,17 @@ class PromiseAppUpdateTest : public testing::Test {
 
 TEST_F(PromiseAppUpdateTest, StateIsNonNull) {
   PromiseApp promise_app = PromiseApp(package_id);
+  promise_app.name = "Name";
   promise_app.progress = 0.1;
   promise_app.status = PromiseStatus::kPending;
   promise_app.should_show = true;
   PromiseAppUpdate u(&promise_app, nullptr);
 
   EXPECT_EQ(package_id, u.PackageId());
+
+  EXPECT_TRUE(u.Name().has_value());
+  EXPECT_EQ(u.Name(), "Name");
+  EXPECT_EQ(u.NameChanged(), false);
 
   EXPECT_TRUE(u.Progress().has_value());
   EXPECT_FLOAT_EQ(u.Progress().value(), 0.1);
@@ -40,6 +45,7 @@ TEST_F(PromiseAppUpdateTest, StateIsNonNull) {
 
 TEST_F(PromiseAppUpdateTest, DeltaIsNonNull) {
   PromiseApp promise_app = PromiseApp(package_id);
+  promise_app.name = "Name";
   promise_app.progress = 0.1;
   promise_app.status = PromiseStatus::kPending;
   promise_app.should_show = true;
@@ -47,6 +53,10 @@ TEST_F(PromiseAppUpdateTest, DeltaIsNonNull) {
   PromiseAppUpdate u(nullptr, &promise_app);
 
   EXPECT_EQ(package_id, u.PackageId());
+
+  EXPECT_TRUE(u.Name().has_value());
+  EXPECT_EQ(u.Name(), "Name");
+  EXPECT_EQ(u.NameChanged(), true);
 
   EXPECT_TRUE(u.Progress().has_value());
   EXPECT_FLOAT_EQ(u.Progress().value(), 0.1);
@@ -64,11 +74,13 @@ TEST_F(PromiseAppUpdateTest, DeltaIsNonNull) {
 
 TEST_F(PromiseAppUpdateTest, StateAndDeltaAreNonNull) {
   PromiseApp promise_app_old = PromiseApp(package_id);
+  promise_app_old.name = "Name";
   promise_app_old.progress = 0.1;
   promise_app_old.status = PromiseStatus::kPending;
   promise_app_old.should_show = false;
 
   PromiseApp promise_app_new = PromiseApp(package_id);
+  promise_app_new.name = "New name";
   promise_app_new.progress = 0.9;
   promise_app_new.status = PromiseStatus::kInstalling;
   promise_app_new.should_show = true;
@@ -77,6 +89,10 @@ TEST_F(PromiseAppUpdateTest, StateAndDeltaAreNonNull) {
   PromiseAppUpdate u(&promise_app_old, &promise_app_new);
 
   EXPECT_EQ(package_id, u.PackageId());
+
+  EXPECT_TRUE(u.Name().has_value());
+  EXPECT_EQ(u.Name(), "New name");
+  EXPECT_EQ(u.NameChanged(), true);
 
   EXPECT_TRUE(u.Progress().has_value());
   EXPECT_FLOAT_EQ(u.Progress().value(), 0.9);
@@ -98,6 +114,7 @@ TEST_F(PromiseAppUpdateTest, Equal) {
   state_1->should_show = false;
 
   auto state_2 = std::make_unique<PromiseApp>(package_id);
+  state_2->name = "Name";
   state_2->progress = 0.9;
   state_2->status = PromiseStatus::kInstalling;
   state_2->should_show = true;

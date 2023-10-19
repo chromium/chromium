@@ -217,6 +217,7 @@ class PromiseAppRegistryCacheObserverTest : public testing::Test,
 TEST_F(PromiseAppRegistryCacheObserverTest, OnPromiseAppUpdate_NewPromiseApp) {
   auto promise_app = std::make_unique<PromiseApp>(kTestPackageId);
   promise_app->progress = 0;
+  promise_app->name = "Test";
   promise_app->status = PromiseStatus::kPending;
   promise_app->should_show = false;
 
@@ -248,6 +249,7 @@ TEST_F(PromiseAppRegistryCacheObserverTest,
   // installing.
   auto promise_app_installing = std::make_unique<PromiseApp>(kTestPackageId);
   promise_app_installing->progress = 0.4;
+  promise_app_installing->name = "Test";
   promise_app_installing->status = PromiseStatus::kInstalling;
   promise_app_installing->should_show = true;
   ExpectPromiseAppUpdate(std::make_unique<PromiseAppUpdate>(

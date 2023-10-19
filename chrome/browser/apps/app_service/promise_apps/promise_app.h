@@ -37,6 +37,10 @@ struct PromiseApp {
 
   PackageId package_id;
 
+  // Used for the accessibility label in Launcher/ Shelf. Not used for the main
+  // icon label as it is typically more verbose than just the official app name.
+  absl::optional<std::string> name;
+
   absl::optional<float> progress;
   PromiseStatus status = PromiseStatus::kUnknown;
 

@@ -215,12 +215,15 @@ void PromiseAppService::OnGetPromiseAppInfoCompleted(
   // promise app item. When an icon is requested, the PromiseAppIconCache will
   // fallback to returning a placeholder icon.
   if (!promise_app_info.has_value() ||
+      !promise_app_info->GetName().has_value() ||
       promise_app_info->GetIcons().size() == 0) {
-    PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
-    promise_app->should_show = true;
-    promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
+    SetPromiseAppReadyToShow(package_id);
     return;
   }
+
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->name = promise_app_info->GetName().value();
+  promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
 
   pending_download_count_[package_id] = promise_app_info->GetIcons().size();
 
@@ -272,9 +275,7 @@ void PromiseAppService::OnIconDownloaded(
   pending_download_count_.erase(package_id);
 
   // Update the promise app so it can show to the user.
-  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
-  promise_app->should_show = true;
-  promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
+  SetPromiseAppReadyToShow(package_id);
 }
 
 bool PromiseAppService::IsRegisteredInAppRegistryCache(
@@ -303,6 +304,12 @@ bool PromiseAppService::IsRegisteredInAppRegistryCache(
         return;
       });
   return is_registered;
+}
+
+void PromiseAppService::SetPromiseAppReadyToShow(const PackageId& package_id) {
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->should_show = true;
+  promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
 }
 
 }  // namespace apps

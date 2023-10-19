@@ -88,10 +88,6 @@ class PromiseAppService : public AppRegistryCache::Observer {
   void SetSkipApiKeyCheckForTesting(bool skip_almanac);
 
  private:
-  // Remove all details about a promise app from the PromiseAppRegistryCache and
-  // PromiseAppIconCache.
-  void RemovePromiseApp(const PackageId& package_id);
-
   // Update a promise app's fields with the info retrieved from the Almanac API.
   void OnGetPromiseAppInfoCompleted(
       const PackageId& package_id,
@@ -106,6 +102,9 @@ class PromiseAppService : public AppRegistryCache::Observer {
   // Check whether there is a registered app in AppRegistryCache with the
   // specified package ID.
   bool IsRegisteredInAppRegistryCache(const PackageId& package_id);
+
+  // Set `should_show` to true for a promise app.
+  void SetPromiseAppReadyToShow(const PackageId& package_id);
 
   raw_ptr<Profile> profile_;
 
