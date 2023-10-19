@@ -105,8 +105,10 @@ static const int kTouchDragImageVerticalOffset = 25;
 // The drag and drop app icon should get scaled by this factor.
 constexpr float kDragDropAppIconScale = 1.2f;
 
-// The icon for promise apps should be scaled down by this factor.
-constexpr float kPromiseIconScale = 0.77f;
+// The icon for promise apps should be scaled down by these factors depending on
+// the app state.
+constexpr float kPromiseIconScalePending = 24.0f / 36.0f;
+constexpr float kPromiseIconScaleInstalling = 28.0f / 36.0f;
 
 // The drag and drop icon scaling up or down animation transition duration.
 constexpr int kDragDropAppIconScaleTransitionInMs = 200;
@@ -725,8 +727,19 @@ void AppListItemView::UpdateDraggedItem(const AppListItem* dragged_item) {
 
 float AppListItemView::GetAdjustedIconScaleForProgressRing() {
   // Account for the promise icon scale (if needed).
-  if (is_promise_app_ && features::ArePromiseIconsEnabled()) {
-    return icon_scale_ * kPromiseIconScale;
+  if (is_promise_app_ && features::ArePromiseIconsEnabled() && item_weak_) {
+    switch (item_weak_->app_status()) {
+      case AppStatus::kPending:
+        return icon_scale_ * kPromiseIconScalePending;
+      case AppStatus::kInstalling:
+      case AppStatus::kInstallCancelled:
+      case AppStatus::kInstallSuccess:
+      case AppStatus::kPaused:
+        return icon_scale_ * kPromiseIconScaleInstalling;
+      case AppStatus::kReady:
+      case AppStatus::kBlocked:
+        return icon_scale_;
+    }
   }
 
   return icon_scale_;
