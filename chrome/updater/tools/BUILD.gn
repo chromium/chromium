@@ -11,7 +11,7 @@ group("tools") {
 }
 
 executable("tag_exe") {
-  sources = [ "main.cc" ]
+  sources = [ "tag_main.cc" ]
   deps = [
     "//base",
     "//chrome/updater:tagging",
