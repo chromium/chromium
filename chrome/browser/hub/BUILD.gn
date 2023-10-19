@@ -46,6 +46,7 @@ android_library_factory("factory_java") {
     "internal/android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
     "internal/android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerFactory.java",
     "internal/android/java/src/org/chromium/chrome/browser/hub/HubManagerFactory.java",
+    "internal/android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactory.java",
   ]
 }
 

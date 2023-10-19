@@ -45,6 +45,7 @@ import java.util.Collections;
  */
 public class HubLayout extends Layout {
     // Copied from TabSwitcherLayout.
+    private static final long TRANSLATE_DURATION_MS = 300L;
     private static final long FADE_DURATION_MS = 325L;
     private static final long TIMEOUT_MS = 250L;
 
@@ -178,7 +179,8 @@ public class HubLayout extends Layout {
         HubLayoutAnimatorProvider animatorProvider;
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             animatorProvider =
-                    new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.TRANSLATE_UP);
+                    TranslateHubLayoutAnimationFactory.createTranslateUpAnimatorProvider(
+                            containerView, TRANSLATE_DURATION_MS);
         } else if (mPreviousLayoutType == LayoutType.START_SURFACE) {
             animatorProvider =
                     FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
@@ -241,7 +243,8 @@ public class HubLayout extends Layout {
         HubLayoutAnimatorProvider animatorProvider;
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             animatorProvider =
-                    new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.TRANSLATE_DOWN);
+                    TranslateHubLayoutAnimationFactory.createTranslateDownAnimatorProvider(
+                            containerView, TRANSLATE_DURATION_MS);
         } else if (nextLayoutType == LayoutType.START_SURFACE) {
             animatorProvider =
                     FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(

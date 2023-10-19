@@ -28,6 +28,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubToolbarViewBinder.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactory.java",
+    "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactoryImpl.java",
   ]
   deps = [
     ":java_resources",
@@ -56,6 +58,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/hub/HubManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonDataUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactoryImplUnitTest.java",
   ]
   deps = [
     ":java",
