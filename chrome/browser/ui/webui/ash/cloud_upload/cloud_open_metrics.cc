@@ -318,15 +318,15 @@ void CloudOpenMetrics::ExpectLoggedWith(Metric<MetricType>& metric,
 }
 
 void CloudOpenMetrics::PrintMetrics() {
-  LOG(WARNING) << "Metrics: " << std::endl
-               << copy_error_ << std::endl
-               << move_error_ << std::endl
-               << drive_open_error_ << std::endl
-               << one_drive_open_error_ << std::endl
-               << source_volume_ << std::endl
-               << task_result_ << std::endl
-               << transfer_required_ << std::endl
-               << upload_result_;
+  LOG(ERROR) << "Metrics: " << std::endl
+             << copy_error_ << std::endl
+             << move_error_ << std::endl
+             << drive_open_error_ << std::endl
+             << one_drive_open_error_ << std::endl
+             << source_volume_ << std::endl
+             << task_result_ << std::endl
+             << transfer_required_ << std::endl
+             << upload_result_;
 }
 
 }  // namespace ash::cloud_upload
