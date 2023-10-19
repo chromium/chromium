@@ -13,6 +13,10 @@
 
 class PrefService;
 
+namespace tpcd::experiment {
+class EligibilityServiceTest;
+}  // namespace tpcd::experiment
+
 namespace privacy_sandbox {
 
 // A Service which controls the onboarding onto tracking protection - namely
@@ -134,6 +138,8 @@ class TrackingProtectionOnboarding : public KeyedService {
   bool ShouldShowOnboardingNotice();
 
  private:
+  friend class tpcd::experiment::EligibilityServiceTest;
+
   // Called when the underlying onboarding pref is changed.
   virtual void OnOnboardingPrefChanged() const;
   // Called when the notice has been acked.
@@ -143,7 +149,7 @@ class TrackingProtectionOnboarding : public KeyedService {
   base::ObserverList<Observer>::Unchecked observers_;
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-  const version_info::Channel channel_;
+  version_info::Channel channel_;
 };
 
 }  // namespace privacy_sandbox

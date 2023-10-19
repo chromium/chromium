@@ -116,6 +116,9 @@ TEST_F(ExperimentManagerImplTestBase, Version) {
               test_case.expected_version);
     EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
               static_cast<int>(test_case.expected_state));
+
+    EXPECT_EQ(experiment_manager.DidVersionChange(),
+              test_case.initial_version != 2);
   }
 }
 

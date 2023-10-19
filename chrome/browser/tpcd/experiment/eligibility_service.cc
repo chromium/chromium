@@ -56,6 +56,10 @@ EligibilityService::EligibilityService(Profile* profile,
       features::kCookieDeprecationFacilitatedTesting));
   CHECK(experiment_manager_);
 
+  if (onboarding_service_ && experiment_manager->DidVersionChange()) {
+    onboarding_service_->MaybeResetOnboardingPrefs();
+  }
+
   is_profile_eligible_ = IsProfileEligible();
   BroadcastProfileEligibility();
 }

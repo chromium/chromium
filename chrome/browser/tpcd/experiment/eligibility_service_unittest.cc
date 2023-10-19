@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
 #include "chrome/browser/tpcd/experiment/mock_experiment_manager.h"
@@ -23,9 +24,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
+#include "components/privacy_sandbox/tracking_protection_onboarding.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/version_info/channel.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
-#include "eligibility_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,6 +49,8 @@ class EligibilityServiceTestBase : public testing::Test {
 
   void SetUp() override {
     experiment_manager_ = std::make_unique<MockExperimentManager>();
+    ON_CALL(*experiment_manager_, DidVersionChange)
+        .WillByDefault(Return(false));
 
     auto* privacy_sandbox_settings =
         PrivacySandboxSettingsFactory::GetForProfile(&profile_);
@@ -70,6 +75,13 @@ class EligibilityServiceTest : public EligibilityServiceTestBase {
   EligibilityServiceTest() {
     feature_list_.InitAndEnableFeature(
         features::kCookieDeprecationFacilitatedTesting);
+  }
+
+ protected:
+  void SetChannelVersion(Profile& profile, version_info::Channel channel) {
+    auto* onboarding_service =
+        TrackingProtectionOnboardingFactory::GetForProfile(&profile);
+    onboarding_service->channel_ = channel;
   }
 
  private:
@@ -109,6 +121,19 @@ TEST_F(EligibilityServiceTest,
   EXPECT_CALL(*experiment_manager_, SetClientEligibility(true, _));
 
   EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+}
+
+TEST_F(EligibilityServiceTest, VersionChange_OnboardingPrefsReset) {
+  EXPECT_CALL(*experiment_manager_, DidVersionChange).WillOnce(Return(true));
+
+  SetChannelVersion(profile_, version_info::Channel::BETA);
+
+  profile_.GetPrefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked,
+                                  true);
+
+  EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(
+      prefs::kTrackingProtectionOnboardingAcked));
 }
 
 class EligibilityServiceOTRProfileTest
