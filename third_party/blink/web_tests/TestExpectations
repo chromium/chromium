@@ -544,7 +544,7 @@ crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-contain-clip-
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-contain-clip-padding.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-contain-position-fifty-fifty.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-contain.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-cover.html [ Failure ]
+crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-size-cover.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-length-auto.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-length-length.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-length-percent.html [ Failure ]
