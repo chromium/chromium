@@ -23,10 +23,13 @@ namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
 
+using ApplySubCaptureTargetResult =
+    BrowserCaptureMediaStreamTrack::ApplySubCaptureTargetResult;
+
 // If crop_id is the empty string, returns an empty base::Token.
 // If crop_id is a valid UUID, returns a base::Token representing the ID.
 // Otherwise, returns nullopt.
-absl::optional<base::Token> CropIdStringToToken(const String& crop_id) {
+absl::optional<base::Token> IdStringToToken(const String& crop_id) {
   if (crop_id.empty()) {
     return base::Token();
   }
@@ -38,20 +41,18 @@ absl::optional<base::Token> CropIdStringToToken(const String& crop_id) {
                          : absl::nullopt;
 }
 
-void RaiseCropException(
-    ScriptPromiseResolverWithTracker<
-        BrowserCaptureMediaStreamTrack::CropToResult>* resolver,
+void RaiseApplySubCaptureTargetException(
+    ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>* resolver,
     DOMExceptionCode exception_code,
     const WTF::String& exception_text,
-    BrowserCaptureMediaStreamTrack::CropToResult result) {
+    ApplySubCaptureTargetResult result) {
   resolver->Reject(
       MakeGarbageCollected<DOMException>(exception_code, exception_text),
       result);
 }
 
-void ResolveCropPromiseHelper(
-    ScriptPromiseResolverWithTracker<
-        BrowserCaptureMediaStreamTrack::CropToResult>* resolver,
+void ResolveApplySubCaptureTargetPromiseHelper(
+    ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>* resolver,
     media::mojom::ApplySubCaptureTargetResult result) {
   DCHECK(IsMainThread());
 
@@ -61,32 +62,27 @@ void ResolveCropPromiseHelper(
 
   switch (result) {
     case media::mojom::ApplySubCaptureTargetResult::kSuccess:
-      // TODO(crbug.com/1264849): Delay reporting success to the Web-application
-      // until "seeing" the last frame cropped to the previous crop-target.
       resolver->Resolve();
       return;
     case media::mojom::ApplySubCaptureTargetResult::kErrorGeneric:
-      RaiseCropException(resolver, DOMExceptionCode::kAbortError,
-                         "Unknown error.",
-                         BrowserCaptureMediaStreamTrack::CropToResult::
-                             kRejectedWithErrorGeneric);
+      RaiseApplySubCaptureTargetException(
+          resolver, DOMExceptionCode::kAbortError, "Unknown error.",
+          ApplySubCaptureTargetResult::kRejectedWithErrorGeneric);
       return;
     case media::mojom::ApplySubCaptureTargetResult::kUnsupportedCaptureDevice:
       // Note that this is an unsupported device; not an unsupported Element.
       // This should essentially not happen. If it happens, it indicates
       // something in the capture pipeline has been changed.
-      RaiseCropException(resolver, DOMExceptionCode::kAbortError,
-                         "Unsupported device.",
-                         BrowserCaptureMediaStreamTrack::CropToResult::
-                             kRejectedWithUnsupportedCaptureDevice);
+      RaiseApplySubCaptureTargetException(
+          resolver, DOMExceptionCode::kAbortError, "Unsupported device.",
+          ApplySubCaptureTargetResult::kRejectedWithUnsupportedCaptureDevice);
       return;
     case media::mojom::ApplySubCaptureTargetResult::kNotImplemented:
       // Unimplemented codepath reached, OTHER than lacking support for
       // a specific Element subtype.
-      RaiseCropException(resolver, DOMExceptionCode::kOperationError,
-                         "Not implemented.",
-                         BrowserCaptureMediaStreamTrack::CropToResult::
-                             kRejectedWithNotImplemented);
+      RaiseApplySubCaptureTargetException(
+          resolver, DOMExceptionCode::kOperationError, "Not implemented.",
+          ApplySubCaptureTargetResult::kRejectedWithNotImplemented);
       return;
     case media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion:
       // This should rarely happen, as the browser process would issue
@@ -94,15 +90,14 @@ void ResolveCropPromiseHelper(
       // the IO thread to the UI thread, it could theoretically happen
       // that Blink receives this callback before being killed, so we
       // can't quite DCHECK this.
-      RaiseCropException(resolver, DOMExceptionCode::kAbortError,
-                         "Non-increasing crop version.",
-                         BrowserCaptureMediaStreamTrack::CropToResult::
-                             kNonIncreasingCropVersion);
+      RaiseApplySubCaptureTargetException(
+          resolver, DOMExceptionCode::kAbortError, "Non-increasing version.",
+          ApplySubCaptureTargetResult::kNonIncreasingVersion);
       return;
     case media::mojom::ApplySubCaptureTargetResult::kInvalidTarget:
-      RaiseCropException(
-          resolver, DOMExceptionCode::kNotAllowedError, "Invalid CropTarget.",
-          BrowserCaptureMediaStreamTrack::CropToResult::kInvalidCropTarget);
+      RaiseApplySubCaptureTargetException(
+          resolver, DOMExceptionCode::kNotAllowedError, "Invalid target.",
+          ApplySubCaptureTargetResult::kInvalidTarget);
       return;
   }
 
@@ -147,27 +142,28 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
   const String crop_id(crop_target ? crop_target->GetId() : String());
 
   // If the promise is not resolved within the |timeout_interval|, a
-  // CropToResult::kTimedOut response will be recorded in the UMA.
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverWithTracker<CropToResult>>(
-          script_state, /*metric_name_prefix=*/"Media.RegionCapture.CropTo",
-          /*timeout_interval=*/base::Seconds(10));
+  // ApplySubCaptureTargetResult::kTimedOut response will be recorded in the
+  // UMA.
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>>(
+      script_state, /*metric_name_prefix=*/"Media.RegionCapture.CropTo",
+      /*timeout_interval=*/base::Seconds(10));
+  resolver->SetResultSuffix("Result2");
   ScriptPromise promise = resolver->Promise();
 
 #if BUILDFLAG(IS_ANDROID)
   resolver->Reject(
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
                                          "Not supported on Android."),
-      CropToResult::kUnsupportedPlatform);
+      ApplySubCaptureTargetResult::kUnsupportedPlatform);
   return promise;
 #else
 
-  const absl::optional<base::Token> crop_id_token =
-      CropIdStringToToken(crop_id);
+  const absl::optional<base::Token> crop_id_token = IdStringToToken(crop_id);
   if (!crop_id_token.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-                         DOMExceptionCode::kUnknownError, "Invalid crop-ID."),
-                     CropToResult::kInvalidCropTargetFormat);
+                         DOMExceptionCode::kUnknownError, "Invalid token."),
+                     ApplySubCaptureTargetResult::kInvalidTarget);
     return promise;
   }
 
@@ -189,7 +185,7 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
     resolver->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
                                            "Native/platform track missing."),
-        CropToResult::kRejectedWithErrorGeneric);
+        ApplySubCaptureTargetResult::kRejectedWithErrorGeneric);
     return promise;
   }
 
@@ -200,14 +196,14 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
   if (!optional_crop_version.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
                          DOMExceptionCode::kOperationError,
-                         "Can't change crop-target while clones exist."),
-                     CropToResult::kInvalidCropTarget);
+                         "Can't change target while clones exist."),
+                     ApplySubCaptureTargetResult::kInvalidTarget);
     return promise;
   }
   const uint32_t crop_version = optional_crop_version.value();
 
   pending_promises_.Set(crop_version,
-                        MakeGarbageCollected<CropPromiseInfo>(resolver));
+                        MakeGarbageCollected<PromiseInfo>(resolver));
 
   // Register for a one-off notification when the first frame cropped
   // to the new crop-target is observed.
@@ -250,7 +246,7 @@ void BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess(
   if (iter == pending_promises_.end()) {
     return;
   }
-  CropPromiseInfo* const info = iter->value;
+  PromiseInfo* const info = iter->value;
 
   DCHECK(!info->result.has_value()) << "Invoked twice.";
   info->result = result;
@@ -267,7 +263,7 @@ void BrowserCaptureMediaStreamTrack::OnCropVersionObserved(
   if (iter == pending_promises_.end()) {
     return;
   }
-  CropPromiseInfo* const info = iter->value;
+  PromiseInfo* const info = iter->value;
 
   DCHECK(!info->crop_version_observed) << "Invoked twice.";
   info->crop_version_observed = true;
@@ -280,7 +276,7 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
   DCHECK(IsMainThread());
   DCHECK_NE(iter, pending_promises_.end());
 
-  CropPromiseInfo* const info = iter->value;
+  PromiseInfo* const info = iter->value;
 
   if (!info->result.has_value()) {
     return;
@@ -306,10 +302,10 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
     }
   }
 
-  ScriptPromiseResolverWithTracker<CropToResult>* const resolver =
-      info->promise_resolver;
+  ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>* const
+      resolver = info->promise_resolver;
   pending_promises_.erase(iter);
-  ResolveCropPromiseHelper(resolver, result);
+  ResolveApplySubCaptureTargetPromiseHelper(resolver, result);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

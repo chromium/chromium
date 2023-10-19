@@ -67,10 +67,11 @@ class BrowserCaptureMediaStreamTrackTest : public testing::Test {
 
   void CheckHistograms(
       int expected_count,
-      BrowserCaptureMediaStreamTrack::CropToResult expected_result) {
-    histogram_tester_.ExpectTotalCount("Media.RegionCapture.CropTo.Result",
+      BrowserCaptureMediaStreamTrack::ApplySubCaptureTargetResult
+          expected_result) {
+    histogram_tester_.ExpectTotalCount("Media.RegionCapture.CropTo.Result2",
                                        expected_count);
-    histogram_tester_.ExpectUniqueSample("Media.RegionCapture.CropTo.Result",
+    histogram_tester_.ExpectUniqueSample("Media.RegionCapture.CropTo.Result2",
                                          expected_result, expected_count);
     histogram_tester_.ExpectTotalCount("Media.RegionCapture.CropTo.Latency",
                                        expected_count);
@@ -120,7 +121,8 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidIdResultFirst) {
   script_promise_tester.WaitUntilSettled();
   EXPECT_TRUE(script_promise_tester.IsFulfilled());
   CheckHistograms(
-      /*expected_count=*/1, BrowserCaptureMediaStreamTrack::CropToResult::kOk);
+      /*expected_count=*/1,
+      BrowserCaptureMediaStreamTrack::ApplySubCaptureTargetResult::kOk);
 }
 
 TEST_F(BrowserCaptureMediaStreamTrackTest,
@@ -161,7 +163,8 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
   EXPECT_TRUE(script_promise_tester.IsRejected());
   CheckHistograms(
       /*expected_count=*/1,
-      BrowserCaptureMediaStreamTrack::CropToResult::kRejectedWithErrorGeneric);
+      BrowserCaptureMediaStreamTrack::ApplySubCaptureTargetResult::
+          kRejectedWithErrorGeneric);
 }
 
 TEST_F(BrowserCaptureMediaStreamTrackTest,
@@ -193,8 +196,8 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
   script_promise_tester.WaitUntilSettled();
   EXPECT_TRUE(script_promise_tester.IsRejected());
   CheckHistograms(
-      /*expected_count=*/1,
-      BrowserCaptureMediaStreamTrack::CropToResult::kInvalidCropTarget);
+      /*expected_count=*/1, BrowserCaptureMediaStreamTrack::
+                                ApplySubCaptureTargetResult::kInvalidTarget);
 }
 
 #else
@@ -223,7 +226,8 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToFailsOnAndroid) {
   EXPECT_TRUE(script_promise_tester.IsRejected());
   CheckHistograms(
       /*expected_count=*/1,
-      BrowserCaptureMediaStreamTrack::CropToResult::kUnsupportedPlatform);
+      BrowserCaptureMediaStreamTrack::ApplySubCaptureTargetResult::
+          kUnsupportedPlatform);
 }
 #endif
 

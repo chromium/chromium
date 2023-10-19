@@ -46,30 +46,30 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class CropToResult {
+  enum class ApplySubCaptureTargetResult {
     kOk = 0,
-    kUnsupportedPlatform = 1,
-    kInvalidCropTargetFormat = 2,
+    kTimedOut = 1,
+    kInvalidFormat = 2,
     kRejectedWithErrorGeneric = 3,
     kRejectedWithUnsupportedCaptureDevice = 4,
-    kRejectedWithErrorUnknownDeviceId_DEPRECATED = 5,
-    kRejectedWithNotImplemented = 6,
-    kNonIncreasingCropVersion = 7,
-    kInvalidCropTarget = 8,
-    kTimedOut = 9,
-    kMaxValue = kTimedOut
+    kRejectedWithNotImplemented = 5,
+    kNonIncreasingVersion = 6,
+    kInvalidTarget = 7,
+    kUnsupportedPlatform = 8,
+    kMaxValue = kUnsupportedPlatform
   };
 
  private:
 #if !BUILDFLAG(IS_ANDROID)
-  struct CropPromiseInfo : GarbageCollected<CropPromiseInfo> {
-    explicit CropPromiseInfo(
-        ScriptPromiseResolverWithTracker<CropToResult>* promise_resolver)
+  struct PromiseInfo : GarbageCollected<PromiseInfo> {
+    explicit PromiseInfo(
+        ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>*
+            promise_resolver)
         : promise_resolver(promise_resolver) {}
 
     void Trace(Visitor* visitor) const { visitor->Trace(promise_resolver); }
 
-    const Member<ScriptPromiseResolverWithTracker<CropToResult>>
+    const Member<ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>>
         promise_resolver;
     absl::optional<media::mojom::ApplySubCaptureTargetResult> result;
     bool crop_version_observed = false;
@@ -77,7 +77,7 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
 
   using CropVersionToPromiseInfoMap =
       HeapHashMap<uint32_t,
-                  Member<BrowserCaptureMediaStreamTrack::CropPromiseInfo>>;
+                  Member<BrowserCaptureMediaStreamTrack::PromiseInfo>>;
   using PromiseMapIterator = CropVersionToPromiseInfoMap::iterator;
 
   // Each cropTo() call is associated with a unique |crop_version| which
@@ -117,7 +117,7 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
   //
   // Note that frames before the first call to cropTo() will be associated
   // with a version of 0, both here and in Viz.
-  HeapHashMap<uint32_t, Member<CropPromiseInfo>> pending_promises_;
+  HeapHashMap<uint32_t, Member<PromiseInfo>> pending_promises_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 
