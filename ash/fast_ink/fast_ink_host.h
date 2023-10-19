@@ -108,6 +108,10 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
   };
 
   std::vector<PendingBitmap> pending_bitmaps_;
+
+  gpu::Mailbox mailbox_;
+  gpu::SyncToken sync_token_;
+  scoped_refptr<viz::RasterContextProvider> context_provider_;
 };
 
 }  // namespace ash

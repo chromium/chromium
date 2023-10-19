@@ -29,6 +29,12 @@
 
 namespace ash {
 
+namespace {
+BASE_FEATURE(kUseOneSharedImageForFastInkHostResources,
+             "UseOneSharedImageForFastInkHostResources",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}
+
 // -----------------------------------------------------------------------------
 // FastInkHost::ScopedPaint
 
@@ -52,7 +58,15 @@ FastInkHost::ScopedPaint::~ScopedPaint() {
 // FastInkHost:
 
 FastInkHost::FastInkHost() = default;
-FastInkHost::~FastInkHost() = default;
+FastInkHost::~FastInkHost() {
+  if (base::FeatureList::IsEnabled(kUseOneSharedImageForFastInkHostResources)) {
+    if (!mailbox_.IsZero()) {
+      CHECK(context_provider_);
+      context_provider_->SharedImageInterface()->DestroySharedImage(sync_token_,
+                                                                    mailbox_);
+    }
+  }
+}
 
 void FastInkHost::Init(aura::Window* host_window) {
   InitBufferMetadata(host_window);
@@ -82,7 +96,8 @@ std::unique_ptr<viz::CompositorFrame> FastInkHost::CreateCompositorFrame(
 
   auto frame = fast_ink_internal::CreateCompositorFrame(
       begin_frame_ack, GetContentRect(), GetTotalDamage(), auto_update,
-      *host_window(), gpu_memory_buffer_.get(), &resource_manager);
+      *host_window(), gpu_memory_buffer_.get(), &resource_manager, mailbox_,
+      sync_token_);
 
   ResetDamage();
 
@@ -122,6 +137,26 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
                                 SK_B32_SHIFT ? gfx::BufferFormat::RGBA_8888
                                              : gfx::BufferFormat::BGRA_8888));
   LOG_IF(ERROR, !gpu_memory_buffer_) << "Failed to create GPU memory buffer";
+
+  if (base::FeatureList::IsEnabled(kUseOneSharedImageForFastInkHostResources)) {
+    context_provider_ = aura::Env::GetInstance()
+                            ->context_factory()
+                            ->SharedMainThreadRasterContextProvider();
+    gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
+
+    // This SharedImage will be used by the display compositor, will be updated
+    // in parallel with being read, and will potentially be used in overlays.
+    uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                     gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+                     gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+    mailbox_ = sii->CreateSharedImage(
+        fast_ink_internal::kFastInkSharedImageFormat,
+        gpu_memory_buffer_->GetSize(), gfx::ColorSpace(),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+        "FastInkHostUIResource", gpu_memory_buffer_->CloneHandle());
+    sync_token_ = sii->GenVerifiedSyncToken();
+  }
 
   if (switches::ShouldClearFastInkBuffer()) {
     bool map_result = gpu_memory_buffer_->Map();

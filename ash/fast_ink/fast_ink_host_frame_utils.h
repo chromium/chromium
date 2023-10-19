@@ -52,15 +52,23 @@ ASH_EXPORT std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBuffer(
     const gfx::Size& size,
     const gfx::BufferUsageAndFormat& usage_and_format);
 
-// Creates a UiResource of a given `size` and `format`.
+// Creates a UiResource of a given `size` and `format`. Uses the SharedImage
+// that `mailbox` is referencing if that is non-zero, in which case the created
+// UiResource does not own that SharedImage. Otherwise creates a new SharedImage
+// and has the UiResource take ownership of that SharedImage.
 ASH_EXPORT std::unique_ptr<UiResource> CreateUiResource(
     const gfx::Size& size,
-    viz::SharedImageFormat format,
     UiSourceId ui_source_id,
     bool is_overlay_candidate,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer);
+    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    gpu::Mailbox mailbox,
+    gpu::SyncToken sync_token);
 
-// Creates and configures a compositor frame.
+// Creates and configures a compositor frame. Uses the SharedImage that
+// `mailbox` is referencing if that is non-zero, in which case the created
+// UiResource does not own that SharedImage. Otherwise creates a new SharedImage
+// if needing to create a new UiResource and has the UiResource take ownership
+// of that SharedImage.
 ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const viz::BeginFrameAck& begin_frame_ack,
     const gfx::Rect& content_rect,
@@ -68,7 +76,9 @@ ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     bool auto_update,
     const aura::Window& host_window,
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
-    UiResourceManager* resource_manager);
+    UiResourceManager* resource_manager,
+    gpu::Mailbox mailbox,
+    gpu::SyncToken sync_token);
 
 }  // namespace fast_ink_internal
 }  // namespace ash

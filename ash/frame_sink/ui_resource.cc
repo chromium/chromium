@@ -11,7 +11,7 @@ namespace ash {
 UiResource::UiResource() = default;
 
 UiResource::~UiResource() {
-  if (!context_provider) {
+  if (!context_provider || !owns_mailbox) {
     return;
   }
 
