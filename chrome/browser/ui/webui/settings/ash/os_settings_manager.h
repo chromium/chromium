@@ -46,6 +46,7 @@ class PhoneHubManager;
 namespace settings {
 
 class AppNotificationHandler;
+class AppPermissionHandler;
 class Hierarchy;
 class OsSettingsSections;
 class SearchHandler;
@@ -108,6 +109,10 @@ class OsSettingsManager : public KeyedService {
     return app_notification_handler_.get();
   }
 
+  AppPermissionHandler* app_permission_handler() {
+    return app_permission_handler_.get();
+  }
+
   InputDeviceSettingsProvider* input_device_settings_provider() {
     return input_device_settings_provider_.get();
   }
@@ -136,6 +141,7 @@ class OsSettingsManager : public KeyedService {
   std::unique_ptr<SettingsUserActionTracker> settings_user_action_tracker_;
   std::unique_ptr<SearchHandler> search_handler_;
   std::unique_ptr<AppNotificationHandler> app_notification_handler_;
+  std::unique_ptr<AppPermissionHandler> app_permission_handler_;
   std::unique_ptr<InputDeviceSettingsProvider> input_device_settings_provider_;
   std::unique_ptr<DisplaySettingsProvider> display_settings_provider_;
 };

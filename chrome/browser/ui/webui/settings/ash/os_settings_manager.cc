@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_notification_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/privacy/app_permission_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/hierarchy.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -57,6 +58,8 @@ OsSettingsManager::OsSettingsManager(
                                           local_search_service_proxy)),
       app_notification_handler_(
           std::make_unique<AppNotificationHandler>(app_service_proxy)),
+      app_permission_handler_(
+          std::make_unique<AppPermissionHandler>(app_service_proxy)),
       input_device_settings_provider_(
           std::make_unique<InputDeviceSettingsProvider>()),
       display_settings_provider_(std::make_unique<DisplaySettingsProvider>()) {}
@@ -87,6 +90,7 @@ void OsSettingsManager::Shutdown() {
   display_settings_provider_.reset();
   input_device_settings_provider_.reset();
   app_notification_handler_.reset();
+  app_permission_handler_.reset();
   search_handler_.reset();
   settings_user_action_tracker_.reset();
   hierarchy_.reset();

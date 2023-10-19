@@ -30,6 +30,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_notification_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/privacy/app_permission_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager.h"
@@ -191,6 +192,14 @@ void OSSettingsUI::BindInterface(
         receiver) {
   OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
       ->app_notification_handler()
+      ->BindInterface(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<app_permission::mojom::AppPermissionsHandler>
+        receiver) {
+  OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+      ->app_permission_handler()
       ->BindInterface(std::move(receiver));
 }
 

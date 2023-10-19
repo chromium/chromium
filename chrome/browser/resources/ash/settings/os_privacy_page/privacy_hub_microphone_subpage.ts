@@ -8,14 +8,26 @@
  * the state of the system microphone access.
  */
 
+import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {isPermissionEnabled} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {App, AppPermissionsHandler, AppPermissionsHandlerInterface, AppPermissionsObserverReceiver} from '../mojom-webui/app_permission_handler.mojom-webui.js';
 
 import {MediaDevicesProxy} from './media_devices_proxy.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {getTemplate} from './privacy_hub_microphone_subpage.html.js';
+
+/**
+ * Whether the app has microphone permission defined.
+ * */
+function hasMicrophonePermission(app: App): boolean {
+  return app.permissions[PermissionType.kMicrophone] !== undefined;
+}
 
 const SettingsPrivacyHubMicrophoneSubpageBase =
     WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement)));
@@ -32,6 +44,14 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
 
   static get properties() {
     return {
+      /**
+       * Apps with microphone permission.
+       */
+      appList_: {
+        type: Array,
+        value: [],
+      },
+
       /**
        * The list of microphones connected to the device.
        */
@@ -67,16 +87,23 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
     };
   }
 
+  private appList_: App[];
+  private appPermissionsObserverReceiver_: AppPermissionsObserverReceiver|null;
   private browserProxy_: PrivacyHubBrowserProxy;
+  private connectedMicrophones_: string[];
   private isMicListEmpty_: boolean;
   private microphoneHardwareToggleActive_: boolean;
-  private connectedMicrophones_: string[];
+  private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
   private shouldDisableMicrophoneToggle_: boolean;
 
   constructor() {
     super();
 
     this.browserProxy_ = PrivacyHubBrowserProxyImpl.getInstance();
+
+    this.mojoInterfaceProvider_ = AppPermissionsHandler.getRemote();
+
+    this.appPermissionsObserverReceiver_ = null;
   }
 
   override ready(): void {
@@ -96,8 +123,29 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
         'devicechange', () => this.updateMicrophoneList_());
   }
 
+  override async connectedCallback(): Promise<void> {
+    super.connectedCallback();
+
+    this.appPermissionsObserverReceiver_ =
+        new AppPermissionsObserverReceiver(this);
+    this.mojoInterfaceProvider_.addObserver(
+        this.appPermissionsObserverReceiver_.$.bindNewPipeAndPassRemote());
+
+    await this.updateAppList_();
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.appPermissionsObserverReceiver_!.$.close();
+  }
+
   private setMicrophoneHardwareToggleState_(enabled: boolean): void {
     this.microphoneHardwareToggleActive_ = enabled;
+  }
+
+  private async updateAppList_(): Promise<void> {
+    const apps = (await this.mojoInterfaceProvider_.getApps()).apps;
+    this.appList_ = apps.filter(app => hasMicrophonePermission(app));
   }
 
   private async updateMicrophoneList_(): Promise<void> {
@@ -137,6 +185,39 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
 
   private onManagePermissionsInChromeRowClick_(): void {
     window.open('chrome://settings/content/microphone');
+  }
+
+  /**
+   * Returns true if the microphone permission of the app is in Allowed or
+   * equivalent state.
+   */
+  private isMicrophonePermissionEnabled_(app: App): boolean {
+    assert(hasMicrophonePermission(app));
+    return isPermissionEnabled(
+        app.permissions[PermissionType.kMicrophone]!.value);
+  }
+
+  /** Implements AppPermissionsObserver.OnAppUpdated */
+  onAppUpdated(updatedApp: App): void {
+    if (!hasMicrophonePermission(updatedApp)) {
+      return;
+    }
+    const idx = this.appList_.findIndex(app => app.id === updatedApp.id);
+    if (idx === -1) {
+      // New app installed.
+      this.push('appList_', updatedApp);
+    } else {
+      // An already installed app is updated.
+      this.splice('appList_', idx, 1, updatedApp);
+    }
+  }
+
+  /** Implements AppPermissionsObserver.OnAppRemoved */
+  onAppRemoved(appId: string): void {
+    const idx = this.appList_.findIndex(app => app.id === appId);
+    if (idx !== -1) {
+      this.splice('appList_', idx, 1);
+    }
   }
 }
 

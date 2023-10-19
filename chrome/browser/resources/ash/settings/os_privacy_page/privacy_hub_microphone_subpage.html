@@ -64,6 +64,24 @@
   </div>
 </template>
 <div class="hr"></div>
+<div id="appsSection">
+  <h2 id="appsSectionTitle">
+    $i18n{privacyHubAppsSectionTitle}
+  </h2>
+  <div id="appList" class="list-frame">
+    <template is="dom-repeat" items="[[appList_]]" as="app">
+      <div class="settings-box">
+        <div class="list-item start settings-box-text">
+          [[app.name]]
+        </div>
+        <cr-toggle
+            checked="[[isMicrophonePermissionEnabled_(app)]]">
+        </cr-toggle>
+      </div>
+    </template>
+  </div>
+</div>
+<div class="hr"></div>
 <div id="websitesSection">
   <h2 id="websitesSectionTitle">$i18n{websitesSectionTitle}</h2>
   <cr-link-row

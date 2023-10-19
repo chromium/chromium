@@ -471,6 +471,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT},
       {"noWebsiteCanUseMicText",
        IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_MIC_TEXT},
+      {"privacyHubAppsSectionTitle",
+       IDS_OS_SETTINGS_PRIVACY_HUB_APPS_SECTION_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
