@@ -14,7 +14,6 @@ namespace views {
 class ImageView;
 class Label;
 class LabelButton;
-class ImageButton;
 }  // namespace views
 
 namespace ash {
@@ -40,7 +39,6 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
   views::Label* title_label() const { return title_label_; }
   views::LabelButton* first_button() const { return first_button_; }
   views::LabelButton* second_button() const { return second_button_; }
-  views::ImageButton* close_button() const { return close_button_; }
 
   // Called when the device zoom scale changes, observed from the widget.
   void UpdateShadowBounds();
@@ -52,17 +50,11 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::LabelButton> first_button_ = nullptr;
   raw_ptr<views::LabelButton> second_button_ = nullptr;
-  raw_ptr<views::ImageButton> close_button_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
 
   // views::View:
   void AddedToWidget() override;
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
-
-  // Handles mouse enter/exit events to either show or hide `close_button_`.
-  void HandleOnMouseHovered(const bool mouse_entered);
 };
 
 }  // namespace ash

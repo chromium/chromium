@@ -70,9 +70,6 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   ui::ImageModel image_model;
   std::u16string title_text;
 
-  // Callback for close button pressed.
-  base::RepeatingClosure close_button_callback;
-
   // Optional system nudge buttons. If the text is not empty, the respective
   // button will be created. Pressing the button will execute its callback, if
   // any, followed by the nudge being closed. `second_button_text` should only

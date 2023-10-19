@@ -344,9 +344,6 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
         /*first_button=*/false);
   }
 
-  nudge_data.close_button_callback = base::BindRepeating(
-      &AnchoredNudgeManagerImpl::Cancel, base::Unretained(this), id);
-
   auto anchored_nudge = std::make_unique<AnchoredNudge>(nudge_data);
   auto* anchored_nudge_ptr = anchored_nudge.get();
   shown_nudges_[id] = anchored_nudge_ptr;
