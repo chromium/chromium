@@ -22,6 +22,12 @@ template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
 using raw_span =
     span<T, dynamic_extent, raw_ptr<T, Traits | AllowPtrArithmetic>>;
 
+template <typename T>
+span<T> ExtractAsDanglingSpan(raw_span<T>& arg) {
+  span<T> result = std::exchange(arg, raw_span<T>());
+  return result;
+}
+
 }  // namespace base
 
 #endif  // BASE_MEMORY_RAW_SPAN_H_
