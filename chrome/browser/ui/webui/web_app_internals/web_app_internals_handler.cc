@@ -78,9 +78,7 @@ constexpr char kInstallationProcessErrorLog[] = "InstallationProcessErrorLog";
 constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
 #endif
 constexpr char kWebAppDirectoryDiskState[] = "WebAppDirectoryDiskState";
-#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kIsolatedWebAppUpdateManager[] = "IsolatedWebAppUpdateManager";
-#endif
 
 constexpr char kNeedsRecordWebAppDebugInfo[] =
     "No debugging info available! Please enable: "
@@ -112,9 +110,7 @@ base::Value::Dict BuildIndexJson() {
 #if BUILDFLAG(IS_MAC)
   index.Append(kAppShimRegistryLocalStorage);
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
   index.Append(kIsolatedWebAppUpdateManager);
-#endif
   index.Append(kWebAppDirectoryDiskState);
 
   return root;
@@ -317,14 +313,12 @@ base::Value::Dict BuildAppShimRegistryLocalStorageJson() {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 base::Value BuildIsolatedWebAppUpdaterManagerJson(
     web_app::WebAppProvider& provider) {
   return base::Value(
       base::Value::Dict().Set(kIsolatedWebAppUpdateManager,
                               provider.iwa_update_manager().AsDebugValue()));
 }
-#endif
 
 void BuildDirectoryState(base::FilePath file_or_folder,
                          base::Value::Dict* folder) {
@@ -399,7 +393,7 @@ void SendError(
     const std::string& error_message) {
   auto result = mojom::InstallIsolatedWebAppResult::New();
   result->success = false;
-  result->error = std::string("could not get web app provider");
+  result->error = error_message;
   std::move(callback).Run(std::move(result));
 }
 
@@ -469,9 +463,7 @@ void WebAppInternalsHandler::BuildDebugInfo(
 #if BUILDFLAG(IS_MAC)
   root.Append(BuildAppShimRegistryLocalStorageJson());
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
   root.Append(BuildIsolatedWebAppUpdaterManagerJson(*provider));
-#endif
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,
