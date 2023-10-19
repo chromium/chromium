@@ -331,34 +331,17 @@ TEST_F(PowerStatusTest, BatteryImageColorResolution) {
   EXPECT_EQ(resolved_colors.foreground_color, SK_ColorRED);
   EXPECT_EQ(resolved_colors.badge_color, SK_ColorBLUE);
 
-  // Test Badge Color Resolution
-  prop.set_external_power(PowerSupplyProperties::AC);
-  prop.set_battery_state(PowerSupplyProperties::CHARGING);
-  prop.set_battery_percent(51);
-  power_status_->SetProtoForTesting(prop);
-
-  // Test badge color resolution with Jelly (>50%).
+  // Test Badge Color Resolution with Jelly.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(chromeos::features::kJelly);
   resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
       power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
 
-  EXPECT_EQ(resolved_colors.badge_color,
-            test_widget->GetRootView()->GetColorProvider()->GetColor(
-                cros_tokens::kButtonLabelColorPrimary));
+  EXPECT_EQ(resolved_colors.badge_color, SK_ColorRED);
 
-  // Test badge color resolution without Jelly (>50%).
+  // Test Badge Color Resolution without Jelly.
   features.Reset();
   features.InitAndDisableFeature(chromeos::features::kJelly);
-  resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
-      power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
-  EXPECT_EQ(resolved_colors.badge_color,
-            ash::AshColorProvider::Get()->GetContentLayerColor(
-                ash::AshColorProvider::ContentLayerType::kBatteryBadgeColor));
-
-  // Test badge color with <= 50%.
-  prop.set_battery_percent(50);
-  power_status_->SetProtoForTesting(prop);
   resolved_colors = PowerStatus::BatteryImageInfo::ResolveColors(
       power_status_->GenerateBatteryImageInfo(SK_ColorRED), color_provider);
   EXPECT_EQ(resolved_colors.badge_color, SK_ColorRED);

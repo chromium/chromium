@@ -85,18 +85,6 @@ int PowerSourceToMessageID(
   return 0;
 }
 
-SkColor GetDefaultBatteryBadgeColor(const ui::ColorProvider* color_provider) {
-  bool use_color_provider =
-      chromeos::features::IsJellyrollEnabled() && color_provider;
-
-  if (use_color_provider) {
-    return color_provider->GetColor(cros_tokens::kButtonLabelColorPrimary);
-  } else {
-    return ash::AshColorProvider::Get()->GetContentLayerColor(
-        ash::AshColorProvider::ContentLayerType::kBatteryBadgeColor);
-  }
-}
-
 SkColor GetDefaultAlertColor(const ui::ColorProvider* color_provider) {
   bool use_color_provider =
       chromeos::features::IsJellyrollEnabled() && color_provider;
@@ -119,11 +107,11 @@ BatteryColors PowerStatus::BatteryImageInfo::ResolveColors(
   resolved_colors.foreground_color =
       info.battery_color_preferences.foreground_color;
 
+  // If there is a preference for badge color, use it. Otherwise, default to the
+  // foreground color used for drawing the battery icon.
   resolved_colors.badge_color =
       info.battery_color_preferences.badge_color.value_or(
-          (info.charge_percent > 50)
-              ? GetDefaultBatteryBadgeColor(color_provider)
-              : info.battery_color_preferences.foreground_color);
+          info.battery_color_preferences.foreground_color);
 
   resolved_colors.alert_color = GetDefaultAlertColor(color_provider);
 
