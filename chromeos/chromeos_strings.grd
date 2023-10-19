@@ -4505,6 +4505,9 @@
         <message name="IDS_SETTINGS_APN_DIALOG_DEFAULT_APN_REQUIRED" desc="Error message that is shown whenever a default APN type is required">
           A default APN is required
         </message>
+        <message name="IDS_SETTINGS_APN_NAME_MODEM" desc="Label for APNs that are selected by the modem">
+          Modem APN
+        </message>
         <message name="IDS_SETTINGS_APN_AUTO_DETECTED" desc="Statement that the APN is automatically detected">
           Automatically detected
         </message>

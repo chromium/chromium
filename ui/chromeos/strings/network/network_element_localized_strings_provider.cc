@@ -367,6 +367,7 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"apnDetailIpTypeIpv6", IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV6},
       {"apnDetailIpTypeIpv4_Ipv6", IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV4_IPV6},
       {"apnAutoDetected", IDS_SETTINGS_APN_AUTO_DETECTED},
+      {"apnNameModem", IDS_SETTINGS_APN_NAME_MODEM},
       {"apnWarningPromptForDisableRemove",
        IDS_SETTINGS_APN_WARNING_PROMPT_FOR_DISABLE_REMOVE},
       {"apnWarningPromptForEnable", IDS_SETTINGS_APN_WARNING_PROMPT_FOR_ENABLE},

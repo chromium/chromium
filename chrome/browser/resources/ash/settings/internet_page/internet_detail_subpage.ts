@@ -1790,6 +1790,7 @@ class SettingsInternetDetailPageElement extends
     }
 
     return getApnDisplayName(
+        this.i18n.bind(this),
         this.managedProperties_!.typeProperties.cellular!.connectedApn);
   }
 

@@ -69,6 +69,11 @@ suite('ApnListItemTest', function() {
     };
     await flushTasks();
     assertEquals(apnListItem.$.apnName.innerText, apnListItem.apn.name);
+
+    apnListItem.apn = {};
+    await flushTasks();
+    assertEquals(
+        apnListItem.$.apnName.innerText, apnListItem.i18n('apnNameModem'));
   });
 
   test('Check if connected sublabel is shown', async function() {
@@ -383,5 +388,14 @@ suite('ApnListItemTest', function() {
     assertEquals(
         apnListItem.$.actionMenuButton.ariaLabel,
         nameText + ' ' + autoDetectedText + ' ' + connectedText);
+
+    // Null APN, connected.
+    apnListItem.apn = {};
+    assertEquals(
+        apnListItem.$.actionMenuButton.ariaLabel,
+        apnListItem.i18n(
+            'apnA11yName', /*index=*/ 1, /*count=*/ 1,
+            apnListItem.i18n('apnNameModem')) +
+            ' ' + autoDetectedText + ' ' + connectedText);
   });
 });

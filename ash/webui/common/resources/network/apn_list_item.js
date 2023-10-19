@@ -88,7 +88,7 @@ class ApnListItem extends ApnListItemBase {
    * @private
    */
   getApnDisplayName_(apn) {
-    return getApnDisplayName(apn);
+    return getApnDisplayName(this.i18n.bind(this), apn);
   }
 
   /**

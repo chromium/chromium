@@ -516,6 +516,7 @@ Polymer({
       return '';
     }
     return getApnDisplayName(
+        this.i18n.bind(this),
         managedProperties.typeProperties.cellular.connectedApn);
   },
 
