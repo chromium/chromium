@@ -213,8 +213,7 @@ GetThreadCacheDefaultPurgeInterval();
 
 BASE_EXPORT BASE_DECLARE_FEATURE(
     kEnableConfigurableThreadCacheMinCachedMemoryForPurging);
-extern const BASE_EXPORT base::FeatureParam<int>
-    kThreadCacheMinCachedMemoryForPurgingBytes;
+BASE_EXPORT int GetThreadCacheMinCachedMemoryForPurgingBytes();
 
 }  // namespace features
 }  // namespace base

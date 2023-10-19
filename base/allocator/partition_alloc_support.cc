@@ -1287,7 +1287,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
       base::features::GetThreadCacheMinPurgeInterval(),
       base::features::GetThreadCacheMaxPurgeInterval(),
       base::features::GetThreadCacheDefaultPurgeInterval(),
-      size_t(base::features::kThreadCacheMinCachedMemoryForPurgingBytes.Get()));
+      size_t(base::features::GetThreadCacheMinCachedMemoryForPurgingBytes()));
 
   base::allocator::StartThreadCachePeriodicPurge();
 

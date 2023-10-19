@@ -409,10 +409,11 @@ BASE_FEATURE(kEnableConfigurableThreadCacheMinCachedMemoryForPurging,
              "EnableConfigurableThreadCacheMinCachedMemoryForPurging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kThreadCacheMinCachedMemoryForPurgingBytes{
-    &kEnableConfigurableThreadCacheMinCachedMemoryForPurging,
+MIRACLE_PARAMETER_FOR_INT(
+    GetThreadCacheMinCachedMemoryForPurgingBytes,
+    kEnableConfigurableThreadCacheMinCachedMemoryForPurging,
     "ThreadCacheMinCachedMemoryForPurgingBytes",
-    partition_alloc::kMinCachedMemoryForPurgingBytes};
+    partition_alloc::kMinCachedMemoryForPurgingBytes)
 
 }  // namespace features
 }  // namespace base
