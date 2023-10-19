@@ -199,6 +199,22 @@ class CONTENT_EXPORT FirstPartySetsHandler {
       const net::SchemefulSite* top_frame_site,
       const net::FirstPartySetsContextConfig& config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) = 0;
+
+  // Synchronously iterates over all the effective entries (i.e. anything that
+  // could be returned by `FindEntry` given the global First-Party Sets and
+  // `config`, including the manual set, policy sets, and aliases), and invokes
+  // `f` on each entry formed as a net::SchemefulSite and a
+  // net::FirstPartySetEntry. If any of these invocations returns false, then
+  // ForEachEffectiveSetEntry stops iterating over the entries and returns false
+  // to its caller. Otherwise, if each call to `f` returns true, then
+  // ForEachEffectiveSetEntry returns true.
+  //
+  // Also returns false if First-Party Sets was not yet initialized. No
+  // guarantees are made re: iteration order.
+  virtual bool ForEachEffectiveSetEntry(
+      const net::FirstPartySetsContextConfig& config,
+      base::FunctionRef<bool(const net::SchemefulSite&,
+                             const net::FirstPartySetEntry&)> f) const = 0;
 };
 
 }  // namespace content

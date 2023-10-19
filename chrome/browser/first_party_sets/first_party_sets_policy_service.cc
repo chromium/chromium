@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
@@ -24,6 +25,8 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
@@ -308,6 +311,23 @@ bool FirstPartySetsPolicyService::IsSiteInManagedSet(
   absl::optional<net::FirstPartySetEntryOverride> maybe_override =
       config_->FindOverride(site);
   return maybe_override.has_value() && !maybe_override->IsDeletion();
+}
+
+bool FirstPartySetsPolicyService::ForEachEffectiveSetEntry(
+    base::FunctionRef<bool(const net::SchemefulSite&,
+                           const net::FirstPartySetEntry&)> f) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_enabled()) {
+    return false;
+  }
+  if (!is_ready()) {
+    // Track this to measure how often the First-Party Sets in the browser
+    // process are queried before they are ready to answer queries.
+    num_queries_before_sets_ready_++;
+    return false;
+  }
+  return content::FirstPartySetsHandler::GetInstance()
+      ->ForEachEffectiveSetEntry(config_.value(), f);
 }
 
 void FirstPartySetsPolicyService::OnReadyToNotifyDelegates(

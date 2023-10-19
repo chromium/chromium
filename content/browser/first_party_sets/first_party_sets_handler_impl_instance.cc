@@ -530,4 +530,15 @@ FirstPartySetsHandlerImplInstance::GetContextConfigForPolicyInternal(
              : net::FirstPartySetsContextConfig();
 }
 
+bool FirstPartySetsHandlerImplInstance::ForEachEffectiveSetEntry(
+    const net::FirstPartySetsContextConfig& config,
+    base::FunctionRef<bool(const net::SchemefulSite&,
+                           const net::FirstPartySetEntry&)> f) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!global_sets_.has_value()) {
+    return false;
+  }
+  return global_sets_->ForEachEffectiveSetEntry(config, f);
+}
+
 }  // namespace content

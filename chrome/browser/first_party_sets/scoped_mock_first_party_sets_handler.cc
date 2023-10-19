@@ -87,6 +87,16 @@ void ScopedMockFirstPartySetsHandler::ComputeFirstPartySetMetadata(
   return std::move(callback).Run(std::move(metadata));
 }
 
+bool ScopedMockFirstPartySetsHandler::ForEachEffectiveSetEntry(
+    const net::FirstPartySetsContextConfig& config,
+    base::FunctionRef<bool(const net::SchemefulSite&,
+                           const net::FirstPartySetEntry&)> f) const {
+  if (invoke_callbacks_asynchronously_) {
+    return false;
+  }
+  return global_sets_.ForEachEffectiveSetEntry(config, f);
+}
+
 void ScopedMockFirstPartySetsHandler::SetContextConfig(
     net::FirstPartySetsContextConfig config) {
   config_ = std::move(config);

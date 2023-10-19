@@ -89,7 +89,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
       const net::SchemefulSite* top_frame_site,
       const net::FirstPartySetsContextConfig& config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) override;
-
+  bool ForEachEffectiveSetEntry(
+      const net::FirstPartySetsContextConfig& config,
+      base::FunctionRef<bool(const net::SchemefulSite&,
+                             const net::FirstPartySetEntry&)> f) const override;
   void GetPersistedSetsForTesting(
       const std::string& browser_context_id,
       base::OnceCallback<

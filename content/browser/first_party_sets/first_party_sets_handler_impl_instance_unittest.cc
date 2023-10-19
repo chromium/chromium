@@ -5,12 +5,15 @@
 #include "content/browser/first_party_sets/first_party_sets_handler_impl_instance.h"
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -696,6 +699,93 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           R"("associatedSites": ["https://associatedsite.test"]})"));
 
   EXPECT_NE(future.Get(), net::FirstPartySetMetadata());
+}
+
+TEST_F(FirstPartySetsHandlerImplEnabledTest,
+       ForEachEffectiveSetEntry_BeforeSetsReady) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite associated(GURL("https://associatedsite.test"));
+
+  // Verifies calling ForEachEffectiveSetEntry before the sets are ready returns
+  // false.
+  EXPECT_FALSE(handler().ForEachEffectiveSetEntry(
+      net::FirstPartySetsContextConfig(),
+      [&](const net::SchemefulSite& site,
+          const net::FirstPartySetEntry& entry) {
+        NOTREACHED_NORETURN();
+        return true;
+      }));
+
+  handler().Init(scoped_dir_.GetPath(), LocalSetDeclaration());
+
+  const std::string input =
+      R"({"primary": "https://example.test", )"
+      R"("associatedSites": ["https://associatedsite.test"]})";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  handler().SetPublicFirstPartySets(base::Version("1.2.3"),
+                                    WritePublicSetsFile(input));
+  // Wait for initialization is done.
+  GetSetsAndWait();
+
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>
+      set_entries;
+  EXPECT_TRUE(handler().ForEachEffectiveSetEntry(
+      net::FirstPartySetsContextConfig(),
+      [&](const net::SchemefulSite& site,
+          const net::FirstPartySetEntry& entry) {
+        set_entries.emplace_back(site, entry);
+        return true;
+      }));
+  EXPECT_THAT(
+      set_entries,
+      UnorderedElementsAre(
+          Pair(example, net::FirstPartySetEntry(
+                            example, net::SiteType::kPrimary, absl::nullopt)),
+          Pair(associated, net::FirstPartySetEntry(
+                               example, net::SiteType::kAssociated, 0))));
+}
+
+TEST_F(FirstPartySetsHandlerImplEnabledTest,
+       ForEachEffectiveSetEntry_WithNonEmptyConfig) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite associated1(GURL("https://associatedsite1.test"));
+  net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
+
+  handler().Init(scoped_dir_.GetPath(), LocalSetDeclaration());
+
+  const std::string input =
+      R"({"primary": "https://example.test", )"
+      R"("associatedSites": ["https://associatedsite1.test"]})";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  handler().SetPublicFirstPartySets(base::Version("1.2.3"),
+                                    WritePublicSetsFile(input));
+  // Wait for initialization is done.
+  GetSetsAndWait();
+
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>
+      set_entries;
+  // Calling ForEachEffectiveSetEntry with context config which add a new
+  // associated site https://associatedsite2.test to the above set.
+  EXPECT_TRUE(handler().ForEachEffectiveSetEntry(
+      net::FirstPartySetsContextConfig(
+          {{associated2,
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                example, net::SiteType::kAssociated, absl::nullopt))}}),
+      [&](const net::SchemefulSite& site,
+          const net::FirstPartySetEntry& entry) {
+        set_entries.emplace_back(site, entry);
+        return true;
+      }));
+  EXPECT_THAT(
+      set_entries,
+      UnorderedElementsAre(
+          Pair(example, net::FirstPartySetEntry(
+                            example, net::SiteType::kPrimary, absl::nullopt)),
+          Pair(associated1,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)),
+          Pair(associated2,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated,
+                                       absl::nullopt))));
 }
 
 class FirstPartySetsHandlerGetContextConfigForPolicyTest
