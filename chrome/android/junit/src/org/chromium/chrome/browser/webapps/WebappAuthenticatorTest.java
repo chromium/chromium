@@ -13,9 +13,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Tests for {@link WebappAuthenticator}.
- */
+/** Tests for {@link WebappAuthenticator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebappAuthenticatorTest {
     @Test

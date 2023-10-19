@@ -30,21 +30,15 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 
 import java.util.List;
 
-/**
- * Unit tests for NotificationTriggerScheduler.
- */
+/** Unit tests for NotificationTriggerScheduler. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NotificationTriggerSchedulerTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    private NotificationTriggerScheduler.Natives mNativeMock;
-    @Mock
-    private BackgroundTaskScheduler mTaskScheduler;
-    @Captor
-    private ArgumentCaptor<TaskInfo> mTaskInfoCaptor;
+    @Mock private NotificationTriggerScheduler.Natives mNativeMock;
+    @Mock private BackgroundTaskScheduler mTaskScheduler;
+    @Captor private ArgumentCaptor<TaskInfo> mTaskInfoCaptor;
 
     private NotificationTriggerScheduler.Clock mClock;
 

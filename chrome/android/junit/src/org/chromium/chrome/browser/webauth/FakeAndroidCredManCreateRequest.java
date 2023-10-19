@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.webauth;
 
 import android.os.Bundle;
 
-/**
- * Fake implementation of the Android Credential Manager CreateCredentialRequest object.
- */
+/** Fake implementation of the Android Credential Manager CreateCredentialRequest object. */
 public final class FakeAndroidCredManCreateRequest {
     private final String mType;
     private final Bundle mCredentialData;
@@ -36,8 +34,12 @@ public final class FakeAndroidCredManCreateRequest {
         return mOrigin;
     }
 
-    private FakeAndroidCredManCreateRequest(String type, Bundle credentialData,
-            Bundle candidateQueryData, boolean alwaysSendAppInfoToProvider, String origin) {
+    private FakeAndroidCredManCreateRequest(
+            String type,
+            Bundle credentialData,
+            Bundle candidateQueryData,
+            boolean alwaysSendAppInfoToProvider,
+            String origin) {
         mType = type;
         mCredentialData = credentialData;
         mCandidateQueryData = candidateQueryData;
@@ -45,9 +47,7 @@ public final class FakeAndroidCredManCreateRequest {
         mOrigin = origin;
     }
 
-    /**
-     * Builder for FakeAndroidCredManCreateRequest.
-     */
+    /** Builder for FakeAndroidCredManCreateRequest. */
     public static class Builder {
         private String mType;
         private final Bundle mCredentialData;
@@ -73,8 +73,12 @@ public final class FakeAndroidCredManCreateRequest {
         }
 
         public FakeAndroidCredManCreateRequest build() {
-            return new FakeAndroidCredManCreateRequest(mType, mCredentialData, mCandidateQueryData,
-                    mAlwaysSendAppInfoToProvider, mOrigin);
+            return new FakeAndroidCredManCreateRequest(
+                    mType,
+                    mCredentialData,
+                    mCandidateQueryData,
+                    mAlwaysSendAppInfoToProvider,
+                    mOrigin);
         }
     }
 }

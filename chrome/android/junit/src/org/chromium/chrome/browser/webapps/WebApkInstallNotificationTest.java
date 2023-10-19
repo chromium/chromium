@@ -37,9 +37,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.webapps.WebApkInstallResult;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests WebAPKs install notifications from {@link WebApkInstallService}.
- */
+/** Tests WebAPKs install notifications from {@link WebApkInstallService}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowNotificationManager.class})
 public class WebApkInstallNotificationTest {
@@ -48,11 +46,9 @@ public class WebApkInstallNotificationTest {
     private static final String SHORT_NAME = "webapk";
     private static final String URL = "https://test.com";
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private final Bitmap mIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
     private Context mContext;
@@ -64,16 +60,19 @@ public class WebApkInstallNotificationTest {
 
         mContext = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mContext);
-        mShadowNotificationManager = shadowOf(
-                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE));
+        mShadowNotificationManager =
+                shadowOf(
+                        (NotificationManager)
+                                mContext.getSystemService(Context.NOTIFICATION_SERVICE));
     }
 
     @Test
     public void testInProgressNotification() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebApkInstallService.showInstallInProgressNotification(
-                    MANIFEST_URL, SHORT_NAME, URL, mIcon, false /* isIconMaskable */);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebApkInstallService.showInstallInProgressNotification(
+                            MANIFEST_URL, SHORT_NAME, URL, mIcon, /* isIconMaskable= */ false);
+                });
 
         String notificationId = WebApkInstallService.getInstallNotificationTag(MANIFEST_URL);
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
@@ -99,7 +98,7 @@ public class WebApkInstallNotificationTest {
     @Test
     public void testCompleteNotification() {
         WebApkInstallService.showInstalledNotification(
-                PACKAGE_NAME, MANIFEST_URL, SHORT_NAME, URL, mIcon, false /* isIconMaskable */);
+                PACKAGE_NAME, MANIFEST_URL, SHORT_NAME, URL, mIcon, /* isIconMaskable= */ false);
 
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
 
@@ -107,7 +106,8 @@ public class WebApkInstallNotificationTest {
         Assert.assertEquals(SHORT_NAME, notification.extras.getString(Notification.EXTRA_TITLE));
         Assert.assertEquals(
                 ChromeChannelDefinitions.ChannelId.WEBAPPS, notification.getChannelId());
-        Assert.assertEquals(mContext.getString(R.string.notification_webapk_installed),
+        Assert.assertEquals(
+                mContext.getString(R.string.notification_webapk_installed),
                 notification.extras.getString(Notification.EXTRA_TEXT));
 
         Bitmap largeIcon =
@@ -123,12 +123,19 @@ public class WebApkInstallNotificationTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
-            ChromeFeatureList.WEB_APK_INSTALL_RETRY})
-    public void
-    testFailureNotification() {
-        WebApkInstallService.showInstallFailedNotification(MANIFEST_URL, SHORT_NAME, URL, mIcon,
-                false /* isIconMaskable */, WebApkInstallResult.FAILURE, null);
+    @EnableFeatures({
+        ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
+        ChromeFeatureList.WEB_APK_INSTALL_RETRY
+    })
+    public void testFailureNotification() {
+        WebApkInstallService.showInstallFailedNotification(
+                MANIFEST_URL,
+                SHORT_NAME,
+                URL,
+                mIcon,
+                /* isIconMaskable= */ false,
+                WebApkInstallResult.FAILURE,
+                null);
 
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
 
@@ -162,13 +169,20 @@ public class WebApkInstallNotificationTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
-            ChromeFeatureList.WEB_APK_INSTALL_RETRY})
-    public void
-    testFailureNotificationWithRetryAction() {
+    @EnableFeatures({
+        ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
+        ChromeFeatureList.WEB_APK_INSTALL_RETRY
+    })
+    public void testFailureNotificationWithRetryAction() {
         byte[] serializedProto = new byte[] {1, 2};
-        WebApkInstallService.showInstallFailedNotification(MANIFEST_URL, SHORT_NAME, URL, mIcon,
-                false /* isIconMaskable */, WebApkInstallResult.FAILURE, serializedProto);
+        WebApkInstallService.showInstallFailedNotification(
+                MANIFEST_URL,
+                SHORT_NAME,
+                URL,
+                mIcon,
+                /* isIconMaskable= */ false,
+                WebApkInstallResult.FAILURE,
+                serializedProto);
 
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
 

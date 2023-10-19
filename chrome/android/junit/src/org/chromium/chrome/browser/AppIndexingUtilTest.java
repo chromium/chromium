@@ -29,20 +29,14 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.mojom.Url;
 
-/**
- * Unit tests for {@link org.chromium.chrome.browser.AppIndexingUtil}.
- */
+/** Unit tests for {@link org.chromium.chrome.browser.AppIndexingUtil}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AppIndexingUtilTest {
-    @Spy
-    private AppIndexingUtil mUtil = new AppIndexingUtil(null);
-    @Mock
-    private AppIndexingReporter mReporter;
-    @Mock
-    private DocumentMetadataTestImpl mDocumentMetadata;
-    @Mock
-    private Tab mTab;
+    @Spy private AppIndexingUtil mUtil = new AppIndexingUtil(null);
+    @Mock private AppIndexingReporter mReporter;
+    @Mock private DocumentMetadataTestImpl mDocumentMetadata;
+    @Mock private Tab mTab;
 
     @Before
     public void setUp() {
@@ -55,15 +49,17 @@ public class AppIndexingUtilTest {
         doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
         doReturn("My neat website").when(mTab).getTitle();
         doReturn(0L).when(mUtil).getElapsedTime();
-        doAnswer(invocation -> {
-            DocumentMetadata.GetEntities_Response callback =
-                    (DocumentMetadata.GetEntities_Response) invocation.getArguments()[0];
-            WebPage webpage = new WebPage();
-            webpage.url = createUrl(JUnitTestGURLs.EXAMPLE_URL.getSpec());
-            webpage.title = "My neat website";
-            callback.call(webpage);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            DocumentMetadata.GetEntities_Response callback =
+                                    (DocumentMetadata.GetEntities_Response)
+                                            invocation.getArguments()[0];
+                            WebPage webpage = new WebPage();
+                            webpage.url = createUrl(JUnitTestGURLs.EXAMPLE_URL.getSpec());
+                            webpage.title = "My neat website";
+                            callback.call(webpage);
+                            return null;
+                        })
                 .when(mDocumentMetadata)
                 .getEntities(any(DocumentMetadata.GetEntities_Response.class));
     }
@@ -109,12 +105,14 @@ public class AppIndexingUtilTest {
 
     @Test
     public void testExtractDocumentMetadata_CacheHit_NoEntity() {
-        doAnswer(invocation -> {
-            DocumentMetadata.GetEntities_Response callback =
-                    (DocumentMetadata.GetEntities_Response) invocation.getArguments()[0];
-            callback.call(null);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            DocumentMetadata.GetEntities_Response callback =
+                                    (DocumentMetadata.GetEntities_Response)
+                                            invocation.getArguments()[0];
+                            callback.call(null);
+                            return null;
+                        })
                 .when(mDocumentMetadata)
                 .getEntities(any(DocumentMetadata.GetEntities_Response.class));
         mUtil.extractDocumentMetadata(mTab);
@@ -137,8 +135,8 @@ public class AppIndexingUtilTest {
     @Test
     public void testReportPageView() {
         mUtil.reportPageView(mTab);
-        verify(mReporter).reportWebPageView(
-                eq(JUnitTestGURLs.EXAMPLE_URL.getSpec()), eq("My neat website"));
+        verify(mReporter)
+                .reportWebPageView(eq(JUnitTestGURLs.EXAMPLE_URL.getSpec()), eq("My neat website"));
     }
 
     private Url createUrl(String s) {

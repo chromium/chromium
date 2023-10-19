@@ -34,10 +34,8 @@ import org.chromium.chrome.test.util.browser.Features;
 @Config(manifest = Config.NONE)
 @LooperMode(Mode.PAUSED)
 public class PartialCustomTabVersionCompatTest {
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Rule
-    public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     @Config(sdk = Build.VERSION_CODES.Q)
     @Test

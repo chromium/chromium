@@ -26,11 +26,9 @@ import org.chromium.base.test.util.Batch;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PendingRunnableTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private Runnable mRunnable;
+    @Mock private Runnable mRunnable;
 
     @Test
     public void testPost() {

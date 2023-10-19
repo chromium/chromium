@@ -30,9 +30,7 @@ import org.chromium.url.GURL;
 
 import java.util.Map;
 
-/**
- * Unit tests for {@link AutofillImageFetcher}.
- */
+/** Unit tests for {@link AutofillImageFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
 @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)
@@ -40,8 +38,7 @@ public class AutofillImageFetcherTest {
     private static final Bitmap TEST_CARD_ART_IMAGE =
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private AutofillImageFetcher mImageFetcher;
 
@@ -64,18 +61,24 @@ public class AutofillImageFetcherTest {
                 CardIconSpecs.create(ContextUtils.getApplicationContext(), CardIconSize.SMALL);
         CardIconSpecs cardIconSpecsLarge =
                 CardIconSpecs.create(ContextUtils.getApplicationContext(), CardIconSize.LARGE);
-        GURL cachedValidUrlSmall1 = AutofillUiUtils.getCreditCardIconUrlWithParams(
-                validUrl1, cardIconSpecsSmall.getWidth(), cardIconSpecsSmall.getHeight());
-        GURL cachedValidUrlLarge1 = AutofillUiUtils.getCreditCardIconUrlWithParams(
-                validUrl1, cardIconSpecsLarge.getWidth(), cardIconSpecsLarge.getHeight());
-        GURL cachedValidUrlSmall2 = AutofillUiUtils.getCreditCardIconUrlWithParams(
-                validUrl2, cardIconSpecsSmall.getWidth(), cardIconSpecsSmall.getHeight());
-        GURL cachedValidUrlLarge2 = AutofillUiUtils.getCreditCardIconUrlWithParams(
-                validUrl2, cardIconSpecsLarge.getWidth(), cardIconSpecsLarge.getHeight());
-        Bitmap treatedImageSmall = AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                TEST_CARD_ART_IMAGE, cardIconSpecsSmall, true);
-        Bitmap treatedImageLarge = AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                TEST_CARD_ART_IMAGE, cardIconSpecsLarge, true);
+        GURL cachedValidUrlSmall1 =
+                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                        validUrl1, cardIconSpecsSmall.getWidth(), cardIconSpecsSmall.getHeight());
+        GURL cachedValidUrlLarge1 =
+                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                        validUrl1, cardIconSpecsLarge.getWidth(), cardIconSpecsLarge.getHeight());
+        GURL cachedValidUrlSmall2 =
+                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                        validUrl2, cardIconSpecsSmall.getWidth(), cardIconSpecsSmall.getHeight());
+        GURL cachedValidUrlLarge2 =
+                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                        validUrl2, cardIconSpecsLarge.getWidth(), cardIconSpecsLarge.getHeight());
+        Bitmap treatedImageSmall =
+                AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
+                        TEST_CARD_ART_IMAGE, cardIconSpecsSmall, true);
+        Bitmap treatedImageLarge =
+                AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
+                        TEST_CARD_ART_IMAGE, cardIconSpecsLarge, true);
 
         mImageFetcher.prefetchImages(new GURL[] {validUrl1, validUrl2});
         Map<String, Bitmap> cachedImages = mImageFetcher.getCachedImagesForTesting();
@@ -117,8 +120,9 @@ public class AutofillImageFetcherTest {
         GURL cardArtUrl = new GURL("https://www.google.com/card-art-url");
         CardIconSpecs cardIconSpecs =
                 CardIconSpecs.create(ContextUtils.getApplicationContext(), CardIconSize.LARGE);
-        Bitmap treatedImage = AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                TEST_CARD_ART_IMAGE, cardIconSpecs, true);
+        Bitmap treatedImage =
+                AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
+                        TEST_CARD_ART_IMAGE, cardIconSpecs, true);
 
         // The card art image is not present in the image cache, so a call is made to fetch the
         // image, and nothing is returned.
@@ -126,8 +130,10 @@ public class AutofillImageFetcherTest {
 
         // The card art image is fetched and cached from the previous call, so the cached image is
         // returned.
-        assertTrue(mImageFetcher.getImageIfAvailable(cardArtUrl, cardIconSpecs)
-                           .get()
-                           .sameAs(treatedImage));
+        assertTrue(
+                mImageFetcher
+                        .getImageIfAvailable(cardArtUrl, cardIconSpecs)
+                        .get()
+                        .sameAs(treatedImage));
     }
 }

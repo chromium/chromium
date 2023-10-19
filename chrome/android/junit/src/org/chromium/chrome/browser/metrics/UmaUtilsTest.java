@@ -21,9 +21,7 @@ import org.robolectric.shadows.ShadowUsageStatsManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 
-/**
- * Unit tests for {@link UmaUtils}.
- */
+/** Unit tests for {@link UmaUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UmaUtilsTest {
@@ -41,12 +39,16 @@ public class UmaUtilsTest {
 
     @Before
     public void setUp() {
-        mShadowActivityManager = Shadows.shadowOf(
-                (ActivityManager) RuntimeEnvironment.getApplication().getSystemService(
-                        Context.ACTIVITY_SERVICE));
-        mShadowUsageStatsManager = Shadows.shadowOf(
-                (UsageStatsManager) RuntimeEnvironment.getApplication().getSystemService(
-                        Context.USAGE_STATS_SERVICE));
+        mShadowActivityManager =
+                Shadows.shadowOf(
+                        (ActivityManager)
+                                RuntimeEnvironment.getApplication()
+                                        .getSystemService(Context.ACTIVITY_SERVICE));
+        mShadowUsageStatsManager =
+                Shadows.shadowOf(
+                        (UsageStatsManager)
+                                RuntimeEnvironment.getApplication()
+                                        .getSystemService(Context.USAGE_STATS_SERVICE));
     }
 
     @Test
@@ -187,7 +189,8 @@ public class UmaUtilsTest {
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecord(HISTOGRAM_IS_BACKGROUND_RESTRICTED, true)
                         .expectIntRecord(HISTOGRAM_STANDBY_BUCKET, expectedUmaStandbyBucketStatus)
-                        .expectIntRecord(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION,
+                        .expectIntRecord(
+                                HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION,
                                 expectedUmaStandbyBucketStatus)
                         .build();
 

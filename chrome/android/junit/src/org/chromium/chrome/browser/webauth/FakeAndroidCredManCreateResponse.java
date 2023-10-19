@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.webauth;
 
 import android.os.Bundle;
 
-/**
- * Fake implementation of the Android Credential Manager CreateCredentialResponse object.
- */
+/** Fake implementation of the Android Credential Manager CreateCredentialResponse object. */
 public final class FakeAndroidCredManCreateResponse {
     public Bundle getData() {
         Bundle data = new Bundle();

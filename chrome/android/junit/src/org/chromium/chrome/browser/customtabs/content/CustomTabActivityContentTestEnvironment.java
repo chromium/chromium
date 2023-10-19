@@ -107,8 +107,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public final CustomTabActivityTabProvider tabProvider = new CustomTabActivityTabProvider();
 
-    @Captor
-    public ArgumentCaptor<Callback<Tab>> activityTabObserverCaptor;
+    @Captor public ArgumentCaptor<Callback<Tab>> activityTabObserverCaptor;
 
     // Captures the WebContents with which tabFromFactory is initialized
     @Captor public ArgumentCaptor<WebContents> webContentsCaptor;
@@ -165,24 +164,43 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     }
 
     public CustomTabActivityTabController createTabController() {
-        return new CustomTabActivityTabController(activity, () -> customTabDelegateFactory,
-                connection, intentDataProvider, activityTabProvider, tabObserverRegistrar,
-                () -> compositorViewHolder, lifecycleDispatcher, warmupManager,
-                tabPersistencePolicy, tabFactory, () -> customTabObserver, webContentsFactory,
-                navigationEventObserver, tabProvider, reparentingTaskProvider,
-                () -> customTabIncognitoManager, () -> realAsyncTabParamsManager,
-                () -> activity.getSavedInstanceState(), activity.getWindowAndroid(),
+        return new CustomTabActivityTabController(
+                activity,
+                () -> customTabDelegateFactory,
+                connection,
+                intentDataProvider,
+                activityTabProvider,
+                tabObserverRegistrar,
+                () -> compositorViewHolder,
+                lifecycleDispatcher,
+                warmupManager,
+                tabPersistencePolicy,
+                tabFactory,
+                () -> customTabObserver,
+                webContentsFactory,
+                navigationEventObserver,
+                tabProvider,
+                reparentingTaskProvider,
+                () -> customTabIncognitoManager,
+                () -> realAsyncTabParamsManager,
+                () -> activity.getSavedInstanceState(),
+                activity.getWindowAndroid(),
                 tabModelInitializer);
     }
 
     public CustomTabActivityNavigationController createNavigationController(
             CustomTabActivityTabController tabController) {
         CustomTabActivityNavigationController controller =
-                new CustomTabActivityNavigationController(tabController, tabProvider,
-                        intentDataProvider, connection,
-                        ()
-                                -> customTabObserver,
-                        closeButtonNavigator, browserInitializer, activity, lifecycleDispatcher,
+                new CustomTabActivityNavigationController(
+                        tabController,
+                        tabProvider,
+                        intentDataProvider,
+                        connection,
+                        () -> customTabObserver,
+                        closeButtonNavigator,
+                        browserInitializer,
+                        activity,
+                        lifecycleDispatcher,
                         new DefaultBrowserProviderImpl());
         controller.onToolbarInitialized(toolbarManager);
         return controller;
@@ -190,14 +208,17 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public CustomTabIntentHandler createIntentHandler(
             CustomTabActivityNavigationController navigationController) {
-        CustomTabIntentHandlingStrategy strategy = new DefaultCustomTabIntentHandlingStrategy(
-                tabProvider, navigationController, navigationEventObserver,
-                () -> customTabObserver) {
-            @Override
-            public GURL getGurlForUrl(String url) {
-                return new GURL(url);
-            }
-        };
+        CustomTabIntentHandlingStrategy strategy =
+                new DefaultCustomTabIntentHandlingStrategy(
+                        tabProvider,
+                        navigationController,
+                        navigationEventObserver,
+                        () -> customTabObserver) {
+                    @Override
+                    public GURL getGurlForUrl(String url) {
+                        return new GURL(url);
+                    }
+                };
         return new CustomTabIntentHandler(
                 tabProvider, intentDataProvider, strategy, (intent) -> false, activity);
     }

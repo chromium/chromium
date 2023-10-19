@@ -26,22 +26,17 @@ import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Unit tests for {@link ImageFetcher}.
- */
+/** Unit tests for {@link ImageFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SuggestionsImageFetcherTest {
     public static final int IMAGE_SIZE_PX = 100;
     public static final GURL URL = JUnitTestGURLs.EXAMPLE_URL;
 
-    @Rule
-    public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+    @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
-    @Mock
-    private ThumbnailProvider mThumbnailProvider;
-    @Mock
-    private LargeIconBridge mLargeIconBridge;
+    @Mock private ThumbnailProvider mThumbnailProvider;
+    @Mock private LargeIconBridge mLargeIconBridge;
 
     @Before
     public void setUp() {

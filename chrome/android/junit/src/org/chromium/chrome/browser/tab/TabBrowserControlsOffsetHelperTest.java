@@ -24,10 +24,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class TabBrowserControlsOffsetHelperTest {
     private final UserDataHost mUserDataHost = new UserDataHost();
 
-    @Mock
-    public TabImpl mTab;
-    @Mock
-    public TabObserver mDispatchedTabObserver;
+    @Mock public TabImpl mTab;
+    @Mock public TabObserver mDispatchedTabObserver;
 
     private TabBrowserControlsOffsetHelper mHelper;
     private TabObserver mRegisteredTabObserver;

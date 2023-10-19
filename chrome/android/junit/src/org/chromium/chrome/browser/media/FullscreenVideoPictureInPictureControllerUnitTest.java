@@ -44,35 +44,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Test FullscreenVideoPictureInPictureController.
- */
+/** Test FullscreenVideoPictureInPictureController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.O,
+@Config(
+        sdk = Build.VERSION_CODES.O,
         shadows = {ShadowPackageManager.class, ShadowPostTask.class, ShadowSystemClock.class})
 public class FullscreenVideoPictureInPictureControllerUnitTest {
     private static final int TAB_ID = 0;
 
-    @Mock
-    private Activity mActivity;
-    @Mock
-    private ActivityTabProvider mActivityTabProvider;
-    @Mock
-    private FullscreenManager mFullscreenManager;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private InfoBarContainer mInfoBarContainer;
+    @Mock private Activity mActivity;
+    @Mock private ActivityTabProvider mActivityTabProvider;
+    @Mock private FullscreenManager mFullscreenManager;
+    @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
+    @Mock private InfoBarContainer mInfoBarContainer;
 
     // Not a mock, since it's just a container and `final` anyway.
     private UserDataHost mUserDataHost = new UserDataHost();
 
     private FullscreenVideoPictureInPictureController mController;
 
-    @Captor
-    private ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
+    @Captor private ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
 
     /** List of tasks that were posted, including with delay.  Run with runUntilIdle(). */
     private List<Runnable> mRunnables = new ArrayList<>();
@@ -80,8 +72,10 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     /** Class to be tested, extended to allow us to provide some hooks. */
     class FullscreenVideoPictureInPictureControllerWithOverrides
             extends FullscreenVideoPictureInPictureController {
-        public FullscreenVideoPictureInPictureControllerWithOverrides(Activity activity,
-                ActivityTabProvider activityTabProvider, FullscreenManager fullscreenManager) {
+        public FullscreenVideoPictureInPictureControllerWithOverrides(
+                Activity activity,
+                ActivityTabProvider activityTabProvider,
+                FullscreenManager fullscreenManager) {
             super(activity, activityTabProvider, fullscreenManager);
         }
 
@@ -99,12 +93,13 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         MockitoAnnotations.initMocks(this);
         ShadowLog.stream = System.out;
 
-        ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
-            @Override
-            public void postDelayedTask(int taskTraits, Runnable task, long delay) {
-                mRunnables.add(task);
-            }
-        });
+        ShadowPostTask.setTestImpl(
+                new ShadowPostTask.TestImpl() {
+                    @Override
+                    public void postDelayedTask(int taskTraits, Runnable task, long delay) {
+                        mRunnables.add(task);
+                    }
+                });
 
         Context context = ContextUtils.getApplicationContext();
         ShadowPackageManager shadowPackageManager = Shadows.shadowOf(context.getPackageManager());
@@ -117,8 +112,9 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
 
-        mController = new FullscreenVideoPictureInPictureControllerWithOverrides(
-                mActivity, mActivityTabProvider, mFullscreenManager);
+        mController =
+                new FullscreenVideoPictureInPictureControllerWithOverrides(
+                        mActivity, mActivityTabProvider, mFullscreenManager);
     }
 
     @After
@@ -175,9 +171,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         verify(mActivity, times(1)).moveTaskToBack(true);
     }
 
-    /**
-     * After starting pip, dismiss should not move the task to back if it hasn't been long enough.
-     */
+    /** After starting pip, dismiss should not move the task to back if it hasn't been long enough. */
     @Test
     public void pictureInPictureIsNotDismissedImmediately() {
         mController.onEnteredPictureInPictureMode();

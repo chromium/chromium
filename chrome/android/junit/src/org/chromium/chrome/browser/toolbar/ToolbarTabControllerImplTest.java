@@ -52,6 +52,7 @@ import org.chromium.url.GURL;
 public class ToolbarTabControllerImplTest {
     private class LoadUrlParamsMatcher implements ArgumentMatcher<LoadUrlParams> {
         LoadUrlParams mLoadUrlParams;
+
         public LoadUrlParamsMatcher(LoadUrlParams loadUrlParams) {
             mLoadUrlParams = loadUrlParams;
         }
@@ -62,37 +63,23 @@ public class ToolbarTabControllerImplTest {
                     && argument.getTransitionType() == mLoadUrlParams.getTransitionType();
         }
     }
-    @Rule
-    public JniMocker mocker = new JniMocker();
-    @Mock
-    private Supplier<Tab> mTabSupplier;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private Tab mTab2;
-    @Mock
-    private Supplier<Boolean> mOverrideHomePageSupplier;
-    @Mock
-    private ObservableSupplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
-    @Mock
-    private BottomControlsCoordinator mBottomControlsCoordinator;
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    private Supplier<Tracker> mTrackerSupplier;
-    @Mock
-    private Runnable mRunnable;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    public Profile.Natives mMockProfileNatives;
-    @Mock
-    private NativePage mNativePage;
-    @Mock
-    private Supplier<Tab> mActivityTabProvider;
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mocker = new JniMocker();
+    @Mock private Supplier<Tab> mTabSupplier;
+    @Mock private Tab mTab;
+    @Mock private Tab mTab2;
+    @Mock private Supplier<Boolean> mOverrideHomePageSupplier;
+    @Mock private ObservableSupplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
+    @Mock private BottomControlsCoordinator mBottomControlsCoordinator;
+    @Mock private Tracker mTracker;
+    @Mock private Supplier<Tracker> mTrackerSupplier;
+    @Mock private Runnable mRunnable;
+    @Mock private Profile mProfile;
+    @Mock public Profile.Natives mMockProfileNatives;
+    @Mock private NativePage mNativePage;
+    @Mock private Supplier<Tab> mActivityTabProvider;
+
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private ToolbarTabControllerImpl mToolbarTabController;
 
@@ -194,15 +181,21 @@ public class ToolbarTabControllerImplTest {
         if (homePageGurl.isEmpty()) {
             homePageGurl = ChromeUrlConstants.nativeNtpGurl();
         }
-        verify(mTab).loadUrl(argThat(new LoadUrlParamsMatcher(
-                new LoadUrlParams(homePageGurl, PageTransition.HOME_PAGE))));
+        verify(mTab)
+                .loadUrl(
+                        argThat(
+                                new LoadUrlParamsMatcher(
+                                        new LoadUrlParams(
+                                                homePageGurl, PageTransition.HOME_PAGE))));
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR,
-            ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER})
+    @DisableFeatures({
+        ChromeFeatureList.BACK_GESTURE_REFACTOR,
+        ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER
+    })
     public void
-    testUsingCorrectTabSupplier_refactorOff_controlWithActivityTabProviderOff_usesRegularTabSupplier() {
+            testUsingCorrectTabSupplier_refactorOff_controlWithActivityTabProviderOff_usesRegularTabSupplier() {
         // Should only use regular tab supplier when back press refactor is disabled and
         // control with activity tab provider is also disabled.
         setUpUsingCorrectTabSupplier();
@@ -215,7 +208,7 @@ public class ToolbarTabControllerImplTest {
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER)
     public void
-    testUsingCorrectTabSupplier_refactorOn_controlWithActivityTabProviderOff_doesNotUseRegularTabSupplier() {
+            testUsingCorrectTabSupplier_refactorOn_controlWithActivityTabProviderOff_doesNotUseRegularTabSupplier() {
         setUpUsingCorrectTabSupplier();
 
         Assert.assertFalse(mToolbarTabController.back());
@@ -226,7 +219,7 @@ public class ToolbarTabControllerImplTest {
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER)
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void
-    testUsingCorrectTabSupplier_refactorOff_controlWithActivityTabProviderOn_doesNotUseRegularTabSupplier() {
+            testUsingCorrectTabSupplier_refactorOff_controlWithActivityTabProviderOn_doesNotUseRegularTabSupplier() {
         setUpUsingCorrectTabSupplier();
 
         Assert.assertFalse(mToolbarTabController.back());
@@ -234,10 +227,12 @@ public class ToolbarTabControllerImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER,
-            ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER})
+    @EnableFeatures({
+        ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER,
+        ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER
+    })
     public void
-    testUsingCorrectTabSupplier_refactorOn_controlWithActivityTabProviderOn_doesNotUseRegularTabSupplier() {
+            testUsingCorrectTabSupplier_refactorOn_controlWithActivityTabProviderOn_doesNotUseRegularTabSupplier() {
         setUpUsingCorrectTabSupplier();
 
         Assert.assertFalse(mToolbarTabController.back());
@@ -245,9 +240,15 @@ public class ToolbarTabControllerImplTest {
     }
 
     private void initToolbarTabController() {
-        mToolbarTabController = new ToolbarTabControllerImpl(mTabSupplier,
-                mOverrideHomePageSupplier, mTrackerSupplier, mBottomControlsCoordinatorSupplier,
-                ToolbarManager::homepageUrl, mRunnable, mActivityTabProvider);
+        mToolbarTabController =
+                new ToolbarTabControllerImpl(
+                        mTabSupplier,
+                        mOverrideHomePageSupplier,
+                        mTrackerSupplier,
+                        mBottomControlsCoordinatorSupplier,
+                        ToolbarManager::homepageUrl,
+                        mRunnable,
+                        mActivityTabProvider);
     }
 
     private void setUpUsingCorrectTabSupplier() {

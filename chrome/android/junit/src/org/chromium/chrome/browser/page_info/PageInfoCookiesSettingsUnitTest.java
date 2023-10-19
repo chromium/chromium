@@ -17,24 +17,25 @@ import org.chromium.components.page_info.PageInfoCookiesSettings;
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- * Tests the functionality of PageInfoCookiesSettings.java.
- */
+/** Tests the functionality of PageInfoCookiesSettings.java. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PageInfoCookiesSettingsUnitTest {
     @Test
     public void testDaysToExpirationCalculations() {
         long currentTime = new Date(70, Calendar.JANUARY, 1).getTime();
         // Same day before midnight.
-        assertEquals(0,
+        assertEquals(
+                0,
                 PageInfoCookiesSettings.calculateDaysUntilExpiration(
                         currentTime, currentTime + DateUtils.DAY_IN_MILLIS - 1));
         // Midnight of the next day.
-        assertEquals(1,
+        assertEquals(
+                1,
                 PageInfoCookiesSettings.calculateDaysUntilExpiration(
                         currentTime, currentTime + DateUtils.DAY_IN_MILLIS));
         // A little after midnight on the 3rd day.
-        assertEquals(3,
+        assertEquals(
+                3,
                 PageInfoCookiesSettings.calculateDaysUntilExpiration(
                         currentTime, currentTime + 3 * DateUtils.DAY_IN_MILLIS + 1));
     }

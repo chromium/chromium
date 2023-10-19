@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.webauth;
 
-/**
- * Fake implementation of Credential Manager Exception.
- */
+/** Fake implementation of Credential Manager Exception. */
 public final class FakeAndroidCredManException extends Exception {
     private final String mType;
 

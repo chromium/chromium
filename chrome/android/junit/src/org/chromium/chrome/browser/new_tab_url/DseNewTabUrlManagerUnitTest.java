@@ -43,21 +43,16 @@ import org.chromium.url.JUnitTestGURLs;
 public class DseNewTabUrlManagerUnitTest {
     private static final String SEARCH_URL = JUnitTestGURLs.SEARCH_URL.getSpec();
     private static final String NEW_TAB_URL = "https://testurl.com/newtab";
-    @Rule
-    public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
-    @Mock
-    private Profile mProfile;
+    @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
+    @Mock private Profile mProfile;
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
-    @Mock
-    private TemplateUrlService mTemplateUrlService;
-    @Mock
-    private TemplateUrl mTemplateUrl;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private TemplateUrl mTemplateUrl;
 
     private SharedPreferencesManager mSharedPreferenceManager;
     private DseNewTabUrlManager mDseNewTabUrlManager;
 
-    @Captor
-    private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
+    @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
 
     @Before
     public void setUp() {
@@ -110,16 +105,16 @@ public class DseNewTabUrlManagerUnitTest {
     public void testShouldOverrideUrlWithNewTabSearchEngineUrlDisabled() {
         // Verifies that the URL is not overridden when the feature flag is disabled.
         assertFalse(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
-        assertEquals(JUnitTestGURLs.NTP_URL,
-                mDseNewTabUrlManager.maybeGetOverrideUrl(
-                        /* gurl= */ JUnitTestGURLs.NTP_URL));
+        assertEquals(
+                JUnitTestGURLs.NTP_URL,
+                mDseNewTabUrlManager.maybeGetOverrideUrl(/* gurl= */ JUnitTestGURLs.NTP_URL));
 
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(false).when(mProfile).isOffTheRecord();
         mProfileSupplier.set(mProfile);
-        assertEquals(JUnitTestGURLs.NTP_URL,
-                mDseNewTabUrlManager.maybeGetOverrideUrl(
-                        /* gurl= */ JUnitTestGURLs.NTP_URL));
+        assertEquals(
+                JUnitTestGURLs.NTP_URL,
+                mDseNewTabUrlManager.maybeGetOverrideUrl(/* gurl= */ JUnitTestGURLs.NTP_URL));
     }
 
     @Test
@@ -132,17 +127,17 @@ public class DseNewTabUrlManagerUnitTest {
                 JUnitTestGURLs.NTP_URL,
                 mDseNewTabUrlManager.maybeGetOverrideUrl(/* gurl= */ JUnitTestGURLs.NTP_URL));
 
-        assertEquals(JUnitTestGURLs.SEARCH_URL,
-                mDseNewTabUrlManager.maybeGetOverrideUrl(
-                        /* gurl= */ JUnitTestGURLs.SEARCH_URL));
+        assertEquals(
+                JUnitTestGURLs.SEARCH_URL,
+                mDseNewTabUrlManager.maybeGetOverrideUrl(/* gurl= */ JUnitTestGURLs.SEARCH_URL));
 
         // Verifies that the URL is not overridden when it is in incognito mode.
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(true).when(mProfile).isOffTheRecord();
         mProfileSupplier.set(mProfile);
-        assertEquals(JUnitTestGURLs.NTP_URL,
-                mDseNewTabUrlManager.maybeGetOverrideUrl(
-                        /* gurl= */ JUnitTestGURLs.NTP_URL));
+        assertEquals(
+                JUnitTestGURLs.NTP_URL,
+                mDseNewTabUrlManager.maybeGetOverrideUrl(/* gurl= */ JUnitTestGURLs.NTP_URL));
 
         // Verifies that the URL is not overridden when {@link DseNewTabUrlManager.SWAP_OUT_NTP} is
         // false.
@@ -154,10 +149,10 @@ public class DseNewTabUrlManagerUnitTest {
 
         // Verifies that the NTP URL should be overridden.
         DseNewTabUrlManager.SWAP_OUT_NTP.setForTesting(true);
-        assertEquals(NEW_TAB_URL,
+        assertEquals(
+                NEW_TAB_URL,
                 mDseNewTabUrlManager
-                        .maybeGetOverrideUrl(
-                                /* gurl= */ JUnitTestGURLs.NTP_URL)
+                        .maybeGetOverrideUrl(/* gurl= */ JUnitTestGURLs.NTP_URL)
                         .getSpec());
     }
 
@@ -186,7 +181,8 @@ public class DseNewTabUrlManagerUnitTest {
         assertEquals(mTemplateUrlService, mDseNewTabUrlManager.getTemplateUrlServiceForTesting());
         verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
         assertFalse(mSharedPreferenceManager.readBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true));
-        assertEquals(NEW_TAB_URL,
+        assertEquals(
+                NEW_TAB_URL,
                 mSharedPreferenceManager.readString(ChromePreferenceKeys.DSE_NEW_TAB_URL, null));
 
         // Verifies that the SharedPreference is updated when the DSE is changed.
@@ -207,12 +203,12 @@ public class DseNewTabUrlManagerUnitTest {
                 ChromeSharedPreferences.getInstance().contains(ChromePreferenceKeys.IS_DSE_GOOGLE));
         assertTrue(DseNewTabUrlManager.isDefaultSearchEngineGoogle());
 
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.IS_DSE_GOOGLE, false);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false);
         assertFalse(DseNewTabUrlManager.isDefaultSearchEngineGoogle());
 
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.IS_DSE_GOOGLE, true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true);
         assertTrue(DseNewTabUrlManager.isDefaultSearchEngineGoogle());
     }
 

@@ -96,7 +96,8 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationT
 
     @Test
     public void updateNotificationBuilderDisplaysCorrectMiscInfo() {
-        mMediaNotificationInfoBuilder.setNotificationSmallIcon(1 /* resId */)
+        mMediaNotificationInfoBuilder
+                .setNotificationSmallIcon(/* resId= */ 1)
                 .setActions(0)
                 .setContentIntent(new Intent());
         MediaNotificationInfo info = mMediaNotificationInfoBuilder.build();

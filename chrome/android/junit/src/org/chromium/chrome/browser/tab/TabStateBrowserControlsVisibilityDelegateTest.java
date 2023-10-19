@@ -40,29 +40,22 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link TabStateBrowserControlsVisibilityDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowSystemClock.class})
 @LooperMode(Mode.PAUSED)
 public class TabStateBrowserControlsVisibilityDelegateTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private TabImpl mTabImpl;
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private NavigationHandle mNavigationHandle1;
-    @Mock
-    private NavigationHandle mNavigationHandle2;
-    @Mock
-    private NavigationHandle mNavigationHandle3;
-    @Mock
-    private SecurityStateModel.Natives mSecurityStateModelNatives;
+    @Mock private TabImpl mTabImpl;
+    @Mock private WebContents mWebContents;
+    @Mock private NavigationHandle mNavigationHandle1;
+    @Mock private NavigationHandle mNavigationHandle2;
+    @Mock private NavigationHandle mNavigationHandle3;
+    @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
 
-    @Captor
-    private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     @Before
     public void setup() {
@@ -85,7 +78,8 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         // Set this after constructor to dodge the ImeAdapter#fromWebContents().
         when(mTabImpl.getWebContents()).thenReturn(mWebContents);
 
-        assertEquals(BrowserControlsState.BOTH,
+        assertEquals(
+                BrowserControlsState.BOTH,
                 controlsVisibilityDelegate.calculateVisibilityConstraints());
 
         tabObserver.onPageLoadStarted(mTabImpl, blueGurl);
@@ -99,13 +93,15 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle2);
         tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle3);
 
-        assertEquals(BrowserControlsState.SHOWN,
+        assertEquals(
+                BrowserControlsState.SHOWN,
                 controlsVisibilityDelegate.calculateVisibilityConstraints());
 
         ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
         ShadowLooper.runUiThreadTasks();
 
-        assertEquals(BrowserControlsState.BOTH,
+        assertEquals(
+                BrowserControlsState.BOTH,
                 controlsVisibilityDelegate.calculateVisibilityConstraints());
     }
 }

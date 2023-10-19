@@ -28,17 +28,13 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Unit tests for SafeBrowsingReferringAppBridge.
- */
+/** Unit tests for SafeBrowsingReferringAppBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SafeBrowsingReferringAppBridgeTest {
-    @Mock
-    private WindowAndroid mWindowAndroid;
+    @Mock private WindowAndroid mWindowAndroid;
 
-    @Mock
-    private ChromeActivity mActivity;
+    @Mock private ChromeActivity mActivity;
 
     private WeakReference<Activity> mActivityRef;
 

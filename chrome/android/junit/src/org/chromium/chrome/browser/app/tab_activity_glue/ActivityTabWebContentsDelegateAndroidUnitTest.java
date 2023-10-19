@@ -41,9 +41,13 @@ import org.chromium.url.GURL;
 
 /** Unit test for {@link ActivityTabWebContentsDelegateAndroid}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ShadowColorUtils.class, ShadowWebContentsDarkModeController.class,
-                ShadowProfile.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {
+            ShadowColorUtils.class,
+            ShadowWebContentsDarkModeController.class,
+            ShadowProfile.class
+        })
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 @DisableFeatures(ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE)
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
@@ -68,19 +72,13 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         }
     }
 
-    @Rule
-    public TestRule mFeatureProcessor = new Features.JUnitProcessor();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    Activity mActivity;
-    @Mock
-    Profile mProfile;
-    @Mock
-    WebContents mWebContents;
-    @Mock
-    Tab mTab;
+    @Mock Activity mActivity;
+    @Mock Profile mProfile;
+    @Mock WebContents mWebContents;
+    @Mock Tab mTab;
 
     GURL mUrl1 = new GURL("https://url1.com");
     GURL mUrl2 = new GURL("https://url2.com");
@@ -90,8 +88,17 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Before
     public void setup() {
         mTabWebContentsDelegateAndroid =
-                new ActivityTabWebContentsDelegateAndroid(mTab, mActivity, null, false, null, null,
-                        null, mock(Supplier.class), mock(Supplier.class), mock(Supplier.class));
+                new ActivityTabWebContentsDelegateAndroid(
+                        mTab,
+                        mActivity,
+                        null,
+                        false,
+                        null,
+                        null,
+                        null,
+                        mock(Supplier.class),
+                        mock(Supplier.class),
+                        mock(Supplier.class));
 
         ShadowProfile.sProfileFromWebContents = mProfile;
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -107,7 +114,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Test
     public void testIsNightMode() {
         ShadowColorUtils.sInNightMode = true;
-        Assert.assertTrue("#isNightModeEnabled is false.",
+        Assert.assertTrue(
+                "#isNightModeEnabled is false.",
                 mTabWebContentsDelegateAndroid.isNightModeEnabled());
 
         ShadowColorUtils.sInNightMode = false;
@@ -122,10 +130,11 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING,
-            ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE})
-    public void
-    testForceDarkWebContent_ThemeSettingsFeatureDisabled() {
+    @DisableFeatures({
+        ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING,
+        ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE
+    })
+    public void testForceDarkWebContent_ThemeSettingsFeatureDisabled() {
         assertForceDarkEnabledForWebContents(false);
     }
 
@@ -169,6 +178,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     private void assertForceDarkEnabledForWebContents(boolean isEnabled) {
         Assert.assertEquals(
                 "Value of #isForceDarkWebContentEnabled is different than test settings.",
-                isEnabled, mTabWebContentsDelegateAndroid.isForceDarkWebContentEnabled());
+                isEnabled,
+                mTabWebContentsDelegateAndroid.isForceDarkWebContentEnabled());
     }
 }

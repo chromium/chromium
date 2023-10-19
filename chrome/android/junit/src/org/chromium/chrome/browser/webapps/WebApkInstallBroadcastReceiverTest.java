@@ -37,13 +37,13 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.webapps.WebApkInstallResult;
 
-/**
- * Tests WebAPKs install notifications from {@link WebApkInstallService}.
- */
+/** Tests WebAPKs install notifications from {@link WebApkInstallService}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowNotificationManager.class, ShadowPendingIntent.class})
-@EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
-        ChromeFeatureList.WEB_APK_INSTALL_RETRY})
+@EnableFeatures({
+    ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
+    ChromeFeatureList.WEB_APK_INSTALL_RETRY
+})
 public class WebApkInstallBroadcastReceiverTest {
     private static final String MANIFEST_URL = "https://test.com/manifest.json";
     private static final String SHORT_NAME = "webapk";
@@ -51,16 +51,13 @@ public class WebApkInstallBroadcastReceiverTest {
     private final Bitmap mIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
     private final byte[] mSerializedProto = new byte[] {1, 2};
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private Context mContext;
     private ShadowNotificationManager mShadowNotificationManager;
 
-    @Mock
-    public WebApkInstallCoordinatorBridge mBridge;
-    @Mock
-    private Context mContextMock;
+    @Mock public WebApkInstallCoordinatorBridge mBridge;
+    @Mock private Context mContextMock;
 
     private WebApkInstallBroadcastReceiver mReceiver;
 
@@ -73,15 +70,24 @@ public class WebApkInstallBroadcastReceiverTest {
 
         mReceiver = new WebApkInstallBroadcastReceiver(mBridge);
 
-        mShadowNotificationManager = shadowOf(
-                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE));
-        WebApkInstallService.showInstallFailedNotification(MANIFEST_URL, SHORT_NAME, URL, mIcon,
-                false /* isIconMaskable */, WebApkInstallResult.FAILURE, mSerializedProto);
+        mShadowNotificationManager =
+                shadowOf(
+                        (NotificationManager)
+                                mContext.getSystemService(Context.NOTIFICATION_SERVICE));
+        WebApkInstallService.showInstallFailedNotification(
+                MANIFEST_URL,
+                SHORT_NAME,
+                URL,
+                mIcon,
+                /* isIconMaskable= */ false,
+                WebApkInstallResult.FAILURE,
+                mSerializedProto);
     }
 
     private Intent createActionIntent(String action) {
-        PendingIntentProvider provider = WebApkInstallBroadcastReceiver.createPendingIntent(
-                mContext, MANIFEST_URL, URL, action, mSerializedProto);
+        PendingIntentProvider provider =
+                WebApkInstallBroadcastReceiver.createPendingIntent(
+                        mContext, MANIFEST_URL, URL, action, mSerializedProto);
         ShadowPendingIntent shadow = shadowOf(provider.getPendingIntent());
         Intent intent = shadow.getSavedIntents()[0];
         Assert.assertNotNull(intent);

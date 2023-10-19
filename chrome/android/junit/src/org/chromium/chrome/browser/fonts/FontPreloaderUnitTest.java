@@ -38,16 +38,18 @@ import org.chromium.chrome.browser.fonts.FontPreloaderUnitTest.ShadowResourcesCo
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Unit tests for {@link FontPreloader}.
- */
+/** Unit tests for {@link FontPreloader}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class, ShadowResourcesCompat.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowSystemClock.class, ShadowResourcesCompat.class})
 @LooperMode(Mode.PAUSED)
 public class FontPreloaderUnitTest {
-    private static final Integer[] FONTS = {org.chromium.chrome.R.font.chrome_google_sans,
-            org.chromium.chrome.R.font.chrome_google_sans_medium,
-            org.chromium.chrome.R.font.chrome_google_sans_bold};
+    private static final Integer[] FONTS = {
+        org.chromium.chrome.R.font.chrome_google_sans,
+        org.chromium.chrome.R.font.chrome_google_sans_medium,
+        org.chromium.chrome.R.font.chrome_google_sans_bold
+    };
     private static final String AFTER_ON_CREATE =
             "Android.Fonts.TimeToRetrieveDownloadableFontsAfterOnCreate";
     private static final String AFTER_INFLATION =
@@ -63,8 +65,7 @@ public class FontPreloaderUnitTest {
     private static final String CUSTOM_TAB = ".CustomTabActivity";
     private static final int INITIAL_TIME = 1000;
 
-    @Mock
-    private Context mContext;
+    @Mock private Context mContext;
 
     private FontPreloader mFontPreloader;
 
@@ -457,15 +458,17 @@ public class FontPreloaderUnitTest {
      * @param expectedValue The expected value to be recorded.
      */
     private void assertHistogramRecorded(String histogram, int expectedValue) {
-        assertEquals(histogram + " isn't recorded correctly.", 1,
+        assertEquals(
+                histogram + " isn't recorded correctly.",
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(histogram, expectedValue));
     }
 
-    /**
-     * @param histogram Histogram name to assert.
-     */
+    /** @param histogram Histogram name to assert. */
     private void assertHistogramNotRecorded(String histogram) {
-        assertEquals(histogram + " shouldn't be recorded.", 0,
+        assertEquals(
+                histogram + " shouldn't be recorded.",
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 }

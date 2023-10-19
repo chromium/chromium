@@ -11,15 +11,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for {@link ChromeLocalizationUtils}.
- */
+/** Tests for {@link ChromeLocalizationUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChromeLocalizationUtilsTest {
-    /**
-     * Test the return value for getUiAvailabilityStatus.
-     */
+    /** Test the return value for getUiAvailabilityStatus. */
     @Test
     public void testGetUiAvailabilityStatus() {
         // The boolean flags in order are: isOverridden, isTopAndroidLanguageAvailable,
@@ -46,9 +42,7 @@ public class ChromeLocalizationUtilsTest {
         Assert.assertEquals(status, ChromeLocalizationUtils.UiAvailableTypes.TOP_AVAILABLE);
     }
 
-    /**
-     * Test the return value for getUiCorrectnessStatus
-     */
+    /** Test the return value for getUiCorrectnessStatus */
     @Test
     public void testGetUiCorrectnessStatus() {
         // The boolean flags in order are: noLanguageAvailable, isJavaUiCorrect, isNativeUiCorrect
@@ -69,9 +63,7 @@ public class ChromeLocalizationUtilsTest {
         Assert.assertEquals(status, ChromeLocalizationUtils.UiCorrectTypes.CORRECT);
     }
 
-    /**
-     * Test the return value for getNoOverrideUiCorrectStatus
-     */
+    /** Test the return value for getNoOverrideUiCorrectStatus */
     @Test
     public void testGetNoOverrideUiCorrectStatus() {
         // The boolean flags in order are: noLanguageAvailable, isCorrect
@@ -89,9 +81,7 @@ public class ChromeLocalizationUtilsTest {
         Assert.assertEquals(status, ChromeLocalizationUtils.UiCorrectTypes.INCORRECT);
     }
 
-    /**
-     * Test the return value for getOverrideUiCorrectStatus
-     */
+    /** Test the return value for getOverrideUiCorrectStatus */
     @Test
     public void testGetOverrideUiCorrectStatus() {
         // The boolean flags in order are: isJavaUiCorrect, isNativeUiCorrect
@@ -109,9 +99,7 @@ public class ChromeLocalizationUtilsTest {
         Assert.assertEquals(status, ChromeLocalizationUtils.UiCorrectTypes.INCORRECT);
     }
 
-    /**
-     * Test the return value for getLocaleUpdateStatus
-     */
+    /** Test the return value for getLocaleUpdateStatus */
     @Test
     public void testGetLocaleUpdateStatus() {
         // First run checks
@@ -137,8 +125,9 @@ public class ChromeLocalizationUtilsTest {
         Assert.assertEquals(
                 status, ChromeLocalizationUtils.LocaleUpdateStatus.OVERRIDDEN_OTHERS_CHANGED);
 
-        status = ChromeLocalizationUtils.getLocaleUpdateStatus(
-                "af,en-US,af,zu", "en-US,af,zu", true);
+        status =
+                ChromeLocalizationUtils.getLocaleUpdateStatus(
+                        "af,en-US,af,zu", "en-US,af,zu", true);
         Assert.assertEquals(
                 status, ChromeLocalizationUtils.LocaleUpdateStatus.OVERRIDDEN_TOP_CHANGED);
 

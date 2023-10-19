@@ -51,11 +51,9 @@ import java.util.Collections;
 @Config(shadows = {ShadowNotificationManager.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ReengagementNotificationControllerTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    public Tracker mTracker;
+    @Mock public Tracker mTracker;
 
     private Context mContext;
     private ShadowNotificationManager mShadowNotificationManager;
@@ -80,8 +78,10 @@ public class ReengagementNotificationControllerTest {
         FeatureList.setTestFeatures(
                 Collections.singletonMap(ChromeFeatureList.REENGAGEMENT_NOTIFICATION, true));
         mContext = ApplicationProvider.getApplicationContext();
-        mShadowNotificationManager = Shadows.shadowOf(
-                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE));
+        mShadowNotificationManager =
+                Shadows.shadowOf(
+                        (NotificationManager)
+                                mContext.getSystemService(Context.NOTIFICATION_SERVICE));
         UmaRecorderHolder.resetForTesting();
     }
 
@@ -94,13 +94,16 @@ public class ReengagementNotificationControllerTest {
     public void testReengagementFirstFeature() {
         ReengagementNotificationController controller =
                 new TestingReengagementNotificationController(
-                        createDefaultInfo(/* passesPrecondition = */ true));
-        doReturn(true).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
-        doReturn(false).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
-        doReturn(false).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                        createDefaultInfo(/* passesPrecondition= */ true));
+        doReturn(true)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+        doReturn(false)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+        doReturn(false)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
 
         testFeatureShowed(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
@@ -110,13 +113,16 @@ public class ReengagementNotificationControllerTest {
     public void testReengagementSecondFeature() {
         ReengagementNotificationController controller =
                 new TestingReengagementNotificationController(
-                        createDefaultInfo(/* passesPrecondition = */ true));
-        doReturn(false).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
-        doReturn(true).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
-        doReturn(false).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                        createDefaultInfo(/* passesPrecondition= */ true));
+        doReturn(false)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+        doReturn(true)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+        doReturn(false)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
 
         testFeatureShowed(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
@@ -126,13 +132,16 @@ public class ReengagementNotificationControllerTest {
     public void testReengagementThirdFeature() {
         ReengagementNotificationController controller =
                 new TestingReengagementNotificationController(
-                        createDefaultInfo(/* passesPrecondition = */ true));
-        doReturn(false).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
-        doReturn(false).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
-        doReturn(true).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                        createDefaultInfo(/* passesPrecondition= */ true));
+        doReturn(false)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+        doReturn(false)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+        doReturn(true)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
 
         testFeatureShowed(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
@@ -142,13 +151,16 @@ public class ReengagementNotificationControllerTest {
     public void testReengagementTwoFeaturesMet() {
         ReengagementNotificationController controller =
                 new TestingReengagementNotificationController(
-                        createDefaultInfo(/* passesPrecondition = */ true));
-        doReturn(false).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
-        doReturn(true).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
-        doReturn(true).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                        createDefaultInfo(/* passesPrecondition= */ true));
+        doReturn(false)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+        doReturn(true)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+        doReturn(true)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
 
         testFeatureShowed(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
@@ -158,13 +170,16 @@ public class ReengagementNotificationControllerTest {
     public void testReengagementAllFeaturesMet() {
         ReengagementNotificationController controller =
                 new TestingReengagementNotificationController(
-                        createDefaultInfo(/* passesPrecondition = */ true));
-        doReturn(true).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
-        doReturn(true).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
-        doReturn(true).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                        createDefaultInfo(/* passesPrecondition= */ true));
+        doReturn(true)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+        doReturn(true)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+        doReturn(true)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
 
         testFeatureShowed(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
@@ -174,25 +189,30 @@ public class ReengagementNotificationControllerTest {
     public void testReengagementNoFeatures() {
         ReengagementNotificationController controller =
                 new TestingReengagementNotificationController(
-                        createDefaultInfo(/* passesPrecondition = */ true));
-        doReturn(false).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
-        doReturn(false).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
-        doReturn(false).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                        createDefaultInfo(/* passesPrecondition= */ true));
+        doReturn(false)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+        doReturn(false)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+        doReturn(false)
+                .when(mTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
-        new Handler().post(
-                ()
-                        -> Assert.assertEquals(
-                                0, mShadowNotificationManager.getAllNotifications().size()));
+        new Handler()
+                .post(
+                        () ->
+                                Assert.assertEquals(
+                                        0,
+                                        mShadowNotificationManager.getAllNotifications().size()));
     }
 
     @Test
     public void testReengagementNoPreconditions() {
         ReengagementNotificationController controller =
                 new TestingReengagementNotificationController(
-                        createDefaultInfo(/* passesPrecondition = */ false));
+                        createDefaultInfo(/* passesPrecondition= */ false));
         controller.tryToReengageTheUser();
         verifyNoMoreInteractions(mTracker);
         Assert.assertEquals(0, mShadowNotificationManager.getAllNotifications().size());
@@ -208,7 +228,8 @@ public class ReengagementNotificationControllerTest {
     }
 
     private void testFeatureShowed(String feature) {
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Shown", getNotificationType(feature)));
 
@@ -216,23 +237,33 @@ public class ReengagementNotificationControllerTest {
         verify(mTracker, times(1)).dismissed(feature);
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
 
-        new Handler().post(() -> {
-            Assert.assertEquals(getNotificationTitle(feature),
-                    notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString());
-            Assert.assertEquals(getNotificationDescription(feature),
-                    notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString());
-        });
+        new Handler()
+                .post(
+                        () -> {
+                            Assert.assertEquals(
+                                    getNotificationTitle(feature),
+                                    notification
+                                            .extras
+                                            .getCharSequence(Notification.EXTRA_TITLE)
+                                            .toString());
+                            Assert.assertEquals(
+                                    getNotificationDescription(feature),
+                                    notification
+                                            .extras
+                                            .getCharSequence(Notification.EXTRA_TEXT)
+                                            .toString());
+                        });
     }
 
     private @NotificationUmaTracker.SystemNotificationType int getNotificationType(String feature) {
         if (TextUtils.equals(
-                    feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE)) {
             return NotificationUmaTracker.SystemNotificationType.CHROME_REENGAGEMENT_1;
         } else if (TextUtils.equals(
-                           feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE)) {
             return NotificationUmaTracker.SystemNotificationType.CHROME_REENGAGEMENT_2;
         } else if (TextUtils.equals(
-                           feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE)) {
             return NotificationUmaTracker.SystemNotificationType.CHROME_REENGAGEMENT_3;
         }
 
@@ -242,13 +273,13 @@ public class ReengagementNotificationControllerTest {
 
     private String getNotificationTitle(String feature) {
         if (TextUtils.equals(
-                    feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE)) {
             return mContext.getString(R.string.chrome_reengagement_notification_1_title);
         } else if (TextUtils.equals(
-                           feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE)) {
             return mContext.getString(R.string.chrome_reengagement_notification_2_title);
         } else if (TextUtils.equals(
-                           feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE)) {
             return mContext.getString(R.string.chrome_reengagement_notification_3_title);
         }
 
@@ -258,13 +289,13 @@ public class ReengagementNotificationControllerTest {
 
     private String getNotificationDescription(String feature) {
         if (TextUtils.equals(
-                    feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE)) {
             return mContext.getString(R.string.chrome_reengagement_notification_1_description);
         } else if (TextUtils.equals(
-                           feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE)) {
             return mContext.getString(R.string.chrome_reengagement_notification_2_description);
         } else if (TextUtils.equals(
-                           feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE)) {
+                feature, FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE)) {
             return mContext.getString(R.string.chrome_reengagement_notification_3_description);
         }
 
@@ -274,9 +305,12 @@ public class ReengagementNotificationControllerTest {
 
     private DefaultBrowserInfo2.DefaultInfo createDefaultInfo(boolean passesPrecondition) {
         int browserCount = passesPrecondition ? 2 : 1;
-        return new DefaultBrowserInfo2.DefaultInfo(/* isChromeSystem = */ true,
-                /* isChromeDefault = */ true,
-                /* isDefaultSystem = */ true, /* hasDefault = */ true, browserCount,
-                /* systemCount = */ 0);
+        return new DefaultBrowserInfo2.DefaultInfo(
+                /* isChromeSystem= */ true,
+                /* isChromeDefault= */ true,
+                /* isDefaultSystem= */ true,
+                /* hasDefault= */ true,
+                browserCount,
+                /* systemCount= */ 0);
     }
 }

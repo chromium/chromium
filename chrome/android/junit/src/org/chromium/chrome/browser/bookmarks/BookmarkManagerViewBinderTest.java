@@ -54,30 +54,21 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BookmarkManagerViewBinderTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock
-    View mView;
-    @Mock
-    BookmarkRow mBookmarkRow;
-    @Mock
-    TextView mTextView;
-    @Mock
-    LinearLayout mLinearLayout;
-    @Mock
-    PersonalizedSigninPromoView mPromoView;
-    @Mock
-    Callback<BookmarkId> mOpenFolderCallback;
-    @Mock
-    ItemTouchHelper mItemTouchHelper;
-    @Mock
-    Runnable mClearHighlightCallback;
-    @Mock
-    BookmarkPromoHeader mBookmarkPromoHeader;
+    @Mock View mView;
+    @Mock BookmarkRow mBookmarkRow;
+    @Mock TextView mTextView;
+    @Mock LinearLayout mLinearLayout;
+    @Mock PersonalizedSigninPromoView mPromoView;
+    @Mock Callback<BookmarkId> mOpenFolderCallback;
+    @Mock ItemTouchHelper mItemTouchHelper;
+    @Mock Runnable mClearHighlightCallback;
+    @Mock BookmarkPromoHeader mBookmarkPromoHeader;
 
     private Activity mActivity;
     private PropertyModel mModel;
@@ -123,7 +114,8 @@ public class BookmarkManagerViewBinderTest {
         when(mView.findViewById(anyInt())).thenReturn(mTextView);
 
         BookmarkListEntry bookmarkListEntry =
-                BookmarkListEntry.createSectionHeader(R.string.reading_list_read,
+                BookmarkListEntry.createSectionHeader(
+                        R.string.reading_list_read,
                         R.dimen.bookmark_reading_list_section_header_padding_top);
         mModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
 
@@ -131,14 +123,18 @@ public class BookmarkManagerViewBinderTest {
                 mModel, mView, BookmarkManagerViewBinder::bindSectionHeaderView);
 
         verify(mTextView).setText(mActivity.getResources().getString(R.string.reading_list_read));
-        int expectedTopPadding = (int) mActivity.getResources().getDimension(
-                R.dimen.bookmark_reading_list_section_header_padding_top);
+        int expectedTopPadding =
+                (int)
+                        mActivity
+                                .getResources()
+                                .getDimension(
+                                        R.dimen.bookmark_reading_list_section_header_padding_top);
         verify(mTextView).setPaddingRelative(anyInt(), eq(expectedTopPadding), anyInt(), anyInt());
     }
 
     @Test
     public void testBindBookmarkFolderView() {
-        setModelForSharedEntryView(/*isHighlighted*/ false);
+        setModelForSharedEntryView(/* isHighlighted= */ false);
 
         PropertyModelChangeProcessor.create(
                 mModel, mBookmarkRow, BookmarkManagerViewBinder::bindBookmarkFolderView);
@@ -150,7 +146,7 @@ public class BookmarkManagerViewBinderTest {
     @Test
     public void testBindBookmarkItemView() {
         when(mBookmarkRow.getContext()).thenReturn(mActivity);
-        setModelForSharedEntryView(/*isHighlighted*/ true);
+        setModelForSharedEntryView(/* isHighlighted= */ true);
 
         PropertyModelChangeProcessor.create(
                 mModel, mBookmarkRow, BookmarkManagerViewBinder::bindBookmarkItemView);
@@ -161,7 +157,7 @@ public class BookmarkManagerViewBinderTest {
 
     @Test
     public void testBindShoppingItemView() {
-        setModelForSharedEntryView(/*isHighlighted*/ false);
+        setModelForSharedEntryView(/* isHighlighted= */ false);
 
         PropertyModelChangeProcessor.create(
                 mModel, mBookmarkRow, BookmarkManagerViewBinder::bindShoppingItemView);

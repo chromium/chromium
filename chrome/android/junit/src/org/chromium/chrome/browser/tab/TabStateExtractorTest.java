@@ -29,9 +29,7 @@ import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
 
-/**
- * Tests for {@link TabStateExtractor}.
- */
+/** Tests for {@link TabStateExtractor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabStateExtractorTest {
@@ -39,17 +37,12 @@ public class TabStateExtractorTest {
     private static final String URL = "test_url";
     private static final String REFERRER_URL = "referrer_url";
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    private WebContentsStateBridge.Natives mWebContentsBridgeJni;
-    @Mock
-    private Tab mTabMock;
-    @Mock
-    private WebContents mWebContentsMock;
-    @Mock
-    private Origin mMockOrigin;
+    @Mock private WebContentsStateBridge.Natives mWebContentsBridgeJni;
+    @Mock private Tab mTabMock;
+    @Mock private WebContents mWebContentsMock;
+    @Mock private Origin mMockOrigin;
 
     private ByteBuffer mByteBuffer = ByteBuffer.allocate(1);
 

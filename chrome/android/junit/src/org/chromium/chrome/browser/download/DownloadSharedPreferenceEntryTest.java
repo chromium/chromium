@@ -36,17 +36,13 @@ import java.util.UUID;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DownloadSharedPreferenceEntryTest {
-    @Rule
-    public JniMocker mMocker = new JniMocker();
+    @Rule public JniMocker mMocker = new JniMocker();
 
-    @Mock
-    private OTRProfileID.Natives mOTRProfileIDNatives;
+    @Mock private OTRProfileID.Natives mOTRProfileIDNatives;
 
-    @Mock
-    private Profile mRegularProfile;
+    @Mock private Profile mRegularProfile;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private String newUUID() {
         return UUID.randomUUID().toString();
@@ -211,8 +207,12 @@ public class DownloadSharedPreferenceEntryTest {
         assertEquals("test,2.pdf", entry.fileName);
 
         String uuid2 = newUUID();
-        notificationString = "5,3," + LegacyHelpers.LEGACY_DOWNLOAD_NAMESPACE + "," + uuid2
-                + ",1,0,0,test,4.pdf";
+        notificationString =
+                "5,3,"
+                        + LegacyHelpers.LEGACY_DOWNLOAD_NAMESPACE
+                        + ","
+                        + uuid2
+                        + ",1,0,0,test,4.pdf";
         entry = DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(3, entry.notificationId);
         assertEquals(LegacyHelpers.buildLegacyContentId(false, uuid2), entry.id);
@@ -223,8 +223,12 @@ public class DownloadSharedPreferenceEntryTest {
         assertEquals("test,4.pdf", entry.fileName);
 
         String uuid3 = newUUID();
-        notificationString = "5,3," + LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE + "," + uuid3
-                + ",1,0,0,test,4.pdf";
+        notificationString =
+                "5,3,"
+                        + LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE
+                        + ","
+                        + uuid3
+                        + ",1,0,0,test,4.pdf";
         entry = DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(3, entry.notificationId);
         assertEquals(LegacyHelpers.buildLegacyContentId(true, uuid3), entry.id);
@@ -289,8 +293,12 @@ public class DownloadSharedPreferenceEntryTest {
         assertEquals("test,2.pdf", entry.fileName);
 
         String id2 = "notaguidhurray";
-        notificationString = "7,3,test_namespace," + id2 + ","
-                + OTRProfileID.getPrimaryOTRProfileID() + ",0,0,0,test,4.pdf";
+        notificationString =
+                "7,3,test_namespace,"
+                        + id2
+                        + ","
+                        + OTRProfileID.getPrimaryOTRProfileID()
+                        + ",0,0,0,test,4.pdf";
         entry = DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(3, entry.notificationId);
         assertEquals(new ContentId("test_namespace", id2), entry.id);
@@ -318,8 +326,12 @@ public class DownloadSharedPreferenceEntryTest {
 
         String id2 = "notaguidhurray";
         OTRProfileID otrProfileID = new OTRProfileID("test-1");
-        notificationString = "7,3,test_namespace," + id2 + ","
-                + OTRProfileID.serialize(otrProfileID) + ",0,0,0,test,4.pdf";
+        notificationString =
+                "7,3,test_namespace,"
+                        + id2
+                        + ","
+                        + OTRProfileID.serialize(otrProfileID)
+                        + ",0,0,0,test,4.pdf";
         entry = DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(3, entry.notificationId);
         assertEquals(new ContentId("test_namespace", id2), entry.id);
@@ -332,8 +344,12 @@ public class DownloadSharedPreferenceEntryTest {
 
         when(mRegularProfile.hasOffTheRecordProfile(any())).thenReturn(false);
         String id3 = "notaguidhurray";
-        notificationString = "7,3,test_namespace," + id3 + ","
-                + OTRProfileID.serialize(otrProfileID) + ",0,0,0,test,4.pdf";
+        notificationString =
+                "7,3,test_namespace,"
+                        + id3
+                        + ","
+                        + OTRProfileID.serialize(otrProfileID)
+                        + ",0,0,0,test,4.pdf";
         entry = DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(3, entry.notificationId);
         assertEquals(new ContentId("test_namespace", id3), entry.id);
@@ -351,15 +367,25 @@ public class DownloadSharedPreferenceEntryTest {
     @Feature({"Download"})
     public void testGetSharedPreferencesString() {
         String uuid = newUUID();
-        String notificationString = "7,2," + LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE + ","
-                + uuid + ",,1,1,1,test,2.pdf";
+        String notificationString =
+                "7,2,"
+                        + LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE
+                        + ","
+                        + uuid
+                        + ",,1,1,1,test,2.pdf";
         DownloadSharedPreferenceEntry entry =
                 DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(notificationString, entry.getSharedPreferenceString());
 
         String uuid2 = newUUID();
-        notificationString = "7,3," + LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE + "," + uuid2
-                + "," + OTRProfileID.getPrimaryOTRProfileID() + ",0,0,0,test,4.pdf";
+        notificationString =
+                "7,3,"
+                        + LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE
+                        + ","
+                        + uuid2
+                        + ","
+                        + OTRProfileID.getPrimaryOTRProfileID()
+                        + ",0,0,0,test,4.pdf";
         entry = DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(notificationString, entry.getSharedPreferenceString());
     }
@@ -645,36 +671,62 @@ public class DownloadSharedPreferenceEntryTest {
 
         // Convert from version 2.
         notificationString = "2,1,1,0," + uuid + ",test.pdf";
-        v7NotificationString = "7,1," + LegacyHelpers.LEGACY_DOWNLOAD_NAMESPACE + "," + uuid + ","
-                + OTRProfileID.getPrimaryOTRProfileID() + ",0,1,0,test.pdf";
+        v7NotificationString =
+                "7,1,"
+                        + LegacyHelpers.LEGACY_DOWNLOAD_NAMESPACE
+                        + ","
+                        + uuid
+                        + ","
+                        + OTRProfileID.getPrimaryOTRProfileID()
+                        + ",0,1,0,test.pdf";
         entry = DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(v7NotificationString, entry.getSharedPreferenceString());
 
         // Convert from version 3.
         notificationString = "3,2,2,1,0," + uuid + ",test.pdf";
-        v7NotificationString = "7,2," + LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE + "," + uuid
-                + "," + OTRProfileID.getPrimaryOTRProfileID() + ",0,1,0,test.pdf";
+        v7NotificationString =
+                "7,2,"
+                        + LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE
+                        + ","
+                        + uuid
+                        + ","
+                        + OTRProfileID.getPrimaryOTRProfileID()
+                        + ",0,1,0,test.pdf";
         entry = DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(v7NotificationString, entry.getSharedPreferenceString());
 
         // Convert from version 4.
         notificationString = "4,2,2,1,0,0," + uuid + ",test.pdf";
-        v7NotificationString = "7,2," + LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE + "," + uuid
-                + "," + OTRProfileID.getPrimaryOTRProfileID() + ",0,0,0,test.pdf";
+        v7NotificationString =
+                "7,2,"
+                        + LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE
+                        + ","
+                        + uuid
+                        + ","
+                        + OTRProfileID.getPrimaryOTRProfileID()
+                        + ",0,0,0,test.pdf";
         entry = DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(v7NotificationString, entry.getSharedPreferenceString());
 
         // Convert from version 5.
         notificationString = "5,2,test_namespace," + uuid + ",1,0,0,test.pdf";
-        v7NotificationString = "7,2,test_namespace," + uuid + ","
-                + OTRProfileID.getPrimaryOTRProfileID() + ",0,0,0,test.pdf";
+        v7NotificationString =
+                "7,2,test_namespace,"
+                        + uuid
+                        + ","
+                        + OTRProfileID.getPrimaryOTRProfileID()
+                        + ",0,0,0,test.pdf";
         entry = DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(v7NotificationString, entry.getSharedPreferenceString());
 
         // Convert from version 6.
         notificationString = "6,2,test_namespace," + uuid + ",1,0,0,0,test.pdf";
-        v7NotificationString = "7,2,test_namespace," + uuid + ","
-                + OTRProfileID.getPrimaryOTRProfileID() + ",0,0,0,test.pdf";
+        v7NotificationString =
+                "7,2,test_namespace,"
+                        + uuid
+                        + ","
+                        + OTRProfileID.getPrimaryOTRProfileID()
+                        + ",0,0,0,test.pdf";
         entry = DownloadSharedPreferenceEntry.parseFromString(notificationString);
         assertEquals(v7NotificationString, entry.getSharedPreferenceString());
     }

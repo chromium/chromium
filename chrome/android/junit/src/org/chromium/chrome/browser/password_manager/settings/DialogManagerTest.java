@@ -29,15 +29,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Tests for the {@link DialogManager} class.
- */
+/** Tests for the {@link DialogManager} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class DialogManagerTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     /**
      * Fake of {@link DialogFragment} allowing to detect calls to {@link DialogFragment#show} and
@@ -47,10 +44,13 @@ public class DialogManagerTest {
         @Retention(RetentionPolicy.SOURCE)
         @IntDef({NEW, SHOWING, DISMISSED})
         public @interface DialogState {}
+
         /** The dialog has not been shown yet. */
         public static final int NEW = 0;
+
         /** The dialog is showing. */
         public static final int SHOWING = 1;
+
         /** The dialog has been dismissed. */
         public static final int DISMISSED = 2;
 
@@ -94,9 +94,7 @@ public class DialogManagerTest {
         mDialogManager.replaceCallbackDelayerForTesting(mManualDelayer);
     }
 
-    /**
-     * Check that a dialog is hidden eventually but not before a prescribed delay.
-     */
+    /** Check that a dialog is hidden eventually but not before a prescribed delay. */
     @Test
     public void testHiddenEventually() {
         mDialogManager.show(mDialogFragment, null);
@@ -112,9 +110,7 @@ public class DialogManagerTest {
         verify(mMockActionsConsumer, times(1)).consume(DialogManager.HideActions.HIDING_DELAYED);
     }
 
-    /**
-     * Check that immediate hiding is notified properly.
-     */
+    /** Check that immediate hiding is notified properly. */
     @Test
     public void testNotification() {
         mDialogManager.show(mDialogFragment, null);
@@ -129,9 +125,7 @@ public class DialogManagerTest {
                 .consume(DialogManager.HideActions.HIDDEN_IMMEDIATELY);
     }
 
-    /**
-     * Check that the callback is called even if the dialog has not been shown at all.
-     */
+    /** Check that the callback is called even if the dialog has not been shown at all. */
     @Test
     public void testCallbackCalled() {
         Runnable callback = mock(Runnable.class);

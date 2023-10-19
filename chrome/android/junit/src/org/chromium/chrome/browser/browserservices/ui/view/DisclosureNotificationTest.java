@@ -35,21 +35,16 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
-/**
- * Tests for {@link DisclosureNotification}.
- */
+/** Tests for {@link DisclosureNotification}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DisclosureNotificationTest {
     private static final String SCOPE = "https://www.example.com";
     private static final String PACKAGE = "com.example.twa";
 
-    @Mock
-    public ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Mock
-    public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
-    @Mock
-    public NotificationManagerProxy mNotificationManager;
+    @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
+    @Mock public NotificationManagerProxy mNotificationManager;
 
     private TrustedWebActivityModel mModel = new TrustedWebActivityModel();
     private DisclosureNotification mNotification;
@@ -64,8 +59,13 @@ public class DisclosureNotificationTest {
         mModel.set(DISCLOSURE_FIRST_TIME, true);
 
         Context context = RuntimeEnvironment.application;
-        mNotification = new DisclosureNotification(context, context.getResources(),
-                mNotificationManager, mModel, mLifecycleDispatcher);
+        mNotification =
+                new DisclosureNotification(
+                        context,
+                        context.getResources(),
+                        mNotificationManager,
+                        mModel,
+                        mLifecycleDispatcher);
     }
 
     @Test

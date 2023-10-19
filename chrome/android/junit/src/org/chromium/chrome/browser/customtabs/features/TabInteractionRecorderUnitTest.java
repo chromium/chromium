@@ -24,14 +24,11 @@ import org.chromium.chrome.browser.tab.Tab;
 /** Unit test for {@link TabInteractionRecorder} on the java side. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabInteractionRecorderUnitTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    Tab mTab;
+    @Mock Tab mTab;
 
     private TestNativeInteractionRecorder mTestNative;
     private TabInteractionRecorder mTestRecorder;
@@ -60,12 +57,15 @@ public class TabInteractionRecorderUnitTest {
         mTestNative.paramHadFormInteractionInActivePage = true;
         TabInteractionRecorder.getFromTab(mTab).onTabClosing();
 
-        Assert.assertTrue("Shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is not recorded.",
+        Assert.assertTrue(
+                "Shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is not recorded.",
                 mPref.contains(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION));
-        Assert.assertTrue("Value of shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is wrong.",
+        Assert.assertTrue(
+                "Value of shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is wrong.",
                 mPref.readBoolean(
                         ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION, false));
-        Assert.assertTrue("Shared pref <CUSTOM_TABS_LAST_CLOSE_TIMESTAMP> is not recorded.",
+        Assert.assertTrue(
+                "Shared pref <CUSTOM_TABS_LAST_CLOSE_TIMESTAMP> is not recorded.",
                 mPref.contains(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP));
     }
 
@@ -74,12 +74,15 @@ public class TabInteractionRecorderUnitTest {
         mTestNative.paramHadNavigationInteraction = true;
         TabInteractionRecorder.getFromTab(mTab).onTabClosing();
 
-        Assert.assertTrue("Shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is not recorded.",
+        Assert.assertTrue(
+                "Shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is not recorded.",
                 mPref.contains(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION));
-        Assert.assertTrue("Value of shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is wrong.",
+        Assert.assertTrue(
+                "Value of shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is wrong.",
                 mPref.readBoolean(
                         ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION, false));
-        Assert.assertTrue("Shared pref <CUSTOM_TABS_LAST_CLOSE_TIMESTAMP> is not recorded.",
+        Assert.assertTrue(
+                "Shared pref <CUSTOM_TABS_LAST_CLOSE_TIMESTAMP> is not recorded.",
                 mPref.contains(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP));
     }
 
@@ -90,13 +93,15 @@ public class TabInteractionRecorderUnitTest {
         mTestNative.paramHadNavigationInteraction = false;
         TabInteractionRecorder.getFromTab(mTab).onTabClosing();
 
-        Assert.assertTrue("Shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is not recorded.",
+        Assert.assertTrue(
+                "Shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is not recorded.",
                 mPref.contains(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION));
         Assert.assertFalse(
                 "Value of shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is wrong.",
                 mPref.readBoolean(
                         ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION, false));
-        Assert.assertTrue("Shared pref <CUSTOM_TABS_LAST_CLOSE_TIMESTAMP> is not recorded.",
+        Assert.assertTrue(
+                "Shared pref <CUSTOM_TABS_LAST_CLOSE_TIMESTAMP> is not recorded.",
                 mPref.contains(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP));
     }
 

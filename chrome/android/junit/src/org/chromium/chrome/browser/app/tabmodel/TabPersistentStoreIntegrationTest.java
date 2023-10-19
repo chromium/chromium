@@ -80,10 +80,9 @@ public class TabPersistentStoreIntegrationTest {
             return false;
         }
     }
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Rule public JniMocker jniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final int TAB_ID = 42;
     private static final WebContentsState WEB_CONTENTS_STATE =
@@ -93,28 +92,17 @@ public class TabPersistentStoreIntegrationTest {
     private TabModelSelector mTabModelSelector;
     private TabPersistentStore mTabPersistentStore;
 
-    @Mock
-    private ChromeTabbedActivity mChromeActivity;
-    @Mock
-    private TabCreatorManager mTabCreatorManager;
-    @Mock
-    private ChromeTabCreator mChromeTabCreator;
-    @Mock
-    private NextTabPolicySupplier mNextTabPolicySupplier;
-    @Mock
-    private TabContentManager mTabContentManager;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private TabModelJniBridge.Natives mTabModelJniBridgeJni;
-    @Mock
-    private RecentlyClosedBridge.Natives mRecentlyClosedBridgeJni;
-    @Mock
-    private Resources mResources;
-    @Mock
-    private TabImpl.Natives mTabImplJni;
-    @Mock
-    private PersistedTabData.Natives mPersistedTabDataJni;
+    @Mock private ChromeTabbedActivity mChromeActivity;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private ChromeTabCreator mChromeTabCreator;
+    @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
+    @Mock private TabContentManager mTabContentManager;
+    @Mock private Profile mProfile;
+    @Mock private TabModelJniBridge.Natives mTabModelJniBridgeJni;
+    @Mock private RecentlyClosedBridge.Natives mRecentlyClosedBridgeJni;
+    @Mock private Resources mResources;
+    @Mock private TabImpl.Natives mTabImplJni;
+    @Mock private PersistedTabData.Natives mPersistedTabDataJni;
 
     private PausedExecutorService mExecutor = new PausedExecutorService();
 
@@ -130,7 +118,7 @@ public class TabPersistentStoreIntegrationTest {
         when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket))
                 .thenReturn(1);
         when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mChromeTabCreator);
-        mOrchestrator = new TabbedModeTabModelOrchestrator(/*tabMergingEnabled=*/true);
+        mOrchestrator = new TabbedModeTabModelOrchestrator(/* tabMergingEnabled= */ true);
         mOrchestrator.createTabModels(
                 mChromeActivity, mTabCreatorManager, mNextTabPolicySupplier, 0);
         mTabModelSelector = mOrchestrator.getTabModelSelector();
@@ -250,7 +238,9 @@ public class TabPersistentStoreIntegrationTest {
     @Test
     @SmallTest
     @Feature({"TabPersistentStore"})
-    @Config(manifest = Config.NONE, shadows = {ShadowHomepageManager.class})
+    @Config(
+            manifest = Config.NONE,
+            shadows = {ShadowHomepageManager.class})
     public void testCloseAllTabsPersistsState() {
         AtomicInteger timesMetadataSaved = new AtomicInteger();
         observeOnMetadataSavedAsynchronously(timesMetadataSaved);
@@ -286,13 +276,14 @@ public class TabPersistentStoreIntegrationTest {
     }
 
     private void observeOnMetadataSavedAsynchronously(AtomicInteger timesMetadataSaved) {
-        TabPersistentStoreObserver observer = new TabPersistentStoreObserver() {
-            @Override
-            public void onMetadataSavedAsynchronously(
-                    TabModelSelectorMetadata modelSelectorMetadata) {
-                timesMetadataSaved.incrementAndGet();
-            }
-        };
+        TabPersistentStoreObserver observer =
+                new TabPersistentStoreObserver() {
+                    @Override
+                    public void onMetadataSavedAsynchronously(
+                            TabModelSelectorMetadata modelSelectorMetadata) {
+                        timesMetadataSaved.incrementAndGet();
+                    }
+                };
         mTabPersistentStore.addObserver(observer);
     }
 }

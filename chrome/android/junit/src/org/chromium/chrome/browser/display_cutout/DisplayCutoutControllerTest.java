@@ -45,26 +45,19 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DisplayCutoutControllerTest {
-    @Mock
-    private TabImpl mTab;
+    @Mock private TabImpl mTab;
 
-    @Mock
-    private WebContents mWebContents;
+    @Mock private WebContents mWebContents;
 
-    @Mock
-    private WindowAndroid mWindowAndroid;
+    @Mock private WindowAndroid mWindowAndroid;
 
-    @Mock
-    private Window mWindow;
+    @Mock private Window mWindow;
 
-    @Captor
-    private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
-    @Mock
-    private ChromeActivity mChromeActivity;
+    @Mock private ChromeActivity mChromeActivity;
 
-    @Mock
-    private InsetObserverView mInsetObserver;
+    @Mock private InsetObserverView mInsetObserver;
 
     private DisplayCutoutTabHelper mDisplayCutoutTabHelper;
     private DisplayCutoutController mController;
@@ -119,7 +112,8 @@ public class DisplayCutoutControllerTest {
         when(mTab.isUserInteractable()).thenReturn(true);
 
         mDisplayCutoutTabHelper.setViewportFit(ViewportFit.AUTO);
-        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
                 mController.computeDisplayCutoutMode());
     }
 
@@ -129,7 +123,8 @@ public class DisplayCutoutControllerTest {
         when(mTab.isUserInteractable()).thenReturn(true);
 
         mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER);
-        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
                 mController.computeDisplayCutoutMode());
     }
 
@@ -139,7 +134,8 @@ public class DisplayCutoutControllerTest {
         when(mTab.isUserInteractable()).thenReturn(true);
 
         mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER_FORCED_BY_USER_AGENT);
-        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
                 mController.computeDisplayCutoutMode());
     }
 
@@ -149,7 +145,8 @@ public class DisplayCutoutControllerTest {
         when(mTab.isUserInteractable()).thenReturn(true);
 
         mDisplayCutoutTabHelper.setViewportFit(ViewportFit.CONTAIN);
-        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER,
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER,
                 mController.computeDisplayCutoutMode());
     }
 
@@ -157,7 +154,8 @@ public class DisplayCutoutControllerTest {
     @SmallTest
     public void testCutoutModeWhenAutoAndNotInteractable() {
         mDisplayCutoutTabHelper.setViewportFit(ViewportFit.AUTO);
-        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
                 mController.computeDisplayCutoutMode());
     }
 
@@ -165,7 +163,8 @@ public class DisplayCutoutControllerTest {
     @SmallTest
     public void testCutoutModeWhenCoverAndNotInteractable() {
         mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER);
-        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
                 mController.computeDisplayCutoutMode());
     }
 
@@ -173,7 +172,8 @@ public class DisplayCutoutControllerTest {
     @SmallTest
     public void testCutoutModeWhenCoverForcedAndNotInteractable() {
         mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER_FORCED_BY_USER_AGENT);
-        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
                 mController.computeDisplayCutoutMode());
     }
 
@@ -181,7 +181,8 @@ public class DisplayCutoutControllerTest {
     @SmallTest
     public void testCutoutModeWhenContainAndNotInteractable() {
         mDisplayCutoutTabHelper.setViewportFit(ViewportFit.CONTAIN);
-        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+        Assert.assertEquals(
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
                 mController.computeDisplayCutoutMode());
     }
 

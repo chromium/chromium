@@ -66,50 +66,36 @@ import java.util.List;
 
 /** Unit tests for AppLaunchDrawBlocker behavior. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowSystemClock.class})
 @LooperMode(Mode.PAUSED)
 public class AppLaunchDrawBlockerUnitTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock
-    private View mView;
-    @Mock
-    private ViewTreeObserver mViewTreeObserver;
-    @Mock
-    private Intent mIntent;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private TemplateUrlServiceFactory.Natives mTemplateUrlServiceFactory;
-    @Mock
-    private TemplateUrlService mTemplateUrlService;
-    @Mock
-    private Supplier<Boolean> mShouldIgnoreIntentSupplier;
-    @Mock
-    private Supplier<Boolean> mIsTabletSupplier;
-    @Mock
-    private Supplier<Boolean> mShouldShowTabSwitcherOnStartSupplier;
-    @Mock
-    private Supplier<Boolean> mIsInstantStartEnabledSupplier;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private View mView;
+    @Mock private ViewTreeObserver mViewTreeObserver;
+    @Mock private Intent mIntent;
+    @Mock private Profile mProfile;
+    @Mock private TemplateUrlServiceFactory.Natives mTemplateUrlServiceFactory;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private Supplier<Boolean> mShouldIgnoreIntentSupplier;
+    @Mock private Supplier<Boolean> mIsTabletSupplier;
+    @Mock private Supplier<Boolean> mShouldShowTabSwitcherOnStartSupplier;
+    @Mock private Supplier<Boolean> mIsInstantStartEnabledSupplier;
 
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
     @Mock
     private IncognitoRestoreAppLaunchDrawBlockerFactory
             mIncognitoRestoreAppLaunchDrawBlockerFactoryMock;
-    @Mock
-    private IncognitoRestoreAppLaunchDrawBlocker mIncognitoRestoreAppLaunchDrawBlockerMock;
-    @Captor
-    private ArgumentCaptor<OnPreDrawListener> mOnPreDrawListenerArgumentCaptor;
-    @Captor
-    private ArgumentCaptor<LifecycleObserver> mLifecycleArgumentCaptor;
+
+    @Mock private IncognitoRestoreAppLaunchDrawBlocker mIncognitoRestoreAppLaunchDrawBlockerMock;
+    @Captor private ArgumentCaptor<OnPreDrawListener> mOnPreDrawListenerArgumentCaptor;
+    @Captor private ArgumentCaptor<LifecycleObserver> mLifecycleArgumentCaptor;
 
     private static final int INITIAL_TIME = 1000;
 
@@ -132,13 +118,23 @@ public class AppLaunchDrawBlockerUnitTest {
         when(mIsTabletSupplier.get()).thenReturn(false);
         when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(false);
         when(mIsInstantStartEnabledSupplier.get()).thenReturn(false);
-        when(mIncognitoRestoreAppLaunchDrawBlockerFactoryMock.create(eq(mIntentSupplier),
-                     eq(mShouldIgnoreIntentSupplier), eq(mActivityLifecycleDispatcher), any()))
+        when(mIncognitoRestoreAppLaunchDrawBlockerFactoryMock.create(
+                        eq(mIntentSupplier),
+                        eq(mShouldIgnoreIntentSupplier),
+                        eq(mActivityLifecycleDispatcher),
+                        any()))
                 .thenReturn(mIncognitoRestoreAppLaunchDrawBlockerMock);
-        mAppLaunchDrawBlocker = new AppLaunchDrawBlocker(mActivityLifecycleDispatcher,
-                mViewSupplier, mIntentSupplier, mShouldIgnoreIntentSupplier, mIsTabletSupplier,
-                mShouldShowTabSwitcherOnStartSupplier, mIsInstantStartEnabledSupplier,
-                mProfileSupplier, mIncognitoRestoreAppLaunchDrawBlockerFactoryMock);
+        mAppLaunchDrawBlocker =
+                new AppLaunchDrawBlocker(
+                        mActivityLifecycleDispatcher,
+                        mViewSupplier,
+                        mIntentSupplier,
+                        mShouldIgnoreIntentSupplier,
+                        mIsTabletSupplier,
+                        mShouldShowTabSwitcherOnStartSupplier,
+                        mIsInstantStartEnabledSupplier,
+                        mProfileSupplier,
+                        mIncognitoRestoreAppLaunchDrawBlockerFactoryMock);
         validateConstructorAndCaptureObservers();
         UmaRecorderHolder.resetForTesting();
         SystemClock.setCurrentTimeMillis(INITIAL_TIME);
@@ -147,21 +143,25 @@ public class AppLaunchDrawBlockerUnitTest {
     @Test
     public void testSearchEngineHadLogoPrefWritten() {
         // Set to false initially.
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, false);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, false);
 
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
         mStartStopWithNativeObserver.onStopWithNative();
 
-        assertTrue("SearchEngineHadLogo pref isn't written.",
-                ChromeSharedPreferences.getInstance().readBoolean(
-                        ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, false));
+        assertTrue(
+                "SearchEngineHadLogo pref isn't written.",
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, false));
     }
 
     @Test
     public void testLastTabNtp_phone_searchEngineHasLogo_noIntent() {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
 
         mInflationObserver.onPostInflationStartup();
@@ -181,8 +181,10 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabEmpty_phone_searchEngineHasLogo_noIntent() {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.EMPTY);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.EMPTY);
         setSearchEngineHasLogo(true);
 
         mInflationObserver.onPostInflationStartup();
@@ -202,8 +204,10 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabOther_phone_searchEngineHasLogo_noIntent() {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.OTHER);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.OTHER);
         setSearchEngineHasLogo(true);
 
         mInflationObserver.onPostInflationStartup();
@@ -214,8 +218,10 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabNtp_phone_searchEngineHasLogo_withIntent() {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
         mIntent = new Intent();
         mIntent.setData(Uri.parse("https://www.google.com"));
@@ -229,8 +235,10 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabEmpty_phone_searchEngineHasLogo_withIntentIgnore() {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.EMPTY);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.EMPTY);
         setSearchEngineHasLogo(true);
         mIntent = new Intent();
         mIntent.setData(Uri.parse("some/link"));
@@ -253,8 +261,10 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabEmpty_phone_noSearchEngineLogo_noIntent() {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.EMPTY);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.EMPTY);
         setSearchEngineHasLogo(false);
 
         mInflationObserver.onPostInflationStartup();
@@ -265,8 +275,10 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void testLastTabNtp_tablet_searchEngineHasLogo_noIntent() {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
         when(mIsTabletSupplier.get()).thenReturn(true);
 
@@ -278,9 +290,11 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void
-    testLastTabNtp_phone_searchEngineHasLogo_noIntent_tabSwitcherOnStartWithoutInstantStart() {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
+            testLastTabNtp_phone_searchEngineHasLogo_noIntent_tabSwitcherOnStartWithoutInstantStart() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
         when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(true);
 
@@ -300,9 +314,11 @@ public class AppLaunchDrawBlockerUnitTest {
 
     @Test
     public void
-    testLastTabNtp_phone_searchEngineHasLogo_noIntent_tabSwitcherOnStartWithInstantStart() {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
+            testLastTabNtp_phone_searchEngineHasLogo_noIntent_tabSwitcherOnStartWithInstantStart() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
         when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(true);
         when(mIsInstantStartEnabledSupplier.get()).thenReturn(true);
@@ -316,11 +332,14 @@ public class AppLaunchDrawBlockerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLastTabNtp_phone_searchEngineHasLogo_withIntent_incognito() {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
-        mIntent = IntentHandler.createTrustedOpenNewTabIntent(
-                ApplicationProvider.getApplicationContext(), true);
+        mIntent =
+                IntentHandler.createTrustedOpenNewTabIntent(
+                        ApplicationProvider.getApplicationContext(), true);
         mIntent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, true);
         when(mShouldIgnoreIntentSupplier.get()).thenReturn(false);
 
@@ -334,8 +353,10 @@ public class AppLaunchDrawBlockerUnitTest {
     public void testBlockedButShouldNotHaveRecorded() {
         // Same scenario as #testLastTabNtp_phone_searchEngineHasLogo_noIntent, but we assume the
         // prediction to block was wrong to verify the histogram is recorded correctly.
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.NTP);
         setSearchEngineHasLogo(true);
 
         mInflationObserver.onPostInflationStartup();
@@ -346,8 +367,10 @@ public class AppLaunchDrawBlockerUnitTest {
     public void testDidNotBlockButShouldHaveRecorded() {
         // Same scenario as #testLastTabEmpty_phone_noSearchEngineLogo_noIntent, but we assume the
         // prediction to not block was wrong to verify the histogram is recorded correctly.
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.OTHER);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.OTHER);
         setSearchEngineHasLogo(true);
 
         mInflationObserver.onPostInflationStartup();
@@ -393,7 +416,9 @@ public class AppLaunchDrawBlockerUnitTest {
         }
 
         verify(mIncognitoRestoreAppLaunchDrawBlockerMock, times(1)).shouldBlockDraw();
-        assertEquals("Duration not recorded.", 1,
+        assertEquals(
+                "Duration not recorded.",
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.AppLaunch.DurationDrawWasBlocked.OnIncognitoReauth", 10));
     }
@@ -416,8 +441,8 @@ public class AppLaunchDrawBlockerUnitTest {
     }
 
     private void setSearchEngineHasLogo(boolean hasLogo) {
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, hasLogo);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, hasLogo);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(hasLogo);
     }
 }

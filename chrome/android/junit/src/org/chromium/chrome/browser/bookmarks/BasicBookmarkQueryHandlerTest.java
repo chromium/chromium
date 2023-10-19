@@ -40,13 +40,10 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BasicBookmarkQueryHandlerTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
 
     private BasicBookmarkQueryHandler mHandler;
 
@@ -99,7 +96,7 @@ public class BasicBookmarkQueryHandlerTest {
                 .when(mBookmarkModel)
                 .searchBookmarks("A", 500);
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForSearch("A", /*powerFilter*/ null);
+                mHandler.buildBookmarkListForSearch("A", /* powerFilter= */ null);
         assertEquals(2, result.size());
     }
 }

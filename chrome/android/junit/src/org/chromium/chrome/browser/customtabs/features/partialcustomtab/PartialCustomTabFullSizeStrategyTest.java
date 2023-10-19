@@ -37,18 +37,23 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 public class PartialCustomTabFullSizeStrategyTest {
     private boolean mFullscreen;
 
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Rule
-    public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
+    @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     private PartialCustomTabFullSizeStrategy createPcctFullSizeStrategy() {
-        PartialCustomTabFullSizeStrategy pcct = new PartialCustomTabFullSizeStrategy(
-                mPCCTTestRule.mActivity, mPCCTTestRule.mOnResizedCallback,
-                mPCCTTestRule.mOnActivityLayoutCallback, mPCCTTestRule.mFullscreenManager, false,
-                true, mPCCTTestRule.mHandleStrategyFactory);
-        pcct.setMockViewForTesting(mPCCTTestRule.mCoordinatorLayout, mPCCTTestRule.mToolbarView,
+        PartialCustomTabFullSizeStrategy pcct =
+                new PartialCustomTabFullSizeStrategy(
+                        mPCCTTestRule.mActivity,
+                        mPCCTTestRule.mOnResizedCallback,
+                        mPCCTTestRule.mOnActivityLayoutCallback,
+                        mPCCTTestRule.mFullscreenManager,
+                        false,
+                        true,
+                        mPCCTTestRule.mHandleStrategyFactory);
+        pcct.setMockViewForTesting(
+                mPCCTTestRule.mCoordinatorLayout,
+                mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator);
         return pcct;
     }
@@ -61,15 +66,24 @@ public class PartialCustomTabFullSizeStrategyTest {
 
         PartialCustomTabFullSizeStrategy strategy = createPcctFullSizeStrategy();
 
-        assertEquals("Full-Size PCCT should be created",
+        assertEquals(
+                "Full-Size PCCT should be created",
                 PartialCustomTabBaseStrategy.PartialCustomTabType.FULL_SIZE,
                 strategy.getStrategyType());
-        assertEquals("Full-Size has wrong height", MATCH_PARENT,
+        assertEquals(
+                "Full-Size has wrong height",
+                MATCH_PARENT,
                 mPCCTTestRule.mAttributeResults.get(0).height);
-        assertEquals("Full-Size has wrong width", MATCH_PARENT,
+        assertEquals(
+                "Full-Size has wrong width",
+                MATCH_PARENT,
                 mPCCTTestRule.mAttributeResults.get(0).width);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
-                .onActivityLayout(eq(0), eq(0), eq(DEVICE_WIDTH_LANDSCAPE), eq(MULTIWINDOW_HEIGHT),
+                .onActivityLayout(
+                        eq(0),
+                        eq(0),
+                        eq(DEVICE_WIDTH_LANDSCAPE),
+                        eq(MULTIWINDOW_HEIGHT),
                         eq(ACTIVITY_LAYOUT_STATE_FULL_SCREEN));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
@@ -82,17 +96,25 @@ public class PartialCustomTabFullSizeStrategyTest {
 
         PartialCustomTabFullSizeStrategy strategy = createPcctFullSizeStrategy();
 
-        assertEquals("Full-Size PCCT should be created",
+        assertEquals(
+                "Full-Size PCCT should be created",
                 PartialCustomTabBaseStrategy.PartialCustomTabType.FULL_SIZE,
                 strategy.getStrategyType());
-        assertEquals("Full-Size has wrong height", MATCH_PARENT,
+        assertEquals(
+                "Full-Size has wrong height",
+                MATCH_PARENT,
                 mPCCTTestRule.mAttributeResults.get(0).height);
-        assertEquals("Full-Size has wrong width", MATCH_PARENT,
+        assertEquals(
+                "Full-Size has wrong width",
+                MATCH_PARENT,
                 mPCCTTestRule.mAttributeResults.get(0).width);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
-                .onActivityLayout(eq(0), eq(0), eq(DEVICE_WIDTH), eq(MULTIWINDOW_HEIGHT),
+                .onActivityLayout(
+                        eq(0),
+                        eq(0),
+                        eq(DEVICE_WIDTH),
+                        eq(MULTIWINDOW_HEIGHT),
                         eq(ACTIVITY_LAYOUT_STATE_FULL_SCREEN));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 }
- 

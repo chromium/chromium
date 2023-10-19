@@ -32,11 +32,13 @@ public class BarrierTest {
         CRED_MAN,
         FIDO_2_API,
     }
+
     public enum ApiCallStatus {
         NONE,
         SUCCESS,
         FAILURE,
     }
+
     public enum Expectation {
         NONE,
         CRED_MAN_RAN,
@@ -44,117 +46,150 @@ public class BarrierTest {
         BOTH_RAN,
         ERROR_RAN,
     }
+
     @Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {{/*mode=*/Barrier.Mode.ONLY_CRED_MAN,
-                                                     /*firstCompletedApi=*/ApiCallType.CRED_MAN,
-                                                     /*firstCompletedStatus=*/ApiCallStatus.SUCCESS,
-                                                     /*secondCompletion=*/ApiCallType.NONE,
-                                                     /*secondCompletionType=*/ApiCallStatus.NONE,
-                                                     /*expectation=*/Expectation.CRED_MAN_RAN},
-                {/*mode=*/Barrier.Mode.ONLY_CRED_MAN,
-                        /*firstCompletedApi=*/ApiCallType.CRED_MAN,
-                        /*firstCompletedStatus=*/ApiCallStatus.FAILURE,
-                        /*secondCompletion=*/ApiCallType.NONE,
-                        /*secondCompletionType=*/ApiCallStatus.NONE,
-                        /*expectation=*/Expectation.ERROR_RAN},
-
-                {/*mode=*/Barrier.Mode.ONLY_FIDO_2_API,
-                        /*firstCompletion=*/ApiCallType.FIDO_2_API,
-                        /*firstCompletionType=*/ApiCallStatus.SUCCESS,
-                        /*secondCompletion=*/ApiCallType.NONE,
-                        /*secondCompletionType=*/ApiCallStatus.NONE,
-                        /*expectation=*/Expectation.FIDO_2_API_RAN},
-                {/*mode=*/Barrier.Mode.ONLY_FIDO_2_API,
-                        /*firstCompletion=*/ApiCallType.FIDO_2_API,
-                        /*firstCompletionType=*/ApiCallStatus.FAILURE,
-                        /*secondCompletion=*/ApiCallType.NONE,
-                        /*secondCompletionType=*/ApiCallStatus.NONE,
-                        /*expectation=*/Expectation.ERROR_RAN},
-
-                {/*mode=*/Barrier.Mode.BOTH,
-                        /*firstCompletion=*/ApiCallType.FIDO_2_API,
-                        /*firstCompletionType=*/ApiCallStatus.SUCCESS,
-                        /*secondCompletion=*/ApiCallType.CRED_MAN,
-                        /*secondCompletionType=*/ApiCallStatus.SUCCESS,
-                        /*expectation=*/Expectation.BOTH_RAN},
-                {/*mode=*/Barrier.Mode.BOTH,
-                        /*firstCompletion=*/ApiCallType.FIDO_2_API,
-                        /*firstCompletionType=*/ApiCallStatus.SUCCESS,
-                        /*secondCompletion=*/ApiCallType.CRED_MAN,
-                        /*secondCompletionType=*/ApiCallStatus.FAILURE,
-                        /*expectation=*/Expectation.FIDO_2_API_RAN},
-                {/*mode=*/Barrier.Mode.BOTH,
-                        /*firstCompletion=*/ApiCallType.FIDO_2_API,
-                        /*firstCompletionType=*/ApiCallStatus.SUCCESS,
-                        /*secondCompletion=*/ApiCallType.NONE,
-                        /*secondCompletionType=*/ApiCallStatus.NONE,
-                        /*expectation=*/Expectation.NONE},
-                {/*mode=*/Barrier.Mode.BOTH,
-                        /*firstCompletion=*/ApiCallType.FIDO_2_API,
-                        /*firstCompletionType=*/ApiCallStatus.FAILURE,
-                        /*secondCompletion=*/ApiCallType.CRED_MAN,
-                        /*secondCompletionType=*/ApiCallStatus.SUCCESS,
-                        /*expectation=*/Expectation.CRED_MAN_RAN},
-                {/*mode=*/Barrier.Mode.BOTH,
-                        /*firstCompletion=*/ApiCallType.FIDO_2_API,
-                        /*firstCompletionType=*/ApiCallStatus.FAILURE,
-                        /*secondCompletion=*/ApiCallType.CRED_MAN,
-                        /*secondCompletionType=*/ApiCallStatus.FAILURE,
-                        /*expectation=*/Expectation.ERROR_RAN},
-                {/*mode=*/Barrier.Mode.BOTH,
-                        /*firstCompletion=*/ApiCallType.CRED_MAN,
-                        /*firstCompletionType=*/ApiCallStatus.SUCCESS,
-                        /*secondCompletion=*/ApiCallType.FIDO_2_API,
-                        /*secondCompletionType=*/ApiCallStatus.SUCCESS,
-                        /*expectation=*/Expectation.BOTH_RAN},
-                {/*mode=*/Barrier.Mode.BOTH,
-                        /*firstCompletion=*/ApiCallType.CRED_MAN,
-                        /*firstCompletionType=*/ApiCallStatus.SUCCESS,
-                        /*secondCompletion=*/ApiCallType.FIDO_2_API,
-                        /*secondCompletionType=*/ApiCallStatus.FAILURE,
-                        /*expectation=*/Expectation.CRED_MAN_RAN},
-                {/*mode=*/Barrier.Mode.BOTH,
-                        /*firstCompletion=*/ApiCallType.CRED_MAN,
-                        /*firstCompletionType=*/ApiCallStatus.SUCCESS,
-                        /*secondCompletion=*/ApiCallType.NONE,
-                        /*secondCompletionType=*/ApiCallStatus.NONE,
-                        /*expectation=*/Expectation.NONE},
-                {/*mode=*/Barrier.Mode.BOTH,
-                        /*firstCompletion=*/ApiCallType.CRED_MAN,
-                        /*firstCompletionType=*/ApiCallStatus.FAILURE,
-                        /*secondCompletion=*/ApiCallType.FIDO_2_API,
-                        /*secondCompletionType=*/ApiCallStatus.SUCCESS,
-                        /*expectation=*/Expectation.FIDO_2_API_RAN},
-                {/*mode=*/Barrier.Mode.BOTH,
-                        /*firstCompletion=*/ApiCallType.CRED_MAN,
-                        /*firstCompletionType=*/ApiCallStatus.FAILURE,
-                        /*secondCompletion=*/ApiCallType.FIDO_2_API,
-                        /*secondCompletionType=*/ApiCallStatus.FAILURE,
-                        /*expectation=*/Expectation.ERROR_RAN}});
+        return Arrays.asList(
+                new Object[][] {
+                    {
+                        /* mode= */ Barrier.Mode.ONLY_CRED_MAN,
+                        /* firstCompletedApi= */ ApiCallType.CRED_MAN,
+                        /* firstCompletedStatus= */ ApiCallStatus.SUCCESS,
+                        /* secondCompletion= */ ApiCallType.NONE,
+                        /* secondCompletionType= */ ApiCallStatus.NONE,
+                        /* expectation= */ Expectation.CRED_MAN_RAN
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.ONLY_CRED_MAN,
+                        /* firstCompletedApi= */ ApiCallType.CRED_MAN,
+                        /* firstCompletedStatus= */ ApiCallStatus.FAILURE,
+                        /* secondCompletion= */ ApiCallType.NONE,
+                        /* secondCompletionType= */ ApiCallStatus.NONE,
+                        /* expectation= */ Expectation.ERROR_RAN
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.ONLY_FIDO_2_API,
+                        /* firstCompletion= */ ApiCallType.FIDO_2_API,
+                        /* firstCompletionType= */ ApiCallStatus.SUCCESS,
+                        /* secondCompletion= */ ApiCallType.NONE,
+                        /* secondCompletionType= */ ApiCallStatus.NONE,
+                        /* expectation= */ Expectation.FIDO_2_API_RAN
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.ONLY_FIDO_2_API,
+                        /* firstCompletion= */ ApiCallType.FIDO_2_API,
+                        /* firstCompletionType= */ ApiCallStatus.FAILURE,
+                        /* secondCompletion= */ ApiCallType.NONE,
+                        /* secondCompletionType= */ ApiCallStatus.NONE,
+                        /* expectation= */ Expectation.ERROR_RAN
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.BOTH,
+                        /* firstCompletion= */ ApiCallType.FIDO_2_API,
+                        /* firstCompletionType= */ ApiCallStatus.SUCCESS,
+                        /* secondCompletion= */ ApiCallType.CRED_MAN,
+                        /* secondCompletionType= */ ApiCallStatus.SUCCESS,
+                        /* expectation= */ Expectation.BOTH_RAN
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.BOTH,
+                        /* firstCompletion= */ ApiCallType.FIDO_2_API,
+                        /* firstCompletionType= */ ApiCallStatus.SUCCESS,
+                        /* secondCompletion= */ ApiCallType.CRED_MAN,
+                        /* secondCompletionType= */ ApiCallStatus.FAILURE,
+                        /* expectation= */ Expectation.FIDO_2_API_RAN
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.BOTH,
+                        /* firstCompletion= */ ApiCallType.FIDO_2_API,
+                        /* firstCompletionType= */ ApiCallStatus.SUCCESS,
+                        /* secondCompletion= */ ApiCallType.NONE,
+                        /* secondCompletionType= */ ApiCallStatus.NONE,
+                        /* expectation= */ Expectation.NONE
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.BOTH,
+                        /* firstCompletion= */ ApiCallType.FIDO_2_API,
+                        /* firstCompletionType= */ ApiCallStatus.FAILURE,
+                        /* secondCompletion= */ ApiCallType.CRED_MAN,
+                        /* secondCompletionType= */ ApiCallStatus.SUCCESS,
+                        /* expectation= */ Expectation.CRED_MAN_RAN
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.BOTH,
+                        /* firstCompletion= */ ApiCallType.FIDO_2_API,
+                        /* firstCompletionType= */ ApiCallStatus.FAILURE,
+                        /* secondCompletion= */ ApiCallType.CRED_MAN,
+                        /* secondCompletionType= */ ApiCallStatus.FAILURE,
+                        /* expectation= */ Expectation.ERROR_RAN
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.BOTH,
+                        /* firstCompletion= */ ApiCallType.CRED_MAN,
+                        /* firstCompletionType= */ ApiCallStatus.SUCCESS,
+                        /* secondCompletion= */ ApiCallType.FIDO_2_API,
+                        /* secondCompletionType= */ ApiCallStatus.SUCCESS,
+                        /* expectation= */ Expectation.BOTH_RAN
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.BOTH,
+                        /* firstCompletion= */ ApiCallType.CRED_MAN,
+                        /* firstCompletionType= */ ApiCallStatus.SUCCESS,
+                        /* secondCompletion= */ ApiCallType.FIDO_2_API,
+                        /* secondCompletionType= */ ApiCallStatus.FAILURE,
+                        /* expectation= */ Expectation.CRED_MAN_RAN
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.BOTH,
+                        /* firstCompletion= */ ApiCallType.CRED_MAN,
+                        /* firstCompletionType= */ ApiCallStatus.SUCCESS,
+                        /* secondCompletion= */ ApiCallType.NONE,
+                        /* secondCompletionType= */ ApiCallStatus.NONE,
+                        /* expectation= */ Expectation.NONE
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.BOTH,
+                        /* firstCompletion= */ ApiCallType.CRED_MAN,
+                        /* firstCompletionType= */ ApiCallStatus.FAILURE,
+                        /* secondCompletion= */ ApiCallType.FIDO_2_API,
+                        /* secondCompletionType= */ ApiCallStatus.SUCCESS,
+                        /* expectation= */ Expectation.FIDO_2_API_RAN
+                    },
+                    {
+                        /* mode= */ Barrier.Mode.BOTH,
+                        /* firstCompletion= */ ApiCallType.CRED_MAN,
+                        /* firstCompletionType= */ ApiCallStatus.FAILURE,
+                        /* secondCompletion= */ ApiCallType.FIDO_2_API,
+                        /* secondCompletionType= */ ApiCallStatus.FAILURE,
+                        /* expectation= */ Expectation.ERROR_RAN
+                    }
+                });
     }
+
     @Parameter(0)
     public Barrier.Mode mMode;
+
     @Parameter(1)
     public ApiCallType mFirstCompletedApi;
+
     @Parameter(2)
     public ApiCallStatus mFirstCompletedStatus;
+
     @Parameter(3)
     public ApiCallType mSecondCompletedApi;
+
     @Parameter(4)
     public ApiCallStatus mSecondCompletedStatus;
+
     @Parameter(5)
     public Expectation mExpectation;
 
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
-    @Mock
-    Runnable mCredManSuccesfulRunnable;
-    @Mock
-    Runnable mFido2ApiSuccessfulRunnable;
-    @Mock
-    Callback<Integer> mErrorCallback;
+    @Mock Runnable mCredManSuccesfulRunnable;
+    @Mock Runnable mFido2ApiSuccessfulRunnable;
+    @Mock Callback<Integer> mErrorCallback;
 
     @Before
     public void setUp() throws Exception {

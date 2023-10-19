@@ -93,19 +93,22 @@ public final class AutofillVcnEnrollBottomSheetContentTest {
 
     @Test
     public void testBottomSheetAccessibilityContentDescriotion() {
-        assertThat(mContent.getSheetContentDescriptionStringId(),
+        assertThat(
+                mContent.getSheetContentDescriptionStringId(),
                 equalTo(R.string.autofill_virtual_card_enroll_content_description));
     }
 
     @Test
     public void testBottomSheetFullHeightAccessibilityDescription() {
-        assertThat(mContent.getSheetFullHeightAccessibilityStringId(),
+        assertThat(
+                mContent.getSheetFullHeightAccessibilityStringId(),
                 equalTo(R.string.autofill_virtual_card_enroll_full_height_content_description));
     }
 
     @Test
     public void testBottomSheetClosedAccessibilityDescription() {
-        assertThat(mContent.getSheetClosedAccessibilityStringId(),
+        assertThat(
+                mContent.getSheetClosedAccessibilityStringId(),
                 equalTo(R.string.autofill_virtual_card_enroll_closed_description));
     }
 
@@ -116,7 +119,8 @@ public final class AutofillVcnEnrollBottomSheetContentTest {
 
     @Test
     public void testContentDeterminesBottomSheetHeight() {
-        assertThat(mContent.getFullHeightRatio(),
+        assertThat(
+                mContent.getFullHeightRatio(),
                 equalTo((float) BottomSheetContent.HeightMode.WRAP_CONTENT));
     }
 }

@@ -31,9 +31,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.Origin;
 
-/**
- * Tests for {@link PermissionUpdater}.
- */
+/** Tests for {@link PermissionUpdater}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PermissionUpdaterTest {
@@ -41,16 +39,12 @@ public class PermissionUpdaterTest {
     private static final String URL = "https://www.website.com";
     private static final String PACKAGE_NAME = "com.package.name";
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    public InstalledWebappPermissionManager mPermissionManager;
+    @Mock public InstalledWebappPermissionManager mPermissionManager;
 
-    @Mock
-    public NotificationPermissionUpdater mNotificationsPermissionUpdater;
-    @Mock
-    public LocationPermissionUpdater mLocationPermissionUpdater;
+    @Mock public NotificationPermissionUpdater mNotificationsPermissionUpdater;
+    @Mock public LocationPermissionUpdater mLocationPermissionUpdater;
 
     private PermissionUpdater mPermissionUpdater;
     private ShadowPackageManager mShadowPackageManager;
@@ -61,8 +55,11 @@ public class PermissionUpdaterTest {
 
         PackageManager pm = RuntimeEnvironment.application.getPackageManager();
         mShadowPackageManager = shadowOf(pm);
-        mPermissionUpdater = new PermissionUpdater(
-                mPermissionManager, mNotificationsPermissionUpdater, mLocationPermissionUpdater);
+        mPermissionUpdater =
+                new PermissionUpdater(
+                        mPermissionManager,
+                        mNotificationsPermissionUpdater,
+                        mLocationPermissionUpdater);
     }
 
     @Test

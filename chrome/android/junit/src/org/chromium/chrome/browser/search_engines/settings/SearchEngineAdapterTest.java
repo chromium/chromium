@@ -47,27 +47,44 @@ public class SearchEngineAdapterTest {
         MockTemplateUrl custom4 = new MockTemplateUrl(104, "custom_keyword4", currentTime - 3);
         MockTemplateUrl custom5 = new MockTemplateUrl(105, "custom_keyword5", currentTime - 4);
 
-        ArrayList<TemplateUrl> templateUrls = new ArrayList<>(Arrays.asList(
-                dse, prepopulated1, prepopulated2, prepopulated3, custom1, custom2, custom3));
+        ArrayList<TemplateUrl> templateUrls =
+                new ArrayList<>(
+                        Arrays.asList(
+                                dse,
+                                prepopulated1,
+                                prepopulated2,
+                                prepopulated3,
+                                custom1,
+                                custom2,
+                                custom3));
 
         List<TemplateUrl> output = new ArrayList<>(templateUrls);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, dse);
-        assertThat(output,
-                contains(prepopulated1, prepopulated2, prepopulated3, dse, custom1, custom2,
+        assertThat(
+                output,
+                contains(
+                        prepopulated1,
+                        prepopulated2,
+                        prepopulated3,
+                        dse,
+                        custom1,
+                        custom2,
                         custom3));
 
         // Mark one of the custom engines as older than the visible threshold.
         custom2.updateAgeInDays(3);
         output = new ArrayList<>(templateUrls);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, dse);
-        assertThat(output,
+        assertThat(
+                output,
                 contains(prepopulated1, prepopulated2, prepopulated3, dse, custom1, custom3));
 
         // Mark one of the custom engines as older than the other.
         custom1.updateAgeInDays(1);
         output = new ArrayList<>(templateUrls);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, dse);
-        assertThat(output,
+        assertThat(
+                output,
                 contains(prepopulated1, prepopulated2, prepopulated3, dse, custom3, custom1));
 
         // Include more than 3 custom serach engines and ensure they're filtered accordingly.
@@ -75,14 +92,29 @@ public class SearchEngineAdapterTest {
         templateUrls.add(custom5);
         output = new ArrayList<>(templateUrls);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, dse);
-        assertThat(output,
-                contains(prepopulated1, prepopulated2, prepopulated3, dse, custom3, custom4,
+        assertThat(
+                output,
+                contains(
+                        prepopulated1,
+                        prepopulated2,
+                        prepopulated3,
+                        dse,
+                        custom3,
+                        custom4,
                         custom5));
 
         // Specify an older custom search engine as default, and ensure it is included as well as
         // the 3 most recent custom search engines.
-        output = new ArrayList<>(Arrays.asList(
-                prepopulated1, prepopulated2, custom1, custom2, custom3, custom4, custom5));
+        output =
+                new ArrayList<>(
+                        Arrays.asList(
+                                prepopulated1,
+                                prepopulated2,
+                                custom1,
+                                custom2,
+                                custom3,
+                                custom4,
+                                custom5));
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, custom2);
         assertThat(
                 output, contains(prepopulated1, prepopulated2, custom2, custom3, custom4, custom5));

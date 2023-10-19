@@ -35,21 +35,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Unit tests for {@link HistoricalTabModelObserver}.
- */
+/** Unit tests for {@link HistoricalTabModelObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HistoricalTabModelObserverUnitTest {
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
 
     private Context mContext;
-    @Mock
-    private SharedPreferences mSharedPreferences;
-    @Mock
-    private TabModel mTabModel;
-    @Mock
-    private HistoricalTabSaver mHistoricalTabSaver;
+    @Mock private SharedPreferences mSharedPreferences;
+    @Mock private TabModel mTabModel;
+    @Mock private HistoricalTabSaver mHistoricalTabSaver;
 
     private HistoricalTabModelObserver mObserver;
 

@@ -34,25 +34,20 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/**
- * Robolectric tests for {@link IncognitoCustomTabSnapshotController}.
- */
+/** Robolectric tests for {@link IncognitoCustomTabSnapshotController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class IncognitoCustomTabSnapshotControllerTest {
-    @Mock
-    private Window mWindowMock;
+    @Mock private Window mWindowMock;
 
-    @Mock
-    private Activity mActivityMock;
+    @Mock private Activity mActivityMock;
 
     private boolean mIsIncognitoShowing;
     private WindowManager.LayoutParams mParams;
     private final Supplier<Boolean> mIsIncognitoShowingSupplier = () -> mIsIncognitoShowing;
 
-    @Rule
-    public TestRule mJunitProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mJunitProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {

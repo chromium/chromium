@@ -26,7 +26,9 @@ import org.chromium.media_session.mojom.MediaSessionAction;
  * handles intent actions correctly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {MediaNotificationTestShadowResources.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationServiceActionsTest extends MediaNotificationTestBase {
     @Test
     public void testProcessIntentWithNoAction() {
@@ -110,8 +112,8 @@ public class MediaNotificationServiceActionsTest extends MediaNotificationTestBa
     public void testProcessNotificationButtonAction_PreviousTrack() {
         setUpService();
 
-        mService.getImpl().processIntent(
-                new Intent(MediaNotificationController.ACTION_PREVIOUS_TRACK));
+        mService.getImpl()
+                .processIntent(new Intent(MediaNotificationController.ACTION_PREVIOUS_TRACK));
         verify(getController()).onMediaSessionAction(MediaSessionAction.PREVIOUS_TRACK);
     }
 
@@ -127,8 +129,8 @@ public class MediaNotificationServiceActionsTest extends MediaNotificationTestBa
     public void testProcessNotificationButtonAction_SeekForward() {
         setUpService();
 
-        mService.getImpl().processIntent(
-                new Intent(MediaNotificationController.ACTION_SEEK_FORWARD));
+        mService.getImpl()
+                .processIntent(new Intent(MediaNotificationController.ACTION_SEEK_FORWARD));
         verify(getController()).onMediaSessionAction(MediaSessionAction.SEEK_FORWARD);
     }
 
@@ -136,8 +138,8 @@ public class MediaNotificationServiceActionsTest extends MediaNotificationTestBa
     public void testProcessNotificationButtonAction_SeekBackward() {
         setUpService();
 
-        mService.getImpl().processIntent(
-                new Intent(MediaNotificationController.ACTION_SEEK_BACKWARD));
+        mService.getImpl()
+                .processIntent(new Intent(MediaNotificationController.ACTION_SEEK_BACKWARD));
         verify(getController()).onMediaSessionAction(MediaSessionAction.SEEK_BACKWARD);
     }
 }

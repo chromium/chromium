@@ -107,8 +107,10 @@ public class TabDragSourceTest {
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        mContext = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
 
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
@@ -255,7 +257,8 @@ public class TabDragSourceTest {
                 mDragDropDelegate,
                 mTabDropTarget,
                 mBrowserControlsStateProvider);
-        assertTrue("Failed to start the tag drag action.",
+        assertTrue(
+                "Failed to start the tag drag action.",
                 mTabDragSource.startTabDragAction(
                         mTabsToolbarView, mStripLayoutHelper, tabBeingDragged, DRAG_START_POINT));
         verify(mDragDropDelegate)
@@ -285,8 +288,9 @@ public class TabDragSourceTest {
                 mDragDropDelegate,
                 mTabDropTarget,
                 mBrowserControlsStateProvider);
-        assertFalse(mTabDragSource.startTabDragAction(
-                mTabsToolbarView, mStripLayoutHelper, tabBeingDragged, DRAG_START_POINT));
+        assertFalse(
+                mTabDragSource.startTabDragAction(
+                        mTabsToolbarView, mStripLayoutHelper, tabBeingDragged, DRAG_START_POINT));
         verify(mTabsToolbarView, never()).startDragAndDrop(any(), any(), any(), anyInt());
     }
 
@@ -339,10 +343,12 @@ public class TabDragSourceTest {
                 mTabDropTarget,
                 mBrowserControlsStateProvider);
         assertTrue(mTabDragSource.getDragSourceTabsToolbarHashCode() == 0);
-        assertTrue(mTabDragSource.startTabDragAction(
-                mTabsToolbarView, mStripLayoutHelper, tabBeingDragged, DRAG_START_POINT));
-        assertTrue(mTabDragSource.getDragSourceTabsToolbarHashCode()
-                == System.identityHashCode(mTabsToolbarView));
+        assertTrue(
+                mTabDragSource.startTabDragAction(
+                        mTabsToolbarView, mStripLayoutHelper, tabBeingDragged, DRAG_START_POINT));
+        assertTrue(
+                mTabDragSource.getDragSourceTabsToolbarHashCode()
+                        == System.identityHashCode(mTabsToolbarView));
     }
 
     /**
@@ -361,17 +367,26 @@ public class TabDragSourceTest {
                 mTabDropTarget,
                 mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
-        mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
-                mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
+        mTabDragSource.startTabDragAction(
+                mTabsToolbarView,
+                mStripLayoutHelper,
+                mStripLayoutHelper.getTabById(mClickedTab.getId()),
+                DRAG_START_POINT);
 
         // Perform drag n drop simulation actions for movement within the strip layout.
-        simulateDragDropEvents(/*withinStripLayout*/ true);
+        simulateDragDropEvents(/* withinStripLayout= */ true);
 
         // Verify appropriate events are generated to simulate movement within the strip layout.
         verify(mStripLayoutHelper, times(1))
                 .onDownInternal(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyInt());
         verify(mStripLayoutHelper, times(4))
-                .drag(anyLong(), anyFloat(), anyFloat(), anyFloat(), anyFloat(), anyFloat(),
+                .drag(
+                        anyLong(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
                         anyFloat());
         verify(mStripLayoutHelper, times(1)).onUpOrCancel(anyLong());
     }
@@ -392,17 +407,26 @@ public class TabDragSourceTest {
                 mTabDropTarget,
                 mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
-        mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
-                mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
+        mTabDragSource.startTabDragAction(
+                mTabsToolbarView,
+                mStripLayoutHelper,
+                mStripLayoutHelper.getTabById(mClickedTab.getId()),
+                DRAG_START_POINT);
 
         // Perform drag n drop simulation actions for movement outside the strip layout.
-        simulateDragDropEvents(/*withinStripLayout*/ false);
+        simulateDragDropEvents(/* withinStripLayout= */ false);
 
         // Verify appropriate events are generated to simulate movement outside the strip layout.
         verify(mStripLayoutHelper, times(1))
                 .onDownInternal(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyInt());
         verify(mStripLayoutHelper, times(5))
-                .drag(anyLong(), anyFloat(), anyFloat(), anyFloat(), anyFloat(), anyFloat(),
+                .drag(
+                        anyLong(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
                         anyFloat());
         verify(mStripLayoutHelper, times(1)).onUpOrCancel(anyLong());
     }
@@ -414,7 +438,7 @@ public class TabDragSourceTest {
      */
     @Test
     public void
-    test_OnDragListenerImpl_ForWithinStripMovement_NoNewWindowIsOpened_ReturnsSuccess() {
+            test_OnDragListenerImpl_ForWithinStripMovement_NoNewWindowIsOpened_ReturnsSuccess() {
         // Prepare
         initializeTest(false, false, 1, 5);
         mTabDragSource.prepareForDragDrop(
@@ -424,15 +448,17 @@ public class TabDragSourceTest {
                 mTabDropTarget,
                 mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
-        mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
-                mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
+        mTabDragSource.startTabDragAction(
+                mTabsToolbarView,
+                mStripLayoutHelper,
+                mStripLayoutHelper.getTabById(mClickedTab.getId()),
+                DRAG_START_POINT);
 
         // Perform drag n drop simulation actions for movement within the strip layout.
-        simulateDragDropEvents(/*withinStripLayout*/ true);
+        simulateDragDropEvents(/* withinStripLayout= */ true);
 
-        // Verify
-        // Since the drop is within the TabToolbar then no tab is move out to a new/existing Chrome
-        // Window.
+        // Verify Since the drop is within the TabToolbar then no tab is move out to a
+        // new/existing Chrome Window.
         verify(mTabDragSource, times(0)).openTabInNewWindow();
     }
 
@@ -452,15 +478,17 @@ public class TabDragSourceTest {
                 mTabDropTarget,
                 mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
-        mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
-                mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
+        mTabDragSource.startTabDragAction(
+                mTabsToolbarView,
+                mStripLayoutHelper,
+                mStripLayoutHelper.getTabById(mClickedTab.getId()),
+                DRAG_START_POINT);
 
         // Perform drag n drop simulation actions for movement outside the strip layout.
-        simulateDragDropEvents(/*withinStripLayout*/ false);
+        simulateDragDropEvents(/* withinStripLayout= */ false);
 
-        // Verify
-        // Since the drop is outside the TabToolbar area the tab will be move to a new Chrome
-        // Window.
+        // Verify Since the drop is outside the TabToolbar area the tab will be move to a new
+        // Chrome Window.
         verify(mTabDragSource, times(1)).openTabInNewWindow();
     }
 
@@ -480,8 +508,11 @@ public class TabDragSourceTest {
                 mTabDropTarget,
                 mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
-        mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
-                mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
+        mTabDragSource.startTabDragAction(
+                mTabsToolbarView,
+                mStripLayoutHelper,
+                mStripLayoutHelper.getTabById(mClickedTab.getId()),
+                DRAG_START_POINT);
 
         // Perform drag n drop simulation action.
         TabDragSource.OnDragListenerImpl onTabDragListener = simulateDragDropEvents(true);
@@ -504,18 +535,21 @@ public class TabDragSourceTest {
             eventsOutsideStripLayout(onTabDragListener);
         }
 
-        assertTrue("Toolbar hash code should match.",
+        assertTrue(
+                "Toolbar hash code should match.",
                 mTabDragSource.getDragSourceTabsToolbarHashCode()
                         == System.identityHashCode(mTabsToolbarView));
         if (withinStripLayout) {
             onTabDragListener.onDrag(
                     mTabsToolbarView, createDragEvent(DragEvent.ACTION_DRAG_ENDED, 0f, 0f, 0));
         } else {
-            onTabDragListener.onDrag(mTabsToolbarView,
+            onTabDragListener.onDrag(
+                    mTabsToolbarView,
                     createDragEvent(
                             DragEvent.ACTION_DRAG_ENDED, DROP_X_SCREEN_POS, DROP_Y_SCREEN_POS, 0));
         }
-        assertTrue("Toolbar hash code should be cleared.",
+        assertTrue(
+                "Toolbar hash code should be cleared.",
                 mTabDragSource.getDragSourceTabsToolbarHashCode() == 0);
 
         return onTabDragListener;
@@ -527,25 +561,43 @@ public class TabDragSourceTest {
         // tab. Within the tab strip movement is when horizontal/x position stays within the strip
         // width and vertical/y stays within the strip height. The top left of the strip layout is
         // (0f, 0f). For verification the y-offset is zero.
-        onTabDragListener.onDrag(mTabsToolbarView,
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
                 createDragEvent(
                         DragEvent.ACTION_DRAG_STARTED, TAB_STRIP_X_START, TAB_STRIP_Y_START, 0));
-        onTabDragListener.onDrag(mTabsToolbarView,
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
                 createDragEvent(
                         DragEvent.ACTION_DRAG_ENTERED, TAB_STRIP_X_START, TAB_STRIP_Y_START, 0));
 
-        onTabDragListener.onDrag(mTabsToolbarView,
-                createDragEvent(DragEvent.ACTION_DRAG_LOCATION, TAB_STRIP_X_START + TAB_X_OFFSET,
-                        TAB_STRIP_Y_START, 0));
-        onTabDragListener.onDrag(mTabsToolbarView,
-                createDragEvent(DragEvent.ACTION_DRAG_LOCATION,
-                        TAB_STRIP_X_START + 2 * TAB_X_OFFSET, TAB_STRIP_Y_START, 0));
-        onTabDragListener.onDrag(mTabsToolbarView,
-                createDragEvent(DragEvent.ACTION_DRAG_LOCATION,
-                        TAB_STRIP_X_START + 3 * TAB_X_OFFSET, TAB_STRIP_Y_START, 0));
-        onTabDragListener.onDrag(mTabsToolbarView,
-                createDragEvent(DragEvent.ACTION_DRAG_LOCATION,
-                        TAB_STRIP_X_START + 4 * TAB_X_OFFSET, TAB_STRIP_Y_START, 0));
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
+                createDragEvent(
+                        DragEvent.ACTION_DRAG_LOCATION,
+                        TAB_STRIP_X_START + TAB_X_OFFSET,
+                        TAB_STRIP_Y_START,
+                        0));
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
+                createDragEvent(
+                        DragEvent.ACTION_DRAG_LOCATION,
+                        TAB_STRIP_X_START + 2 * TAB_X_OFFSET,
+                        TAB_STRIP_Y_START,
+                        0));
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
+                createDragEvent(
+                        DragEvent.ACTION_DRAG_LOCATION,
+                        TAB_STRIP_X_START + 3 * TAB_X_OFFSET,
+                        TAB_STRIP_Y_START,
+                        0));
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
+                createDragEvent(
+                        DragEvent.ACTION_DRAG_LOCATION,
+                        TAB_STRIP_X_START + 4 * TAB_X_OFFSET,
+                        TAB_STRIP_Y_START,
+                        0));
         // Total distance moved so far by pointer is still within the width of the tab strip.
 
         onTabDragListener.onDrag(
@@ -560,39 +612,63 @@ public class TabDragSourceTest {
         // strip in this case)). The top left of the strip layout is (0f, 0f). For verification the
         // x-offset is zero.
 
-        onTabDragListener.onDrag(mTabsToolbarView,
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
                 createDragEvent(
                         DragEvent.ACTION_DRAG_STARTED, TAB_STRIP_X_START, TAB_STRIP_Y_START, 0));
-        onTabDragListener.onDrag(mTabsToolbarView,
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
                 createDragEvent(
                         DragEvent.ACTION_DRAG_ENTERED, TAB_STRIP_X_START, TAB_STRIP_Y_START, 0));
-        onTabDragListener.onDrag(mTabsToolbarView,
-                createDragEvent(DragEvent.ACTION_DRAG_LOCATION, TAB_STRIP_X_START,
-                        TAB_STRIP_Y_START + TAB_STRIP_Y_STEP, 0)); // Move within the tabs area.
-        onTabDragListener.onDrag(mTabsToolbarView,
-                createDragEvent(DragEvent.ACTION_DRAG_LOCATION, TAB_STRIP_X_START,
-                        TAB_Y_OFFSET_WITHIN, 0)); // Still within the tabs area.
-        onTabDragListener.onDrag(mTabsToolbarView,
-                createDragEvent(DragEvent.ACTION_DRAG_LOCATION, TAB_STRIP_X_START,
-                        TAB_Y_OFFSET_OUTSIDE, 0)); // Outside the tabs area but inside the toolbars.
-        onTabDragListener.onDrag(mTabsToolbarView,
-                createDragEvent(DragEvent.ACTION_DRAG_LOCATION, TAB_STRIP_X_START,
-                        TAB_Y_OFFSET_WITHIN, 0)); // Back to within the tabs area.
-        onTabDragListener.onDrag(mTabsToolbarView,
-                createDragEvent(DragEvent.ACTION_DRAG_LOCATION, TAB_STRIP_X_START,
-                        TAB_STRIP_Y_START + TAB_Y_OFFSET_OUTSIDE, 0));
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
+                createDragEvent(
+                        DragEvent.ACTION_DRAG_LOCATION,
+                        TAB_STRIP_X_START,
+                        TAB_STRIP_Y_START + TAB_STRIP_Y_STEP,
+                        0)); // Move within the tabs area.
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
+                createDragEvent(
+                        DragEvent.ACTION_DRAG_LOCATION,
+                        TAB_STRIP_X_START,
+                        TAB_Y_OFFSET_WITHIN,
+                        0)); // Still within the tabs area.
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
+                createDragEvent(
+                        DragEvent.ACTION_DRAG_LOCATION,
+                        TAB_STRIP_X_START,
+                        TAB_Y_OFFSET_OUTSIDE,
+                        0)); // Outside the tabs area but inside the toolbars.
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
+                createDragEvent(
+                        DragEvent.ACTION_DRAG_LOCATION,
+                        TAB_STRIP_X_START,
+                        TAB_Y_OFFSET_WITHIN,
+                        0)); // Back to within the tabs area.
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
+                createDragEvent(
+                        DragEvent.ACTION_DRAG_LOCATION,
+                        TAB_STRIP_X_START,
+                        TAB_STRIP_Y_START + TAB_Y_OFFSET_OUTSIDE,
+                        0));
         // Total distance moved by pointer is beyond height of the tab strip.
 
         // This event will indicate the the pointer has moved outside of the TabToolbar view and no
         // more ACTION_DRAG_LOCATION and ACTION_DROP events will be received too.
-        onTabDragListener.onDrag(mTabsToolbarView,
-                createDragEvent(DragEvent.ACTION_DRAG_EXITED, TAB_STRIP_X_START,
-                        TAB_STRIP_Y_START + TAB_Y_OFFSET_OUTSIDE, 0));
+        onTabDragListener.onDrag(
+                mTabsToolbarView,
+                createDragEvent(
+                        DragEvent.ACTION_DRAG_EXITED,
+                        TAB_STRIP_X_START,
+                        TAB_STRIP_Y_START + TAB_Y_OFFSET_OUTSIDE,
+                        0));
     }
 
-    /**
-     * Tests the instance of the local class {@link TabDragSource} get and clear methods.
-     */
+    /** Tests the instance of the local class {@link TabDragSource} get and clear methods. */
     @Test
     public void test_canAcceptTabDrop_SimulateDragDrops_ReturnsSuccess() {
         // Prepare
@@ -604,38 +680,56 @@ public class TabDragSourceTest {
                 mTabDropTarget,
                 mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
-        mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
-                mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
+        mTabDragSource.startTabDragAction(
+                mTabsToolbarView,
+                mStripLayoutHelper,
+                mStripLayoutHelper.getTabById(mClickedTab.getId()),
+                DRAG_START_POINT);
         View tabsToolbarViewForDrop = getAnotherToolbarView();
         when(tabsToolbarViewForDrop.getWidth()).thenReturn(300);
         when(tabsToolbarViewForDrop.getHeight()).thenReturn(50);
 
         // Perform drag n drop simulation action as if dropped on another Chrome Window and verify.
         // Drop event on another Chrome window in the in top half.
-        assertTrue("Tab drop should be accepted in another tabs toolbar view.",
-                mTabDragSource.getOnDragListenerImpl().canAcceptTabDrop(tabsToolbarViewForDrop,
-                        createDragEvent(DragEvent.ACTION_DROP, 150f, 10f, 0)));
-        assertTrue("After the drop event on top half accept next should be true.",
+        assertTrue(
+                "Tab drop should be accepted in another tabs toolbar view.",
+                mTabDragSource
+                        .getOnDragListenerImpl()
+                        .canAcceptTabDrop(
+                                tabsToolbarViewForDrop,
+                                createDragEvent(DragEvent.ACTION_DROP, 150f, 10f, 0)));
+        assertTrue(
+                "After the drop event on top half accept next should be true.",
                 mTabDragSource.getAcceptNextDrop());
         // Clear for next drop.
         mTabDragSource.clearAcceptNextDrop();
-        assertFalse("After the drop event is handled the accept nNext flag is cleared.",
+        assertFalse(
+                "After the drop event is handled the accept nNext flag is cleared.",
                 mTabDragSource.getAcceptNextDrop());
 
         // Trigger another drop event on the same, not drag source, Chrome window in the bottom
         // half.
-        assertTrue("Tab drop should be accepted in the bottom half but the flag is set to"
+        assertTrue(
+                "Tab drop should be accepted in the bottom half but the flag is set to"
                         + " ignore drop.",
-                mTabDragSource.getOnDragListenerImpl().canAcceptTabDrop(tabsToolbarViewForDrop,
-                        createDragEvent(DragEvent.ACTION_DROP, 150f, 35f, 0)));
-        assertFalse("After the drop event in the bottom half, the next accept should not be true.",
+                mTabDragSource
+                        .getOnDragListenerImpl()
+                        .canAcceptTabDrop(
+                                tabsToolbarViewForDrop,
+                                createDragEvent(DragEvent.ACTION_DROP, 150f, 35f, 0)));
+        assertFalse(
+                "After the drop event in the bottom half, the next accept should not be true.",
                 mTabDragSource.getAcceptNextDrop());
 
         // Perform ACTION_DROP event on the same tabs view as the source view,
-        assertFalse("Tab drop should be ignored if it is the same as drag source toolbar,"
+        assertFalse(
+                "Tab drop should be ignored if it is the same as drag source toolbar,"
                         + " as it means tab reordering.",
-                mTabDragSource.getOnDragListenerImpl().canAcceptTabDrop(
-                        mTabsToolbarView, createDragEvent(DragEvent.ACTION_DROP, 150f, 10f, 0)));
+                mTabDragSource
+                        .getOnDragListenerImpl()
+                        .canAcceptTabDrop(
+                                mTabsToolbarView,
+                                createDragEvent(DragEvent.ACTION_DROP, 150f, 10f, 0)));
     }
 
     private View getAnotherToolbarView() {
@@ -662,18 +756,24 @@ public class TabDragSourceTest {
                 mTabDropTarget,
                 mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
-        mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
-                mStripLayoutHelper.getTabById(mClickedTab.getId()), DRAG_START_POINT);
+        mTabDragSource.startTabDragAction(
+                mTabsToolbarView,
+                mStripLayoutHelper,
+                mStripLayoutHelper.getTabById(mClickedTab.getId()),
+                DRAG_START_POINT);
 
         // Perform drag n drop simulation actions for movement outside the strip layout.
-        simulateDragDropEvents(/*withinStripLayout*/ false);
+        simulateDragDropEvents(/* withinStripLayout= */ false);
 
-        // Verify
-        // Since the drop is outside the TabToolbar area check if intent is send to SysUI to
-        // position the window.
+        // Verify Since the drop is outside the TabToolbar area check if intent is send to SysUI
+        // to position the window.
         verify(mTabDragSource, times(1))
-                .sendPositionInfoToSysUI(eq(mTabsToolbarView), anyFloat(), anyFloat(),
-                        eq(DROP_X_SCREEN_POS), eq(DROP_Y_SCREEN_POS));
+                .sendPositionInfoToSysUI(
+                        eq(mTabsToolbarView),
+                        anyFloat(),
+                        anyFloat(),
+                        eq(DROP_X_SCREEN_POS),
+                        eq(DROP_Y_SCREEN_POS));
     }
 
     /**
@@ -694,7 +794,9 @@ public class TabDragSourceTest {
                 mTabDropTarget,
                 mBrowserControlsStateProvider);
         mTabDragSource.setTabsToolbarHeightInDp(TAB_STRIP_HEIGHT);
-        mTabDragSource.startTabDragAction(mTabsToolbarView, mStripLayoutHelper,
+        mTabDragSource.startTabDragAction(
+                mTabsToolbarView,
+                mStripLayoutHelper,
                 mStripLayoutHelper.getTabById(mClickedTab.getId()),
                 new PointF(dragStartXPosition, dragStartYPosition));
         View.DragShadowBuilder tabDragShadowBuilder =

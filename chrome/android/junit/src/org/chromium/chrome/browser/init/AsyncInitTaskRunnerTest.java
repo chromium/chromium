@@ -35,11 +35,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for {@link AsyncInitTaskRunner}
- */
+/** Tests for {@link AsyncInitTaskRunner} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowAsyncTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AsyncInitTaskRunnerTest {
     private LibraryLoader mLoader;
@@ -58,20 +58,24 @@ public class AsyncInitTaskRunnerTest {
         PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());
 
         mLatch = new CountDownLatch(1);
-        mRunner = spy(new AsyncInitTaskRunner() {
-            @Override
-            protected void onSuccess() {
-                mLatch.countDown();
-            }
-            @Override
-            protected void onFailure(Exception failureCause) {
-                mLatch.countDown();
-            }
-            @Override
-            protected Executor getTaskPerThreadExecutor() {
-                return new RoboExecutorService();
-            }
-        });
+        mRunner =
+                spy(
+                        new AsyncInitTaskRunner() {
+                            @Override
+                            protected void onSuccess() {
+                                mLatch.countDown();
+                            }
+
+                            @Override
+                            protected void onFailure(Exception failureCause) {
+                                mLatch.countDown();
+                            }
+
+                            @Override
+                            protected Executor getTaskPerThreadExecutor() {
+                                return new RoboExecutorService();
+                            }
+                        });
         // Allow test to run on all builds
         when(mRunner.shouldFetchVariationsSeedDuringFirstRun()).thenReturn(true);
         doNothing().when(mRunner).prefetchLibrary();

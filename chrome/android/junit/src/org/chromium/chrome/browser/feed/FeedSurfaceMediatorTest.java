@@ -78,65 +78,47 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Tests for {@link FeedSurfaceMediator}.
- */
+/** Tests for {@link FeedSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 // TODO(crbug.com/1353777): Disabling the feature explicitly, because native is not
 // available to provide a default value. This should be enabled if the feature is enabled by
 // default or removed if the flag is removed.
 @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
-@EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.INTEREST_FEED_V2_HEARTS,
-        ChromeFeatureList.WEB_FEED_SORT, ChromeFeatureList.FEED_HEADER_STICK_TO_TOP})
+@EnableFeatures({
+    ChromeFeatureList.WEB_FEED,
+    ChromeFeatureList.INTEREST_FEED_V2_HEARTS,
+    ChromeFeatureList.WEB_FEED_SORT,
+    ChromeFeatureList.FEED_HEADER_STICK_TO_TOP
+})
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public JniMocker mocker = new JniMocker();
 
     // Mocked JNI.
-    @Mock
-    private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
-    @Mock
-    private WebFeedBridge.Natives mWebFeedBridgeJniMock;
+    @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
-    @Mock
-    private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
-    @Mock
-    private IdentityServicesProvider mIdentityService;
-    @Mock
-    private PrefChangeRegistrar mPrefChangeRegistrar;
-    @Mock
-    private PrefService mPrefService;
-    @Mock
-    private Profile mProfileMock;
-    @Mock
-    private SigninManager mSigninManager;
-    @Mock
-    private IdentityManager mIdentityManager;
-    @Mock
-    private TemplateUrlService mUrlService;
-    @Mock
-    private FeedStream mForYouStream;
-    @Mock
-    private FeedStream mFollowingStream;
+    @Mock private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
+    @Mock private IdentityServicesProvider mIdentityService;
+    @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
+    @Mock private PrefService mPrefService;
+    @Mock private Profile mProfileMock;
+    @Mock private SigninManager mSigninManager;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private TemplateUrlService mUrlService;
+    @Mock private FeedStream mForYouStream;
+    @Mock private FeedStream mFollowingStream;
     @Mock private FeedStream mSupervisedUserStream;
     @Mock private HybridListRenderer mHybridListRenderer;
-    @Mock
-    private ListLayoutHelper mListLayoutHelper;
-    @Mock
-    private FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
-    @Mock
-    private FeedOptionsCoordinator mOptionsCoordinator;
-    @Mock
-    private FeedReliabilityLogger mReliabilityLogger;
+    @Mock private ListLayoutHelper mListLayoutHelper;
+    @Mock private FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
+    @Mock private FeedOptionsCoordinator mOptionsCoordinator;
+    @Mock private FeedReliabilityLogger mReliabilityLogger;
     @Mock private UiConfig mUiConfig;
-    @Captor
-    private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
+    @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserverCaptor;
     private final Context mContext = RuntimeEnvironment.application;
     private Activity mActivity;
@@ -160,10 +142,10 @@ public class FeedSurfaceMediatorTest {
         when(mFeedSurfaceCoordinator.isActive()).thenReturn(true);
         when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(new RecyclerView(mActivity));
         when(mFeedSurfaceCoordinator.createFeedStream(
-                     eq(StreamKind.FOLLOWING), any(Stream.StreamsMediator.class)))
+                        eq(StreamKind.FOLLOWING), any(Stream.StreamsMediator.class)))
                 .thenReturn(mFollowingStream);
         when(mFeedSurfaceCoordinator.createFeedStream(
-                     eq(StreamKind.FOR_YOU), any(Stream.StreamsMediator.class)))
+                        eq(StreamKind.FOR_YOU), any(Stream.StreamsMediator.class)))
                 .thenReturn(mForYouStream);
         when(mFeedSurfaceCoordinator.createFeedStream(
                         eq(StreamKind.SUPERVISED_USER), any(Stream.StreamsMediator.class)))
@@ -250,7 +232,8 @@ public class FeedSurfaceMediatorTest {
         verify(mFollowingStream, times(1)).bind(any(), any(), any(), any(), any(), any(), anyInt());
         verify(mSupervisedUserStream, never())
                 .bind(any(), any(), any(), any(), any(), any(), anyInt());
-        assertEquals(FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
+        assertEquals(
+                FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
                 sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
     }
 
@@ -270,7 +253,8 @@ public class FeedSurfaceMediatorTest {
         verify(mSupervisedUserStream, never())
                 .bind(any(), any(), any(), any(), any(), any(), anyInt());
 
-        assertEquals(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
+        assertEquals(
+                FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
         assertEquals(2, mFeedSurfaceMediator.getTabToStreamSizeForTesting());
     }
@@ -576,7 +560,8 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(true, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
-        assertEquals(ViewVisibility.INVISIBLE,
+        assertEquals(
+                ViewVisibility.INVISIBLE,
                 model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
     }
 
@@ -596,7 +581,8 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
-        assertEquals(ViewVisibility.GONE,
+        assertEquals(
+                ViewVisibility.GONE,
                 model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
     }
 
@@ -616,7 +602,8 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
-        assertEquals(ViewVisibility.GONE,
+        assertEquals(
+                ViewVisibility.GONE,
                 model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
     }
 
@@ -636,7 +623,8 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
-        assertEquals(ViewVisibility.GONE,
+        assertEquals(
+                ViewVisibility.GONE,
                 model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
     }
 
@@ -657,7 +645,8 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(true, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(true, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
-        assertEquals(ViewVisibility.VISIBLE,
+        assertEquals(
+                ViewVisibility.VISIBLE,
                 model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
     }
 
@@ -678,7 +667,8 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
-        assertEquals(ViewVisibility.GONE,
+        assertEquals(
+                ViewVisibility.GONE,
                 model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
     }
 
@@ -698,7 +688,8 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
-        assertEquals(ViewVisibility.GONE,
+        assertEquals(
+                ViewVisibility.GONE,
                 model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
     }
 
@@ -718,7 +709,8 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
-        assertEquals(ViewVisibility.GONE,
+        assertEquals(
+                ViewVisibility.GONE,
                 model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
     }
 
@@ -732,7 +724,8 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(0, model.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
         assertEquals(false, forYou.get(SectionHeaderProperties.UNREAD_CONTENT_KEY));
-        assertEquals(ViewVisibility.VISIBLE,
+        assertEquals(
+                ViewVisibility.VISIBLE,
                 forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
     }
 
@@ -744,8 +737,10 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
 
         // Set up mediator with For_you feed (2 column)
-        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
-                SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
+        mFeedSurfaceMediator =
+                createMediator(
+                        FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
+                        SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
         mFeedSurfaceMediator.updateContent();
 
         // Switch to following feed with latest option. Uses 2 column.
@@ -765,8 +760,10 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
 
         // Set up mediator with For_you feed (2 column)
-        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
-                SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
+        mFeedSurfaceMediator =
+                createMediator(
+                        FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
+                        SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
         mFeedSurfaceMediator.updateContent();
         verify(mListLayoutHelper).setColumnCount(2);
 
@@ -789,8 +786,10 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
 
         // Set up mediator with Following feed with default sort option (1 column)
-        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
-                SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
+        mFeedSurfaceMediator =
+                createMediator(
+                        FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
+                        SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
         mFeedSurfaceMediator.updateContent();
         verify(mListLayoutHelper).setColumnCount(1);
 
@@ -809,8 +808,10 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
 
         // Set up mediator with For_you feed (2 column)
-        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
-                SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
+        mFeedSurfaceMediator =
+                createMediator(
+                        FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
+                        SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
         mFeedSurfaceMediator.updateContent();
         verify(mListLayoutHelper).setColumnCount(2);
 
@@ -864,7 +865,8 @@ public class FeedSurfaceMediatorTest {
         assertEquals(0, model.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
         assertEquals(false, forYou.get(SectionHeaderProperties.UNREAD_CONTENT_KEY));
         // Options Indicator untouched.
-        assertEquals(ViewVisibility.GONE,
+        assertEquals(
+                ViewVisibility.GONE,
                 forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
     }
 
@@ -889,7 +891,8 @@ public class FeedSurfaceMediatorTest {
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
         listener.onSectionHeaderUnselected(0);
 
-        assertEquals(ViewVisibility.INVISIBLE,
+        assertEquals(
+                ViewVisibility.INVISIBLE,
                 forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
         verify(mOptionsCoordinator, times(1)).ensureGone();
     }
@@ -915,7 +918,8 @@ public class FeedSurfaceMediatorTest {
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
         listener.onSectionHeaderUnselected(0);
 
-        assertEquals(ViewVisibility.GONE,
+        assertEquals(
+                ViewVisibility.GONE,
                 forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
         verify(mOptionsCoordinator, times(1)).ensureGone();
     }
@@ -993,7 +997,8 @@ public class FeedSurfaceMediatorTest {
         listener.onSectionHeaderUnselected(0);
         // Verifies that unselecting header hides the options view and resets the
         // {@link SectionHeaderProperties.OPTIONS_VIEW_VISIBILITY_KEY}.
-        assertEquals(ViewVisibility.INVISIBLE,
+        assertEquals(
+                ViewVisibility.INVISIBLE,
                 forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
         verify(mOptionsCoordinator, times(1)).ensureGone();
         assertEquals(false, forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY));
@@ -1040,7 +1045,8 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(0, model.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
         assertEquals(false, forYou.get(SectionHeaderProperties.UNREAD_CONTENT_KEY));
-        assertEquals(ViewVisibility.VISIBLE,
+        assertEquals(
+                ViewVisibility.VISIBLE,
                 forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
     }
 
@@ -1087,7 +1093,8 @@ public class FeedSurfaceMediatorTest {
     }
 
     private FeedSurfaceMediator createMediator() {
-        return createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
+        return createMediator(
+                FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
     }
 
@@ -1100,7 +1107,14 @@ public class FeedSurfaceMediatorTest {
             @FeedSurfaceCoordinator.StreamTabId int tabId,
             PropertyModel sectionHeaderModel,
             UiConfig uiConfig) {
-        return new FeedSurfaceMediator(mFeedSurfaceCoordinator, mActivity, null, sectionHeaderModel,
-                tabId, /*actionDelegate=*/null, mOptionsCoordinator, uiConfig);
+        return new FeedSurfaceMediator(
+                mFeedSurfaceCoordinator,
+                mActivity,
+                null,
+                sectionHeaderModel,
+                tabId,
+                /* actionDelegate= */ null,
+                mOptionsCoordinator,
+                uiConfig);
     }
 }

@@ -45,16 +45,13 @@ public class UpdateSuccessMetricsTest {
     private static final int NOT_UPDATING = 0;
     private static final int UPDATING = 1;
 
-    @Mock
-    private TrackingProvider mProvider;
+    @Mock private TrackingProvider mProvider;
 
     private UpdateSuccessMetrics mMetrics;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {
@@ -78,7 +75,8 @@ public class UpdateSuccessMetricsTest {
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
         order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INTENT, Source.FROM_MENU)));
 
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "GoogleUpdate.StartingUpdateState", NOT_UPDATING));
     }
@@ -98,7 +96,8 @@ public class UpdateSuccessMetricsTest {
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
         order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INTENT, Source.FROM_MENU)));
 
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "GoogleUpdate.StartingUpdateState", UPDATING));
     }

@@ -35,10 +35,8 @@ public class HistoryAdapterAccessibilityTest {
     private StubbedHistoryProvider mHistoryProvider;
     private HistoryAdapter mAdapter;
 
-    @Mock
-    private MoreProgressButton mMockButton;
-    @Mock
-    private HistoryContentManager mContentManager;
+    @Mock private MoreProgressButton mMockButton;
+    @Mock private HistoryContentManager mContentManager;
 
     @Before
     public void setUp() {
@@ -46,8 +44,12 @@ public class HistoryAdapterAccessibilityTest {
         mHistoryProvider = new StubbedHistoryProvider();
         mHistoryProvider.setPaging(PAGING);
 
-        mAdapter = new HistoryAdapter(
-                mContentManager, mHistoryProvider, new ObservableSupplierImpl<>(), (vg) -> null);
+        mAdapter =
+                new HistoryAdapter(
+                        mContentManager,
+                        mHistoryProvider,
+                        new ObservableSupplierImpl<>(),
+                        (vg) -> null);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
         mAdapter.setScrollToLoadDisabledForTest(true);

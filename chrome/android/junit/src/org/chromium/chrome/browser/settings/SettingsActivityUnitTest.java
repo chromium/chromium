@@ -46,9 +46,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Unit tests for {@link SettingsActivity}.
- */
+/** Unit tests for {@link SettingsActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowProfileManagerUtils.class)
 public class SettingsActivityUnitTest {
@@ -59,18 +57,14 @@ public class SettingsActivityUnitTest {
         protected static void flushPersistentDataForAllProfiles() {}
     }
 
-    @Rule
-    public Features.JUnitProcessor featuresRule = new Features.JUnitProcessor();
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public Features.JUnitProcessor featuresRule = new Features.JUnitProcessor();
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private ActivityScenario<SettingsActivity> mActivityScenario;
     private SettingsActivity mSettingsActivity;
 
-    @Mock
-    public ChromeBrowserInitializer mInitializer;
-    @Mock
-    public Profile mProfile;
+    @Mock public ChromeBrowserInitializer mInitializer;
+    @Mock public Profile mProfile;
 
     @Before
     public void setup() {
@@ -91,7 +85,8 @@ public class SettingsActivityUnitTest {
         launchSettingsActivity(TestSettingsFragment.class.getName());
         mActivityScenario.moveToState(State.CREATED);
 
-        assertTrue("SettingsActivity is using a wrong fragment.",
+        assertTrue(
+                "SettingsActivity is using a wrong fragment.",
                 mSettingsActivity.getMainFragment() instanceof TestSettingsFragment);
     }
 
@@ -99,12 +94,14 @@ public class SettingsActivityUnitTest {
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY)
     public void testBackPress() throws TimeoutException {
         launchSettingsActivity(TestSettingsFragment.class.getName());
-        assertTrue("SettingsActivity is using a wrong fragment.",
+        assertTrue(
+                "SettingsActivity is using a wrong fragment.",
                 mSettingsActivity.getMainFragment() instanceof TestSettingsFragment);
         TestSettingsFragment mainFragment =
                 (TestSettingsFragment) mSettingsActivity.getMainFragment();
         mainFragment.getHandleBackPressChangedSupplier().set(true);
-        Assert.assertTrue("TestSettingsFragment will handle back press",
+        Assert.assertTrue(
+                "TestSettingsFragment will handle back press",
                 mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
 
         // Simulate back press.
@@ -113,7 +110,8 @@ public class SettingsActivityUnitTest {
         mainFragment.getBackPressCallback().waitForFirst();
 
         mainFragment.getHandleBackPressChangedSupplier().set(false);
-        Assert.assertFalse("TestSettingsFragment will not handle back press",
+        Assert.assertFalse(
+                "TestSettingsFragment will not handle back press",
                 mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
     }
 
@@ -233,11 +231,9 @@ public class SettingsActivityUnitTest {
         return null;
     }
 
-    /**
-     * Class that override the divider behavior.
-     */
-    public static class CustomDividerTestSettingsFragment
-            extends TestSettingsFragment implements CustomDividerFragment {
+    /** Class that override the divider behavior. */
+    public static class CustomDividerTestSettingsFragment extends TestSettingsFragment
+            implements CustomDividerFragment {
         static final int DIVIDER_START_PADDING = 10;
         static final int DIVIDER_END_PADDING = 15;
 

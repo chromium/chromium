@@ -63,48 +63,57 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BookmarkImageFetcherTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private LargeIconBridge mLargeIconBridge;
-    @Mock
-    private RoundedIconGenerator mIconGenerator;
-    @Mock
-    private ImageFetcher mImageFetcher;
-    @Mock
-    private Callback<Drawable> mDrawableCallback;
-    @Mock
-    private Callback<Pair<Drawable, Drawable>> mFolderDrawablesCallback;
-    @Mock
-    private SyncService mSyncService;
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Captor
-    private ArgumentCaptor<Drawable> mDrawableCaptor;
-    @Captor
-    private ArgumentCaptor<Pair<Drawable, Drawable>> mFolderDrawablesCaptor;
-    @Captor
-    private ArgumentCaptor<Callback<GURL>> mGURLCallbackCaptor;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private LargeIconBridge mLargeIconBridge;
+    @Mock private RoundedIconGenerator mIconGenerator;
+    @Mock private ImageFetcher mImageFetcher;
+    @Mock private Callback<Drawable> mDrawableCallback;
+    @Mock private Callback<Pair<Drawable, Drawable>> mFolderDrawablesCallback;
+    @Mock private SyncService mSyncService;
 
-    private final BookmarkId mFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
-    private final BookmarkId mBookmarkId1 = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
-    private final BookmarkId mBookmarkId2 = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
+    @Captor private ArgumentCaptor<Drawable> mDrawableCaptor;
+    @Captor private ArgumentCaptor<Pair<Drawable, Drawable>> mFolderDrawablesCaptor;
+    @Captor private ArgumentCaptor<Callback<GURL>> mGURLCallbackCaptor;
+
+    private final BookmarkId mFolderId = new BookmarkId(/* id= */ 1, BookmarkType.NORMAL);
+    private final BookmarkId mBookmarkId1 = new BookmarkId(/* id= */ 2, BookmarkType.NORMAL);
+    private final BookmarkId mBookmarkId2 = new BookmarkId(/* id= */ 3, BookmarkType.NORMAL);
 
     private final BookmarkItem mFolderItem =
             new BookmarkItem(mFolderId, "Folder", null, true, null, true, false, 0, false, 0);
-    private final BookmarkItem mBookmarkItem1 = new BookmarkItem(mBookmarkId1, "Bookmark1",
-            JUnitTestGURLs.EXAMPLE_URL, false, mFolderId, true, false, 0, false, 0);
-    private final BookmarkItem mBookmarkItem2 = new BookmarkItem(mBookmarkId2, "Bookmark1",
-            JUnitTestGURLs.EXAMPLE_URL, false, mFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mBookmarkItem1 =
+            new BookmarkItem(
+                    mBookmarkId1,
+                    "Bookmark1",
+                    JUnitTestGURLs.EXAMPLE_URL,
+                    false,
+                    mFolderId,
+                    true,
+                    false,
+                    0,
+                    false,
+                    0);
+    private final BookmarkItem mBookmarkItem2 =
+            new BookmarkItem(
+                    mBookmarkId2,
+                    "Bookmark1",
+                    JUnitTestGURLs.EXAMPLE_URL,
+                    false,
+                    mFolderId,
+                    true,
+                    false,
+                    0,
+                    false,
+                    0);
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
 
     private Activity mActivity;
@@ -215,9 +224,13 @@ public class BookmarkImageFetcherTest {
 
     @Test
     public void testFetchImageForBookmarkWithFaviconFallback_fallbackToFavicon() {
-        doCallback(1, (Callback<GURL> callback) -> {
-            callback.onResult(null);
-        }).when(mBookmarkModel).getImageUrlForBookmark(any(), any());
+        doCallback(
+                        1,
+                        (Callback<GURL> callback) -> {
+                            callback.onResult(null);
+                        })
+                .when(mBookmarkModel)
+                .getImageUrlForBookmark(any(), any());
 
         mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                 mBookmarkItem1, mDrawableCallback);

@@ -12,15 +12,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit tests for {@link org.chromium.chrome.browser.ShortcutHelper}.
- */
+/** Unit tests for {@link org.chromium.chrome.browser.ShortcutHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ShortcutHelperTest {
-    /**
-     * Test method for {@link ShortcutHelper#getScopeFromUrl.}
-     */
+    /** Test method for {@link ShortcutHelper#getScopeFromUrl.} */
     @Test
     public void testGetScopeFromUrl() {
         String url1 = "https://www.google.com";

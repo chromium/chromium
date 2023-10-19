@@ -29,15 +29,11 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ExpandedSheetHelperImplUnitTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private ModalDialogManager mModalDialogManager;
-    @Mock
-    private TabObscuringHandler mTabObscuringHandler;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private TabObscuringHandler mTabObscuringHandler;
     private ExpandedSheetHelperImpl mExpandedSheetHelperImpl;
 
     @Before

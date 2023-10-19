@@ -81,8 +81,13 @@ public class SharedBookmarkModelMocks {
         doReturn(MOBILE_BOOKMARK_ID).when(bookmarkModel).getMobileFolderId();
         doReturn(READING_LIST_BOOKMARK_ID).when(bookmarkModel).getReadingListFolder();
         doReturn(PARTNER_BOOKMARK_ID).when(bookmarkModel).getPartnerFolderId();
-        doReturn(Arrays.asList(DESKTOP_BOOKMARK_ID, OTHER_BOOKMARK_ID, MOBILE_BOOKMARK_ID,
-                         PARTNER_BOOKMARK_ID, READING_LIST_BOOKMARK_ID))
+        doReturn(
+                        Arrays.asList(
+                                DESKTOP_BOOKMARK_ID,
+                                OTHER_BOOKMARK_ID,
+                                MOBILE_BOOKMARK_ID,
+                                PARTNER_BOOKMARK_ID,
+                                READING_LIST_BOOKMARK_ID))
                 .when(bookmarkModel)
                 .getTopLevelFolderIds();
 
@@ -104,8 +109,13 @@ public class SharedBookmarkModelMocks {
         doReturn(true).when(bookmarkModel).isFolderVisible(DESKTOP_BOOKMARK_ID);
         doReturn(false).when(bookmarkModel).isFolderVisible(OTHER_BOOKMARK_ID);
         doReturn(true).when(bookmarkModel).isFolderVisible(MOBILE_BOOKMARK_ID);
-        doReturn(Arrays.asList(FOLDER_BOOKMARK_ID_A, URL_BOOKMARK_ID_A, URL_BOOKMARK_ID_F,
-                         URL_BOOKMARK_ID_G, URL_BOOKMARK_ID_H))
+        doReturn(
+                        Arrays.asList(
+                                FOLDER_BOOKMARK_ID_A,
+                                URL_BOOKMARK_ID_A,
+                                URL_BOOKMARK_ID_F,
+                                URL_BOOKMARK_ID_G,
+                                URL_BOOKMARK_ID_H))
                 .when(bookmarkModel)
                 .getChildIds(MOBILE_BOOKMARK_ID);
         doReturn(Arrays.asList(URL_BOOKMARK_ID_B, URL_BOOKMARK_ID_C))

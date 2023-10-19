@@ -80,43 +80,26 @@ import java.util.List;
         shadows = {ShadowUrlUtilities.class, ShadowSysUtils.class})
 @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)
 public class DesktopSiteSettingsIPHControllerUnitTest {
-    @Rule
-    public TestRule mFeaturesProcessor = new JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mFeaturesProcessor = new JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
-    @Mock
-    private WebsitePreferenceBridge mWebsitePreferenceBridge;
-    @Mock
-    private WindowAndroid mWindowAndroid;
-    @Mock
-    private ActivityTabProvider mActivityTabProvider;
-    @Mock
-    private View mToolbarMenuButton;
-    @Mock
-    private AppMenuHandler mAppMenuHandler;
-    @Mock
-    private UserEducationHelper mUserEducationHelper;
-    @Mock
-    private Context mContext;
-    @Mock
-    private WeakReference<Context> mWeakReferenceContext;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private NavigationController mNavigationController;
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    private Profile mProfile;
+    @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
+    @Mock private WebsitePreferenceBridge mWebsitePreferenceBridge;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ActivityTabProvider mActivityTabProvider;
+    @Mock private View mToolbarMenuButton;
+    @Mock private AppMenuHandler mAppMenuHandler;
+    @Mock private UserEducationHelper mUserEducationHelper;
+    @Mock private Context mContext;
+    @Mock private WeakReference<Context> mWeakReferenceContext;
+    @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
+    @Mock private NavigationController mNavigationController;
+    @Mock private Tracker mTracker;
+    @Mock private Profile mProfile;
     @Mock private MessageDispatcher mMessageDispatcher;
 
-    @Captor
-    private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
+    @Captor private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
 
     private DesktopSiteSettingsIPHController mController;
     private GURL mTabUrl;
@@ -135,7 +118,7 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
 
         TrackerFactory.setTrackerForTests(mTracker);
         when(mTracker.wouldTriggerHelpUI(
-                     FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE))
+                        FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE))
                 .thenReturn(true);
         when(mTracker.wouldTriggerHelpUI(
                         FeatureConstants.REQUEST_DESKTOP_SITE_WINDOW_SETTING_FEATURE))
@@ -149,7 +132,7 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
 
         when(mWebsitePreferenceBridge.getContentSettingsExceptions(
-                     mProfile, ContentSettingsType.REQUEST_DESKTOP_SITE))
+                        mProfile, ContentSettingsType.REQUEST_DESKTOP_SITE))
                 .thenReturn(new ArrayList<>());
 
         initializeController();
@@ -194,12 +177,16 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
     @Config(qualifiers = "sw600dp")
     public void testPerSiteIPHPreChecksFailed_TrackerWouldNotTrigger() {
         when(mTracker.wouldTriggerHelpUI(
-                     FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE))
+                        FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE))
                 .thenReturn(false);
-        boolean failed = mController.perSiteIPHPreChecksFailed(
-                mTab, mTracker, FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
-        verify(mTracker).wouldTriggerHelpUI(
-                FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
+        boolean failed =
+                mController.perSiteIPHPreChecksFailed(
+                        mTab,
+                        mTracker,
+                        FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
+        verify(mTracker)
+                .wouldTriggerHelpUI(
+                        FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
         Assert.assertTrue(
                 "Generic site IPH should not trigger when Tracker#wouldTriggerHelpUI returns"
                         + " false.",
@@ -211,8 +198,11 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
     public void testPerSiteIPHPreChecksFailed_IncognitoTab() {
         when(mTab.isIncognito()).thenReturn(true);
 
-        boolean failed = mController.perSiteIPHPreChecksFailed(
-                mTab, mTracker, FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
+        boolean failed =
+                mController.perSiteIPHPreChecksFailed(
+                        mTab,
+                        mTracker,
+                        FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
         Assert.assertTrue("Generic site IPH should not be triggered in incognito.", failed);
     }
 
@@ -222,8 +212,11 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
         mTabUrl = JUnitTestGURLs.CHROME_ABOUT;
         when(mTab.getUrl()).thenReturn(mTabUrl);
 
-        boolean failed = mController.perSiteIPHPreChecksFailed(
-                mTab, mTracker, FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
+        boolean failed =
+                mController.perSiteIPHPreChecksFailed(
+                        mTab,
+                        mTracker,
+                        FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
         Assert.assertTrue("Generic site IPH should not be triggered on a chrome:// page.", failed);
     }
 
@@ -244,9 +237,11 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
     public void testGenericIPH_NotShown_SettingUsed() {
         // The user must have previously used the site-level setting if exceptions are added.
         when(mWebsitePreferenceBridge.getContentSettingsExceptions(
-                     mProfile, ContentSettingsType.REQUEST_DESKTOP_SITE))
-                .thenReturn(List.of(
-                        mock(ContentSettingException.class), mock(ContentSettingException.class)));
+                        mProfile, ContentSettingsType.REQUEST_DESKTOP_SITE))
+                .thenReturn(
+                        List.of(
+                                mock(ContentSettingException.class),
+                                mock(ContentSettingException.class)));
         mController.showGenericIPH(mTab, mProfile);
         verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
     }
@@ -354,11 +349,15 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
         verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
 
         IPHCommand command = mIPHCommandCaptor.getValue();
-        Assert.assertEquals("IPHCommand feature should match.", command.featureName,
+        Assert.assertEquals(
+                "IPHCommand feature should match.",
+                command.featureName,
                 FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
-        Assert.assertEquals("IPHCommand stringId should match.",
-                switchToDesktop ? R.string.rds_site_settings_generic_iph_text_desktop
-                                : R.string.rds_site_settings_generic_iph_text_mobile,
+        Assert.assertEquals(
+                "IPHCommand stringId should match.",
+                switchToDesktop
+                        ? R.string.rds_site_settings_generic_iph_text_desktop
+                        : R.string.rds_site_settings_generic_iph_text_mobile,
                 command.stringId);
         Assert.assertEquals(
                 "IPHCommand stringArgs should match.", mTabUrl.getHost(), command.stringArgs[0]);

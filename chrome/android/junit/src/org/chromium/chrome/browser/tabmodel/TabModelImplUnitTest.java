@@ -38,49 +38,33 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 
 import java.util.Arrays;
 
-/**
- * Unit tests for {@link TabModelImpl}.
- */
+/** Unit tests for {@link TabModelImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabModelImplUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final long FAKE_NATIVE_ADDRESS = 123L;
 
-    /**
-     * Disable native calls from {@link TabModelJniBridge}.
-     */
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Mock
-    private TabModelJniBridge.Natives mTabModelJniBridge;
-    /**
-     * Required to be non-null for {@link TabModelJniBridge}.
-     */
-    @Mock
-    private Profile mProfile;
-    /**
-     * Required to simulate tab thumbnail deletion.
-     */
-    @Mock
-    private TabContentManager mTabContentManager;
-    /**
-     * Required to handle some tab lookup actions.
-     */
-    @Mock
-    private TabModelDelegate mTabModelDelegate;
-    /**
-     * Required to handle some actions and initialize {@link TabModelOrderControllerImpl}.
-     */
-    @Mock
-    private TabModelSelector mTabModelSelector;
+    /** Disable native calls from {@link TabModelJniBridge}. */
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private TabModelFilterProvider mTabModelFilterProvider;
-    @Mock
-    private TabModelFilter mTabModelFilter;
+    @Mock private TabModelJniBridge.Natives mTabModelJniBridge;
+
+    /** Required to be non-null for {@link TabModelJniBridge}. */
+    @Mock private Profile mProfile;
+
+    /** Required to simulate tab thumbnail deletion. */
+    @Mock private TabContentManager mTabContentManager;
+
+    /** Required to handle some tab lookup actions. */
+    @Mock private TabModelDelegate mTabModelDelegate;
+
+    /** Required to handle some actions and initialize {@link TabModelOrderControllerImpl}. */
+    @Mock private TabModelSelector mTabModelSelector;
+
+    @Mock private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock private TabModelFilter mTabModelFilter;
 
     private int mNextTabId;
 
@@ -123,9 +107,7 @@ public class TabModelImplUnitTest {
         model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER, false);
     }
 
-    /**
-     * Create a {@link TabModel} to use for the test.
-     */
+    /** Create a {@link TabModel} to use for the test. */
     private TabModel createTabModel(boolean isActive, boolean isIncognito) {
         AsyncTabParamsManager realAsyncTabParamsManager =
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
@@ -133,12 +115,18 @@ public class TabModelImplUnitTest {
                 new TabModelOrderControllerImpl(mTabModelSelector);
         TabModel tabModel;
         when(mProfile.isOffTheRecord()).thenReturn(isIncognito);
-        tabModel = new TabModelImpl(mProfile, ActivityType.TABBED,
-                /*regularTabCreator=*/null, /*incognitoTabCreator=*/null, orderController,
-                mTabContentManager,
-                ()
-                        -> NextTabPolicy.HIERARCHICAL,
-                realAsyncTabParamsManager, mTabModelDelegate, /*supportsUndo=*/false);
+        tabModel =
+                new TabModelImpl(
+                        mProfile,
+                        ActivityType.TABBED,
+                        /* regularTabCreator= */ null,
+                        /* incognitoTabCreator= */ null,
+                        orderController,
+                        mTabContentManager,
+                        () -> NextTabPolicy.HIERARCHICAL,
+                        realAsyncTabParamsManager,
+                        mTabModelDelegate,
+                        /* supportsUndo= */ false);
         when(mTabModelSelector.getModel(isIncognito)).thenReturn(tabModel);
         tabModel.setActive(isActive);
         if (isActive) {

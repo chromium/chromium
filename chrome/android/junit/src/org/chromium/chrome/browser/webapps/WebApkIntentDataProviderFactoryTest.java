@@ -18,9 +18,7 @@ import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
 import java.util.Map;
 
-/**
- * Tests {@link WebApkIntentDataProviderFactory}.
- */
+/** Tests {@link WebApkIntentDataProviderFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebApkIntentDataProviderFactoryTest {
@@ -32,7 +30,8 @@ public class WebApkIntentDataProviderFactoryTest {
     @Test
     public void testGetIconUrlAndIconMurmur2HashMap() {
         Bundle bundle = new Bundle();
-        bundle.putString(WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
+        bundle.putString(
+                WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
                 ICON_URL1 + " " + ICON_MURMUR2_HASH1 + " " + ICON_URL2 + " " + ICON_MURMUR2_HASH2);
 
         Map<String, String> iconUrlToMurmur2HashMap =
@@ -52,7 +51,8 @@ public class WebApkIntentDataProviderFactoryTest {
     @Test
     public void testGetIconUrlAndIconMurmur2HashMap_duplicateUrl() {
         Bundle bundle = new Bundle();
-        bundle.putString(WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
+        bundle.putString(
+                WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
                 ICON_URL1 + " " + ICON_MURMUR2_HASH1 + " " + ICON_URL1 + " " + ICON_MURMUR2_HASH2);
 
         Map<String, String> iconUrlToMurmur2HashMap =
@@ -63,13 +63,12 @@ public class WebApkIntentDataProviderFactoryTest {
         assertEquals(ICON_MURMUR2_HASH2, iconUrlToMurmur2HashMap.get(ICON_URL1));
     }
 
-    /**
-     * Test when contains empty urls, getIconUrlAndIconMurmur2HashMap still returns correct result.
-     */
+    /** Test when contains empty urls, getIconUrlAndIconMurmur2HashMap still returns correct result. */
     @Test
     public void testGetIconUrlAndIconMurmur2HashMap_emptyUrl() {
         Bundle bundle = new Bundle();
-        bundle.putString(WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
+        bundle.putString(
+                WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
                 " 0  0 " + ICON_URL1 + " " + ICON_MURMUR2_HASH1);
 
         Map<String, String> iconUrlToMurmur2HashMap =
@@ -87,7 +86,8 @@ public class WebApkIntentDataProviderFactoryTest {
     @Test
     public void testGetIconUrlAndIconMurmur2HashMap_notPaired() {
         Bundle bundle = new Bundle();
-        bundle.putString(WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
+        bundle.putString(
+                WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
                 ICON_URL1 + " " + ICON_MURMUR2_HASH1 + " 0");
 
         Map<String, String> iconUrlToMurmur2HashMap =

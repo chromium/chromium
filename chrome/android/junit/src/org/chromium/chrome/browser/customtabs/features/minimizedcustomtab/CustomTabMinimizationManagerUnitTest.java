@@ -49,34 +49,29 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Unit tests for {@link CustomTabMinimizationManager}.
- */
+/** Unit tests for {@link CustomTabMinimizationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
+})
 public class CustomTabMinimizationManagerUnitTest {
     @Rule
     public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(CustomTabActivity.class);
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final String TITLE = "Google";
     private static final String HOST = JUnitTestGURLs.GOOGLE_URL.getHost();
 
-    @Spy
-    private AppCompatActivity mActivity;
-    @Mock
-    private ActivityTabProvider mTabProvider;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private WebContents mWebContents;
+    @Spy private AppCompatActivity mActivity;
+    @Mock private ActivityTabProvider mTabProvider;
+    @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
 
     private CustomTabMinimizationManager mManager;
 

@@ -47,26 +47,23 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Tests for {@link CustomTabActivityTabController}.
- */
+/** Tests for {@link CustomTabActivityTabController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowUrlUtilities.class})
 @DisableFeatures(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)
 public class CustomTabActivityTabControllerUnitTest {
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
-    @Rule
-    public Features.JUnitProcessor processor = new Features.JUnitProcessor();
+    @Rule public Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
     private CustomTabActivityTabController mTabController;
 
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
+    @Mock private Profile mProfile;
+    @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
 
     @Before
     public void setUp() {
@@ -198,10 +195,13 @@ public class CustomTabActivityTabControllerUnitTest {
     // Some websites replace the tab with a new one.
     @Test
     public void doesNotSetHeaderWhenIncognito() {
-        doAnswer((mock) -> {
-            fail("setClientDataHeaderForNewTab() should not be called for incognito tabs");
-            return null;
-        })
+        doAnswer(
+                        (mock) -> {
+                            fail(
+                                    "setClientDataHeaderForNewTab() should not be called for"
+                                            + " incognito tabs");
+                            return null;
+                        })
                 .when(env.connection)
                 .setClientDataHeaderForNewTab(any(), any());
         env.isIncognito = true;
@@ -219,7 +219,8 @@ public class CustomTabActivityTabControllerUnitTest {
         ArgumentCaptor<TabObserver> tabObservers = ArgumentCaptor.forClass(TabObserver.class);
         verify(env.tabObserverRegistrar, atLeastOnce()).registerTabObserver(tabObservers.capture());
         for (TabObserver observer : tabObservers.getAllValues()) {
-            assertFalse("RealtimeEngagementSignalObserver is not attached.",
+            assertFalse(
+                    "RealtimeEngagementSignalObserver is not attached.",
                     observer instanceof RealtimeEngagementSignalObserver);
         }
     }

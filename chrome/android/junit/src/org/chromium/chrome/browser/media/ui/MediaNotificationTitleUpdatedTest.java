@@ -31,7 +31,9 @@ import org.chromium.services.media_session.MediaMetadata;
  * MediaMetadata gets updated.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {MediaNotificationTestShadowResources.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase {
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;

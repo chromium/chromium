@@ -37,27 +37,18 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/**
- * Unit tests for {@link EngagementSignalsHandler}.
- */
+/** Unit tests for {@link EngagementSignalsHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
 public class EngagementSignalsHandlerUnitTest {
-    @Rule
-    public Features.JUnitProcessor processor = new Features.JUnitProcessor();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public Features.JUnitProcessor processor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private CustomTabsConnection mConnection;
-    @Mock
-    private CustomTabsSessionToken mSession;
-    @Mock
-    private EngagementSignalsCallback mCallback;
-    @Mock
-    private TabObserverRegistrar mTabObserverRegistrar;
-    @Mock
-    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
+    @Mock private CustomTabsConnection mConnection;
+    @Mock private CustomTabsSessionToken mSession;
+    @Mock private EngagementSignalsCallback mCallback;
+    @Mock private TabObserverRegistrar mTabObserverRegistrar;
+    @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
 
     private EngagementSignalsHandler mEngagementSignalsHandler;
 
@@ -126,11 +117,11 @@ public class EngagementSignalsHandlerUnitTest {
         tabObserver.getValue().onAllTabsClosed();
         // Verify observers are removed.
         verify(mPrivacyPreferencesManager).removeObserver(privacyObserver.getValue());
-        var tabObserverInHandler = tabObserver.getAllValues()
-                                           .stream()
-                                           .filter(o -> !o.equals(observer))
-                                           .findFirst()
-                                           .orElseThrow();
+        var tabObserverInHandler =
+                tabObserver.getAllValues().stream()
+                        .filter(o -> !o.equals(observer))
+                        .findFirst()
+                        .orElseThrow();
         verify(mTabObserverRegistrar).unregisterActivityTabObserver(tabObserverInHandler);
         assertNull(mEngagementSignalsHandler.getEngagementSignalsObserverForTesting());
     }

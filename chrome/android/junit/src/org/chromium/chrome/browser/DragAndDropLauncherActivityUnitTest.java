@@ -33,21 +33,15 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Unit tests for {@link DragAndDropLauncherActivity}.
- */
+/** Unit tests for {@link DragAndDropLauncherActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 31)
 public class DragAndDropLauncherActivityUnitTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public ExpectedException exception = ExpectedException.none();
 
-    @Mock
-    private ActivityInfo mActivityInfo;
-    @Mock
-    private PackageManager mPackageManager;
+    @Mock private ActivityInfo mActivityInfo;
+    @Mock private PackageManager mPackageManager;
 
     private Context mContext;
     private String mLinkUrl;
@@ -67,23 +61,32 @@ public class DragAndDropLauncherActivityUnitTest {
         Intent intent = DragAndDropLauncherActivity.getLinkLauncherIntent(mContext, mLinkUrl, null);
         assertEquals(
                 "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
-                DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW, intent.getAction());
-        assertNotNull("The intent creation timestamp should be saved.",
+                DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW,
+                intent.getAction());
+        assertNotNull(
+                "The intent creation timestamp should be saved.",
                 DragAndDropLauncherActivity.getLinkIntentCreationTimestampMs());
-        assertEquals("The intent class should be DragAndDropLauncherActivity.",
-                DragAndDropLauncherActivity.class.getName(), intent.getComponent().getClassName());
-        assertTrue("The intent should contain the CATEGORY_BROWSABLE category.",
+        assertEquals(
+                "The intent class should be DragAndDropLauncherActivity.",
+                DragAndDropLauncherActivity.class.getName(),
+                intent.getComponent().getClassName());
+        assertTrue(
+                "The intent should contain the CATEGORY_BROWSABLE category.",
                 intent.getCategories().contains(Intent.CATEGORY_BROWSABLE));
-        Assert.assertFalse("Intent should not contain the EXTRA_WINDOW_ID.",
+        Assert.assertFalse(
+                "Intent should not contain the EXTRA_WINDOW_ID.",
                 intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
     }
 
     @Test
     public void testGetLinkLauncherIntent_specificWindowId() {
         Intent intent = DragAndDropLauncherActivity.getLinkLauncherIntent(mContext, mLinkUrl, 3);
-        Assert.assertTrue("Intent should contain the EXTRA_WINDOW_ID.",
+        Assert.assertTrue(
+                "Intent should contain the EXTRA_WINDOW_ID.",
                 intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
-        assertEquals("The EXTRA_WINDOW_ID intent extra value should match.", 3,
+        assertEquals(
+                "The EXTRA_WINDOW_ID intent extra value should match.",
+                3,
                 intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
     }
 
@@ -101,7 +104,8 @@ public class DragAndDropLauncherActivityUnitTest {
     public void testIsIntentValid_missingIntentCreationTimestamp() {
         Intent intent = DragAndDropLauncherActivity.getLinkLauncherIntent(mContext, mLinkUrl, null);
         DragAndDropLauncherActivity.setLinkIntentCreationTimestampMs(null);
-        Assert.assertFalse("The intent creation timestamp is missing.",
+        Assert.assertFalse(
+                "The intent creation timestamp is missing.",
                 DragAndDropLauncherActivity.isIntentValid(intent));
     }
 }

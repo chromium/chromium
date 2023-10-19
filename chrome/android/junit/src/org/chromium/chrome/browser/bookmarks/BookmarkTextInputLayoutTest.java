@@ -41,47 +41,38 @@ import org.chromium.ui.base.TestActivity;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BookmarkTextInputLayoutTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarios =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock
-    private BookmarkDelegate mBookmarkDelegate;
-    @Mock
-    private DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private BookmarkOpener mBookmarkOpener;
-    @Mock
-    private SelectionDelegate mSelectionDelegate;
-    @Mock
-    private Runnable mOpenSearchUiRunnable;
-    @Mock
-    private Callback mOpenFolderCallback;
-    @Mock
-    private BookmarkId mBookmarkId;
-    @Mock
-    private BookmarkItem mBookmarkItem;
-    @Mock
-    private BookmarkUiPrefs mBookmarkUiPrefs;
-    @Mock
-    private BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
+    @Mock private BookmarkDelegate mBookmarkDelegate;
+    @Mock private DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private BookmarkOpener mBookmarkOpener;
+    @Mock private SelectionDelegate mSelectionDelegate;
+    @Mock private Runnable mOpenSearchUiRunnable;
+    @Mock private Callback mOpenFolderCallback;
+    @Mock private BookmarkId mBookmarkId;
+    @Mock private BookmarkItem mBookmarkItem;
+    @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock private BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
 
     private Context mContext;
     private BookmarkTextInputLayout mBookmarkTextInputLayout;
 
     @Before
     public void setUp() {
-        mContext = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
 
-        View customView = LayoutInflater.from(mContext).inflate(
-                R.layout.bookmark_add_new_folder_input_layout, null);
+        View customView =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.bookmark_add_new_folder_input_layout, null);
         mBookmarkTextInputLayout = customView.findViewById(R.id.folder_title);
     }
 

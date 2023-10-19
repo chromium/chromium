@@ -12,9 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * A {@link Verifier} for testing.
- */
+/** A {@link Verifier} for testing. */
 class TestVerifier implements Verifier {
     private final Set<Origin> mPreviouslyVerifiedOrigins = new HashSet<>();
     private final Map<Origin, Promise<Boolean>> mPendingVerifications = new HashMap<>();

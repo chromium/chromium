@@ -31,8 +31,7 @@ import org.chromium.components.sync.SyncService;
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public final class BaseCustomTabRootUiCoordinatorUnitTest {
-    @Rule
-    public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
     private void enablePageInsights(CustomTabsConnection connection, SyncService syncService) {
         when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(true);

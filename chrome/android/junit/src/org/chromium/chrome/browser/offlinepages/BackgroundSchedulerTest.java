@@ -33,21 +33,21 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
-/**
- * Unit tests for BackgroundScheduler.
- */
+/** Unit tests for BackgroundScheduler. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BackgroundSchedulerTest {
-    private TriggerConditions mConditions1 = new TriggerConditions(
-            true /* power */, 10 /* battery percentage */, true /* requires unmetered */);
-    private TriggerConditions mConditions2 = new TriggerConditions(
-            false /* power */, 0 /* battery percentage */, false /* does not require unmetered */);
+    private TriggerConditions mConditions1 =
+            new TriggerConditions(
+                    /* power= */ true, 10 /* battery percentage */, true /* requires unmetered */);
+    private TriggerConditions mConditions2 =
+            new TriggerConditions(
+                    /* power= */ false,
+                    0 /* battery percentage */,
+                    false /* does not require unmetered */);
 
-    @Mock
-    private BackgroundTaskScheduler mTaskScheduler;
-    @Captor
-    ArgumentCaptor<TaskInfo> mTaskInfo;
+    @Mock private BackgroundTaskScheduler mTaskScheduler;
+    @Captor ArgumentCaptor<TaskInfo> mTaskInfo;
 
     @Before
     public void setUp() {
@@ -113,8 +113,8 @@ public class BackgroundSchedulerTest {
     @Test
     @Feature({"OfflinePages"})
     public void testScheduleBackup() {
-        BackgroundScheduler.getInstance().scheduleBackup(
-                mConditions1, 5 * DateUtils.MINUTE_IN_MILLIS);
+        BackgroundScheduler.getInstance()
+                .scheduleBackup(mConditions1, 5 * DateUtils.MINUTE_IN_MILLIS);
         verify(mTaskScheduler, times(1))
                 .schedule(eq(ContextUtils.getApplicationContext()), eq(mTaskInfo.getValue()));
 
@@ -140,11 +140,13 @@ public class BackgroundSchedulerTest {
 
         doNothing()
                 .when(mTaskScheduler)
-                .cancel(eq(ContextUtils.getApplicationContext()),
+                .cancel(
+                        eq(ContextUtils.getApplicationContext()),
                         eq(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID));
         BackgroundScheduler.getInstance().cancel();
         verify(mTaskScheduler, times(1))
-                .cancel(eq(ContextUtils.getApplicationContext()),
+                .cancel(
+                        eq(ContextUtils.getApplicationContext()),
                         eq(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID));
     }
 }

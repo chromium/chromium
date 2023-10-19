@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.bookmarks;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,30 +43,35 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
     private static final int FOLDER_CHILD_COUNT = 10;
     private static final int UNREAD_CHILD_COUNT = 10;
 
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private final BookmarkId mFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId = new BookmarkId(/* id= */ 1, BookmarkType.NORMAL);
     private final BookmarkId mReadingListFolderId =
-            new BookmarkId(/*id=*/2, BookmarkType.READING_LIST);
+            new BookmarkId(/* id= */ 2, BookmarkType.READING_LIST);
     private final BookmarkItem mFolderItem =
             new BookmarkItem(mFolderId, "test folder", null, true, null, true, false, 0, false, 0);
-    private final BookmarkItem mReadingListFolderItem = new BookmarkItem(
-            mReadingListFolderId, "Reading List", null, true, null, true, false, 0, false, 0);
+    private final BookmarkItem mReadingListFolderItem =
+            new BookmarkItem(
+                    mReadingListFolderId,
+                    "Reading List",
+                    null,
+                    true,
+                    null,
+                    true,
+                    false,
+                    0,
+                    false,
+                    0);
 
-    @Mock
-    private ImprovedBookmarkFolderView mView;
-    @Mock
-    private ImprovedBookmarkFolderView mSubstituteView;
-    @Mock
-    private BookmarkImageFetcher mBookmarkImageFetcher;
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private Drawable mDrawable;
+    @Mock private ImprovedBookmarkFolderView mView;
+    @Mock private ImprovedBookmarkFolderView mSubstituteView;
+    @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private Drawable mDrawable;
 
     private Activity mActivity;
     private ImprovedBookmarkFolderViewCoordinator mCoordinator;
@@ -80,17 +86,19 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
         doReturn(UNREAD_CHILD_COUNT).when(mBookmarkModel).getUnreadCount();
 
         // Setup BookmarkImageFetcher.
-        doCallback(1,
-                (Callback<Pair<Drawable, Drawable>> callback)
-                        -> callback.onResult(new Pair<>(mDrawable, mDrawable)))
+        doCallback(
+                        1,
+                        (Callback<Pair<Drawable, Drawable>> callback) ->
+                                callback.onResult(new Pair<>(mDrawable, mDrawable)))
                 .when(mBookmarkImageFetcher)
                 .fetchFirstTwoImagesForFolder(any(), any());
         createCoordinator();
     }
 
     private void createCoordinator() {
-        mCoordinator = new ImprovedBookmarkFolderViewCoordinator(
-                mActivity, mBookmarkImageFetcher, mBookmarkModel);
+        mCoordinator =
+                new ImprovedBookmarkFolderViewCoordinator(
+                        mActivity, mBookmarkImageFetcher, mBookmarkModel);
         mModel = mCoordinator.getModelForTesting();
     }
 
@@ -101,7 +109,8 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR));
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_ICON_TINT));
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE));
-        assertEquals(FOLDER_CHILD_COUNT,
+        assertEquals(
+                FOLDER_CHILD_COUNT,
                 mModel.get(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT));
         assertNotNull(
                 mModel.get(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES));
@@ -118,7 +127,8 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR));
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_ICON_TINT));
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE));
-        assertEquals(UNREAD_CHILD_COUNT,
+        assertEquals(
+                UNREAD_CHILD_COUNT,
                 mModel.get(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT));
         assertNotNull(
                 mModel.get(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES));

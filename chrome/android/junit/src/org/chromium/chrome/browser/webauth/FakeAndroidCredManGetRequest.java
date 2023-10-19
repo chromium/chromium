@@ -9,9 +9,7 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Fake implementation of the Android Credential Manager GetCredentialRequest object.
- */
+/** Fake implementation of the Android Credential Manager GetCredentialRequest object. */
 public final class FakeAndroidCredManGetRequest {
     private final List<FakeAndroidCredentialOption> mCredentialOptions;
     private final Bundle mData;
@@ -34,17 +32,18 @@ public final class FakeAndroidCredManGetRequest {
         return mAlwaysSendAppInfoToProvider;
     }
 
-    private FakeAndroidCredManGetRequest(List<FakeAndroidCredentialOption> credentialOptions,
-            Bundle data, boolean alwaysSendAppInfoToProvider, String origin) {
+    private FakeAndroidCredManGetRequest(
+            List<FakeAndroidCredentialOption> credentialOptions,
+            Bundle data,
+            boolean alwaysSendAppInfoToProvider,
+            String origin) {
         mCredentialOptions = credentialOptions;
         mData = data;
         mAlwaysSendAppInfoToProvider = alwaysSendAppInfoToProvider;
         mOrigin = origin;
     }
 
-    /**
-     * Builder for FakeAndroidCredManGetRequest.
-     */
+    /** Builder for FakeAndroidCredManGetRequest. */
     public static final class Builder {
         private List<FakeAndroidCredentialOption> mCredentialOptions = new ArrayList<>();
         private final Bundle mData;

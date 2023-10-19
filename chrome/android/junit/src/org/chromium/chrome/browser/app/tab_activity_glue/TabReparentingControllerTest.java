@@ -39,9 +39,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Unit tests for {@link TabReparentingControllerTest}.
- */
+/** Unit tests for {@link TabReparentingControllerTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabReparentingControllerTest {
@@ -68,8 +66,7 @@ public class TabReparentingControllerTest {
         }
     }
 
-    @Mock
-    ReparentingTask mTask;
+    @Mock ReparentingTask mTask;
 
     MockTabModel mTabModel;
     MockTabModel mIncognitoTabModel;
@@ -248,11 +245,17 @@ public class TabReparentingControllerTest {
 
         int index;
         if (incognito) {
-            mIncognitoTabModel.addTab(tab, -1, TabLaunchType.FROM_BROWSER_ACTIONS,
+            mIncognitoTabModel.addTab(
+                    tab,
+                    -1,
+                    TabLaunchType.FROM_BROWSER_ACTIONS,
                     TabCreationState.LIVE_IN_FOREGROUND);
             index = mIncognitoTabModel.indexOf(tab);
         } else {
-            mTabModel.addTab(tab, -1, TabLaunchType.FROM_BROWSER_ACTIONS,
+            mTabModel.addTab(
+                    tab,
+                    -1,
+                    TabLaunchType.FROM_BROWSER_ACTIONS,
                     TabCreationState.LIVE_IN_FOREGROUND);
             index = mTabModel.indexOf(tab);
         }

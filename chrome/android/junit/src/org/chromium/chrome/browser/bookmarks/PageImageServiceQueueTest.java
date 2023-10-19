@@ -39,17 +39,12 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PageImageServiceQueueTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private Callback<GURL> mBookmarkUrlCallback;
-    @Mock
-    private Callback<GURL> mQueuedBookmarkUrlCallback;
-    @Mock
-    private SyncService mSyncService;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private Callback<GURL> mBookmarkUrlCallback;
+    @Mock private Callback<GURL> mQueuedBookmarkUrlCallback;
+    @Mock private SyncService mSyncService;
     @Captor private ArgumentCaptor<Callback<GURL>> mGurlCallbackCaptor;
 
     private PageImageServiceQueue mPageImageServiceQueue;
@@ -61,7 +56,7 @@ public class PageImageServiceQueueTest {
                 .when(mSyncService)
                 .getActiveDataTypes();
         mPageImageServiceQueue =
-                new PageImageServiceQueue(mBookmarkModel, /*maxFetchRequests*/ 1, mSyncService);
+                new PageImageServiceQueue(mBookmarkModel, /* maxFetchRequests= */ 1, mSyncService);
     }
 
     @Test

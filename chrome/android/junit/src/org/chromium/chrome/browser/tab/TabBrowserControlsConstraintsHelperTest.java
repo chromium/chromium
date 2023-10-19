@@ -35,17 +35,12 @@ import java.lang.ref.WeakReference;
 public class TabBrowserControlsConstraintsHelperTest {
     private final UserDataHost mUserDataHost = new UserDataHost();
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    TabImpl mTab;
-    @Mock
-    WebContents mWebContents;
-    @Mock
-    TabDelegateFactory mDelegateFactory;
-    @Mock
-    TabBrowserControlsConstraintsHelper.Natives mJniMock;
+    @Mock TabImpl mTab;
+    @Mock WebContents mWebContents;
+    @Mock TabDelegateFactory mDelegateFactory;
+    @Mock TabBrowserControlsConstraintsHelper.Natives mJniMock;
 
     private TabBrowserControlsConstraintsHelper mHelper;
     private TabObserver mRegisteredTabObserver;
@@ -150,8 +145,13 @@ public class TabBrowserControlsConstraintsHelperTest {
 
         mVisibilityDelegate.set(BrowserControlsState.SHOWN);
         Mockito.verify(mJniMock, Mockito.never())
-                .updateState(Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.anyInt(),
-                        Mockito.anyInt(), Mockito.anyBoolean());
+                .updateState(
+                        Mockito.anyLong(),
+                        Mockito.any(),
+                        Mockito.any(),
+                        Mockito.anyInt(),
+                        Mockito.anyInt(),
+                        Mockito.anyBoolean());
     }
 
     @Test
@@ -193,11 +193,18 @@ public class TabBrowserControlsConstraintsHelperTest {
         verifyUpdateState(constraints, BrowserControlsState.BOTH, animate);
     }
 
-    private void verifyUpdateState(@BrowserControlsState int constraints,
-            @BrowserControlsState int current, boolean animate) {
-        Mockito.verify(mJniMock).updateState(Mockito.anyLong(), Mockito.same(mHelper),
-                Mockito.same(mWebContents), Mockito.eq(constraints), Mockito.eq(current),
-                Mockito.eq(animate));
+    private void verifyUpdateState(
+            @BrowserControlsState int constraints,
+            @BrowserControlsState int current,
+            boolean animate) {
+        Mockito.verify(mJniMock)
+                .updateState(
+                        Mockito.anyLong(),
+                        Mockito.same(mHelper),
+                        Mockito.same(mWebContents),
+                        Mockito.eq(constraints),
+                        Mockito.eq(current),
+                        Mockito.eq(animate));
         Mockito.clearInvocations(mJniMock);
     }
 

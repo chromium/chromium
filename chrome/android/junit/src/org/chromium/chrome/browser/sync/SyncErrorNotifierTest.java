@@ -39,20 +39,15 @@ import org.chromium.components.sync.SyncService;
 /** Unit tests for {@link SyncErrorNotifier}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SyncErrorNotifierTest {
-    @Rule
-    public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private final Context mContext = ContextUtils.getApplicationContext();
 
-    @Mock
-    private NotificationManagerProxy mNotificationManagerProxy;
-    @Mock
-    private SyncService mSyncService;
-    @Mock
-    private TrustedVaultClient mTrustedVaultClient;
+    @Mock private NotificationManagerProxy mNotificationManagerProxy;
+    @Mock private SyncService mSyncService;
+    @Mock private TrustedVaultClient mTrustedVaultClient;
 
-    @Captor
-    private ArgumentCaptor<NotificationWrapper> mNotificationWrapperCaptor;
+    @Captor private ArgumentCaptor<NotificationWrapper> mNotificationWrapperCaptor;
 
     @Test
     @SmallTest
@@ -92,9 +87,11 @@ public class SyncErrorNotifierTest {
         verify(mSyncService).markPassphrasePromptMutedForCurrentProductVersion();
         verify(mNotificationManagerProxy).notify(mNotificationWrapperCaptor.capture());
         Bundle notificationExtras = mNotificationWrapperCaptor.getValue().getNotification().extras;
-        assertEquals(notificationExtras.getCharSequence(Notification.EXTRA_TITLE),
+        assertEquals(
+                notificationExtras.getCharSequence(Notification.EXTRA_TITLE),
                 mContext.getString(R.string.sync_error_card_title));
-        assertEquals(notificationExtras.getCharSequence(Notification.EXTRA_TEXT),
+        assertEquals(
+                notificationExtras.getCharSequence(Notification.EXTRA_TEXT),
                 mContext.getString(R.string.hint_passphrase_required));
 
         // Spurious syncStateChanged()...
@@ -168,9 +165,11 @@ public class SyncErrorNotifierTest {
         // Notification must be shown now.
         verify(mNotificationManagerProxy).notify(mNotificationWrapperCaptor.capture());
         Bundle notificationExtras = mNotificationWrapperCaptor.getValue().getNotification().extras;
-        assertEquals(notificationExtras.getCharSequence(Notification.EXTRA_TITLE),
+        assertEquals(
+                notificationExtras.getCharSequence(Notification.EXTRA_TITLE),
                 mContext.getString(R.string.password_sync_error_summary));
-        assertEquals(notificationExtras.getCharSequence(Notification.EXTRA_TEXT),
+        assertEquals(
+                notificationExtras.getCharSequence(Notification.EXTRA_TEXT),
                 mContext.getString(R.string.hint_sync_retrieve_keys_for_passwords));
 
         // Spurious syncStateChanged()...
@@ -212,9 +211,11 @@ public class SyncErrorNotifierTest {
         verify(mNotificationManagerProxy, Mockito.times(0)).cancel(anyInt());
         verify(mNotificationManagerProxy).notify(mNotificationWrapperCaptor.capture());
         Bundle notificationExtras = mNotificationWrapperCaptor.getValue().getNotification().extras;
-        assertEquals(notificationExtras.getCharSequence(Notification.EXTRA_TITLE),
+        assertEquals(
+                notificationExtras.getCharSequence(Notification.EXTRA_TITLE),
                 mContext.getString(R.string.sync_error_card_title));
-        assertEquals(notificationExtras.getCharSequence(Notification.EXTRA_TEXT),
+        assertEquals(
+                notificationExtras.getCharSequence(Notification.EXTRA_TEXT),
                 mContext.getString(R.string.hint_sync_retrieve_keys_for_everything));
     }
 

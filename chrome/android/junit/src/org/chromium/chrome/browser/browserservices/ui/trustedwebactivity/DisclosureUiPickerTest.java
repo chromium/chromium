@@ -41,28 +41,19 @@ import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 
-/**
- * Tests for {@link DisclosureUiPicker}.
- */
+/** Tests for {@link DisclosureUiPicker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.O)
 public class DisclosureUiPickerTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    public DisclosureInfobar mInfobar;
-    @Mock
-    public DisclosureSnackbar mSnackbar;
-    @Mock
-    public DisclosureNotification mNotification;
+    @Mock public DisclosureInfobar mInfobar;
+    @Mock public DisclosureSnackbar mSnackbar;
+    @Mock public DisclosureNotification mNotification;
 
-    @Mock
-    public BrowserServicesIntentDataProvider mIntentDataProvider;
-    @Mock
-    public NotificationManagerProxy mNotificationManager;
-    @Mock
-    public ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock public BrowserServicesIntentDataProvider mIntentDataProvider;
+    @Mock public NotificationManagerProxy mNotificationManager;
+    @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
@@ -76,9 +67,14 @@ public class DisclosureUiPickerTest {
 
         when(mIntentDataProvider.getTwaDisclosureUi()).thenReturn(TwaDisclosureUi.DEFAULT);
 
-        mPicker = new DisclosureUiPicker(new FilledLazy<>(mInfobar), new FilledLazy<>(mSnackbar),
-                new FilledLazy<>(mNotification), mIntentDataProvider, mNotificationManager,
-                mLifecycleDispatcher);
+        mPicker =
+                new DisclosureUiPicker(
+                        new FilledLazy<>(mInfobar),
+                        new FilledLazy<>(mSnackbar),
+                        new FilledLazy<>(mNotification),
+                        mIntentDataProvider,
+                        mNotificationManager,
+                        mLifecycleDispatcher);
     }
 
     @Test

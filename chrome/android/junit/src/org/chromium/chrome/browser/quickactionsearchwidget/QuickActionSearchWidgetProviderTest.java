@@ -40,11 +40,11 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferen
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Tests for the (@link QuickActionSearchWidgetProvider}.
- */
+/** Tests for the (@link QuickActionSearchWidgetProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowLog.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowLog.class})
 public class QuickActionSearchWidgetProviderTest {
     private static final int WIDGET_A_ID = 123;
     private static final int WIDGET_B_ID = 987;
@@ -67,8 +67,9 @@ public class QuickActionSearchWidgetProviderTest {
         mContext = Mockito.spy(ApplicationProvider.getApplicationContext());
         mOptionsWidgetA = new Bundle();
         mOptionsWidgetB = new Bundle();
-        mPreferences = new SearchActivityPreferences(
-                "Search Engine", "https://search.engine.com", true, true, true);
+        mPreferences =
+                new SearchActivityPreferences(
+                        "Search Engine", "https://search.engine.com", true, true, true);
 
         // Inflate an actual RemoteViews to avoid stubbing internal methods or making
         // any other assumptions about the class.
@@ -199,7 +200,8 @@ public class QuickActionSearchWidgetProviderTest {
     public void testCreateWidgetFromSizeSpecs() {
         updateReportedWidgetSizes(mOptionsWidgetA, new SizeF(80, 80), new SizeF(400, 40));
         // Lastly, set a different array of sizes and confirm it is used instead.
-        mOptionsWidgetA.putParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES,
+        mOptionsWidgetA.putParcelableArrayList(
+                AppWidgetManager.OPTION_APPWIDGET_SIZES,
                 new ArrayList<SizeF>(Arrays.asList(new SizeF(50, 50))));
         mWidgetProvider.getRemoteViews(mContext, mPreferences, mOptionsWidgetA);
 
@@ -215,7 +217,8 @@ public class QuickActionSearchWidgetProviderTest {
         updateReportedWidgetSizes(mOptionsWidgetA, new SizeF(80, 80), new SizeF(400, 40));
         // Define new sizes. These must be ignored, because RemoteViews constructor is not
         // supported.
-        mOptionsWidgetA.putParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES,
+        mOptionsWidgetA.putParcelableArrayList(
+                AppWidgetManager.OPTION_APPWIDGET_SIZES,
                 new ArrayList<SizeF>(Arrays.asList(new SizeF(50, 50))));
         mWidgetProvider.getRemoteViews(mContext, mPreferences, mOptionsWidgetA);
 

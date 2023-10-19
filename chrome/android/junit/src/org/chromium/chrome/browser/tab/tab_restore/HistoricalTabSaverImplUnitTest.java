@@ -30,18 +30,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Unit tests for {@link HistoricalTabSaverImpl}.
- */
+/** Unit tests for {@link HistoricalTabSaverImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HistoricalTabSaverImplUnitTest {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Mock
-    private TabModel mTabModel;
-    @Mock
-    private HistoricalTabSaverImpl.Natives mHistoricalTabSaverJni;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Mock private TabModel mTabModel;
+    @Mock private HistoricalTabSaverImpl.Natives mHistoricalTabSaverJni;
 
     private HistoricalTabSaverImpl mHistoricalTabSaver;
 
@@ -54,9 +49,7 @@ public class HistoricalTabSaverImplUnitTest {
         mHistoricalTabSaver.ignoreUrlSchemesForTesting(true);
     }
 
-    /**
-     * Tests nothing is saved for an empty group.
-     */
+    /** Tests nothing is saved for an empty group. */
     @Test
     public void testCreateHistoricalGroup_Empty() {
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[0]));
@@ -65,9 +58,7 @@ public class HistoricalTabSaverImplUnitTest {
         verifyNoMoreInteractions(mHistoricalTabSaverJni);
     }
 
-    /**
-     * Tests nothing is saved for an empty bulk closure.
-     */
+    /** Tests nothing is saved for an empty bulk closure. */
     @Test
     public void testCreateHistoricalBulk_Empty() {
         ArrayList<HistoricalEntry> entries = new ArrayList<>();
@@ -76,9 +67,7 @@ public class HistoricalTabSaverImplUnitTest {
         verifyNoMoreInteractions(mHistoricalTabSaverJni);
     }
 
-    /**
-     * Tests nothing is saved for an incognito tab closure.
-     */
+    /** Tests nothing is saved for an incognito tab closure. */
     @Test
     public void testCreateHistoricalBulk_Incognito() {
         Tab tab = new MockTab(0, true);
@@ -87,9 +76,7 @@ public class HistoricalTabSaverImplUnitTest {
         verifyNoMoreInteractions(mHistoricalTabSaverJni);
     }
 
-    /**
-     * Tests collapsing a group with a single tab into a single tab entry.
-     */
+    /** Tests collapsing a group with a single tab into a single tab entry. */
     @Test
     public void testCreateHistoricalTab_FromGroup() {
         Tab tab = new MockTab(0, false);
@@ -122,9 +109,7 @@ public class HistoricalTabSaverImplUnitTest {
         verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab, buf, 1);
     }
 
-    /**
-     * Tests collapsing a bulk closure with a single tab into a single tab entry.
-     */
+    /** Tests collapsing a bulk closure with a single tab into a single tab entry. */
     @Test
     public void testCreateHistoricalTab_FromBulk() {
         Tab tab = new MockTab(0, false);
@@ -157,9 +142,7 @@ public class HistoricalTabSaverImplUnitTest {
         verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab, buf, 1);
     }
 
-    /**
-     * Tests a bulk closure is collapsed to a group if there is just a group.
-     */
+    /** Tests a bulk closure is collapsed to a group if there is just a group. */
     @Test
     public void testCreateHistoricalGroup_FromBulk() {
         Tab tab0 = new MockTab(0, false);
@@ -179,9 +162,7 @@ public class HistoricalTabSaverImplUnitTest {
                         eq(mTabModel), eq("Foo"), eq(tabList), eq(buffers), eq(versions));
     }
 
-    /**
-     * Tests incognito tabs are removed and collapse to a single tab.
-     */
+    /** Tests incognito tabs are removed and collapse to a single tab. */
     @Test
     public void testCreateHistoricalTab_FromGroupWithIncognito() {
         Tab tab0 = new MockTab(0, false);
@@ -197,9 +178,7 @@ public class HistoricalTabSaverImplUnitTest {
         verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab0, buf, -1);
     }
 
-    /**
-     * Tests incognito tabs are removed and maintain a group.
-     */
+    /** Tests incognito tabs are removed and maintain a group. */
     @Test
     public void testCreateHistoricalGroup_FromGroupWithIncognito() {
         Tab tab0 = new MockTab(0, false);
@@ -216,13 +195,15 @@ public class HistoricalTabSaverImplUnitTest {
         ByteBuffer[] buffers = new ByteBuffer[] {buf, buf};
         int[] versions = new int[] {-1, -1};
         verify(mHistoricalTabSaverJni, times(1))
-                .createHistoricalGroup(eq(mTabModel), eq("Foo"), eq(new Tab[] {tab0, tab2}),
-                        eq(buffers), eq(versions));
+                .createHistoricalGroup(
+                        eq(mTabModel),
+                        eq("Foo"),
+                        eq(new Tab[] {tab0, tab2}),
+                        eq(buffers),
+                        eq(versions));
     }
 
-    /**
-     * Tests duplicates are allowed.
-     */
+    /** Tests duplicates are allowed. */
     @Test
     public void testCreateHistoricalGroup_FromGroupWithDuplicates() {
         Tab tab0 = new MockTab(0, false);
@@ -241,9 +222,7 @@ public class HistoricalTabSaverImplUnitTest {
                         eq(mTabModel), eq("Foo"), eq(tabList), eq(buffers), eq(versions));
     }
 
-    /**
-     * Tests a bulk closure of tabs including some invalid entries.
-     */
+    /** Tests a bulk closure of tabs including some invalid entries. */
     @Test
     public void testCreateHistoricalBulk_AllTabsWithInvalid() {
         Tab tab0 = new MockTab(0, true);
@@ -263,14 +242,17 @@ public class HistoricalTabSaverImplUnitTest {
         ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf};
         int[] versions = new int[] {-1, -1, -1};
         verify(mHistoricalTabSaverJni, times(1))
-                .createHistoricalBulkClosure(eq(mTabModel), eq(new int[0]), eq(new String[0]),
+                .createHistoricalBulkClosure(
+                        eq(mTabModel),
+                        eq(new int[0]),
+                        eq(new String[0]),
                         eq(new int[] {Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID}),
-                        eq(new Tab[] {tab1, tab2, tab2}), eq(buffers), eq(versions));
+                        eq(new Tab[] {tab1, tab2, tab2}),
+                        eq(buffers),
+                        eq(versions));
     }
 
-    /**
-     * Tests a bulk closure of tabs and groups including some invalid entries.
-     */
+    /** Tests a bulk closure of tabs and groups including some invalid entries. */
     @Test
     public void testCreateHistoricalBulk_MixedWithInvalid() {
         // Tab.
@@ -315,7 +297,13 @@ public class HistoricalTabSaverImplUnitTest {
         ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf, buf, buf, buf, buf};
         int[] versions = new int[] {-1, -1, -1, -1, -1, -1, -1};
         verify(mHistoricalTabSaverJni, times(1))
-                .createHistoricalBulkClosure(eq(mTabModel), eq(groupIds), eq(groupTitles),
-                        eq(perTabGroupIds), eq(tabs), eq(buffers), eq(versions));
+                .createHistoricalBulkClosure(
+                        eq(mTabModel),
+                        eq(groupIds),
+                        eq(groupTitles),
+                        eq(perTabGroupIds),
+                        eq(tabs),
+                        eq(buffers),
+                        eq(versions));
     }
 }

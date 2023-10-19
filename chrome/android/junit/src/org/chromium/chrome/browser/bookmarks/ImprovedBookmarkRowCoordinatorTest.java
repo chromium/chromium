@@ -58,46 +58,71 @@ public class ImprovedBookmarkRowCoordinatorTest {
     private static final int CHILD_COUNT = 5;
     private static final int READING_LIST_CHILD_COUNT = 1;
     private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
-    private static final String EXAMPLE_URL_FORMATTED = UrlFormatter.formatUrlForSecurityDisplay(
-            EXAMPLE_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+    private static final String EXAMPLE_URL_FORMATTED =
+            UrlFormatter.formatUrlForSecurityDisplay(
+                    EXAMPLE_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
-    @Rule
-    public final JniMocker mJniMocker = new JniMocker();
 
-    private final BookmarkId mFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
+    @Rule public final JniMocker mJniMocker = new JniMocker();
+
+    private final BookmarkId mFolderId = new BookmarkId(/* id= */ 1, BookmarkType.NORMAL);
     private final BookmarkId mReadingListFolderId =
-            new BookmarkId(/*id=*/2, BookmarkType.READING_LIST);
-    private final BookmarkId mBookmarkId = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
-    private final BookmarkId mReadingListId = new BookmarkId(/*id=*/4, BookmarkType.READING_LIST);
+            new BookmarkId(/* id= */ 2, BookmarkType.READING_LIST);
+    private final BookmarkId mBookmarkId = new BookmarkId(/* id= */ 3, BookmarkType.NORMAL);
+    private final BookmarkId mReadingListId =
+            new BookmarkId(/* id= */ 4, BookmarkType.READING_LIST);
 
     private final BookmarkItem mFolderItem =
             new BookmarkItem(mFolderId, "User folder", null, true, null, true, false, 0, false, 0);
-    private final BookmarkItem mBookmarkItem = new BookmarkItem(
-            mBookmarkId, "Bookmark", EXAMPLE_URL, false, mFolderId, true, false, 0, false, 0);
-    private final BookmarkItem mReadingListFolderItem = new BookmarkItem(
-            mReadingListFolderId, "Reading List", null, true, null, true, false, 0, false, 0);
-    private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId, "ReadingList",
-            EXAMPLE_URL, false, mReadingListFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mBookmarkItem =
+            new BookmarkItem(
+                    mBookmarkId,
+                    "Bookmark",
+                    EXAMPLE_URL,
+                    false,
+                    mFolderId,
+                    true,
+                    false,
+                    0,
+                    false,
+                    0);
+    private final BookmarkItem mReadingListFolderItem =
+            new BookmarkItem(
+                    mReadingListFolderId,
+                    "Reading List",
+                    null,
+                    true,
+                    null,
+                    true,
+                    false,
+                    0,
+                    false,
+                    0);
+    private final BookmarkItem mReadingListItem =
+            new BookmarkItem(
+                    mReadingListId,
+                    "ReadingList",
+                    EXAMPLE_URL,
+                    false,
+                    mReadingListFolderId,
+                    true,
+                    false,
+                    0,
+                    false,
+                    0);
 
-    @Mock
-    private BookmarkImageFetcher mBookmarkImageFetcher;
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private Drawable mDrawable;
-    @Mock
-    private Runnable mClickListener;
-    @Mock
-    private BookmarkUiPrefs mBookmarkUiPrefs;
-    @Mock
-    private ShoppingService mShoppingService;
-    @Mock
-    private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
+    @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private Drawable mDrawable;
+    @Mock private Runnable mClickListener;
+    @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock private ShoppingService mShoppingService;
+    @Mock private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
     @Mock private ImprovedBookmarkRow mImprovedBookmarkRow;
 
     private Activity mActivity;
@@ -117,9 +142,10 @@ public class ImprovedBookmarkRowCoordinatorTest {
         doReturn(READING_LIST_CHILD_COUNT).when(mBookmarkModel).getChildCount(mReadingListFolderId);
 
         // Setup BookmarkImageFetcher.
-        doCallback(1,
-                (Callback<Pair<Drawable, Drawable>> callback)
-                        -> callback.onResult(new Pair<>(mDrawable, mDrawable)))
+        doCallback(
+                        1,
+                        (Callback<Pair<Drawable, Drawable>> callback) ->
+                                callback.onResult(new Pair<>(mDrawable, mDrawable)))
                 .when(mBookmarkImageFetcher)
                 .fetchFirstTwoImagesForFolder(any(), any());
         doCallback(1, (Callback<Drawable> callback) -> callback.onResult(mDrawable))
@@ -132,8 +158,13 @@ public class ImprovedBookmarkRowCoordinatorTest {
         // Setup CurrencyFormatter.
         mJniMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
 
-        mCoordinator = new ImprovedBookmarkRowCoordinator(mActivity, mBookmarkImageFetcher,
-                mBookmarkModel, mBookmarkUiPrefs, mShoppingService);
+        mCoordinator =
+                new ImprovedBookmarkRowCoordinator(
+                        mActivity,
+                        mBookmarkImageFetcher,
+                        mBookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService);
     }
 
     @Test
@@ -143,8 +174,9 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
         assertEquals("User folder", model.get(ImprovedBookmarkRowProperties.TITLE));
         assertNull(model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
-        assertEquals(String.format("%s %s", model.get(ImprovedBookmarkRowProperties.TITLE),
-                             "No bookmarks"),
+        assertEquals(
+                String.format(
+                        "%s %s", model.get(ImprovedBookmarkRowProperties.TITLE), "No bookmarks"),
                 model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
         assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         assertFalse(model.get(ImprovedBookmarkRowProperties.SELECTED));
@@ -167,7 +199,8 @@ public class ImprovedBookmarkRowCoordinatorTest {
         assertEquals("User folder (0)", model.get(ImprovedBookmarkRowProperties.TITLE));
         assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
-        assertEquals("User folder No bookmarks",
+        assertEquals(
+                "User folder No bookmarks",
                 model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
     }
 

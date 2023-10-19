@@ -35,10 +35,8 @@ import org.chromium.ui.util.ColorUtils;
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class CustomTabNavigationBarControllerTest {
-    @Mock
-    private ColorProvider mColorProvider;
-    @Mock
-    private CustomTabIntentDataProvider mCustomTabIntentDataProvider;
+    @Mock private ColorProvider mColorProvider;
+    @Mock private CustomTabIntentDataProvider mCustomTabIntentDataProvider;
     private Window mWindow;
     private Context mContext;
 
@@ -125,7 +123,8 @@ public class CustomTabNavigationBarControllerTest {
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(null);
         when(mColorProvider.getNavigationBarColor()).thenReturn(Color.WHITE);
         CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-        verify(mWindow).setNavigationBarDividerColor(
-                mContext.getColor(org.chromium.chrome.R.color.black_alpha_12));
+        verify(mWindow)
+                .setNavigationBarDividerColor(
+                        mContext.getColor(org.chromium.chrome.R.color.black_alpha_12));
     }
 }

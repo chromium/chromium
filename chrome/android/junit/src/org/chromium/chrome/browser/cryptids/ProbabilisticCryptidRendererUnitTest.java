@@ -21,15 +21,12 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 import java.util.Random;
 
-/**
- * Unit tests for ProbabilisticCryptidRenderer.
- */
+/** Unit tests for ProbabilisticCryptidRenderer. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.PROBABILISTIC_CRYPTID_RENDERER)
 public class ProbabilisticCryptidRendererUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final long PERIOD_LENGTH = 60 * 60 * 24 * 1000; // Arbitrary value of 1 day
     private static final int MAX_PROBABILITY = 200000; // Arbitrary value of 20%
@@ -42,38 +39,42 @@ public class ProbabilisticCryptidRendererUnitTest {
     @Test
     @SmallTest
     public void testCalculateProbability() {
-        int probDuringMoratorium = ProbabilisticCryptidRenderer.calculateProbability(
-                /* lastRenderTimestamp = */ 0,
-                /* currentTimestamp = */ 1,
-                /* renderingMoratoriumLength = */ 100,
-                /* rampUpLength = */ 100,
-                /* maxProbability = */ MAX_PROBABILITY);
+        int probDuringMoratorium =
+                ProbabilisticCryptidRenderer.calculateProbability(
+                        /* lastRenderTimestamp= */ 0,
+                        /* currentTimestamp= */ 1,
+                        /* renderingMoratoriumLength= */ 100,
+                        /* rampUpLength= */ 100,
+                        /* maxProbability= */ MAX_PROBABILITY);
         Assert.assertEquals(0, probDuringMoratorium);
 
-        int probEarlyRampup = ProbabilisticCryptidRenderer.calculateProbability(
-                /* lastRenderTimestamp = */ 0,
-                /* currentTimestamp = */ 125,
-                /* renderingMoratoriumLength = */ 100,
-                /* rampUpLength = */ 100,
-                /* maxProbability = */ MAX_PROBABILITY);
+        int probEarlyRampup =
+                ProbabilisticCryptidRenderer.calculateProbability(
+                        /* lastRenderTimestamp= */ 0,
+                        /* currentTimestamp= */ 125,
+                        /* renderingMoratoriumLength= */ 100,
+                        /* rampUpLength= */ 100,
+                        /* maxProbability= */ MAX_PROBABILITY);
         // 125 is 25% between 100 and 200
         Assert.assertEquals((int) Math.round(MAX_PROBABILITY * .25), probEarlyRampup);
 
-        int probLateRampup = ProbabilisticCryptidRenderer.calculateProbability(
-                /* lastRenderTimestamp = */ 0,
-                /* currentTimestamp = */ 180,
-                /* renderingMoratoriumLength = */ 100,
-                /* rampUpLength = */ 100,
-                /* maxProbability = */ MAX_PROBABILITY);
+        int probLateRampup =
+                ProbabilisticCryptidRenderer.calculateProbability(
+                        /* lastRenderTimestamp= */ 0,
+                        /* currentTimestamp= */ 180,
+                        /* renderingMoratoriumLength= */ 100,
+                        /* rampUpLength= */ 100,
+                        /* maxProbability= */ MAX_PROBABILITY);
         // 180 is 80% between 100 and 200
         Assert.assertEquals((int) Math.round(MAX_PROBABILITY * .8), probLateRampup);
 
-        int probPostRampup = ProbabilisticCryptidRenderer.calculateProbability(
-                /* lastRenderTimestamp = */ 0,
-                /* currentTimestamp = */ 300,
-                /* renderingMoratoriumLength = */ 100,
-                /* rampUpLength = */ 100,
-                /* maxProbability = */ MAX_PROBABILITY);
+        int probPostRampup =
+                ProbabilisticCryptidRenderer.calculateProbability(
+                        /* lastRenderTimestamp= */ 0,
+                        /* currentTimestamp= */ 300,
+                        /* renderingMoratoriumLength= */ 100,
+                        /* rampUpLength= */ 100,
+                        /* maxProbability= */ MAX_PROBABILITY);
         Assert.assertEquals(MAX_PROBABILITY, probPostRampup);
     }
 
@@ -87,7 +88,8 @@ public class ProbabilisticCryptidRendererUnitTest {
         // We expect |howLongSinceDefaultTime| to be one moratorium length, because the default
         // case should be rigged up to start users at the end of the moratorium.
         long delta = howLongSinceDefaultTime - render.getRenderingMoratoriumLengthMillis();
-        Assert.assertTrue(String.format("Delta %d was larger than 10 seconds (10000)", delta),
+        Assert.assertTrue(
+                String.format("Delta %d was larger than 10 seconds (10000)", delta),
                 delta < 10000); // Allow a 10 second grace period in case the test is slow.
     }
 
@@ -108,9 +110,7 @@ public class ProbabilisticCryptidRendererUnitTest {
     // verify that the number of trues returned is consistent with our assumptions about how often
     // this should happen, within |TOLERANCE|.
 
-    /**
-     * This fake bypasses any calls to pref logic, and also uses a seeded RNG.
-     */
+    /** This fake bypasses any calls to pref logic, and also uses a seeded RNG. */
     private static class FakeProbabilisticCrpytidRenderer extends ProbabilisticCryptidRenderer {
         public FakeProbabilisticCrpytidRenderer(long lastRenderDeltaFromNow) {
             mLastRenderTimestamp = System.currentTimeMillis() + lastRenderDeltaFromNow;
@@ -153,7 +153,7 @@ public class ProbabilisticCryptidRendererUnitTest {
                 new FakeProbabilisticCrpytidRenderer(lastRenderDeltaFromNow);
         int numTrueRuns = 0;
         for (int i = 0; i < NUM_RUNS; i++) {
-            numTrueRuns += render.shouldUseCryptidRendering(/*profile=*/null) ? 1 : 0;
+            numTrueRuns += render.shouldUseCryptidRendering(/* profile= */ null) ? 1 : 0;
         }
         return numTrueRuns;
     }
@@ -171,8 +171,13 @@ public class ProbabilisticCryptidRendererUnitTest {
     public void testShouldUseCryptidRenderingEarlyRampUp() {
         // Last render was moratiorium length + 25% of ramp-up length, or 1.25 PERIOD_LENGTHs, ago.
         long delta = Math.round(-1 * 1.25 * PERIOD_LENGTH);
-        int expectedHits = (int) Math.round(
-                .25 * MAX_PROBABILITY * NUM_RUNS / ProbabilisticCryptidRenderer.DENOMINATOR);
+        int expectedHits =
+                (int)
+                        Math.round(
+                                .25
+                                        * MAX_PROBABILITY
+                                        * NUM_RUNS
+                                        / ProbabilisticCryptidRenderer.DENOMINATOR);
         int result = shouldUseCryptidRenderingTestHelper(delta);
         int error = Math.abs(expectedHits - result);
         Assert.assertTrue(
@@ -187,8 +192,13 @@ public class ProbabilisticCryptidRendererUnitTest {
     public void testShouldUseCryptidRenderingLateRampUp() {
         // Last render was moratiorium length + 80% of ramp-up length, or 1.8 PERIOD_LENGTHs, ago.
         long delta = Math.round(-1 * 1.8 * PERIOD_LENGTH);
-        int expectedHits = (int) Math.round(
-                .8 * MAX_PROBABILITY * NUM_RUNS / ProbabilisticCryptidRenderer.DENOMINATOR);
+        int expectedHits =
+                (int)
+                        Math.round(
+                                .8
+                                        * MAX_PROBABILITY
+                                        * NUM_RUNS
+                                        / ProbabilisticCryptidRenderer.DENOMINATOR);
         int result = shouldUseCryptidRenderingTestHelper(delta);
         int error = Math.abs(expectedHits - result);
         Assert.assertTrue(

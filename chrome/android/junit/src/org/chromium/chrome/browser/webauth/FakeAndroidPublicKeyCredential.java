@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.webauth;
 
 import android.os.Bundle;
 
-/**
- * Fake implementation of the Android Credential Manager Passkey object.
- */
+/** Fake implementation of the Android Credential Manager Passkey object. */
 public final class FakeAndroidPublicKeyCredential implements FakeAndroidCredential {
     @Override
     public Bundle getData() {

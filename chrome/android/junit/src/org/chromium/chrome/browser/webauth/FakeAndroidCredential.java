@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.webauth;
 
 import android.os.Bundle;
 
-/**
- * Interface of the Android Credential Manager Credential object.
- */
+/** Interface of the Android Credential Manager Credential object. */
 interface FakeAndroidCredential {
     Bundle getData();
 

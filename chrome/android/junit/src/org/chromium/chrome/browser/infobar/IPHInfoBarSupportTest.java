@@ -36,15 +36,11 @@ import org.chromium.components.infobars.InfoBarUiItem;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class IPHInfoBarSupportTest {
-    @Mock
-    private IPHBubbleDelegate mDelegate;
-    @Mock
-    private InfoBarUiItem mItem;
-    @Mock
-    private View mView;
+    @Mock private IPHBubbleDelegate mDelegate;
+    @Mock private InfoBarUiItem mItem;
+    @Mock private View mView;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Test
     @Feature({"Browser"})
@@ -85,7 +81,13 @@ public class IPHInfoBarSupportTest {
         when(mDelegate.createStateForInfoBar(mView, 1)).thenReturn(state);
         when(infoBar.getView()).thenReturn(mView);
         // TODO(crbug.com/782796): Clang formatted this incorrectly.
-        doAnswer((invocation) -> { support.onDismiss(); return null; }).when(bubble).dismiss();
+        doAnswer(
+                        (invocation) -> {
+                            support.onDismiss();
+                            return null;
+                        })
+                .when(bubble)
+                .dismiss();
 
         support.notifyAllAnimationsFinished(mItem);
 

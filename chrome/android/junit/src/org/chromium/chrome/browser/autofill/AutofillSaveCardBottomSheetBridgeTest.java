@@ -43,16 +43,13 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
 
     private static final String HTTPS_EXAMPLE_TEST = "https://example.test";
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private AutofillSaveCardBottomSheetBridge mAutofillSaveCardBottomSheetBridge;
 
-    @Mock
-    private AutofillSaveCardBottomSheetBridge.Natives mBridgeNatives;
+    @Mock private AutofillSaveCardBottomSheetBridge.Natives mBridgeNatives;
 
     private Activity mActivity;
     private ShadowActivity mShadowActivity;
@@ -61,39 +58,42 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
 
     private MockTabModel mTabModel;
 
-    @Mock
-    private ManagedBottomSheetController mBottomSheetController;
+    @Mock private ManagedBottomSheetController mBottomSheetController;
 
-    @Mock
-    private ManagedLayoutManager mLayoutManager;
+    @Mock private ManagedLayoutManager mLayoutManager;
 
-    @Mock
-    private AutofillSaveCardBottomSheetBridge.CoordinatorFactory mCoordinatorFactory;
+    @Mock private AutofillSaveCardBottomSheetBridge.CoordinatorFactory mCoordinatorFactory;
 
     private AutofillSaveCardUiInfo mUiInfo;
 
-    @Mock
-    private AutofillSaveCardBottomSheetCoordinator mCoordinator;
+    @Mock private AutofillSaveCardBottomSheetCoordinator mCoordinator;
 
     @Before
     public void setUp() {
         mJniMocker.mock(AutofillSaveCardBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
-        mUiInfo = new AutofillSaveCardUiInfo.Builder()
-                          .withCardDetail(new CardDetail(/*iconId*/ 0, "label", "subLabel"))
-                          .build();
+        mUiInfo =
+                new AutofillSaveCardUiInfo.Builder()
+                        .withCardDetail(new CardDetail(/* iconId= */ 0, "label", "subLabel"))
+                        .build();
         mActivity = buildActivity(Activity.class).create().get();
         mShadowActivity = shadowOf(mActivity);
         mWindow = new WindowAndroid(mActivity);
-        mTabModel = new MockTabModel(/*incognito=*/false, /*delegate=*/null);
+        mTabModel = new MockTabModel(/* incognito= */ false, /* delegate= */ null);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
-        mAutofillSaveCardBottomSheetBridge = new AutofillSaveCardBottomSheetBridge(
-                MOCK_POINTER, mWindow, mTabModel, mCoordinatorFactory);
+        mAutofillSaveCardBottomSheetBridge =
+                new AutofillSaveCardBottomSheetBridge(
+                        MOCK_POINTER, mWindow, mTabModel, mCoordinatorFactory);
     }
 
     private void setupCoordinatorFactory() {
-        when(mCoordinatorFactory.create(mActivity, mBottomSheetController, mLayoutManager,
-                     mTabModel, mUiInfo, mAutofillSaveCardBottomSheetBridge))
+        when(mCoordinatorFactory.create(
+                        mActivity,
+                        mBottomSheetController,
+                        mLayoutManager,
+                        mTabModel,
+                        mUiInfo,
+                        mAutofillSaveCardBottomSheetBridge))
                 .thenReturn(mCoordinator);
     }
 

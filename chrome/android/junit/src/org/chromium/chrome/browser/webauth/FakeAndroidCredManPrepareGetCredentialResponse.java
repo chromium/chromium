@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.webauth;
 
-/**
- * Fake implementation of the Android Credential Manager PrepareGetCredentialResponse object.
- */
+/** Fake implementation of the Android Credential Manager PrepareGetCredentialResponse object. */
 public final class FakeAndroidCredManPrepareGetCredentialResponse {
     public boolean hasAuthenticationResults() {
         return false;
