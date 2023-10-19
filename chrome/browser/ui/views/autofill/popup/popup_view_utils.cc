@@ -569,6 +569,7 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kAddressEntry:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
+    case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kFieldByFieldFilling:
       return true;
     default:
