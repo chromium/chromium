@@ -558,7 +558,12 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
 #endif
 }
 
-TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
+TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText_Old) {
+  // TODO(crbug.com/1465966): Clean up after the base::Feature is removed.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      safe_browsing::kImprovedDownloadBubbleWarnings);
+
   SetupCompletedDownloadItem(base::Hours(1));
   SetStatusTextBuilder(/*for_bubble=*/true);
 
@@ -622,6 +627,99 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
     EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
               test_case.expected_bubble_status_msg);
   }
+}
+
+TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
+  SetupCompletedDownloadItem(base::Hours(1));
+  SetStatusTextBuilder(/*for_bubble=*/true);
+
+  const struct InsecureDownloadStatusTestCase {
+    download::DownloadItem::InsecureDownloadStatus insecure_download_status;
+    std::string expected_bubble_status_msg;
+  } kInsecureDownloadStatusTestCases[] = {
+      {download::DownloadItem::InsecureDownloadStatus::BLOCK,
+       "Insecure download blocked"},
+      {download::DownloadItem::InsecureDownloadStatus::WARN,
+       "Insecure download blocked"},
+  };
+  for (const auto& test_case : kInsecureDownloadStatusTestCases) {
+    SetupDownloadItemDefaults();
+    ON_CALL(item(), GetInsecureDownloadStatus())
+        .WillByDefault(Return(test_case.insecure_download_status));
+    EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+              test_case.expected_bubble_status_msg);
+#if !BUILDFLAG(IS_ANDROID)
+    // Android doesn't have BubbleUI info.
+    // Whether it's v2 or not doesn't affect the primary button, so it doesn't
+    // matter what we pass here.
+    EXPECT_EQ(model()
+                  .GetBubbleUIInfo(/*is_download_bubble_v2=*/true)
+                  .primary_button_command.value(),
+              DownloadCommands::Command::KEEP);
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  const struct DangerTypeTestCase {
+    download::DownloadDangerType danger_type;
+    std::string expected_bubble_status_msg;
+  } kDangerTypeTestCases[] = {
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
+       "Dangerous download blocked"},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
+       "Dangerous download blocked"},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+       "Dangerous download blocked"},
+      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
+       "Dangerous download blocked"},
+      {download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED,
+       "Blocked \xE2\x80\xA2 Encrypted"},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
+       "Dangerous download blocked"},
+      {download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE,
+       "Blocked \xE2\x80\xA2 Too big"},
+      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
+       "Sensitive content"},
+      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK,
+       "Blocked by your organization"},
+      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
+       "Scan for malware \xE2\x80\xA2 Suspicious"},
+  };
+  for (const auto& test_case : kDangerTypeTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Failed for danger type "
+                 << download::GetDownloadDangerTypeString(test_case.danger_type)
+                 << std::endl);
+    SetupDownloadItemDefaults();
+    ON_CALL(item(), GetDangerType())
+        .WillByDefault(Return(test_case.danger_type));
+    EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+              test_case.expected_bubble_status_msg);
+  }
+}
+
+TEST_F(DownloadItemModelTest,
+       CompletedBubbleWarningStatusText_FiletypeWarning) {
+  SetupCompletedDownloadItem(base::Hours(1));
+  SetStatusTextBuilder(/*for_bubble=*/true);
+  SetupDownloadItemDefaults();
+  ON_CALL(item(), GetDangerType())
+      .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+  EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+            "Unverified download blocked");
+
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(FULL_SAFE_BROWSING)
+  // It doesn't matter what the DownloadProtectionData is; just that it is
+  // present.
+  std::string token = "token";
+  safe_browsing::ClientDownloadResponse::Verdict verdict =
+      safe_browsing::ClientDownloadResponse::SAFE;
+  safe_browsing::ClientDownloadResponse::TailoredVerdict tailored_verdict;
+  safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
+      &item(), token, verdict, tailored_verdict);
+
+  EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+            "Suspicious download blocked");
+#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(FULL_SAFE_BROWSING)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -713,7 +811,11 @@ TEST_F(DownloadItemModelTest, InProgressOrCompletedBubbleUIInfo_V2Off) {
             DownloadCommands::Command::CANCEL);
 }
 
-TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2On) {
+TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2On_Old) {
+  // TODO(crbug.com/1465966): Clean up after the base::Feature is removed.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      safe_browsing::kImprovedDownloadBubbleWarnings);
   SetupCompletedDownloadItem(base::Hours(1));
   const struct DangerTypeTestCase {
     download::DownloadDangerType danger_type;
@@ -781,7 +883,83 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2On) {
   }
 }
 
-TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2Off) {
+TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2On) {
+  SetupCompletedDownloadItem(base::Hours(1));
+  const struct DangerTypeTestCase {
+    download::DownloadDangerType danger_type;
+    bool has_checkbox;
+    absl::optional<DownloadCommands::Command> primary_button_command;
+    std::vector<DownloadCommands::Command> subpage_button_commands;
+  } kDangerTypeTestCases[] = {
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+       false,
+       absl::nullopt,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
+       false,
+       absl::nullopt,
+       {DownloadCommands::Command::DISCARD}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
+       false,
+       absl::nullopt,
+       {DownloadCommands::Command::DISCARD}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+       false,
+       absl::nullopt,
+       {DownloadCommands::Command::DISCARD}},
+      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
+       false,
+       absl::nullopt,
+       {DownloadCommands::Command::DISCARD}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
+       false,
+       absl::nullopt,
+       {DownloadCommands::Command::DISCARD}},
+      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
+       false,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
+       false,
+       absl::nullopt,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
+       false,
+       absl::nullopt,
+       {DownloadCommands::Command::DEEP_SCAN,
+        DownloadCommands::Command::BYPASS_DEEP_SCANNING}},
+      {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING,
+       false,
+       absl::nullopt,
+       {DownloadCommands::Command::DISCARD,
+        DownloadCommands::Command::CANCEL_DEEP_SCAN}},
+  };
+  for (const auto& test_case : kDangerTypeTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Failed for danger type "
+                 << download::GetDownloadDangerTypeString(test_case.danger_type)
+                 << std::endl);
+    SetupDownloadItemDefaults();
+    ON_CALL(item(), GetDangerType())
+        .WillByDefault(Return(test_case.danger_type));
+    DownloadUIModel::BubbleUIInfo bubble_ui_info =
+        model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+    EXPECT_EQ(bubble_ui_info.HasCheckbox(), test_case.has_checkbox);
+    EXPECT_EQ(bubble_ui_info.primary_button_command,
+              test_case.primary_button_command);
+    std::vector<DownloadCommands::Command> subpage_commands;
+    for (auto button : bubble_ui_info.subpage_buttons) {
+      subpage_commands.push_back(button.command);
+    }
+    EXPECT_EQ(subpage_commands, test_case.subpage_button_commands);
+  }
+}
+
+TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2Off_Old) {
+  // TODO(crbug.com/1465966): Clean up after the base::Feature is removed.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      safe_browsing::kImprovedDownloadBubbleWarnings);
   SetupCompletedDownloadItem(base::Hours(1));
   SetIsBubbleV2Enabled(false);
   const struct DangerTypeTestCase {
