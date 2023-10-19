@@ -372,7 +372,7 @@ public class SigninFirstRunFragmentTest {
                                     .getIdentityManager(Profile.getLastUsedRegularProfile()))
                             .thenReturn(mIdentityManagerMock);
                 });
-        doCallback(/*index*/ 2, (SignInCallback callback) -> callback.onSignInAborted())
+        doCallback(/* index= */ 2, (SignInCallback callback) -> callback.onSignInAborted())
                 .when(mSigninManagerMock)
                 .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL1)), anyInt(), any());
         launchActivityWithFragment();
@@ -1439,8 +1439,7 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Replace all the progress bars with dummies. Currently the progress bar cannot
-                    // be
-                    // stopped otherwise due to some espresso issues (crbug/1115067).
+                    // be stopped otherwise due to some espresso issues (crbug/1115067).
                     ProgressBar nativeAndPolicyProgressBar =
                             mFragment
                                     .getView()

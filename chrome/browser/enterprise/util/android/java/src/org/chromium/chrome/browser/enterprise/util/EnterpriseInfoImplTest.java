@@ -175,18 +175,16 @@ public class EnterpriseInfoImplTest {
         handler.post(
                 () -> {
                     // getDeviceEnterpriseInfo should insert a post() to run its callback. This
-                    // post() will
-                    // run after the outer post() is finished.
+                    // post() will run after the outer post() is finished.
                     instance.getDeviceEnterpriseInfo(reentrantCallback);
 
                     // This inner post() will be inserted after the one from
                     // getDeviceEnterpriseInfo(reentrantCallback). Therefore it will run after
                     // |reentrantCallback| is invoked. When |reentrantCallback| is invoked it will
-                    // run its
-                    // own getDeviceEnterpriseInfo() which will in turn insert its own post(). If
-                    // all goes
-                    // as expected this assert should check after |helper| is notified once by
-                    // |reentrantCallback| but before it's notified a second time by |callback|.
+                    // run its own getDeviceEnterpriseInfo() which will in turn insert its own
+                    // post(). If all goes as expected this assert should check after |helper| is
+                    // notified once by |reentrantCallback| but before it's notified a second time
+                    // by |callback|.
                     handler.post(
                             () -> {
                                 Assert.assertEquals(

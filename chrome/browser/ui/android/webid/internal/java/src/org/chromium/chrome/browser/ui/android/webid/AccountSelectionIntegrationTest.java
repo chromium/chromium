@@ -143,8 +143,8 @@ public class AccountSelectionIntegrationTest {
                             Arrays.asList(ANA, BOB),
                             IDP_METADATA,
                             mClientIdMetadata,
-                            false /* isAutoReauthn */,
-                            "signin" /* rpContext */);
+                            /* isAutoReauthn= */ false,
+                            /* rpContext= */ "signin");
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -166,8 +166,8 @@ public class AccountSelectionIntegrationTest {
                             Arrays.asList(ANA, BOB),
                             IDP_METADATA,
                             mClientIdMetadata,
-                            false /* isAutoReauthn */,
-                            "signin" /* rpContext */);
+                            /* isAutoReauthn= */ false,
+                            /* rpContext= */ "signin");
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
@@ -189,8 +189,8 @@ public class AccountSelectionIntegrationTest {
                             Arrays.asList(BOB),
                             IDP_METADATA,
                             mClientIdMetadata,
-                            false /* isAutoReauthn */,
-                            "signin" /* rpContext */);
+                            /* isAutoReauthn= */ false,
+                            /* rpContext= */ "signin");
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -262,8 +262,8 @@ public class AccountSelectionIntegrationTest {
                             Arrays.asList(ANA, BOB),
                             IDP_METADATA,
                             mClientIdMetadata,
-                            false /* isAutoReauthn */,
-                            "signin" /* rpContext */);
+                            /* isAutoReauthn= */ false,
+                            /* rpContext= */ "signin");
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
@@ -286,7 +286,7 @@ public class AccountSelectionIntegrationTest {
                             TEST_ETLD_PLUS_ONE_1,
                             TEST_ETLD_PLUS_ONE_2,
                             IDP_METADATA,
-                            "signin" /* rpContext */);
+                            /* rpContext= */ "signin");
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -306,7 +306,7 @@ public class AccountSelectionIntegrationTest {
                             TEST_ETLD_PLUS_ONE_1,
                             TEST_ETLD_PLUS_ONE_2,
                             IDP_METADATA,
-                            "signin" /* rpContext */);
+                            /* rpContext= */ "signin");
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
@@ -394,7 +394,7 @@ public class AccountSelectionIntegrationTest {
                             TEST_ETLD_PLUS_ONE_1,
                             TEST_ETLD_PLUS_ONE_2,
                             IDP_METADATA,
-                            "signin" /* rpContext */,
+                            /* rpContext= */ "signin",
                             TOKEN_ERROR);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -415,7 +415,7 @@ public class AccountSelectionIntegrationTest {
                             TEST_ETLD_PLUS_ONE_1,
                             TEST_ETLD_PLUS_ONE_2,
                             IDP_METADATA,
-                            "signin" /* rpContext */,
+                            /* rpContext= */ "signin",
                             TOKEN_ERROR);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);

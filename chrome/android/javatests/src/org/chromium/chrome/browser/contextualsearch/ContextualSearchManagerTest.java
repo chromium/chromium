@@ -327,9 +327,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         final NavigationHandle navigationHandle =
                 NavigationHandle.createForTesting(
                         initialUrl,
-                        true /* isRendererInitiated */,
+                        /* isRendererInitiated= */ true,
                         PageTransition.LINK,
-                        true /* hasUserGesture */);
+                        /* hasUserGesture= */ true);
 
         GURL redirectUrl = new GURL(EXTERNAL_APP_URL);
 
@@ -391,7 +391,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         GURL url = new GURL(EXTERNAL_APP_URL);
         final NavigationHandle navigationHandle =
                 NavigationHandle.createForTesting(
-                        url, true /* isRendererInitiated */, PageTransition.LINK, hasGesture);
+                        url, /* isRendererInitiated= */ true, PageTransition.LINK, hasGesture);
 
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
@@ -564,7 +564,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                 "geo:47.6,-122.3",
                                 QuickActionCategory.ADDRESS,
                                 CardTag.CT_LOCATION,
-                                null /* relatedSearchesInBar */));
+                                /* relatedSearchesInBar= */ null));
 
         ContextualSearchBarControl barControl = mPanel.getSearchBarControl();
         ContextualSearchQuickActionControl quickActionControl = barControl.getQuickActionControl();
@@ -637,7 +637,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                 "geo:47.6,-122.3",
                                 QuickActionCategory.ADDRESS,
                                 CardTag.CT_LOCATION,
-                                null /* relatedSearchesInBar */));
+                                /* relatedSearchesInBar= */ null));
 
         sActivityTestRule.getActivity().onUserInteraction();
         // Expand the panel to trigger the quick action intent to be fired.
@@ -674,7 +674,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                 testUrl,
                                 QuickActionCategory.WEBSITE,
                                 CardTag.CT_URL,
-                                null /* relatedSearchesInBar */));
+                                /* relatedSearchesInBar= */ null));
 
         sActivityTestRule.getActivity().onUserInteraction();
         // Expand the bar which should trigger the quick action.
@@ -701,7 +701,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                 null,
                                 QuickActionCategory.NONE,
                                 cardTag,
-                                null /* relatedSearchesInBar */));
+                                /* relatedSearchesInBar= */ null));
 
         expandPanelAndAssert();
     }

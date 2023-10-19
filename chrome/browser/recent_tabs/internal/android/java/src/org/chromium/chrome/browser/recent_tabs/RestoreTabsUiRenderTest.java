@@ -188,8 +188,7 @@ public class RestoreTabsUiRenderTest {
                 () -> {
                     // 1 device in DEVICE_MODEL_LIST and 0 selected tabs in REVIEW_TABS_MODEL_LIST.
                     // Restore tabs button disabled, tablet icon and no chevron/onClickListener for
-                    // device
-                    // view.
+                    // device view.
                     ForeignSession session =
                             new ForeignSession(
                                     "tag",

@@ -347,8 +347,7 @@ public class TabPersistentStoreTest {
                                 }
 
                                 // This is intended to pretend we've started the activity, so we can
-                                // attach a base
-                                // context to the activity.
+                                // attach a base context to the activity.
                                 @Override
                                 public void onStart() {
                                     if (getBaseContext() == null) {
@@ -441,7 +440,7 @@ public class TabPersistentStoreTest {
                     Assert.assertNull(store.getPrefetchTabStateActiveTabTaskForTesting());
 
                     // Make sure the metadata file loads properly and in order.
-                    store.loadState(false /* ignoreIncognitoFiles */);
+                    store.loadState(/* ignoreIncognitoFiles= */ false);
                 });
 
         mockObserver.initializedCallback.waitForCallback(0, 1);
@@ -579,7 +578,7 @@ public class TabPersistentStoreTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     firstStore.addObserver(firstObserver);
-                    firstStore.loadState(false /* ignoreIncognitoFiles */);
+                    firstStore.loadState(/* ignoreIncognitoFiles= */ false);
                 });
         firstObserver.initializedCallback.waitForCallback(0, 1);
         Assert.assertEquals(numExpectedTabs, firstObserver.mTabCountAtStartup);
@@ -607,11 +606,9 @@ public class TabPersistentStoreTest {
                     // The second TabPersistentStore reads the file written by the first
                     // TabPersistentStore.
                     // Make sure that all of the Tabs appear in the new one -- even though the new
-                    // file was
-                    // written before the first TabPersistentStore loaded any TabState files and
-                    // added them
-                    // to the TabModels.
-                    secondStore.loadState(false /* ignoreIncognitoFiles */);
+                    // file was written before the first TabPersistentStore loaded any TabState
+                    // files and added them to the TabModels.
+                    secondStore.loadState(/* ignoreIncognitoFiles= */ false);
                 });
         secondObserver.initializedCallback.waitForCallback(0, 1);
         Assert.assertEquals(numExpectedTabs, secondObserver.mTabCountAtStartup);
@@ -678,7 +675,7 @@ public class TabPersistentStoreTest {
                     store.addObserver(mockObserver);
 
                     // Make sure the metadata file loads properly and in order.
-                    store.loadState(false /* ignoreIncognitoFiles */);
+                    store.loadState(/* ignoreIncognitoFiles= */ false);
                 });
         mockObserver.initializedCallback.waitForCallback(0, 1);
         Assert.assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
@@ -731,7 +728,7 @@ public class TabPersistentStoreTest {
                     store.addObserver(mockObserver);
 
                     // Load the TabModel metadata.
-                    store.loadState(false /* ignoreIncognitoFiles */);
+                    store.loadState(/* ignoreIncognitoFiles= */ false);
                 });
         mockObserver.initializedCallback.waitForCallback(0, 1);
         Assert.assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
@@ -849,7 +846,7 @@ public class TabPersistentStoreTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    store.loadState(false /* ignoreIncognitoFiles */);
+                    store.loadState(/* ignoreIncognitoFiles= */ false);
                     store.restoreTabs(true);
                 });
 
@@ -974,8 +971,7 @@ public class TabPersistentStoreTest {
                     for (int i = 0; i < tabsToSave.length; i++) {
                         // Tabs are uninitialized so TabState won't save unless we override here.
                         // It doesn't matter what TabState is saved for the tests which use this
-                        // function
-                        // only that it is saved. So an arbitrary TabState is used.
+                        // function only that it is saved. So an arbitrary TabState is used.
                         TabStateExtractor.setTabStateForTesting(
                                 tabsToSave[i].getId(), new TabState());
                         TabStateAttributes.from(tabsToSave[i])
@@ -1033,7 +1029,7 @@ public class TabPersistentStoreTest {
         // Load up the TabModel metadata.
         int numExpectedTabs = info.numRegularTabs + info.numIncognitoTabs;
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> store.loadState(!restoreIncognito /* ignoreIncognitoFiles */));
+                () -> store.loadState(/* ignoreIncognitoFiles= */ !restoreIncognito));
         mockObserver.initializedCallback.waitForCallback(0, 1);
         Assert.assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
         mockObserver.detailsReadCallback.waitForCallback(0, info.contents.length);

@@ -72,7 +72,7 @@ public class PaymentRequestMetricsTest {
                         "visa",
                         R.drawable.visa_card,
                         mBillingAddressId,
-                        "" /* serverId */));
+                        /* serverId= */ ""));
     }
 
     /**

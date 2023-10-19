@@ -262,8 +262,7 @@ public class ContextualSearchPolicyTest {
                     // Choose to disable Contextual Search.
                     ContextualSearchPolicy.setContextualSearchState(false);
                     // The Contextual Search pref is disabled, but opt-in pref should still be
-                    // enabled since
-                    // it is not disabled explicitly.
+                    // enabled since it is not disabled explicitly.
                     Assert.assertTrue(ContextualSearchPolicy.isContextualSearchDisabled());
                     Assert.assertTrue(ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
 

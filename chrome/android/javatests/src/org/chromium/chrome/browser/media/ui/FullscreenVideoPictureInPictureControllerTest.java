@@ -254,8 +254,8 @@ public class FullscreenVideoPictureInPictureControllerTest {
                 DOMUtils.clickNode(
                         getWebContents(),
                         "fullscreen",
-                        true /* goThroughRootAndroidView */,
-                        false /* shouldScrollIntoView */));
+                        /* goThroughRootAndroidView= */ true,
+                        /* shouldScrollIntoView= */ false));
 
         // We use the web contents fullscreen heuristic.
         CriteriaHelper.pollUiThread(getWebContents()::hasActiveEffectivelyFullscreenVideo);

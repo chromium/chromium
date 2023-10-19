@@ -141,7 +141,7 @@ public class HomeButtonCoordinatorTest {
     @Test
     public void testDestroy() {
         HomeButtonCoordinator homeButtonCoordinator =
-                newHomeButtonCoordinator(/*view*/ mHomeButton);
+                newHomeButtonCoordinator(/* view= */ mHomeButton);
 
         homeButtonCoordinator.destroy();
 
@@ -152,7 +152,7 @@ public class HomeButtonCoordinatorTest {
     @Test
     public void testIphDefault() {
         HomeButtonCoordinator homeButtonCoordinator =
-                newHomeButtonCoordinator(/*view*/ mHomeButton);
+                newHomeButtonCoordinator(/* view= */ mHomeButton);
         mPromoShownOneshotSupplier.set(false);
 
         homeButtonCoordinator.handlePageLoadFinished(NOT_NTP_URL);
@@ -162,7 +162,7 @@ public class HomeButtonCoordinatorTest {
     @Test
     public void testIphWithoutFeed() {
         HomeButtonCoordinator homeButtonCoordinator =
-                newHomeButtonCoordinator(/*view*/ mHomeButton);
+                newHomeButtonCoordinator(/* view= */ mHomeButton);
         mIsFeedEnabled = false;
         mPromoShownOneshotSupplier.set(false);
 
@@ -173,7 +173,7 @@ public class HomeButtonCoordinatorTest {
     @Test
     public void testIphLoadNtp() {
         HomeButtonCoordinator homeButtonCoordinator =
-                newHomeButtonCoordinator(/*view*/ mHomeButton);
+                newHomeButtonCoordinator(/* view= */ mHomeButton);
         mPromoShownOneshotSupplier.set(false);
 
         homeButtonCoordinator.handlePageLoadFinished(NTP_URL);
@@ -183,7 +183,7 @@ public class HomeButtonCoordinatorTest {
     @Test
     public void testIphHomepageNotNtp() {
         HomeButtonCoordinator homeButtonCoordinator =
-                newHomeButtonCoordinator(/*view*/ mHomeButton);
+                newHomeButtonCoordinator(/* view= */ mHomeButton);
         mIsHomepageNonNtp = true;
         mPromoShownOneshotSupplier.set(false);
 
@@ -196,7 +196,7 @@ public class HomeButtonCoordinatorTest {
 
     @Test
     public void testIphNoView() {
-        HomeButtonCoordinator homeButtonCoordinator = newHomeButtonCoordinator(/*view*/ null);
+        HomeButtonCoordinator homeButtonCoordinator = newHomeButtonCoordinator(/* view= */ null);
         mPromoShownOneshotSupplier.set(false);
 
         homeButtonCoordinator.handlePageLoadFinished(NOT_NTP_URL);
@@ -206,7 +206,7 @@ public class HomeButtonCoordinatorTest {
     @Test
     public void testIphIncognito() {
         HomeButtonCoordinator homeButtonCoordinator =
-                newHomeButtonCoordinator(/*view*/ mHomeButton);
+                newHomeButtonCoordinator(/* view= */ mHomeButton);
         mPromoShownOneshotSupplier.set(false);
 
         mIsIncognito = true;
@@ -221,7 +221,7 @@ public class HomeButtonCoordinatorTest {
     @Test
     public void testIphIsShown() {
         HomeButtonCoordinator homeButtonCoordinator =
-                newHomeButtonCoordinator(/*view*/ mHomeButton);
+                newHomeButtonCoordinator(/* view= */ mHomeButton);
         mPromoShownOneshotSupplier.set(false);
 
         when(mHomeButton.isShown()).thenReturn(false);
@@ -236,7 +236,7 @@ public class HomeButtonCoordinatorTest {
     @Test
     public void testIphShowedPromo() {
         HomeButtonCoordinator homeButtonCoordinator =
-                newHomeButtonCoordinator(/*view*/ mHomeButton);
+                newHomeButtonCoordinator(/* view= */ mHomeButton);
         mPromoShownOneshotSupplier.set(true);
 
         homeButtonCoordinator.handlePageLoadFinished(NOT_NTP_URL);
@@ -246,7 +246,7 @@ public class HomeButtonCoordinatorTest {
     @Test
     public void testIphDelayedPromoShown() {
         HomeButtonCoordinator homeButtonCoordinator =
-                newHomeButtonCoordinator(/*view*/ mHomeButton);
+                newHomeButtonCoordinator(/* view= */ mHomeButton);
 
         homeButtonCoordinator.handlePageLoadFinished(NOT_NTP_URL);
         verifyIphNotShown();

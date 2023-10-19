@@ -118,7 +118,7 @@ public class FastCheckoutDetailScreenViewTest {
                     /* origin= */ "https://example.fr",
                     /* name= */ "Jane Doe",
                     /* number= */ "4564565541234",
-                    /*obfuscatedNumber*/ "1234",
+                    /* obfuscatedNumber= */ "1234",
                     /* month= */ "10",
                     /* year= */ "2025",
                     /* issuerIconString= */ "dinersCC");

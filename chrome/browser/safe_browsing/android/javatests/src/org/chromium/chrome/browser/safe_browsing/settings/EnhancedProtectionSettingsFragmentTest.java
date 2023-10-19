@@ -183,8 +183,7 @@ public class EnhancedProtectionSettingsFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Check that the extra bullet points and friendlier When On/Things to Consider
-                    // headings
-                    // and the learn more label are gone.
+                    // headings and the learn more label are gone.
                     Assert.assertNull(mEnhancedProtectionWhenOn);
                     Assert.assertNull(mEnhancedProtectionThingsToConsider);
                     Assert.assertNull(mEnhancedProtectionBulletSix);

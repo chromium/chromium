@@ -326,11 +326,11 @@ public class ScopeChangeControllerTest {
         NavigationHandle handle =
                 NavigationHandle.createForTesting(
                         url,
-                        true /* isInPrimaryMainFrame*/,
+                        /* isInPrimaryMainFrame= */ true,
                         isSameDocument,
-                        true /* isRendererInitiated */,
-                        0 /* pageTransition */,
-                        false /* hasUserGesture */,
+                        /* isRendererInitiated= */ true,
+                        /* pageTransition= */ 0,
+                        /* hasUserGesture= */ false,
                         isReload);
         handle.didFinish(url, false, didCommit, false, false, false, 0, 0, 0, false);
         return handle;

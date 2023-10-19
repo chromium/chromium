@@ -350,7 +350,7 @@ public class AddToHomescreenTest {
     @CommandLineFlags.Add(ContentSwitches.DISABLE_POPUP_BLOCKING)
     public void testAddWebappShortcutWithEmptyPage() {
         Tab spawnedPopup = spawnPopupInBackground("");
-        addShortcutToTab(spawnedPopup, "", true /* expectAdded */);
+        addShortcutToTab(spawnedPopup, "", /* expectAdded= */ true);
 
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));

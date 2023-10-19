@@ -109,7 +109,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     private void showOverviewMode() {
         mOverviewOpen = true;
         for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
-            observer.onStartedShowing(LayoutType.TAB_SWITCHER /*showToolbar*/);
+            observer.onStartedShowing(/* showToolbar= */ LayoutType.TAB_SWITCHER);
         }
         for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
             observer.onFinishedShowing(LayoutType.TAB_SWITCHER);
@@ -151,7 +151,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testOverviewBehaviorAvailableDuringConstruction() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         Assert.assertEquals("Should have 1 overview observer", 1, mLayoutStateObserverSet.size());
 
         toggleTabStackButtonCoordinator.destroy();
@@ -161,7 +162,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testOverviewBehaviorAvailableAfterDestroy() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         toggleTabStackButtonCoordinator.destroy();
 
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
@@ -171,7 +173,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testDestroyDuringIph() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
 
@@ -188,7 +191,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testIphAndOverviewHighlight() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
 
@@ -214,7 +218,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testDismissIphBeforeOverview() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
 
@@ -241,7 +246,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testOverviewModeEventsWithoutIph() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
 
@@ -257,7 +263,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testIphWithNoPageLoad() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
 
@@ -267,7 +274,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testIphWithNoViewButton() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ null);
+                newToggleTabStackButtonCoordinator(/* toggleTabStackButton= */ null);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
 
@@ -278,7 +285,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testIphWithNoOverviewModeBehavior() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         mPromoShownOneshotSupplier.set(false);
 
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
@@ -304,7 +312,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testIphIncognito() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
 
@@ -320,7 +329,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testIphIsShown() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
 
@@ -336,7 +346,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testIphShowedPromo() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(true);
 
@@ -347,7 +358,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testIphDelayedPromoShown() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
+                newToggleTabStackButtonCoordinator(
+                        /* toggleTabStackButton= */ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
 
         toggleTabStackButtonCoordinator.handlePageLoadFinished();

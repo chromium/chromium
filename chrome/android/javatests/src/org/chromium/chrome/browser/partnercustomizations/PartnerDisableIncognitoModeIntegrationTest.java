@@ -156,7 +156,7 @@ public class PartnerDisableIncognitoModeIntegrationTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     Criteria.checkThat(
-                            mActivityTestRule.tabsCount(true /* incognito */), Matchers.is(0));
+                            mActivityTestRule.tabsCount(/* incognito= */ true), Matchers.is(0));
                 });
     }
 }

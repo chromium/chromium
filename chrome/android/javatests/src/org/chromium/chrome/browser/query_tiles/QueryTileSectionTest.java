@@ -76,7 +76,7 @@ public class QueryTileSectionTest {
         // in Java, allowing our mDumpThreadsOnFailureRule to trigger.
         IdlingPolicies.setMasterPolicyTimeout(10, TimeUnit.SECONDS);
 
-        mTileProvider = new TestTileProvider(2 /* levels */, 8 /* count */);
+        mTileProvider = new TestTileProvider(/* levels= */ 2, /* count= */ 8);
         TileProviderFactory.setTileProviderForTesting(mTileProvider);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);

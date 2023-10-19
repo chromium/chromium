@@ -107,7 +107,7 @@ public final class DownloadForegroundServiceManagerTest {
          */
         void onServiceConnected() {
             setBoundService(new MockDownloadForegroundService());
-            processDownloadUpdateQueue(true /* isProcessingPending */);
+            processDownloadUpdateQueue(/* isProcessingPending= */ true);
         }
     }
 

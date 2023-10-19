@@ -200,8 +200,8 @@ public class OptionalButtonCoordinatorTest {
                         mockIphCommandBuilder,
                         /* isEnabled= */ isEnabled,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
-                        /*tooltipTextResId*/ Resources.ID_NULL, /*showHoverHighlight*/
-                        false);
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ false);
 
         mOptionalButtonCoordinator.updateButton(buttonData);
 
@@ -233,8 +233,8 @@ public class OptionalButtonCoordinatorTest {
                         mockIphCommandBuilder,
                         /* isEnabled= */ isEnabled,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
-                        /*tooltipTextResId*/ Resources.ID_NULL, /*showHoverHighlight*/
-                        false);
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ false);
 
         ArgumentCaptor<Runnable> onShowCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         ArgumentCaptor<Runnable> onDismissCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
@@ -277,8 +277,8 @@ public class OptionalButtonCoordinatorTest {
                         mockIphCommandBuilder,
                         /* isEnabled= */ isEnabled,
                         AdaptiveToolbarButtonVariant.PRICE_TRACKING,
-                        /*tooltipTextResId*/ Resources.ID_NULL, /*showHoverHighlight*/
-                        false);
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ false);
 
         mOptionalButtonCoordinator.updateButton(buttonData);
 
@@ -316,8 +316,8 @@ public class OptionalButtonCoordinatorTest {
                         mockIphCommandBuilder,
                         /* isEnabled= */ isEnabled,
                         AdaptiveToolbarButtonVariant.PRICE_TRACKING,
-                        /*tooltipTextResId*/ Resources.ID_NULL, /*showHoverHighlight*/
-                        false);
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ false);
 
         mOptionalButtonCoordinator.updateButton(buttonData);
 
@@ -355,8 +355,8 @@ public class OptionalButtonCoordinatorTest {
                         mockIphCommandBuilder,
                         /* isEnabled= */ isEnabled,
                         AdaptiveToolbarButtonVariant.PRICE_TRACKING,
-                        /*tooltipTextResId*/ Resources.ID_NULL, /*showHoverHighlight*/
-                        false);
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ false);
 
         mOptionalButtonCoordinator.updateButton(buttonData);
 
@@ -383,8 +383,8 @@ public class OptionalButtonCoordinatorTest {
                         /* iphCommandBuilder= */ null,
                         /* isEnabled= */ true,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
-                        /*tooltipTextResId*/ Resources.ID_NULL, /*showHoverHighlight*/
-                        false);
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ false);
 
         // Call update button with an enabled button.
         mOptionalButtonCoordinator.updateButton(buttonData);
@@ -424,8 +424,8 @@ public class OptionalButtonCoordinatorTest {
                         mockIphCommandBuilder,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
                         /* actionChipLabelResId= */ 0,
-                        /*tooltipTextResId*/ Resources.ID_NULL, /*showHoverHighlight*/
-                        false);
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ false);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setEnabled(isEnabled);

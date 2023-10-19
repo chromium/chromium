@@ -159,8 +159,7 @@ public class RunOnNextLayoutDelegateUnitTest {
         verify(mRunnable2, never()).run();
 
         // Even if a layout never happens because the mRunOnNextLayoutView hasn't changed, the
-        // runnable should still
-        // run.
+        // runnable should still run.
         ShadowLooper.runUiThreadTasks();
 
         verify(mRunnable1, times(1)).run();

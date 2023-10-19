@@ -96,7 +96,7 @@ public class MinidumpUploadJobImplTest {
                                 .getName()
                                 .replace(triesBelowMaxString, maxTriesString));
 
-        uploadMinidumpsSync(minidumpUploadJob, true /* expectReschedule */);
+        uploadMinidumpsSync(minidumpUploadJob, /* expectReschedule= */ true);
         Assert.assertFalse(firstFile.exists());
         Assert.assertFalse(secondFile.exists());
         Assert.assertFalse(justBelowMaxTriesFile.exists());
@@ -145,7 +145,7 @@ public class MinidumpUploadJobImplTest {
         File firstFile = createMinidumpFileInCrashDir("firstFile.dmp0.try0");
         File secondFile = createMinidumpFileInCrashDir("secondFile.dmp0.try0");
 
-        uploadMinidumpsSync(minidumpUploadJob, true /* expectReschedule */);
+        uploadMinidumpsSync(minidumpUploadJob, /* expectReschedule= */ true);
         Assert.assertFalse(firstFile.exists());
         Assert.assertFalse(secondFile.exists());
         File expectedSecondFile;
@@ -173,7 +173,7 @@ public class MinidumpUploadJobImplTest {
         // Note the omitted ".try0" suffix.
         File fileUsingLegacyNamingScheme = createMinidumpFileInCrashDir("1_abc.dmp0");
 
-        uploadMinidumpsSync(minidumpUploadJob, false /* expectReschedule */);
+        uploadMinidumpsSync(minidumpUploadJob, /* expectReschedule= */ false);
 
         // The file should not have been touched, nor should any successful upload files have
         // appeared.

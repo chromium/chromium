@@ -761,9 +761,8 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         // Double-tapping left of screen will cause the video to roll back to the
-                        // beginning
-                        // and controls to be shown immediately (no fade-in) and then gradually fade
-                        // out.
+                        // beginning and controls to be shown immediately (no fade-in) and then
+                        // gradually fade out.
                         categoryView.getVideoPlayerForTesting().doubleTapForTesting(/* x= */ 0f);
                     });
 

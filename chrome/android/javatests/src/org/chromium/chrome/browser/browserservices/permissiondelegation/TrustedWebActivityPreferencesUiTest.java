@@ -98,8 +98,7 @@ public class TrustedWebActivityPreferencesUiTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     // The preference group gets recreated in onPreferenceClick, so we need to find
-                    // it
-                    // again.
+                    // it again.
                     final ExpandablePreferenceGroup group =
                             (ExpandablePreferenceGroup)
                                     websitePreferences.findPreference(groupName);

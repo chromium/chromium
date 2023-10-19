@@ -188,8 +188,7 @@ public class LocationBarTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Do not show a logo image on NTP, unless the default engine is Google, to
-                    // avoid
-                    // occasional timeout in loading it.
+                    // avoid occasional timeout in loading it.
                     doReturn(isGoogle).when(mTemplateUrlService).doesDefaultSearchEngineHaveLogo();
                     doReturn(isGoogle).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
                     doReturn(url)

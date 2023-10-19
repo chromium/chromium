@@ -495,8 +495,7 @@ public class ScrimTest {
                     mScrimCoordinator.showScrim(model);
 
                     // Animations are disabled for these types of tests, so just make sure the
-                    // animation was
-                    // created then continue as if we weren't running animation.
+                    // animation was created then continue as if we weren't running animation.
                     if (animate) {
                         assertNotNull(
                                 "Animations should be running.",

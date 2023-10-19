@@ -1304,9 +1304,9 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediatorWithoutInit(
                         /* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled */ false,
+                        /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace*/ false);
+                        /* useMagicSpace= */ false);
         verify(mCarouselOrSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
                         mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
@@ -1338,9 +1338,9 @@ public class StartSurfaceMediatorUnitTest {
 
         createStartSurfaceMediatorWithoutInit(
                 /* isStartSurfaceEnabled= */ true,
-                /* isRefactorEnabled */ false,
+                /* isRefactorEnabled= */ false,
                 /* hadWarmStart= */ false,
-                /* useMagicSpace*/ false);
+                /* useMagicSpace= */ false);
         assertThat(
                 mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMargin));
@@ -1365,9 +1365,9 @@ public class StartSurfaceMediatorUnitTest {
 
         createStartSurfaceMediatorWithoutInit(
                 /* isStartSurfaceEnabled= */ true,
-                /* isRefactorEnabled */ false,
+                /* isRefactorEnabled= */ false,
                 /* hadWarmStart= */ false,
-                /* useMagicSpace*/ false);
+                /* useMagicSpace= */ false);
         assertThat(
                 mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginPolished));
@@ -1408,9 +1408,9 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediatorWithoutInit(
                         /* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled */ false,
+                        /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace*/ false);
+                        /* useMagicSpace= */ false);
         assertThat(
                 mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginWithTab));
@@ -1450,9 +1450,9 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(
                         /* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled */ false,
+                        /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ true,
-                        /* useMagicSpace*/ false);
+                        /* useMagicSpace= */ false);
         assertFalse(mediator.shouldShowFeedPlaceholder());
 
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
@@ -1562,9 +1562,9 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(
                         /* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled */ false,
+                        /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace*/ false);
+                        /* useMagicSpace= */ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoContainerView).setVisibility(View.VISIBLE);
@@ -1587,9 +1587,9 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(
                         /* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled */ false,
+                        /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace*/ false);
+                        /* useMagicSpace= */ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoContainerView, times(0)).setVisibility(View.VISIBLE);
@@ -1608,9 +1608,9 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(
                         /* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled */ false,
+                        /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace*/ false);
+                        /* useMagicSpace= */ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoContainerView).setVisibility(View.VISIBLE);
@@ -1629,9 +1629,9 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(
                         /* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled */ false,
+                        /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace*/ false);
+                        /* useMagicSpace= */ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoContainerView, times(0)).setVisibility(View.VISIBLE);
@@ -1952,7 +1952,7 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(
-                        /* isStartSurfaceEnabled= */ true, /* isRefactorEnabled */ true);
+                        /* isStartSurfaceEnabled= */ true, /* isRefactorEnabled= */ true);
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
         assertEquals(mTabSwitcherModule, mediator.getTabSwitcherModuleForTesting());
 
@@ -1984,9 +1984,9 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(
                         /* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled */ false,
+                        /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace*/ false);
+                        /* useMagicSpace= */ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         mProfileSupplier.set(mProfile);
@@ -2019,9 +2019,9 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(
                         /* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled */ true,
+                        /* isRefactorEnabled= */ true,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace */ true);
+                        /* useMagicSpace= */ true);
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
         assertNull(mediator.getTabSwitcherModuleForTesting());
         assertNull(mediator.getControllerForTesting());
@@ -2092,9 +2092,9 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(
                         /* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled */ true,
+                        /* isRefactorEnabled= */ true,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace */ true);
+                        /* useMagicSpace= */ true);
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
         assertNull(mediator.getTabSwitcherModuleForTesting());
         assertNull(mediator.getControllerForTesting());
@@ -2159,8 +2159,8 @@ public class StartSurfaceMediatorUnitTest {
 
     private StartSurfaceMediator createStartSurfaceMediator(boolean isStartSurfaceEnabled) {
         return createStartSurfaceMediator(
-                isStartSurfaceEnabled, /* isRefactorEnabled */
-                false,
+                isStartSurfaceEnabled,
+                /* isRefactorEnabled= */ false,
                 /* hadWarmStart= */ false,
                 /* useMagicSpace= */ false);
     }
@@ -2199,7 +2199,7 @@ public class StartSurfaceMediatorUnitTest {
         boolean hasTabSwitcherModule = isStartSurfaceEnabled && isRefactorEnabled && !useMagicSpace;
         return new StartSurfaceMediator(
                 useMagicSpace ? null : mCarouselOrSingleTabSwitcherModuleController,
-                null /* tabSwitcherContainer */,
+                /* tabSwitcherContainer= */ null,
                 hasTabSwitcherModule ? mTabSwitcherModule : null,
                 mTabModelSelector,
                 !isStartSurfaceEnabled ? null : mPropertyModel,
@@ -2208,15 +2208,15 @@ public class StartSurfaceMediatorUnitTest {
                 mActivity,
                 mBrowserControlsStateProvider,
                 mActivityStateChecker,
-                null /* TabCreatorManager */,
-                true /* excludeQueryTiles */,
+                /* tabCreatorManager= */ null,
+                /* excludeQueryTiles= */ true,
                 mStartSurfaceSupplier,
                 hadWarmStart,
                 isStartSurfaceEnabled ? mInitializeMVTilesRunnable : null,
                 mParentTabSupplier,
                 mLogoContainerView,
                 mBackPressManager,
-                null /* feedPlaceholderParentView */,
+                /* feedPlaceholderParentView= */ null,
                 mActivityLifecycleDispatcher,
                 mTabSwitcherClickHandler,
                 mProfileSupplier);

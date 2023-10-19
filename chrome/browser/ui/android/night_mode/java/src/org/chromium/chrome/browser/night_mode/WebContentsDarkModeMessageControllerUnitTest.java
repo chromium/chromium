@@ -330,55 +330,60 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
     @Test
     public void testSendMessage_OptOut_Sent_Clicked() {
-        doTestSendMessage_OptOut_Sent(/* clicked */ true);
+        doTestSendMessage_OptOut_Sent(/* clicked= */ true);
     }
 
     @Test
     public void testSendMessage_OptOut_Sent_NotClicked() {
-        doTestSendMessage_OptOut_Sent(/* clicked */ false);
+        doTestSendMessage_OptOut_Sent(/* clicked= */ false);
     }
 
     @Test
     public void testSendMessage_OptIn_Sent_Clicked() {
-        doTestSendMessage_OptIn_Sent(/* clicked */ true);
+        doTestSendMessage_OptIn_Sent(/* clicked= */ true);
     }
 
     @Test
     public void testSendMessage_OptIn_Sent_NotClicked() {
-        doTestSendMessage_OptIn_Sent(/* clicked */ false);
+        doTestSendMessage_OptIn_Sent(/* clicked= */ false);
     }
 
     // Message not sent tests.
 
     @Test
     public void testSendMessage_OptOut_NotSent_DisabledShouldTrigger() {
-        doTestSendMessage_NotSent(/* optOut */ true, /* enabled */ false, /* shouldTrigger*/ true);
+        doTestSendMessage_NotSent(
+                /* optOut= */ true, /* enabled= */ false, /* shouldTrigger= */ true);
     }
 
     @Test
     public void testSendMessage_OptOut_NotSent_DisabledShouldNotTrigger() {
-        doTestSendMessage_NotSent(/* optOut */ true, /* enabled */ false, /* shouldTrigger*/ false);
+        doTestSendMessage_NotSent(
+                /* optOut= */ true, /* enabled= */ false, /* shouldTrigger= */ false);
     }
 
     @Test
     public void testSendMessage_OptOut_NotSent_EnabledShouldNotTrigger() {
-        doTestSendMessage_NotSent(/* optOut */ true, /* enabled */ true, /* shouldTrigger*/ false);
+        doTestSendMessage_NotSent(
+                /* optOut= */ true, /* enabled= */ true, /* shouldTrigger= */ false);
     }
 
     @Test
     public void testSendMessage_OptIn_NotSent_EnabledShouldTrigger() {
-        doTestSendMessage_NotSent(/* optOut */ false, /* enabled */ true, /* shouldTrigger*/ true);
+        doTestSendMessage_NotSent(
+                /* optOut= */ false, /* enabled= */ true, /* shouldTrigger= */ true);
     }
 
     @Test
     public void testSendMessage_OptIn_NotSent_EnabledShouldNotTrigger() {
-        doTestSendMessage_NotSent(/* optOut */ false, /* enabled */ true, /* shouldTrigger*/ false);
+        doTestSendMessage_NotSent(
+                /* optOut= */ false, /* enabled= */ true, /* shouldTrigger= */ false);
     }
 
     @Test
     public void testSendMessage_OptIn_NotSent_DisabledShouldNotTrigger() {
         doTestSendMessage_NotSent(
-                /* optOut */ false, /* enabled */ false, /* shouldTrigger*/ false);
+                /* optOut= */ false, /* enabled= */ false, /* shouldTrigger= */ false);
     }
 
     // Dialog tests.

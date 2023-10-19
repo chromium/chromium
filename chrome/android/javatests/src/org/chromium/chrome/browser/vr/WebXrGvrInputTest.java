@@ -376,7 +376,7 @@ public class WebXrGvrInputTest {
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testWebXrInputSourceHasGamepad() {
-        webxrGamepadSupportImpl(true /* daydream */);
+        webxrGamepadSupportImpl(/* daydream= */ true);
     }
 
     /**
@@ -389,7 +389,7 @@ public class WebXrGvrInputTest {
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testWebXrInputSourceWithoutGamepad_Cardboard() {
-        webxrGamepadSupportImpl(false /* daydream */);
+        webxrGamepadSupportImpl(/* daydream= */ false);
     }
 
     private void webxrGamepadSupportImpl(boolean daydream) {

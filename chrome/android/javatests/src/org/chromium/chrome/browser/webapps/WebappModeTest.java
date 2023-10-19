@@ -110,8 +110,7 @@ public class WebappModeTest {
                     // Register the webapps so when the data storage is opened, the test doesn't
                     // crash.
                     // There is no race condition with the retrieval as AsyncTasks are run
-                    // sequentially on
-                    // the background thread.
+                    // sequentially on the background thread.
                     WebappRegistry.getInstance()
                             .register(
                                     WEBAPP_1_ID,

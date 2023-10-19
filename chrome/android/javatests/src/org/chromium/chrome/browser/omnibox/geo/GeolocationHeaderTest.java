@@ -169,7 +169,7 @@ public class GeolocationHeaderTest {
     @DisabledTest(message = "http://crbug/1479552")
     public void testGeolocationHeaderPrimingEnabledPermissionAllow() {
         setPermission(ContentSettingValues.ALLOW);
-        checkHeaderPriming(true /* shouldPrimeHeader */);
+        checkHeaderPriming(/* shouldPrimeHeader= */ true);
     }
 
     @Test
@@ -178,7 +178,7 @@ public class GeolocationHeaderTest {
     @DisabledTest(message = "http://crbug/1479552")
     public void testGeolocationHeaderPrimingDisabledPermissionBlock() {
         setPermission(ContentSettingValues.BLOCK);
-        checkHeaderPriming(false /* shouldPrimeHeader */);
+        checkHeaderPriming(/* shouldPrimeHeader= */ false);
     }
 
     @Test
@@ -187,7 +187,7 @@ public class GeolocationHeaderTest {
     @DisabledTest(message = "http://crbug/1479552")
     public void testGeolocationHeaderPrimingDisabledPermissionAsk() {
         setPermission(ContentSettingValues.ASK);
-        checkHeaderPriming(false /* shouldPrimeHeader */);
+        checkHeaderPriming(/* shouldPrimeHeader= */ false);
     }
 
     @Test
@@ -198,7 +198,7 @@ public class GeolocationHeaderTest {
     public void testGeolocationHeaderPrimingDisabledOSPermissionBlocked() {
         setPermission(ContentSettingValues.ALLOW);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
-        checkHeaderPriming(false /* shouldPrimeHeader */);
+        checkHeaderPriming(/* shouldPrimeHeader= */ false);
     }
 
     private void checkHeaderWithPermission(

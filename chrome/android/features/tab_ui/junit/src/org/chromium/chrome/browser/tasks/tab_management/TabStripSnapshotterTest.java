@@ -110,7 +110,7 @@ public class TabStripSnapshotterTest {
         Mockito.when(mRecyclerView.computeHorizontalScrollOffset()).thenReturn(0);
         ModelList modelList = new ModelList();
         PropertyModel propertyModel1 = makePropertyModel(mTabFaviconFetcherA, false, false);
-        modelList.add(new ListItem(/*type*/ 0, propertyModel1));
+        modelList.add(new ListItem(/* type= */ 0, propertyModel1));
         TabStripSnapshotter tabStripSnapshotter =
                 new TabStripSnapshotter(this::onModelTokenChange, modelList, mRecyclerView);
 
@@ -120,7 +120,7 @@ public class TabStripSnapshotterTest {
         Assert.assertEquals(1, mTokenList.size());
 
         PropertyModel propertyModel2 = makePropertyModel(mTabFaviconFetcherA, true, true);
-        modelList.add(new ListItem(/*type*/ 0, propertyModel2));
+        modelList.add(new ListItem(/* type= */ 0, propertyModel2));
         Assert.assertEquals(2, mTokenList.size());
         Assert.assertNotEquals(mTokenList.get(0), mTokenList.get(1));
 

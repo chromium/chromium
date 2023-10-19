@@ -65,7 +65,7 @@ public class PaymentRequestEmptyUpdateTest {
                         "visa",
                         R.drawable.visa_card,
                         billingAddressId,
-                        "" /* serverId */));
+                        /* serverId= */ ""));
     }
 
     /** Expand the shipping address section and select a valid address. */

@@ -753,8 +753,8 @@ public class MessageAnimationCoordinatorUnitTest {
                 true,
                 () -> {
                     // Simulate triggering the callback given by MessageQueueManager after animation
-                    // is
-                    // finished; equivalent to calling MessageQueueManager's updateWithStacking.
+                    // is finished; equivalent to calling MessageQueueManager's
+                    // updateWithStacking.
                     mAnimationCoordinator.updateWithStacking(
                             Arrays.asList(null, null), true, () -> {});
                 });

@@ -54,7 +54,7 @@ public final class ServicificationBackgroundServiceTest {
     @Before
     public void setUp() {
         mServicificationBackgroundService =
-                new ServicificationBackgroundService(true /*supportsMinimalBrowser*/);
+                new ServicificationBackgroundService(/* supportsMinimalBrowser= */ true);
     }
 
     @After

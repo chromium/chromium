@@ -141,7 +141,7 @@ public class NfcSystemLevelPromptTest {
         Assert.assertEquals(0, mDialogCallback.getCallCount());
         Assert.assertEquals(1, mIntentCallback.getCallCount());
 
-        mWindowAndroidIntentCallback.onIntentCompleted(0 /* resultCode */, new Intent());
+        mWindowAndroidIntentCallback.onIntentCompleted(/* resultCode= */ 0, new Intent());
         Assert.assertEquals(1, mDialogCallback.getCallCount());
         Assert.assertEquals(1, mIntentCallback.getCallCount());
     }

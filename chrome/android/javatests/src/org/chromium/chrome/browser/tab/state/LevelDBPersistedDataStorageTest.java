@@ -70,10 +70,9 @@ public class LevelDBPersistedDataStorageTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Both PersistedDataStorage are associated with the same BrowserContext so
-                    // calling
-                    // destroy() on the first one will free the same SessionProtoDB for all of them.
-                    // Calling
-                    // on both would cause call destroy() on a freed SessionProtoDB.
+                    // calling destroy() on the first one will free the same SessionProtoDB for
+                    // all of them.
+                    // Calling on both would cause call destroy() on a freed SessionProtoDB.
                     mPersistedDataStorage[0].destroy();
                 });
     }

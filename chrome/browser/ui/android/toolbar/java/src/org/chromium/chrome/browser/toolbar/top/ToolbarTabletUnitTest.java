@@ -347,7 +347,7 @@ public final class ToolbarTabletUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testIsReadyForTextureCapture_HasFocus() {
-        mToolbarTablet.onUrlFocusChange(/*hasFocus*/ true);
+        mToolbarTablet.onUrlFocusChange(/* hasFocus= */ true);
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
         Assert.assertFalse(result.isReady);
         Assert.assertEquals(TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS, result.blockReason);
@@ -479,7 +479,7 @@ public final class ToolbarTabletUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testIsReadyForTextureCapture_InTabSwitcher() {
-        mToolbarTablet.setTabSwitcherMode(/*inTabSwitcherMode*/ true);
+        mToolbarTablet.setTabSwitcherMode(/* inTabSwitcherMode= */ true);
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
         Assert.assertFalse(result.isReady);
         Assert.assertEquals(TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE, result.blockReason);
@@ -501,7 +501,7 @@ public final class ToolbarTabletUnitTest {
             Assert.assertTrue(result.isReady);
         }
 
-        mToolbarTablet.setTextureCaptureMode(/*textureMode*/ true);
+        mToolbarTablet.setTextureCaptureMode(/* textureMode= */ true);
 
         {
             CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
@@ -509,7 +509,7 @@ public final class ToolbarTabletUnitTest {
             Assert.assertEquals(TopToolbarBlockCaptureReason.SNAPSHOT_SAME, result.blockReason);
         }
 
-        mToolbarTablet.updateBookmarkButton(/*isBookmarked*/ true, /*editingAllowed*/ true);
+        mToolbarTablet.updateBookmarkButton(/* isBookmarked= */ true, /* editingAllowed= */ true);
 
         {
             CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();

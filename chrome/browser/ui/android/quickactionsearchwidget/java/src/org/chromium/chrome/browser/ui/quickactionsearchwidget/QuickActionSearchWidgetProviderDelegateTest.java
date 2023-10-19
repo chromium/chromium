@@ -247,8 +247,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
                 new VerticalResizeHeightVariant[] {
                     // The following 2 variants "should never happen" and technically violate any
                     // assumptions that could be made about Android widget sizing, but we keep these
-                    // to
-                    // verify that we're not doing anything unexpected / bad, like crashing.
+                    // to verify that we're not doing anything unexpected / bad, like crashing.
                     new VerticalResizeHeightVariant(
                             0, //
                             "zero",

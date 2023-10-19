@@ -52,8 +52,8 @@ public class PaymentRequestCanMakePaymentQueryTest {
                                 "2050",
                                 "visa",
                                 R.drawable.visa_card,
-                                "" /* billingAddressId */,
-                                "" /* serverId */));
+                                /* billingAddressId= */ "",
+                                /* serverId= */ ""));
     }
 
     @Test

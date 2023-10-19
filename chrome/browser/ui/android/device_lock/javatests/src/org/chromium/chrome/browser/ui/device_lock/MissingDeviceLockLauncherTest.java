@@ -127,7 +127,7 @@ public class MissingDeviceLockLauncherTest {
                         + "removed.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
-                        /* defaultValue */ false));
+                        /* defaultValue= */ false));
     }
 
     @Test
@@ -145,7 +145,7 @@ public class MissingDeviceLockLauncherTest {
                         + "removed.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
-                        /* defaultValue */ false));
+                        /* defaultValue= */ false));
     }
 
     @Test
@@ -176,7 +176,7 @@ public class MissingDeviceLockLauncherTest {
                         + "device lock dialog is shown.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
-                        /* defaultValue */ false));
+                        /* defaultValue= */ false));
     }
 
     @Test
@@ -198,7 +198,7 @@ public class MissingDeviceLockLauncherTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
-                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ true);
+                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData= */ true);
                 });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, times(1)).signOut(anyInt(), any(), eq(true));
@@ -233,7 +233,7 @@ public class MissingDeviceLockLauncherTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
-                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ false);
+                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData= */ false);
                 });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, times(1)).signOut(anyInt(), any(), eq(false));
@@ -268,7 +268,7 @@ public class MissingDeviceLockLauncherTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
-                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ true);
+                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData= */ true);
                 });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, times(0)).signOut(anyInt(), any(), anyBoolean());
@@ -296,7 +296,7 @@ public class MissingDeviceLockLauncherTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
-                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ false);
+                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData= */ false);
                 });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, never()).signOut(anyInt(), any(), anyBoolean());

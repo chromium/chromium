@@ -352,13 +352,13 @@ public class WebappNavigationTest {
         assertEquals(otherInScopeUrl, ChromeTabUtils.getUrlStringOnUiThread(tab));
 
         mActivityTestRule.loadUrlInTab(
-                offOriginUrl(), PageTransition.LINK, tab, 10 /* secondsToWait */);
+                offOriginUrl(), PageTransition.LINK, tab, /* secondsToWait= */ 10);
         String mozillaUrl =
                 mActivityTestRule
                         .getTestServer()
                         .getURLWithHostName("mozilla.org", "/defaultresponse");
         mActivityTestRule.loadUrlInTab(
-                mozillaUrl, PageTransition.LINK, tab, 10 /* secondsToWait */);
+                mozillaUrl, PageTransition.LINK, tab, /* secondsToWait= */ 10);
 
         // Toolbar with the close button should be visible.
         WebappActivityTestRule.assertToolbarShownMaybeHideable(activity);

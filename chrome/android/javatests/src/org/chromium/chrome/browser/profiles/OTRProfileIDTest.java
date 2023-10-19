@@ -61,8 +61,7 @@ public class OTRProfileIDTest {
                                     .getPrimaryOTRProfile(/* createIfNeeded= */ true);
 
                     // OTRProfileId should not be null for primary OTR profile and it should be the
-                    // id of
-                    // primary OTR profile.
+                    // id of primary OTR profile.
                     assert profile.getOTRProfileID() != null;
                     assert profile.getOTRProfileID().isPrimaryOTRId();
                 });
@@ -80,8 +79,7 @@ public class OTRProfileIDTest {
                                             otrProfileID, /* createIfNeeded= */ true);
 
                     // OTRProfileId should not be null for non-primary OTR profile and it should not
-                    // be the
-                    // id of primary OTR profile.
+                    // be the id of primary OTR profile.
                     assert profile.getOTRProfileID() != null;
                     assert !profile.getOTRProfileID().isPrimaryOTRId();
                 });

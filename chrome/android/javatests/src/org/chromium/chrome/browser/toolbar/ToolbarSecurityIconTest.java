@@ -326,9 +326,9 @@ public final class ToolbarSecurityIconTest {
         assertEquals(
                 R.color.default_red,
                 mLocationBarModel.getSecurityIconColorWithSecurityLevel(
-                        /*connectionSecurityLevel*/ ConnectionSecurityLevel.DANGEROUS,
-                        /*brandedColorScheme*/ BrandedColorScheme.APP_DEFAULT,
-                        /*isIncognito*/ false));
+                        /* connectionSecurityLevel= */ ConnectionSecurityLevel.DANGEROUS,
+                        /* brandedColorScheme= */ BrandedColorScheme.APP_DEFAULT,
+                        /* isIncognito= */ false));
     }
 
     @Test
@@ -338,9 +338,9 @@ public final class ToolbarSecurityIconTest {
         assertEquals(
                 R.color.baseline_error_80,
                 mLocationBarModel.getSecurityIconColorWithSecurityLevel(
-                        /*connectionSecurityLevel*/ ConnectionSecurityLevel.DANGEROUS,
-                        /*brandedColorScheme*/ BrandedColorScheme.APP_DEFAULT,
-                        /*isIncognito*/ true));
+                        /* connectionSecurityLevel= */ ConnectionSecurityLevel.DANGEROUS,
+                        /* brandedColorScheme= */ BrandedColorScheme.APP_DEFAULT,
+                        /* isIncognito= */ true));
     }
 
     @Test
@@ -358,7 +358,7 @@ public final class ToolbarSecurityIconTest {
                         mLocationBarModel.getSecurityIconColorWithSecurityLevel(
                                 connectionSecurityLevel,
                                 brandedColorScheme,
-                                /*isIncognito*/ false));
+                                /* isIncognito= */ false));
             }
         }
     }
@@ -377,14 +377,14 @@ public final class ToolbarSecurityIconTest {
                     defaultColorResLight,
                     mLocationBarModel.getSecurityIconColorWithSecurityLevel(
                             connectionSecurityLevel,
-                            /*brandedColorScheme*/ BrandedColorScheme.LIGHT_BRANDED_THEME,
-                            /*isIncognito*/ false));
+                            /* brandedColorScheme= */ BrandedColorScheme.LIGHT_BRANDED_THEME,
+                            /* isIncognito= */ false));
             assertEquals(
                     defaultColorResDark,
                     mLocationBarModel.getSecurityIconColorWithSecurityLevel(
                             connectionSecurityLevel,
-                            /*brandedColorScheme*/ BrandedColorScheme.DARK_BRANDED_THEME,
-                            /*isIncognito*/ false));
+                            /* brandedColorScheme= */ BrandedColorScheme.DARK_BRANDED_THEME,
+                            /* isIncognito= */ false));
         }
     }
 }

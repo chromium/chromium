@@ -364,7 +364,7 @@ public class DetachedResourceRequestTest {
     @DisableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
     @DisabledTest(message = "https://crbug.com/1431268")
     public void testSafeBrowsingMainResource() throws Exception {
-        testSafeBrowsingMainResource(true /* afterNative */, false /* splitCacheEnabled */);
+        testSafeBrowsingMainResource(/* afterNative= */ true, /* splitCacheEnabled= */ false);
     }
 
     /**
@@ -375,7 +375,7 @@ public class DetachedResourceRequestTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
     public void testSafeBrowsingMainResourceWithSplitCache() throws Exception {
-        testSafeBrowsingMainResource(true /* afterNative */, true /* splitCacheEnabled */);
+        testSafeBrowsingMainResource(/* afterNative= */ true, /* splitCacheEnabled= */ true);
     }
 
     /**
@@ -398,7 +398,7 @@ public class DetachedResourceRequestTest {
     @DisableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
     @DisabledTest(message = "https://crbug.com/1431268")
     public void testSafeBrowsingMainResourceBeforeNative() throws Exception {
-        testSafeBrowsingMainResource(false /* afterNative */, false /* splitCacheEnabled */);
+        testSafeBrowsingMainResource(/* afterNative= */ false, /* splitCacheEnabled= */ false);
     }
 
     /**

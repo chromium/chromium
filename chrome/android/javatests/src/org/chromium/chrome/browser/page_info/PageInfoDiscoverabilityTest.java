@@ -222,7 +222,7 @@ public class PageInfoDiscoverabilityTest {
                                     mResources,
                                     mContext,
                                     mUrlBarEditingTextStateProvider,
-                                    /* isTablet */ false,
+                                    /* isTablet= */ false,
                                     mLocationBarDataProvider,
                                     mPermissionDialogController,
                                     mSearchEngineLogoUtils,
@@ -274,12 +274,12 @@ public class PageInfoDiscoverabilityTest {
                 sPermissionTestRule,
                 testAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
-                true /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
-                null /* javascriptToExecute */,
-                0 /* missingPermissionPromptTextId */);
+                /* expectPermissionAllowed= */ true,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
+                /* javascriptToExecute= */ null,
+                /* missingPermissionPromptTextId= */ 0);
 
         Assert.assertEquals(ContentSettingsType.GEOLOCATION, mMediator.getLastPermission());
     }
@@ -306,12 +306,12 @@ public class PageInfoDiscoverabilityTest {
                 sPermissionTestRule,
                 testAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
-                false /* expectPermissionAllowed */,
-                false /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
-                null /* javascriptToExecute */,
-                0 /* missingPermissionPromptTextId */);
+                /* expectPermissionAllowed= */ false,
+                /* permissionPromptAllow= */ false,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
+                /* javascriptToExecute= */ null,
+                /* missingPermissionPromptTextId= */ 0);
 
         Assert.assertEquals(ContentSettingsType.GEOLOCATION, mMediator.getLastPermission());
     }

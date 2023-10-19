@@ -94,7 +94,7 @@ public final class TrustedWebActivityCurrentPageVerifierTest {
         String pageDifferentOrigin = "https://bar.com/chrome/test/data/android/simple.html";
         launchTwa(page);
 
-        mActivityTestRule.loadUrl(pageDifferentOrigin, 10 /* secondsToWait */);
+        mActivityTestRule.loadUrl(pageDifferentOrigin, /* secondsToWait= */ 10);
 
         TrustedWebActivityTestUtil.waitForCurrentPageVerifierToFinish(
                 mActivityTestRule.getActivity());

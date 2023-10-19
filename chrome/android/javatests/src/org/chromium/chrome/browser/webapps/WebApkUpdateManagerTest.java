@@ -352,7 +352,7 @@ public class WebApkUpdateManagerTest {
                                     creationData.darkBackgroundColor,
                                     0,
                                     creationData.isPrimaryIconMaskable,
-                                    false /* isSplashIconMaskable */,
+                                    /* isSplashIconMaskable= */ false,
                                     "",
                                     creationData.shellVersion,
                                     creationData.manifestUrl,
@@ -362,11 +362,11 @@ public class WebApkUpdateManagerTest {
                                     WebApkDistributor.BROWSER,
                                     creationData.iconUrlToMurmur2HashMap,
                                     null,
-                                    false /* forceNavigation */,
-                                    false /* isSplashProvidedByWebApk */,
-                                    null /* shareData */,
+                                    /* forceNavigation= */ false,
+                                    /* isSplashProvidedByWebApk= */ false,
+                                    /* shareData= */ null,
                                     creationData.shortcuts,
-                                    1 /* webApkVersionCode */);
+                                    /* webApkVersionCode= */ 1);
                     updateManager.updateIfNeeded(storage, intentDataProvider);
                 });
         waiter.waitForCallback(0);
@@ -377,7 +377,7 @@ public class WebApkUpdateManagerTest {
     private void waitForUpdate(final CreationData creationData) throws Exception {
         CallbackHelper waiter = new CallbackHelper();
         Assert.assertTrue(
-                checkUpdateNeeded(creationData, waiter, true /* acceptDialogIfAppears */));
+                checkUpdateNeeded(creationData, waiter, /* acceptDialogIfAppears= */ true));
         waiter.waitForCallback(0);
     }
 

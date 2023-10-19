@@ -317,7 +317,7 @@ public class RestoreMigrateTest {
         TabPersistentStore storeIn = buildTabPersistentStore(selectorIn, 0);
 
         int maxId = Math.max(getMaxId(selector0), getMaxId(selector1));
-        storeIn.loadState(false /* ignoreIncognitoFiles */);
+        storeIn.loadState(/* ignoreIncognitoFiles= */ false);
         Assert.assertEquals(
                 "Invalid next id",
                 maxId + 1,
@@ -349,8 +349,8 @@ public class RestoreMigrateTest {
 
         TabPersistentStore storeIn1 = buildTabPersistentStore(selectorIn1, 1);
 
-        storeIn0.loadState(false /* ignoreIncognitoFiles */);
-        storeIn1.loadState(false /* ignoreIncognitoFiles */);
+        storeIn0.loadState(/* ignoreIncognitoFiles= */ false);
+        storeIn1.loadState(/* ignoreIncognitoFiles= */ false);
 
         Assert.assertEquals("Unexpected number of tabs to load", 6, storeIn0.getRestoredTabCount());
         Assert.assertEquals("Unexpected number of tabs to load", 3, storeIn1.getRestoredTabCount());

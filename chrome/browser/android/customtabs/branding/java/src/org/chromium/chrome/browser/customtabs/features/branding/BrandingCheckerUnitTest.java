@@ -110,9 +110,9 @@ public class BrandingCheckerUnitTest {
         assertEquals("Show branding time is different.", showBrandingTime, mStorage.get(PACKAGE_1));
 
         assertHistogramRecorded(
-                /*decision*/ BrandingDecision.TOOLBAR, /*isPackageValid*/
-                true,
-                /*isTaskCanceled*/ false);
+                /* decision= */ BrandingDecision.TOOLBAR,
+                /* isPackageValid= */ true,
+                /* isCanceled= */ false);
     }
 
     @Test
@@ -133,9 +133,9 @@ public class BrandingCheckerUnitTest {
                 mStorage.get(NEW_APPLICATION));
 
         assertHistogramRecorded(
-                /*decision*/ BrandingDecision.TOAST, /*isPackageValid*/
-                true,
-                /*isTaskCanceled*/ false);
+                /* decision= */ BrandingDecision.TOAST,
+                /* isPackageValid= */ true,
+                /* isCanceled= */ false);
     }
 
     @Test
@@ -161,9 +161,9 @@ public class BrandingCheckerUnitTest {
         assertEquals("Show branding time is different.", showBrandingTime, mStorage.get(PACKAGE_1));
 
         assertHistogramRecorded(
-                /*decision*/ BrandingDecision.TOAST, /*isPackageValid*/
-                true,
-                /*isTaskCanceled*/ true);
+                /* decision= */ BrandingDecision.TOAST,
+                /* isPackageValid= */ true,
+                /* isCanceled= */ true);
     }
 
     @Test
@@ -181,9 +181,9 @@ public class BrandingCheckerUnitTest {
                 "Branding time should not record for invalid id.", -1, mStorage.get(INVALID_ID));
 
         assertHistogramRecorded(
-                /*decision*/ BrandingDecision.TOAST, /*isPackageValid*/
-                false,
-                /*isTaskCanceled*/ false);
+                /* decision= */ BrandingDecision.TOAST,
+                /* isPackageValid= */ false,
+                /* isCanceled= */ false);
     }
 
     @Test

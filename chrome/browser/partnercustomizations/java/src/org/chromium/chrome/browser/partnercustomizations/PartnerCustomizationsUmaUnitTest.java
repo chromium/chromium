@@ -263,11 +263,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(NTP_CORRECTLY);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                true /* isInitialTabNtpOrOverview */,
-                true /* isCharacterizationCertain */,
-                true /* isHomepagePartner */,
-                true /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ true,
+                /* isCharacterizationCertain= */ true,
+                /* isHomepagePartner= */ true,
+                /* isHomepageNtp= */ true,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -276,11 +276,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(NTP_INCORRECTLY);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                true /* isInitialTabNtpOrOverview */,
-                true /* isCharacterizationCertain */,
-                true /* isHomepagePartner */,
-                false /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ true,
+                /* isCharacterizationCertain= */ true,
+                /* isHomepagePartner= */ true,
+                /* isHomepageNtp= */ false,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -289,11 +289,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(NTP_CORRECTLY);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                true /* isInitialTabNtpOrOverview */,
-                true /* isCharacterizationCertain */,
-                false /* isHomepagePartner */,
-                true /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ true,
+                /* isCharacterizationCertain= */ true,
+                /* isHomepagePartner= */ false,
+                /* isHomepageNtp= */ true,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -302,11 +302,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(NTP_INCORRECTLY);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                true /* isInitialTabNtpOrOverview */,
-                true /* isCharacterizationCertain */,
-                false /* isHomepagePartner */,
-                false /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ true,
+                /* isCharacterizationCertain= */ true,
+                /* isHomepagePartner= */ false,
+                /* isHomepageNtp= */ false,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -315,11 +315,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(NTP_UNKNOWN);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                true /* isInitialTabNtpOrOverview */,
-                false /* isCharacterizationCertain */,
-                true /* isHomepagePartner */,
-                true /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ true,
+                /* isCharacterizationCertain= */ false,
+                /* isHomepagePartner= */ true,
+                /* isHomepageNtp= */ true,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -328,11 +328,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(NTP_UNKNOWN);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                true /* isInitialTabNtpOrOverview */,
-                false /* isCharacterizationCertain */,
-                true /* isHomepagePartner */,
-                false /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ true,
+                /* isCharacterizationCertain= */ false,
+                /* isHomepagePartner= */ true,
+                /* isHomepageNtp= */ false,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -341,11 +341,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(NTP_UNKNOWN);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                true /* isInitialTabNtpOrOverview */,
-                false /* isCharacterizationCertain */,
-                false /* isHomepagePartner */,
-                true /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ true,
+                /* isCharacterizationCertain= */ false,
+                /* isHomepagePartner= */ false,
+                /* isHomepageNtp= */ true,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -354,11 +354,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(NTP_UNKNOWN);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                true /* isInitialTabNtpOrOverview */,
-                false /* isCharacterizationCertain */,
-                false /* isHomepagePartner */,
-                false /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ true,
+                /* isCharacterizationCertain= */ false,
+                /* isHomepagePartner= */ false,
+                /* isHomepageNtp= */ false,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -367,11 +367,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(PARTNER_CUSTOM_HOMEPAGE);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                false /* isInitialTabNtpOrOverview */,
-                true /* isCharacterizationCertain */,
-                true /* isHomepagePartner */,
-                true /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ false,
+                /* isCharacterizationCertain= */ true,
+                /* isHomepagePartner= */ true,
+                /* isHomepageNtp= */ true,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -380,11 +380,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(PARTNER_CUSTOM_HOMEPAGE);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                false /* isInitialTabNtpOrOverview */,
-                true /* isCharacterizationCertain */,
-                true /* isHomepagePartner */,
-                false /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ false,
+                /* isCharacterizationCertain= */ true,
+                /* isHomepagePartner= */ true,
+                /* isHomepageNtp= */ false,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -393,11 +393,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(OTHER_CUSTOM_HOMEPAGE);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                false /* isInitialTabNtpOrOverview */,
-                true /* isCharacterizationCertain */,
-                false /* isHomepagePartner */,
-                true /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ false,
+                /* isCharacterizationCertain= */ true,
+                /* isHomepagePartner= */ false,
+                /* isHomepageNtp= */ true,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -406,11 +406,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(OTHER_CUSTOM_HOMEPAGE);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                false /* isInitialTabNtpOrOverview */,
-                true /* isCharacterizationCertain */,
-                false /* isHomepagePartner */,
-                false /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ false,
+                /* isCharacterizationCertain= */ true,
+                /* isHomepagePartner= */ false,
+                /* isHomepageNtp= */ false,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -419,11 +419,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(PARTNER_CUSTOM_HOMEPAGE);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                false /* isInitialTabNtpOrOverview */,
-                false /* isCharacterizationCertain */,
-                true /* isHomepagePartner */,
-                true /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ false,
+                /* isCharacterizationCertain= */ false,
+                /* isHomepagePartner= */ true,
+                /* isHomepageNtp= */ true,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -432,11 +432,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(PARTNER_CUSTOM_HOMEPAGE);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                false /* isInitialTabNtpOrOverview */,
-                false /* isCharacterizationCertain */,
-                true /* isHomepagePartner */,
-                false /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ false,
+                /* isCharacterizationCertain= */ false,
+                /* isHomepagePartner= */ true,
+                /* isHomepageNtp= */ false,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -445,11 +445,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(OTHER_CUSTOM_HOMEPAGE);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                false /* isInitialTabNtpOrOverview */,
-                false /* isCharacterizationCertain */,
-                false /* isHomepagePartner */,
-                true /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ false,
+                /* isCharacterizationCertain= */ false,
+                /* isHomepagePartner= */ false,
+                /* isHomepageNtp= */ true,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 
@@ -458,11 +458,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher histograms = expectOutcome(OTHER_CUSTOM_HOMEPAGE);
         mPartnerCustomizationsUma.logInitialTabCustomizationOutcomeDelayed(
                 UNUSED,
-                false /* isInitialTabNtpOrOverview */,
-                false /* isCharacterizationCertain */,
-                false /* isHomepagePartner */,
-                false /* isHomepageNtp */,
-                true /* unused */);
+                /* isInitialTabNtpOrOverview= */ false,
+                /* isCharacterizationCertain= */ false,
+                /* isHomepagePartner= */ false,
+                /* isHomepageNtp= */ false,
+                /* unused= */ true);
         histograms.assertExpected();
     }
 

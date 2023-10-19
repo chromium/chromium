@@ -24,7 +24,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MIDITest {
     @Rule
-    public PermissionTestRule mPermissionRule = new PermissionTestRule(true /* useHttpsServer */);
+    public PermissionTestRule mPermissionRule = new PermissionTestRule(/* useHttpsServer= */ true);
 
     private static final String TEST_FILE = "/content/test/data/android/midi_permissions.html";
 

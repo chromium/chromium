@@ -423,8 +423,8 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                                         .hasSameContents(
                                                 "key1",
                                                 "desc1",
-                                                null /* icon */,
-                                                null /* iconDescription */));
+                                                /* icon= */ null,
+                                                /* iconDescription= */ null));
                     }
                 });
     }
@@ -449,8 +449,8 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                                         .hasSameContents(
                                                 "key1",
                                                 "desc1",
-                                                null /* icon */,
-                                                null /* iconDescription */));
+                                                /* icon= */ null,
+                                                /* iconDescription= */ null));
                     }
 
                     {
@@ -725,8 +725,8 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                                     .hasSameContents(
                                             "key1",
                                             "desc1",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
 
                     // Update item 1 with different description.
                     mChooserDialog.addOrUpdateItem("key1", "desc2");
@@ -737,8 +737,8 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                                     .hasSameContents(
                                             "key1",
                                             "desc2",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
 
                     mChooserDialog.setIdleState();
 
@@ -788,8 +788,8 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                                     .hasSameContents(
                                             "key1",
                                             "desc1",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
 
                     // Add item 2.
                     mChooserDialog.addOrUpdateItem("key2", "desc2");
@@ -800,16 +800,16 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                                     .hasSameContents(
                                             "key1",
                                             "desc1",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
                     Assert.assertTrue(
                             itemAdapter
                                     .getItem(1)
                                     .hasSameContents(
                                             "key2",
                                             "desc2",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
 
                     mChooserDialog.setIdleState();
 
@@ -826,8 +826,8 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                                     .hasSameContents(
                                             "key1",
                                             "desc1",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
 
                     // The list should be visible with one item, it should not show
                     // the empty view and the button should not be enabled.
@@ -876,28 +876,27 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                                     .hasSameContents(
                                             "key1",
                                             "desc1",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
                     Assert.assertTrue(
                             itemAdapter
                                     .getItem(1)
                                     .hasSameContents(
                                             "key2",
                                             "desc2",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
                     Assert.assertTrue(
                             itemAdapter
                                     .getItem(2)
                                     .hasSameContents(
                                             "key3",
                                             "desc1",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
 
                     // Since two items have the same name, their display text should have their
-                    // unique
-                    // keys appended.
+                    // unique keys appended.
                     Assert.assertEquals("desc1 (key1)", itemAdapter.getDisplayText(0));
                     Assert.assertEquals("desc2", itemAdapter.getDisplayText(1));
                     Assert.assertEquals("desc1 (key3)", itemAdapter.getDisplayText(2));
@@ -912,16 +911,16 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                                     .hasSameContents(
                                             "key1",
                                             "desc1",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
                     Assert.assertTrue(
                             itemAdapter
                                     .getItem(1)
                                     .hasSameContents(
                                             "key3",
                                             "desc1",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
                     Assert.assertEquals("desc1 (key1)", itemAdapter.getDisplayText(0));
                     Assert.assertEquals("desc1 (key3)", itemAdapter.getDisplayText(1));
 
@@ -935,8 +934,8 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                                     .hasSameContents(
                                             "key3",
                                             "desc1",
-                                            null /* icon */,
-                                            null /* iconDescription */));
+                                            /* icon= */ null,
+                                            /* iconDescription= */ null));
                     // After removing item 1, item 3 is the only remaining item, so its display text
                     // also changed to its original description.
                     Assert.assertEquals("desc1", itemAdapter.getDisplayText(0));

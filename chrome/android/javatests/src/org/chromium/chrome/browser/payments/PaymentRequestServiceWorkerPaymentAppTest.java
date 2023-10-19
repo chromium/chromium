@@ -74,8 +74,8 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
                                                         activity.getResources(),
                                                         Bitmap.createBitmap(
                                                                 new int[] {Color.RED},
-                                                                1 /* width */,
-                                                                1 /* height */,
+                                                                /* width= */ 1,
+                                                                /* height= */ 1,
                                                                 Bitmap.Config.ARGB_8888))
                                                 : null;
                                 delegate.onCanMakePaymentCalculated(true);
@@ -132,7 +132,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
                 scope,
                 supportedMethodNames,
                 name,
-                true /*withIcon*/,
+                /* withIcon= */ true,
                 new SupportedDelegations(shippingAddress, payerName, payerPhone, payerEmail));
     }
 
@@ -239,27 +239,27 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @Feature({"Payments"})
     public void testPaymentAppProvidingShippingComesFirst() throws TimeoutException {
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://alicepay.test" /*scope*/,
-                false /*shippingAddress*/,
-                false /*payerName*/,
-                false /*payerPhone*/,
-                false /*payerEmail*/,
-                "noSupportedDelegation" /*name*/);
+                /* scope= */ "https://alicepay.test",
+                /* shippingAddress= */ false,
+                /* payerName= */ false,
+                /* payerPhone= */ false,
+                /* payerEmail= */ false,
+                /* name= */ "noSupportedDelegation");
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://bobpay.test" /*scope*/,
-                true /*shippingAddress*/,
-                false /*payerName*/,
-                false /*payerPhone*/,
-                false /*payerEmail*/,
-                "shippingSupported1" /*name */);
+                /* scope= */ "https://bobpay.test",
+                /* shippingAddress= */ true,
+                /* payerName= */ false,
+                /* payerPhone= */ false,
+                /* payerEmail= */ false,
+                /* name= */ "shippingSupported1");
         // Install the second app supporting shipping delegation to force showing payment sheet.
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://charliepay.test" /*scope*/,
-                true /*shippingAddress*/,
-                false /*payerName*/,
-                false /*payerPhone*/,
-                false /*payerEmail*/,
-                "shippingSupported2" /*name */);
+                /* scope= */ "https://charliepay.test",
+                /* shippingAddress= */ true,
+                /* payerName= */ false,
+                /* payerPhone= */ false,
+                /* payerEmail= */ false,
+                /* name= */ "shippingSupported2");
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
@@ -277,34 +277,34 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @Feature({"Payments"})
     public void testPaymentAppProvidingContactComesFirst() throws TimeoutException {
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://alicepay.test" /*scope*/,
-                false /*shippingAddress*/,
-                false /*payerName*/,
-                false /*payerPhone*/,
-                false /*payerEmail*/,
-                "noSupportedDelegation" /*name*/);
+                /* scope= */ "https://alicepay.test",
+                /* shippingAddress= */ false,
+                /* payerName= */ false,
+                /* payerPhone= */ false,
+                /* payerEmail= */ false,
+                /* name= */ "noSupportedDelegation");
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://bobpay.test" /*scope*/,
-                false /*shippingAddress*/,
-                true /*payerName*/,
-                true /*payerPhone*/,
-                true /*payerEmail*/,
-                "contactSupported" /*name */);
+                /* scope= */ "https://bobpay.test",
+                /* shippingAddress= */ false,
+                /* payerName= */ true,
+                /* payerPhone= */ true,
+                /* payerEmail= */ true,
+                /* name= */ "contactSupported");
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://charliepay.test" /*scope*/,
-                false /*shippingAddress*/,
-                false /*payerName*/,
-                false /*payerPhone*/,
-                true /*payerEmail*/,
-                "emailOnlySupported" /*name */);
+                /* scope= */ "https://charliepay.test",
+                /* shippingAddress= */ false,
+                /* payerName= */ false,
+                /* payerPhone= */ false,
+                /* payerEmail= */ true,
+                /* name= */ "emailOnlySupported");
         // Install the second app supporting contact delegation to force showing payment sheet.
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://davepay.test" /*scope*/,
-                false /*shippingAddress*/,
-                true /*payerName*/,
-                true /*payerPhone*/,
-                true /*payerEmail*/,
-                "contactSupported2" /*name */);
+                /* scope= */ "https://davepay.test",
+                /* shippingAddress= */ false,
+                /* payerName= */ true,
+                /* payerPhone= */ true,
+                /* payerEmail= */ true,
+                /* name= */ "contactSupported2");
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
@@ -328,35 +328,35 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @Feature({"Payments"})
     public void testPaymentAppProvidingAllRequiredInfoComesFirst() throws TimeoutException {
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://alicepay.test" /*scope*/,
-                true /*shippingAddress*/,
-                false /*payerName*/,
-                false /*payerPhone*/,
-                false /*payerEmail*/,
-                "shippingSupported" /*name */);
+                /* scope= */ "https://alicepay.test",
+                /* shippingAddress= */ true,
+                /* payerName= */ false,
+                /* payerPhone= */ false,
+                /* payerEmail= */ false,
+                /* name= */ "shippingSupported");
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://bobpay.test" /*scope*/,
-                false /*shippingAddress*/,
-                true /*payerName*/,
-                true /*payerPhone*/,
-                true /*payerEmail*/,
-                "contactSupported" /*name */);
+                /* scope= */ "https://bobpay.test",
+                /* shippingAddress= */ false,
+                /* payerName= */ true,
+                /* payerPhone= */ true,
+                /* payerEmail= */ true,
+                /* name= */ "contactSupported");
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://charliepay.test" /*scope*/,
-                true /*shippingAddress*/,
-                true /*payerName*/,
-                true /*payerPhone*/,
-                true /*payerEmail*/,
-                "shippingAndContactSupported" /*name*/);
+                /* scope= */ "https://charliepay.test",
+                /* shippingAddress= */ true,
+                /* payerName= */ true,
+                /* payerPhone= */ true,
+                /* payerEmail= */ true,
+                /* name= */ "shippingAndContactSupported");
         // Install the second app supporting both shipping and contact delegations to force showing
         // payment sheet.
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://davepay.test" /*scope*/,
-                true /*shippingAddress*/,
-                true /*payerName*/,
-                true /*payerPhone*/,
-                true /*payerEmail*/,
-                "shippingAndContactSupported2" /*name*/);
+                /* scope= */ "https://davepay.test",
+                /* shippingAddress= */ true,
+                /* payerName= */ true,
+                /* payerPhone= */ true,
+                /* payerEmail= */ true,
+                /* name= */ "shippingAndContactSupported2");
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
@@ -383,19 +383,19 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @Feature({"Payments"})
     public void testSkipsToSinglePaymentAppProvidingShipping() throws TimeoutException {
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://alicepay.test" /*scope*/,
-                false /*shippingAddress*/,
-                false /*payerName*/,
-                false /*payerPhone*/,
-                false /*payerEmail*/,
-                "noSupportedDelegation" /*name*/);
+                /* scope= */ "https://alicepay.test",
+                /* shippingAddress= */ false,
+                /* payerName= */ false,
+                /* payerPhone= */ false,
+                /* payerEmail= */ false,
+                /* name= */ "noSupportedDelegation");
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://bobpay.test" /*scope*/,
-                true /*shippingAddress*/,
-                false /*payerName*/,
-                false /*payerPhone*/,
-                false /*payerEmail*/,
-                "shippingSupported" /*name */);
+                /* scope= */ "https://bobpay.test",
+                /* shippingAddress= */ true,
+                /* payerName= */ false,
+                /* payerPhone= */ false,
+                /* payerEmail= */ false,
+                /* name= */ "shippingSupported");
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
         mPaymentRequestTestRule.clickNodeAndWait(
@@ -407,26 +407,26 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @Feature({"Payments"})
     public void testSkipsToSinglePaymentAppProvidingContact() throws TimeoutException {
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://alicepay.test" /*scope*/,
-                false /*shippingAddress*/,
-                false /*payerName*/,
-                false /*payerPhone*/,
-                false /*payerEmail*/,
-                "noSupportedDelegation" /*name*/);
+                /* scope= */ "https://alicepay.test",
+                /* shippingAddress= */ false,
+                /* payerName= */ false,
+                /* payerPhone= */ false,
+                /* payerEmail= */ false,
+                /* name= */ "noSupportedDelegation");
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://bobpay.test" /*scope*/,
-                false /*shippingAddress*/,
-                true /*payerName*/,
-                true /*payerPhone*/,
-                true /*payerEmail*/,
-                "contactSupported" /*name */);
+                /* scope= */ "https://bobpay.test",
+                /* shippingAddress= */ false,
+                /* payerName= */ true,
+                /* payerPhone= */ true,
+                /* payerEmail= */ true,
+                /* name= */ "contactSupported");
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://charliepay.test" /*scope*/,
-                false /*shippingAddress*/,
-                false /*payerName*/,
-                false /*payerPhone*/,
-                true /*payerEmail*/,
-                "emailOnlySupported" /*name */);
+                /* scope= */ "https://charliepay.test",
+                /* shippingAddress= */ false,
+                /* payerName= */ false,
+                /* payerPhone= */ false,
+                /* payerEmail= */ true,
+                /* name= */ "emailOnlySupported");
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
         mPaymentRequestTestRule.clickNodeAndWait(
@@ -438,26 +438,26 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @Feature({"Payments"})
     public void testSkipsToSinglePaymentAppProvidingAllRequiredInfo() throws TimeoutException {
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://alicepay.test" /*scope*/,
-                true /*shippingAddress*/,
-                false /*payerName*/,
-                false /*payerPhone*/,
-                false /*payerEmail*/,
-                "shippingSupported" /*name */);
+                /* scope= */ "https://alicepay.test",
+                /* shippingAddress= */ true,
+                /* payerName= */ false,
+                /* payerPhone= */ false,
+                /* payerEmail= */ false,
+                /* name= */ "shippingSupported");
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://bobpay.test" /*scope*/,
-                false /*shippingAddress*/,
-                true /*payerName*/,
-                true /*payerPhone*/,
-                true /*payerEmail*/,
-                "contactSupported" /*name */);
+                /* scope= */ "https://bobpay.test",
+                /* shippingAddress= */ false,
+                /* payerName= */ true,
+                /* payerPhone= */ true,
+                /* payerEmail= */ true,
+                /* name= */ "contactSupported");
         installMockServiceWorkerPaymentAppWithDelegations(
-                "https://charliepay.test" /*scope*/,
-                true /*shippingAddress*/,
-                true /*payerName*/,
-                true /*payerPhone*/,
-                true /*payerEmail*/,
-                "shippingAndContactSupported" /*name*/);
+                /* scope= */ "https://charliepay.test",
+                /* shippingAddress= */ true,
+                /* payerName= */ true,
+                /* payerPhone= */ true,
+                /* payerEmail= */ true,
+                /* name= */ "shippingAndContactSupported");
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
         mPaymentRequestTestRule.clickNodeAndWait(

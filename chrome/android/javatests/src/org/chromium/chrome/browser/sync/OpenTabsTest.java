@@ -200,13 +200,13 @@ public class OpenTabsTest {
         EntitySpecifics header = makeSessionEntity(tag, clientName, urls.length);
         mSyncTestRule
                 .getFakeServerHelper()
-                .injectUniqueClientEntity("" /* nonUniqueName */, tag /* clientTag */, header);
+                .injectUniqueClientEntity(/* nonUniqueName= */ "", /* clientTag= */ tag, header);
         for (int i = 0; i < urls.length; i++) {
             EntitySpecifics tab = makeTabEntity(tag, urls[i], i);
             mSyncTestRule
                     .getFakeServerHelper()
                     .injectUniqueClientEntity(
-                            "" /* nonUniqueName */, tag + " " + i /* clientTag */, tab);
+                            /* nonUniqueName= */ "", /* clientTag= */ tag + " " + i, tab);
         }
     }
 

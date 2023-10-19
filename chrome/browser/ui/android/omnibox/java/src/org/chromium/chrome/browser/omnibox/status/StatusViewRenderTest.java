@@ -105,8 +105,7 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                             mStatusModel, mStatusView, new StatusViewBinder());
 
                     // Increases visibility for manual parsing of diffs. Status view matches the
-                    // parent
-                    // height, so this white will stretch vertically.
+                    // parent height, so this white will stretch vertically.
                     mStatusView.setBackgroundColor(Color.WHITE);
                 });
     }

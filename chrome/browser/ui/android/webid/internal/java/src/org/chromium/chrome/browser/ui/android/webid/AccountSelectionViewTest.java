@@ -418,7 +418,7 @@ public class AccountSelectionViewTest {
         IdentityProviderMetadata idpMetadata =
                 new IdentityProviderMetadata(
                         expectedTextColor,
-                        /*brandBackgroundColor*/ Color.GREEN,
+                        /* brandBackgroundColor= */ Color.GREEN,
                         "https://icon-url.example",
                         TEST_CONFIG_URL);
 

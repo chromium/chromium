@@ -713,7 +713,7 @@ public class CrashFileManagerTest {
                                     new File("12_1_md.dmp.try0"),
                                     new File("1_12_md.dmp.try0")
                                 },
-                                12 /* uid */)
+                                /* uid= */ 12)
                         .toArray());
     }
 
@@ -725,7 +725,7 @@ public class CrashFileManagerTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testMinidumpStorageRestrictionsPerUid() throws IOException {
-        testMinidumpStorageRestrictions(true /* perUid */);
+        testMinidumpStorageRestrictions(/* perUid= */ true);
     }
 
     /*
@@ -736,7 +736,7 @@ public class CrashFileManagerTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testMinidumpStorageRestrictionsGlobal() throws IOException {
-        testMinidumpStorageRestrictions(false /* perUid */);
+        testMinidumpStorageRestrictions(/* perUid= */ false);
     }
 
     private static void deleteFilesInDirIfExists(File directory) {
@@ -757,7 +757,8 @@ public class CrashFileManagerTest {
         CrashFileManager fileManager = new CrashFileManager(mTestRule.getCacheDir());
         // Delete existing minidumps to ensure they don't interfere with this test.
         deleteFilesInDirIfExists(fileManager.getCrashDirectory());
-        Assert.assertEquals(0, fileManager.getMinidumpsReadyForUpload(10000 /* maxTries */).length);
+        Assert.assertEquals(
+                0, fileManager.getMinidumpsReadyForUpload(/* maxTries= */ 10000).length);
         File tmpCopyDir = new File(mTestRule.getExistingCacheDir(), "tmpDir");
 
         // Note that these minidump files are set up directly in the cache dir - not in the crash
@@ -766,7 +767,8 @@ public class CrashFileManagerTest {
         File minidumpToCopy = new File(mTestRule.getExistingCacheDir(), "toCopy.dmp.try0");
         CrashTestRule.setUpMinidumpFile(minidumpToCopy, "BOUNDARY");
         // Ensure we didn't add any new minidumps to the crash directory.
-        Assert.assertEquals(0, fileManager.getMinidumpsReadyForUpload(10000 /* maxTries */).length);
+        Assert.assertEquals(
+                0, fileManager.getMinidumpsReadyForUpload(/* maxTries= */ 10000).length);
 
         int minidumpLimit =
                 perUid
@@ -779,13 +781,13 @@ public class CrashFileManagerTest {
                     fileManager,
                     minidumpToCopy,
                     tmpCopyDir,
-                    perUid ? 1 : n /* uid */,
-                    true /* shouldSucceed */);
+                    /* uid= */ perUid ? 1 : n,
+                    /* shouldSucceed= */ true);
         }
 
         // Update time-stamps of copied files.
         long initialTimestamp = new Date().getTime();
-        File[] minidumps = fileManager.getMinidumpsReadyForUpload(10000 /* maxTries */);
+        File[] minidumps = fileManager.getMinidumpsReadyForUpload(/* maxTries= */ 10000);
         for (int n = 0; n < minidumps.length; n++) {
             if (!minidumps[n].setLastModified(initialTimestamp + n * 1000)) {
                 throw new RuntimeException(
@@ -793,7 +795,7 @@ public class CrashFileManagerTest {
             }
         }
 
-        File[] allMinidumps = fileManager.getMinidumpsReadyForUpload(10000 /* maxTries */);
+        File[] allMinidumps = fileManager.getMinidumpsReadyForUpload(/* maxTries= */ 10000);
         Assert.assertEquals(minidumpLimit, allMinidumps.length);
 
         File oldestMinidump = getOldestFile(allMinidumps);
@@ -801,9 +803,10 @@ public class CrashFileManagerTest {
         // Now the crash directory is full - so copying a new minidump should cause the oldest
         // existing minidump to be deleted.
         createFdForandCopyFile(
-                fileManager, minidumpToCopy, tmpCopyDir, 1 /* uid */, true /* shouldSucceed */);
+                fileManager, minidumpToCopy, tmpCopyDir, /* uid= */ 1, /* shouldSucceed= */ true);
         Assert.assertEquals(
-                minidumpLimit, fileManager.getMinidumpsReadyForUpload(10000 /* maxTries */).length);
+                minidumpLimit,
+                fileManager.getMinidumpsReadyForUpload(/* maxTries= */ 10000).length);
         // Ensure we removed the oldest file.
         Assert.assertFalse(oldestMinidump.exists());
     }
@@ -854,7 +857,8 @@ public class CrashFileManagerTest {
         CrashFileManager fileManager = new CrashFileManager(mTestRule.getCacheDir());
         // Delete existing minidumps to ensure they don't interfere with this test.
         deleteFilesInDirIfExists(fileManager.getCrashDirectory());
-        Assert.assertEquals(0, fileManager.getMinidumpsReadyForUpload(10000 /* maxTries */).length);
+        Assert.assertEquals(
+                0, fileManager.getMinidumpsReadyForUpload(/* maxTries= */ 10000).length);
         File tmpCopyDir = new File(mTestRule.getExistingCacheDir(), "tmpDir");
 
         // Note that these minidump files are set up directly in the cache dir - not in the crash
@@ -866,7 +870,7 @@ public class CrashFileManagerTest {
         final int kilo = 1024;
         byte[] kiloByteArray = new byte[kilo];
         FileOutputStream minidumpOutputStream =
-                new FileOutputStream(minidumpToCopy, true /* append */);
+                new FileOutputStream(minidumpToCopy, /* append= */ true);
         try {
             for (int n = 0; n < kilo; n++) {
                 minidumpOutputStream.write(kiloByteArray);
@@ -875,9 +879,10 @@ public class CrashFileManagerTest {
             minidumpOutputStream.close();
         }
         createFdForandCopyFile(
-                fileManager, minidumpToCopy, tmpCopyDir, 0 /* uid */, false /* shouldSucceed */);
+                fileManager, minidumpToCopy, tmpCopyDir, /* uid= */ 0, /* shouldSucceed= */ false);
         Assert.assertEquals(0, tmpCopyDir.listFiles().length);
-        Assert.assertEquals(0, fileManager.getMinidumpsReadyForUpload(10000 /* maxTries */).length);
+        Assert.assertEquals(
+                0, fileManager.getMinidumpsReadyForUpload(/* maxTries= */ 10000).length);
     }
 
     @Test

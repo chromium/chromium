@@ -190,13 +190,9 @@ public class NQETest {
                                     .enableQuic(false);
 
                             // The pref may not be written if the computed Effective Connection Type
-                            // (ECT) matches
-                            // the default ECT for the current connection type. Force the ECT to
-                            // "Slow-2G". Since
-                            // "Slow-2G" is not the default ECT for any connection type, this
-                            // ensures that the
-                            // pref
-                            // is written to.
+                            // (ECT) matches the default ECT for the current connection type.
+                            // Force the ECT to "Slow-2G". Since "Slow-2G" is not the default ECT
+                            // for any connection type, this ensures that the pref is written to.
                             JSONObject nqeOptions =
                                     new JSONObject()
                                             .put("force_effective_connection_type", "Slow-2G");
@@ -365,8 +361,8 @@ public class NQETest {
             readCountHistogram.assertExpected();
 
             // Check RTT observation count after throughput observation has been received. This
-            // ensures
-            // that executor has finished posting the RTT observation to the RTT listeners.
+            // ensures that executor has finished posting the RTT observation to the RTT
+            // listeners.
             assertThat(rttListener.rttObservationCount()).isGreaterThan(0);
 
             // Verify that effective connection type callback is received and

@@ -339,7 +339,7 @@ public class NotificationPlatformBridgeTest {
                 action.actionIntent,
                 remoteInputs,
                 remoteInputs[0].getResultKey(),
-                "My Reply" /* reply */);
+                /* reply= */ "My Reply");
 
         // Check reply was received by the service worker (see android_test_worker.js).
         // Expect +1 engagement from interacting with the notification.
@@ -391,7 +391,7 @@ public class NotificationPlatformBridgeTest {
                 action.actionIntent,
                 remoteInputs,
                 remoteInputs[0].getResultKey(),
-                "" /* reply */);
+                /* reply= */ "");
 
         // Check empty reply was received by the service worker (see android_test_worker.js).
         // Expect +1 engagement from interacting with the notification.
@@ -413,7 +413,7 @@ public class NotificationPlatformBridgeTest {
 
         // Send the pending intent filled in with the additional information from the new
         // intent.
-        pendingIntent.send(context, 0 /* code */, fillInIntent);
+        pendingIntent.send(context, /* code= */ 0, fillInIntent);
     }
 
     /**

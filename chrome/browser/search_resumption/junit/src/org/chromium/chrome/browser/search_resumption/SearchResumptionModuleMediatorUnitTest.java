@@ -138,7 +138,7 @@ public class SearchResumptionModuleMediatorUnitTest {
     @Test
     @MediumTest
     public void testDoNotBuildModuleWithoutEnoughSuggestions() {
-        createMediator(null, false /* useNewServiceEnabled */);
+        createMediator(null, /* useNewServiceEnabled= */ false);
         List<AutocompleteMatch> list = Arrays.asList(mNonSearchSuggest1, mNonSearchSuggest1);
         doReturn(list).when(mAutocompleteResult).getSuggestionsList();
 
@@ -158,7 +158,7 @@ public class SearchResumptionModuleMediatorUnitTest {
     @Test
     @MediumTest
     public void testShowModuleWithEnoughResults() {
-        createMediator(null, false /* useNewServiceEnabled */);
+        createMediator(null, /* useNewServiceEnabled= */ false);
         List<AutocompleteMatch> list =
                 Arrays.asList(mNonSearchSuggest1, mSearchSuggest1, mSearchSuggest2);
         doReturn(list).when(mAutocompleteResult).getSuggestionsList();
@@ -179,7 +179,7 @@ public class SearchResumptionModuleMediatorUnitTest {
                 Arrays.asList(mNonSearchSuggest1, mSearchSuggest1, mSearchSuggest2);
         SuggestionResult suggestionResult = new SuggestionResult(mUrlToTrack, list);
 
-        createMediator(suggestionResult, false /* useNewServiceEnabled */);
+        createMediator(suggestionResult, /* useNewServiceEnabled= */ false);
         verify(mParent, times(1)).inflate();
         Assert.assertEquals(View.VISIBLE, mSuggestionTilesContainerView.getVisibility());
         Assert.assertEquals(
@@ -195,7 +195,7 @@ public class SearchResumptionModuleMediatorUnitTest {
         String[] texts = {"suggestion 1"};
         GURL[] gUrls = {JUnitTestGURLs.URL_1};
 
-        createMediator(null, true /* useNewServiceEnabled */);
+        createMediator(null, /* useNewServiceEnabled= */ true);
         mMediator.onSuggestionsAvailable(texts, gUrls);
         verify(mParent, times(0)).inflate();
         Assert.assertEquals(
@@ -214,7 +214,7 @@ public class SearchResumptionModuleMediatorUnitTest {
     public void testShowModuleWithEnoughResults_newServiceAPI() {
         initSuggestions();
 
-        createMediator(null, true /* useNewServiceEnabled */);
+        createMediator(null, /* useNewServiceEnabled= */ true);
         mMediator.onSuggestionsAvailable(mSuggestionTexts, mSuggestionUrls);
         verify(mParent, times(1)).inflate();
         Assert.assertEquals(View.VISIBLE, mSuggestionTilesContainerView.getVisibility());
@@ -223,11 +223,11 @@ public class SearchResumptionModuleMediatorUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
 
-        mMediator.onExpandedOrCollapsed(true /* expand */);
+        mMediator.onExpandedOrCollapsed(/* expand= */ true);
         Assert.assertTrue(
                 mActionTester.getActions().contains(SearchResumptionModuleUtils.ACTION_EXPAND));
 
-        mMediator.onExpandedOrCollapsed(false /* expand */);
+        mMediator.onExpandedOrCollapsed(/* expand= */ false);
         Assert.assertTrue(
                 mActionTester.getActions().contains(SearchResumptionModuleUtils.ACTION_COLLAPSE));
     }
@@ -238,7 +238,7 @@ public class SearchResumptionModuleMediatorUnitTest {
         initSuggestions();
         SuggestionResult suggestionResult = createCachedSuggestions();
 
-        createMediator(suggestionResult, true /* useNewServiceEnabled */);
+        createMediator(suggestionResult, /* useNewServiceEnabled= */ true);
         verify(mParent, times(1)).inflate();
         Assert.assertEquals(View.VISIBLE, mSuggestionTilesContainerView.getVisibility());
         Assert.assertEquals(

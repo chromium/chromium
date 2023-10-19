@@ -89,7 +89,7 @@ public class FastCheckoutIntegrationTest {
                 /* origin= */ "https://example.fr",
                 /* name= */ "Frederic Profiletest",
                 /* number= */ "4111111111111",
-                /*obfuscatedNumber*/ "1111",
+                /* obfuscatedNumber= */ "1111",
                 /* month= */ "11",
                 /* year= */ "2023",
                 /* issuerIconString= */ "dinersCC"),
@@ -98,7 +98,7 @@ public class FastCheckoutIntegrationTest {
                 /* origin= */ "https://example.fr",
                 /* name= */ "Jane Doe",
                 /* number= */ "4564565541234",
-                /*obfuscatedNumber*/ "1234",
+                /* obfuscatedNumber= */ "1234",
                 /* month= */ "10",
                 /* year= */ "2025",
                 /* issuerIconString= */ "visaCC")

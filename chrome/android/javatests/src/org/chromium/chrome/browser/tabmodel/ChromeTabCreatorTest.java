@@ -192,7 +192,7 @@ public class ChromeTabCreatorTest {
                                                 new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
                                                 TabLaunchType.FROM_LINK,
                                                 null,
-                                                createIntent(/*tabIndex*/ 0)); // At the start.
+                                                createIntent(/* tabIndex= */ 0)); // At the start.
                         Assert.assertFalse(
                                 "The second/last tab should be the first in the list.",
                                 0 == indexOf(tabTwo));

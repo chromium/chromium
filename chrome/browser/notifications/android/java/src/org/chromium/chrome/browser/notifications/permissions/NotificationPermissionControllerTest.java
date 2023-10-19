@@ -291,8 +291,8 @@ public class NotificationPermissionControllerTest {
                             mFakeTimeRule.advanceMillis(10 * DateUtils.DAY_IN_MILLIS);
 
                             // If the user hits "Deny" on the permission dialog then we have one
-                            // more chance to ask
-                            // again, so Android tells us to show a rationale first.
+                            // more chance to ask again, so Android tells us to show a rationale
+                            // first.
                             setShouldShowRequestPermissionRationale(activity, true);
 
                             // Set the rationale dialog to be approved, this should trigger a new OS
@@ -321,8 +321,7 @@ public class NotificationPermissionControllerTest {
                             assertEquals(1, rationaleDelegate.getCallCount());
 
                             // The permission request shouldn't show up on the third and fourth
-                            // calls to
-                            // requestPermissionIfNeeded() as we already have permission.
+                            // calls to requestPermissionIfNeeded() as we already have permission.
                             assertNotEquals(0, secondPermissionRequestTimestamp);
                             assertEquals(
                                     secondPermissionRequestTimestamp,
@@ -330,14 +329,11 @@ public class NotificationPermissionControllerTest {
                                             .getAndroidNotificationPermissionRequestTimestamp());
 
                             // We should record a histogram value indicating we've asked for
-                            // permission 2 times,
-                            // showing the rationale and the OS prompt in one call to
-                            // requestPermissionIfNeeded
-                            // counts as one attempt.
+                            // permission 2 times, showing the rationale and the OS prompt in one
+                            // call to requestPermissionIfNeeded counts as one attempt.
                             verifyPermissionRequestCountHistogram(/* expectedCount= */ 2);
                             // The last 2 calls to requestPermissionIfNeeded() should have recorded
-                            // the state as
-                            // "Already has permission, rationale was shown before".
+                            // the state as "Already has permission, rationale was shown before".
                             verifyStateHistogramWasRecorded(
                                     NotificationPermissionState.ALLOWED, /* expectedTimes= */ 2);
                         });
@@ -413,16 +409,14 @@ public class NotificationPermissionControllerTest {
                                                     0));
 
                             // Try showing it for the second time before sufficient time has elapsed
-                            // assuming user
-                            // dismissed the OS prompt by touching outside.
+                            // assuming user dismissed the OS prompt by touching outside.
                             setShouldShowRequestPermissionRationale(activity, false);
                             assertEquals(
                                     PermissionRequestMode.DO_NOT_REQUEST,
                                     notificationPermissionController.shouldRequestPermission());
 
                             // Try showing the second time after 10 days. This time click positive
-                            // button on
-                            // rationale and negative on OS prompt.
+                            // button on rationale and negative on OS prompt.
                             mFakeTimeRule.advanceMillis(10 * DateUtils.DAY_IN_MILLIS);
                             assertEquals(
                                     PermissionRequestMode.REQUEST_PERMISSION_WITH_RATIONALE,
@@ -443,8 +437,7 @@ public class NotificationPermissionControllerTest {
                                     notificationPermissionController.shouldRequestPermission());
 
                             // After 10 days. Request permission again. This time again click
-                            // positive button on
-                            // rationale and negative on OS prompt.
+                            // positive button on rationale and negative on OS prompt.
                             mFakeTimeRule.advanceMillis(10 * DateUtils.DAY_IN_MILLIS);
                             setShouldShowRequestPermissionRationale(activity, true);
                             assertEquals(
@@ -505,14 +498,13 @@ public class NotificationPermissionControllerTest {
                                             .getAndroidNotificationPermissionRequestTimestamp());
 
                             // The first call to requestPermissionIfNeeded() should record a metric
-                            // indicating we
-                            // have never asked before.
+                            // indicating we have never asked before.
                             verifyStateHistogramWasRecorded(
                                     NotificationPermissionState.DENIED_NEVER_ASKED,
                                     /* expectedTimes= */ 1);
                             // The second call to requestPermissionIfNeeded() should record a metric
-                            // indicating the
-                            // permission was granted without having to show the rationale.
+                            // indicating the permission was granted without having to show the
+                            // rationale.
                             verifyStateHistogramWasRecorded(
                                     NotificationPermissionState.ALLOWED, /* expectedTimes= */ 1);
                             // We should have recorded a metric indicating the OS prompt was
@@ -550,8 +542,7 @@ public class NotificationPermissionControllerTest {
                             mFakeTimeRule.advanceMillis(1 * DateUtils.DAY_IN_MILLIS);
 
                             // Try showing it for the second time before sufficient time has elapsed
-                            // assuming user
-                            // dismissed the OS prompt by touching outside.
+                            // assuming user dismissed the OS prompt by touching outside.
                             setShouldShowRequestPermissionRationale(activity, false);
 
                             notificationPermissionController.requestPermissionIfNeeded();
@@ -562,8 +553,7 @@ public class NotificationPermissionControllerTest {
                                     PermissionPrefs
                                             .getAndroidNotificationPermissionRequestTimestamp());
                             // The second call to requestPermissionIfNeeded() should have recorded
-                            // the state as
-                            // "Asked once, dismissed, waiting to show again".
+                            // the state as "Asked once, dismissed, waiting to show again".
                             verifyStateHistogramWasRecorded(
                                     NotificationPermissionState.DENIED_ASKED_ONCE,
                                     /* expectedTimes= */ 1);
@@ -602,8 +592,7 @@ public class NotificationPermissionControllerTest {
                             mFakeTimeRule.advanceMillis(1 * DateUtils.DAY_IN_MILLIS);
 
                             // Try showing it for the second time before sufficient time has elapsed
-                            // assuming user
-                            // rejected the OS prompt by tapping "Deny".
+                            // assuming user rejected the OS prompt by tapping "Deny".
                             setShouldShowRequestPermissionRationale(activity, true);
 
                             notificationPermissionController.requestPermissionIfNeeded();
@@ -614,8 +603,7 @@ public class NotificationPermissionControllerTest {
                                     PermissionPrefs
                                             .getAndroidNotificationPermissionRequestTimestamp());
                             // The second call to requestPermissionIfNeeded() should have recorded
-                            // the state as
-                            // "Asked once, dismissed, waiting to show again".
+                            // the state as "Asked once, dismissed, waiting to show again".
                             verifyStateHistogramWasRecorded(
                                     NotificationPermissionState.DENIED_ASKED_ONCE,
                                     /* expectedTimes= */ 1);
@@ -650,8 +638,8 @@ public class NotificationPermissionControllerTest {
                             // Dismiss OS prompt.
                             invokeOSPermissionCallback(permissionDelegate, false);
                             // If the permission dialog is dismissed then it doesn't count towards
-                            // the request
-                            // limit, so Android tells us we shouldn't show the rationale yet.
+                            // the request limit, so Android tells us we shouldn't show the
+                            // rationale yet.
                             setShouldShowRequestPermissionRationale(activity, false);
 
                             // 10 days have passed.
@@ -673,8 +661,7 @@ public class NotificationPermissionControllerTest {
                             // permission 2 times.
                             verifyPermissionRequestCountHistogram(/* expectedCount= */ 2);
                             // The last call to requestPermissionIfNeeded() should have recorded the
-                            // state as "Asked
-                            // once, dismissed, showing again".
+                            // state as "Asked once, dismissed, showing again".
                             verifyStateHistogramWasRecorded(
                                     NotificationPermissionState.DENIED_ASKED_ONCE,
                                     /* expectedTimes= */ 1);
@@ -706,8 +693,8 @@ public class NotificationPermissionControllerTest {
                             // Reject OS prompt.
                             invokeOSPermissionCallback(permissionDelegate, false);
                             // If the user hits "Deny" on the permission dialog then we have one
-                            // more chance to ask
-                            // again, so Android tells us to show a rationale first.
+                            // more chance to ask again, so Android tells us to show a rationale
+                            // first.
                             setShouldShowRequestPermissionRationale(activity, true);
 
                             // 10 days have passed.
@@ -736,12 +723,10 @@ public class NotificationPermissionControllerTest {
                                             .getAndroidNotificationPermissionRequestTimestamp());
 
                             // We should record a histogram value indicating we've asked for
-                            // permission 2 times,
-                            // showing the rationale counts as an attempt.
+                            // permission 2 times, showing the rationale counts as an attempt.
                             verifyPermissionRequestCountHistogram(/* expectedCount= */ 2);
                             // The last call to requestPermissionIfNeeded() should have recorded the
-                            // state as "Asked
-                            // once, denied, showing rationale".
+                            // state as "Asked once, denied, showing rationale".
                             verifyStateHistogramWasRecorded(
                                     NotificationPermissionState.DENIED_ASKED_ONCE,
                                     /* expectedTimes= */ 1);
@@ -774,8 +759,8 @@ public class NotificationPermissionControllerTest {
                             // Reject OS prompt.
                             invokeOSPermissionCallback(permissionDelegate, false);
                             // If the user hits "Deny" on the permission dialog then we have one
-                            // more chance to ask
-                            // again, so Android tells us to show a rationale first.
+                            // more chance to ask again, so Android tells us to show a rationale
+                            // first.
                             setShouldShowRequestPermissionRationale(activity, true);
 
                             // 10 days have passed since last request.
@@ -809,18 +794,13 @@ public class NotificationPermissionControllerTest {
                                             > firstPermissionRequestTimestamp);
 
                             // We should record a histogram value indicating we've asked for
-                            // permission 2 times,
-                            // showing the rationale and the OS prompt in one call to
-                            // requestPermissionIfNeeded()
-                            // counts as one attempt.
+                            // permission 2 times, showing the rationale and the OS prompt in one
+                            // call to requestPermissionIfNeeded() counts as one attempt.
                             verifyPermissionRequestCountHistogram(/* expectedCount= */ 2);
                             // The last call to requestPermissionIfNeeded() should have recorded the
-                            // state as "Asked
-                            // once, denied, showing rationale", we record this state at the
-                            // beginning of
-                            // requestPermissionNeeded, so it doesn't take into account the response
-                            // to the shown
-                            // dialogs.
+                            // state as "Asked once, denied, showing rationale", we record this
+                            // state at the beginning of requestPermissionNeeded, so it doesn't
+                            // take into account the response to the shown dialogs.
                             verifyStateHistogramWasRecorded(
                                     NotificationPermissionState.DENIED_ASKED_ONCE,
                                     /* expectedTimes= */ 1);
@@ -854,8 +834,8 @@ public class NotificationPermissionControllerTest {
                             // Reject the OS prompt.
                             invokeOSPermissionCallback(permissionDelegate, false);
                             // If the user hits "Deny" on the permission dialog then we have one
-                            // more chance to ask
-                            // again, so Android tells us to show a rationale first.
+                            // more chance to ask again, so Android tells us to show a rationale
+                            // first.
                             setShouldShowRequestPermissionRationale(activity, true);
 
                             // 10 days have passed since last request.
@@ -904,24 +884,19 @@ public class NotificationPermissionControllerTest {
                                             > firstPermissionRequestTimestamp);
 
                             // If the user hits "Deny" again on the permission dialog then we can't
-                            // request
-                            // permissions anymore, the third call to requestPermissionIfNeeded()
-                            // should not show
-                            // anything.
+                            // request permissions anymore, the third call to
+                            // requestPermissionIfNeeded() should not show anything.
                             assertEquals(
                                     secondPermissionRequestTimestamp,
                                     PermissionPrefs
                                             .getAndroidNotificationPermissionRequestTimestamp());
 
                             // We should record a histogram value indicating we've asked for
-                            // permission 2 times,
-                            // showing the rationale and the OS prompt in one call to
-                            // requestPermissionIfNeeded
-                            // counts as one attempt.
+                            // permission 2 times, showing the rationale and the OS prompt in one
+                            // call to requestPermissionIfNeeded counts as one attempt.
                             verifyPermissionRequestCountHistogram(/* expectedCount= */ 2);
                             // The third call to requestPermissionIfNeeded() should have recorded
-                            // the state as
-                            // "Asked twice, denied".
+                            // the state as "Asked twice, denied".
                             verifyStateHistogramWasRecorded(
                                     NotificationPermissionState.DENIED_ASKED_TWICE,
                                     /* expectedTimes= */ 1);
@@ -970,8 +945,7 @@ public class NotificationPermissionControllerTest {
                                             .getAndroidNotificationPermissionRequestTimestamp());
                             assertEquals(1, rationaleDelegate.getCallCount());
                             // The last call should have recorded the state as "Asked once, showed
-                            // rationale then
-                            // denied"
+                            // rationale then denied"
                             verifyStateHistogramWasRecorded(
                                     NotificationPermissionState.DENIED_ASKED_TWICE,
                                     /* expectedTimes= */ 1);

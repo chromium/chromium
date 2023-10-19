@@ -472,8 +472,7 @@ public class CustomTabTabPersistencePolicyTest {
         CustomTabActivity customTabActivity =
                 new CustomTabActivity() {
                     // This is intended to pretend we've started the activity, so we can attach a
-                    // base
-                    // context to the activity.
+                    // base context to the activity.
                     @Override
                     public void onStart() {
                         attachBaseContext(mAppContext);

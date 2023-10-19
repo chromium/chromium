@@ -115,9 +115,9 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     private static final CreditCard VIRTUAL_CARD =
             createVirtualCreditCard(
                     /* name= */ "Visa",
-                    /* number= */ "4111111111111111", /* month */
-                    "5", /* year */
-                    "2050",
+                    /* number= */ "4111111111111111",
+                    /* month= */ "5",
+                    /* year= */ "2050",
                     /* network= */ "Visa",
                     /* iconId= */ 0,
                     /* cardNameForAutofillDisplay= */ "Visa",

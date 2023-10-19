@@ -64,7 +64,7 @@ public class PaymentRequestShippingAddressChangeTest {
                         "visa",
                         R.drawable.visa_card,
                         billingAddressId,
-                        "" /* serverId */));
+                        /* serverId= */ ""));
     }
 
     /**

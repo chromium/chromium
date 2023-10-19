@@ -102,7 +102,7 @@ public class TrustedWebActivityClientLocationDelegationTest {
                 () ->
                         mClient.startListeningLocationUpdates(
                                 SCOPE.toString(),
-                                false /* highAccuracy */,
+                                /* highAccuracy= */ false,
                                 locationUpdateCallback));
         locationUpdate.waitForFirst();
     }
@@ -130,7 +130,7 @@ public class TrustedWebActivityClientLocationDelegationTest {
                 () ->
                         mClient.startListeningLocationUpdates(
                                 otherOrigin.toString(),
-                                false /* highAccuracy */,
+                                /* highAccuracy= */ false,
                                 locationUpdateCallback));
         locationError.waitForFirst();
     }

@@ -109,22 +109,22 @@ public class StatusBarColorControllerTest {
                 ChromeColors.getPrimaryBackgroundColor(activity, true);
 
         sActivityTestRule.loadUrlInNewTab(
-                "about:blank", true /* incognito */, TabLaunchType.FROM_CHROME_UI);
+                "about:blank", /* incognito= */ true, TabLaunchType.FROM_CHROME_UI);
         TabModelSelector tabModelSelector = activity.getTabModelSelector();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tabModelSelector.selectModel(true /* incognito */);
+                    tabModelSelector.selectModel(/* incognito= */ true);
                 });
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.getLayoutManager()
-                            .showLayout(LayoutType.TAB_SWITCHER, false /* animate */);
+                            .showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
                 });
 
         waitForStatusBarColor(activity, expectedOverviewIncognitoColor);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tabModelSelector.selectModel(false /* incognito */);
+                    tabModelSelector.selectModel(/* incognito= */ false);
                 });
         ThemeTestUtils.assertStatusBarColor(activity, expectedOverviewStandardColor);
     }
@@ -151,7 +151,7 @@ public class StatusBarColorControllerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.getLayoutManager()
-                            .showLayout(LayoutType.TAB_SWITCHER, false /* animate */);
+                            .showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
                 });
         waitForStatusBarColor(activity, expectedDefaultStandardColor);
     }
@@ -170,7 +170,7 @@ public class StatusBarColorControllerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.getLayoutManager()
-                            .showLayout(LayoutType.START_SURFACE, false /* animate */);
+                            .showLayout(LayoutType.START_SURFACE, /* animate= */ false);
                 });
         StartSurfaceTestUtils.waitForStartSurfaceVisible(activity);
         waitForStatusBarColor(activity, expectedDefaultStandardColor);
@@ -234,7 +234,7 @@ public class StatusBarColorControllerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.getLayoutManager()
-                            .showLayout(LayoutType.START_SURFACE, false /* animate */);
+                            .showLayout(LayoutType.START_SURFACE, /* animate= */ false);
                 });
         StartSurfaceTestUtils.waitForStartSurfaceVisible(activity);
         waitForStatusBarColor(activity, expectedPolishedStandardColor);
@@ -243,7 +243,7 @@ public class StatusBarColorControllerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.getLayoutManager()
-                            .showLayout(LayoutType.TAB_SWITCHER, false /* animate */);
+                            .showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
                 });
         waitForStatusBarColor(activity, expectedDefaultStandardColor);
     }

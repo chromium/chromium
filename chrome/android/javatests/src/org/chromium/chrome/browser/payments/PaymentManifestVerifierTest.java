@@ -198,7 +198,7 @@ public class PaymentManifestVerifierTest {
                         mTestOrigin,
                         mMethodName,
                         mMatchingApps,
-                        null /* supportedOrigins */,
+                        /* supportedOrigins= */ null,
                         mWebDataService,
                         new PaymentManifestDownloader() {
                             @Override
@@ -234,7 +234,7 @@ public class PaymentManifestVerifierTest {
                         mTestOrigin,
                         mMethodName,
                         mMatchingApps,
-                        null /* supportedOrigins */,
+                        /* supportedOrigins= */ null,
                         mWebDataService,
                         new PaymentManifestDownloader() {
                             @Override
@@ -281,7 +281,7 @@ public class PaymentManifestVerifierTest {
                         mTestOrigin,
                         mMethodName,
                         mMatchingApps,
-                        null /* supportedOrigins */,
+                        /* supportedOrigins= */ null,
                         mWebDataService,
                         mDownloader,
                         new PaymentManifestParser() {
@@ -312,7 +312,7 @@ public class PaymentManifestVerifierTest {
                         mTestOrigin,
                         mMethodName,
                         mMatchingApps,
-                        null /* supportedOrigins */,
+                        /* supportedOrigins= */ null,
                         mWebDataService,
                         mDownloader,
                         new PaymentManifestParser() {
@@ -351,7 +351,7 @@ public class PaymentManifestVerifierTest {
                         mTestOrigin,
                         mMethodName,
                         mMatchingApps,
-                        null /* supportedOrigins */,
+                        /* supportedOrigins= */ null,
                         mWebDataService,
                         mDownloader,
                         mParser,
@@ -428,7 +428,7 @@ public class PaymentManifestVerifierTest {
                         mTestOrigin,
                         mMethodName,
                         mMatchingApps,
-                        null /* supportedOrigins */,
+                        /* supportedOrigins= */ null,
                         mWebDataService,
                         downloader,
                         parser,
@@ -499,7 +499,7 @@ public class PaymentManifestVerifierTest {
                         mTestOrigin,
                         mMethodName,
                         mMatchingApps,
-                        null /* supportedOrigins */,
+                        /* supportedOrigins= */ null,
                         mWebDataService,
                         downloader,
                         parser,

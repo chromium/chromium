@@ -1228,8 +1228,7 @@ public class PasswordSettingsExportTest {
                 () -> {
                     PasswordSettings fragment = mSettingsActivityTestRule.getFragment();
                     // To show an error, the error type for UMA needs to be specified. Because it is
-                    // not
-                    // relevant for cases when the error is forcibly displayed in tests,
+                    // not relevant for cases when the error is forcibly displayed in tests,
                     // HistogramExportResult.NO_CONSUMER is passed as an arbitrarily chosen value.
                     fragment.getExportFlowForTesting()
                             .showExportErrorAndAbort(

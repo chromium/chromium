@@ -322,8 +322,8 @@ public class SwitchToTabTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(),
                 cta2,
-                true /*incognito*/,
-                false /*waitForNtpLoad*/);
+                /* incognito= */ true,
+                /* waitForNtpLoad= */ false);
         moveActivityToFront(cta1);
 
         // Switch back to cta1, and try to switch to "about.html" in cta2.

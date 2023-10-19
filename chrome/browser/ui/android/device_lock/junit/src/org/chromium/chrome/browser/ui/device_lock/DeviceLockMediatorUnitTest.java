@@ -274,13 +274,13 @@ public class DeviceLockMediatorUnitTest {
                 mDeviceLockAuthenticatorBridge,
                 ON_CREATE_DEVICE_LOCK_CLICKED,
                 mSuccessfulDeviceLockCreation,
-                /* deviceLockChallengeResult */ null,
+                /* deviceLockChallengeResult= */ null,
                 mSuccessfulAccountReauthenticationChallenge,
-                /* deviceLockCreationCalls */ 1,
-                /* deviceLockChallengesTriggered */ 0, /* accountReauthenticationsTriggered */
-                1,
-                /* onDeviceLockReadyCalls */ 1, /* onDeviceLockRefusedCalls */
-                0);
+                /* deviceLockCreationCalls= */ 1,
+                /* deviceLockChallengesTriggered= */ 0,
+                /* accountReauthenticationsTriggered= */ 1,
+                /* onDeviceLockReadyCalls= */ 1,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -290,13 +290,13 @@ public class DeviceLockMediatorUnitTest {
                 mDeviceLockAuthenticatorBridge,
                 ON_CREATE_DEVICE_LOCK_CLICKED,
                 mSuccessfulDeviceLockCreation,
-                /* deviceLockChallengeResult */ null,
+                /* deviceLockChallengeResult= */ null,
                 mSuccessfulAccountReauthenticationChallenge,
-                /* deviceLockCreationCalls */ 1,
-                /* deviceLockChallengesTriggered */ 0, /* accountReauthenticationsTriggered */
-                0,
-                /* onDeviceLockReadyCalls */ 1, /* onDeviceLockRefusedCalls */
-                0);
+                /* deviceLockCreationCalls= */ 1,
+                /* deviceLockChallengesTriggered= */ 0,
+                /* accountReauthenticationsTriggered= */ 0,
+                /* onDeviceLockReadyCalls= */ 1,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -307,14 +307,14 @@ public class DeviceLockMediatorUnitTest {
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
                 ON_CREATE_DEVICE_LOCK_CLICKED,
-                /* deviceLockCreationResult */ null, /* deviceLockChallengeResult */
-                null,
-                mSuccessfulAccountReauthenticationChallenge, /* deviceLockCreationCalls */
-                0,
-                /* deviceLockChallengesTriggered */ 0, /* accountReauthenticationsTriggered */
-                1,
-                /* onDeviceLockReadyCalls */ 1, /* onDeviceLockRefusedCalls */
-                0);
+                /* deviceLockCreationResult= */ null,
+                /* deviceLockChallengeResult= */ null,
+                mSuccessfulAccountReauthenticationChallenge,
+                /* deviceLockCreationCalls= */ 0,
+                /* deviceLockChallengesTriggered= */ 0,
+                /* accountReauthenticationsTriggered= */ 1,
+                /* onDeviceLockReadyCalls= */ 1,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -324,13 +324,13 @@ public class DeviceLockMediatorUnitTest {
                 mDeviceLockAuthenticatorBridge,
                 ON_CREATE_DEVICE_LOCK_CLICKED,
                 mFailedDeviceLockCreation,
-                /* deviceLockChallengeResult */ null,
-                /* accountReauthenticationResult */ null, /* deviceLockCreationCalls */
-                1,
-                /* deviceLockChallengesTriggered */ 0, /* accountReauthenticationsTriggered */
-                0,
-                /* onDeviceLockReadyCalls */ 0, /* onDeviceLockRefusedCalls */
-                0);
+                /* deviceLockChallengeResult= */ null,
+                /* accountReauthenticationResult= */ null,
+                /* deviceLockCreationCalls= */ 1,
+                /* deviceLockChallengesTriggered= */ 0,
+                /* accountReauthenticationsTriggered= */ 0,
+                /* onDeviceLockReadyCalls= */ 0,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -340,13 +340,13 @@ public class DeviceLockMediatorUnitTest {
                 mDeviceLockAuthenticatorBridge,
                 ON_CREATE_DEVICE_LOCK_CLICKED,
                 mSuccessfulDeviceLockCreation,
-                /* deviceLockChallengeResult */ null,
+                /* deviceLockChallengeResult= */ null,
                 mRejectedAccountReauthenticationChallenge,
-                /* deviceLockCreationCalls */ 1,
-                /* deviceLockChallengesTriggered */ 0, /* accountReauthenticationsTriggered */
-                1,
-                /* onDeviceLockReadyCalls */ 0, /* onDeviceLockRefusedCalls */
-                0);
+                /* deviceLockCreationCalls= */ 1,
+                /* deviceLockChallengesTriggered= */ 0,
+                /* accountReauthenticationsTriggered= */ 1,
+                /* onDeviceLockReadyCalls= */ 0,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -357,13 +357,13 @@ public class DeviceLockMediatorUnitTest {
                 mDeviceLockAuthenticatorBridge,
                 ON_GO_TO_OS_SETTINGS_CLICKED,
                 mSuccessfulDeviceLockCreation,
-                /* deviceLockChallengeResult */ null,
+                /* deviceLockChallengeResult= */ null,
                 mSuccessfulAccountReauthenticationChallenge,
-                /* deviceLockCreationCalls */ 1,
-                /* deviceLockChallengesTriggered */ 0, /* accountReauthenticationsTriggered */
-                1,
-                /* onDeviceLockReadyCalls */ 1, /* onDeviceLockRefusedCalls */
-                0);
+                /* deviceLockCreationCalls= */ 1,
+                /* deviceLockChallengesTriggered= */ 0,
+                /* accountReauthenticationsTriggered= */ 1,
+                /* onDeviceLockReadyCalls= */ 1,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -373,14 +373,14 @@ public class DeviceLockMediatorUnitTest {
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
                 ON_GO_TO_OS_SETTINGS_CLICKED,
-                /* deviceLockCreationResult */ null, /* deviceLockChallengeResult */
-                null,
-                mSuccessfulAccountReauthenticationChallenge, /* deviceLockCreationCalls */
-                0,
-                /* deviceLockChallengesTriggered */ 0, /* accountReauthenticationsTriggered */
-                1,
-                /* onDeviceLockReadyCalls */ 1, /* onDeviceLockRefusedCalls */
-                0);
+                /* deviceLockCreationResult= */ null,
+                /* deviceLockChallengeResult= */ null,
+                mSuccessfulAccountReauthenticationChallenge,
+                /* deviceLockCreationCalls= */ 0,
+                /* deviceLockChallengesTriggered= */ 0,
+                /* accountReauthenticationsTriggered= */ 1,
+                /* onDeviceLockReadyCalls= */ 1,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -390,13 +390,13 @@ public class DeviceLockMediatorUnitTest {
                 mDeviceLockAuthenticatorBridge,
                 ON_GO_TO_OS_SETTINGS_CLICKED,
                 mFailedDeviceLockCreation,
-                /* deviceLockChallengeResult */ null,
-                /* accountReauthenticationResult */ null, /* deviceLockCreationCalls */
-                1,
-                /* deviceLockChallengesTriggered */ 0, /* accountReauthenticationsTriggered */
-                0,
-                /* onDeviceLockReadyCalls */ 0, /* onDeviceLockRefusedCalls */
-                0);
+                /* deviceLockChallengeResult= */ null,
+                /* accountReauthenticationResult= */ null,
+                /* deviceLockCreationCalls= */ 1,
+                /* deviceLockChallengesTriggered= */ 0,
+                /* accountReauthenticationsTriggered= */ 0,
+                /* onDeviceLockReadyCalls= */ 0,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -406,13 +406,13 @@ public class DeviceLockMediatorUnitTest {
                 mDeviceLockAuthenticatorBridge,
                 ON_GO_TO_OS_SETTINGS_CLICKED,
                 mSuccessfulDeviceLockCreation,
-                /* deviceLockChallengeResult */ null,
+                /* deviceLockChallengeResult= */ null,
                 mRejectedAccountReauthenticationChallenge,
-                /* deviceLockCreationCalls */ 1, /* deviceLockChallengesTriggered */
-                0,
-                /* accountReauthenticationsTriggered */ 1, /* onDeviceLockReadyCalls */
-                0,
-                /* onDeviceLockRefusedCalls */ 0);
+                /* deviceLockCreationCalls= */ 1,
+                /* deviceLockChallengesTriggered= */ 0,
+                /* accountReauthenticationsTriggered= */ 1,
+                /* onDeviceLockReadyCalls= */ 0,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -421,31 +421,31 @@ public class DeviceLockMediatorUnitTest {
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
                 ON_USER_UNDERSTANDS_CLICKED,
-                /* deviceLockCreationResult */ null,
+                /* deviceLockCreationResult= */ null,
                 mSuccessfulDeviceLockChallenge,
-                mSuccessfulAccountReauthenticationChallenge, /* deviceLockCreationCalls */
-                0,
-                /* deviceLockChallengesTriggered */ 1, /* accountReauthenticationsTriggered */
-                1,
-                /* onDeviceLockReadyCalls */ 1, /* onDeviceLockRefusedCalls */
-                0);
+                mSuccessfulAccountReauthenticationChallenge,
+                /* deviceLockCreationCalls= */ 0,
+                /* deviceLockChallengesTriggered= */ 1,
+                /* accountReauthenticationsTriggered= */ 1,
+                /* onDeviceLockReadyCalls= */ 1,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
     public void
             testUserUnderstandsOnClick_nullReauthenticationBridge_noReauthenticationChallenge() {
         testOnClick(
-                mAccount, /* deviceLockAuthenticatorBridge */
-                null,
+                mAccount,
+                /* deviceLockAuthenticatorBridge= */ null,
                 ON_USER_UNDERSTANDS_CLICKED,
-                /* deviceLockCreationResult */ null, /* deviceLockChallengeResult */
-                null,
-                mSuccessfulAccountReauthenticationChallenge, /* deviceLockCreationCalls */
-                0,
-                /* deviceLockChallengesTriggered */ 0, /* accountReauthenticationsTriggered */
-                1,
-                /* onDeviceLockReadyCalls */ 1, /* onDeviceLockRefusedCalls */
-                0);
+                /* deviceLockCreationResult= */ null,
+                /* deviceLockChallengeResult= */ null,
+                mSuccessfulAccountReauthenticationChallenge,
+                /* deviceLockCreationCalls= */ 0,
+                /* deviceLockChallengesTriggered= */ 0,
+                /* accountReauthenticationsTriggered= */ 1,
+                /* onDeviceLockReadyCalls= */ 1,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -454,14 +454,14 @@ public class DeviceLockMediatorUnitTest {
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
                 ON_USER_UNDERSTANDS_CLICKED,
-                /* deviceLockCreationResult */ null,
+                /* deviceLockCreationResult= */ null,
                 mFailedDeviceLockChallenge,
-                /* accountReauthenticationResult */ null, /* deviceLockCreationCalls */
-                0,
-                /* deviceLockChallengesTriggered */ 1, /* accountReauthenticationsTriggered */
-                0,
-                /* onDeviceLockReadyCalls */ 0, /* onDeviceLockRefusedCalls */
-                0);
+                /* accountReauthenticationResult= */ null,
+                /* deviceLockCreationCalls= */ 0,
+                /* deviceLockChallengesTriggered= */ 1,
+                /* accountReauthenticationsTriggered= */ 0,
+                /* onDeviceLockReadyCalls= */ 0,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -470,14 +470,14 @@ public class DeviceLockMediatorUnitTest {
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
                 ON_USER_UNDERSTANDS_CLICKED,
-                /* deviceLockCreationResult */ null,
+                /* deviceLockCreationResult= */ null,
                 mSuccessfulDeviceLockChallenge,
-                mRejectedAccountReauthenticationChallenge, /* deviceLockCreationCalls */
-                0,
-                /* deviceLockChallengesTriggered */ 1, /* accountReauthenticationsTriggered */
-                1,
-                /* onDeviceLockReadyCalls */ 0, /* onDeviceLockRefusedCalls */
-                0);
+                mRejectedAccountReauthenticationChallenge,
+                /* deviceLockCreationCalls= */ 0,
+                /* deviceLockChallengesTriggered= */ 1,
+                /* accountReauthenticationsTriggered= */ 1,
+                /* onDeviceLockReadyCalls= */ 0,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -486,14 +486,14 @@ public class DeviceLockMediatorUnitTest {
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
                 ON_USER_UNDERSTANDS_CLICKED,
-                /* deviceLockCreationResult */ null,
+                /* deviceLockCreationResult= */ null,
                 mSuccessfulDeviceLockChallenge,
-                mErrorAccountReauthenticationChallenge, /* deviceLockCreationCalls */
-                0,
-                /* deviceLockChallengesTriggered */ 1, /* accountReauthenticationsTriggered */
-                1,
-                /* onDeviceLockReadyCalls */ 0, /* onDeviceLockRefusedCalls */
-                0);
+                mErrorAccountReauthenticationChallenge,
+                /* deviceLockCreationCalls= */ 0,
+                /* deviceLockChallengesTriggered= */ 1,
+                /* accountReauthenticationsTriggered= */ 1,
+                /* onDeviceLockReadyCalls= */ 0,
+                /* onDeviceLockRefusedCalls= */ 0);
     }
 
     @Test
@@ -502,14 +502,14 @@ public class DeviceLockMediatorUnitTest {
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
                 ON_DISMISS_CLICKED,
-                /* deviceLockCreationResult */ null, /* deviceLockChallengeResult */
-                null,
-                /* accountReauthenticationResult */ null, /* deviceLockCreationCalls */
-                0,
-                /* deviceLockChallengesTriggered */ 0, /* accountReauthenticationsTriggered */
-                0,
-                /* onDeviceLockReadyCalls */ 0, /* onDeviceLockRefusedCalls */
-                1);
+                /* deviceLockCreationResult= */ null,
+                /* deviceLockChallengeResult= */ null,
+                /* accountReauthenticationResult= */ null,
+                /* deviceLockCreationCalls= */ 0,
+                /* deviceLockChallengesTriggered= */ 0,
+                /* accountReauthenticationsTriggered= */ 0,
+                /* onDeviceLockReadyCalls= */ 0,
+                /* onDeviceLockRefusedCalls= */ 1);
     }
 
     private void testOnClick(

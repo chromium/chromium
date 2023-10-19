@@ -329,8 +329,7 @@ public class StartupLoadingMetricsTest {
                     intent.addCategory(Intent.CATEGORY_LAUNCHER);
 
                     // The SLOW_PAGE will hang for 2 seconds before sending a response. It should be
-                    // enough
-                    // to put Chrome in background before the page is committed.
+                    // enough to put Chrome in background before the page is committed.
                     mTabbedActivityTestRule.prepareUrlIntent(intent, getServerURL(SLOW_PAGE));
                     mTabbedActivityTestRule.launchActivity(intent);
 
@@ -368,8 +367,7 @@ public class StartupLoadingMetricsTest {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.addCategory(Intent.CATEGORY_LAUNCHER);
                     // Waits for the native initialization to finish. As part of it skips the
-                    // foreground
-                    // start as requested above.
+                    // foreground start as requested above.
                     mTabbedActivityTestRule.startMainActivityFromIntent(intent, getTestPage());
                 });
 

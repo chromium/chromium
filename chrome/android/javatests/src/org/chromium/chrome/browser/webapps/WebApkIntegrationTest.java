@@ -188,7 +188,7 @@ public class WebApkIntegrationTest {
                 new WebApkServiceConnectionManager(
                         TaskTraits.UI_DEFAULT,
                         WebApkServiceClient.CATEGORY_WEBAPK_API,
-                        null /* action */);
+                        /* action= */ null);
         connectionManager.connect(
                 ApplicationProvider.getApplicationContext(),
                 "org.chromium.webapk.test",

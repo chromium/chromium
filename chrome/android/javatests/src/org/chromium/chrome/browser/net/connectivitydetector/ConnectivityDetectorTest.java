@@ -39,8 +39,7 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     // So don't skip http probes here.
     private ConnectivityDetectorDelegateStub mConnectivityDetectorDelegate =
             new ConnectivityDetectorDelegateStub(
-                    ConnectivityDetector.ConnectionState.NO_INTERNET,
-                    false /*shouldSkipHttpProbes*/);
+                    ConnectivityDetector.ConnectionState.NO_INTERNET, /* skipHttpProbes= */ false);
 
     @Before
     public void setUp() throws Exception {

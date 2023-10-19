@@ -123,8 +123,8 @@ public class SecurePaymentConfirmationAuthnTest {
                         RuntimeEnvironment.application.getResources(),
                         Bitmap.createBitmap(
                                 new int[] {Color.RED},
-                                1 /* width */,
-                                1 /* height */,
+                                /* width= */ 1,
+                                /* height= */ 1,
                                 Bitmap.Config.ARGB_8888));
         mResponseCallback =
                 (response) -> {

@@ -240,8 +240,8 @@ public class PermissionUpdateMessageTest {
                 ChromeTabUtils.fullyLoadUrlInNewTab(
                         InstrumentationRegistry.getInstrumentation(),
                         mActivityTestRule.getActivity(),
-                        "about:blank", /*  incognito */
-                        false);
+                        "about:blank",
+                        /* incognito= */ false);
                 ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 1);
                 expectMessagesCount(windowAndroid, 1);
             }
@@ -278,9 +278,9 @@ public class PermissionUpdateMessageTest {
         runTest(
                 GEOLOCATION_PAGE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                null /* javascriptToExecute */,
+                /* javascriptToExecute= */ null,
                 ContentSettingsType.GEOLOCATION,
-                false /* switchContent */);
+                /* switchContent= */ false);
     }
 
     // Ensure the correct permission update message UI, and destroying the UI does not crash when
@@ -295,7 +295,7 @@ public class PermissionUpdateMessageTest {
                 Manifest.permission.CAMERA,
                 "getUserMediaAndStopLegacy({video: true, audio: false});",
                 ContentSettingsType.MEDIASTREAM_CAMERA,
-                false /* switchContent */);
+                /* switchContent= */ false);
     }
 
     // Ensure the correct permission update message UI, and destroying the UI does not crash when
@@ -309,7 +309,7 @@ public class PermissionUpdateMessageTest {
                 Manifest.permission.RECORD_AUDIO,
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
                 ContentSettingsType.MEDIASTREAM_MIC,
-                false /* switchContent */);
+                /* switchContent= */ false);
     }
 
     // Make sure switching android web content will not trigger multiple prompts.
@@ -321,8 +321,8 @@ public class PermissionUpdateMessageTest {
         runTest(
                 GEOLOCATION_PAGE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                null /* javascriptToExecute */,
+                /* javascriptToExecute= */ null,
                 ContentSettingsType.GEOLOCATION,
-                true /* switchContent */);
+                /* switchContent= */ true);
     }
 }

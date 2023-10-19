@@ -69,7 +69,7 @@ public class PaymentRequestNameAndFreeShippingTest {
                         "visa",
                         R.drawable.visa_card,
                         billingAddressId,
-                        "" /* serverId */));
+                        /* serverId= */ ""));
     }
 
     /** Submit the payer name and shipping address to the merchant when the user clicks "Pay." */

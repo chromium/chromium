@@ -359,7 +359,7 @@ public class RedirectHandlerTest {
                 true,
                 uninitializedUserInteractionTime,
                 RedirectHandler.NO_COMMITTED_ENTRY_INDEX,
-                true /* isInitialNavigation */,
+                /* isInitialNavigation= */ true,
                 true);
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(
@@ -376,12 +376,12 @@ public class RedirectHandlerTest {
         RedirectHandler handler = RedirectHandler.create();
         handler.updateNewUrlLoading(
                 PageTransition.LINK,
-                false /* isRedirect */,
-                false /* hasUserGesture */,
+                /* isRedirect= */ false,
+                /* hasUserGesture= */ false,
                 0,
                 lastIndex,
-                true /* isInitialNavigation */,
-                true /* isRendererInitiated */);
+                /* isInitialNavigation= */ true,
+                /* isRendererInitiated= */ true);
         handler.clear();
         Assert.assertEquals(
                 lastIndex, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
@@ -402,12 +402,12 @@ public class RedirectHandlerTest {
                 };
         handler.updateNewUrlLoading(
                 PageTransition.LINK,
-                false /* isRedirect */,
-                true /* hasUserGesture */,
+                /* isRedirect= */ false,
+                /* hasUserGesture= */ true,
                 0,
                 0,
-                true /* isInitialNavigation */,
-                true /* isRendererInitiated */);
+                /* isInitialNavigation= */ true,
+                /* isRendererInitiated= */ true);
         currentTime.set(RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS + 1);
         Assert.assertTrue(handler.isNavigationChainExpired());
     }

@@ -44,8 +44,8 @@ public class TranslateOptionsTest {
                         NEVER_LANGUAGE,
                         NEVER_DOMAIN,
                         ALWAYS_TRANSLATE,
-                        /*triggeredFromMenu */ false, /*hashCodes*/
-                        null,
+                        /* triggeredFromMenu= */ false,
+                        /* hashCodes= */ null,
                         CONTENT_LANGUAGES_CODES);
         Assert.assertEquals("English", options.sourceLanguageName());
         Assert.assertEquals("Spanish", options.targetLanguageName());
@@ -70,7 +70,7 @@ public class TranslateOptionsTest {
                         NEVER_LANGUAGE,
                         NEVER_DOMAIN,
                         !ALWAYS_TRANSLATE,
-                        /*triggeredFromMenu */ true,
+                        /* triggeredFromMenu= */ true,
                         UMA_HASH_CODES,
                         CONTENT_LANGUAGES_CODES);
         // Charge target and source languages.
@@ -110,9 +110,9 @@ public class TranslateOptionsTest {
                         CODES,
                         NEVER_LANGUAGE,
                         NEVER_DOMAIN,
-                        ALWAYS_TRANSLATE, /* triggeredFromMenu */
-                        false,
-                        /* hashCodes*/ null,
+                        ALWAYS_TRANSLATE,
+                        /* triggeredFromMenu= */ false,
+                        /* hashCodes= */ null,
                         CONTENT_LANGUAGES_CODES);
 
         // Target language does not exist
@@ -136,9 +136,9 @@ public class TranslateOptionsTest {
                         CODES,
                         NEVER_LANGUAGE,
                         NEVER_DOMAIN,
-                        !ALWAYS_TRANSLATE, /* triggeredFromMenu */
-                        false,
-                        /* hashCodes*/ null,
+                        !ALWAYS_TRANSLATE,
+                        /* triggeredFromMenu= */ false,
+                        /* hashCodes= */ null,
                         CONTENT_LANGUAGES_CODES);
         Assert.assertFalse(options.optionsChanged());
         options.toggleNeverTranslateDomainState(true);
@@ -184,9 +184,9 @@ public class TranslateOptionsTest {
                         CODES,
                         NEVER_LANGUAGE,
                         NEVER_DOMAIN,
-                        ALWAYS_TRANSLATE, /* triggeredFromMenu */
-                        false,
-                        /* hashCodes*/ UMA_HASH_CODES,
+                        ALWAYS_TRANSLATE,
+                        /* triggeredFromMenu= */ false,
+                        /* hashCodes= */ UMA_HASH_CODES,
                         CONTENT_LANGUAGES_CODES);
 
         Assert.assertEquals(2, options.contentLanguages().length);
@@ -216,9 +216,9 @@ public class TranslateOptionsTest {
                         CODES,
                         NEVER_LANGUAGE,
                         NEVER_DOMAIN,
-                        ALWAYS_TRANSLATE, /* triggeredFromMenu */
-                        false,
-                        /* hashCodes*/ UMA_HASH_CODES,
+                        ALWAYS_TRANSLATE,
+                        /* triggeredFromMenu= */ false,
+                        /* hashCodes= */ UMA_HASH_CODES,
                         CONTENT_LANGUAGES_CODES);
 
         Assert.assertEquals(2, options.contentLanguages().length);

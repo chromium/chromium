@@ -284,7 +284,7 @@ public class TabSuspensionTest {
                 });
 
         MultiWindowTestHelper.waitForTabs(
-                "CTA", activity2, /* expectedTotalTabCount */ 1, tab2.getId());
+                "CTA", activity2, /* expectedTotalTabCount= */ 1, tab2.getId());
         waitForSuspendedTabToShow(tab2, DIFFERENT_FQDN);
 
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);

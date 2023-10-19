@@ -296,7 +296,6 @@ public class EdgeToEdgeControllerTest {
                         intThat(Matchers.greaterThan(0)));
     }
 
-
     /** Test that we update WebContentsObservers when a Tab changes WebContents. */
     @Test
     public void onTabSwitched_onWebContentsSwapped() {

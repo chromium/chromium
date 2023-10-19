@@ -298,7 +298,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
                         mTabModelSelector,
                         mTabListFaviconProvider,
                         mTab3,
-                        true /* isScrollableMvtEnabled */,
+                        /* isScrollableMvtEnabled= */ true,
                         null,
                         null,
                         null);
@@ -341,7 +341,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
                         mTabModelSelector,
                         mTabListFaviconProvider,
                         mTab3,
-                        false /* isScrollableMvtEnabled */,
+                        /* isScrollableMvtEnabled= */ false,
                         null,
                         null,
                         null);
@@ -384,7 +384,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
                         mTabModelSelector,
                         mTabListFaviconProvider,
                         mTab3,
-                        false /* isScrollableMvtEnabled */,
+                        /* isScrollableMvtEnabled= */ false,
                         null,
                         tabContentManager,
                         null);
@@ -407,7 +407,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
                 mTabModelSelector,
                 mTabListFaviconProvider,
                 mTab3,
-                false /* isScrollableMvtEnabled */,
+                /* isScrollableMvtEnabled= */ false,
                 callback,
                 null,
                 null);
@@ -431,7 +431,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
                         mTabModelSelector,
                         mTabListFaviconProvider,
                         mTab3,
-                        true /* isScrollableMvtEnabled */,
+                        /* isScrollableMvtEnabled= */ true,
                         null,
                         mTabContentManager,
                         mUiConfig);

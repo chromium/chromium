@@ -127,7 +127,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
             return Promise.fulfilled(
                     PendingIntent.getActivity(
                             context,
-                            0 /* requestCode */,
+                            /* requestCode= */ 0,
                             intent,
                             IntentUtils.getPendingIntentMutabilityFlag(false)));
         }
@@ -156,7 +156,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
             return Promise.fulfilled(
                     PendingIntent.getActivity(
                             context,
-                            0 /* requestCode */,
+                            /* requestCode= */ 0,
                             intent,
                             IntentUtils.getPendingIntentMutabilityFlag(false)));
         }

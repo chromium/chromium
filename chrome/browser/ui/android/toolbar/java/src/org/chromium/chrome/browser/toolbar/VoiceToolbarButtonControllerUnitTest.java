@@ -96,7 +96,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     public void testIPHCommandHelper() {
         assertNull(
                 mVoiceToolbarButtonController
-                        .get(/*tab*/ null)
+                        .get(/* tab= */ null)
                         .getButtonSpec()
                         .getIPHCommandBuilder());
 

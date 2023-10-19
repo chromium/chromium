@@ -74,8 +74,7 @@ public class TabletPhoneLayoutChangeTest {
                             cta.recreatingForTabletModeChangeForTesting());
 
                     // Simulate invocation of #onSaveInstanceState to verify that the saved instance
-                    // state
-                    // contains DID_CHANGE_TABLET_MODE.
+                    // state contains DID_CHANGE_TABLET_MODE.
                     Bundle outState = new Bundle();
                     cta.onSaveInstanceState(outState);
                     Assert.assertTrue(

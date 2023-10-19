@@ -103,7 +103,7 @@ public class StartSurfaceOnTabletTest {
         StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         verifyTabCountAndActiveTabUrl(
-                mActivityTestRule.getActivity(), 1, TAB_URL, null /* expectHomeSurfaceUiShown */);
+                mActivityTestRule.getActivity(), 1, TAB_URL, /* expectHomeSurfaceUiShown= */ null);
     }
 
     @Test
@@ -125,7 +125,7 @@ public class StartSurfaceOnTabletTest {
                 mActivityTestRule.getActivity(),
                 2,
                 UrlConstants.NTP_URL,
-                true /* expectHomeSurfaceUiShown */);
+                /* expectHomeSurfaceUiShown= */ true);
         histogram.assertExpected();
     }
 
@@ -153,7 +153,7 @@ public class StartSurfaceOnTabletTest {
                 mActivityTestRule.getActivity(),
                 3,
                 UrlConstants.NTP_URL,
-                true /* expectHomeSurfaceUiShown */);
+                /* expectHomeSurfaceUiShown= */ true);
         histogram.assertExpected();
     }
 
@@ -182,7 +182,7 @@ public class StartSurfaceOnTabletTest {
                 mActivityTestRule.getActivity(),
                 2,
                 modifiedNtpUrl,
-                false /* expectHomeSurfaceUiShown */);
+                /* expectHomeSurfaceUiShown= */ false);
         histogram.assertExpected();
     }
 
@@ -198,7 +198,7 @@ public class StartSurfaceOnTabletTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         // Verifies that a NTP is created and set as the current Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 2, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
+                cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
 
         waitForNtpLoaded(cta.getActivityTab());
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
@@ -240,7 +240,7 @@ public class StartSurfaceOnTabletTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 3, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
+                cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
@@ -288,7 +288,7 @@ public class StartSurfaceOnTabletTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 3, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
+                cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
@@ -577,7 +577,7 @@ public class StartSurfaceOnTabletTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 2, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
+                cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(cta.getActivityTab());
 
         try {
@@ -588,7 +588,7 @@ public class StartSurfaceOnTabletTest {
         }
 
         // Verifies that the last active Tab is showing, and NTP home surface is closed.
-        verifyTabCountAndActiveTabUrl(cta, 1, TAB_URL, null /* expectHomeSurfaceUiShown */);
+        verifyTabCountAndActiveTabUrl(cta, 1, TAB_URL, /* expectHomeSurfaceUiShown= */ null);
     }
 
     /**
@@ -607,7 +607,7 @@ public class StartSurfaceOnTabletTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 2, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
+                cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(cta.getActivityTab());
 
         Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);

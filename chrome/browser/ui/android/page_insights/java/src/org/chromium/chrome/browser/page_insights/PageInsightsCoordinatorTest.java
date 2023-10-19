@@ -408,7 +408,7 @@ public class PageInsightsCoordinatorTest {
                 () ->
                         mBottomUiObserverCaptor
                                 .getValue()
-                                .onSheetStateChanged(SheetState.PEEK, /*unused*/ 0));
+                                .onSheetStateChanged(SheetState.PEEK, /* unused= */ 0));
         waitForAnimationToFinish();
         assertEquals(
                 "Sheet should be hidden",
@@ -419,7 +419,7 @@ public class PageInsightsCoordinatorTest {
                 () ->
                         mBottomUiObserverCaptor
                                 .getValue()
-                                .onSheetStateChanged(SheetState.HIDDEN, /*unused*/ 0));
+                                .onSheetStateChanged(SheetState.HIDDEN, /* unused= */ 0));
         waitForAnimationToFinish();
         assertEquals(
                 "Sheet should be restored",

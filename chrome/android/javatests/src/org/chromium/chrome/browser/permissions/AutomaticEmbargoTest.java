@@ -31,7 +31,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutomaticEmbargoTest {
     @Rule
-    public PermissionTestRule mPermissionRule = new PermissionTestRule(true /* useHttpsServer */);
+    public PermissionTestRule mPermissionRule = new PermissionTestRule(/* useHttpsServer= */ true);
 
     private static final String GEOLOCATION_TEST_FILE =
             "/chrome/test/data/geolocation/geolocation_on_load.html";
@@ -83,9 +83,9 @@ public class AutomaticEmbargoTest {
                 updateWaiter,
                 testFile,
                 javascript,
-                0 /* nUpdates */,
+                /* nUpdates= */ 0,
                 withGesture,
-                true /* isDialog */);
+                /* isDialog= */ true);
         TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
@@ -96,7 +96,7 @@ public class AutomaticEmbargoTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 
-        runTest(GEOLOCATION_TEST_FILE, "", "Denied", true /* withGesture */);
+        runTest(GEOLOCATION_TEST_FILE, "", "Denied", /* withGesture= */ true);
     }
 
     @Test
@@ -107,14 +107,14 @@ public class AutomaticEmbargoTest {
                 NOTIFICATIONS_TEST_FILE,
                 "requestPermission()",
                 "request-callback-denied",
-                false /* withGesture */);
+                /* withGesture= */ false);
     }
 
     @Test
     @LargeTest
     @Feature({"MIDI"})
     public void testMIDIEmbargo() throws Exception {
-        runTest(MIDI_TEST_FILE, "", "fail", true /* withGesture */);
+        runTest(MIDI_TEST_FILE, "", "fail", /* withGesture= */ true);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class AutomaticEmbargoTest {
     @Feature({"MediaPermissions"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testCameraEmbargo() throws Exception {
-        runTest(MEDIA_TEST_FILE, "initiate_getMicrophone()", "deny", true /* withGesture */);
+        runTest(MEDIA_TEST_FILE, "initiate_getMicrophone()", "deny", /* withGesture= */ true);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class AutomaticEmbargoTest {
     @Feature({"MediaPermissions"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testMicrophoneEmbargo() throws Exception {
-        runTest(MEDIA_TEST_FILE, "initiate_getCamera()", "deny", true /* withGesture */);
+        runTest(MEDIA_TEST_FILE, "initiate_getCamera()", "deny", /* withGesture= */ true);
     }
 
     @Test
@@ -139,6 +139,6 @@ public class AutomaticEmbargoTest {
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     @DisabledTest(message = "https://crbug.com/1378316")
     public void testMicrophoneAndCameraEmbargo() throws Exception {
-        runTest(MEDIA_TEST_FILE, "initiate_getCombined()", "deny", true /* withGesture */);
+        runTest(MEDIA_TEST_FILE, "initiate_getCombined()", "deny", /* withGesture= */ true);
     }
 }

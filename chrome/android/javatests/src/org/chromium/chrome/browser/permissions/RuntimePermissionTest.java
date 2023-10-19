@@ -71,12 +71,12 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
-                true /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
-                null /* javascriptToExecute */,
-                0 /* missingPermissionPromptTextId */);
+                /* expectPermissionAllowed= */ true,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
+                /* javascriptToExecute= */ null,
+                /* missingPermissionPromptTextId= */ 0);
     }
 
     @Test
@@ -92,12 +92,12 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
-                true /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
+                /* expectPermissionAllowed= */ true,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
                 "getUserMediaAndStopLegacy({video: true, audio: false});",
-                0 /* missingPermissionPromptTextId */);
+                /* missingPermissionPromptTextId= */ 0);
     }
 
     @Test
@@ -113,12 +113,12 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
-                true /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
+                /* expectPermissionAllowed= */ true,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
-                0 /* missingPermissionPromptTextId */);
+                /* missingPermissionPromptTextId= */ 0);
     }
 
     @Test
@@ -139,11 +139,11 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
-                false /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                true /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
-                null /* javascriptToExecute */,
+                /* expectPermissionAllowed= */ false,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ true,
+                /* waitForUpdater= */ true,
+                /* javascriptToExecute= */ null,
                 R.string.infobar_missing_location_permission_text);
     }
 
@@ -160,10 +160,10 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
-                false /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                true /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
+                /* expectPermissionAllowed= */ false,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ true,
+                /* waitForUpdater= */ true,
                 "getUserMediaAndStopLegacy({video: true, audio: false});",
                 R.string.infobar_missing_camera_permission_text);
     }
@@ -181,10 +181,10 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
-                false /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                true /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
+                /* expectPermissionAllowed= */ false,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ true,
+                /* waitForUpdater= */ true,
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
                 R.string.infobar_missing_microphone_permission_text);
     }
@@ -231,10 +231,10 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 DOWNLOAD_TEST,
-                false /* expectPermissionAllowed */,
-                null /* permissionPromptAllow */,
-                true /* waitForMissingPermissionPrompt */,
-                false /* waitForUpdater */,
+                /* expectPermissionAllowed= */ false,
+                /* permissionPromptAllow= */ null,
+                /* waitForMissingPermissionPrompt= */ true,
+                /* waitForUpdater= */ false,
                 "document.getElementsByTagName('a')[0].click();",
                 R.string.missing_storage_permission_download_education_text);
     }
@@ -257,11 +257,11 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
-                false /* expectPermissionAllowed */,
-                false /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
-                null /* javascriptToExecute */,
+                /* expectPermissionAllowed= */ false,
+                /* permissionPromptAllow= */ false,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
+                /* javascriptToExecute= */ null,
                 R.string.infobar_missing_location_permission_text);
     }
 
@@ -279,12 +279,12 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
-                false /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
+                /* expectPermissionAllowed= */ false,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
-                0 /* missingPermissionPromptTextId */);
+                /* missingPermissionPromptTextId= */ 0);
 
         // Now set the expectation that the runtime prompt is not shown again.
         mTestAndroidPermissionDelegate.setResponse(RuntimePromptResponse.ASSERT_NEVER_ASKED);
@@ -294,12 +294,12 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
-                false /* expectPermissionAllowed */,
-                null /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
+                /* expectPermissionAllowed= */ false,
+                /* permissionPromptAllow= */ null,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
-                0 /* missingPermissionPromptTextId */);
+                /* missingPermissionPromptTextId= */ 0);
     }
 
     @Test
@@ -316,12 +316,12 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
-                false /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
+                /* expectPermissionAllowed= */ false,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
                 "getUserMediaAndStopLegacy({video: true, audio: false});",
-                0 /* missingPermissionPromptTextId */);
+                /* missingPermissionPromptTextId= */ 0);
 
         // Now set the expectation that the runtime prompt is not shown again.
         mTestAndroidPermissionDelegate.setResponse(RuntimePromptResponse.ASSERT_NEVER_ASKED);
@@ -331,12 +331,12 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
-                false /* expectPermissionAllowed */,
-                null /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
+                /* expectPermissionAllowed= */ false,
+                /* permissionPromptAllow= */ null,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
                 "getUserMediaAndStopLegacy({video: true, audio: false});",
-                0 /* missingPermissionPromptTextId */);
+                /* missingPermissionPromptTextId= */ 0);
     }
 
     @Test
@@ -357,12 +357,12 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
-                true /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
-                null /* javascriptToExecute */,
-                0 /* missingPermissionPromptTextId */);
+                /* expectPermissionAllowed= */ true,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
+                /* javascriptToExecute= */ null,
+                /* missingPermissionPromptTextId= */ 0);
     }
 
     @Test
@@ -384,12 +384,12 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
-                true /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
-                null /* javascriptToExecute */,
-                0 /* missingPermissionPromptTextId */);
+                /* expectPermissionAllowed= */ true,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
+                /* javascriptToExecute= */ null,
+                /* missingPermissionPromptTextId= */ 0);
     }
 
     @Test
@@ -407,12 +407,12 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
-                true /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
+                /* expectPermissionAllowed= */ true,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
                 "getUserMediaAndStopLegacy({video: true, audio: false});",
-                0 /* missingPermissionPromptTextId */);
+                /* missingPermissionPromptTextId= */ 0);
     }
 
     @Test
@@ -429,11 +429,11 @@ public class RuntimePermissionTest {
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
-                true /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */,
-                false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */,
+                /* expectPermissionAllowed= */ true,
+                /* permissionPromptAllow= */ true,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
-                0 /* missingPermissionPromptTextId */);
+                /* missingPermissionPromptTextId= */ 0);
     }
 }

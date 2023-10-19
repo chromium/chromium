@@ -187,7 +187,7 @@ public class RequestCoordinatorBridgeTest {
                     mRequestCoordinatorBridge.savePageLater(
                             url,
                             namespace,
-                            true /* userRequested */,
+                            /* userRequested= */ true,
                             new OfflinePageOrigin(),
                             new Callback<Integer>() {
                                 @Override

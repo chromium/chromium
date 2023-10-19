@@ -72,7 +72,7 @@ public class PaymentRequestTabTest {
                         "visa",
                         R.drawable.visa_card,
                         billingAddressId,
-                        "" /* serverId */));
+                        /* serverId= */ ""));
     }
 
     /** If the user switches tabs somehow, the dialog is dismissed. */

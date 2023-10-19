@@ -111,7 +111,7 @@ public class ActionChipsProcessorUnitTest {
     public void onOmniboxSessionStateChange_noRecordsEverOnActivation() {
         // This is a perfectly normal scenario. Simulate that we have a suggestion with actions, we
         // click on one action, and then emit a "focus" signal. There should be NO uma records.
-        populateModelForActions(actionWithHandle(1), actionWithHandle(/*invalid*/ 0));
+        populateModelForActions(actionWithHandle(1), actionWithHandle(/* handle= */ 0));
         assertEquals(2, mActionModel.size());
         mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* model= */ null);
 
@@ -247,7 +247,7 @@ public class ActionChipsProcessorUnitTest {
 
     @Test
     public void onOmniboxSessionStateChange_recordActionInvalid() {
-        populateModelForActions(actionWithHandle(1), actionWithHandle(/*invalid*/ 0));
+        populateModelForActions(actionWithHandle(1), actionWithHandle(/* handle= */ 0));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
@@ -265,7 +265,7 @@ public class ActionChipsProcessorUnitTest {
 
     @Test
     public void onSuggestionsReceived_resetsLastState() {
-        populateModelForActions(actionWithHandle(1), actionWithHandle(/*invalid*/ 0));
+        populateModelForActions(actionWithHandle(1), actionWithHandle(/* handle= */ 0));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(

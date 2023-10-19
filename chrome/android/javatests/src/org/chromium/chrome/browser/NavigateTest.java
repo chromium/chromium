@@ -262,9 +262,9 @@ public class NavigateTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         TabUtils.switchUserAgent(
-                                tab, /* switchToDesktop */
-                                true,
-                                /* forcedByUser */ true,
+                                tab,
+                                /* switchToDesktop= */ true,
+                                /* forcedByUser= */ true,
                                 UseDesktopUserAgentCaller.OTHER));
         ChromeTabUtils.waitForTabPageLoaded(tab, url1);
 
@@ -294,9 +294,9 @@ public class NavigateTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         TabUtils.switchUserAgent(
-                                tab, /* switchToDesktop */
-                                true,
-                                /* forcedByUser */ true,
+                                tab,
+                                /* switchToDesktop= */ true,
+                                /* forcedByUser= */ true,
                                 UseDesktopUserAgentCaller.OTHER));
 
         navigateAndObserve(url);

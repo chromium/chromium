@@ -47,15 +47,15 @@ public class PaymentRequestCanMakePaymentQueryNoCardTest {
                                 "https://example.test",
                                 true,
                                 true,
-                                "" /* nameOnCard */,
+                                /* nameOnCard= */ "",
                                 "4111111111111111",
                                 "1111",
                                 "12",
                                 "2050",
                                 "visa",
                                 R.drawable.visa_card,
-                                "" /* billingAddressId */,
-                                "" /* serverId */));
+                                /* billingAddressId= */ "",
+                                /* serverId= */ ""));
     }
 
     @Test

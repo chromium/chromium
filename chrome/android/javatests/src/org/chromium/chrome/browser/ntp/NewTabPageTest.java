@@ -525,7 +525,7 @@ public class NewTabPageTest {
                         View logoView = ntpLayout.findViewById(R.id.search_provider_logo);
                         Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
 
-                        ntpLayout.setSearchProviderInfo(/* hasLogo= */ false, /* isGoogle */ true);
+                        ntpLayout.setSearchProviderInfo(/* hasLogo= */ false, /* isGoogle= */ true);
                         // Mock to notify the template URL service observer.
                         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo())
                                 .thenReturn(false);
@@ -535,7 +535,7 @@ public class NewTabPageTest {
                                 .onTemplateURLServiceChangedForTesting();
                         Assert.assertEquals(View.GONE, logoView.getVisibility());
 
-                        ntpLayout.setSearchProviderInfo(/* hasLogo= */ true, /* isGoogle */ true);
+                        ntpLayout.setSearchProviderInfo(/* hasLogo= */ true, /* isGoogle= */ true);
                         // Mock to notify the template URL service observer.
                         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo())
                                 .thenReturn(true);
@@ -575,7 +575,7 @@ public class NewTabPageTest {
                 () -> {
                     when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
                     when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
-                    ntpLayout.setSearchProviderInfo(/* hasLogo= */ false, /* isGoogle */ true);
+                    ntpLayout.setSearchProviderInfo(/* hasLogo= */ false, /* isGoogle= */ true);
                     // Mock to notify the template URL service observer.
                     ntpLayout
                             .getLogoCoordinatorForTesting()
@@ -609,7 +609,7 @@ public class NewTabPageTest {
                 () -> {
                     when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
                     when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
-                    ntpLayout.setSearchProviderInfo(/* hasLogo= */ true, /* isGoogle */ true);
+                    ntpLayout.setSearchProviderInfo(/* hasLogo= */ true, /* isGoogle= */ true);
                     // Mock to notify the template URL service observer.
                     ntpLayout
                             .getLogoCoordinatorForTesting()

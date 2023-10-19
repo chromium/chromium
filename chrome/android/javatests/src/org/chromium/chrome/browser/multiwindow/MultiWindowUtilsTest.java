@@ -388,10 +388,10 @@ public class MultiWindowUtilsTest {
     public void testIsOpenInOtherWindowSupported_isNotInMultiWindowDisplayMode_returnsFalse() {
         assertFalse(
                 doTestIsOpenInOtherWindowSupported(
-                        /* isAutomotive */ false,
-                        /* isInMultiWindowMode */ false,
-                        /* isInMultiDisplayMode */ false,
-                        /* openInOtherWindowActivity */ ChromeTabbedActivity.class));
+                        /* isAutomotive= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ false,
+                        /* openInOtherWindowActivity= */ ChromeTabbedActivity.class));
     }
 
     @Test
@@ -400,10 +400,10 @@ public class MultiWindowUtilsTest {
     public void testIsOpenInOtherWindowSupported_isAutomotive_returnsFalse() {
         assertFalse(
                 doTestIsOpenInOtherWindowSupported(
-                        /* isAutomotive */ true,
-                        /* isInMultiWindowMode */ true,
-                        /* isInMultiDisplayMode */ true,
-                        /* openInOtherWindowActivity */ ChromeTabbedActivity.class));
+                        /* isAutomotive= */ true,
+                        /* isInMultiWindowMode= */ true,
+                        /* isInMultiDisplayMode= */ true,
+                        /* openInOtherWindowActivity= */ ChromeTabbedActivity.class));
     }
 
     @Test
@@ -412,10 +412,10 @@ public class MultiWindowUtilsTest {
     public void testIsOpenInOtherWindowSupported_otherWindowActivityIsNull_returnsFalse() {
         assertFalse(
                 doTestIsOpenInOtherWindowSupported(
-                        /* isAutomotive */ false,
-                        /* isInMultiWindowMode */ true,
-                        /* isInMultiDisplayMode */ true,
-                        /* openInOtherWindowActivity */ null));
+                        /* isAutomotive= */ false,
+                        /* isInMultiWindowMode= */ true,
+                        /* isInMultiDisplayMode= */ true,
+                        /* openInOtherWindowActivity= */ null));
     }
 
     @Test
@@ -424,10 +424,10 @@ public class MultiWindowUtilsTest {
     public void testIsOpenInOtherWindowSupported_otherWindowActivityIsNotNull_returnsTrue() {
         assertTrue(
                 doTestIsOpenInOtherWindowSupported(
-                        /* isAutomotive */ false,
-                        /* isInMultiWindowMode */ true,
-                        /* isInMultiDisplayMode */ true,
-                        /* openInOtherWindowActivity */ ChromeTabbedActivity.class));
+                        /* isAutomotive= */ false,
+                        /* isInMultiWindowMode= */ true,
+                        /* isInMultiDisplayMode= */ true,
+                        /* openInOtherWindowActivity= */ ChromeTabbedActivity.class));
     }
 
     public boolean doTestIsOpenInOtherWindowSupported(
@@ -456,9 +456,9 @@ public class MultiWindowUtilsTest {
     public void testCanEnterMultiWindowMode_isAutomotive_returnsFalse() {
         assertFalse(
                 doTestCanEnterMultiWindowMode(
-                        /* isAutomotive */ true,
-                        /* aospMultiWindowModeSupported */ false,
-                        /* customMultiWindowModeSupported */ false));
+                        /* isAutomotive= */ true,
+                        /* aospMultiWindowModeSupported= */ false,
+                        /* customMultiWindowModeSupported= */ false));
     }
 
     @Test
@@ -467,9 +467,9 @@ public class MultiWindowUtilsTest {
     public void testCanEnterMultiWindowMode_noSupport_returnsFalse() {
         assertFalse(
                 doTestCanEnterMultiWindowMode(
-                        /* isAutomotive */ false,
-                        /* aospMultiWindowModeSupported */ false,
-                        /* customMultiWindowModeSupported */ false));
+                        /* isAutomotive= */ false,
+                        /* aospMultiWindowModeSupported= */ false,
+                        /* customMultiWindowModeSupported= */ false));
     }
 
     @Test
@@ -478,9 +478,9 @@ public class MultiWindowUtilsTest {
     public void testCanEnterMultiWindowMode_aospMultiWindowModeSupported_returnsFalse() {
         assertTrue(
                 doTestCanEnterMultiWindowMode(
-                        /* isAutomotive */ false,
-                        /* aospMultiWindowModeSupported */ true,
-                        /* customMultiWindowModeSupported */ false));
+                        /* isAutomotive= */ false,
+                        /* aospMultiWindowModeSupported= */ true,
+                        /* customMultiWindowModeSupported= */ false));
     }
 
     @Test
@@ -489,9 +489,9 @@ public class MultiWindowUtilsTest {
     public void testCanEnterMultiWindowMode_customMultiWindowModeSupported_returnsFalse() {
         assertTrue(
                 doTestCanEnterMultiWindowMode(
-                        /* isAutomotive */ false,
-                        /* aospMultiWindowModeSupported */ false,
-                        /* customMultiWindowModeSupported */ true));
+                        /* isAutomotive= */ false,
+                        /* aospMultiWindowModeSupported= */ false,
+                        /* customMultiWindowModeSupported= */ true));
     }
 
     public boolean doTestCanEnterMultiWindowMode(

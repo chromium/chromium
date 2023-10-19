@@ -169,9 +169,9 @@ public class FullscreenManagerTestUtils {
                             .startFling(
                                     SystemClock.uptimeMillis(),
                                     vx,
-                                    vy, /*synthetic_scroll*/
-                                    false,
-                                    /*prevent_boosting*/ false);
+                                    vy,
+                                    /* synthetic_scroll= */ false,
+                                    /* prevent_boosting= */ false);
                 });
     }
 }

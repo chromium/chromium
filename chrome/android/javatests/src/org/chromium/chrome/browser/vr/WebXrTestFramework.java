@@ -76,7 +76,7 @@ public abstract class WebXrTestFramework extends XrTestFramework {
             try {
                 nodeClicked =
                         DOMUtils.clickNode(
-                                webContents, "webgl-canvas", false /* goThroughRootAndroidView */);
+                                webContents, "webgl-canvas", /* goThroughRootAndroidView= */ false);
                 if (DEBUG_LOGS) {
                     Log.i(TAG, "enterSessionWithUserGesture: nodeClicked => " + nodeClicked);
                 }

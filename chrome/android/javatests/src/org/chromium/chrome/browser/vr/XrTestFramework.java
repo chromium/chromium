@@ -180,7 +180,7 @@ public abstract class XrTestFramework {
      */
     public static String runJavaScriptInFrameOrFail(
             String js, int timeout, final WebContents webContents) {
-        return runJavaScriptInFrameInternal(js, timeout, webContents, true /* failOnTimeout */);
+        return runJavaScriptInFrameInternal(js, timeout, webContents, /* failOnTimeout= */ true);
     }
 
     /**
@@ -253,7 +253,7 @@ public abstract class XrTestFramework {
                                         boolExpression,
                                         POLL_CHECK_INTERVAL_SHORT_MS,
                                         webContents,
-                                        false /* failOnTimeout */);
+                                        /* failOnTimeout= */ false);
                         if (DEBUG_LOGS) {
                             Log.i(
                                     TAG,
@@ -687,7 +687,7 @@ public abstract class XrTestFramework {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRule.getActivity()
-                            .getTabCreator(true /* incognito */)
+                            .getTabCreator(/* incognito= */ true)
                             .launchUrl(url, TabLaunchType.FROM_LINK);
                 });
     }

@@ -299,7 +299,7 @@ public class WebApkInfoTest {
         bundle.putInt(WebApkMetaDataKeys.MASKABLE_ICON_ID, PRIMARY_MASKABLE_ICON_ID);
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
         WebappInfo info = createWebApkInfo(intent);
@@ -317,7 +317,7 @@ public class WebApkInfoTest {
         bundle.putInt(WebApkMetaDataKeys.ICON_ID, PRIMARY_ICON_ID);
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
         WebappInfo info = createWebApkInfo(intent);
@@ -338,7 +338,7 @@ public class WebApkInfoTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         Intent intent =
                 WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, intentStartUrl);
@@ -369,7 +369,7 @@ public class WebApkInfoTest {
         bundle.putString(WebApkMetaDataKeys.START_URL, manifestStartUrl);
         bundle.putString(WebApkMetaDataKeys.SCOPE, "");
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         Intent intent =
                 WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, intentStartUrl);
@@ -395,7 +395,7 @@ public class WebApkInfoTest {
                 WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
                 iconUrl1 + " " + murmur2Hash1 + " " + iconUrl2 + " " + murmur2Hash2);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
 
         WebappInfo info = createWebApkInfo(intent);
@@ -417,7 +417,7 @@ public class WebApkInfoTest {
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         bundle.putString(WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES, "randomUrl " + hash);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
 
         WebappInfo info = createWebApkInfo(intent);
@@ -436,7 +436,7 @@ public class WebApkInfoTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
 
@@ -454,7 +454,7 @@ public class WebApkInfoTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
         intent.putExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.COUNT + 1);
@@ -476,7 +476,7 @@ public class WebApkInfoTest {
         bundle.putString(WebApkMetaDataKeys.NAME, name);
         bundle.putString(WebApkMetaDataKeys.SHORT_NAME, shortName);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
 
@@ -494,7 +494,7 @@ public class WebApkInfoTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         String name = "WebAPK name";
         String shortName = "WebAPK short name";
@@ -531,7 +531,7 @@ public class WebApkInfoTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
         intent.putExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.EXTERNAL_INTENT);
@@ -551,7 +551,7 @@ public class WebApkInfoTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
         intent.putExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.EXTERNAL_INTENT);
@@ -600,14 +600,14 @@ public class WebApkInfoTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
         WebappInfo info = createWebApkInfo(intent);
         Assert.assertEquals(WebApkDistributor.BROWSER, info.distributor());
 
         // Test Case: Unbound WebAPK
         WebApkTestHelper.registerWebApkWithMetaData(
-                UNBOUND_WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                UNBOUND_WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
         intent = new Intent();
         intent.putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, UNBOUND_WEBAPK_PACKAGE_NAME);
         intent.putExtra(WebappConstants.EXTRA_URL, START_URL);
@@ -772,7 +772,7 @@ public class WebApkInfoTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         FakeResources res = new FakeResources();
         res.addStringForTesting(
@@ -886,7 +886,7 @@ public class WebApkInfoTest {
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         bundle.putString(WebApkMetaDataKeys.WEB_MANIFEST_URL, MANIFEST_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
 
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
         WebappInfo info = createWebApkInfo(intent);

@@ -171,7 +171,7 @@ public class PortalsTest {
                     Profile profile = Profile.fromWebContents(tab.getWebContents());
                     BrowsingHistoryBridge provider = new BrowsingHistoryBridge(profile);
                     provider.setObserver(observer);
-                    provider.queryHistory(/* query */ "");
+                    provider.queryHistory(/* query= */ "");
                 });
         observer.getQueryCallback().waitForCallback(0);
         return observer.getHistoryQueryResults();

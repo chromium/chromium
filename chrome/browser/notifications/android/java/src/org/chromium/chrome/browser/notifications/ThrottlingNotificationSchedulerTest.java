@@ -92,7 +92,7 @@ public class ThrottlingNotificationSchedulerTest {
 
         // A bunch of tasks arrives in order.
         addTask("t1", PendingNotificationTask.Priority.LOW);
-        SystemClock.setCurrentTimeMillis(CURRENT_TIME_MS + 1 /* milliseconds */);
+        SystemClock.setCurrentTimeMillis(/* milliseconds= */ CURRENT_TIME_MS + 1);
 
         addTask("t2", PendingNotificationTask.Priority.HIGH);
         addTask("t3", PendingNotificationTask.Priority.LOW);

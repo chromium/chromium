@@ -101,7 +101,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
     public void testIPHCommandHelper() {
         assertNull(
                 mOptionalNewTabButtonController
-                        .get(/*tab*/ null)
+                        .get(/* tab= */ null)
                         .getButtonSpec()
                         .getIPHCommandBuilder());
 

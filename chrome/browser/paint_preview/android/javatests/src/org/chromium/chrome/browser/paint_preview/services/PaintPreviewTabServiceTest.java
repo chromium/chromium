@@ -54,7 +54,7 @@ public class PaintPreviewTabServiceTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
-        mTabModel = mTabModelSelector.getModel(/*incognito*/ false);
+        mTabModel = mTabModelSelector.getModel(/* incognito= */ false);
     }
 
     /** Verifies that a Tab's contents are captured when the activity is stopped. */
@@ -109,7 +109,7 @@ public class PaintPreviewTabServiceTest {
                 () -> {
                     mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
                     mTab = mTabModelSelector.getTabById(tabId);
-                    mTabModel = mTabModelSelector.getModel(/*incognito*/ false);
+                    mTabModel = mTabModelSelector.getModel(/* incognito= */ false);
                 });
 
         TestThreadUtils.runOnUiThreadBlocking(

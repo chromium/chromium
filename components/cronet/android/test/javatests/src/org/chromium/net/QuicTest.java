@@ -57,13 +57,9 @@ public class QuicTest {
                                     QuicTestServer.getServerPort());
 
                             // The pref may not be written if the computed Effective Connection Type
-                            // (ECT) matches
-                            // the default ECT for the current connection type. Force the ECT to
-                            // "Slow-2G". Since
-                            // "Slow-2G" is not the default ECT for any connection type, this
-                            // ensures that the
-                            // pref
-                            // is written to.
+                            // (ECT) matches the default ECT for the current connection type.
+                            // Force the ECT to "Slow-2G". Since "Slow-2G" is not the default ECT
+                            // for any connection type, this ensures that the pref is written to.
                             JSONObject nqeParams =
                                     new JSONObject()
                                             .put("force_effective_connection_type", "Slow-2G");

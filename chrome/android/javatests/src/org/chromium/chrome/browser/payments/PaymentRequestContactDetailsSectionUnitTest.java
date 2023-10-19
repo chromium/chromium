@@ -87,9 +87,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
 
         createContactDetailsSectionWithProfiles(
                 profiles,
-                true /* requestPayerName */,
-                true /* requestPayerPhone */,
-                true /* requestPayerEmail */);
+                /* requestPayerName= */ true,
+                /* requestPayerPhone= */ true,
+                /* requestPayerEmail= */ true);
 
         List<EditableOption> items = mContactDetailsSection.getItems();
         Assert.assertEquals(2, items.size());
@@ -142,9 +142,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
 
         createContactDetailsSectionWithProfiles(
                 profiles,
-                true /* requestPayerName */,
-                true /* requestPayerPhone */,
-                true /* requestPayerEmail */);
+                /* requestPayerName= */ true,
+                /* requestPayerPhone= */ true,
+                /* requestPayerEmail= */ true);
 
         List<EditableOption> items = mContactDetailsSection.getItems();
         Assert.assertEquals(2, items.size());
@@ -184,9 +184,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
 
         createContactDetailsSectionWithProfiles(
                 profiles,
-                true /* requestPayerName */,
-                false /* requestPayerPhone */,
-                true /* requestPayerEmail */);
+                /* requestPayerName= */ true,
+                /* requestPayerPhone= */ false,
+                /* requestPayerEmail= */ true);
 
         List<EditableOption> items = mContactDetailsSection.getItems();
         Assert.assertEquals(1, items.size());
@@ -220,9 +220,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                         .build());
         createContactDetailsSectionWithProfiles(
                 profiles,
-                true /* requestPayerName */,
-                true /* requestPayerPhone */,
-                true /* requestPayerEmail */);
+                /* requestPayerName= */ true,
+                /* requestPayerPhone= */ true,
+                /* requestPayerEmail= */ true);
 
         List<EditableOption> items = mContactDetailsSection.getItems();
         Assert.assertEquals(1, items.size());
@@ -288,9 +288,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                         .build());
         createContactDetailsSectionWithProfiles(
                 profiles,
-                true /* requestPayerName */,
-                true /* requestPayerPhone */,
-                true /* requestPayerEmail */);
+                /* requestPayerName= */ true,
+                /* requestPayerPhone= */ true,
+                /* requestPayerEmail= */ true);
 
         List<EditableOption> items = mContactDetailsSection.getItems();
         Assert.assertEquals(1, items.size());
@@ -342,9 +342,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
         List<AutofillProfile> profiles = new ArrayList<>();
         createContactDetailsSectionWithProfiles(
                 profiles,
-                true /* requestPayerName */,
-                true /* requestPayerPhone */,
-                true /* requestPayerEmail */);
+                /* requestPayerName= */ true,
+                /* requestPayerPhone= */ true,
+                /* requestPayerEmail= */ true);
 
         List<EditableOption> items = mContactDetailsSection.getItems();
         Assert.assertEquals(0, items.size());
@@ -403,9 +403,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
 
         createContactDetailsSectionWithProfiles(
                 profiles,
-                true /* requestPayerName */,
-                true /* requestPayerPhone */,
-                true /* requestPayerEmail */);
+                /* requestPayerName= */ true,
+                /* requestPayerPhone= */ true,
+                /* requestPayerEmail= */ true);
 
         List<EditableOption> items = mContactDetailsSection.getItems();
         Assert.assertEquals(1, items.size());
@@ -453,9 +453,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
         List<AutofillProfile> profiles = new ArrayList<>();
         createContactDetailsSectionWithProfiles(
                 profiles,
-                true /* requestPayerName */,
-                true /* requestPayerPhone */,
-                true /* requestPayerEmail */);
+                /* requestPayerName= */ true,
+                /* requestPayerPhone= */ true,
+                /* requestPayerEmail= */ true);
 
         List<EditableOption> items = mContactDetailsSection.getItems();
         Assert.assertEquals(0, items.size());

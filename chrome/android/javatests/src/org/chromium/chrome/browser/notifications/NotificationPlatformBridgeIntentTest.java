@@ -115,7 +115,7 @@ public class NotificationPlatformBridgeIntentTest {
                         .putExtra(EXTRA_NOTIFICATION_ID, NotificationPlatformBridge.PLATFORM_ID)
                         .putExtra(
                                 NotificationConstants.EXTRA_NOTIFICATION_TAG,
-                                "p#https://example.com#0" /* notificationId */);
+                                /* notificationId= */ "p#https://example.com#0");
 
         SettingsActivity activity =
                 ActivityTestUtils.waitForActivity(

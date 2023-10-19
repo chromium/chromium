@@ -89,7 +89,7 @@ public final class AddToHomescreenCurrentPageVerifierTest {
         String pageDifferentOrigin = "https://bar.com/chrome/test/data/android/simple.html";
         launchWebapp(page);
 
-        mActivityTestRule.loadUrl(pageDifferentOrigin, 10 /* secondsToWait */);
+        mActivityTestRule.loadUrl(pageDifferentOrigin, /* secondsToWait= */ 10);
         assertEquals(VerificationStatus.FAILURE, getCurrentPageVerifierStatus());
     }
 }

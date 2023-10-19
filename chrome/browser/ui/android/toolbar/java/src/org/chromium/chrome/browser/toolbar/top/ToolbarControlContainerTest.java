@@ -278,13 +278,13 @@ public class ToolbarControlContainerTest {
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder().expectNoRecords(BLOCK_NAME).build();
-        verifyRequestsOnInMotionChange(/*inMotion*/ true, /*expectResourceRequested*/ false);
+        verifyRequestsOnInMotionChange(/* inMotion= */ true, /* expectResourceRequested= */ false);
         histogramWatcher.assertExpected();
 
         verifyIsDirtyWasBlocked(TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION);
         assertFalse(didAdapterLockControls());
 
-        verifyRequestsOnInMotionChange(/*inMotion*/ false, /*expectResourceRequested*/ true);
+        verifyRequestsOnInMotionChange(/* inMotion= */ false, /* expectResourceRequested= */ true);
     }
 
     @Test
@@ -302,7 +302,8 @@ public class ToolbarControlContainerTest {
                         .expectIntRecord(
                                 BLOCK_NAME, TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION)
                         .build()) {
-            verifyRequestsOnInMotionChange(/*inMotion*/ true, /*expectResourceRequested*/ false);
+            verifyRequestsOnInMotionChange(
+                    /* inMotion= */ true, /* expectResourceRequested= */ false);
         }
         assertTrue(didAdapterLockControls());
 
@@ -313,7 +314,8 @@ public class ToolbarControlContainerTest {
                         .expectNoRecords(BLOCK_NAME)
                         .expectNoRecords(ALLOW_NAME)
                         .build()) {
-            verifyRequestsOnInMotionChange(/*inMotion*/ false, /*expectResourceRequested*/ true);
+            verifyRequestsOnInMotionChange(
+                    /* inMotion= */ false, /* expectResourceRequested= */ true);
         }
         assertFalse(didAdapterLockControls());
     }
@@ -333,9 +335,9 @@ public class ToolbarControlContainerTest {
         when(mTab.isNativePage()).thenReturn(false);
         mIsVisible = true;
 
-        verifyRequestsOnInMotionChange(/*inMotion*/ true, /*expectResourceRequested*/ false);
+        verifyRequestsOnInMotionChange(/* inMotion= */ true, /* expectResourceRequested= */ false);
         assertTrue(didAdapterLockControls());
-        verifyRequestsOnInMotionChange(/*inMotion*/ false, /*expectResourceRequested*/ true);
+        verifyRequestsOnInMotionChange(/* inMotion= */ false, /* expectResourceRequested= */ true);
         assertFalse(didAdapterLockControls());
         histogramWatcher.assertExpected();
     }

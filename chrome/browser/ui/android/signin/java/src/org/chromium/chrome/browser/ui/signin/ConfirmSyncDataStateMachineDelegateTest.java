@@ -104,8 +104,7 @@ public class ConfirmSyncDataStateMachineDelegateTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Replace the progress bar with a dummy. Currently the progress bar cannot be
-                    // stopped
-                    // otherwise due to some espresso issues (crbug/1115067).
+                    // stopped otherwise due to some espresso issues (crbug/1115067).
                     ProgressBar progressBar = mStateMachineDelegate.getProgressBarViewForTesting();
                     progressBar.setIndeterminateDrawable(
                             new ColorDrawable(

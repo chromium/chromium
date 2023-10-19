@@ -42,9 +42,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.COMPLETE,
-                        true /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         AutofillContact contact2 =
                 new AutofillContact(
                         mockContext,
@@ -53,9 +53,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.COMPLETE,
-                        true /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
 
         // The return value should be true for identical profiles.
         Assert.assertTrue(contact1.isEqualOrSupersetOf(contact2));
@@ -100,9 +100,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.COMPLETE,
-                        false /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         AutofillContact contact2 =
                 new AutofillContact(
                         mockContext,
@@ -111,9 +111,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.COMPLETE,
-                        false /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
 
         // The return value should be true for identical profiles.
         Assert.assertTrue(contact1.isEqualOrSupersetOf(contact2));
@@ -143,9 +143,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.COMPLETE,
-                        true /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(3, contact.getRelevanceScore());
 
         // The name is not valid, the score should be 2.
@@ -157,9 +157,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.INVALID_NAME,
-                        true /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(2, contact.getRelevanceScore());
 
         // The phone is not valid, the score should be 2.
@@ -171,9 +171,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.INVALID_PHONE_NUMBER,
-                        true /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(2, contact.getRelevanceScore());
 
         // The email is not valid, the score should be 2.
@@ -185,9 +185,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.INVALID_EMAIL,
-                        true /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(2, contact.getRelevanceScore());
 
         // The name and phone are not valid, the score should be 1.
@@ -199,9 +199,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.INVALID_NAME | ContactEditor.INVALID_PHONE_NUMBER,
-                        true /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(1, contact.getRelevanceScore());
 
         // The name and email are not valid, the score should be 1.
@@ -213,9 +213,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.INVALID_NAME | ContactEditor.INVALID_EMAIL,
-                        true /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(1, contact.getRelevanceScore());
 
         // The phone and email are not valid, the score should be 1.
@@ -227,9 +227,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.INVALID_PHONE_NUMBER | ContactEditor.INVALID_EMAIL,
-                        true /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(1, contact.getRelevanceScore());
 
         // The name, phone and email are not valid, the score should be 0.
@@ -243,9 +243,9 @@ public class AutofillContactUnitTest {
                         ContactEditor.INVALID_NAME
                                 | ContactEditor.INVALID_PHONE_NUMBER
                                 | ContactEditor.INVALID_EMAIL,
-                        true /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(0, contact.getRelevanceScore());
     }
 
@@ -265,9 +265,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.COMPLETE,
-                        false /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(2, contact.getRelevanceScore());
 
         // The name is not valid, the score should still be 2.
@@ -279,9 +279,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.INVALID_NAME,
-                        false /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(2, contact.getRelevanceScore());
 
         // The phone is not valid, the score should be 1.
@@ -293,9 +293,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.INVALID_PHONE_NUMBER,
-                        false /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(1, contact.getRelevanceScore());
 
         // The email is not valid, the score should be 1.
@@ -307,9 +307,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.INVALID_EMAIL,
-                        false /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(1, contact.getRelevanceScore());
 
         // The phone and email are not valid, the score should be 0.
@@ -321,9 +321,9 @@ public class AutofillContactUnitTest {
                         PHONE,
                         EMAIL,
                         ContactEditor.INVALID_PHONE_NUMBER | ContactEditor.INVALID_EMAIL,
-                        false /* requestName */,
-                        true /* requestPhone */,
-                        true /* requestEmail */);
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(0, contact.getRelevanceScore());
     }
 }

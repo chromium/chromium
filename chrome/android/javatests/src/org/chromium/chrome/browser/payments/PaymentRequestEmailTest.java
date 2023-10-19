@@ -77,7 +77,7 @@ public class PaymentRequestEmailTest {
                         .setLocality("Los Angeles")
                         .setPostalCode("90291")
                         .setCountryCode("US")
-                        .setPhoneNumber("" /* phone_number */)
+                        .setPhoneNumber(/* phone_number= */ "")
                         .setEmailAddress("jon.doe@google.com")
                         .setLanguageCode("en-US")
                         .build());
@@ -93,7 +93,7 @@ public class PaymentRequestEmailTest {
                         .setPostalCode("90291")
                         .setCountryCode("US")
                         .setPhoneNumber("555-555-5555")
-                        .setEmailAddress("" /* emailAddress */)
+                        .setEmailAddress(/* emailAddress= */ "")
                         .setLanguageCode("en-US")
                         .build());
 

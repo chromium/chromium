@@ -453,7 +453,7 @@ public class PersonalDataManagerTest {
                         .setSortingCode("", VerificationStatus.NO_STATUS)
                         .setCountryCode("Canada", VerificationStatus.USER_VERIFIED)
                         .setPhoneNumber("", VerificationStatus.NO_STATUS)
-                        .setEmailAddress("" /* email */, VerificationStatus.NO_STATUS)
+                        .setEmailAddress(/* email= */ "", VerificationStatus.NO_STATUS)
                         .setLanguageCode("")
                         .build();
         String guid = mHelper.setProfile(profileWithDifferentStatuses);
@@ -658,7 +658,7 @@ public class PersonalDataManagerTest {
         mHelper.setProfileUseStatsForTesting(guid3, 100, 20);
 
         List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(false /* includeNameInLabel */);
+                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ false);
         Assert.assertEquals(3, profiles.size());
         Assert.assertTrue(
                 "Profile1 should be ranked first", guid1.equals(profiles.get(0).getGUID()));
@@ -729,7 +729,7 @@ public class PersonalDataManagerTest {
         mHelper.setProfileUseStatsForTesting(guid3, 100, 20);
 
         List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(false /* includeNameInLabel */);
+                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ false);
         Assert.assertEquals(3, profiles.size());
         Assert.assertTrue(
                 "Profile2 should be ranked first", guid2.equals(profiles.get(0).getGUID()));
@@ -782,35 +782,35 @@ public class PersonalDataManagerTest {
         // Create a local card and an identical server card.
         CreditCard card1 =
                 new CreditCard(
-                        "" /* guid */,
-                        "" /* origin */,
-                        true /* isLocal */,
-                        false /* isCached */,
+                        /* guid= */ "",
+                        /* origin= */ "",
+                        /* isLocal= */ true,
+                        /* isCached= */ false,
                         "John Doe",
                         "1234123412341234",
                         "",
                         "5",
                         "2020",
                         "Visa",
-                        0 /* issuerIconDrawableId */,
-                        "" /* billingAddressId */,
-                        "" /* serverId */);
+                        /* issuerIconDrawableId= */ 0,
+                        /* billingAddressId= */ "",
+                        /* serverId= */ "");
 
         CreditCard card2 =
                 new CreditCard(
-                        "" /* guid */,
-                        "" /* origin */,
-                        false /* isLocal */,
-                        false /* isCached */,
+                        /* guid= */ "",
+                        /* origin= */ "",
+                        /* isLocal= */ false,
+                        /* isCached= */ false,
                         "John Doe",
                         "1234123412341234",
                         "",
                         "5",
                         "2020",
                         "Visa",
-                        0 /* issuerIconDrawableId */,
-                        "" /* billingAddressId */,
-                        "" /* serverId */);
+                        /* issuerIconDrawableId= */ 0,
+                        /* billingAddressId= */ "",
+                        /* serverId= */ "");
 
         mHelper.setCreditCard(card1);
         mHelper.addServerCreditCard(card2);
@@ -848,19 +848,19 @@ public class PersonalDataManagerTest {
         String guid =
                 mHelper.setCreditCard(
                         new CreditCard(
-                                "" /* guid */,
-                                "" /* origin */,
-                                true /* isLocal */,
-                                false /* isCached */,
+                                /* guid= */ "",
+                                /* origin= */ "",
+                                /* isLocal= */ true,
+                                /* isCached= */ false,
                                 "John Doe",
                                 "1234123412341234",
                                 "",
                                 "5",
                                 "2020",
                                 "Visa",
-                                0 /* issuerIconDrawableId */,
-                                "" /* billingAddressId */,
-                                "" /* serverId */));
+                                /* issuerIconDrawableId= */ 0,
+                                /* billingAddressId= */ "",
+                                /* serverId= */ ""));
 
         // Make sure the credit card does not have the specific use stats form the start.
         Assert.assertTrue(1234 != mHelper.getCreditCardUseCountForTesting(guid));
@@ -907,19 +907,19 @@ public class PersonalDataManagerTest {
         String guid =
                 mHelper.setCreditCard(
                         new CreditCard(
-                                "" /* guid */,
-                                "" /* origin */,
-                                true /* isLocal */,
-                                false /* isCached */,
+                                /* guid= */ "",
+                                /* origin= */ "",
+                                /* isLocal= */ true,
+                                /* isCached= */ false,
                                 "John Doe",
                                 "1234123412341234",
                                 "",
                                 "5",
                                 "2020",
                                 "Visa",
-                                0 /* issuerIconDrawableId */,
-                                "" /* billingAddressId */,
-                                "" /* serverId */));
+                                /* issuerIconDrawableId= */ 0,
+                                /* billingAddressId= */ "",
+                                /* serverId= */ ""));
 
         // Set specific use stats for the credit card.
         mHelper.setCreditCardUseStatsForTesting(guid, 1234, 1234);
@@ -946,7 +946,7 @@ public class PersonalDataManagerTest {
         mHelper.setProfile(createTestProfile());
 
         List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(false /* includeNameInLabel */);
+                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ false);
         Assert.assertEquals(
                 "Acme Inc., 123 Main, Los Angeles, California 90210, United States",
                 profiles.get(0).getLabel());
@@ -959,7 +959,7 @@ public class PersonalDataManagerTest {
         mHelper.setProfile(createTestProfile());
 
         List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(true /* includeNameInLabel */);
+                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ true);
         Assert.assertEquals(
                 "John Major, Acme Inc., 123 Main, Los Angeles, California 90210, "
                         + "United States",
@@ -972,34 +972,34 @@ public class PersonalDataManagerTest {
     public void testClearAllData() throws TimeoutException {
         CreditCard localCard =
                 new CreditCard(
-                        "" /* guid */,
-                        "" /* origin */,
-                        true /* isLocal */,
-                        false /* isCached */,
+                        /* guid= */ "",
+                        /* origin= */ "",
+                        /* isLocal= */ true,
+                        /* isCached= */ false,
                         "John Doe",
                         "1234123412341234",
                         "",
                         "5",
                         "2020",
                         "Visa",
-                        0 /* issuerIconDrawableId */,
-                        "" /* billingAddressId */,
-                        "" /* serverId */);
+                        /* issuerIconDrawableId= */ 0,
+                        /* billingAddressId= */ "",
+                        /* serverId= */ "");
         CreditCard serverCard =
                 new CreditCard(
-                        "serverGuid" /* guid */,
-                        "" /* origin */,
-                        false /* isLocal */,
-                        false /* isCached */,
+                        /* guid= */ "serverGuid",
+                        /* origin= */ "",
+                        /* isLocal= */ false,
+                        /* isCached= */ false,
                         "John Doe Server",
                         "41111111111111111",
                         "",
                         "3",
                         "2019",
                         "Visa",
-                        0 /* issuerIconDrawableId */,
-                        "" /* billingAddressId */,
-                        "serverId" /* serverId */);
+                        /* issuerIconDrawableId= */ 0,
+                        /* billingAddressId= */ "",
+                        /* serverId= */ "serverId");
         mHelper.addServerCreditCard(serverCard);
         Assert.assertEquals(1, mHelper.getNumberOfCreditCardsForSettings());
 

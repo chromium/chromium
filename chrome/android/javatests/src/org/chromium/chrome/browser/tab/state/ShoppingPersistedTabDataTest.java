@@ -870,8 +870,8 @@ public class ShoppingPersistedTabDataTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // There is ShoppingPersistedTabData associated with the Tab, however, it is 1
-                    // day old
-                    // (the threshold for a refetch is 1 hour) so a refetch will be forced.
+                    // day old (the threshold for a refetch is 1 hour) so a refetch will be
+                    // forced.
                     ShoppingPersistedTabData shoppingPersistedTabData =
                             new ShoppingPersistedTabData(tab);
                     shoppingPersistedTabData.setLastUpdatedMs(
@@ -929,8 +929,7 @@ public class ShoppingPersistedTabDataTest {
                     ShoppingPersistedTabData shoppingPersistedTabData =
                             new ShoppingPersistedTabData(tab);
                     // ShoppingPersistedTabData is 1 day old which will trigger a refetch, however,
-                    // this
-                    // time it will be acquired from storage, then refetched.
+                    // this time it will be acquired from storage, then refetched.
                     shoppingPersistedTabData.setLastUpdatedMs(
                             System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1));
                     save(shoppingPersistedTabData);

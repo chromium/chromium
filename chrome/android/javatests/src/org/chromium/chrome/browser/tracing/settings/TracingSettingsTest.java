@@ -104,8 +104,8 @@ public class TracingSettingsTest {
                             mMockNotificationManager.getMutationCountAndDecrement(),
                             Matchers.greaterThan(0));
                 },
-                15000L /* maxTimeoutMs */,
-                50 /* checkIntervalMs */);
+                /* maxTimeoutMs= */ 15000L,
+                /* checkIntervalMs= */ 50);
     }
 
     private void waitForTracingControllerInitialization(PreferenceFragmentCompat fragment)
@@ -145,7 +145,7 @@ public class TracingSettingsTest {
                     // Already initialized.
                     callbackHelper.notifyCalled();
                 });
-        callbackHelper.waitForCallback(0 /* currentCallCount */);
+        callbackHelper.waitForCallback(/* currentCallCount= */ 0);
     }
 
     @Test
@@ -198,8 +198,7 @@ public class TracingSettingsTest {
                                         public void onTracingStateChanged(
                                                 @TracingController.State int state) {
                                             // onTracingStateChanged() should be called four times
-                                            // in total, with the right
-                                            // order of state changes:
+                                            // in total, with the right order of state changes:
                                             Assert.assertEquals(mExpectedState, state);
                                             if (state == TracingController.State.RECORDING) {
                                                 mExpectedState = TracingController.State.STOPPING;
@@ -218,7 +217,7 @@ public class TracingSettingsTest {
                 });
 
         // Wait for state change to RECORDING.
-        callbackHelper.waitForCallback(0 /* currentCallCount */);
+        callbackHelper.waitForCallback(/* currentCallCount= */ 0);
 
         // Recording started, a notification with a stop button should be displayed.
         Notification notification = waitForNotification().notification;
@@ -230,9 +229,9 @@ public class TracingSettingsTest {
         // Initiate stopping the recording and wait for state changes to STOPPING and STOPPED.
         stopIntent.send();
         callbackHelper.waitForCallback(
-                1 /* currentCallCount */,
-                2 /* numberOfCallsToWaitFor */,
-                15000L /* timeout */,
+                /* currentCallCount= */ 1,
+                /* numberOfCallsToWaitFor= */ 2,
+                /* timeout= */ 15000L,
                 TimeUnit.MILLISECONDS);
 
         // Notification should be replaced twice, once with an "is stopping" notification and then
@@ -253,7 +252,7 @@ public class TracingSettingsTest {
 
         // Discard the trace and wait for state change back to IDLE.
         deleteIntent.send();
-        callbackHelper.waitForCallback(3 /* currentCallCount */);
+        callbackHelper.waitForCallback(/* currentCallCount= */ 3);
 
         // The temporary file should be deleted asynchronously.
         CriteriaHelper.pollInstrumentationThread(() -> !tempFile.exists());

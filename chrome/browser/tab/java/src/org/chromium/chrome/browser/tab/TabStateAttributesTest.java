@@ -179,7 +179,7 @@ public class TabStateAttributesTest {
                 TabStateAttributes.from(mTab).getDirtinessState());
 
         while (observers.hasNext()) {
-            observers.next().onLoadStopped(mTab, /* toDifferentDocument */ true);
+            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ true);
         }
         Assert.assertEquals(
                 TabStateAttributes.DirtinessState.CLEAN,
@@ -190,7 +190,7 @@ public class TabStateAttributesTest {
         TabStateAttributes.from(mTab).setStateForTesting(TabStateAttributes.DirtinessState.UNTIDY);
         observers = TabTestUtils.getTabObservers(mTab);
         while (observers.hasNext()) {
-            observers.next().onLoadStopped(mTab, /* toDifferentDocument */ true);
+            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ true);
         }
         Assert.assertEquals(
                 TabStateAttributes.DirtinessState.DIRTY,
@@ -210,7 +210,7 @@ public class TabStateAttributesTest {
                 TabStateAttributes.from(mTab).getDirtinessState());
 
         while (observers.hasNext()) {
-            observers.next().onLoadStopped(mTab, /* toDifferentDocument */ false);
+            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ false);
         }
         Assert.assertEquals(
                 TabStateAttributes.DirtinessState.CLEAN,
@@ -222,7 +222,7 @@ public class TabStateAttributesTest {
         TabStateAttributes.from(mTab).setStateForTesting(TabStateAttributes.DirtinessState.UNTIDY);
         observers = TabTestUtils.getTabObservers(mTab);
         while (observers.hasNext()) {
-            observers.next().onLoadStopped(mTab, /* toDifferentDocument */ false);
+            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ false);
         }
         Assert.assertEquals(
                 TabStateAttributes.DirtinessState.UNTIDY,
@@ -233,7 +233,7 @@ public class TabStateAttributesTest {
         // task be queued.
         observers = TabTestUtils.getTabObservers(mTab);
         while (observers.hasNext()) {
-            observers.next().onLoadStopped(mTab, /* toDifferentDocument */ false);
+            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ false);
         }
         Assert.assertEquals(
                 TabStateAttributes.DirtinessState.UNTIDY,

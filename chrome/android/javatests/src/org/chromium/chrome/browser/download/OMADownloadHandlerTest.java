@@ -368,7 +368,7 @@ public class OMADownloadHandlerTest {
                 ChromeSharedPreferences.getInstance(),
                 ChromePreferenceKeys.DOWNLOAD_PENDING_OMA_DOWNLOADS,
                 pendingOmaDownloads,
-                false /* forceCommit */);
+                /* forceCommit= */ false);
 
         pendingOmaDownloads =
                 DownloadManagerService.getStoredDownloadInfo(

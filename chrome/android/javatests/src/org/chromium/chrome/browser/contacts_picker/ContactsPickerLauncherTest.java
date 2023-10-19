@@ -75,14 +75,14 @@ public class ContactsPickerLauncherTest {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     return ContactsPicker.showContactsPicker(
-                            webContents, /* listener */
-                            null,
-                            true /* allowMultiple */,
-                            /* includeNames */ true, /*  includeEmails*/
-                            true, /* includeTel */
-                            true,
-                            /* includeAddresses */ true, /* includeIcons */
-                            true,
+                            webContents,
+                            /* listener= */ null,
+                            /* allowMultiple= */ true,
+                            /* includeNames= */ true,
+                            /* includeEmails= */ true,
+                            /* includeTel= */ true,
+                            /* includeAddresses= */ true,
+                            /* includeIcons= */ true,
                             webContents.getMainFrame().getLastCommittedOrigin().getScheme());
                 });
     }

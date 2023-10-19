@@ -108,8 +108,7 @@ public class PasswordMigrationWarningExportFlowTest {
                             new FakePasswordManagerHandler(
                                     PasswordManagerHandlerProvider.getInstance());
                     // Create a password, otherwise the export will not be allowed when there are
-                    // not
-                    // passwords saved.
+                    // not passwords saved.
                     setPasswordSource("https://example.com", "test user", "password");
                     mCoordinator =
                             new PasswordMigrationWarningCoordinator(

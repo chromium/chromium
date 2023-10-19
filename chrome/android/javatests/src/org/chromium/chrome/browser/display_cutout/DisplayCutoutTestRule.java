@@ -160,8 +160,7 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
                     @Override
                     public void evaluate() throws Throwable {
                         // TODO(mthiesse): This class should be refactored to have an
-                        // ActivityTestRule
-                        // rather than extending one.
+                        // ActivityTestRule rather than extending one.
                         ChromeTabbedActivityTestRule rule = new ChromeTabbedActivityTestRule();
                         rule.startMainActivityOnBlankPage();
                         setActivity((T) rule.getActivity());

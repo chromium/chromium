@@ -320,7 +320,7 @@ public class SearchEngineLogoUtilsUnitTest {
         expected =
                 new StatusIconResource(
                         R.drawable.ic_search,
-                        ThemeUtils.getThemedToolbarIconTintRes(/* useLight */ true));
+                        ThemeUtils.getThemedToolbarIconTintRes(/* useLight= */ true));
         Assert.assertEquals(
                 expected,
                 mSearchEngineLogoUtils.getSearchLoupeResource(BrandedColorScheme.INCOGNITO));

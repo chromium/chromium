@@ -134,8 +134,8 @@ public class VideoFullscreenOrientationLockChromeTest {
                         fileUri,
                         fileUri,
                         mimeType,
-                        true /* allowExternalAppHandlers */,
-                        true /* allowShareAction */,
+                        /* allowExternalAppHandlers= */ true,
+                        /* allowShareAction= */ true,
                         mActivityTestRule.getActivity());
         IntentHandler.startActivityForTrustedIntent(intent);
         waitUntilUnlocked();

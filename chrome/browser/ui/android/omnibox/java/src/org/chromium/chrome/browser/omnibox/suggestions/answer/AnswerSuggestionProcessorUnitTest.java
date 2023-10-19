@@ -206,8 +206,8 @@ public class AnswerSuggestionProcessorUnitTest {
                 Arrays.asList(
                         new TextField(
                                 AnswerTextType.SUGGESTION, text, AnswerTextStyle.NORMAL, lines)),
-                /* additionalText */ null, /* statusText */
-                null,
+                /* additionalText= */ null,
+                /* statusText= */ null,
                 url);
     }
 

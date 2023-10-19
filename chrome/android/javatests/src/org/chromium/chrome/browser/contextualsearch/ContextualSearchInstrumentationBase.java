@@ -138,7 +138,7 @@ public class ContextualSearchInstrumentationBase {
                             Profile.getLastUsedRegularProfile(), false, false);
             ContentView cv =
                     ContentView.createContentView(
-                            activity, null /* eventOffsetHandler */, webContents);
+                            activity, /* eventOffsetHandler= */ null, webContents);
             webContents.initialize(
                     null,
                     ViewAndroidDelegate.createBasicDelegate(cv),

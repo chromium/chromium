@@ -120,15 +120,13 @@ public class WebappActivityTestRule extends ChromeActivityTestRule<WebappActivit
                         TestThreadUtils.runOnUiThreadBlocking(
                                 () -> {
                                     // Register the webapp so when the data storage is opened, the
-                                    // test doesn't
-                                    // crash.
+                                    // test doesn't crash.
                                     WebappRegistry.refreshSharedPrefsForTesting();
                                     WebappRegistry.getInstance().register(WEBAPP_ID, callback);
                                 });
 
                         // Running this on the UI thread causes issues, so can't group everything
-                        // into one
-                        // runnable.
+                        // into one runnable.
                         callback.waitForCallback(0);
 
                         TestThreadUtils.runOnUiThreadBlocking(
@@ -230,8 +228,7 @@ public class WebappActivityTestRule extends ChromeActivityTestRule<WebappActivit
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     // we are waiting for WebappActivity#getActivityTab() to be non-null because we
-                    // want
-                    // to ensure that native has been loaded.
+                    // want to ensure that native has been loaded.
                     // We also wait till the splash screen has finished initializing.
                     Criteria.checkThat(getActivity().getActivityTab(), Matchers.notNullValue());
 

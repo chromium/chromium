@@ -162,8 +162,8 @@ public class DownloadNotificationServiceTest {
         mDownloadNotificationService.notifyDownloadPaused(
                 ID1,
                 "test",
-                true /* isResumable*/,
-                false /* isAutoResumable */,
+                /* isResumable= */ true,
+                /* isAutoResumable= */ false,
                 mPrimaryOTRProfileID,
                 false,
                 null,
@@ -250,8 +250,8 @@ public class DownloadNotificationServiceTest {
         mDownloadNotificationService.notifyDownloadPaused(
                 ID1,
                 "test",
-                true /* isResumable */,
-                true /* isAutoResumable */,
+                /* isResumable= */ true,
+                /* isAutoResumable= */ true,
                 mPrimaryOTRProfileID,
                 false,
                 null,
@@ -305,8 +305,8 @@ public class DownloadNotificationServiceTest {
         mDownloadNotificationService.notifyDownloadPaused(
                 ID1,
                 "test",
-                false /* isResumable*/,
-                true /* isAutoResumable */,
+                /* isResumable= */ false,
+                /* isAutoResumable= */ true,
                 mPrimaryOTRProfileID,
                 false,
                 null,

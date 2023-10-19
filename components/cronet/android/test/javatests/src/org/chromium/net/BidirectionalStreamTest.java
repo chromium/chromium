@@ -526,7 +526,7 @@ public class BidirectionalStreamTest {
         String url = Http2TestServer.getEchoStreamUrl();
         // Use a direct executor to avoid race.
         TestBidirectionalStreamCallback callback =
-                new TestBidirectionalStreamCallback(/*useDirectExecutor*/ true) {
+                new TestBidirectionalStreamCallback(/* useDirectExecutor= */ true) {
                     @Override
                     public void onStreamReady(BidirectionalStream stream) {
                         // Start the first write.

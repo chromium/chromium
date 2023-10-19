@@ -71,26 +71,26 @@ public class StandardNotificationBuilderTest {
         Bitmap image =
                 Bitmap.createBitmap(
                         new int[] {Color.BLUE},
-                        1 /* width */,
-                        1 /* height */,
+                        /* width= */ 1,
+                        /* height= */ 1,
                         Bitmap.Config.ARGB_8888);
-        image = image.copy(Bitmap.Config.ARGB_8888, true /* isMutable */);
+        image = image.copy(Bitmap.Config.ARGB_8888, /* isMutable= */ true);
 
         Bitmap largeIcon =
                 Bitmap.createBitmap(
                         new int[] {Color.RED},
-                        1 /* width */,
-                        1 /* height */,
+                        /* width= */ 1,
+                        /* height= */ 1,
                         Bitmap.Config.ARGB_8888);
-        largeIcon = largeIcon.copy(Bitmap.Config.ARGB_8888, true /* isMutable */);
+        largeIcon = largeIcon.copy(Bitmap.Config.ARGB_8888, /* isMutable= */ true);
 
         Bitmap actionIcon =
                 Bitmap.createBitmap(
                         new int[] {Color.GRAY},
-                        1 /* width */,
-                        1 /* height */,
+                        /* width= */ 1,
+                        /* height= */ 1,
                         Bitmap.Config.ARGB_8888);
-        actionIcon = actionIcon.copy(Bitmap.Config.ARGB_8888, true /* isMutable */);
+        actionIcon = actionIcon.copy(Bitmap.Config.ARGB_8888, /* isMutable= */ true);
 
         return new StandardNotificationBuilder(context)
                 .setTitle("title")
@@ -107,7 +107,7 @@ public class StandardNotificationBuilderTest {
                 .setDeleteIntent(outContentAndDeleteIntents[1])
                 .addButtonAction(actionIcon, "button 1", createIntent(context, "button1"))
                 .addButtonAction(actionIcon, "button 2", createIntent(context, "button2"))
-                .addSettingsAction(0 /* iconId */, "settings", createIntent(context, "settings"));
+                .addSettingsAction(/* iconId= */ 0, "settings", createIntent(context, "settings"));
     }
 
     private Notification buildNotification(NotificationBuilderBase builder) {
@@ -275,6 +275,6 @@ public class StandardNotificationBuilderTest {
     private static PendingIntentProvider createIntent(Context context, String action) {
         Intent intent = new Intent("StandardNotificationBuilderTest." + action);
         return PendingIntentProvider.getBroadcast(
-                context, 0 /* requestCode */, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                context, /* requestCode= */ 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

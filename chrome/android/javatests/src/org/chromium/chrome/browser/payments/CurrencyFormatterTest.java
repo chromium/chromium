@@ -102,8 +102,7 @@ public class CurrencyFormatterTest {
                             {"55.00", "", "en-US", "", "55.00"},
                             {"55.00", "ABCDEF", "en-US", "ABCDE\u2026", "55.00"},
                             // Currency code more than 6 character is formatted to first 5
-                            // characters and
-                            // ellipsis. "\u2026" is unicode for ellipsis.
+                            // characters and ellipsis. "\u2026" is unicode for ellipsis.
                             {"55.00", longStringOfLength(2048), "en-US", "AAAAA\u2026", "55.00"},
                         });
 

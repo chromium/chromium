@@ -90,7 +90,7 @@ public class SelectPopupOtherContentViewTest {
 
                     ContentView cv =
                             ContentView.createContentView(
-                                    activity, null /* eventOffsetHandler */, webContents);
+                                    activity, /* eventOffsetHandler= */ null, webContents);
                     webContents.initialize(
                             "",
                             ViewAndroidDelegate.createBasicDelegate(cv),

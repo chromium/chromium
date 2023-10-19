@@ -296,10 +296,9 @@ public class NetworkChangesTest {
                 .applyEngineBuilderPatch(
                         (builder) -> {
                             // This ends up throwing away the experimental options set in setUp.
-                            // This is fine as
-                            // those are related to H/3 tests. This is an H/2 so that's fine. If
-                            // this assumption
-                            // stops being true consider merging them or splitting
+                            // This is fine as those are related to H/3 tests. This is an H/2 so
+                            // that's fine. If this assumption stops being true consider merging
+                            // them or splitting
                             // NetworkChangeTests in two.
                             JSONObject experimentalOptions =
                                     new JSONObject().put("spdy_go_away_on_ip_change", false);
@@ -1011,15 +1010,11 @@ public class NetworkChangesTest {
                     @Override
                     public void onStatus(int status) {
                         // We are not guaranteed to receive every single state update: we might
-                        // register
-                        // the listener too late, missing what we're looking for.
+                        // register the listener too late, missing what we're looking for.
                         // Hence, we should unblock also if we see a status that can only happen
-                        // after the
-                        // one we're waiting for (this works under the assumption that "value
-                        // ordering" of
-                        // states represent the "happens-after ordering" of states, which is true at
-                        // the
-                        // moment).
+                        // after the one we're waiting for (this works under the assumption that
+                        // "value ordering" of states represent the "happens-after ordering" of
+                        // states, which is true at the moment).
                         if (status >= targetStatus) {
                             cv.open();
                         } else {
@@ -1027,10 +1022,8 @@ public class NetworkChangesTest {
                             // once.
                             // We want to keep getting called until we reach the target status, so
                             // re-register the listener. This effectively means that we're
-                            // busy-polling the
-                            // state, but this is test code, so it's not too bad. Sleep a bit to
-                            // avoid
-                            // potential locks contention.
+                            // busy-polling the state, but this is test code, so it's not too bad.
+                            // Sleep a bit to avoid potential locks contention.
                             try {
                                 Thread.sleep(/* millis= */ 100);
                             } catch (InterruptedException e) {

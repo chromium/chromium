@@ -1351,8 +1351,7 @@ public class WebsitePermissionsFetcherTest {
                                 ArrayList<Website> siteArray = new ArrayList<>(sites);
                                 for (Website site : siteArray) {
                                     // Verify youtube.com has google.com as FPS owner which has 4
-                                    // members
-                                    // within the group of sites with data.
+                                    // members within the group of sites with data.
                                     if (site.compareByAddressTo(expectedYoutubeWebsite) == 0) {
                                         Assert.assertNotNull(site.getFPSCookieInfo());
                                         Assert.assertEquals(
@@ -1361,8 +1360,7 @@ public class WebsitePermissionsFetcherTest {
                                                 4, site.getFPSCookieInfo().getMembersCount());
                                     }
                                     // Verify verizonconnect.com has verizon.com as FPS owner which
-                                    // has 2
-                                    // members within the group of sites with data.
+                                    // has 2 members within the group of sites with data.
                                     if (site.compareByAddressTo(expectedVerizonConnectWebsite)
                                             == 0) {
                                         Assert.assertNotNull(site.getFPSCookieInfo());

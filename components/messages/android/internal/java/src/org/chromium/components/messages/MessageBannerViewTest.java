@@ -194,8 +194,7 @@ public class MessageBannerViewTest {
                     PropertyModelChangeProcessor.create(
                             propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
                     // Simulate the invocation of #setPopupMenuShownListener by the
-                    // MessageBannerCoordinator
-                    // ctor.
+                    // MessageBannerCoordinator ctor.
                     mMessageBannerView.setPopupMenuShownListener(listener);
                 });
 
@@ -418,8 +417,7 @@ public class MessageBannerViewTest {
                     PropertyModelChangeProcessor.create(
                             propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
                     // Change the PRIMARY_BUTTON_TEXT to a non-empty string after the view has
-                    // already been
-                    // put together.
+                    // already been put together.
                     propertyModel.set(
                             MessageBannerProperties.PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_TEXT);
                 });
@@ -514,8 +512,7 @@ public class MessageBannerViewTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Change the PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER after the view has
-                    // already
-                    // been put together.
+                    // already been put together.
                     model.set(
                             MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
                             PrimaryWidgetAppearance.PROGRESS_SPINNER);
@@ -575,8 +572,7 @@ public class MessageBannerViewTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Change the PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER after the view has
-                    // already
-                    // been put together.
+                    // already been put together.
                     model.set(
                             MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
                             PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET);

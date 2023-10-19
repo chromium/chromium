@@ -176,8 +176,10 @@ public class AutofillTest {
         mSyncTestRule
                 .getFakeServerHelper()
                 .injectUniqueClientEntity(
-                        specifics.getAutofillProfile().getGuid() /* nonUniqueName */,
-                        specifics.getAutofillProfile().getGuid() /* clientTag */,
+                        specifics.getAutofillProfile().getGuid()
+                        /* nonUniqueName= */ ,
+                        specifics.getAutofillProfile().getGuid()
+                        /* clientTag= */ ,
                         specifics);
     }
 

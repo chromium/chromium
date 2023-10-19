@@ -768,9 +768,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         List<Integer> menuItemIds = new ArrayList<Integer>();
         List<Integer> heightList = new ArrayList<Integer>();
-        createMenuItem(menuItemIds, heightList, 0 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
+        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
 
         int height =
                 mAppMenuHandler
@@ -778,8 +778,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         .calculateHeightForItems(
                                 menuItemIds,
                                 heightList,
-                                -1 /* groupDividerResourceId */,
-                                35 /* availableScreenSpace */);
+                                /* groupDividerResourceId= */ -1,
+                                /* availableScreenSpace= */ 35);
         Assert.assertEquals(30, height);
     }
 
@@ -790,9 +790,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         List<Integer> menuItemIds = new ArrayList<Integer>();
         List<Integer> heightList = new ArrayList<Integer>();
-        createMenuItem(menuItemIds, heightList, 0 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
+        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
 
         int height =
                 mAppMenuHandler
@@ -800,8 +800,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         .calculateHeightForItems(
                                 menuItemIds,
                                 heightList,
-                                -1 /* groupDividerResourceId */,
-                                26 /* availableScreenSpace */);
+                                /* groupDividerResourceId= */ -1,
+                                /* availableScreenSpace= */ 26);
         // The space only can fit the 1st and 2nd items and the partial 3rd item.
         Assert.assertEquals(25, height);
     }
@@ -813,9 +813,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         List<Integer> menuItemIds = new ArrayList<Integer>();
         List<Integer> heightList = new ArrayList<Integer>();
-        createMenuItem(menuItemIds, heightList, 0 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
+        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
 
         int height =
                 mAppMenuHandler
@@ -823,8 +823,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         .calculateHeightForItems(
                                 menuItemIds,
                                 heightList,
-                                -1 /* groupDividerResourceId */,
-                                24 /* availableScreenSpace */);
+                                /* groupDividerResourceId= */ -1,
+                                /* availableScreenSpace= */ 24);
         // The space only can fit the full 1st item, the full 2nd items and the partial 3rd item.
         // The space for the 3rd item is 4, but since the menu is small enough, we show the maximum
         // available height instead of switching to the partial 3rd item.
@@ -838,10 +838,10 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         List<Integer> menuItemIds = new ArrayList<Integer>();
         List<Integer> heightList = new ArrayList<Integer>();
-        createMenuItem(menuItemIds, heightList, 0 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 3 /* id */, 10 /* height */);
+        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 3, /* height= */ 10);
 
         int height =
                 mAppMenuHandler
@@ -849,8 +849,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         .calculateHeightForItems(
                                 menuItemIds,
                                 heightList,
-                                -1 /* groupDividerResourceId */,
-                                34 /* availableScreenSpace */);
+                                /* groupDividerResourceId= */ -1,
+                                /* availableScreenSpace= */ 34);
         // The space only can fit the full 1st item, the full 2nd item, the full 3rd item, and the
         // partial 4th item. But the space for 4th item is 4, which is not enough to show partial
         // 3rd item(5 = LAST_ITEM_SHOW_FRACTION * 10), we show the partial 3rd item instead.
@@ -864,11 +864,11 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         List<Integer> menuItemIds = new ArrayList<Integer>();
         List<Integer> heightList = new ArrayList<Integer>();
-        createMenuItem(menuItemIds, heightList, 0 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 3 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 4 /* id */, 10 /* height */);
+        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 3, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 4, /* height= */ 10);
 
         int height =
                 mAppMenuHandler
@@ -876,8 +876,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         .calculateHeightForItems(
                                 menuItemIds,
                                 heightList,
-                                3 /* groupDividerResourceId */,
-                                36 /* availableScreenSpace */);
+                                /* groupDividerResourceId= */ 3,
+                                /* availableScreenSpace= */ 36);
         // The space only can fit the 1st, 2nd, 3rd, and partial 4th item. But the 4th item is a
         // divider line, so we show only the partial 3rd item.
         Assert.assertEquals(25, height);
@@ -890,10 +890,10 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         List<Integer> menuItemIds = new ArrayList<Integer>();
         List<Integer> heightList = new ArrayList<Integer>();
-        createMenuItem(menuItemIds, heightList, 0 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 3 /* id */, 10 /* height */);
+        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 3, /* height= */ 10);
 
         int height =
                 mAppMenuHandler
@@ -901,8 +901,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         .calculateHeightForItems(
                                 menuItemIds,
                                 heightList,
-                                2 /* groupDividerResourceId */,
-                                26 /* availableScreenSpace */);
+                                /* groupDividerResourceId= */ 2,
+                                /* availableScreenSpace= */ 26);
         // The space only can fit the 1st, 2nd and the partial 3rd item. The third item
         // is a divider line, and the menu is small enough that we still want to use all available
         // space.
@@ -917,10 +917,10 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         List<Integer> menuItemIds = new ArrayList<Integer>();
         List<Integer> heightList = new ArrayList<Integer>();
-        createMenuItem(menuItemIds, heightList, 0 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 3 /* id */, 10 /* height */);
+        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 3, /* height= */ 10);
 
         int height =
                 mAppMenuHandler
@@ -928,8 +928,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         .calculateHeightForItems(
                                 menuItemIds,
                                 heightList,
-                                2 /* groupDividerResourceId */,
-                                34 /* availableScreenSpace */);
+                                /* groupDividerResourceId= */ 2,
+                                /* availableScreenSpace= */ 34);
         // The space only can fit the full 1st, 2nd and 3rd item and the partial 4th item.
         // But the space for 4th item is 4, which is not enough to show partial 4th item(5 =
         // LAST_ITEM_SHOW_FRACTION * 10), so we should show the partial 3rd item instead. The third
@@ -945,9 +945,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         List<Integer> menuItemIds = new ArrayList<Integer>();
         List<Integer> heightList = new ArrayList<Integer>();
-        createMenuItem(menuItemIds, heightList, 0 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
+        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
 
         int height =
                 mAppMenuHandler
@@ -955,8 +955,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         .calculateHeightForItems(
                                 menuItemIds,
                                 heightList,
-                                -1 /* groupDividerResourceId */,
-                                4 /* availableScreenSpace */);
+                                /* groupDividerResourceId= */ -1,
+                                /* availableScreenSpace= */ 4);
         // The space is not enough for any item, but we still show 1 and half items at least.
         Assert.assertEquals(15, height);
     }
@@ -969,9 +969,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         List<Integer> menuItemIds = new ArrayList<Integer>();
         List<Integer> heightList = new ArrayList<Integer>();
-        createMenuItem(menuItemIds, heightList, 0 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
-        createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
+        createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
+        createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
 
         int height =
                 mAppMenuHandler
@@ -979,8 +979,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         .calculateHeightForItems(
                                 menuItemIds,
                                 heightList,
-                                1 /* groupDividerResourceId */,
-                                6 /* availableScreenSpace */);
+                                /* groupDividerResourceId= */ 1,
+                                /* availableScreenSpace= */ 6);
         // The space is not enough for any item, but we still show 1 and half items at least.
         Assert.assertEquals(15, height);
     }
@@ -999,8 +999,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         .calculateHeightForItems(
                                 menuItemIds,
                                 heightList,
-                                1 /* groupDividerResourceId */,
-                                -1 /* availableScreenSpace */);
+                                /* groupDividerResourceId= */ 1,
+                                /* availableScreenSpace= */ -1);
         // Make sure there are no crashes.
         Assert.assertEquals(0, height);
     }

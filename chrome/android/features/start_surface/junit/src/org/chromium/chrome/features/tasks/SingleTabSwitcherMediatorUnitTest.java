@@ -169,7 +169,7 @@ public class SingleTabSwitcherMediatorUnitTest {
                         mTabModelSelector,
                         mTabListFaviconProvider,
                         mTabContentManager,
-                        true /* isSurfacePolishEnabled */);
+                        /* isSurfacePolishEnabled= */ true);
 
         assertNotNull(mPropertyModel.get(FAVICON));
         assertNotNull(mPropertyModel.get(CLICK_LISTENER));

@@ -53,8 +53,8 @@ public class MediaViewerUtilsTest {
                         uri,
                         uri,
                         "image/png",
-                        false /*allowExternalAppHandlers */,
-                        true /*allowShareAction*/,
+                        /* allowExternalAppHandlers= */ false,
+                        /* allowShareAction= */ true,
                         mCustomTabActivityTestRule.getActivity());
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         Assert.assertFalse(ColorUtils.inNightMode(mCustomTabActivityTestRule.getActivity()));
@@ -75,8 +75,8 @@ public class MediaViewerUtilsTest {
                         uri,
                         uri,
                         "image/png",
-                        false /*allowExternalAppHandlers */,
-                        true /*allowShareAction*/,
+                        /* allowExternalAppHandlers= */ false,
+                        /* allowShareAction= */ true,
                         mCustomTabActivityTestRule.getActivity());
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         Assert.assertTrue(ColorUtils.inNightMode(mCustomTabActivityTestRule.getActivity()));
@@ -91,8 +91,8 @@ public class MediaViewerUtilsTest {
                         uri,
                         uri,
                         "image/png",
-                        false /*allowExternalAppHandlers */,
-                        false /*allowShareAction*/,
+                        /* allowExternalAppHandlers= */ false,
+                        /* allowShareAction= */ false,
                         InstrumentationRegistry.getInstrumentation().getContext());
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 

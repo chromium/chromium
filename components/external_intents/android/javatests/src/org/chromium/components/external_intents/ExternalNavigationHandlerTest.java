@@ -1348,8 +1348,7 @@ public class ExternalNavigationHandlerTest {
                         Assert.assertNotNull(mDelegate.incognitoDialogUserDecisionCallback);
 
                         // Inform the handler that the user decided not to launch the intent and
-                        // verify that
-                        // the appropriate URL is navigated to in the browser.
+                        // verify that the appropriate URL is navigated to in the browser.
                         mDelegate.incognitoDialogUserDecisionCallback.onResult(
                                 Boolean.valueOf(false));
                         Assert.assertEquals(playUrl, mUrlHandler.mNewUrlAfterClobbering);
@@ -1372,8 +1371,7 @@ public class ExternalNavigationHandlerTest {
                         Assert.assertNotNull(mDelegate.incognitoDialogUserDecisionCallback);
 
                         // Inform the handler that the user decided to launch the intent and verify
-                        // that
-                        // the intent was launched.
+                        // that the intent was launched.
                         mDelegate.incognitoDialogUserDecisionCallback.onResult(
                                 Boolean.valueOf(true));
                         Assert.assertNull(mUrlHandler.mNewUrlAfterClobbering);
@@ -1425,8 +1423,7 @@ public class ExternalNavigationHandlerTest {
                         Assert.assertNotNull(mDelegate.incognitoDialogUserDecisionCallback);
 
                         // Inform the handler that the user decided not to launch the intent and
-                        // verify that
-                        // the appropriate URL is navigated to in the browser.
+                        // verify that the appropriate URL is navigated to in the browser.
                         mDelegate.incognitoDialogUserDecisionCallback.onResult(
                                 Boolean.valueOf(false));
                         Assert.assertEquals(
@@ -1452,8 +1449,7 @@ public class ExternalNavigationHandlerTest {
                         Assert.assertNotNull(mDelegate.incognitoDialogUserDecisionCallback);
 
                         // Inform the handler that the user decided not to launch the intent and
-                        // verify that
-                        // the appropriate URL is navigated to in the browser.
+                        // verify that the appropriate URL is navigated to in the browser.
                         mDelegate.incognitoDialogUserDecisionCallback.onResult(
                                 Boolean.valueOf(false));
                         Assert.assertEquals(

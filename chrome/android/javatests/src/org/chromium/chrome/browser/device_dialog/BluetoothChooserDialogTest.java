@@ -305,26 +305,26 @@ public class BluetoothChooserDialogTest {
                     mChooserDialog.addOrUpdateDevice(
                             "id-1",
                             "Name 1",
-                            false /* isGATTConnected */,
-                            -1 /* signalStrengthLevel */);
+                            /* isGATTConnected= */ false,
+                            /* signalStrengthLevel= */ -1);
                     // Add connected device with no signal strength.
                     mChooserDialog.addOrUpdateDevice(
                             "id-2",
                             "Name 2",
-                            true /* isGATTConnected */,
-                            -1 /* signalStrengthLevel */);
+                            /* isGATTConnected= */ true,
+                            /* signalStrengthLevel= */ -1);
                     // Add non-connected device with signal strength level 1.
                     mChooserDialog.addOrUpdateDevice(
                             "id-3",
                             "Name 3",
-                            false /* isGATTConnected */,
-                            1 /* signalStrengthLevel */);
+                            /* isGATTConnected= */ false,
+                            /* signalStrengthLevel= */ 1);
                     // Add connected device with signal strength level 1.
                     mChooserDialog.addOrUpdateDevice(
                             "id-4",
                             "Name 4",
-                            true /* isGATTConnected */,
-                            1 /* signalStrengthLevel */);
+                            /* isGATTConnected= */ true,
+                            /* signalStrengthLevel= */ 1);
                 });
 
         // After adding items to the dialog, the help message should be showing,
@@ -345,7 +345,7 @@ public class BluetoothChooserDialogTest {
                 itemAdapter
                         .getItem(0)
                         .hasSameContents(
-                                "id-1", "Name 1", null /* icon */, null /* iconDescription */));
+                                "id-1", "Name 1", /* icon= */ null, /* iconDescription= */ null));
         Assert.assertTrue(
                 itemAdapter
                         .getItem(1)
@@ -631,7 +631,7 @@ public class BluetoothChooserDialogTest {
         @Override
         public void requestPermissions(String[] permissions, PermissionCallback callback) {
             // Requesting for permission takes away focus from the window.
-            mDialog.onWindowFocusChanged(false /* hasFocus */);
+            mDialog.onWindowFocusChanged(/* hasFocus= */ false);
             mPermissionsRequested = permissions;
             mCallback = callback;
         }

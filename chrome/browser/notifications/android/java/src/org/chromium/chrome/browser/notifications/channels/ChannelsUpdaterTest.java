@@ -85,7 +85,7 @@ public class ChannelsUpdaterTest {
     public void testShouldUpdateChannels_returnsFalsePreO() {
         ChannelsUpdater updater =
                 new ChannelsUpdater(
-                        false /* isAtLeastO */, mSharedPreferences, mChannelsInitializer, 0);
+                        /* isAtLeastO= */ false, mSharedPreferences, mChannelsInitializer, 0);
         assertThat(updater.shouldUpdateChannels(), is(false));
     }
 
@@ -95,7 +95,7 @@ public class ChannelsUpdaterTest {
     public void testShouldUpdateChannels_returnsTrueIfOAndNoSavedVersionInPrefs() {
         ChannelsUpdater updater =
                 new ChannelsUpdater(
-                        true /* isAtLeastO */, mSharedPreferences, mChannelsInitializer, 0);
+                        /* isAtLeastO= */ true, mSharedPreferences, mChannelsInitializer, 0);
         assertThat(updater.shouldUpdateChannels(), is(true));
     }
 
@@ -106,7 +106,7 @@ public class ChannelsUpdaterTest {
         mSharedPreferences.writeInt(ChromePreferenceKeys.NOTIFICATIONS_CHANNELS_VERSION, 4);
         ChannelsUpdater updater =
                 new ChannelsUpdater(
-                        true /* isAtLeastO */, mSharedPreferences, mChannelsInitializer, 5);
+                        /* isAtLeastO= */ true, mSharedPreferences, mChannelsInitializer, 5);
         assertThat(updater.shouldUpdateChannels(), is(true));
     }
 
@@ -117,7 +117,7 @@ public class ChannelsUpdaterTest {
         mSharedPreferences.writeInt(ChromePreferenceKeys.NOTIFICATIONS_CHANNELS_VERSION, 3);
         ChannelsUpdater updater =
                 new ChannelsUpdater(
-                        true /* isAtLeastO */, mSharedPreferences, mChannelsInitializer, 3);
+                        /* isAtLeastO= */ true, mSharedPreferences, mChannelsInitializer, 3);
         assertThat(updater.shouldUpdateChannels(), is(false));
     }
 
@@ -127,7 +127,7 @@ public class ChannelsUpdaterTest {
     public void testUpdateChannels_noopPreO() {
         ChannelsUpdater updater =
                 new ChannelsUpdater(
-                        false /* isAtLeastO */, mSharedPreferences, mChannelsInitializer, 21);
+                        /* isAtLeastO= */ false, mSharedPreferences, mChannelsInitializer, 21);
         updater.updateChannels();
 
         assertThat(getChannelsIgnoringDefault(), hasSize(0));
@@ -142,7 +142,7 @@ public class ChannelsUpdaterTest {
     public void testUpdateChannels_createsExpectedChannelsAndUpdatesPref() {
         ChannelsUpdater updater =
                 new ChannelsUpdater(
-                        true /* isAtLeastO */, mSharedPreferences, mChannelsInitializer, 21);
+                        /* isAtLeastO= */ true, mSharedPreferences, mChannelsInitializer, 21);
         updater.updateChannels();
 
         assertThat(getChannelsIgnoringDefault(), hasSize((greaterThan(0))));
@@ -177,7 +177,7 @@ public class ChannelsUpdaterTest {
 
         ChannelsUpdater updater =
                 new ChannelsUpdater(
-                        true /* isAtLeastO */,
+                        /* isAtLeastO= */ true,
                         mSharedPreferences,
                         new ChannelsInitializer(
                                 mNotificationManagerProxy, definitions, mMockResources),
