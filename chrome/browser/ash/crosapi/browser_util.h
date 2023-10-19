@@ -151,8 +151,6 @@ extern const ComponentInfo kLacrosDogfoodDevInfo;
 extern const ComponentInfo kLacrosDogfoodBetaInfo;
 extern const ComponentInfo kLacrosDogfoodStableInfo;
 
-BASE_DECLARE_FEATURE(kLacrosForSupervisedUsers);
-
 // The default update channel to leverage for Lacros when the channel is
 // unknown.
 extern const version_info::Channel kLacrosDefaultChannel;
@@ -259,7 +257,8 @@ LacrosMode GetLacrosMode();
 // true, specifically, if the feature is disabled by user/policy.
 bool IsLacrosOnlyBrowserAllowed();
 
-// Returns true if `ash::features::kLacrosOnly` flag is allowed.
+// Returns true if `ash::standalone_browser::features::kLacrosOnly` flag is
+// allowed to be configured on about:flags page.
 bool IsLacrosOnlyFlagAllowed();
 
 // Returns true if Lacros is allowed to launch and show a window. This can

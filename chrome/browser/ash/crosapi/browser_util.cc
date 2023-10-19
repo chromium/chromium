@@ -29,6 +29,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/component_updater/component_updater_service.h"
@@ -129,11 +130,14 @@ bool IsUserTypeAllowed(const User& user) {
     case user_manager::USER_TYPE_GUEST:
       return true;
     case user_manager::USER_TYPE_CHILD:
-      return base::FeatureList::IsEnabled(kLacrosForSupervisedUsers);
+      return base::FeatureList::IsEnabled(
+          ash::standalone_browser::features::kLacrosForSupervisedUsers);
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
-      return base::FeatureList::IsEnabled(features::kWebKioskEnableLacros);
+      return base::FeatureList::IsEnabled(
+          ash::standalone_browser::features::kWebKioskEnableLacros);
     case user_manager::USER_TYPE_KIOSK_APP:
-      return base::FeatureList::IsEnabled(features::kChromeKioskEnableLacros);
+      return base::FeatureList::IsEnabled(
+          ash::standalone_browser::features::kChromeKioskEnableLacros);
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::NUM_USER_TYPES:
       return false;
@@ -272,7 +276,8 @@ LacrosMode GetLacrosModeInternal(const User* user,
       return LacrosMode::kOnly;
   }
 
-  if (base::FeatureList::IsEnabled(ash::features::kLacrosOnly)) {
+  if (base::FeatureList::IsEnabled(
+          ash::standalone_browser::features::kLacrosOnly)) {
     return LacrosMode::kOnly;
   }
 
@@ -376,21 +381,6 @@ const ComponentInfo kLacrosDogfoodBetaInfo = {
 const ComponentInfo kLacrosDogfoodStableInfo = {
     "lacros-dogfood-stable", "ehpjbaiafkpkmhjocnenjbbhmecnfcjb"};
 
-// A kill switch for lacros chrome apps.
-BASE_FEATURE(kLacrosDisableChromeApps,
-             "LacrosDisableChromeApps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Makes LaCrOS allowed for Family Link users.
-// With this feature disabled LaCrOS cannot be enabled for Family Link users.
-// When this feature is enabled LaCrOS availability is a under control of other
-// launch switches.
-// Note: Family Link users do not have access to chrome://flags and this feature
-// flag is meant to help with development and testing.
-BASE_FEATURE(kLacrosForSupervisedUsers,
-             "LacrosForSupervisedUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 const Channel kLacrosDefaultChannel = Channel::DEV;
 
 const char kLacrosStabilitySwitch[] = "lacros-stability";
@@ -481,8 +471,8 @@ bool IsProfileMigrationEnabled() {
 bool IsProfileMigrationEnabledWithUserAndPolicyInitState(
     const user_manager::User* user,
     PolicyInitState policy_init_state) {
-  return !base::FeatureList::IsEnabled(
-             ash::features::kLacrosProfileMigrationForceOff) &&
+  return !base::FeatureList::IsEnabled(ash::standalone_browser::features::
+                                           kLacrosProfileMigrationForceOff) &&
          !IsAshWebBrowserEnabledForMigration(user, policy_init_state);
 }
 
@@ -534,7 +524,8 @@ bool IsLacrosAllowedToLaunch() {
 }
 
 bool IsLacrosChromeAppsEnabled() {
-  return !base::FeatureList::IsEnabled(kLacrosDisableChromeApps) &&
+  return !base::FeatureList::IsEnabled(
+             ash::standalone_browser::features::kLacrosDisableChromeApps) &&
          IsLacrosEnabled();
 }
 

@@ -15,11 +15,12 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Base test class that performs additional setup that is only needed when the
-// `ash::features::kLacrosOnly` flag is used.
+// `ash::standalone_browser::features::kLacrosOnly` flag is used.
 // TODO(crbug.com/1457360): Decide whether this needs to be added to
 // WebUIMochaBrowserTest directly. Keeping it separate for now until more tests
 // that need it are migrated to WebUIMochaBrowserTest.
@@ -58,8 +59,8 @@ class InlineLoginBrowserTestWithArcAccountRestrictionsEnabledBase
     set_test_loader_host(chrome::kChromeUIChromeSigninHost);
     scoped_feature_list_.InitWithFeatures(
         {
-            ash::features::kLacrosOnly,
-            ash::features::kLacrosProfileMigrationForceOff,
+            ash::standalone_browser::features::kLacrosOnly,
+            ash::standalone_browser::features::kLacrosProfileMigrationForceOff,
         },
         {});
   }

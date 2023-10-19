@@ -9,6 +9,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "chrome/browser/ash/crostini/fake_crostini_features.h"');
+GEN('#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"');
 GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
 GEN('#include "chrome/common/buildflags.h"');
 GEN('#include "chrome/common/chrome_features.h"');
@@ -986,15 +987,15 @@ TEST_F(
  [
    'OsPeoplePageAccountManagerSubpage',
    'os_people_page/account_manager_subpage_test.js',
-   {disabled: ['ash::features::kLacrosOnly']},
+   {disabled: ['ash::standalone_browser::features::kLacrosOnly']},
  ],
  [
    'OsPeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled',
    'os_people_page/account_manager_subpage_test.js',
    {
      enabled: [
-       'ash::features::kLacrosOnly',
-       'ash::features::kLacrosProfileMigrationForceOff'
+       'ash::standalone_browser::features::kLacrosOnly',
+       'ash::standalone_browser::features::kLacrosProfileMigrationForceOff'
      ]
    },
  ],

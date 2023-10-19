@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -137,7 +138,8 @@ class PassphraseStateNotifiedToCrosapiObserverChecker
 class AshCustomPassphraseSharingSyncTest : public SyncTest {
  public:
   AshCustomPassphraseSharingSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatures({ash::features::kLacrosOnly}, {});
+    feature_list_.InitWithFeatures(
+        {ash::standalone_browser::features::kLacrosOnly}, {});
   }
 
   AshCustomPassphraseSharingSyncTest(

@@ -4,8 +4,9 @@
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
-GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "ash/constants/ash_features.h"');
+GEN('#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"');
+GEN('#include "content/public/test/browser_test.h"');
 
 // TODO(crbug.com/1347746): Merge this test suite with the EduCoexistenceTest
 // after the feature is launched.
@@ -13,8 +14,8 @@ const EduCoexistenceTestWithArcRestrictions = class extends PolymerTest {
   get featureList() {
     return {
       enabled: [
-        'ash::features::kLacrosOnly',
-        'ash::features::kLacrosProfileMigrationForceOff',
+        'ash::standalone_browser::features::kLacrosOnly',
+        'ash::standalone_browser::features::kLacrosProfileMigrationForceOff',
       ],
     };
   }

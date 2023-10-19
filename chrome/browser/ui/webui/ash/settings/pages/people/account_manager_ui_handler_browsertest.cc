@@ -22,6 +22,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
@@ -396,7 +397,8 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
     std::vector<base::test::FeatureRef> lacros =
         ash::standalone_browser::GetFeatureRefs();
     if (GetDeviceAccountInfo().user_type == user_manager::USER_TYPE_CHILD) {
-      lacros.push_back(crosapi::browser_util::kLacrosForSupervisedUsers);
+      lacros.push_back(
+          ash::standalone_browser::features::kLacrosForSupervisedUsers);
     }
     feature_list_.InitWithFeatures(lacros, {});
   }

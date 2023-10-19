@@ -29,6 +29,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -378,7 +379,8 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   {
     // If Lacros is enabled, migration should run.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
+    feature_list.InitWithFeatures(
+        {ash::standalone_browser::features::kLacrosOnly}, {});
     EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
         user->GetAccountId(), user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
@@ -392,7 +394,8 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
     // If copy migration is marked as completed then migration should not run
     // even if move migration is not completed.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
+    feature_list.InitWithFeatures(
+        {ash::standalone_browser::features::kLacrosOnly}, {});
     EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
         user->GetAccountId(), user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
@@ -407,7 +410,8 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   {
     // If move migration is marked as completed, move migration should not run.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
+    feature_list.InitWithFeatures(
+        {ash::standalone_browser::features::kLacrosOnly}, {});
     EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
         user->GetAccountId(), user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
@@ -425,7 +429,8 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateSecondaryUser) {
 
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
+    feature_list.InitWithFeatures(
+        {ash::standalone_browser::features::kLacrosOnly}, {});
     // Migration should be triggered for the primary user.
     EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
         primary_user->GetAccountId(), primary_user->username_hash(),
@@ -446,7 +451,8 @@ TEST_F(BrowserDataMigratorRestartTest,
 
   // If Lacros is enabled, migration should run.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
+  feature_list.InitWithFeatures(
+      {ash::standalone_browser::features::kLacrosOnly}, {});
   EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
       user->GetAccountId(), user->username_hash(),
       crosapi::browser_util::PolicyInitState::kAfterInit));

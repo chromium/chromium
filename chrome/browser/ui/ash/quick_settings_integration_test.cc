@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -150,7 +151,8 @@ class LacrosWindowTitleObserver
 class QuickSettingsLacrosIntegrationTest : public QuickSettingsIntegrationTest {
  public:
   QuickSettingsLacrosIntegrationTest() {
-    feature_list_.InitAndEnableFeature(features::kLacrosOnly);
+    feature_list_.InitAndEnableFeature(
+        ash::standalone_browser::features::kLacrosOnly);
   }
 
   // InteractiveAshTest:

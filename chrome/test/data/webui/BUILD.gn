@@ -181,6 +181,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/ash:ash",
       "//chrome/browser/ash:test_support",
+      "//chromeos/ash/components/standalone_browser",
     ]
   }
   if (enable_compose) {

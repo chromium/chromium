@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/decoder/decoder_engine.h"
 #include "chromeos/ash/services/ime/decoder/system_engine.h"
@@ -142,7 +143,7 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       &features::kAssistMultiWord,
       &features::kAutocorrectParamsTuning,
       &features::kFirstPartyVietnameseInput,
-      &features::kLacrosOnly,
+      &ash::standalone_browser::features::kLacrosOnly,
       &features::kSystemJapanesePhysicalTyping,
       &features::kImeDownloaderUpdate,
       &features::kImeUsEnglishModelUpdate,
@@ -166,7 +167,8 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   // TODO(b/290714161): Remove this once the shared library no longer uses
   // LacrosSupport.
   if (strcmp(feature_name, "LacrosSupport") == 0) {
-    return base::FeatureList::IsEnabled(features::kLacrosOnly);
+    return base::FeatureList::IsEnabled(
+        ash::standalone_browser::features::kLacrosOnly);
   }
 
   return false;

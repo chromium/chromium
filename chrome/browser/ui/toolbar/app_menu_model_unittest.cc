@@ -57,9 +57,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/user_manager/fake_user_manager.h"
-
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -241,7 +241,8 @@ TEST_F(AppMenuModelTest, Basics) {
   // becomes visible. Note that profile migration is only enabled if Lacros is
   // the only browser.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kLacrosOnly);
+  feature_list.InitAndEnableFeature(
+      ash::standalone_browser::features::kLacrosOnly);
 #endif
 
   FakeIconDelegate fake_delegate;

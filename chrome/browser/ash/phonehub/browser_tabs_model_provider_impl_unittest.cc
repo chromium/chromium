@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/crosapi/mojom/synced_session_client.mojom.h"
 #include "components/account_id/account_id.h"
@@ -370,7 +371,7 @@ TEST_F(BrowserTabsModelProviderImplTest, OnForeignSyncedPhoneSessionsUpdated) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing,
-                            ash::features::kLacrosOnly},
+                            ash::standalone_browser::features::kLacrosOnly},
       /*disabled_features=*/{});
   ScopedLacrosOnlyHandle lacros_only_handle;
 
@@ -420,7 +421,7 @@ TEST_F(BrowserTabsModelProviderImplTest, OnSessionSyncEnabledChanged) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing,
-                            ash::features::kLacrosOnly},
+                            ash::standalone_browser::features::kLacrosOnly},
       /*disabled_features=*/{});
   ScopedLacrosOnlyHandle lacros_only_handle;
 

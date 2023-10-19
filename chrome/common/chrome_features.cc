@@ -1579,23 +1579,6 @@ BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
              "WebAppManifestPolicyAppIdentityUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// When this feature flag is enabled together with the LacrosAvailability
-// policy, the Chrome app Kiosk session uses Lacros-chrome as the web browser to
-// launch Chrome apps. When disabled, the Ash-chrome will be used instead.
-BASE_FEATURE(kChromeKioskEnableLacros,
-             "ChromeKioskEnableLacros",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When this feature flag is enabled together with the LacrosAvailability
-// policy, the web (PWA) Kiosk session uses Lacros-chrome as the web browser to
-// launch web (PWA) applications. When disabled, the Ash-chrome will be used
-// instead.
-BASE_FEATURE(kWebKioskEnableLacros,
-             "WebKioskEnableLacros",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables Isolated context APIs (Coralfish/IWA APIs) in web kiosk sessions.
 // When enabled, Web App (PWA) kiosk session passes an isolated context check,
