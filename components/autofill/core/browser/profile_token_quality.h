@@ -44,11 +44,6 @@ class PersonalDataManager;
 // an observation for a derived type, it is stored as an observation for the
 // corresponding stored type.
 // See `components/autofill/README.md` for details on stored and derived types.
-//
-// TODO(crbug.com/1453650): Interface + logic to reset observations for
-// `kAccount` profiles and for edits via settings.
-// TODO(crbug.com/1453650): Treat values entered through settings as `kAccepted`
-// observations.
 class ProfileTokenQuality {
  public:
   // Describes the different types of observations, derived from an autofilled

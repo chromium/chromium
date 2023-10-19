@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
+#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -781,6 +782,37 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
 
   // Verify that we've loaded the profiles from the web database.
   ExpectSameElements(profiles, personal_data_->GetProfiles());
+}
+
+// Tests that when the value for a type changes, `UpdateProfile()` resets the
+// observations for that type.
+TEST_F(PersonalDataManagerTest, UpdateProfile_ResetObservations) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillTrackProfileTokenQuality};
+
+  // Add a profile with observations for NAME_FIRST and NAME_LAST.
+  AutofillProfile profile = test::GetFullProfile();
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+  test_api(profile.token_quality())
+      .AddObservation(NAME_LAST,
+                      ProfileTokenQuality::ObservationType::kEditedFallback);
+  AddProfileToPersonalDataManager(profile);
+
+  // Modify the NAME_FIRST and update the profile in the PDM.
+  profile.SetRawInfo(NAME_FIRST, u"new " + profile.GetRawInfo(NAME_FIRST));
+  UpdateProfileOnPersonalDataManager(profile);
+
+  // Expect that only the observations for NAME_LAST remain.
+  profile = *personal_data_->GetProfileByGUID(profile.guid());
+  EXPECT_TRUE(profile.token_quality()
+                  .GetObservationTypesForFieldType(NAME_FIRST)
+                  .empty());
+  EXPECT_THAT(
+      profile.token_quality().GetObservationTypesForFieldType(NAME_LAST),
+      UnorderedElementsAre(
+          ProfileTokenQuality::ObservationType::kEditedFallback));
 }
 
 TEST_F(PersonalDataManagerTest, MigrateProfileToAccount) {
