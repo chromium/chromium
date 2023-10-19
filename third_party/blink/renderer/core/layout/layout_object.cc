@@ -543,7 +543,7 @@ LayoutObject::LayoutObject(Node* node)
       parent_(nullptr),
       previous_(nullptr),
       next_(nullptr),
-      fragment_(MakeGarbageCollected<FragmentData>()) {
+      fragment_(MakeGarbageCollected<FragmentDataList>()) {
 #if DCHECK_IS_ON()
   fragment_->SetIsFirst();
 #endif
@@ -702,10 +702,7 @@ void LayoutObject::AssertClearedPaintInvalidationFlags() const {
   if (IsLayoutView() && !EverHadLayout() && !SlowFirstChild())
     return;
 
-  wtf_size_t fragment_count = 0;
-  for (const FragmentData* walker = &FirstFragment(); walker;
-       walker = walker->NextFragment())
-    fragment_count++;
+  wtf_size_t fragment_count = FragmentList().size();
   if (fragment_count != To<LayoutBox>(this)->PhysicalFragmentCount()) {
     ShowLayoutTreeForThis();
     DCHECK_EQ(fragment_count, To<LayoutBox>(this)->PhysicalFragmentCount());

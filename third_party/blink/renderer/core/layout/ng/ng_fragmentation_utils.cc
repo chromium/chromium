@@ -1359,6 +1359,12 @@ const NGBlockBreakToken* FindPreviousBreakToken(
   return previous_fragment->BreakToken();
 }
 
+wtf_size_t BoxFragmentIndex(const NGPhysicalBoxFragment& fragment) {
+  DCHECK(!fragment.IsInlineBox());
+  const NGBlockBreakToken* token = FindPreviousBreakToken(fragment);
+  return token ? token->SequenceNumber() + 1 : 0;
+}
+
 wtf_size_t PreviousInnerFragmentainerIndex(
     const NGPhysicalBoxFragment& fragment) {
   // This should be a fragmentation context root, typically a multicol

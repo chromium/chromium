@@ -515,6 +515,9 @@ const NGBlockBreakToken* PreviousFragmentainerBreakToken(
 // been properly converted to LayoutNG.
 const NGBlockBreakToken* FindPreviousBreakToken(const NGPhysicalBoxFragment&);
 
+// Return the LayoutBox::PhysicalFragments() index for this fragment.
+wtf_size_t BoxFragmentIndex(const NGPhysicalBoxFragment&);
+
 // Return the index of the fragmentainer preceding the first fragmentainer
 // inside this fragment. Used by nested block fragmentation.
 wtf_size_t PreviousInnerFragmentainerIndex(const NGPhysicalBoxFragment&);

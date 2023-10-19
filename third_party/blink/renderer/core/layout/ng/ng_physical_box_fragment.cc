@@ -571,7 +571,7 @@ PhysicalOffset NGPhysicalBoxFragment::OffsetFromOwnerLayoutBox() const {
   const FragmentData* fragment_data =
       owner_box->FragmentDataFromPhysicalFragment(*this);
   DCHECK(fragment_data);
-  const FragmentData& last_fragment_data = fragment_data->LastFragment();
+  const FragmentData& last_fragment_data = owner_box->FragmentList().back();
   return fragment_data->PaintOffset() - last_fragment_data.PaintOffset();
 }
 

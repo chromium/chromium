@@ -15,56 +15,73 @@ class LayoutBox;
 class LayoutObject;
 class NGPhysicalBoxFragment;
 
-template <typename Iterator, typename Data>
+template <typename Iterator, typename Data, typename Head>
 class FragmentDataIteratorBase {
   STACK_ALLOCATED();
 
  public:
-  explicit FragmentDataIteratorBase(Data* data) : fragment_data_(data) {}
+  explicit FragmentDataIteratorBase(Head& head) : fragment_head_(head) {}
+  explicit FragmentDataIteratorBase(nullptr_t) {}
 
-  Data* GetFragmentData() const { return fragment_data_; }
+  Data* GetFragmentData() const {
+    return !IsDone() ? &fragment_head_.at(idx_) : nullptr;
+  }
+
   bool Advance() {
-    if (fragment_data_) {
-      fragment_data_ = fragment_data_->NextFragment();
+    if (IsDone()) {
+      return false;
     }
-    return !!fragment_data_;
+    idx_++;
+    if (idx_ >= fragment_head_.size()) {
+      idx_ = WTF::kNotFound;
+      return false;
+    }
+    return true;
   }
-  bool IsDone() const { return !fragment_data_; }
 
-  Iterator& begin() { return *static_cast<Iterator*>(this); }
-  Iterator end() { return Iterator(nullptr); }
-  bool operator!=(const Iterator& other) {
-    return fragment_data_ != other.fragment_data_;
+  bool IsDone() const { return idx_ == WTF::kNotFound; }
+
+  Iterator& begin() {
+    DCHECK_EQ(idx_, 0u);
+    return *static_cast<Iterator*>(this);
   }
-  Data& operator*() const { return *fragment_data_; }
+  Iterator end() {
+    Iterator end_it(*static_cast<Iterator*>(this));
+    end_it.idx_ = WTF::kNotFound;
+    return end_it;
+  }
+  bool operator!=(const Iterator& other) {
+    DCHECK_EQ(&fragment_head_, &other.fragment_head_);
+    return idx_ != other.idx_;
+  }
+  Data& operator*() const { return fragment_head_.at(idx_); }
   Iterator& operator++() {
     Advance();
     return *static_cast<Iterator*>(this);
   }
 
  protected:
-  Data* fragment_data_;
+  Head& fragment_head_;
+  wtf_size_t idx_ = 0u;
 };
 
 class FragmentDataIterator
     : public FragmentDataIteratorBase<FragmentDataIterator,
-                                      const FragmentData> {
+                                      const FragmentData,
+                                      const FragmentDataList> {
  public:
   explicit FragmentDataIterator(const LayoutObject& object)
-      : FragmentDataIteratorBase(&object.FirstFragment()) {}
-  explicit FragmentDataIterator(std::nullptr_t)
-      : FragmentDataIteratorBase(nullptr) {}
+      : FragmentDataIteratorBase(object.FragmentList()) {}
 };
 
 class MutableFragmentDataIterator
     : public FragmentDataIteratorBase<MutableFragmentDataIterator,
-                                      FragmentData> {
+                                      FragmentData,
+                                      FragmentDataList> {
  public:
   explicit MutableFragmentDataIterator(const LayoutObject& object)
       : FragmentDataIteratorBase(
-            &object.GetMutableForPainting().FirstFragment()) {}
-  explicit MutableFragmentDataIterator(std::nullptr_t)
-      : FragmentDataIteratorBase(nullptr) {}
+            object.GetMutableForPainting().FragmentList()) {}
 };
 
 // FragmentData iterator, accompanied by "corresponding" NG layout structures.
@@ -93,7 +110,6 @@ class AccompaniedFragmentIterator : public FragmentDataIterator {
  private:
   absl::optional<InlineCursor> cursor_;
   const LayoutBox* ng_layout_box_ = nullptr;
-  wtf_size_t box_fragment_index_ = 0u;
 };
 
 }  // namespace blink

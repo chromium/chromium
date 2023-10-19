@@ -268,11 +268,7 @@ void LinkHighlightImpl::UpdateAfterPrePaint() {
     return;
   DCHECK(!object->GetFrameView()->ShouldThrottleRendering());
 
-  wtf_size_t fragment_count = 0;
-  for (const auto* fragment = &object->FirstFragment(); fragment;
-       fragment = fragment->NextFragment())
-    ++fragment_count;
-
+  wtf_size_t fragment_count = object->FragmentList().size();
   if (fragment_count != fragments_.size()) {
     fragments_.resize(fragment_count);
     SetNeedsRepaintAndCompositingUpdate();

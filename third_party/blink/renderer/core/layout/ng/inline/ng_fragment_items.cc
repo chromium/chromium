@@ -70,7 +70,8 @@ bool NGFragmentItems::IsSubSpan(const Span& span) const {
 }
 
 void NGFragmentItems::FinalizeAfterLayout(
-    const HeapVector<Member<const NGLayoutResult>, 1>& results) {
+    const HeapVector<Member<const NGLayoutResult>, 1>& results,
+    LayoutBlockFlow& container) {
   struct LastItem {
     const NGFragmentItem* item;
     wtf_size_t fragment_id;
@@ -81,13 +82,25 @@ void NGFragmentItems::FinalizeAfterLayout(
       clear_scope(&last_items);
   wtf_size_t item_index = 0;
   wtf_size_t line_fragment_id = NGFragmentItem::kInitialLineFragmentId;
+
+  // If there are container fragments that don't have fragment items, or if
+  // there are just floats there, the inline formatting context may be
+  // non-contiguous, which means that a non-atomic inline may be non-contiguous
+  // (e.g. it may exist in fragment 1, be absent in fragment 2, present again in
+  // fragment 3). This requires some quite expensive calculations when setting
+  // up the FragmentData objects.
+  bool may_be_non_contiguous_ifc = false;
+
   for (const auto& result : results) {
     const auto& fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
     const NGFragmentItems* fragment_items = fragment.Items();
-    if (UNLIKELY(!fragment_items))
+    if (UNLIKELY(!fragment_items)) {
+      may_be_non_contiguous_ifc = true;
       continue;
+    }
 
+    bool found_inflow_content = false;
     fragment_items->size_of_earlier_fragments_ = item_index;
     const Span items = fragment_items->Items();
     for (const NGFragmentItem& item : items) {
@@ -96,6 +109,8 @@ void NGFragmentItems::FinalizeAfterLayout(
         DCHECK_EQ(item.DeltaToNextForSameLayoutObject(), 0u);
         item.SetFragmentId(line_fragment_id++);
         continue;
+      } else if (!found_inflow_content) {
+        found_inflow_content = !item.IsFloating();
       }
       LayoutObject* const layout_object = item.GetMutableLayoutObject();
       DCHECK(!layout_object->IsOutOfFlowPositioned());
@@ -155,7 +170,14 @@ void NGFragmentItems::FinalizeAfterLayout(
       last->item = &item;
       last->item_index = item_index;
     }
+
+    if (!found_inflow_content) {
+      may_be_non_contiguous_ifc = true;
+    }
   }
+
+  container.SetMayBeNonContiguousIfc(may_be_non_contiguous_ifc);
+
 #if DCHECK_IS_ON()
   for (const auto& iter : last_items)
     CheckIsLast(*iter.value.item);

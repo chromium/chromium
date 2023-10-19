@@ -3278,7 +3278,7 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
         fragment_context.absolute_position.paint_offset_root =
             fragment_context.fixed_position.paint_offset_root = &object_;
 
-    object_.GetMutableForPainting().FirstFragment().ClearNextFragment();
+    object_.GetMutableForPainting().FragmentList().Shrink(1);
   }
 
   if (object_.HasLayer()) {
@@ -3301,7 +3301,8 @@ void PaintPropertyTreeBuilder::UpdateFragmentData() {
     context_.fragment_context.current.fragmentainer_idx =
         pre_paint_info_->fragmentainer_idx;
   } else {
-    fragment.ClearNextFragment();
+    DCHECK_EQ(&fragment, &object_.FirstFragment());
+    object_.GetMutableForPainting().FragmentList().Shrink(1);
 
     if (context_.fragment_context.current.fragmentainer_idx == WTF::kNotFound) {
       // We're not fragmented, but we may have been previously. Reset the

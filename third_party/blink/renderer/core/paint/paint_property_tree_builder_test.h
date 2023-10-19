@@ -46,23 +46,12 @@ class PaintPropertyTreeBuilderTest : public PaintControllerPaintTest {
       const TransformPaintPropertyNode&);
 
   static unsigned NumFragments(const LayoutObject* obj) {
-    unsigned count = 0;
-    auto* fragment = &obj->FirstFragment();
-    while (fragment) {
-      count++;
-      fragment = fragment->NextFragment();
-    }
-    return count;
+    return obj->FragmentList().size();
   }
 
   static const FragmentData& FragmentAt(const LayoutObject* obj,
-                                        unsigned count) {
-    auto* fragment = &obj->FirstFragment();
-    while (count > 0) {
-      count--;
-      fragment = fragment->NextFragment();
-    }
-    return *fragment;
+                                        unsigned index) {
+    return obj->FragmentList().at(index);
   }
 
  private:

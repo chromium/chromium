@@ -2775,8 +2775,10 @@ void LayoutBox::FinalizeLayoutResults() {
 #endif
   // If we've added all the results we were going to, and the node establishes
   // an inline formatting context, we have some finalization to do.
-  if (HasFragmentItems())
-    NGFragmentItems::FinalizeAfterLayout(layout_results_);
+  if (HasFragmentItems()) {
+    NGFragmentItems::FinalizeAfterLayout(layout_results_,
+                                         *To<LayoutBlockFlow>(this));
+  }
 }
 
 void LayoutBox::RebuildFragmentTreeSpine() {
@@ -2927,15 +2929,7 @@ const NGPhysicalBoxFragment& LayoutBox::NGPhysicalFragmentList::back() const {
 const FragmentData* LayoutBox::FragmentDataFromPhysicalFragment(
     const NGPhysicalBoxFragment& physical_fragment) const {
   NOT_DESTROYED();
-  const FragmentData* fragment_data = &FirstFragment();
-  for (const auto& result : layout_results_) {
-    if (&result->PhysicalFragment() == &physical_fragment)
-      return fragment_data;
-    DCHECK(fragment_data->NextFragment());
-    fragment_data = fragment_data->NextFragment();
-  }
-  NOTREACHED();
-  return fragment_data;
+  return &FragmentList().at(BoxFragmentIndex(physical_fragment));
 }
 
 void LayoutBox::SetSpannerPlaceholder(

@@ -3034,9 +3034,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return *fragment_;
   }
 
+  const FragmentDataList& FragmentList() const {
+    NOT_DESTROYED();
+    return *fragment_;
+  }
+
   bool IsFragmented() const {
     NOT_DESTROYED();
-    return !!FirstFragment().NextFragment();
+    return FragmentList().size() > 1;
   }
 
   enum OverflowRecalcType {
@@ -3211,6 +3216,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     }
 
     FragmentData& FirstFragment() { return *layout_object_.fragment_; }
+    FragmentDataList& FragmentList() { return *layout_object_.fragment_; }
 
     void EnsureId() { layout_object_.fragment_->EnsureId(); }
 
@@ -4273,7 +4279,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   Member<LayoutObject> parent_;
   Member<LayoutObject> previous_;
   Member<LayoutObject> next_;
-  Member<FragmentData> fragment_;
+  Member<FragmentDataList> fragment_;
 
   // Store state between styleWillChange and styleDidChange
   static bool affects_parent_block_;
