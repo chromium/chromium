@@ -813,12 +813,25 @@ public class LocationBarCoordinator
     }
 
     /**
-     * @see LocationBarMediator#setUrlBarHintTextColorForSurfacePolish(boolean, boolean)
+     * @see LocationBarMediator#setIsSurfacePolishOmniboxColorEnabled(boolean)
      */
-    public void setUrlBarHintTextColorForSurfacePolish(
-            boolean useColorfulOmniboxType, boolean usePreviousHintTextColor) {
-        mLocationBarMediator.setUrlBarHintTextColorForSurfacePolish(
-                useColorfulOmniboxType, usePreviousHintTextColor);
+    public void setIsSurfacePolishOmniboxColorEnabled(boolean isSurfacePolishOmniboxColorEnabled) {
+        mLocationBarMediator.setIsSurfacePolishOmniboxColorEnabled(
+                isSurfacePolishOmniboxColorEnabled);
+    }
+
+    /**
+     * @see LocationBarMediator#updateButtonTints(boolean)
+     */
+    public void updateButtonTints() {
+        mLocationBarMediator.updateButtonTints();
+    }
+
+    /**
+     * @see LocationBarMediator#setUrlBarHintTextColor(boolean)
+     */
+    public void setUrlBarHintTextColor(boolean isStartOrNtp) {
+        mLocationBarMediator.setUrlBarHintTextColor(isStartOrNtp);
     }
 
     /**

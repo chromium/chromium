@@ -374,31 +374,29 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
     }
 
     /**
-     * Sets the color of the hint text in the search box to be colorOnSurface or
-     * colorOnPrimaryContainer based on whether useColorfulOmniboxType is true or not.
+     * Sets search box hint text color to brandedColorScheme.
+     *
+     * @param brandedColorScheme The {@link @BrandedColorScheme}.
+     */
+    void setUrlBarHintTextColorForDefault(@BrandedColorScheme int brandedColorScheme) {
+        mIsHintTextFixedForStartOrNtp = false;
+        setBrandedColorScheme(brandedColorScheme);
+    }
+
+    /**
+     * Sets search box hint text color for Surface Polish. The color may be colorOnSurface or
+     * colorOnPrimaryContainer, depending on useColorfulOmniboxType.
      *
      * @param useColorfulOmniboxType True if the surface polish flag and omnibox color variant are
      *     both enabled and we need to use the colorful type for the url bar hint color.
-     * @param usePreviousHintTextColor True if we leave the Start Surface or NTP and return to the
-     *     value set originally.
-     * @param brandedColorScheme The {@link @BrandedColorScheme}.
      */
-    void setUrlBarHintTextColorForSurfacePolish(
-            boolean useColorfulOmniboxType,
-            boolean usePreviousHintTextColor,
-            @BrandedColorScheme int brandedColorScheme) {
-        if (usePreviousHintTextColor) {
-            mIsHintTextFixedForStartOrNtp = false;
-            setBrandedColorScheme(brandedColorScheme);
-            return;
-        }
-
+    void setUrlBarHintTextColorForSurfacePolish(boolean useColorfulOmniboxType) {
+        mIsHintTextFixedForStartOrNtp = true;
         final @ColorInt int hintTextColor =
                 useColorfulOmniboxType
                         ? SemanticColorUtils.getDefaultTextColorOnAccent1Container(mContext)
                         : SemanticColorUtils.getDefaultTextColor(mContext);
         mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);
-        mIsHintTextFixedForStartOrNtp = true;
     }
 
     /**

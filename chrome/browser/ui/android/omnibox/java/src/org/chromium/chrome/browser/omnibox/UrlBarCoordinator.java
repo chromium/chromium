@@ -315,14 +315,17 @@ public class UrlBarCoordinator
     }
 
     /**
-     * @see UrlBarMediator#setUrlBarHintTextColorForSurfacePolish(boolean, boolean, int)
+     * @see UrlBarMediator#setUrlBarHintTextColorForDefault(int)
      */
-    public void setUrlBarHintTextColorForSurfacePolish(
-            boolean useColorfulOmniboxType,
-            boolean usePreviousHintTextColor,
-            @BrandedColorScheme int brandedColorScheme) {
-        mMediator.setUrlBarHintTextColorForSurfacePolish(
-                useColorfulOmniboxType, usePreviousHintTextColor, brandedColorScheme);
+    public void setUrlBarHintTextColorForDefault(@BrandedColorScheme int brandedColorScheme) {
+        mMediator.setUrlBarHintTextColorForDefault(brandedColorScheme);
+    }
+
+    /**
+     * @see UrlBarMediator#setUrlBarHintTextColorForSurfacePolish(boolean)
+     */
+    public void setUrlBarHintTextColorForSurfacePolish(boolean useColorfulOmniboxType) {
+        mMediator.setUrlBarHintTextColorForSurfacePolish(useColorfulOmniboxType);
     }
 
     /**

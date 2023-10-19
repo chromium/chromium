@@ -10,6 +10,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -203,6 +204,7 @@ class LocationBarMediator
             new ObservableSupplierImpl<>();
     private boolean mShouldClearOmniboxOnFocus = true;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private boolean mIsSurfacePolishOmniboxColorEnabled;
 
     /*package */ LocationBarMediator(
             @NonNull Context context,
@@ -343,6 +345,9 @@ class LocationBarMediator
 
         mLocationBarLayout.onFinishNativeInitialization();
         if (mProfileSupplier.hasValue()) setProfile(mProfileSupplier.get());
+
+        mLocationBarLayout.setMicButtonDrawable(
+                AppCompatResources.getDrawable(mContext, R.drawable.btn_mic));
         onPrimaryColorChanged();
 
         for (Runnable deferredRunnable : mDeferredNativeRunnables) {
@@ -1017,20 +1022,6 @@ class LocationBarMediator
         }
     }
 
-    @VisibleForTesting
-    /* package */ void updateAssistantVoiceSearchDrawableAndColors() {
-        mLocationBarLayout.setMicButtonTint(
-                ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme));
-        mLocationBarLayout.setMicButtonDrawable(
-                AppCompatResources.getDrawable(mContext, R.drawable.btn_mic));
-    }
-
-    @VisibleForTesting
-    /* package */ void updateLensButtonColors() {
-        mLocationBarLayout.setLensButtonTint(
-                ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme));
-    }
-
     /** Update visuals to use a correct color scheme depending on the primary color. */
     @VisibleForTesting
     /* package */ void updateBrandedColorScheme() {
@@ -1040,6 +1031,8 @@ class LocationBarMediator
                         mLocationBarDataProvider.isIncognito(),
                         getPrimaryBackgroundColor());
 
+        // The delete button only appears when the url bar has focus, so its tint is rather static,
+        // and need not be assigned in updateButtonTints().
         mLocationBarLayout.setDeleteButtonTint(
                 ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme));
         // If the URL changed colors and is not focused, update the URL to account for the new
@@ -1264,11 +1257,9 @@ class LocationBarMediator
 
     @Override
     public void onPrimaryColorChanged() {
-        // This method needs to be called first as it computes |mBrandedColorScheme|.
+        // Compute |mBrandedColorScheme| first.
         updateBrandedColorScheme();
-
-        updateAssistantVoiceSearchDrawableAndColors();
-        updateLensButtonColors();
+        updateButtonTints();
     }
 
     @Override
@@ -1570,21 +1561,37 @@ class LocationBarMediator
     }
 
     /**
-     * Sets the color of the hint text in the search box based on the current page. If the current
-     * page is Start Surface or NTP, we set the hint text color to be colorOnSurface or
-     * colorOnPrimaryContainer based on whether useColorfulOmniboxType is true or not. If the
-     * current page is not Start Surface or NTP, we set the hint text color back to the previous
-     * value set before entering Start Surface or NTP.
+     * Sets mIsSurfacePolishOmniboxColorEnabled.
      *
-     * @param useColorfulOmniboxType True if the surface polish flag and omnibox color variant are
-     *     both enabled and we need to use the colorful type for the url bar hint color.
-     * @param usePreviousHintTextColor True if we leave the Start Surface or NTP and return to the
-     *     value set originally.
+     * @param isSurfacePolishOmniboxColorEnabled True if the surface polish flag and omnibox color
+     *     variant are are both enabled, thus requiring colorful type for the url bar hint color and
+     *     icons.
      */
-    public void setUrlBarHintTextColorForSurfacePolish(
-            boolean useColorfulOmniboxType, boolean usePreviousHintTextColor) {
-        mUrlCoordinator.setUrlBarHintTextColorForSurfacePolish(
-                useColorfulOmniboxType, usePreviousHintTextColor, mBrandedColorScheme);
+    public void setIsSurfacePolishOmniboxColorEnabled(boolean isSurfacePolishOmniboxColorEnabled) {
+        mIsSurfacePolishOmniboxColorEnabled = isSurfacePolishOmniboxColorEnabled;
+    }
+
+    /** Updates the tints of UI buttons. */
+    public void updateButtonTints() {
+        ColorStateList tint = ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme);
+        mLocationBarLayout.setMicButtonTint(tint);
+        mLocationBarLayout.setLensButtonTint(tint);
+    }
+
+    /**
+     * Sets the search box hint text color, depending on whether or not the the current page is
+     * Start Surface or NTP.
+     *
+     * @param isStartOrNtp Whether the current page is Start Surface or NTP. If true, then a
+     *     colorful theme may be applied.
+     */
+    public void setUrlBarHintTextColor(boolean isStartOrNtp) {
+        if (isStartOrNtp) {
+            mUrlCoordinator.setUrlBarHintTextColorForSurfacePolish(
+                    mIsSurfacePolishOmniboxColorEnabled);
+        } else {
+            mUrlCoordinator.setUrlBarHintTextColorForDefault(mBrandedColorScheme);
+        }
     }
 
     /**

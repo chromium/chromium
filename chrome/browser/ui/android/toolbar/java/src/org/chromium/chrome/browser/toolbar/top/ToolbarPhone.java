@@ -292,11 +292,10 @@ public class ToolbarPhone extends ToolbarLayout
     private final boolean mIsSurfacePolishOmniboxColorEnabled;
 
     // For both Start Surface and NTP, when the surface polish flag is enabled, we will change the
-    // appearance(G logo background, search text color and style) of the real search box after it is
-    // pinned at top when scrolling up the surface. This variable is used to distinguish whether the
-    // current page is Start Surface or NTP and we have changed the appearance of the real search
-    // box.
-    private boolean mHasSetLocationBarStyling;
+    // appearance (G logo background, search text color and style) of the real search box after it's
+    // pinned at top when scrolling up the surface. This variable distinguishes whether the current
+    // page is Start Surface / NTP, to indicate that the appearance of the real search box changed.
+    private boolean mIsStartOrNtpWithSurfacePolish;
 
     // The following are some properties used during animation.  We use explicit property classes
     // to avoid the cost of reflection for each animation setup.
@@ -365,6 +364,7 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
         mLocationBar = locationBarCoordinator;
+        mLocationBar.setIsSurfacePolishOmniboxColorEnabled(mIsSurfacePolishOmniboxColorEnabled);
         initLocationBarBackground();
     }
 
@@ -2474,37 +2474,29 @@ public class ToolbarPhone extends ToolbarLayout
             return;
         }
 
-        Typeface typeface;
-        boolean isNightMode = ColorUtils.inNightMode(getContext());
-        // If the current page is Start surface or NTP instead of the search results page or other
-        // browser tabs.
-        boolean isStartOrNtp =
+        // Detect whether state has changed and update only when that happens.
+        boolean prevIsStartOrNtpWithSurfacePolish = mIsStartOrNtpWithSurfacePolish;
+        mIsStartOrNtpWithSurfacePolish =
                 (visualState == VisualState.NEW_TAB_NORMAL || mIsShowingStartSurfaceHomepage)
-                && !hasFocus;
-        if (isStartOrNtp) {
-            // If the real omnibox's appearance has been changed, we don't change it again.
-            if (!mHasSetLocationBarStyling) {
-                mHasSetLocationBarStyling = true;
-
-                mLocationBar.setStatusIconBackgroundVisibility(!isNightMode);
-
-                mLocationBar.setUrlBarHintTextColorForSurfacePolish(
-                        mIsSurfacePolishOmniboxColorEnabled, /*usePreviousHintTextColor*/ false);
-                typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);
-                mLocationBar.setUrlBarTypeface(typeface);
-            }
-        } else if (mHasSetLocationBarStyling) {
-            // We only need to change back the appearance of the real search box when the current
-            // page is not Start surface or NTP and we haven't changed back the appearance yet.
-            mHasSetLocationBarStyling = false;
-
-            mLocationBar.setStatusIconBackgroundVisibility(false);
-
-            mLocationBar.setUrlBarHintTextColorForSurfacePolish(
-                    mIsSurfacePolishOmniboxColorEnabled, /*usePreviousHintTextColor*/ true);
-            typeface = Typeface.defaultFromStyle(Typeface.NORMAL);
-            mLocationBar.setUrlBarTypeface(typeface);
+                        && !hasFocus;
+        if (mIsStartOrNtpWithSurfacePolish == prevIsStartOrNtpWithSurfacePolish) {
+            return;
         }
+
+        // TODO(crbug.com/1487760): Use TextAppearance style instead.
+        Typeface typeface;
+        if (mIsStartOrNtpWithSurfacePolish) {
+            boolean isNightMode = ColorUtils.inNightMode(getContext());
+            mLocationBar.setStatusIconBackgroundVisibility(!isNightMode);
+            typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);
+        } else {
+            // Restore the appearance of the real search box when transitioning from Start Surface
+            // or NTP to the search results page.
+            mLocationBar.setStatusIconBackgroundVisibility(false);
+            typeface = Typeface.defaultFromStyle(Typeface.NORMAL);
+        }
+        mLocationBar.setUrlBarTypeface(typeface);
+        mLocationBar.setUrlBarHintTextColor(mIsStartOrNtpWithSurfacePolish);
     }
 
     private void updateVisualsForLocationBarState() {
