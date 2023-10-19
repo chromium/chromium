@@ -54,10 +54,10 @@ class CharacterPropertyValues {
 
   void SetHanKerning() {
     // https://drafts.csswg.org/css-text-4/#text-spacing-classes
-    Set(kLeftSingleQuotationMarkCharacter, HanKerningCharType::kOpen);
-    Set(kLeftDoubleQuotationMarkCharacter, HanKerningCharType::kOpen);
-    Set(kRightSingleQuotationMarkCharacter, HanKerningCharType::kClose);
-    Set(kRightDoubleQuotationMarkCharacter, HanKerningCharType::kClose);
+    Set(kLeftSingleQuotationMarkCharacter, HanKerningCharType::kOpenQuote);
+    Set(kLeftDoubleQuotationMarkCharacter, HanKerningCharType::kOpenQuote);
+    Set(kRightSingleQuotationMarkCharacter, HanKerningCharType::kCloseQuote);
+    Set(kRightDoubleQuotationMarkCharacter, HanKerningCharType::kCloseQuote);
     Set(kIdeographicSpaceCharacter, HanKerningCharType::kMiddle);
     Set(kIdeographicCommaCharacter, HanKerningCharType::kDot);
     Set(kIdeographicFullStopCharacter, HanKerningCharType::kDot);

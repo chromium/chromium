@@ -85,6 +85,10 @@ class PLATFORM_EXPORT HanKerning {
     // https://learn.microsoft.com/en-us/typography/opentype/spec/features_ae#tag-chws
     bool has_contextual_spacing = false;
 
+    // True if quote characters are fullwdith. In a common convention, they are
+    // proportional (Latin) in Japanese, but fullwidth in Chinese.
+    bool is_quote_fullwidth = false;
+
     // `CharType` for "fullwidth dot punctuation."
     // https://drafts.csswg.org/css-text-4/#text-spacing-classes
     CharType type_for_dot = CharType::kOther;

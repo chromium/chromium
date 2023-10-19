@@ -47,12 +47,18 @@ class GlyphBoundsDetector {
       if (bound.right() <= half_em_) {
         return HanKerning::CharType::kClose;
       }
+      if (bound.left() >= half_em_) {
+        return HanKerning::CharType::kOpen;
+      }
       if (bound.left() >= quarter_em_ && bound.width() <= half_em_) {
         return HanKerning::CharType::kMiddle;
       }
     } else {
       if (bound.bottom() <= half_em_) {
         return HanKerning::CharType::kClose;
+      }
+      if (bound.top() >= half_em_) {
+        return HanKerning::CharType::kOpen;
       }
       if (bound.top() >= quarter_em_ && bound.height() <= half_em_) {
         return HanKerning::CharType::kMiddle;
@@ -114,6 +120,12 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
       return font_data.type_for_colon;
     case CharType::kSemicolon:
       return font_data.type_for_semicolon;
+    case CharType::kOpenQuote:
+      return font_data.is_quote_fullwidth ? CharType::kOpen
+                                          : CharType::kOpenNarrow;
+    case CharType::kCloseQuote:
+      return font_data.is_quote_fullwidth ? CharType::kClose
+                                          : CharType::kCloseNarrow;
   }
   NOTREACHED_NORETURN();
 }
@@ -262,10 +274,15 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
       kFullwidthComma, kFullwidthFullStop,
       // Colon characters.
       // https://drafts.csswg.org/css-text-4/#fullwidth-colon-punctuation
-      kFullwidthColon, kFullwidthSemicolon};
+      kFullwidthColon, kFullwidthSemicolon,
+      // Quote characters. In a common convention, they are proportional (Latin)
+      // in Japanese, but fullwidth in Chinese.
+      kLeftDoubleQuotationMarkCharacter, kLeftSingleQuotationMarkCharacter,
+      kRightDoubleQuotationMarkCharacter, kRightSingleQuotationMarkCharacter};
   constexpr unsigned kDotSize = 4;
   constexpr unsigned kColonIndex = 4;
   constexpr unsigned kSemicolonIndex = 5;
+  constexpr unsigned kQuoteStartIndex = 6;
   static_assert(kDotSize <= std::size(kChars));
   static_assert(kColonIndex < std::size(kChars));
   static_assert(kSemicolonIndex < std::size(kChars));
@@ -281,37 +298,69 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   shaper.GetGlyphData(font, locale, locale.GetScriptForHan(), is_horizontal,
                       glyph_data_list);
 
-  // All characters must meet the following conditions:
-  // * Has one glyph for one character.
-  // * Its advance is 1ch.
-  // Also prepare `glyphs` for `BoundsForGlyphs` while checking.
+  // If the font doesn't have any of these glyphs, or uses multiple glyphs for a
+  // code point, it's not applicable.
   if (glyph_data_list.size() != std::size(kChars)) {
     has_alternate_spacing = false;
     return;
   }
+  unsigned cluster = 0;
+  for (const HarfBuzzShaper::GlyphData& glyph_data : glyph_data_list) {
+    if (!glyph_data.glyph || glyph_data.cluster != cluster) {
+      has_alternate_spacing = false;
+      return;
+    }
+    ++cluster;
+  }
+
+  // Quotes and other characters have different requirements for the advance.
+  // First, ensure all non-quote characters have 1ic advances. If not, this font
+  // isn't applicable.
   Vector<Glyph, 256> glyphs;
   const float em = font.GetFontMetrics().IdeographicFullWidth().value_or(
       font.PlatformData().size());
-  unsigned cluster = 0;
-  for (const HarfBuzzShaper::GlyphData& glyph_data : glyph_data_list) {
-    if (!glyph_data.glyph || glyph_data.cluster != cluster ||
-        (is_horizontal ? glyph_data.advance.x() : glyph_data.advance.y()) !=
-            em) {
+  const base::span<HarfBuzzShaper::GlyphData> glyph_data_span(glyph_data_list);
+  for (const HarfBuzzShaper::GlyphData& glyph_data :
+       glyph_data_span.first(kQuoteStartIndex)) {
+    if ((is_horizontal ? glyph_data.advance.x() : glyph_data.advance.y()) !=
+        em) {
       has_alternate_spacing = false;
       return;
     }
     glyphs.push_back(glyph_data.glyph);
-    ++cluster;
   }
-  DCHECK_EQ(glyphs.size(), std::size(kChars));
+
+  // Quotes not being fullwidth doesn't necessarily mean the font isn't
+  // applicable. Quotes are unified by the Unicode unification process (i.e.,
+  // Latin curly quotes and CJK quotes have the same code points,) and that they
+  // can be either proportional or fullwidth. Japanese fonts oten have
+  // proportional glyphs, prioritizing Latin usages, while Chinese fonts often
+  // have fullwidth glyphs, prioritizing Chinese usages.
+  //
+  // Adobe has a convention to switch to CJK glyphs by the OpenType `fwid`
+  // feature, but not all fonts follow this convention. The current logic
+  // doesn't support this convention.
+  is_quote_fullwidth = true;
+  for (const HarfBuzzShaper::GlyphData& glyph_data :
+       glyph_data_span.subspan(kQuoteStartIndex)) {
+    if ((is_horizontal ? glyph_data.advance.x() : glyph_data.advance.y()) !=
+        em) {
+      is_quote_fullwidth = false;
+      glyphs.Shrink(kQuoteStartIndex);
+      break;
+    }
+    glyphs.push_back(glyph_data.glyph);
+  }
+  DCHECK((is_quote_fullwidth && glyphs.size() == std::size(kChars)) ||
+         (!is_quote_fullwidth && glyphs.size() == kQuoteStartIndex));
 
   // Compute glyph bounds for all glyphs.
   Vector<SkRect, 256> bounds(glyphs.size());
   font.BoundsForGlyphs(glyphs, &bounds);
   // `bounds` are relative to the glyph origin. Adjust them to be relative to
   // the paint origin.
-  DCHECK_EQ(glyph_data_list.size(), bounds.size());
-  for (wtf_size_t i = 0; i < glyph_data_list.size(); ++i) {
+  DCHECK_LE(bounds.size(), glyph_data_list.size());
+  for (wtf_size_t i = 0; i < bounds.size(); ++i) {
     const HarfBuzzShaper::GlyphData& glyph_data = glyph_data_list[i];
     bounds[i].offset({glyph_data.offset.x(), glyph_data.offset.y()});
   }
@@ -322,6 +371,18 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   type_for_dot = detector.GetCharType(bounds_span.first(kDotSize));
   type_for_colon = detector.GetCharType(bounds[kColonIndex]);
   type_for_semicolon = detector.GetCharType(bounds[kSemicolonIndex]);
+
+  // Quotes are often misplaced, especially in Japanese vertical flow, due to
+  // the lack of established conventions. In that case, treat such quotes the
+  // same as narrow quotes.
+  if (is_quote_fullwidth) {
+    const base::span<SkRect> quotes = bounds_span.subspan(kQuoteStartIndex);
+    DCHECK_EQ(quotes.size(), 4u);
+    if (detector.GetCharType(quotes.first(2)) != CharType::kOpen ||
+        detector.GetCharType(quotes.subspan(2)) != CharType::kClose) {
+      is_quote_fullwidth = false;
+    }
+  }
 }
 
 }  // namespace blink

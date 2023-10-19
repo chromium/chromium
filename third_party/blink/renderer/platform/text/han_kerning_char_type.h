@@ -32,6 +32,8 @@ enum class HanKerningCharType : uint8_t {
   kDot,
   kColon,
   kSemicolon,
+  kOpenQuote,
+  kCloseQuote,
 
   // When adding values, ensure `CharacterProperty` has enough storage.
 };
