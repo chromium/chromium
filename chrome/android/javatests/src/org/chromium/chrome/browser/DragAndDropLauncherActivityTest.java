@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,6 +28,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -56,12 +58,19 @@ public class DragAndDropLauncherActivityTest {
     private Context mContext;
     private String mLinkUrl;
     private final CallbackHelper mTabAddedCallback = new CallbackHelper();
+    private UserActionTester mActionTester;
 
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mContext = ContextUtils.getApplicationContext();
-        mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
+        mLinkUrl = JUnitTestGURLs.EXAMPLE_URL.getSpec();
+        mActionTester = new UserActionTester();
+    }
+
+    @After
+    public void tearDown() {
+        mActionTester.tearDown();
     }
 
     /**
@@ -102,6 +111,11 @@ public class DragAndDropLauncherActivityTest {
                 "Activity tab URL should match the dragged link URL.",
                 new GURL(mLinkUrl).getSpec(),
                 ChromeTabUtils.getUrlOnUiThread(activityTab).getSpec());
+        Assert.assertTrue(
+                "User action should be logged.",
+                mActionTester
+                        .getActions()
+                        .contains(DragAndDropLauncherActivity.LAUNCHED_FROM_LINK_USER_ACTION));
     }
 
     /**

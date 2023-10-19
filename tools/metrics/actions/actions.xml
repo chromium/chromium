@@ -21075,6 +21075,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileNewInstanceLaunchedFromDraggedLink">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    The user dragged a link out of Chrome to open it in a new or existing
+    instance of ChromeTabbedActivity. Recorded for Android only.
+  </description>
+</action>
+
 <action name="MobileNewTabOpened" not_user_triggered="true">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

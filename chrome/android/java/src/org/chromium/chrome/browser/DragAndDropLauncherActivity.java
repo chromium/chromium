@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 
 /**
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
  */
 public class DragAndDropLauncherActivity extends Activity {
     static final String ACTION_DRAG_DROP_VIEW = "org.chromium.chrome.browser.dragdrop.action.VIEW";
+    static final String LAUNCHED_FROM_LINK_USER_ACTION = "MobileNewInstanceLaunchedFromDraggedLink";
 
     private static final long LINK_DROP_TIMEOUT_MS = 5 * TimeUtils.MILLISECONDS_PER_MINUTE;
     private static Long sLinkIntentCreationTimestampMs;
@@ -41,6 +43,7 @@ public class DragAndDropLauncherActivity extends Activity {
         // Launch the intent in a new or existing ChromeTabbedActivity.
         intent.setClass(this, ChromeTabbedActivity.class);
         IntentUtils.addTrustedIntentExtras(intent);
+        RecordUserAction.record(LAUNCHED_FROM_LINK_USER_ACTION);
 
         // Launch the intent in an existing Chrome window, referenced by the EXTRA_WINDOW_ID intent
         // extra, if required. This extra will be present when the maximum number of instances is
