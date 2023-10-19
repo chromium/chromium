@@ -269,6 +269,7 @@ source_set("ios_web_navigation_unittests") {
     "navigation/navigation_item_impl_unittest.mm",
     "navigation/navigation_manager_impl_unittest.mm",
     "navigation/navigation_manager_util_unittest.mm",
+    "navigation/navigation_util_unittest.mm",
     "navigation/nscoder_util_unittest.mm",
     "navigation/proto_util_unittest.mm",
     "navigation/synthesized_session_restore_unittest.mm",
