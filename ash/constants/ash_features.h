@@ -1113,6 +1113,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipDoubleTapToResizeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipPinchToResizeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipTiltEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipTuckEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ArePostLoginGlanceablesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrivacyIndicatorsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLocalPrinterObservingEnabled();
