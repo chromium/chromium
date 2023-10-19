@@ -10,7 +10,6 @@
 #include "base/memory/singleton.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequence_bound.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/camera_app_device_impl.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
@@ -89,12 +88,9 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
 
   void IsDeviceInUse(const std::string& device_id,
                      IsDeviceInUseCallback callback) override;
-  void IsSWPrivacySwitchOn(IsSWPrivacySwitchOnCallback callback) override;
 
  private:
   friend struct base::DefaultSingletonTraits<CameraAppDeviceBridgeImpl>;
-
-  class SWPrivacySwitchObserver;
 
   bool is_supported_;
 
@@ -120,8 +116,6 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
 
   base::Lock devices_in_use_lock_;
   base::flat_set<std::string> devices_in_use_ GUARDED_BY(devices_in_use_lock_);
-
-  base::SequenceBound<SWPrivacySwitchObserver> privacy_switch_observer_;
 };
 
 }  // namespace media

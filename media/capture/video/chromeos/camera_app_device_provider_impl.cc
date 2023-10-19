@@ -96,9 +96,4 @@ void CameraAppDeviceProviderImpl::IsDeviceInUseWithDeviceId(
   bridge_->IsDeviceInUse(*device_id, std::move(callback));
 }
 
-void CameraAppDeviceProviderImpl::IsSWPrivacySwitchOn(
-    IsSWPrivacySwitchOnCallback callback) {
-  bridge_->IsSWPrivacySwitchOn(std::move(callback));
-}
-
 }  // namespace media
