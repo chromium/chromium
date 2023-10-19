@@ -46,11 +46,13 @@ NGBlockBreakToken* NGBlockBreakToken::CreateRepeated(const NGBlockNode& node,
 NGBlockBreakToken* NGBlockBreakToken::CreateForBreakInRepeatedFragment(
     const NGBlockNode& node,
     unsigned sequence_number,
-    LayoutUnit consumed_block_size) {
+    LayoutUnit consumed_block_size,
+    bool is_at_block_end) {
   auto* token = MakeGarbageCollected<NGBlockBreakToken>(PassKey(), node);
   token->data_ = MakeGarbageCollected<NGBlockBreakTokenData>();
   token->data_->sequence_number = sequence_number;
   token->data_->consumed_block_size = consumed_block_size;
+  token->is_at_block_end_ = is_at_block_end;
 #if DCHECK_IS_ON()
   token->is_repeated_actual_break_ = true;
 #endif

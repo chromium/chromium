@@ -52,7 +52,8 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
       // repeated root.
       if (break_token->SequenceNumber() != sequence_number) {
         break_token = NGBlockBreakToken::CreateForBreakInRepeatedFragment(
-            node, sequence_number, break_token->ConsumedBlockSize());
+            node, sequence_number, break_token->ConsumedBlockSize(),
+            break_token->IsAtBlockEnd());
       }
     } else if (idx + 1 < fragment_count) {
       // Unless it's the very last fragment, it needs a break token.
@@ -83,7 +84,8 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
           fragmentainer_break_token =
               NGBlockBreakToken::CreateForBreakInRepeatedFragment(
                   node, fragmentainer_sequence_number,
-                  fragmentainer_break_token->ConsumedBlockSize());
+                  fragmentainer_break_token->ConsumedBlockSize(),
+                  /* is_at_block_end */ false);
           fragmentainer.GetMutableForCloning().SetBreakToken(
               fragmentainer_break_token);
         }
