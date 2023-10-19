@@ -2637,6 +2637,27 @@
       },
     },
 
+    'gpu_dawn_webgpu_compat_cts': {
+      'webgpu_cts_compat_tests': {
+        'telemetry_test_name': 'webgpu_compat_cts',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+        ],
+        'args': [
+          '--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features',
+        ],
+        'ci_only': True,
+        'swarming': {
+          'shards': 14,
+        },
+        'android_swarming': {
+          'shards': 36,
+        },
+        'experiment_percentage': 100,
+      },
+    },
+
     'gpu_dawn_webgpu_cts': {
       'webgpu_cts_tests': {
         'telemetry_test_name': 'webgpu_cts',
@@ -6237,6 +6258,12 @@
       'gpu_dawn_perf_smoke_isolated_scripts',
       'gpu_dawn_webgpu_blink_web_tests',
       'gpu_dawn_webgpu_blink_web_tests_force_swiftshader',
+    ],
+
+    'gpu_dawn_compat_telemetry_tests': [
+      'gpu_dawn_webgpu_compat_cts',
+      'gpu_dawn_webgpu_cts',
+      'gpu_dawn_web_platform_webgpu_cts_force_swiftshader',
     ],
 
     'gpu_dawn_integration_asan_gtests_passthrough': [

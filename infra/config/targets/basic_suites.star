@@ -3106,6 +3106,30 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "gpu_dawn_webgpu_compat_cts",
+    tests = {
+        "webgpu_cts_compat_tests": targets.legacy_test_config(
+            telemetry_test_name = "webgpu_compat_cts",
+            mixins = [
+                "has_native_resultdb_integration",
+                "webgpu_telemetry_cts",
+            ],
+            args = [
+                "--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features",
+            ],
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 14,
+            ),
+            android_swarming = targets.swarming(
+                shards = 36,
+            ),
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "gpu_dawn_webgpu_cts",
     tests = {
         "webgpu_cts_tests": targets.legacy_test_config(
