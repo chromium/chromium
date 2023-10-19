@@ -108,16 +108,12 @@ class DeviceTrustServiceTest : public testing::Test,
                           base::Value(GetOrigins()));
     prefs_.SetManagedPref(kUserContextAwareAccessSignalsAllowlistPref,
                           base::Value(GetOrigins()));
-    prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
-                          base::Value(GetOrigins()));
   }
 
   void DisableServicePolicy() {
     prefs_.SetManagedPref(kBrowserContextAwareAccessSignalsAllowlistPref,
                           base::Value(base::Value::List()));
     prefs_.SetManagedPref(kUserContextAwareAccessSignalsAllowlistPref,
-                          base::Value(base::Value::List()));
-    prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
                           base::Value(base::Value::List()));
   }
 

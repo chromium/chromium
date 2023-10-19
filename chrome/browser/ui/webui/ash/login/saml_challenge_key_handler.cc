@@ -19,7 +19,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 
-using enterprise_connectors::kContextAwareAccessSignalsAllowlistPref;
+using enterprise_connectors::kUserContextAwareAccessSignalsAllowlistPref;
 
 namespace ash {
 
@@ -52,12 +52,15 @@ bool UrlMatchesPattern(const GURL& url, const base::Value::List& patterns) {
 bool AreContextAwareAccessSignalsEnabledForUrl(const GURL& url,
                                                const Profile* profile) {
   const PrefService* prefs = profile->GetPrefs();
-  if (!prefs || !prefs->HasPrefPath(kContextAwareAccessSignalsAllowlistPref))
+  if (!prefs ||
+      !prefs->HasPrefPath(kUserContextAwareAccessSignalsAllowlistPref)) {
     return false;
+  }
 
-  return prefs->IsManagedPreference(kContextAwareAccessSignalsAllowlistPref) &&
+  return prefs->IsManagedPreference(
+             kUserContextAwareAccessSignalsAllowlistPref) &&
          UrlMatchesPattern(
-             url, prefs->GetList(kContextAwareAccessSignalsAllowlistPref));
+             url, prefs->GetList(kUserContextAwareAccessSignalsAllowlistPref));
 }
 
 void LogVerifiedAccessForSAMLDeviceTrustMatchesEndpoints(bool is_matching) {
