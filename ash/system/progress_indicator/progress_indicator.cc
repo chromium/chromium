@@ -403,6 +403,48 @@ void ProgressIndicator::SetInnerIconVisible(bool visible) {
     InvalidateLayer();
 }
 
+void ProgressIndicator::SetInnerRingVisible(bool visible) {
+  if (inner_ring_visible_ == visible) {
+    return;
+  }
+
+  inner_ring_visible_ = visible;
+
+  // It's not necessary to invalidate the `layer()` if progress is complete
+  // since the inner ring is only painted while progress is incomplete.
+  if (progress_ != kProgressComplete) {
+    InvalidateLayer();
+  }
+}
+
+void ProgressIndicator::SetOuterRingTrackVisible(bool visible) {
+  if (outer_ring_track_visible_ == visible) {
+    return;
+  }
+
+  outer_ring_track_visible_ = visible;
+
+  // It's not necessary to invalidate the `layer()` if progress is complete
+  // since the progress ring track is only painted while progress is incomplete.
+  if (progress_ != kProgressComplete) {
+    InvalidateLayer();
+  }
+}
+
+void ProgressIndicator::SetOuterRingStrokeWidth(float width) {
+  if (outer_ring_stroke_width_ == width) {
+    return;
+  }
+
+  outer_ring_stroke_width_ = width;
+
+  // It's not necessary to invalidate the `layer()` if progress is complete
+  // since the outer ring is only painted while progress is incomplete.
+  if (progress_ != kProgressComplete) {
+    InvalidateLayer();
+  }
+}
+
 void ProgressIndicator::OnDeviceScaleFactorChanged(float old_scale,
                                                    float new_scale) {
   InvalidateLayer();
@@ -457,7 +499,8 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
     canvas->SaveLayerAlpha(SK_AlphaOPAQUE * opacity);
   }
 
-  float outer_ring_stroke_width = GetOuterRingStrokeWidth(layer(), progress_);
+  float outer_ring_stroke_width = outer_ring_stroke_width_.value_or(
+      GetOuterRingStrokeWidth(layer(), progress_));
   gfx::RectF bounds(gfx::SizeF(layer()->size()));
   bounds.Inset(gfx::InsetsF(outer_ring_stroke_width / 2.f));
   SkPath path(CreateRoundedRectPath(
@@ -476,10 +519,16 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
           : AshColorProvider::Get()->GetControlsLayerColor(
                 AshColorProvider::ControlsLayerType::kFocusRingColor);
 
-  // Outer ring.
   flags.setColor(SkColorSetA(
       color,
       SK_AlphaOPAQUE * GetOuterRingOpacity(progress_) * outer_ring_opacity));
+
+  // Outer ring track.
+  if (outer_ring_track_visible_) {
+    canvas->DrawPath(CreatePathSegment(path, 0.f, 1.0f), flags);
+  }
+
+  // Outer ring.
   if (start <= end) {
     // If `start` <= `end`, only a single path segment is necessary.
     canvas->DrawPath(CreatePathSegment(path, start, end), flags);
@@ -504,6 +553,7 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
   }
 
   const bool inner_ring_visible =
+      inner_ring_visible_ &&
       !cc::MathUtil::IsWithinEpsilon(inner_ring_stroke_width, 0.f);
 
   // Inner ring.

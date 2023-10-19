@@ -68,6 +68,19 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
   void SetInnerIconVisible(bool visible);
   bool inner_icon_visible() const { return inner_icon_visible_; }
 
+  // Sets the visibility for this progress indicator's inner ring. Note that
+  // the inner ring will only be painted while `progress_` is incomplete,
+  // regardless of the value of `visible` provided.
+  void SetInnerRingVisible(bool visible);
+
+  // Sets the visibility of the progress indicator's outer ring track. Note that
+  // the track will only be painted while `progress_` is incomplete, regardless
+  // of the value of `visible` provided.
+  void SetOuterRingTrackVisible(bool visible);
+
+  // Sets the width for this progress indicator's outer ring stroke.
+  void SetOuterRingStrokeWidth(float width);
+
   // Returns the underlying `animation_registry_` in which to look up animations
   // for the associated `animation_key_`. NOTE: This may return `nullptr`.
   ProgressIndicatorAnimationRegistry* animation_registry() {
@@ -176,6 +189,19 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
   // inner icon will only be painted while `progress_` is incomplete, regardless
   // of this value.
   bool inner_icon_visible_ = true;
+
+  // Whether this progress indicator's inner ring is visible. Note that the
+  // inner ring will only be painted while `progress_` is incomplete, regardless
+  // of this value.
+  bool inner_ring_visible_ = true;
+
+  // Whether this progress indicator's outer ring track is visible. Note that
+  // the track will only be painted while `progress_` is incomplete, regardless
+  // of this value.
+  bool outer_ring_track_visible_ = false;
+
+  // The width for the outer ring stroke.
+  absl::optional<float> outer_ring_stroke_width_;
 };
 
 }  // namespace ash

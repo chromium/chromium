@@ -1865,13 +1865,24 @@ void AppListItemView::ItemProgressUpdated() {
             },
             base::Unretained(this)));
     progress_indicator_->SetInnerIconVisible(false);
+    progress_indicator_->SetInnerRingVisible(false);
+    progress_indicator_->SetOuterRingStrokeWidth(2.0);
     EnsureLayer();
     layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
         [](AppListItemView* view, ui::ColorId color_id) {
           return view->GetColorProvider()->GetColor(color_id);
         },
         base::Unretained(this))));
-    progress_indicator_->SetColorId(cros_tokens::kCrosRefPrimary70);
+  }
+
+  EnsureLayer();
+
+  if (item()->app_status() == AppStatus::kPending) {
+    progress_indicator_->SetColorId(cros_tokens::kCrosSysHighlightShape);
+    progress_indicator_->SetOuterRingTrackVisible(true);
+  } else {
+    progress_indicator_->SetColorId(cros_tokens::kCrosSysPrimary);
+    progress_indicator_->SetOuterRingTrackVisible(false);
   }
 
   UpdateProgressRingBounds();
@@ -1886,7 +1897,6 @@ void AppListItemView::UpdateProgressRingBounds() {
   CHECK(!is_folder_);
 
   gfx::Size progress_indicator_size = app_list_config_->grid_icon_size();
-  EnsureLayer();
 
   const gfx::Rect progress_bounds = GetIconBoundsForTargetViewBounds(
       app_list_config_, rect,
