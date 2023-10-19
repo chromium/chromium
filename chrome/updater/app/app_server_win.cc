@@ -141,9 +141,15 @@ bool SwapGoogleUpdate(UpdaterScope scope,
   list->AddCreateRegKeyWorkItem(root, COMPANY_KEY, KEY_WOW64_32KEY);
   list->AddCreateRegKeyWorkItem(root, UPDATER_KEY, KEY_WOW64_32KEY);
   list->AddCreateRegKeyWorkItem(root, CLIENTS_KEY, KEY_WOW64_32KEY);
+  list->AddCreateRegKeyWorkItem(root, CLIENT_STATE_KEY, KEY_WOW64_32KEY);
   list->AddCreateRegKeyWorkItem(root, google_update_appid_key, KEY_WOW64_32KEY);
+  list->AddCreateRegKeyWorkItem(
+      root, GetAppClientStateKey(kLegacyGoogleUpdateAppID), KEY_WOW64_32KEY);
   list->AddSetRegValueWorkItem(root, google_update_appid_key, KEY_WOW64_32KEY,
                                kRegValuePV, kUpdaterVersionUtf16, true);
+  list->AddSetRegValueWorkItem(
+      root, GetAppClientStateKey(kLegacyGoogleUpdateAppID), KEY_WOW64_32KEY,
+      kRegValuePV, kUpdaterVersionUtf16, true);
   list->AddSetRegValueWorkItem(
       root, google_update_appid_key, KEY_WOW64_32KEY, kRegValueName,
       base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
