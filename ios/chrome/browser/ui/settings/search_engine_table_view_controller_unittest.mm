@@ -21,7 +21,6 @@
 #import "components/policy/core/common/schema_registry.h"
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_registry_simple.h"
-#import "components/prefs/testing_pref_service.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/search_engines/template_url_data_util.h"
@@ -90,8 +89,8 @@ class SearchEngineTableViewControllerTest
 
   void SetupForChoiceScreenDisplay() {
     feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
-    country_codes::RegisterProfilePrefs(pref_service_.registry());
-    pref_service_.registry()->RegisterInt64Pref(
+    pref_service_ = chrome_browser_state_->GetTestingPrefService();
+    pref_service_->registry()->RegisterInt64Pref(
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
 
     // Override the country checks to simulate being in Belgium.
@@ -237,7 +236,7 @@ class SearchEngineTableViewControllerTest
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   base::HistogramTester histogram_tester_;
   TemplateURLService* template_url_service_;  // weak
-  TestingPrefServiceSimple pref_service_;
+  sync_preferences::TestingPrefServiceSyncable* pref_service_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -361,6 +360,15 @@ TEST_F(SearchEngineTableViewControllerTest,
   ASSERT_EQ(2, NumberOfItemsInSection(1));
   CheckCustomItem(kEngineC1Name, kEngineC1Url, false, 1, 0);
   CheckCustomItem(kEngineC2Name, kEngineC2Url, false, 1, 1);
+
+  // Select another default engine by user interaction.
+  [controller() tableView:controller().tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+  // We don't care about the value, we just need to check that something was
+  // written.
+  ASSERT_FALSE(
+      pref_service_->GetInt64(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp) == 0);
 }
 
 // Tests that items are displayed correctly when TemplateURLService is filled
@@ -442,6 +450,15 @@ TEST_F(SearchEngineTableViewControllerTest,
   }
   ASSERT_EQ(1, NumberOfItemsInSection(1));
   CheckCustomItem(kEngineC2Name, kEngineC2Url, false, 1, 0);
+
+  // Select another default engine by user interaction.
+  [controller() tableView:controller().tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
+  // We don't care about the value, we just need to check that something was
+  // written.
+  ASSERT_FALSE(
+      pref_service_->GetInt64(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp) == 0);
 }
 
 // Tests that when TemplateURLService add or remove TemplateURLs, or update
@@ -857,6 +874,11 @@ TEST_F(SearchEngineTableViewControllerTest,
   // Select C4 as default engine by user interaction.
   [controller() tableView:controller().tableView
       didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
+  // We don't care about the value, we just need to check that something was
+  // written.
+  ASSERT_FALSE(
+      pref_service_->GetInt64(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp) == 0);
 
   ASSERT_EQ(number_of_prepopulated_items + 1, NumberOfItemsInSection(0));
   ASSERT_EQ(2, NumberOfItemsInSection(1));
