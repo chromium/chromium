@@ -1150,7 +1150,7 @@
       'chromeos-amd64-generic-lacros-dbg': 'chromeos_amd64-generic_lacros_dbg_reclient',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
       'chromeos-amd64-generic-siso-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
-      'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg_try_reclient',
+      'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg_reclient',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on_reclient',
       'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks_reclient',
       'chromeos-jacuzzi-rel': 'chromeos_jacuzzi_dchecks_reclient',
@@ -2252,11 +2252,6 @@
 
     'chromeos_arm-generic_dbg_reclient': [
       'chromeos_device_reclient', 'arm-generic', 'debug', 'ozone_headless'
-    ],
-
-    'chromeos_arm-generic_dbg_try_reclient': [
-      'chromeos_device_reclient', 'arm-generic', 'debug',
-      'also_build_lacros_chrome_for_architecture_arm', 'ozone_headless'
     ],
 
     'chromeos_arm-generic_dcheck_always_on_reclient': [

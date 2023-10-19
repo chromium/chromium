@@ -73,7 +73,6 @@
   "chromeos-arm-generic-dbg": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "arm",
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "is_debug": true,
