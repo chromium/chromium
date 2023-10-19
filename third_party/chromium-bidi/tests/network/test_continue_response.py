@@ -12,16 +12,19 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import re
+
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, execute_command,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
+                          execute_command, send_JSON_command, subscribe,
+                          wait_for_event)
 
 from . import create_blocked_request
 
 
 @pytest.mark.asyncio
-async def test_continue_request_non_existent_request(websocket):
+async def test_continue_response_non_existent_request(websocket):
     with pytest.raises(
             Exception,
             match=str({
@@ -30,7 +33,7 @@ async def test_continue_request_non_existent_request(websocket):
             })):
         await execute_command(
             websocket, {
-                "method": "network.continueRequest",
+                "method": "network.continueResponse",
                 "params": {
                     "request": '_UNKNOWN_',
                 },
@@ -38,59 +41,8 @@ async def test_continue_request_non_existent_request(websocket):
 
 
 @pytest.mark.asyncio
-async def test_continue_request_invalid_phase_response_started(
-        websocket, context_id, example_url):
-
-    network_id = await create_blocked_request(websocket,
-                                              context_id,
-                                              url=example_url,
-                                              phases=["responseStarted"])
-
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "invalid argument",
-                "message": f"Blocked request for network id '{network_id}' is not in 'BeforeRequestSent' phase"
-            })):
-        await execute_command(
-            websocket, {
-                "method": "network.continueRequest",
-                "params": {
-                    "request": network_id,
-                    "url": example_url,
-                },
-            })
-
-
-async def test_continue_request_invalid_phase_auth_required(
-        websocket, context_id, auth_required_url):
-
-    network_id = await create_blocked_request(websocket,
-                                              context_id,
-                                              url=auth_required_url,
-                                              phases=["authRequired"])
-
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "invalid argument",
-                "message": f"Blocked request for network id '{network_id}' is not in 'BeforeRequestSent' phase"
-            })):
-        await execute_command(
-            websocket, {
-                "method": "network.continueRequest",
-                "params": {
-                    "request": network_id,
-                    "url": auth_required_url,
-                },
-            })
-
-
-@pytest.mark.asyncio
-async def test_continue_request_invalid_url(websocket, context_id,
-                                            example_url):
-    invalid_url = '%invalid%'
-
+async def test_continue_response_invalid_phase(websocket, context_id,
+                                               example_url):
     network_id = await create_blocked_request(websocket,
                                               context_id,
                                               url=example_url,
@@ -100,22 +52,94 @@ async def test_continue_request_invalid_url(websocket, context_id,
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": f"Invalid URL '{invalid_url}': TypeError: Failed to construct 'URL': Invalid URL",
+                "message": f"Blocked request for network id '{network_id}' is in 'BeforeRequestSent' phase"
             })):
         await execute_command(
             websocket, {
-                "method": "network.continueRequest",
+                "method": "network.continueResponse",
                 "params": {
-                    "request": network_id,
-                    "url": invalid_url,
+                    "request": network_id
                 },
             })
 
 
 @pytest.mark.asyncio
-async def test_continue_request_non_blocked_request(websocket, context_id,
-                                                    assert_no_events_in_queue,
-                                                    hang_url):
+async def test_continue_response_invalid_status_code(websocket, context_id,
+                                                     example_url):
+    network_id = await create_blocked_request(websocket,
+                                              context_id,
+                                              url=example_url,
+                                              phases=["responseStarted"])
+
+    with pytest.raises(
+            Exception,
+            match=re.compile(
+                str({
+                    "error": "invalid argument",
+                    "message": 'Number must be greater than or equal to 0 in "statusCode".*'
+                }))):
+        await execute_command(
+            websocket, {
+                "method": "network.continueResponse",
+                "params": {
+                    "request": network_id,
+                    "statusCode": -1,
+                },
+            })
+
+
+@pytest.mark.asyncio
+async def test_continue_response_invalid_reason_phrase(websocket, context_id,
+                                                       example_url):
+    network_id = await create_blocked_request(websocket,
+                                              context_id,
+                                              url=example_url,
+                                              phases=["responseStarted"])
+
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": 'Expected string, received array in "reasonPhrase".'
+            })):
+        await execute_command(
+            websocket, {
+                "method": "network.continueResponse",
+                "params": {
+                    "request": network_id,
+                    "reasonPhrase": [],
+                },
+            })
+
+
+@pytest.mark.asyncio
+async def test_continue_response_invalid_headers(websocket, context_id,
+                                                 example_url):
+    network_id = await create_blocked_request(websocket,
+                                              context_id,
+                                              url=example_url,
+                                              phases=["responseStarted"])
+
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": 'Expected array, received string in "headers".'
+            })):
+        await execute_command(
+            websocket, {
+                "method": "network.continueResponse",
+                "params": {
+                    "request": network_id,
+                    "headers": "",
+                },
+            })
+
+
+@pytest.mark.asyncio
+async def test_continue_response_non_blocked_request(websocket, context_id,
+                                                     assert_no_events_in_queue,
+                                                     hang_url):
     await subscribe(websocket, [
         "network.beforeRequestSent", "cdp.Network.responseReceived",
         "cdp.Network.loadingFailed"
@@ -151,16 +175,80 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
             })):
         await execute_command(
             websocket, {
-                "method": "network.continueRequest",
+                "method": "network.continueResponse",
                 "params": {
                     "request": network_id,
-                    "url": hang_url,
                 },
             })
 
 
+@pytest.mark.parametrize("continueResponseParams", [
+    {
+        "headers": [{
+            "name": "header1",
+            "value": {
+                "type": "string",
+                "value": "value1",
+            }
+        }]
+    },
+    {
+        "statusCode": 401,
+    },
+],
+                         ids=["headers-only", "statusCode-only"])
 @pytest.mark.asyncio
-async def test_continue_request_completes_use_cdp_events(
+async def test_continue_response_must_specify_both_status_and_headers(
+        websocket, context_id, example_url, continueResponseParams):
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["responseStarted"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": example_url,
+                }, ],
+            },
+        })
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "context": context_id,
+                "wait": "complete",
+            }
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
+    network_id = event_response["params"]["request"]["request"]
+
+    await subscribe(websocket, ["network.responseCompleted"])
+
+    # TODO(https://github.com/w3c/webdriver-bidi/issues/572): Follow up with spec.
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "unknown error",
+                "message": "Cannot override only status or headers, both should be provided"
+            })):
+        await execute_command(
+            websocket, {
+                "method": "network.continueResponse",
+                "params": {
+                    "request": network_id,
+                    "reasonPhrase": "Remember to drink water",
+                } | continueResponseParams,
+            })
+
+
+@pytest.mark.asyncio
+async def test_continue_response_completes_use_cdp_events(
         websocket, context_id, example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
@@ -168,7 +256,7 @@ async def test_continue_request_completes_use_cdp_events(
         websocket, {
             "method": "network.addIntercept",
             "params": {
-                "phases": ["beforeRequestSent"],
+                "phases": ["responseStarted"],
                 "urlPatterns": [{
                     "type": "string",
                     "pattern": example_url,
@@ -190,10 +278,18 @@ async def test_continue_request_completes_use_cdp_events(
 
     await execute_command(
         websocket, {
-            "method": "network.continueRequest",
+            "method": "network.continueResponse",
             "params": {
                 "request": network_id,
-                "url": example_url,
+                "statusCode": 501,
+                "reasonPhrase": "Remember to drink water",
+                "headers": [{
+                    "name": "header1",
+                    "value": {
+                        "type": "string",
+                        "value": "value1",
+                    }
+                }],
             },
         })
 
@@ -207,7 +303,18 @@ async def test_continue_request_completes_use_cdp_events(
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": ANY_DICT,
-            "response": ANY_DICT,
+            "response": AnyExtending({
+                "headers": [{
+                    "name": "header1",
+                    "value": {
+                        "type": "string",
+                        "value": "value1",
+                    },
+                }, ],
+                "url": example_url,
+                "status": 200,  # TODO: Update status code to 501?
+                "statusText": "Remember to drink water",
+            }),
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
@@ -215,7 +322,7 @@ async def test_continue_request_completes_use_cdp_events(
 
 
 @pytest.mark.asyncio
-async def test_continue_request_completes_use_bidi_events(
+async def test_continue_response_completes_use_bidi_events(
         websocket, context_id, example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
@@ -223,7 +330,7 @@ async def test_continue_request_completes_use_bidi_events(
         websocket, {
             "method": "network.addIntercept",
             "params": {
-                "phases": ["beforeRequestSent"],
+                "phases": ["responseStarted"],
                 "urlPatterns": [{
                     "type": "string",
                     "pattern": example_url,
@@ -249,7 +356,7 @@ async def test_continue_request_completes_use_bidi_events(
             "initiator": {
                 "type": "other",
             },
-            "isBlocked": True,
+            "isBlocked": False,
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": {
@@ -272,10 +379,18 @@ async def test_continue_request_completes_use_bidi_events(
 
     await execute_command(
         websocket, {
-            "method": "network.continueRequest",
+            "method": "network.continueResponse",
             "params": {
                 "request": network_id,
-                "url": example_url,
+                "statusCode": 501,
+                "reasonPhrase": "Remember to drink water",
+                "headers": [{
+                    "name": "header1",
+                    "value": {
+                        "type": "string",
+                        "value": "value1",
+                    }
+                }],
             },
         })
 
@@ -289,7 +404,18 @@ async def test_continue_request_completes_use_bidi_events(
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": ANY_DICT,
-            "response": ANY_DICT,
+            "response": AnyExtending({
+                "headers": [{
+                    "name": "header1",
+                    "value": {
+                        "type": "string",
+                        "value": "value1",
+                    },
+                }, ],
+                "url": example_url,
+                "status": 200,  # TODO: Update status code to 501?
+                "statusText": "Remember to drink water",
+            }),
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
@@ -297,14 +423,14 @@ async def test_continue_request_completes_use_bidi_events(
 
 
 @pytest.mark.asyncio
-async def test_continue_request_twice(websocket, context_id, example_url):
+async def test_continue_response_twice(websocket, context_id, example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     await execute_command(
         websocket, {
             "method": "network.addIntercept",
             "params": {
-                "phases": ["beforeRequestSent"],
+                "phases": ["responseStarted"],
                 "urlPatterns": [{
                     "type": "string",
                     "pattern": example_url,
@@ -330,7 +456,7 @@ async def test_continue_request_twice(websocket, context_id, example_url):
             "initiator": {
                 "type": "other",
             },
-            "isBlocked": True,
+            "isBlocked": False,
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": {
@@ -353,10 +479,9 @@ async def test_continue_request_twice(websocket, context_id, example_url):
 
     await execute_command(
         websocket, {
-            "method": "network.continueRequest",
+            "method": "network.continueResponse",
             "params": {
                 "request": network_id,
-                "url": example_url,
             },
         })
 
@@ -371,16 +496,15 @@ async def test_continue_request_twice(websocket, context_id, example_url):
             })):
         await execute_command(
             websocket, {
-                "method": "network.continueRequest",
+                "method": "network.continueResponse",
                 "params": {
                     "request": network_id,
-                    "url": example_url,
                 },
             })
 
 
 @pytest.mark.asyncio
-async def test_continue_request_remove_intercept_inflight_request(
+async def test_continue_response_remove_intercept_inflight_request(
         websocket, context_id, example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
@@ -388,7 +512,7 @@ async def test_continue_request_remove_intercept_inflight_request(
         websocket, {
             "method": "network.addIntercept",
             "params": {
-                "phases": ["beforeRequestSent"],
+                "phases": ["responseStarted"],
                 "urlPatterns": [{
                     "type": "string",
                     "pattern": example_url,
@@ -419,7 +543,7 @@ async def test_continue_request_remove_intercept_inflight_request(
             "initiator": {
                 "type": "other",
             },
-            "isBlocked": True,
+            "isBlocked": False,
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": {
@@ -451,10 +575,9 @@ async def test_continue_request_remove_intercept_inflight_request(
 
     await execute_command(
         websocket, {
-            "method": "network.continueRequest",
+            "method": "network.continueResponse",
             "params": {
                 "request": network_id,
-                "url": example_url,
             },
         })
 

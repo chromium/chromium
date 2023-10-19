@@ -48,8 +48,23 @@ export function bidiNetworkHeadersFromCdpNetworkHeaders(
   }));
 }
 
+/** Converts from Bidi network headers to CDP Network domain headers. */
+export function cdpNetworkHeadersFromBidiNetworkHeaders(
+  headers?: Network.Header[]
+): Protocol.Network.Headers | undefined {
+  if (headers === undefined) {
+    return undefined;
+  }
+
+  return headers.reduce((result, header) => {
+    // TODO: Distinguish between string and bytes?
+    result[header.name] = header.value.value;
+    return result;
+  }, {} as Protocol.Network.Headers);
+}
+
 /** Converts from CDP Fetch domain header entries to Bidi network headers. */
-export function bidiNetworkHeadersFromCdpFetchHeaderEntryArray(
+export function bidiNetworkHeadersFromCdpFetchHeaders(
   headers?: Protocol.Fetch.HeaderEntry[]
 ): Network.Header[] {
   if (!headers) {
@@ -62,5 +77,19 @@ export function bidiNetworkHeadersFromCdpFetchHeaderEntryArray(
       type: 'string',
       value,
     },
+  }));
+}
+
+/** Converts from Bidi network headers to CDP Fetch domain header entries. */
+export function cdpFetchHeadersFromBidiNetworkHeaders(
+  headers?: Network.Header[]
+): Protocol.Fetch.HeaderEntry[] | undefined {
+  if (headers === undefined) {
+    return undefined;
+  }
+
+  return headers.map(({name, value}) => ({
+    name,
+    value: value.value,
   }));
 }

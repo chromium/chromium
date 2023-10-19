@@ -92,11 +92,58 @@ describe('NetworkUtils', () => {
     });
   });
 
+  describe('should convert Bidi network headers to CDP network headers', () => {
+    it('undefined', () => {
+      const cdpNetworkHeaders =
+        networkUtils.cdpNetworkHeadersFromBidiNetworkHeaders(undefined);
+
+      expect(cdpNetworkHeaders).to.equal(undefined);
+    });
+
+    it('empty', () => {
+      const bidiNetworkHeaders: Network.Header[] = [];
+      const cdpNetworkHeaders =
+        networkUtils.cdpNetworkHeadersFromBidiNetworkHeaders(
+          bidiNetworkHeaders
+        );
+
+      expect(cdpNetworkHeaders).to.deep.equal({});
+    });
+
+    it('non-empty', () => {
+      const bidiNetworkHeaders: Network.Header[] = [
+        {
+          name: 'Content-Type',
+          value: {
+            type: 'string',
+            value: 'text/html',
+          },
+        },
+        {
+          name: 'Content-Length',
+          value: {
+            type: 'string',
+            value: '123',
+          },
+        },
+      ];
+      const cdpNetworkHeaders =
+        networkUtils.cdpNetworkHeadersFromBidiNetworkHeaders(
+          bidiNetworkHeaders
+        );
+
+      expect(cdpNetworkHeaders).to.deep.equal({
+        'Content-Type': 'text/html',
+        'Content-Length': '123',
+      });
+    });
+  });
+
   describe('should convert CDP fetch header entry array to Bidi network headers', () => {
     it('empty', () => {
       const cdpFetchHeaderEntryArray: Protocol.Fetch.HeaderEntry[] = [];
       const bidiNetworkHeaders =
-        networkUtils.bidiNetworkHeadersFromCdpFetchHeaderEntryArray(
+        networkUtils.bidiNetworkHeadersFromCdpFetchHeaders(
           cdpFetchHeaderEntryArray
         );
 
@@ -115,7 +162,7 @@ describe('NetworkUtils', () => {
         },
       ];
       const bidiNetworkHeaders =
-        networkUtils.bidiNetworkHeadersFromCdpFetchHeaderEntryArray(
+        networkUtils.bidiNetworkHeadersFromCdpFetchHeaders(
           cdpFetchHeaderEntryArray
         );
 
@@ -133,6 +180,55 @@ describe('NetworkUtils', () => {
             type: 'string',
             value: '123',
           },
+        },
+      ]);
+    });
+  });
+
+  describe('should convert Bidi network headers to CDP fetch header entry array', () => {
+    it('undefined', () => {
+      const cdpFetchHeaderEntryArray =
+        networkUtils.cdpFetchHeadersFromBidiNetworkHeaders(undefined);
+
+      expect(cdpFetchHeaderEntryArray).to.equal(undefined);
+    });
+
+    it('empty', () => {
+      const bidiNetworkHeaders: Network.Header[] = [];
+      const cdpFetchHeaderEntryArray =
+        networkUtils.cdpFetchHeadersFromBidiNetworkHeaders(bidiNetworkHeaders);
+
+      expect(cdpFetchHeaderEntryArray).to.deep.equal([]);
+    });
+
+    it('non-empty', () => {
+      const bidiNetworkHeaders: Network.Header[] = [
+        {
+          name: 'Content-Type',
+          value: {
+            type: 'string',
+            value: 'text/html',
+          },
+        },
+        {
+          name: 'Content-Length',
+          value: {
+            type: 'string',
+            value: '123',
+          },
+        },
+      ];
+      const cdpFetchHeaderEntryArray =
+        networkUtils.cdpFetchHeadersFromBidiNetworkHeaders(bidiNetworkHeaders);
+
+      expect(cdpFetchHeaderEntryArray).to.deep.equal([
+        {
+          name: 'Content-Type',
+          value: 'text/html',
+        },
+        {
+          name: 'Content-Length',
+          value: '123',
         },
       ]);
     });

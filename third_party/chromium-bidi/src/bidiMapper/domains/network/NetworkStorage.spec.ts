@@ -20,6 +20,7 @@ import * as sinon from 'sinon';
 import {Network} from '../../../protocol/protocol.js';
 import {EventManager} from '../events/EventManager.js';
 
+import {NetworkRequest} from './NetworkRequest.js';
 import {NetworkStorage} from './NetworkStorage.js';
 
 const UUID_REGEX =
@@ -27,10 +28,12 @@ const UUID_REGEX =
 
 describe('NetworkStorage', () => {
   let eventManager: sinon.SinonStubbedInstance<EventManager>;
+  let networkRequest: sinon.SinonStubbedInstance<NetworkRequest>;
   let networkStorage: NetworkStorage;
 
   beforeEach(() => {
     eventManager = sinon.createStubInstance(EventManager);
+    networkRequest = sinon.createStubInstance(NetworkRequest);
     networkStorage = new NetworkStorage(eventManager);
   });
 
@@ -209,6 +212,14 @@ describe('NetworkStorage', () => {
     });
 
     expect(networkStorage.hasBlockedRequests()).to.be.true;
+  });
+
+  it('has network requests', () => {
+    expect(networkStorage.hasNetworkRequests()).to.be.false;
+
+    networkStorage.addRequest(networkRequest);
+
+    expect(networkStorage.hasNetworkRequests()).to.be.true;
   });
 
   describe('getFetchEnableParams', () => {

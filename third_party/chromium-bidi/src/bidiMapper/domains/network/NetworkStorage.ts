@@ -115,7 +115,7 @@ export class NetworkStorage {
     this.#interceptMap.delete(intercept);
   }
 
-  /** Returns true iff there's at least one added intercept. */
+  /** Returns true if there's at least one added intercept. */
   hasIntercepts() {
     return this.#interceptMap.size > 0;
   }
@@ -163,7 +163,12 @@ export class NetworkStorage {
     }
   }
 
-  /** Returns true iff there's at least one blocked network request. */
+  /** Returns true if there's at least one network request. */
+  hasNetworkRequests() {
+    return this.#requestMap.size > 0;
+  }
+
+  /** Returns true if there's at least one blocked network request. */
   hasBlockedRequests() {
     return this.#blockedRequestMap.size > 0;
   }

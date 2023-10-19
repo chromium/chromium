@@ -28,6 +28,7 @@ import {
   Network,
   type BrowsingContext,
   ChromiumBidi,
+  type JsUint,
 } from '../../../protocol/protocol.js';
 import type {Result} from '../../../utils/result.js';
 import {assert} from '../../../utils/assert.js';
@@ -35,7 +36,7 @@ import type {CdpTarget} from '../context/CdpTarget.js';
 
 import {
   computeResponseHeadersSize,
-  bidiNetworkHeadersFromCdpFetchHeaderEntryArray,
+  bidiNetworkHeadersFromCdpFetchHeaders,
   bidiNetworkHeadersFromCdpNetworkHeaders,
 } from './NetworkUtils.js';
 import type {NetworkStorage} from './NetworkStorage.js';
@@ -235,7 +236,7 @@ export class NetworkRequest {
       phase = Network.InterceptPhase.ResponseStarted;
     }
 
-    const headers = bidiNetworkHeadersFromCdpFetchHeaderEntryArray(
+    const headers = bidiNetworkHeadersFromCdpFetchHeaders(
       // TODO: Use params.request.headers if request?
       params.responseHeaders
     );
@@ -289,19 +290,37 @@ export class NetworkRequest {
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
   async continueRequest(
-    networkId: Protocol.Fetch.RequestId,
+    cdpFetchRequestId: Protocol.Fetch.RequestId,
     url?: string,
-    method?: string
+    method?: string,
+    headers?: Protocol.Fetch.HeaderEntry[]
   ) {
     // TODO: Expand.
     await this.#cdpTarget.cdpClient.sendCommand('Fetch.continueRequest', {
-      requestId: networkId,
+      requestId: cdpFetchRequestId,
       url,
       method,
+      headers,
       // TODO: Set?
       // postData:,
-      // headers:,
       // interceptResponse:,
+    });
+
+    this.#interceptPhase = undefined;
+  }
+
+  /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
+  async continueResponse(
+    cdpFetchRequestId: Protocol.Fetch.RequestId,
+    responseCode?: JsUint,
+    responsePhrase?: string,
+    responseHeaders?: Protocol.Fetch.HeaderEntry[]
+  ) {
+    await this.#cdpTarget.cdpClient.sendCommand('Fetch.continueResponse', {
+      requestId: cdpFetchRequestId,
+      responseCode,
+      responsePhrase,
+      responseHeaders,
     });
 
     this.#interceptPhase = undefined;

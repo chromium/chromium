@@ -24,7 +24,9 @@ import {
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
+import {assert} from '../../../utils/assert.js';
 
+import {cdpFetchHeadersFromBidiNetworkHeaders} from './NetworkUtils.js';
 import {NetworkStorage} from './NetworkStorage.js';
 
 /** Dispatches Network domain commands. */
@@ -69,8 +71,7 @@ export class NetworkProcessor {
     params: Network.ContinueRequestParameters
   ): Promise<EmptyResult> {
     const networkId = params.request;
-    const blockedRequest = this.#getBlockedRequest(networkId);
-    const {request: fetchId, phase} = blockedRequest;
+    const {request: fetchId, phase} = this.#getBlockedRequest(networkId);
 
     if (phase !== Network.InterceptPhase.BeforeRequestSent) {
       throw new InvalidArgumentException(
@@ -82,23 +83,57 @@ export class NetworkProcessor {
       NetworkProcessor.parseUrlString(params.url);
     }
 
-    const {url, method} = params;
+    const {url, method, headers} = params;
     // TODO: Set / expand.
-    // ; headers
-    // ; cookies
-    // ; body
+    // ; Step 9. cookies
+    // ; Step 10. body
 
-    await this.#networkStorage
-      .getRequest(networkId)
-      ?.continueRequest(fetchId, url, method);
+    const requestHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
+      cdpFetchHeadersFromBidiNetworkHeaders(headers);
+
+    const request = this.#networkStorage.getRequest(networkId);
+    assert(request, `Network request with ID ${networkId} doesn't exist`);
+
+    await request.continueRequest(fetchId, url, method, requestHeaders);
 
     this.#networkStorage.removeBlockedRequest(networkId);
 
     return {};
   }
 
-  continueResponse(_params: Network.ContinueResponseParameters): EmptyResult {
-    throw new UnknownCommandException('Not implemented yet.');
+  async continueResponse(
+    params: Network.ContinueResponseParameters
+  ): Promise<EmptyResult> {
+    const networkId = params.request;
+    const {request: fetchId, phase} = this.#getBlockedRequest(networkId);
+
+    if (phase === Network.InterceptPhase.BeforeRequestSent) {
+      throw new InvalidArgumentException(
+        `Blocked request for network id '${networkId}' is in 'BeforeRequestSent' phase`
+      );
+    }
+
+    const {statusCode, reasonPhrase, headers} = params;
+
+    const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
+      cdpFetchHeadersFromBidiNetworkHeaders(headers);
+
+    // TODO: Set / expand.
+    // ; Step 10. cookies
+    // ; Step 11. credentials
+    const request = this.#networkStorage.getRequest(networkId);
+    assert(request, `Network request with ID ${networkId} doesn't exist`);
+
+    await request.continueResponse(
+      fetchId,
+      statusCode,
+      reasonPhrase,
+      responseHeaders
+    );
+
+    this.#networkStorage.removeBlockedRequest(networkId);
+
+    return {};
   }
 
   continueWithAuth(_params: Network.ContinueWithAuthParameters): EmptyResult {
@@ -118,9 +153,10 @@ export class NetworkProcessor {
       );
     }
 
-    await this.#networkStorage
-      .getRequest(networkId)
-      ?.failRequest(fetchId, 'Failed');
+    const request = this.#networkStorage.getRequest(networkId);
+    assert(request, `Network request with ID ${networkId} doesn't exist`);
+
+    await request.failRequest(fetchId, 'Failed');
 
     this.#networkStorage.removeBlockedRequest(networkId);
 
@@ -171,7 +207,8 @@ export class NetworkProcessor {
   async #fetchApply() {
     if (
       this.#networkStorage.hasIntercepts() ||
-      this.#networkStorage.hasBlockedRequests()
+      this.#networkStorage.hasBlockedRequests() ||
+      this.#networkStorage.hasNetworkRequests()
     ) {
       // TODO: Add try/catch. Remove the intercept if CDP Fetch commands fail.
       await this.#fetchEnable();
