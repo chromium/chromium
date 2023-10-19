@@ -13,6 +13,7 @@
     fill: var(--cr-secondary-text-color);
     font-size: 11px;
     line-height: 20px;
+    user-select: none;
   }
 
   .axis,
@@ -65,7 +66,8 @@
     stroke: var(--google-blue-700);
   }
 
-  :host-context([chrome-refresh-2023]) .tick .tooltip-text {
+  :host-context([chrome-refresh-2023]) .tick,
+  :host-context([chrome-refresh-2023]) .tooltip-text {
     line-height: 16px;
   }
 
