@@ -194,8 +194,9 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      */
     void recalculateOmniboxAlignment() {
         View contentView = mAnchorView.getRootView().findViewById(android.R.id.content);
+        int contentViewTopPadding = contentView == null ? 0 : contentView.getPaddingTop();
         ViewUtils.getRelativeLayoutPosition(contentView, mAnchorView, mPositionArray);
-        int top = mPositionArray[1] + mAnchorView.getMeasuredHeight();
+        int top = mPositionArray[1] + mAnchorView.getMeasuredHeight() - contentViewTopPadding;
         int left;
         int width;
         int paddingLeft;

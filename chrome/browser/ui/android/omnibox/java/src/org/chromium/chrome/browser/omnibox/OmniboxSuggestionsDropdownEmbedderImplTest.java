@@ -137,6 +137,24 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
+    public void testRecalculateOmniboxAlignment_contentViewPadding() {
+        doReturn(13).when(mContentView).getPaddingTop();
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(60).when(mHorizontalAlignmentView).getTop();
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(
+                new OmniboxAlignment(
+                        0,
+                        ANCHOR_HEIGHT + ANCHOR_TOP - 13,
+                        ANCHOR_WIDTH,
+                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP - 13),
+                        0,
+                        0),
+                alignment);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @CommandLineFlags.Add({
         "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
