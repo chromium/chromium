@@ -1016,7 +1016,7 @@ void WizardController::ShowLocalPasswordSetupScreen() {
 
 void WizardController::ShowEnrollmentScreen() {
   // Update the enrollment configuration and start the screen.
-  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnEnrollmentScreenShown();
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordEnrollingUserType();
   prescribed_enrollment_config_ =
       policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
   StartEnrollmentScreen(false);
@@ -1777,8 +1777,8 @@ void WizardController::OnScreenExit(OobeScreenId screen,
   }
   DCHECK(current_screen_->screen_id() == screen);
 
-  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnScreenExited(screen,
-                                                                exit_reason);
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordScreenExit(screen,
+                                                                  exit_reason);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2376,7 +2376,7 @@ void WizardController::OnOobeFlowFinished() {
     active_user_prefs->ClearPref(prefs::kChoobeCompletedScreens);
   }
 
-  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnOnboadingFlowCompleted(
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordOnboadingComplete(
       GetLocalState()->GetTime(prefs::kOobeStartTime),
       active_user_prefs->GetTime(prefs::kOobeOnboardingTime));
 
@@ -2488,7 +2488,7 @@ void WizardController::PerformOOBECompletedActions(
   }
 
   StartupUtils::MarkOobeCompleted();
-  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnPreLoginOobeCompleted(
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordPreLoginOobeComplete(
       flow_type);
 
   // Triggers DLC installation once OOBE is complete.
@@ -2510,11 +2510,9 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
       }
     }
 
-    GetLoginDisplayHost()
-        ->GetOobeMetricsHelper()
-        ->OnScreenShownStatusDetermined(
-            new_current->screen_id(),
-            OobeMetricsHelper::ScreenShownStatus::kSkipped);
+    GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordScreenShownStatus(
+        new_current->screen_id(),
+        OobeMetricsHelper::ScreenShownStatus::kSkipped);
     return;
   }
 
@@ -2560,7 +2558,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   }
 
   UpdateStatusAreaVisibilityForScreen(current_screen_->screen_id());
-  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnScreenShownStatusDetermined(
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordScreenShownStatus(
       current_screen_->screen_id(),
       OobeMetricsHelper::ScreenShownStatus::kShown);
   current_screen_->Show(wizard_context_);

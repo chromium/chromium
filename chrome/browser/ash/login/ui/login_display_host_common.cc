@@ -539,7 +539,7 @@ void LoginDisplayHostCommon::OnPowerwashAllowedCallback(
 }
 
 void LoginDisplayHostCommon::StartUserOnboarding() {
-  oobe_metrics_helper_->OnOnboardingFlowStarted(
+  oobe_metrics_helper_->RecordOnboardingStart(
       g_browser_process->local_state()->GetTime(prefs::kOobeStartTime));
   StartWizard(LocaleSwitchView::kScreenId);
 }

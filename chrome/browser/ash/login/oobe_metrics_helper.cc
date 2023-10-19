@@ -129,9 +129,13 @@ OobeMetricsHelper::OobeMetricsHelper() = default;
 
 OobeMetricsHelper::~OobeMetricsHelper() = default;
 
-void OobeMetricsHelper::OnScreenShownStatusDetermined(
-    OobeScreenId screen,
-    ScreenShownStatus status) {
+void OobeMetricsHelper::RecordScreenShownStatus(OobeScreenId screen,
+                                                ScreenShownStatus status) {
+  // Notify registered observers.
+  for (auto& observer : observers_) {
+    observer.OnScreenShownStatusChanged(screen, status);
+  }
+
   if (status == ScreenShownStatus::kShown) {
     screen_show_times_[screen] = base::TimeTicks::Now();
   }
@@ -155,8 +159,13 @@ void OobeMetricsHelper::RecordUpdatedStepShownStatus(OobeScreenId screen,
   base::UmaHistogramEnumeration(histogram_name, status);
 }
 
-void OobeMetricsHelper::OnScreenExited(OobeScreenId screen,
-                                       const std::string& exit_reason) {
+void OobeMetricsHelper::RecordScreenExit(OobeScreenId screen,
+                                         const std::string& exit_reason) {
+  // Notify registered observers.
+  for (auto& observer : observers_) {
+    observer.OnScreenExited(screen, exit_reason);
+  }
+
   // Legacy histogram, requires old screen names.
   std::string legacy_screen_name = GetUmaLegacyScreenName(screen);
   std::string histogram_name =
@@ -190,13 +199,23 @@ void OobeMetricsHelper::RecordUpdatedStepCompletionTime(
                                 base::Milliseconds(10), base::Minutes(10), 100);
 }
 
-void OobeMetricsHelper::OnPreLoginOobeFirstStart() {
+void OobeMetricsHelper::RecordPreLoginOobeFirstStart() {
+  // Notify registered observers.
+  for (auto& observer : observers_) {
+    observer.OnPreLoginOobeFirstStarted();
+  }
+
   // Record `False` to report the `Started` bucket.
   base::UmaHistogramBoolean(kUmaOobeFlowStatus, false);
 }
 
-void OobeMetricsHelper::OnPreLoginOobeCompleted(
+void OobeMetricsHelper::RecordPreLoginOobeComplete(
     CompletedPreLoginOobeFlowType flow_type) {
+  // Notify registered observers.
+  for (auto& observer : observers_) {
+    observer.OnPreLoginOobeCompleted(flow_type);
+  }
+
   base::TimeTicks startup_time =
       startup_metric_utils::GetCommon().MainEntryPointTicks();
   if (startup_time.is_null()) {
@@ -221,8 +240,12 @@ void OobeMetricsHelper::OnPreLoginOobeCompleted(
                                 base::Minutes(10), 100);
 }
 
-void OobeMetricsHelper::OnOnboardingFlowStarted(base::Time oobe_start_time) {
-  std::string onboarding_type;
+void OobeMetricsHelper::RecordOnboardingStart(base::Time oobe_start_time) {
+  // Notify registered observers.
+  for (auto& observer : observers_) {
+    observer.OnOnboardingStarted();
+  }
+
   if (!oobe_start_time.is_null()) {
     base::UmaHistogramCustomTimes(
         kUmaOobeStartToOnboardingStart, base::Time::Now() - oobe_start_time,
@@ -234,9 +257,13 @@ void OobeMetricsHelper::OnOnboardingFlowStarted(base::Time oobe_start_time) {
       kUmaOnboardingFlowStatus + GetOnboardingTypeSuffix(), false);
 }
 
-void OobeMetricsHelper::OnOnboadingFlowCompleted(
+void OobeMetricsHelper::RecordOnboadingComplete(
     base::Time oobe_start_time,
     base::Time onboarding_start_time) {
+  for (auto& observer : observers_) {
+    observer.OnOnboadingCompleted();
+  }
+
   if (!oobe_start_time.is_null()) {
     // Record `True` to report the `Completed` bucket.
     base::UmaHistogramBoolean(kUmaOobeFlowStatus, true);
@@ -256,7 +283,7 @@ void OobeMetricsHelper::OnOnboadingFlowCompleted(
   }
 }
 
-void OobeMetricsHelper::OnEnrollmentScreenShown() {
+void OobeMetricsHelper::RecordEnrollingUserType() {
   bool is_consumer = g_browser_process->local_state()->GetBoolean(
       prefs::kOobeIsConsumerSegment);
   base::UmaHistogramBoolean("OOBE.Enrollment.IsUserEnrollingAConsumer",
@@ -266,6 +293,14 @@ void OobeMetricsHelper::OnEnrollmentScreenShown() {
 void OobeMetricsHelper::RecordChromeVersion() {
   base::UmaHistogramSparse("OOBE.ChromeVersionBeforeUpdate",
                            version_info::GetMajorVersionNumberAsInt());
+}
+
+void OobeMetricsHelper::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void OobeMetricsHelper::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace ash

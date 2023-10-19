@@ -536,7 +536,7 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
     if (GetLocalState() &&
         GetLocalState()->GetTime(prefs::kOobeStartTime).is_null()) {
       GetLocalState()->SetTime(prefs::kOobeStartTime, base::Time::Now());
-      GetOobeMetricsHelper()->OnPreLoginOobeFirstStart();
+      GetOobeMetricsHelper()->RecordPreLoginOobeFirstStart();
     }
 
     CHECK(OobeConfiguration::Get());

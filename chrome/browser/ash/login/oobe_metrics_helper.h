@@ -7,6 +7,8 @@
 
 #include <map>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 
@@ -28,6 +30,36 @@ class OobeMetricsHelper {
     kRegular = 2
   };
 
+  // Observer that is notified on certain OOBE recording events.
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override = default;
+
+    // Invoked when `screen shown status` metrics are being reported.
+    virtual void OnScreenShownStatusChanged(OobeScreenId screen,
+                                            ScreenShownStatus status) {}
+
+    // Invoked when `screen exit` metrics are being reported.
+    virtual void OnScreenExited(OobeScreenId screen,
+                                const std::string& exit_reason) {}
+
+    // Invoked when `pre login OOBE flow start` metrics are being reported.
+    virtual void OnPreLoginOobeFirstStarted() {}
+
+    // Invoked when `pre login OOBE flow complete` metrics are being reported.
+    virtual void OnPreLoginOobeCompleted(
+        CompletedPreLoginOobeFlowType flow_type) {}
+
+    // Invoked when `onboarding flow start` metrics are being reported.
+    virtual void OnOnboardingStarted() {}
+
+    // Invoked when `onboarding complete` metrics are being reported.
+    virtual void OnOnboadingCompleted() {}
+  };
+
   OobeMetricsHelper();
   ~OobeMetricsHelper();
   OobeMetricsHelper(const OobeMetricsHelper& other) = delete;
@@ -35,37 +67,40 @@ class OobeMetricsHelper {
 
   // Called when the status of a screen during the flow is determined,
   // shown/skipped.
-  void OnScreenShownStatusDetermined(OobeScreenId screen,
-                                     ScreenShownStatus status);
+  void RecordScreenShownStatus(OobeScreenId screen, ScreenShownStatus status);
 
   // Called when the screen is exited, this should be preceded by a call to
   // `OnScreenShownStatusDetermined()`.
-  void OnScreenExited(OobeScreenId screen, const std::string& exit_reason);
+  void RecordScreenExit(OobeScreenId screen, const std::string& exit_reason);
 
   // Called the first time pre-login OOBE has started. This method will not be
   // called again if the device restarts into the pre-login flow.
-  void OnPreLoginOobeFirstStart();
+  void RecordPreLoginOobeFirstStart();
 
   // Called upon marking pre-login OOBE as completed.
-  void OnPreLoginOobeCompleted(CompletedPreLoginOobeFlowType screen);
+  void RecordPreLoginOobeComplete(CompletedPreLoginOobeFlowType screen);
 
   // Called after the log-in of a new user is completed and before the showing
   // of the first onboarding screen. If this is the first onboarding after OOBE
   // completion, the start time of OOBE should be passed to the method,
   // otherwise, the NULL time should be passed.
-  void OnOnboardingFlowStarted(base::Time oobe_start_time);
+  void RecordOnboardingStart(base::Time oobe_start_time);
 
   // Called after the last screen of the onboarding flow is exited and before
   // the session starts.
   // A NULL time in either `oobe_start_time` or `onboarding_start_time` means
   // that the start time is not available.
-  void OnOnboadingFlowCompleted(base::Time oobe_start_time,
-                                base::Time onboarding_start_time);
+  void RecordOnboadingComplete(base::Time oobe_start_time,
+                               base::Time onboarding_start_time);
 
   // Called when `ShowEnrollmentScreen()` is called.
-  void OnEnrollmentScreenShown();
+  void RecordEnrollingUserType();
 
   void RecordChromeVersion();
+
+  void AddObserver(Observer* observer);
+
+  void RemoveObserver(Observer* observer);
 
  private:
   void RecordUpdatedStepShownStatus(OobeScreenId screen,
@@ -75,6 +110,8 @@ class OobeMetricsHelper {
 
   // Maps screen names to last time of their shows.
   std::map<OobeScreenId, base::TimeTicks> screen_show_times_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash
