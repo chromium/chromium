@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feedback/content/content_tracing_manager.h"
@@ -46,6 +48,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "extensions/browser/api/feedback_private/mock_feedback_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -815,13 +818,58 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
   EXPECT_EQ(owned_widgets_post_dialog.size(), 1u);
 }
 
-// Test that the SystemInfo (Histograms) dialog opens
-// when OpenSystemInfoDialog is invoked.
-IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenSystemInfoDialog) {
+// Test that the SystemInfo dialog opens when OpenSystemInfoDialog is invoked on
+// Feedback SWA.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       OpenSystemInfoDialog_From_FeedbackSWA) {
   Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
 
   gfx::NativeWindow feedback_window =
       feedback_browser->window()->GetNativeWindow();
+
+  std::set<views::Widget*> owned_widgets_pre_dialog;
+  views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
+
+  EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
+
+  // Initialize the delegate.
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+
+  feedback_delegate.OpenSystemInfoDialog();
+
+  std::set<views::Widget*> owned_widgets_post_dialog;
+  views::Widget::GetAllOwnedWidgets(feedback_window,
+                                    &owned_widgets_post_dialog);
+
+  EXPECT_EQ(owned_widgets_post_dialog.size(), 1u);
+}
+
+// Test that the SystemInfo dialog opens when OpenSystemInfoDialog is invoked on
+// Feedback Dialog.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       OpenSystemInfoDialog_From_FeedbackDialog) {
+  extensions::FeedbackPrivateAPI* api =
+      extensions::FeedbackPrivateAPI::GetFactoryInstance()->Get(
+          browser()->profile());
+
+  auto info = api->CreateFeedbackInfo(
+      "testing", std::string(), "Login", std::string(), GURL(),
+      extensions::api::feedback_private::FeedbackFlow::kLogin,
+      /*from_assistant=*/false,
+      /*include_bluetooth_logs=*/false,
+      /*show_questionnaire=*/false,
+      /*from_chrome_labs_or_kaleidoscope=*/false,
+      /*from_autofill=*/false,
+      /*autofill_metadata=*/base::Value::Dict());
+
+  base::test::TestFuture<void> test_future;
+  // Open the feedback dialog.
+  OsFeedbackDialog::ShowDialogAsync(browser()->profile(), *info,
+                                    test_future.GetCallback());
+  EXPECT_TRUE(test_future.Wait());
+
+  gfx::NativeWindow feedback_window = OsFeedbackDialog::FindDialogWindow();
 
   std::set<views::Widget*> owned_widgets_pre_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);

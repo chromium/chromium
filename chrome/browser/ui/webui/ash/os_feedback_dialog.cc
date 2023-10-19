@@ -72,6 +72,14 @@ void OsFeedbackDialog::ShowDialogAsync(
           context, info.ToValue(), std::move(callback), parent));
 }
 
+gfx::NativeWindow OsFeedbackDialog::FindDialogWindow() {
+  auto* instance = SystemWebDialogDelegate::FindInstance(GetUrl().spec());
+  if (instance) {
+    return static_cast<OsFeedbackDialog*>(instance)->dialog_window();
+  }
+  return nullptr;
+}
+
 // Protected.
 OsFeedbackDialog::OsFeedbackDialog(base::Value::Dict feedback_info)
     : SystemWebDialogDelegate(GetUrl(),

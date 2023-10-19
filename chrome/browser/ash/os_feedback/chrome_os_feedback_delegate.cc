@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
 #include "chrome/browser/ui/webui/feedback/child_web_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -91,6 +92,18 @@ bool ShouldAddAttachment(const AttachedFilePtr& attached_file) {
     return false;
   }
   return true;
+}
+
+// Find the native window of feedback SWA or dialog.
+gfx::NativeWindow FindFeedbackWindow(Profile* profile) {
+  Browser* feedback_browser =
+      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::OS_FEEDBACK);
+
+  if (feedback_browser) {
+    return feedback_browser->window()->GetNativeWindow();
+  }
+
+  return OsFeedbackDialog::FindDialogWindow();
 }
 
 // Key-value pair to be added to FeedbackData when user grants consent to Google
@@ -400,11 +413,8 @@ bool ChromeOsFeedbackDelegate::IsChildAccount() {
 
 void ChromeOsFeedbackDelegate::OpenWebDialog(GURL url,
                                              const std::string& args) {
-  Browser* feedback_browser = ash::FindSystemWebAppBrowser(
-      profile_, ash::SystemWebAppType::OS_FEEDBACK);
-
-  gfx::NativeWindow window = feedback_browser->window()->GetNativeWindow();
-
+  gfx::NativeWindow window = FindFeedbackWindow(profile_);
+  CHECK(window);
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
 
   ChildWebDialog* child_dialog = new ChildWebDialog(

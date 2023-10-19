@@ -26,6 +26,9 @@ class OsFeedbackDialog : public SystemWebDialogDelegate {
       base::OnceClosure callback,
       gfx::NativeWindow parent = nullptr);
 
+  // Find the native window of the dialog.
+  static gfx::NativeWindow FindDialogWindow();
+
  protected:
   explicit OsFeedbackDialog(base::Value::Dict feedback_info);
   OsFeedbackDialog(const OsFeedbackDialog&) = delete;
