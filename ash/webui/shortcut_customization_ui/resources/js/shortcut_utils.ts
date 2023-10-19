@@ -35,6 +35,8 @@ export const keyCodeToModifier: {[keyCode: number]: number} = {
 export const unidentifiedKeyCodeToKey: {[keyCode: number]: string} = {
   159: 'MicrophoneMuteToggle',
   192: '`',  // Backquote key.
+  218: 'KeyboardBrightnessUp',
+  232: 'KeyboardBrightnessDown',
   237: 'EmojiPicker',
   238: 'EnableOrToggleDictation',
   239: 'ViewAllApps',
