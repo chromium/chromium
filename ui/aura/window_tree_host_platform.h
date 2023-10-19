@@ -16,7 +16,7 @@
 #include "ui/platform_window/platform_window_delegate.h"
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 class PlatformWindow;
 class KeyboardHook;
 struct PlatformWindowInitProperties;

@@ -14,7 +14,7 @@
 
 namespace ui {
 
-enum class DomCode;
+enum class DomCode : uint32_t;
 
 // We use windows virtual keycodes throughout our keyboard event related code,
 // including unit tests. But Mac uses a different set of virtual keycodes.

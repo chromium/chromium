@@ -39,7 +39,7 @@ class Transform;
 
 namespace ui {
 class Compositor;
-enum class DomCode;
+enum class DomCode : uint32_t;
 class EventSink;
 class InputMethod;
 class ViewProp;

@@ -12,7 +12,7 @@
 
 namespace ui {
 
-enum class DomCode;
+enum class DomCode : uint32_t;
 
 // Platform-specific functions related to menus.
 class COMPONENT_EXPORT(OZONE_BASE) PlatformMenuUtils {

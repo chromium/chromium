@@ -61,7 +61,7 @@ class Compositor;
 class Cursor;
 class LatencyInfo;
 class TouchEvent;
-enum class DomCode;
+enum class DomCode : uint32_t;
 struct DidOverscrollParams;
 }  // namespace ui
 

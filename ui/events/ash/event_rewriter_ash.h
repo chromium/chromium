@@ -31,7 +31,7 @@ class ImeKeyboard;
 
 namespace ui {
 
-enum class DomCode;
+enum class DomCode : uint32_t;
 struct KeyboardDevice;
 
 // EventRewriterAsh makes various changes to keyboard-related events,

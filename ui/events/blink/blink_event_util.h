@@ -23,7 +23,7 @@ class Vector2dF;
 }
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 class GestureEventAndroid;
 struct GestureEventData;
 struct GestureEventDetails;

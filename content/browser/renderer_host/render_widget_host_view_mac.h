@@ -43,7 +43,7 @@ class RenderWidgetHostNSViewBridge;
 }  // namespace remote_cocoa
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 class Layer;
 class ScopedPasswordInputEnabler;
 }

@@ -40,7 +40,7 @@ namespace ui {
 
 class Event;
 class MouseEvent;
-enum class DomCode;
+enum class DomCode : uint32_t;
 
 // Key used to store keyboard 'state' values in Event::Properties.
 constexpr char kPropertyKeyboardState[] = "_keyevent_kbd_state_";

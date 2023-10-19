@@ -12,7 +12,7 @@
 
 namespace ui {
 
-enum class DomCode;
+enum class DomCode : uint32_t;
 
 constexpr int kDefaultSensitivity = 3;
 

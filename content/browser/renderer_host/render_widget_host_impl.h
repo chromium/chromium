@@ -94,7 +94,7 @@ class Vector2dF;
 }  // namespace gfx
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 }
 
 namespace content {

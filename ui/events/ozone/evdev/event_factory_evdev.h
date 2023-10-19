@@ -39,7 +39,7 @@ struct KeyboardDevice;
 struct TouchpadDevice;
 class SystemInputInjector;
 class GamepadProviderOzone;
-enum class DomCode;
+enum class DomCode : uint32_t;
 enum class StylusState;
 
 #if !defined(USE_EVDEV)

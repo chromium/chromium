@@ -22,7 +22,7 @@
 namespace ui {
 
 class EventModifiers;
-enum class DomCode;
+enum class DomCode : uint32_t;
 
 // Keyboard for evdev.
 //

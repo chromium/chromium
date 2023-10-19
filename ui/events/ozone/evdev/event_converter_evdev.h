@@ -28,7 +28,7 @@
 struct input_event;
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 struct InputDeviceSettingsEvdev;
 
 class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
