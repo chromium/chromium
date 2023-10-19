@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PACKAGE_ID_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_PACKAGE_ID_H_
+#ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PACKAGE_ID_H_
+#define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PACKAGE_ID_H_
 
 #include <string>
 
@@ -29,7 +29,7 @@ namespace apps {
 // --------|-----------|-----------------------|--------------------------
 // kArc    | "android" | package name          | "android:com.foo.bar"
 // kWeb    | "web"     | processed manifest ID | "web:https://app.com/id"
-class PackageId {
+class COMPONENT_EXPORT(APP_TYPES) PackageId {
  public:
   // Creates a Package ID from App Type and opaque package identifier.
   // `app_type` must be a supported type (Web or ARC), and `identifier` must be
@@ -65,4 +65,4 @@ class PackageId {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PACKAGE_ID_H_
+#endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PACKAGE_ID_H_

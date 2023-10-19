@@ -34,8 +34,6 @@ source_set("app_service") {
     "launch_utils.h",
     "metrics/app_service_metrics.cc",
     "metrics/app_service_metrics.h",
-    "package_id.cc",
-    "package_id.h",
     "package_id_util.cc",
     "package_id_util.h",
     "paused_apps.cc",
@@ -342,7 +340,6 @@ source_set("unit_tests") {
     "app_service_proxy_unittest.cc",
     "intent_util_unittest.cc",
     "launch_utils_unittest.cc",
-    "package_id_unittest.cc",
     "publishers/publisher_unittest.cc",
   ]
 

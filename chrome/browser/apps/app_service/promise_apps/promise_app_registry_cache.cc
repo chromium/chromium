@@ -4,11 +4,11 @@
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 
 namespace apps {
 

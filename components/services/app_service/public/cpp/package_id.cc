@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/package_id.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 
 #include <string>
 

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
-#include "chrome/browser/apps/app_service/package_id.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
