@@ -284,15 +284,6 @@ void InitLogging(UpdaterScope updater_scope) {
       {0xa1, 0x88, 0x21, 0x36, 0xab, 0x85, 0xf5, 0xf1}};
   logging::LogEventProvider::Initialize(kUpdaterETWProviderName);
 #endif
-
-  VLOG(1) << "Log initialized for " <<
-      [] {
-        base::FilePath file_exe;
-        return base::PathService::Get(base::FILE_EXE, &file_exe)
-                   ? file_exe
-                   : base::FilePath();
-      }() << " -> "
-          << settings.log_file_path;
 }
 
 std::string GetUpdaterUserAgent() {

@@ -17,6 +17,7 @@
 #include "base/process/memory.h"
 #include "base/process/process_handle.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -49,6 +50,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/process_startup_helper.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/windows_version.h"
 #include "chrome/updater/app/server/win/service_main.h"
 #include "chrome/updater/util/win_util.h"
 #endif
@@ -253,6 +255,16 @@ constexpr const char* BuildArch() {
 #endif
 }
 
+std::string OperatingSystemVersion() {
+#if BUILDFLAG(IS_WIN)
+  const base::win::OSInfo::VersionNumber v =
+      base::win::OSInfo::GetInstance()->version_number();
+  return base::StringPrintf("%u.%u.%u.%u", v.major, v.minor, v.build, v.patch);
+#else
+  return base::SysInfo().OperatingSystemVersion();
+#endif
+}
+
 base::CommandLine::StringType GetCommandLineString() {
 #if BUILDFLAG(IS_WIN)
   // Gets the raw command line on Windows, because
@@ -283,10 +295,11 @@ int UpdaterMain(int argc, const char* const* argv) {
 
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope);
-  VLOG(1) << "Version " << kUpdaterVersion << ", " << BuildFlavor() << ", "
+  VLOG(1) << "Version: " << kUpdaterVersion << ", " << BuildFlavor() << ", "
           << BuildArch() << ", command line: " << GetCommandLineString();
-  VLOG(1) << "System uptime (seconds): " << base::SysInfo::Uptime().InSeconds()
-          << ", parent pid: "
+  VLOG(1) << "OS version: " << OperatingSystemVersion()
+          << ", System uptime (seconds): "
+          << base::SysInfo::Uptime().InSeconds() << ", parent pid: "
           << base::GetParentProcessId(base::GetCurrentProcessHandle());
   const int retval = HandleUpdaterCommands(updater_scope, command_line);
   VLOG(1) << __func__ << " (--" << GetUpdaterCommand(command_line) << ")"
