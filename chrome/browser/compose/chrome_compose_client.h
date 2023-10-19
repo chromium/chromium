@@ -60,7 +60,7 @@ class ChromeComposeClient
 
   // This API gets optimization guidance for a web site.  We use this
   // to guide our decision to enable the feature and trigger the nudge.
-  compose::ComposeNudgeDecision GetOptimizationGuidanceForUrl(const GURL& url);
+  compose::ComposeHintDecision GetOptimizationGuidanceForUrl(const GURL& url);
 
  protected:
   optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();

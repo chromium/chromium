@@ -8,14 +8,21 @@ package compose;
 
 // Whether we should show the nudge, disable the nudge, or disable the whole
 // feature for this URL.
-enum ComposeNudgeDecision {
-  UNKNOWN = 0;
-  SHOW_NUDGE = 1;
-  DISABLE_NUDGE = 2;
-  COMPOSE_DISABLED = 3;
+enum ComposeHintDecision {
+  // Chrome will decide what to do on its own.
+  COMPOSE_HINT_DECISION_UNSPECIFIED = 0;
+
+  // The nudge and context menu are enabled.
+  COMPOSE_HINT_DECISION_ENABLED = 1;
+
+  // The nudge is disabled, but context menu is still enabled.
+  COMPOSE_HINT_DECISION_DISABLE_NUDGE = 2;
+
+  // The nudge and context menu are both disabled.
+  COMPOSE_HINT_DECISION_COMPOSE_DISABLED = 3;
 }
 
 // Guidance from the optimization guide for the compose feature on this URL.
 message ComposeHintMetadata {
-  optional ComposeNudgeDecision decision = 1;
+  optional ComposeHintDecision decision = 1;
 }

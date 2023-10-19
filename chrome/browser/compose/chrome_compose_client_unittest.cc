@@ -407,7 +407,8 @@ TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceShowNudgeTest) {
   // Set up a fake metadata to return from the mock.
   optimization_guide::OptimizationMetadata test_metadata;
   compose::ComposeHintMetadata compose_hint_metadata;
-  compose_hint_metadata.set_decision(compose::ComposeNudgeDecision::SHOW_NUDGE);
+  compose_hint_metadata.set_decision(
+      compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED);
   test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
 
   EXPECT_CALL(opt_guide(),
@@ -425,19 +426,21 @@ TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceShowNudgeTest) {
   SetEnabled();
 
   GURL example(kExampleURL);
-  compose::ComposeNudgeDecision decision =
+  compose::ComposeHintDecision decision =
       client().GetOptimizationGuidanceForUrl(example);
   ClearEnabled();
 
   // Verify response from CanApplyOptimization is as we expect.
-  EXPECT_EQ(compose::ComposeNudgeDecision::SHOW_NUDGE, decision);
+  EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED,
+            decision);
 }
 
 TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceFeatureOffTest) {
   // Set up a fake metadata to return from the mock.
   optimization_guide::OptimizationMetadata test_metadata;
   compose::ComposeHintMetadata compose_hint_metadata;
-  compose_hint_metadata.set_decision(compose::ComposeNudgeDecision::SHOW_NUDGE);
+  compose_hint_metadata.set_decision(
+      compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED);
   test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
 
   EXPECT_CALL(opt_guide(),
@@ -455,19 +458,22 @@ TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceFeatureOffTest) {
   ClearEnabled();
 
   GURL example(kExampleURL);
-  compose::ComposeNudgeDecision decision =
+  compose::ComposeHintDecision decision =
       client().GetOptimizationGuidanceForUrl(example);
   ClearEnabled();
 
   // Verify response from CanApplyOptimization is as we expect.
-  EXPECT_EQ(compose::ComposeNudgeDecision::COMPOSE_DISABLED, decision);
+  EXPECT_EQ(
+      compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED,
+      decision);
 }
 
 TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceNoFeedbackTest) {
   // Set up a fake metadata to return from the mock.
   optimization_guide::OptimizationMetadata test_metadata;
   compose::ComposeHintMetadata compose_hint_metadata;
-  compose_hint_metadata.set_decision(compose::ComposeNudgeDecision::SHOW_NUDGE);
+  compose_hint_metadata.set_decision(
+      compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED);
   test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
 
   EXPECT_CALL(opt_guide(),
@@ -485,12 +491,13 @@ TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceNoFeedbackTest) {
   SetEnabled();
 
   GURL example(kExampleURL);
-  compose::ComposeNudgeDecision decision =
+  compose::ComposeHintDecision decision =
       client().GetOptimizationGuidanceForUrl(example);
   ClearEnabled();
 
   // Verify response from CanApplyOptimization is as we expect.
-  EXPECT_EQ(compose::ComposeNudgeDecision::UNKNOWN, decision);
+  EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED,
+            decision);
 }
 
 TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceNoComposeMetadataTest) {
@@ -514,12 +521,13 @@ TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceNoComposeMetadataTest) {
   SetEnabled();
 
   GURL example(kExampleURL);
-  compose::ComposeNudgeDecision decision =
+  compose::ComposeHintDecision decision =
       client().GetOptimizationGuidanceForUrl(example);
   ClearEnabled();
 
   // Verify response from CanApplyOptimization is as we expect.
-  EXPECT_EQ(compose::ComposeNudgeDecision::UNKNOWN, decision);
+  EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED,
+            decision);
 }
 
 TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {

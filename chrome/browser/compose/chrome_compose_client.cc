@@ -125,14 +125,14 @@ void ChromeComposeClient::SetOptimizationGuideForTest(
   opt_guide_ = opt_guide;
 }
 
-compose::ComposeNudgeDecision
-ChromeComposeClient::GetOptimizationGuidanceForUrl(const GURL& url) {
+compose::ComposeHintDecision ChromeComposeClient::GetOptimizationGuidanceForUrl(
+    const GURL& url) {
   if (!GetOptimizationGuide()) {
-    return compose::ComposeNudgeDecision::UNKNOWN;
+    return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
   }
 
   if (!ComposeEnabling::IsEnabledForProfile(profile_)) {
-    return compose::ComposeNudgeDecision::COMPOSE_DISABLED;
+    return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED;
   }
 
   optimization_guide::OptimizationMetadata metadata;
@@ -141,14 +141,14 @@ ChromeComposeClient::GetOptimizationGuidanceForUrl(const GURL& url) {
       url, optimization_guide::proto::OptimizationType::COMPOSE, &metadata);
   if (opt_guide_has_hint !=
       optimization_guide::OptimizationGuideDecision::kTrue) {
-    return compose::ComposeNudgeDecision::UNKNOWN;
+    return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
   }
 
   absl::optional<compose::ComposeHintMetadata> compose_metadata =
       optimization_guide::ParsedAnyMetadata<compose::ComposeHintMetadata>(
           metadata.any_metadata().value());
   if (!compose_metadata.has_value()) {
-    return compose::ComposeNudgeDecision::UNKNOWN;
+    return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
   }
 
   return compose_metadata->decision();
