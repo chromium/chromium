@@ -87,6 +87,9 @@ class POLICY_EXPORT PolicyLoaderLacros
   static void set_main_user_policy_data_for_testing(
       const enterprise_management::PolicyData& policy_data);
 
+  static const std::vector<std::string> device_affiliation_ids();
+  static const std::string device_dm_token();
+
   base::Time last_fetch_timestamp() { return last_fetch_timestamp_; }
 
  private:
