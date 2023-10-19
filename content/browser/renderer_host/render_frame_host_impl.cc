@@ -8634,8 +8634,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
        destinations) {
     SendFencedFrameReportingBeaconInternal(
         DestinationEnumEvent(event_type, event_data), destination,
-        /*from_renderer=*/true, attribution_reporting_runtime_features,
-        GetFrameTreeNodeId());
+        /*from_renderer=*/true, attribution_reporting_runtime_features);
   }
 }
 
@@ -8671,8 +8670,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
   SendFencedFrameReportingBeaconInternal(
       DestinationURLEvent(destination_url),
       blink::FencedFrame::ReportingDestination::kBuyer,
-      /*from_renderer=*/true, attribution_reporting_runtime_features,
-      GetFrameTreeNodeId());
+      /*from_renderer=*/true, attribution_reporting_runtime_features);
 }
 
 void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
@@ -8773,7 +8771,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
                                data),
           destination,
           /*from_renderer=*/false, attribution_reporting_features,
-          GetFrameTreeNodeId(), navigation_request.GetNavigationId());
+          navigation_request.GetNavigationId());
     }
   } else {
     if (!info->destinations.empty()) {
@@ -8787,7 +8785,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
                                info->data),
           destination,
           /*from_renderer=*/false, info->attribution_reporting_runtime_features,
-          GetFrameTreeNodeId(), navigation_request.GetNavigationId());
+          navigation_request.GetNavigationId());
     }
   }
 
@@ -8802,7 +8800,6 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     bool from_renderer,
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features,
-    int initiator_frame_tree_node_id,
     absl::optional<int64_t> navigation_id) {
   if (!IsActive()) {
     // reportEvent is not allowed when this RenderFrameHost or one of its
@@ -8861,7 +8858,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
           event_variant, destination,
           /*request_initiator_frame=*/this,
           attribution_reporting_runtime_features, error_message,
-          console_message_level, initiator_frame_tree_node_id, navigation_id)) {
+          console_message_level, GetFrameTreeNodeId(), navigation_id)) {
     AddMessageToConsole(console_message_level, error_message);
   }
 }

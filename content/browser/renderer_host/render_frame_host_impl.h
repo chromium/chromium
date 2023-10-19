@@ -4073,7 +4073,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool from_renderer,
       network::AttributionReportingRuntimeFeatures
           attribution_reporting_features,
-      int initiator_frame_tree_node_id,
       absl::optional<int64_t> navigation_id = absl::nullopt);
 
   // Indicates whether this frame has third-party storage
