@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 
 namespace apps {
 
@@ -21,14 +22,22 @@ constexpr char kAppServiceDirName[] = "app_service";
 constexpr char kAppStorageFileName[] = "AppStorage";
 
 constexpr char kTypeKey[] = "type";
+constexpr char kReadinessKey[] = "readiness";
 constexpr char kNameKey[] = "name";
 constexpr char kShortNameKey[] = "short_name";
-constexpr char kReadinessKey[] = "readiness";
+constexpr char kAdditionalSearchTermsKey[] = "additional_search_terms";
+constexpr char kIconResourceIdKey[] = "icon_resource_id";
 constexpr char kInstallReasonKey[] = "install_reason";
 constexpr char kInstallSourceKey[] = "install_source";
 constexpr char kIsPlatformAppKey[] = "is_platform_app";
 constexpr char kRecommendableKey[] = "recommendable";
 constexpr char kSearchableKey[] = "searchable";
+constexpr char kShowInLauncherKey[] = "show_in_launcher";
+constexpr char kShowInShelfKey[] = "show_in_shelf";
+constexpr char kShowInSearchKey[] = "show_in_search";
+constexpr char kShowInManagementKey[] = "show_in_management";
+constexpr char kHandlesIntentsKey[] = "handles_intents";
+constexpr char kAllowUninstallKey[] = "allow_uninstall";
 
 absl::optional<std::string> GetStringValueFromDict(
     const base::Value::Dict& dict,
@@ -38,6 +47,11 @@ absl::optional<std::string> GetStringValueFromDict(
 }
 
 }  // namespace
+
+#define SET_KEY_FOR_OPTIONAL_VALUE(FIELD, KEY)     \
+  if (app->FIELD.has_value()) {                    \
+    app_details_dict.Set(KEY, app->FIELD.value()); \
+  }
 
 AppStorageFileHandler::AppInfo::AppInfo() = default;
 AppStorageFileHandler::AppInfo::~AppInfo() = default;
@@ -124,6 +138,20 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
       app_details_dict.Set(kShortNameKey, app->short_name.value());
     }
 
+    if (!app->additional_search_terms.empty()) {
+      base::Value::List additional_search_terms;
+      for (const auto& additional_search_term : app->additional_search_terms) {
+        additional_search_terms.Append(additional_search_term);
+      }
+      app_details_dict.Set(kAdditionalSearchTermsKey,
+                           std::move(additional_search_terms));
+    }
+
+    if (app->icon_key.has_value() &&
+        app->icon_key->resource_id != IconKey::kInvalidResourceId) {
+      app_details_dict.Set(kIconResourceIdKey, app->icon_key->resource_id);
+    }
+
     if (app->install_reason != InstallReason::kUnknown) {
       app_details_dict.Set(kInstallReasonKey,
                            static_cast<int>(app->install_reason));
@@ -134,17 +162,15 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
                            static_cast<int>(app->install_source));
     }
 
-    if (app->is_platform_app.has_value()) {
-      app_details_dict.Set(kIsPlatformAppKey, app->is_platform_app.value());
-    }
-
-    if (app->recommendable.has_value()) {
-      app_details_dict.Set(kRecommendableKey, app->recommendable.value());
-    }
-
-    if (app->searchable.has_value()) {
-      app_details_dict.Set(kSearchableKey, app->searchable.value());
-    }
+    SET_KEY_FOR_OPTIONAL_VALUE(is_platform_app, kIsPlatformAppKey);
+    SET_KEY_FOR_OPTIONAL_VALUE(recommendable, kRecommendableKey);
+    SET_KEY_FOR_OPTIONAL_VALUE(searchable, kSearchableKey);
+    SET_KEY_FOR_OPTIONAL_VALUE(show_in_launcher, kShowInLauncherKey);
+    SET_KEY_FOR_OPTIONAL_VALUE(show_in_shelf, kShowInShelfKey);
+    SET_KEY_FOR_OPTIONAL_VALUE(show_in_search, kShowInSearchKey);
+    SET_KEY_FOR_OPTIONAL_VALUE(show_in_management, kShowInManagementKey);
+    SET_KEY_FOR_OPTIONAL_VALUE(handles_intents, kHandlesIntentsKey);
+    SET_KEY_FOR_OPTIONAL_VALUE(allow_uninstall, kAllowUninstallKey);
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info_dict.Set(app->app_id, std::move(app_details_dict));
@@ -195,6 +221,21 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     app->name = GetStringValueFromDict(*value, kNameKey);
     app->short_name = GetStringValueFromDict(*value, kShortNameKey);
 
+    auto icon_resource_id = value->FindInt(kIconResourceIdKey);
+    if (icon_resource_id.has_value()) {
+      app->icon_key =
+          apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
+                        icon_resource_id.value(), apps::IconEffects::kNone);
+    }
+
+    auto* additional_search_terms = value->FindList(kAdditionalSearchTermsKey);
+    if (additional_search_terms) {
+      for (auto& additional_search_term : *additional_search_terms) {
+        app->additional_search_terms.push_back(
+            additional_search_term.GetString());
+      }
+    }
+
     auto install_reason = value->FindInt(kInstallReasonKey);
     if (install_reason.has_value() &&
         install_reason.value() >= static_cast<int>(InstallReason::kUnknown) &&
@@ -212,6 +253,12 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     app->is_platform_app = value->FindBool(kIsPlatformAppKey);
     app->recommendable = value->FindBool(kRecommendableKey);
     app->searchable = value->FindBool(kSearchableKey);
+    app->show_in_launcher = value->FindBool(kShowInLauncherKey);
+    app->show_in_shelf = value->FindBool(kShowInShelfKey);
+    app->show_in_search = value->FindBool(kShowInSearchKey);
+    app->show_in_management = value->FindBool(kShowInManagementKey);
+    app->handles_intents = value->FindBool(kHandlesIntentsKey);
+    app->allow_uninstall = value->FindBool(kAllowUninstallKey);
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info->apps.push_back(std::move(app));

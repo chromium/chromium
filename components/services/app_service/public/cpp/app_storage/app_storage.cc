@@ -134,12 +134,36 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
   IS_APP_VALUE_CHANGED(name);
   IS_APP_VALUE_CHANGED(short_name);
 
+  if (app->additional_search_terms.size() !=
+      it->second->additional_search_terms.size()) {
+    return true;
+  }
+  for (size_t i = 0; i < app->additional_search_terms.size(); i++) {
+    if (app->additional_search_terms[i] !=
+        it->second->additional_search_terms[i]) {
+      return true;
+    }
+  }
+
+  if (app->icon_key.has_value() &&
+      (!it->second->icon_key.has_value() ||
+       app->icon_key.value().resource_id !=
+           it->second->icon_key.value().resource_id)) {
+    return true;
+  }
+
   IS_APP_VALUE_CHANGED_FOR_ENUM(install_reason, InstallReason::kUnknown)
   IS_APP_VALUE_CHANGED_FOR_ENUM(install_source, InstallSource::kUnknown)
 
   IS_APP_VALUE_CHANGED(is_platform_app);
   IS_APP_VALUE_CHANGED(recommendable);
   IS_APP_VALUE_CHANGED(searchable);
+  IS_APP_VALUE_CHANGED(show_in_launcher);
+  IS_APP_VALUE_CHANGED(show_in_shelf);
+  IS_APP_VALUE_CHANGED(show_in_search);
+  IS_APP_VALUE_CHANGED(show_in_management);
+  IS_APP_VALUE_CHANGED(handles_intents);
+  IS_APP_VALUE_CHANGED(allow_uninstall);
 
   // TODO(crbug.com/1385932): Add other files in the App structure.
   return false;

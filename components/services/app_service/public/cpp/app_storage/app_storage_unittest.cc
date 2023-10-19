@@ -17,6 +17,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
@@ -152,11 +153,21 @@ class AppStorageTest : public testing::Test {
     app2->readiness = kReadiness2;
     app2->name = kAppName2;
     app2->short_name = kAppShortName1;
+    app2->additional_search_terms = {"term1", "term2"};
+    app2->icon_key =
+        apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
+                      /*resource_id=*/65535, apps::IconEffects::kNone);
     app2->install_reason = InstallReason::kUser;
     app2->install_source = InstallSource::kBrowser;
     app2->is_platform_app = false;
     app2->recommendable = true;
     app2->searchable = true;
+    app2->show_in_launcher = true;
+    app2->show_in_shelf = true;
+    app2->show_in_search = true;
+    app2->show_in_management = true;
+    app2->handles_intents = false;
+    app2->allow_uninstall = false;
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
@@ -165,11 +176,22 @@ class AppStorageTest : public testing::Test {
 
   MODIFY_FIELD(name, kAppName2)
   MODIFY_FIELD(short_name, kAppShortName2)
+  MODIFY_FIELD(additional_search_terms, {"term1"})
+  MODIFY_FIELD(icon_key,
+               apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
+                             /*resource_id=*/65535,
+                             apps::IconEffects::kNone))
   MODIFY_FIELD(install_reason, InstallReason::kDefault)
   MODIFY_FIELD(install_source, InstallSource::kSync)
   MODIFY_FIELD(is_platform_app, true)
   MODIFY_FIELD(recommendable, false)
   MODIFY_FIELD(searchable, false)
+  MODIFY_FIELD(show_in_launcher, true)
+  MODIFY_FIELD(show_in_shelf, true)
+  MODIFY_FIELD(show_in_search, true)
+  MODIFY_FIELD(show_in_management, true)
+  MODIFY_FIELD(handles_intents, false)
+  MODIFY_FIELD(allow_uninstall, false)
 
   void RemoveOneApp(AppType app_type, const std::string& app_id) {
     AppPtr app = std::make_unique<App>(app_type, app_id);
@@ -287,6 +309,12 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
   VERIFY_MODIFY_FIELD(is_platform_app, true);
   VERIFY_MODIFY_FIELD(recommendable, false);
   VERIFY_MODIFY_FIELD(searchable, false);
+  VERIFY_MODIFY_FIELD(show_in_launcher, true);
+  VERIFY_MODIFY_FIELD(show_in_shelf, true);
+  VERIFY_MODIFY_FIELD(show_in_search, true);
+  VERIFY_MODIFY_FIELD(show_in_management, true);
+  VERIFY_MODIFY_FIELD(handles_intents, false);
+  VERIFY_MODIFY_FIELD(allow_uninstall, false);
 
   RemoveOneApp(kAppType1, kAppId1);
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);

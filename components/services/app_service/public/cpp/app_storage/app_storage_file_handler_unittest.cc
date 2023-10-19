@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
@@ -103,11 +104,21 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->readiness = Readiness::kDisabledByUser;
     app2->name = kAppName2;
     app2->short_name = kAppShortName;
+    app2->additional_search_terms = {"item1", "item2"};
+    app2->icon_key =
+        apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
+                      /*resource_id=*/65535, apps::IconEffects::kNone);
     app2->install_reason = InstallReason::kUser;
     app2->install_source = InstallSource::kBrowser;
     app2->is_platform_app = false;
     app2->recommendable = true;
     app2->searchable = true;
+    app2->show_in_launcher = true;
+    app2->show_in_shelf = true;
+    app2->show_in_search = true;
+    app2->show_in_management = true;
+    app2->handles_intents = false;
+    app2->allow_uninstall = false;
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
