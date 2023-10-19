@@ -9,7 +9,6 @@ import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {State} from '../../externs/ts/state.js';
-// @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
 import {Store} from '../../externs/ts/store.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
@@ -115,20 +114,14 @@ export class ToolbarController {
      * @private @type {HTMLElement}
      * @const
      */
-    // @ts-ignore: error TS2339: Property 'pinnedToggle_' does not exist on type
-    // 'ToolbarController'.
     this.pinnedToggle_;
 
     /**
      * @private @type {HTMLElement}
      * @const
      */
-    // @ts-ignore: error TS2339: Property 'pinnedToggleJelly_' does not exist on
-    // type 'ToolbarController'.
     this.pinnedToggleJelly_;
 
-    // @ts-ignore: error TS2339: Property 'pinnedToggleJelly_' does not exist on
-    // type 'ToolbarController'.
     [this.pinnedToggle_, this.pinnedToggleJelly_] = queryRequiredExactlyOne(
         ['#pinned-toggle', '#pinned-toggle-jelly'], this.toolbar_);
 
@@ -306,8 +299,6 @@ export class ToolbarController {
       this.cloudButton_.addEventListener('click', () => {
         this.cloudButton_.toggleAttribute('menu-shown', true);
         this.cloudButton_.toggleAttribute('aria-expanded', true);
-        // @ts-ignore: error TS2339: Property 'showAt' does not exist on type
-        // 'HTMLElement'.
         cloudPanel.showAt(this.cloudButton_);
       });
       cloudPanel.addEventListener(XfCloudPanel.events.PANEL_CLOSED, () => {
@@ -333,8 +324,6 @@ export class ToolbarController {
     this.togglePinnedCommand_.addEventListener(
         'hiddenChange', this.updatePinnedToggle_.bind(this));
 
-    // @ts-ignore: error TS2339: Property 'pinnedToggle_' does not exist on type
-    // 'ToolbarController'.
     (this.pinnedToggleJelly_ || this.pinnedToggle_)
         .addEventListener('change', this.onPinnedToggleChanged_.bind(this));
 
@@ -346,7 +335,6 @@ export class ToolbarController {
    * Updates toolbar's UI elements which are related to current directory.
    * @private
    */
-  // @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
   updateCurrentDirectoryButtons_(event) {
     this.updateRefreshCommand_();
 
@@ -413,8 +401,6 @@ export class ToolbarController {
         text = strf('MANY_ENTRIES_SELECTED', selection.totalCount);
       }
     }
-    // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable to
-    // type 'string | null'.
     this.filesSelectedLabel_.textContent = text;
 
     // Update visibility of the delete and move to trash buttons.
@@ -505,7 +491,6 @@ export class ToolbarController {
    */
   onSharesheetButtonClicked_() {
     this.sharesheetButton_.setAttribute('menu-shown', '');
-    // @ts-ignore: error TS6133: 'e' is declared but its value is never read.
     this.toolbar_.ownerDocument.body.addEventListener('focusin', (e) => {
       this.sharesheetButton_.removeAttribute('menu-shown');
     }, {once: true});
@@ -521,18 +506,10 @@ export class ToolbarController {
   updatePinnedToggle_() {
     this.pinnedToggleWrapper_.hidden = this.togglePinnedCommand_.hidden;
     if (util.isCrosComponentsEnabled()) {
-      // @ts-ignore: error TS2339: Property 'pinnedToggleJelly_' does not exist
-      // on type 'ToolbarController'.
       this.pinnedToggleJelly_.selected = this.togglePinnedCommand_.checked;
-      // @ts-ignore: error TS2339: Property 'pinnedToggleJelly_' does not exist
-      // on type 'ToolbarController'.
       this.pinnedToggleJelly_.disabled = this.togglePinnedCommand_.disabled;
     } else {
-      // @ts-ignore: error TS2339: Property 'pinnedToggle_' does not exist on
-      // type 'ToolbarController'.
       this.pinnedToggle_.checked = this.togglePinnedCommand_.checked;
-      // @ts-ignore: error TS2339: Property 'pinnedToggle_' does not exist on
-      // type 'ToolbarController'.
       this.pinnedToggle_.disabled = this.togglePinnedCommand_.disabled;
     }
   }
@@ -544,11 +521,7 @@ export class ToolbarController {
     // Optimistally update the command's properties so we get notified if they
     // change back.
     this.togglePinnedCommand_.checked = util.isCrosComponentsEnabled() ?
-        // @ts-ignore: error TS2339: Property 'pinnedToggleJelly_' does not
-        // exist on type 'ToolbarController'.
         this.pinnedToggleJelly_.selected :
-        // @ts-ignore: error TS2339: Property 'pinnedToggle_' does not exist on
-        // type 'ToolbarController'.
         this.pinnedToggle_.checked;
   }
 
@@ -583,8 +556,6 @@ export class ToolbarController {
     // If the bulk pinning preference is enabled, the user should not be able to
     // toggle items offline.
     if (this.bulkPinningPref_ !== bulkPinningPref) {
-      // @ts-ignore: error TS2322: Type 'boolean | undefined' is not assignable
-      // to type 'boolean | null'.
       this.bulkPinningPref_ = bulkPinningPref;
       this.togglePinnedCommand_.canExecuteChange(
           this.listContainer_.currentList);

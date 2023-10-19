@@ -5,7 +5,7 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {storage, ValueChanged} from '../../common/js/storage.js';
+import {storage} from '../../common/js/storage.js';
 import {util} from '../../common/js/util.js';
 
 /**
@@ -46,8 +46,6 @@ export class TaskHistory extends EventTarget {
    */
   getLastExecutedTime(descriptor) {
     const taskId = util.makeTaskID(descriptor);
-    // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable to
-    // type 'number'.
     return this.lastExecutedTime_[taskId] ? this.lastExecutedTime_[taskId] : 0;
   }
 
@@ -58,9 +56,6 @@ export class TaskHistory extends EventTarget {
   load_() {
     storage.local.get(TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME, value => {
       this.lastExecutedTime_ =
-          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-          // because expression of type 'string' can't be used to index type
-          // 'Object'.
           value[TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME] || {};
     });
   }
@@ -71,8 +66,6 @@ export class TaskHistory extends EventTarget {
    */
   save_() {
     const objectToSave = {};
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
     objectToSave[TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME] =
         this.lastExecutedTime_;
     storage.local.set(objectToSave);
@@ -80,7 +73,7 @@ export class TaskHistory extends EventTarget {
 
   /**
    * Handles local storage change event to update the current history.
-   * @param {!Object<string, !ValueChanged>} changes
+   * @param {!Object<string, !StorageChange>} changes
    * @param {string} areaName
    * @private
    */
@@ -91,7 +84,7 @@ export class TaskHistory extends EventTarget {
 
     for (const key in changes) {
       if (key == TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME) {
-        this.lastExecutedTime_ = changes[key]?.newValue;
+        this.lastExecutedTime_ = changes[key].newValue;
         dispatchSimpleEvent(this, TaskHistory.EventType.UPDATE);
       }
     }
@@ -110,8 +103,6 @@ export class TaskHistory extends EventTarget {
 
     let items = [];
     for (let i = 0; i < keys.length; i++) {
-      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
-      // type.
       items.push({id: keys[i], timestamp: this.lastExecutedTime_[keys[i]]});
     }
 
@@ -120,12 +111,9 @@ export class TaskHistory extends EventTarget {
 
     const newObject = {};
     for (let i = 0; i < items.length; i++) {
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       newObject[items[i].id] = items[i].timestamp;
     }
 
-    // @ts-ignore: error TS2322: Type '{}' is not assignable to type '{ [x:
-    // string]: number; }'.
     this.lastExecutedTime_ = newObject;
   }
 }

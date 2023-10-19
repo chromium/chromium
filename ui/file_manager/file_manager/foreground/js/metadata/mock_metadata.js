@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @ts-ignore: error TS6133: 'MetadataModel' is declared but its value is never
-// read.
 import {MetadataModel} from './metadata_model.js';
 
 /**
@@ -29,17 +27,13 @@ export class MockMetadataModel {
   }
 
   /** @override */
-  // @ts-ignore: error TS7006: Parameter 'entries' implicitly has an 'any' type.
   get(entries) {
     return Promise.resolve(this.getCache(entries));
   }
 
   /** @override */
-  // @ts-ignore: error TS7006: Parameter 'entries' implicitly has an 'any' type.
   getCache(entries) {
     return entries.map(
-        // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any'
-        // type.
         entry => this.propertiesMap_.has(entry.toURL()) ?
             this.propertiesMap_.get(entry.toURL()) :
             this.properties);
@@ -54,8 +48,5 @@ export class MockMetadataModel {
   }
 
   /** @override */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'MockMetadataModel' does not
-  // extend another class.
   notifyEntriesChanged() {}
 }

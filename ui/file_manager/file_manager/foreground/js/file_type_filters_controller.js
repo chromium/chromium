@@ -181,13 +181,9 @@ export class FileTypeFiltersController {
         newFilter === chrome.fileManagerPrivate.FileCategory.ALL;
     let offMessage = strf(
         'RECENT_VIEW_FILTER_OFF',
-        // @ts-ignore: error TS2345: Argument of type 'string | undefined' is
-        // not assignable to parameter of type 'string'.
         str(this.filterTypeToTranslationKeyMap_.get(currentFilter)));
     let onMessage = strf(
         'RECENT_VIEW_FILTER_ON',
-        // @ts-ignore: error TS2345: Argument of type 'string | undefined' is
-        // not assignable to parameter of type 'string'.
         str(this.filterTypeToTranslationKeyMap_.get(newFilter)));
     if (isFromAllToOthers) {
       offMessage = '';
@@ -207,8 +203,6 @@ export class FileTypeFiltersController {
    * @private
    */
   createFilterButton_(fileCategory) {
-    // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
-    // assignable to parameter of type 'string'.
     const label = str(this.filterTypeToTranslationKeyMap_.get(fileCategory));
     const button =
         createChild(this.container_, 'file-type-filter-button', 'cr-button');

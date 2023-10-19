@@ -9,7 +9,6 @@ import {reportPromise} from '../../../common/js/test_error_reporting.js';
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {MetadataRequest} from './metadata_request.js';
 
-// @ts-ignore: error TS7006: Parameter 'dataUrl' implicitly has an 'any' type.
 function makeFileEntryFromDataURL(name, dataUrl) {
   const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
   const data = atob(dataUrl.split('base64,')[1]);
@@ -23,8 +22,6 @@ function makeFileEntryFromDataURL(name, dataUrl) {
     name: name,
     isDirectory: false,
     url: dataUrl,
-    // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any'
-    // type.
     file: function(callback) {
       callback(blob);
     },
@@ -69,14 +66,11 @@ const entryA = makeFileEntryFromDataURL(
 
 const entryB = makeFileEntryFromDataURL('empty.jpg', 'data:image/jpeg;base64,');
 
-/** @param {()=>void} callback */
 export function testExternalMetadataProviderBasic(callback) {
   // Mocking SharedWorker's port.
   const port = /** @type {!MessagePort} */ ({
     postMessage: function(message) {
       if (message.verb === 'request') {
-        // @ts-ignore: error TS2721: Cannot invoke an object which is possibly
-        // 'null'.
         port.onmessage(/** @type {!MessageEvent} */ ({
           data: {
             verb: 'result',
@@ -100,16 +94,8 @@ export function testExternalMetadataProviderBasic(callback) {
       provider
           .get([
             new MetadataRequest(
-                // @ts-ignore: error TS2345: Argument of type '{ name: any;
-                // isDirectory: boolean; url: any; file: (callback: any) =>
-                // void; toURL: () => any; }' is not assignable to parameter of
-                // type 'FileSystemEntry'.
                 entryA, ['contentThumbnailUrl', 'contentThumbnailTransform']),
             new MetadataRequest(
-                // @ts-ignore: error TS2345: Argument of type '{ name: any;
-                // isDirectory: boolean; url: any; file: (callback: any) =>
-                // void; toURL: () => any; }' is not assignable to parameter of
-                // type 'FileSystemEntry'.
                 entryB, ['contentThumbnailUrl', 'contentThumbnailTransform']),
           ])
           .then(results => {

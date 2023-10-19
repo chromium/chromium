@@ -7,7 +7,7 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {recordBoolean} from '../../common/js/metrics.js';
-import {strf, util} from '../../common/js/util.js';
+import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -31,24 +31,18 @@ export class Action {
    *
    * @return {boolean} True if the function can execute, false if not.
    */
-  canExecute() {
-    return false;
-  }
+  canExecute() {}
 
   /**
    * @return {?string}
    */
-  getTitle() {
-    return null;
-  }
+  getTitle() {}
 
   /**
    * Entries that this Action will execute upon.
    * @return {!Array<!Entry|!FileEntry>}
    */
-  getEntries() {
-    return [];
-  }
+  getEntries() {}
 }
 
 /** @implements {Action} */
@@ -94,26 +88,17 @@ class DriveShareAction {
    */
   static create(entries, metadataModel, volumeManager, ui) {
     if (entries.length !== 1) {
-      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-      // 'DriveShareAction'.
       return null;
     }
-    // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined'
-    // is not assignable to parameter of type 'FileSystemEntry'.
     return new DriveShareAction(entries[0], metadataModel, volumeManager, ui);
   }
 
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'DriveShareAction' does not
-  // extend another class.
   execute() {
     // Open the Sharing dialog in a new window.
     chrome.fileManagerPrivate.getEntryProperties(
-        // @ts-ignore: error TS2322: Type 'FileSystemEntry | FilesAppEntry' is
-        // not assignable to type 'FileSystemEntry'.
         [util.unwrapEntry(this.entry_)], ['shareUrl'], results => {
           if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError.message);
@@ -125,12 +110,10 @@ class DriveShareAction {
                 '(returned ' + results.length + ')');
             return;
           }
-          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           if (results[0].shareUrl === undefined) {
             console.warn('getEntryProperties shareUrl is undefined');
             return;
           }
-          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           util.visitURL(assert(results[0].shareUrl));
         });
   }
@@ -138,13 +121,9 @@ class DriveShareAction {
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'DriveShareAction' does not
-  // extend another class.
   canExecute() {
     const metadata = this.metadataModel_.getCache([this.entry_], ['canShare']);
     assert(metadata.length === 1);
-    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     const canShareItem = metadata[0].canShare !== false;
     return this.volumeManager_.getDriveConnectionState().type !==
         chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE &&
@@ -159,9 +138,6 @@ class DriveShareAction {
   }
 
   /** @override */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'DriveShareAction' does not
-  // extend another class.
   getEntries() {
     return [this.entry_];
   }
@@ -176,7 +152,7 @@ class DriveToggleOfflineAction {
    * @param {!ActionModelUI} ui
    * @param {!VolumeManager} volumeManager
    * @param {boolean} value
-   * @param {function():void} onExecute
+   * @param {function()} onExecute
    */
   constructor(entries, metadataModel, ui, volumeManager, value, onExecute) {
     /**
@@ -210,7 +186,7 @@ class DriveToggleOfflineAction {
     this.value_ = value;
 
     /**
-     * @private @type {function():void}
+     * @private @type {function()}
      * @const
      */
     this.onExecute_ = onExecute;
@@ -222,18 +198,15 @@ class DriveToggleOfflineAction {
    * @param {!ActionModelUI} ui
    * @param {!VolumeManager} volumeManager
    * @param {boolean} value
-   * @param {function():void} onExecute
+   * @param {function()} onExecute
    * @return {DriveToggleOfflineAction}
    */
   static create(entries, metadataModel, ui, volumeManager, value, onExecute) {
     const actionableEntries = entries.filter(
         entry =>
-            // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        metadataModel.getCache([entry], ['pinned'])[0].pinned !== value);
+            metadataModel.getCache([entry], ['pinned'])[0].pinned !== value);
 
     if (actionableEntries.length === 0) {
-      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-      // 'DriveToggleOfflineAction'.
       return null;
     }
 
@@ -244,17 +217,12 @@ class DriveToggleOfflineAction {
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'DriveToggleOfflineAction'
-  // does not extend another class.
   execute() {
     const entries = this.entries_;
     if (entries.length == 0) {
       return;
     }
 
-    // @ts-ignore: error TS7034: Variable 'currentEntry' implicitly has type
-    // 'any' in some locations where its type cannot be determined.
     let currentEntry;
     let error = false;
 
@@ -267,18 +235,9 @@ class DriveToggleOfflineAction {
         }
         currentEntry = entries.shift();
         // Skip files we cannot pin.
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        if (this.metadataModel_
-                // @ts-ignore: error TS2322: Type 'FileSystemEntry | undefined'
-                // is not assignable to type 'FileSystemEntry'.
-                .getCache([currentEntry], ['canPin'])[0]
-                // @ts-ignore: error TS2339: Property 'canPin' does not exist on
-                // type 'MetadataItem'.
+        if (this.metadataModel_.getCache([currentEntry], ['canPin'])[0]
                 .canPin) {
           chrome.fileManagerPrivate.pinDriveFile(
-              // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
-              // undefined' is not assignable to parameter of type
-              // 'FileSystemEntry'.
               currentEntry, this.value_, steps.entryPinned);
         } else {
           steps.start();
@@ -289,26 +248,17 @@ class DriveToggleOfflineAction {
       entryPinned: () => {
         error = !!chrome.runtime.lastError;
         recordBoolean('DrivePinSuccess', !error);
-        // @ts-ignore: error TS7005: Variable 'currentEntry' implicitly has an
-        // 'any' type.
         if (this.metadataModel_.getCache([currentEntry], ['hosted'])[0]
                 .hosted) {
           recordBoolean('DriveHostedFilePinSuccess', !error);
         }
         if (error && this.value_) {
-          // @ts-ignore: error TS7005: Variable 'currentEntry' implicitly has an
-          // 'any' type.
           this.metadataModel_.get([currentEntry], ['size']).then(results => {
-            // @ts-ignore: error TS2532: Object is possibly 'undefined'.
             steps.showError(results[0].size);
           });
           return;
         }
-        // @ts-ignore: error TS7005: Variable 'currentEntry' implicitly has an
-        // 'any' type.
         this.metadataModel_.notifyEntriesChanged([currentEntry]);
-        // @ts-ignore: error TS7005: Variable 'currentEntry' implicitly has an
-        // 'any' type.
         this.metadataModel_.get([currentEntry], ['pinned'])
             .then(steps.updateUI);
       },
@@ -321,8 +271,6 @@ class DriveToggleOfflineAction {
           this.onExecute_();
         }
         this.ui_.listContainer.currentView.updateListItemsMetadata(
-            // @ts-ignore: error TS7005: Variable 'currentEntry' implicitly has
-            // an 'any' type.
             'external', [currentEntry]);
         if (!error) {
           steps.start();
@@ -331,14 +279,9 @@ class DriveToggleOfflineAction {
 
       // Show an error.
       // TODO(crbug.com/1138744): Migrate this error message to a visual signal.
-      // @ts-ignore: error TS7006: Parameter 'size' implicitly has an 'any'
-      // type.
       showError: size => {
         this.ui_.alertDialog.show(
-            // @ts-ignore: error TS7005: Variable 'currentEntry' implicitly has
-            // an 'any' type.
             strf('OFFLINE_FAILURE_MESSAGE', unescape(currentEntry.name)), null,
-            // @ts-ignore: error TS2554: Expected 1-3 arguments, but got 4.
             null, null);
       },
     };
@@ -348,14 +291,8 @@ class DriveToggleOfflineAction {
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'DriveToggleOfflineAction'
-  // does not extend another class.
   canExecute() {
-    return this.metadataModel_
-        .getCache(this.entries_, ['canPin'])
-        // @ts-ignore: error TS2339: Property 'canPin' does not exist on type
-        // 'MetadataItem'.
+    return this.metadataModel_.getCache(this.entries_, ['canPin'])
         .some(metadata => metadata.canPin);
   }
 
@@ -367,9 +304,6 @@ class DriveToggleOfflineAction {
   }
 
   /** @override */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'DriveToggleOfflineAction'
-  // does not extend another class.
   getEntries() {
     return this.entries_;
   }
@@ -381,7 +315,7 @@ class DriveCreateFolderShortcutAction {
   /**
    * @param {!Entry} entry
    * @param {!FolderShortcutsDataModel} shortcutsModel
-   * @param {function():void} onExecute
+   * @param {function()} onExecute
    */
   constructor(entry, shortcutsModel, onExecute) {
     /**
@@ -397,7 +331,7 @@ class DriveCreateFolderShortcutAction {
     this.shortcutsModel_ = shortcutsModel;
 
     /**
-     * @private @type {function():void}
+     * @private @type {function()}
      * @const
      */
     this.onExecute_ = onExecute;
@@ -407,37 +341,25 @@ class DriveCreateFolderShortcutAction {
    * @param {!Array<!Entry>} entries
    * @param {!VolumeManager} volumeManager
    * @param {!FolderShortcutsDataModel} shortcutsModel
-   * @param {function():void} onExecute
+   * @param {function()} onExecute
    * @return {DriveCreateFolderShortcutAction}
    */
   static create(entries, volumeManager, shortcutsModel, onExecute) {
-    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     if (entries.length !== 1 || entries[0].isFile) {
-      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-      // 'DriveCreateFolderShortcutAction'.
       return null;
     }
-    // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined'
-    // is not assignable to parameter of type 'FileSystemEntry | FilesAppEntry'.
     const locationInfo = volumeManager.getLocationInfo(entries[0]);
     if (!locationInfo || locationInfo.isSpecialSearchRoot ||
         locationInfo.isRootEntry) {
-      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-      // 'DriveCreateFolderShortcutAction'.
       return null;
     }
     return new DriveCreateFolderShortcutAction(
-        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
-        // undefined' is not assignable to parameter of type 'FileSystemEntry'.
         entries[0], shortcutsModel, onExecute);
   }
 
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class
-  // 'DriveCreateFolderShortcutAction' does not extend another class.
   execute() {
     this.shortcutsModel_.add(this.entry_);
     this.onExecute_();
@@ -446,9 +368,6 @@ class DriveCreateFolderShortcutAction {
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class
-  // 'DriveCreateFolderShortcutAction' does not extend another class.
   canExecute() {
     return !this.shortcutsModel_.exists(this.entry_);
   }
@@ -461,9 +380,6 @@ class DriveCreateFolderShortcutAction {
   }
 
   /** @override */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class
-  // 'DriveCreateFolderShortcutAction' does not extend another class.
   getEntries() {
     return [this.entry_];
   }
@@ -475,7 +391,7 @@ class DriveRemoveFolderShortcutAction {
   /**
    * @param {!Entry} entry
    * @param {!FolderShortcutsDataModel} shortcutsModel
-   * @param {function():void} onExecute
+   * @param {function()} onExecute
    */
   constructor(entry, shortcutsModel, onExecute) {
     /**
@@ -491,7 +407,7 @@ class DriveRemoveFolderShortcutAction {
     this.shortcutsModel_ = shortcutsModel;
 
     /**
-     * @private @type {function():void}
+     * @private @type {function()}
      * @const
      */
     this.onExecute_ = onExecute;
@@ -500,31 +416,21 @@ class DriveRemoveFolderShortcutAction {
   /**
    * @param {!Array<!Entry>} entries
    * @param {!FolderShortcutsDataModel} shortcutsModel
-   * @param {function():void} onExecute
+   * @param {function()} onExecute
    * @return {DriveRemoveFolderShortcutAction}
    */
   static create(entries, shortcutsModel, onExecute) {
-    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     if (entries.length !== 1 || entries[0].isFile ||
-        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
-        // undefined' is not assignable to parameter of type 'FileSystemEntry'.
         !shortcutsModel.exists(entries[0])) {
-      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-      // 'DriveRemoveFolderShortcutAction'.
       return null;
     }
     return new DriveRemoveFolderShortcutAction(
-        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
-        // undefined' is not assignable to parameter of type 'FileSystemEntry'.
         entries[0], shortcutsModel, onExecute);
   }
 
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class
-  // 'DriveRemoveFolderShortcutAction' does not extend another class.
   execute() {
     this.shortcutsModel_.remove(this.entry_);
     this.onExecute_();
@@ -533,9 +439,6 @@ class DriveRemoveFolderShortcutAction {
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class
-  // 'DriveRemoveFolderShortcutAction' does not extend another class.
   canExecute() {
     return this.shortcutsModel_.exists(this.entry_);
   }
@@ -548,9 +451,6 @@ class DriveRemoveFolderShortcutAction {
   }
 
   /** @override */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class
-  // 'DriveRemoveFolderShortcutAction' does not extend another class.
   getEntries() {
     return [this.entry_];
   }
@@ -601,26 +501,17 @@ class DriveManageAction {
    */
   static create(entries, volumeManager, ui) {
     if (entries.length !== 1) {
-      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-      // 'DriveManageAction'.
       return null;
     }
 
-    // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined'
-    // is not assignable to parameter of type 'FileSystemEntry'.
     return new DriveManageAction(entries[0], volumeManager, ui);
   }
 
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'DriveManageAction' does not
-  // extend another class.
   execute() {
     chrome.fileManagerPrivate.getEntryProperties(
-        // @ts-ignore: error TS2322: Type 'FileSystemEntry | FilesAppEntry' is
-        // not assignable to type 'FileSystemEntry'.
         [util.unwrapEntry(this.entry_)], ['alternateUrl'], results => {
           if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError.message);
@@ -632,12 +523,10 @@ class DriveManageAction {
                 '(returned ' + results.length + ')');
             return;
           }
-          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           if (results[0].alternateUrl === undefined) {
             console.warn('getEntryProperties alternateUrl is undefined');
             return;
           }
-          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           util.visitURL(assert(results[0].alternateUrl));
         });
   }
@@ -645,9 +534,6 @@ class DriveManageAction {
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'DriveManageAction' does not
-  // extend another class.
   canExecute() {
     return this.volumeManager_.getDriveConnectionState().type !==
         chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE;
@@ -661,9 +547,6 @@ class DriveManageAction {
   }
 
   /** @override */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'DriveManageAction' does not
-  // extend another class.
   getEntries() {
     return [this.entry_];
   }
@@ -680,7 +563,7 @@ class CustomAction {
    * @param {!Array<!Entry>} entries
    * @param {string} id
    * @param {?string} title
-   * @param {function():void} onExecute
+   * @param {function()} onExecute
    */
   constructor(entries, id, title, onExecute) {
     /**
@@ -702,7 +585,7 @@ class CustomAction {
     this.title_ = title;
 
     /**
-     * @private @type {function():void}
+     * @private @type {function()}
      * @const
      */
     this.onExecute_ = onExecute;
@@ -711,14 +594,8 @@ class CustomAction {
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'CustomAction' does not extend
-  // another class.
   execute() {
     chrome.fileManagerPrivate.executeCustomAction(
-        // @ts-ignore: error TS2345: Argument of type '(FileSystemEntry |
-        // FilesAppEntry)[]' is not assignable to parameter of type
-        // 'FileSystemEntry[]'.
         this.entries_.map(e => util.unwrapEntry(e)), this.id_, () => {
           if (chrome.runtime.lastError) {
             console.error(
@@ -732,9 +609,6 @@ class CustomAction {
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'CustomAction' does not extend
-  // another class.
   canExecute() {
     return true;  // Custom actions are always executable.
   }
@@ -742,17 +616,11 @@ class CustomAction {
   /**
    * @override
    */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'CustomAction' does not extend
-  // another class.
   getTitle() {
     return this.title_;
   }
 
   /** @override */
-  // @ts-ignore: error TS4121: This member cannot have a JSDoc comment with an
-  // '@override' tag because its containing class 'CustomAction' does not extend
-  // another class.
   getEntries() {
     return this.entries_;
   }
@@ -804,17 +672,17 @@ export class ActionsModel extends EventTarget {
     this.entries_ = entries;
 
     /**
-     * @private @type {!Record<string, !Action>}
+     * @private @type {!Object<!Action>}
      */
     this.actions_ = {};
 
     /**
-     * @private @type {?function():void}
+     * @private @type {?function()}
      */
     this.initializePromiseReject_ = null;
 
     /**
-     * @private @type {?Promise<void>}
+     * @private @type {Promise}
      */
     this.initializePromise_ = null;
 
@@ -827,7 +695,7 @@ export class ActionsModel extends EventTarget {
   /**
    * Initializes the ActionsModel, including populating the list of available
    * actions for the given entries.
-   * @return {!Promise<void>}
+   * @return {!Promise}
    */
   initialize() {
     if (this.initializePromise_) {
@@ -843,9 +711,6 @@ export class ActionsModel extends EventTarget {
           this.initializePromiseReject_ = reject;
 
           const volumeInfo = this.entries_.length >= 1 &&
-              // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
-              // undefined' is not assignable to parameter of type
-              // 'FileSystemEntry | FilesAppEntry'.
               this.volumeManager_.getVolumeInfo(this.entries_[0]);
           // All entries need to be on the same volume to execute ActionsModel
           // commands.
@@ -864,9 +729,6 @@ export class ActionsModel extends EventTarget {
                   this.entries_, this.metadataModel_, this.volumeManager_,
                   this.ui_);
               if (shareAction) {
-                // @ts-ignore: error TS7053: Element implicitly has an 'any'
-                // type because expression of type 'string' can't be used to
-                // index type '{}'.
                 actions[ActionsModel.CommonActionId.SHARE] = shareAction;
               }
 
@@ -874,9 +736,6 @@ export class ActionsModel extends EventTarget {
                   this.entries_, this.metadataModel_, this.ui_,
                   this.volumeManager_, true, this.invalidate_.bind(this));
               if (saveForOfflineAction) {
-                // @ts-ignore: error TS7053: Element implicitly has an 'any'
-                // type because expression of type 'string' can't be used to
-                // index type '{}'.
                 actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE] =
                     saveForOfflineAction;
               }
@@ -885,9 +744,6 @@ export class ActionsModel extends EventTarget {
                   this.entries_, this.metadataModel_, this.ui_,
                   this.volumeManager_, false, this.invalidate_.bind(this));
               if (offlineNotNecessaryAction) {
-                // @ts-ignore: error TS7053: Element implicitly has an 'any'
-                // type because expression of type 'string' can't be used to
-                // index type '{}'.
                 actions[ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY] =
                     offlineNotNecessaryAction;
               }
@@ -897,9 +753,6 @@ export class ActionsModel extends EventTarget {
                       this.entries_, this.volumeManager_, this.shortcutsModel_,
                       this.invalidate_.bind(this));
               if (createFolderShortcutAction) {
-                // @ts-ignore: error TS7053: Element implicitly has an 'any'
-                // type because expression of type 'string' can't be used to
-                // index type '{}'.
                 actions[ActionsModel.InternalActionId.CREATE_FOLDER_SHORTCUT] =
                     createFolderShortcutAction;
               }
@@ -909,9 +762,6 @@ export class ActionsModel extends EventTarget {
                       this.entries_, this.shortcutsModel_,
                       this.invalidate_.bind(this));
               if (removeFolderShortcutAction) {
-                // @ts-ignore: error TS7053: Element implicitly has an 'any'
-                // type because expression of type 'string' can't be used to
-                // index type '{}'.
                 actions[ActionsModel.InternalActionId.REMOVE_FOLDER_SHORTCUT] =
                     removeFolderShortcutAction;
               }
@@ -919,9 +769,6 @@ export class ActionsModel extends EventTarget {
               const manageInDriveAction = DriveManageAction.create(
                   this.entries_, this.volumeManager_, this.ui_);
               if (manageInDriveAction) {
-                // @ts-ignore: error TS7053: Element implicitly has an 'any'
-                // type because expression of type 'string' can't be used to
-                // index type '{}'.
                 actions[ActionsModel.InternalActionId.MANAGE_IN_DRIVE] =
                     manageInDriveAction;
               }
@@ -932,9 +779,6 @@ export class ActionsModel extends EventTarget {
             // For FSP, fetch custom actions via an API.
             case VolumeManagerCommon.VolumeType.PROVIDED:
               chrome.fileManagerPrivate.getCustomActions(
-                  // @ts-ignore: error TS2345: Argument of type
-                  // '(FileSystemEntry | FilesAppEntry)[]' is not assignable to
-                  // parameter of type 'FileSystemEntry[]'.
                   this.entries_.map(e => util.unwrapEntry(e)),
                   customActions => {
                     if (chrome.runtime.lastError) {
@@ -960,9 +804,6 @@ export class ActionsModel extends EventTarget {
                                 .FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED) {
                           return;
                         }
-                        // @ts-ignore: error TS7053: Element implicitly has an
-                        // 'any' type because expression of type 'string' can't
-                        // be used to index type '{}'.
                         actions[action.id] = new CustomAction(
                             this.entries_, action.id, action.title || null,
                             this.invalidate_.bind(this));
@@ -983,7 +824,7 @@ export class ActionsModel extends EventTarget {
   }
 
   /**
-   * @return {!Record<string, !Action>}
+   * @return {!Object<!Action>}
    */
   getActions() {
     return this.actions_;
@@ -994,8 +835,6 @@ export class ActionsModel extends EventTarget {
    * @return {Action}
    */
   getAction(id) {
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
     return this.actions_[id] || null;
   }
 

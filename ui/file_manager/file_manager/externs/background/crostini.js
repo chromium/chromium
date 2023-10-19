@@ -20,8 +20,6 @@ export class Crostini {
    * Initialize Volume Manager.
    * @param {!VolumeManager} volumeManager
    */
-  // @ts-ignore: error TS6133: 'volumeManager' is declared but its value is
-  // never read.
   initVolumeManager(volumeManager) {}
 
   /**
@@ -30,8 +28,6 @@ export class Crostini {
    * @param {string} containerName
    * @param {boolean} enabled
    */
-  // @ts-ignore: error TS6133: 'enabled' is declared but its value is never
-  // read.
   setEnabled(vmName, containerName, enabled) {}
 
   /**
@@ -39,17 +35,13 @@ export class Crostini {
    * @param {string} vmName
    * @return {boolean}
    */
-  // @ts-ignore: error TS6133: 'vmName' is declared but its value is never read.
-  isEnabled(vmName) {
-    return false;
-  }
+  isEnabled(vmName) {}
 
   /**
    * Registers an entry as a shared path for the specified VM.
    * @param {string} vmName
    * @param {!Entry} entry
    */
-  // @ts-ignore: error TS6133: 'entry' is declared but its value is never read.
   registerSharedPath(vmName, entry) {}
 
   /**
@@ -57,7 +49,6 @@ export class Crostini {
    * @param {string} vmName
    * @param {!Entry} entry
    */
-  // @ts-ignore: error TS6133: 'entry' is declared but its value is never read.
   unregisterSharedPath(vmName, entry) {}
 
   /**
@@ -67,10 +58,7 @@ export class Crostini {
    * @return {boolean} True if path is shared either by a direct
    *   share or from one of its ancestor directories.
    */
-  // @ts-ignore: error TS6133: 'entry' is declared but its value is never read.
-  isPathShared(vmName, entry) {
-    return false;
-  }
+  isPathShared(vmName, entry) {}
 
   /**
    * Returns true if entry can be shared with the specified VM.
@@ -79,9 +67,5 @@ export class Crostini {
    * @param {boolean} persist If path is to be persisted.
    * @return {boolean}
    */
-  // @ts-ignore: error TS6133: 'persist' is declared but its value is never
-  // read.
-  canSharePath(vmName, entry, persist) {
-    return false;
-  }
+  canSharePath(vmName, entry, persist) {}
 }

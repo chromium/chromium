@@ -6,6 +6,8 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeInfoList} from '../../externs/volume_info_list.js';
 
 import {FilteredVolumeManager} from './filtered_volume_manager.js';
 import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.js';
@@ -21,13 +23,9 @@ function createMockVolumeManager() {
   // Patch its addEventListener, removeEventListener methods to make them log
   // (instead of throw) "not implemented", since those throw events break the
   // FilteredVolumeManager initialization code in tests.
-  // @ts-ignore: error TS6133: 'handler' is declared but its value is never
-  // read.
   volumeManager.addEventListener = (type, handler) => {
     console.log('MockVolumeManager.addEventListener not implemented');
   };
-  // @ts-ignore: error TS6133: 'handler' is declared but its value is never
-  // read.
   volumeManager.removeEventListener = (type, handler) => {
     console.log('MockVolumeManager.removeEventListener not implemented');
   };
@@ -37,7 +35,6 @@ function createMockVolumeManager() {
 
 /**
  * Tests FilteredVolumeManager default volume filter.
- * @param {()=>void} done
  */
 export function testVolumeDefaultFilter(done) {
   // Create mock volume manager.
@@ -130,7 +127,6 @@ export function testVolumeDefaultFilter(done) {
 
 /**
  * Tests FilteredVolumeManager 'fusebox-only' volume filter.
- * @param {()=>void} done
  */
 export function testVolumeFuseboxOnlyFilter(done) {
   // Create mock volume manager.
@@ -214,7 +210,6 @@ export function testVolumeFuseboxOnlyFilter(done) {
 
 /**
  * Tests FilteredVolumeManager 'media-store-files-only' volume filter.
- * @param {()=>void} done
  */
 export function testVolumeMediaStoreFilesOnlyFilter(done) {
   // Create mock volume manager.
@@ -318,7 +313,6 @@ export function testVolumeMediaStoreFilesOnlyFilter(done) {
 
 /**
  * Tests the disabled volume related functions.
- * @param {()=>void} done
  */
 export function testDisabledVolumes(done) {
   // Create mock volume manager.

@@ -27,13 +27,9 @@ export class AndroidAppListModel extends EventTarget {
       return;
     }
 
-    // @ts-ignore: error TS7034: Variable 'extensions' implicitly has type
-    // 'any[]' in some locations where its type cannot be determined.
     let extensions = [];
     if (!includeAllFiles) {
       for (let i = 0; i < typeList.length; i++) {
-        // @ts-ignore: error TS2339: Property 'extensions' does not exist on
-        // type 'Object'.
         extensions = extensions.concat(typeList[i].extensions);
       }
     }
@@ -58,8 +54,6 @@ export class AndroidAppListModel extends EventTarget {
    *     picker app.
    */
   item(index) {
-    // @ts-ignore: error TS2322: Type 'AndroidApp | undefined' is not assignable
-    // to type 'AndroidApp'.
     return this.apps_[index];
   }
 }

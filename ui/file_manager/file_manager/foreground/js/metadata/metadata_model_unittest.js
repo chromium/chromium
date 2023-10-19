@@ -17,19 +17,13 @@ class TestMetadataProvider extends MetadataProvider {
   }
 
   /** @override */
-  // @ts-ignore: error TS7006: Parameter 'requests' implicitly has an 'any'
-  // type.
   get(requests) {
     this.requestCount++;
-    // @ts-ignore: error TS7006: Parameter 'request' implicitly has an 'any'
-    // type.
     return Promise.resolve(requests.map(request => {
       const entry = request.entry;
       const names = request.names;
       const result = {};
       for (let i = 0; i < names.length; i++) {
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'any' can't be used to index type '{}'.
         result[names[i]] = entry.toURL() + ':' + names[i];
       }
       return result;
@@ -44,8 +38,6 @@ class TestEmptyMetadataProvider extends MetadataProvider {
   }
 
   /** @override */
-  // @ts-ignore: error TS7006: Parameter 'requests' implicitly has an 'any'
-  // type.
   get(requests) {
     return Promise.resolve(requests.map(() => {
       return {};
@@ -57,14 +49,10 @@ class TestEmptyMetadataProvider extends MetadataProvider {
 class ManualTestMetadataProvider extends MetadataProvider {
   constructor() {
     super(['propertyA', 'propertyB', 'propertyC']);
-    // @ts-ignore: error TS7008: Member 'callback' implicitly has an 'any[]'
-    // type.
     this.callback = [];
   }
 
   /** @override */
-  // @ts-ignore: error TS7006: Parameter 'requests' implicitly has an 'any'
-  // type.
   get(requests) {
     return new Promise(fulfill => {
       this.callback.push(fulfill);
@@ -96,12 +84,9 @@ function getProperty(result, property) {
   if (!result) {
     throw new Error('Fail: Metadata result is undefined');
   }
-  // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-  // expression of type 'string' can't be used to index type 'Object'.
   return result[property];
 }
 
-/** @param {()=>void} callback */
 export function testMetadataModelBasic(callback) {
   let provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
@@ -111,18 +96,13 @@ export function testMetadataModelBasic(callback) {
         provider = /** @type {!TestMetadataProvider} */ (model.getProvider());
         assertEquals(1, provider.requestCount);
         assertEquals(
-            // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-            // undefined' is not assignable to parameter of type 'Object'.
             'filesystem://A:property', getProperty(results[0], 'property'));
         assertEquals(
-            // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-            // undefined' is not assignable to parameter of type 'Object'.
             'filesystem://B:property', getProperty(results[1], 'property'));
       }),
       callback);
 }
 
-/** @param {()=>void} callback */
 export function testMetadataModelRequestForCachedProperty(callback) {
   let provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
@@ -138,20 +118,14 @@ export function testMetadataModelRequestForCachedProperty(callback) {
                 /** @type {!TestMetadataProvider} */ (model.getProvider());
             assertEquals(1, provider.requestCount);
             assertEquals(
-                // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-                // undefined' is not assignable to parameter of type 'Object'.
                 'filesystem://A:property', getProperty(results[0], 'property'));
             assertEquals(
-                // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-                // undefined' is not assignable to parameter of type 'Object'.
                 'filesystem://B:property', getProperty(results[1], 'property'));
           }),
       callback);
 }
 
 export function testMetadataModelRequestForCachedAndNonCachedProperty(
-    // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any'
-    // type.
     callback) {
   let provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
@@ -171,29 +145,20 @@ export function testMetadataModelRequestForCachedAndNonCachedProperty(
             assertEquals(2, provider.requestCount);
             assertEquals(
                 'filesystem://A:propertyA',
-                // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-                // undefined' is not assignable to parameter of type 'Object'.
                 getProperty(results[0], 'propertyA'));
             assertEquals(
                 'filesystem://A:propertyB',
-                // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-                // undefined' is not assignable to parameter of type 'Object'.
                 getProperty(results[0], 'propertyB'));
             assertEquals(
                 'filesystem://B:propertyA',
-                // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-                // undefined' is not assignable to parameter of type 'Object'.
                 getProperty(results[1], 'propertyA'));
             assertEquals(
                 'filesystem://B:propertyB',
-                // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-                // undefined' is not assignable to parameter of type 'Object'.
                 getProperty(results[1], 'propertyB'));
           }),
       callback);
 }
 
-/** @param {()=>void} callback */
 export function testMetadataModelRequestForCachedAndNonCachedEntry(callback) {
   let provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
@@ -212,20 +177,14 @@ export function testMetadataModelRequestForCachedAndNonCachedEntry(callback) {
                 /** @type {!TestMetadataProvider} */ (model.getProvider());
             assertEquals(2, provider.requestCount);
             assertEquals(
-                // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-                // undefined' is not assignable to parameter of type 'Object'.
                 'filesystem://A:property', getProperty(results[0], 'property'));
             assertEquals(
-                // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-                // undefined' is not assignable to parameter of type 'Object'.
                 'filesystem://B:property', getProperty(results[1], 'property'));
           }),
       callback);
 }
 
 export function testMetadataModelRequestBeforeCompletingPreviousRequest(
-    // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any'
-    // type.
     callback) {
   let provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
@@ -240,14 +199,11 @@ export function testMetadataModelRequestBeforeCompletingPreviousRequest(
         provider = /** @type {!TestMetadataProvider} */ (model.getProvider());
         assertEquals(1, provider.requestCount);
         assertEquals(
-            // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-            // undefined' is not assignable to parameter of type 'Object'.
             'filesystem://A:property', getProperty(results[0], 'property'));
       }),
       callback);
 }
 
-/** @param {()=>void} callback */
 export function testMetadataModelNotUpdateCachedResultAfterRequest(callback) {
   let provider = new ManualTestMetadataProvider();
   const model = new MetadataModel(provider);
@@ -272,28 +228,19 @@ export function testMetadataModelNotUpdateCachedResultAfterRequest(callback) {
           .then(results => {
             // The result should be cached value at the time when get was
             // called.
-            // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-            // undefined' is not assignable to parameter of type 'Object'.
             assertEquals('valueA1', getProperty(results[0][0], 'propertyA'));
-            // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-            // undefined' is not assignable to parameter of type 'Object'.
             assertEquals('valueB', getProperty(results[0][0], 'propertyB'));
-            // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-            // undefined' is not assignable to parameter of type 'Object'.
             assertEquals('valueC', getProperty(results[1][0], 'propertyC'));
           }),
       callback);
 }
 
-/** @param {()=>void} callback */
 export function testMetadataModelGetCache(callback) {
   let provider = new TestMetadataProvider();
   const model = new MetadataModel(provider);
 
   const promise = model.get([entryA], ['property']);
   const cache = model.getCache([entryA], ['property']);
-  // @ts-ignore: error TS2345: Argument of type 'MetadataItem | undefined' is
-  // not assignable to parameter of type 'Object'.
   assertEquals(null, getProperty(cache[0], 'property'));
 
   reportPromise(
@@ -302,8 +249,6 @@ export function testMetadataModelGetCache(callback) {
         provider = /** @type {!TestMetadataProvider} */ (model.getProvider());
         assertEquals(1, provider.requestCount);
         assertEquals(
-            // @ts-ignore: error TS2345: Argument of type 'MetadataItem |
-            // undefined' is not assignable to parameter of type 'Object'.
             'filesystem://A:property', getProperty(cache[0], 'property'));
       }),
       callback);
@@ -318,7 +263,6 @@ export function testMetadataModelUnknownProperty() {
   });
 }
 
-/** @param {()=>void} callback */
 export function testMetadataModelEmptyResult(callback) {
   const provider = new TestEmptyMetadataProvider();
   const model = new MetadataModel(provider);
@@ -326,8 +270,6 @@ export function testMetadataModelEmptyResult(callback) {
   // getImpl returns empty result.
   reportPromise(
       model.get([entryA], ['property']).then(results => {
-        // @ts-ignore: error TS2345: Argument of type 'MetadataItem | undefined'
-        // is not assignable to parameter of type 'Object'.
         assertEquals(undefined, getProperty(results[0], 'property'));
       }),
       callback);

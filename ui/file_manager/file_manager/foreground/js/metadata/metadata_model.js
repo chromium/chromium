@@ -89,14 +89,12 @@ export class MetadataModel {
     // Check if the results are cached or not.
     if (this.cache_.hasFreshCache(entries, names)) {
       if (window.IN_TEST) {
-        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.stats_.fromCache += entries.length;
       }
       return Promise.resolve(this.getCache(entries, names));
     }
 
     if (window.IN_TEST) {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.stats_.fullFetch += entries.length;
     }
 
@@ -111,9 +109,6 @@ export class MetadataModel {
     // Register callback.
     const promise = new Promise(fulfill => {
       this.callbackRequests_.push(new MetadataProviderCallbackRequest(
-          // @ts-ignore: error TS2345: Argument of type '(value: any) => void'
-          // is not assignable to parameter of type '(arg0: MetadataItem[]) =>
-          // undefined'.
           entries, names, snapshot, fulfill));
     });
 
@@ -124,16 +119,10 @@ export class MetadataModel {
         // contained in the result.
         const requestedEntries = [];
         for (let i = 0; i < requests.length; i++) {
-          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           requestedEntries.push(requests[i].entry);
-          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           for (let j = 0; j < requests[i].names.length; j++) {
-            // @ts-ignore: error TS2532: Object is possibly 'undefined'.
             const name = requests[i].names[j];
-            // @ts-ignore: error TS2532: Object is possibly 'undefined'.
             if (!(name in list[i])) {
-              // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an
-              // index type.
               list[i][name] = undefined;
             }
           }
@@ -145,7 +134,6 @@ export class MetadataModel {
         // Invoke callbacks.
         let i = 0;
         while (i < this.callbackRequests_.length) {
-          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           if (this.callbackRequests_[i].storeProperties(
                   requestId, requestedEntries, list)) {
             // Callback was called.
@@ -175,15 +163,12 @@ export class MetadataModel {
     const entriesToUpdate = [];
     for (let i = 0; i < fileUrls.length; i++) {
       const url = fileUrls[i];
-      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
-      // type.
       const entry = allEntries[url]?.entry;
       if (!entry) {
         continue;
       }
       entriesToUpdate.push(entry);
       const item = new MetadataItem();
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       names.forEach((key, j) => item[key] = values[i][j]);
       itemsToUpdate.push(item);
     }
@@ -229,7 +214,6 @@ export class MetadataModel {
   notifyEntriesCreated(entries) {
     this.cache_.clear(util.entriesToURLs(entries));
     if (window.IN_TEST) {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.stats_.clearCacheCount += entries.length;
     }
   }
@@ -242,7 +226,6 @@ export class MetadataModel {
   notifyEntriesRemoved(urls) {
     this.cache_.clear(urls);
     if (window.IN_TEST) {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.stats_.clearCacheCount += urls.length;
     }
   }
@@ -254,7 +237,6 @@ export class MetadataModel {
   notifyEntriesChanged(entries) {
     this.cache_.invalidate(this.cache_.generateRequestId(), entries);
     if (window.IN_TEST) {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.stats_.invalidateCount += entries.length;
     }
   }
@@ -265,15 +247,12 @@ export class MetadataModel {
   clearAllCache() {
     this.cache_.clearAll();
     if (window.IN_TEST) {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.stats_.clearAllCount++;
     }
   }
 
   /** @return {MetadataStats} */
   getStats() {
-    // @ts-ignore: error TS2322: Type 'MetadataStats | null' is not assignable
-    // to type 'MetadataStats'.
     return this.stats_;
   }
 

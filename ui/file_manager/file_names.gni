@@ -19,6 +19,11 @@ static_js_files = [
   "file_manager/background/js/file_operation_manager.js",
   "file_manager/background/js/file_operation_util.js",
 
+  # TODO(lucmult): Check if we can move those mocks to the test files section.
+  "file_manager/background/js/mock_crostini.js",
+  "file_manager/background/js/mock_file_operation_manager.js",
+  "file_manager/background/js/mock_progress_center.js",
+  "file_manager/background/js/mock_volume_manager.js",
   "file_manager/background/js/progress_center.js",
   "file_manager/background/js/runtime_loaded_test_util.js",
   "file_manager/background/js/test_util.js",
@@ -44,7 +49,9 @@ static_js_files = [
   "file_manager/common/js/progress_center_common.js",
   "file_manager/common/js/recent_date_bucket.js",
   "file_manager/common/js/storage.js",
+  "file_manager/common/js/test_error_reporting.js",
   "file_manager/common/js/ui.js",
+  "file_manager/common/js/unittest_util.js",
   "file_manager/common/js/url_constants.js",
   "file_manager/common/js/util.js",
   "file_manager/common/js/volume_manager_types.js",
@@ -65,6 +72,7 @@ static_js_files = [
   "file_manager/externs/metadata_model.js",
   "file_manager/externs/metadata_worker_window.js",
   "file_manager/externs/progress_center_panel.js",
+  "file_manager/externs/volume_info.js",
   "file_manager/externs/volume_info_list.js",
   "file_manager/externs/volume_manager.js",
   "file_manager/externs/ts/state.js",
@@ -448,6 +456,8 @@ ts_generated_templates += [
 generate_definitions_js_files = [
   "file_manager/common/js/volume_manager_types.js",
   "file_manager/externs/files_app_entry_interfaces.js",
+  "file_manager/externs/volume_info.js",
+  "file_manager/externs/volume_info_list.js",
   "file_manager/externs/search_item.js",
   "file_manager/externs/quick_view.js",
 ]
@@ -456,7 +466,6 @@ generate_definitions_js_files = [
 checked_in_dts_files = [
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
-  "file_manager/externs/volume_info.d.ts",
   "file_manager/definitions/navigator_connection.d.ts",
   "file_manager/foreground/js/ui/command.d.ts",
   "file_manager/foreground/js/ui/list.d.ts",
@@ -486,23 +495,17 @@ unittest_files = [
   # Common:
   "file_manager/common/js/array_data_model_unittest.js",
   "file_manager/common/js/async_util_unittest.js",
+  "file_manager/common/js/util_unittest.js",
+  "file_manager/common/js/filtered_volume_manager_unittest.js",
   "file_manager/common/js/file_type_unittest.js",
   "file_manager/common/js/files_app_entry_types_unittest.js",
-  "file_manager/common/js/filtered_volume_manager_unittest.js",
   "file_manager/common/js/recent_date_bucket_unittest.js",
   "file_manager/common/js/storage_unittest.js",
-  "file_manager/common/js/test_error_reporting.js",
-  "file_manager/common/js/unittest_util.js",
-  "file_manager/common/js/util_unittest.js",
   "file_manager/common/js/volume_manager_types_unittest.js",
 
   # Background:
   "file_manager/background/js/file_operation_handler_unittest.js",
   "file_manager/background/js/file_operation_manager_unittest.js",
-  "file_manager/background/js/mock_crostini.js",
-  "file_manager/background/js/mock_file_operation_manager.js",
-  "file_manager/background/js/mock_progress_center.js",
-  "file_manager/background/js/mock_volume_manager.js",
   "file_manager/background/js/volume_manager_unittest.js",
 
   # Foreground:
@@ -562,7 +565,7 @@ unittest_files = [
 ]
 
 # Files that don't have the generated HTML, but are used for tests.
-unittest_harness = [
+unittest_files += [
   # Test harness
   "base/js/test_harness.html",
   "base/js/test_harness.js",

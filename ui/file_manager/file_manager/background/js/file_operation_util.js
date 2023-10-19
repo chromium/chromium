@@ -74,14 +74,10 @@ fileOperationUtil.deduplicatePath =
       // |relativePath| is "file (10).txt", the second check path will be
       // "file (11).txt".
       const match = /^(.*?)(?: \((\d+)\))?(\.[^.]*?)?$/.exec(relativePath);
-      // @ts-ignore: error TS18047: 'match' is possibly 'null'.
       const prefix = match[1];
-      // @ts-ignore: error TS18047: 'match' is possibly 'null'.
       const ext = match[3] || '';
 
       // Check to see if the target exists.
-      // @ts-ignore: error TS7006: Parameter 'copyNumber' implicitly has an
-      // 'any' type.
       const resolvePath = (trialPath, copyNumber) => {
         return fileOperationUtil.resolvePath(dirEntry, trialPath)
             .then(
@@ -102,8 +98,6 @@ fileOperationUtil.deduplicatePath =
                 });
       };
 
-      // @ts-ignore: error TS7006: Parameter 'error' implicitly has an 'any'
-      // type.
       const promise = resolvePath(relativePath, 1).catch(error => {
         if (error instanceof Error) {
           return Promise.reject(error);
@@ -139,8 +133,6 @@ class Speedometer {
      * @private @type {!Array<!{time: number, bytes: number}>} Recent samples.
      *     |time| is in milliseconds.
      */
-    // @ts-ignore: error TS7008: Member 'samples_' implicitly has an 'any[]'
-    // type.
     this.samples_ = [];
 
     /**
@@ -219,7 +211,7 @@ class Speedometer {
     } else {
       // Drop this sample if we already received one less than a second ago.
       const last = this.samples_[this.samples_.length - 1];
-      if (last && sample.time - last.time < 1000) {
+      if (sample.time - last.time < 1000) {
         return;
       }
     }

@@ -9,8 +9,6 @@ import {ConfirmDialog} from './dialogs.js';
 /**
  * Confirm dialog.
  */
-// @ts-ignore: error TS2415: Class 'FilesConfirmDialog' incorrectly extends base
-// class 'ConfirmDialog'.
 export class FilesConfirmDialog extends ConfirmDialog {
   /**
    * @param {!Element} parentElement
@@ -18,18 +16,17 @@ export class FilesConfirmDialog extends ConfirmDialog {
   constructor(parentElement) {
     super(parentElement);
 
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.container.classList.add('files-ng');
 
     /**
-     * @type {?function():void} showModalElement Optional call to show the
+     * @type {?function()} showModalElement Optional call to show the
      * modal <dialog> parent of |this| if needed.
      * @public
      */
     this.showModalElement = null;
 
     /**
-     * @type {?function():void} doneCallback Optional callback when |this|
+     * @type {?function()} doneCallback Optional callback when |this|
      * is closed confirmed or cancelled via dialog buttons.
      * @public
      */
@@ -52,7 +49,6 @@ export class FilesConfirmDialog extends ConfirmDialog {
     super.initDom();
     super.hasModalContainer = true;
 
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.frame.classList.add('files-confirm-dialog');
   }
 
@@ -60,21 +56,16 @@ export class FilesConfirmDialog extends ConfirmDialog {
    * @override
    * @suppress {accessControls}
    */
-  // @ts-ignore: error TS7019: Rest parameter 'args' implicitly has an 'any[]'
-  // type.
   show_(...args) {
     if (!this.showModalElement) {
       this.parentNode_ = util.getFilesAppModalDialogInstance();
     }
 
     if (this.focusCancelButton) {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.frame.classList.add('files-confirm-dialog-cancel-default');
       this.setInitialFocusOnCancel();
     }
 
-    // @ts-ignore: error TS2556: A spread argument must either have a tuple type
-    // or be passed to a rest parameter.
     super.show_(...args);
 
     if (!this.showModalElement) {
@@ -85,8 +76,6 @@ export class FilesConfirmDialog extends ConfirmDialog {
   /**
    * @override
    */
-  // @ts-ignore: error TS7019: Rest parameter 'args' implicitly has an 'any[]'
-  // type.
   hide(...args) {
     if (!this.showModalElement) {
       this.parentNode_.close();
@@ -98,10 +87,7 @@ export class FilesConfirmDialog extends ConfirmDialog {
   /**
    * @override
    */
-  // @ts-ignore: error TS7019: Rest parameter 'args' implicitly has an 'any[]'
-  // type.
   showWithTitle(title, message, ...args) {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.frame.classList.toggle('no-title', !title);
     super.showWithTitle(title, message, ...args);
   }
@@ -109,10 +95,7 @@ export class FilesConfirmDialog extends ConfirmDialog {
   /**
    * @override
    */
-  // @ts-ignore: error TS7019: Rest parameter 'args' implicitly has an 'any[]'
-  // type.
   showHtml(title, message, ...args) {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.frame.classList.toggle('no-title', !title);
     super.showHtml(title, message, ...args);
   }

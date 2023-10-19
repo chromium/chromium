@@ -14,10 +14,7 @@ export class ConcurrentQueue {
   constructor(limit) {
     console.assert(limit > 0, '|limit| must be larger than 0');
     this.limit_ = limit;
-    // @ts-ignore: error TS7008: Member 'added_' implicitly has an 'any[]' type.
     this.added_ = [];
-    // @ts-ignore: error TS7008: Member 'running_' implicitly has an 'any[]'
-    // type.
     this.running_ = [];
     this.cancelled_ = false;
   }
@@ -47,8 +44,7 @@ export class ConcurrentQueue {
    * Enqueues a task for running as soon as possible. If there is already the
    * maximum number of tasks running, the run of this task is delayed until less
    * than the limit given at the construction time of tasks are running.
-   * @param {function(function():void):void} task The task to be enqueued for
-   *     execution.
+   * @param {function(function())} task The task to be enqueued for execution.
    */
   run(task) {
     if (this.cancelled_) {
@@ -92,8 +88,7 @@ export class ConcurrentQueue {
   /**
    * Executes the given task. The task is placed in the list of running tasks
    * and immediately executed.
-   * @param {function(function():void):void} task The task to be immediately
-   *     executed.
+   * @param {function(function())} task The task to be immediately executed.
    */
   execute_(task) {
     this.running_.push(task);
@@ -111,7 +106,6 @@ export class ConcurrentQueue {
   /**
    * Handles a task being finished.
    */
-  // @ts-ignore: error TS7006: Parameter 'task' implicitly has an 'any' type.
   onTaskFinished_(task) {
     this.removeTask_(task);
     this.scheduleNext_();
@@ -120,7 +114,6 @@ export class ConcurrentQueue {
   /**
    * Attempts to remove the task that was running.
    */
-  // @ts-ignore: error TS7006: Parameter 'task' implicitly has an 'any' type.
   removeTask_(task) {
     const index = this.running_.indexOf(task);
     if (index >= 0) {
@@ -185,8 +178,7 @@ export class AsyncQueue extends ConcurrentQueue {
  */
 export class GroupTask {
   /**
-   * @param {!function(function():void):void} closure Closure with a completion
-callback
+   * @param {!function(function())} closure Closure with a completion callback
    *     to be executed.
    * @param {!Array<string>} dependencies Array of dependencies.
    * @param {!string} name Task identifier. Specify to use in dependencies.
@@ -217,13 +209,11 @@ export class Group {
     this.addedTasks_ = {};
     this.pendingTasks_ = {};
     this.finishedTasks_ = {};
-    // @ts-ignore: error TS7008: Member 'completionCallbacks_' implicitly has an
-    // 'any[]' type.
     this.completionCallbacks_ = [];
   }
 
   /**
-   * @return {!Record<string, GroupTask>} Pending tasks
+   * @return {!Object<GroupTask>} Pending tasks
    */
   get pendingTasks() {
     return this.pendingTasks_;
@@ -232,8 +222,8 @@ export class Group {
   /**
    * Enqueues a closure to be executed after dependencies are completed.
    *
-   * @param {function(function():void):void} closure Closure with a completion
-   *     callback to be executed.
+   * @param {function(function())} closure Closure with a completion callback to
+   *     be executed.
    * @param {Array<string>=} opt_dependencies Array of dependencies. If no
    *     dependencies, then the the closure will be executed immediately.
    * @param {string=} opt_name Task identifier. Specify to use in dependencies.
@@ -244,11 +234,7 @@ export class Group {
 
     const task = new GroupTask(closure, opt_dependencies || [], name);
 
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
     this.addedTasks_[name] = task;
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
     this.pendingTasks_[name] = task;
   }
 
@@ -281,23 +267,17 @@ export class Group {
     }
 
     for (const name in this.pendingTasks_) {
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'string' can't be used to index type '{}'.
       const task = this.pendingTasks_[name];
       let dependencyMissing = false;
       for (let index = 0; index < task.dependencies.length; index++) {
         const dependency = task.dependencies[index];
         // Check if the dependency has finished.
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'any' can't be used to index type '{}'.
         if (!this.finishedTasks_[dependency]) {
           dependencyMissing = true;
         }
       }
       // All dependences finished, therefore start the task.
       if (!dependencyMissing) {
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'any' can't be used to index type '{}'.
         delete this.pendingTasks_[task.name];
         task.closure(this.finish_.bind(this, task));
       }
@@ -311,8 +291,6 @@ export class Group {
    * @private
    */
   finish_(task) {
-    // @ts-ignore: error TS2339: Property 'name' does not exist on type
-    // 'Object'.
     this.finishedTasks_[task.name] = task;
     this.continue_();
   }
@@ -326,7 +304,7 @@ export class Group {
  */
 export class Aggregator {
   /**
-   * @param {function():void} closure Closure to be aggregated.
+   * @param {function()} closure Closure to be aggregated.
    * @param {number=} opt_delay Minimum aggregation time in milliseconds.
    *     Default is 50 milliseconds.
    */
@@ -338,7 +316,7 @@ export class Aggregator {
     this.delay_ = opt_delay || 50;
 
     /**
-     * @type {function():void}
+     * @type {function()}
      * @private
      */
     this.closure_ = closure;
@@ -403,13 +381,13 @@ export class Aggregator {
  */
 export class RateLimiter {
   /**
-   * @param {function():void} closure Closure to be called.
+   * @param {function()} closure Closure to be called.
    * @param {number=} opt_minInterval Minimum interval between each call in
    *     milliseconds. Default is 200 milliseconds.
    */
   constructor(closure, opt_minInterval) {
     /**
-     * @type {function():void}
+     * @type {function()}
      * @private
      */
     this.closure_ = closure;

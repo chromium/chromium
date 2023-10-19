@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+import {VolumeInfo} from './volume_info.js';
 
 /**
  * Location information which shows where the path points in FileManager's
@@ -13,7 +14,7 @@ export class EntryLocation {
   constructor() {
     /**
      * Volume information.
-     * @type {import("./volume_info.js").VolumeInfo}
+     * @type {VolumeInfo}
      */
     this.volumeInfo;
 

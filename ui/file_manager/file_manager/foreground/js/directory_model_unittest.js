@@ -56,8 +56,6 @@ function getDirectoryModel() {
   const metadataModel = new MockMetadataModel({});
   const fileOperationManager = new MockFileOperationManager();
   return new DirectoryModel(
-      // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
-      // assignable to parameter of type 'MetadataModel'.
       false, fileFilter, metadataModel, volumeManager, fileOperationManager);
 }
 
@@ -84,20 +82,16 @@ export function testRecanAfterDeletionForRecents() {
   // Current directory is not Recent.
   directoryModel.getCurrentRootType = () =>
       VolumeManagerCommon.RootType.DOWNLOADS;
-  // @ts-ignore: error TS2721: Cannot invoke an object which is possibly 'null'.
   onIOTaskProgressStatusCallback(deleteEvent);
   assertFalse(isRescanCalled);
-  // @ts-ignore: error TS2721: Cannot invoke an object which is possibly 'null'.
   onIOTaskProgressStatusCallback(copyEvent);
   assertFalse(isRescanCalled);
 
   // Current directory is Recent.
   directoryModel.getCurrentRootType = () => VolumeManagerCommon.RootType.RECENT;
-  // @ts-ignore: error TS2721: Cannot invoke an object which is possibly 'null'.
   onIOTaskProgressStatusCallback(deleteEvent);
   assertTrue(isRescanCalled);
   isRescanCalled = false;
-  // @ts-ignore: error TS2721: Cannot invoke an object which is possibly 'null'.
   onIOTaskProgressStatusCallback(copyEvent);
   assertTrue(isRescanCalled);
 }
@@ -113,8 +107,6 @@ export function testRescanAfterIOTaskOperationOnlyForNonWatchableVolume() {
     isRescanCalled = true;
   };
   // Current directory is non-watchable.
-  // @ts-ignore: error TS2322: Type '() => { watchable: false; }' is not
-  // assignable to type '() => VolumeInfo'.
   directoryModel.getCurrentVolumeInfo = () => {
     return {
       watchable: false,
@@ -141,8 +133,6 @@ export function testRescanAfterIOTaskOperationOnlyForNonWatchableVolume() {
     });
 
     isRescanCalled = false;
-    // @ts-ignore: error TS2721: Cannot invoke an object which is possibly
-    // 'null'.
     onIOTaskProgressStatusCallback(event);
     assertTrue(isRescanCalled);
   }

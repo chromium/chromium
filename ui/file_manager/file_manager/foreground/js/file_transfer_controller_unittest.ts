@@ -219,8 +219,8 @@ export function testCanMoveDownloads() {
     '/Downloads/',
     '/otherFolder/',
   ]);
-  const downloadsEntry = myFilesMockFs.entries['/Downloads']!;
-  const otherFolderEntry = myFilesMockFs.entries['/otherFolder']!;
+  const downloadsEntry = myFilesMockFs.entries['/Downloads'];
+  const otherFolderEntry = myFilesMockFs.entries['/otherFolder'];
 
   assertTrue(!!downloadsEntry);
   assertTrue(!!otherFolderEntry);
@@ -299,8 +299,7 @@ export async function testPreparePaste(done: () => void) {
   assertEquals(browserFilePastePlan.sourceEntries.length, 0);
 
   // File instances should still be copied to target folder.
-  const writtenEntry =
-      myFilesMockFs.entries['/testdir/browserfile']! as MockFileEntry;
+  const writtenEntry = myFilesMockFs.entries['/testdir/browserfile'];
   assertEquals('content', await writtenEntry.content.text());
 
   done();

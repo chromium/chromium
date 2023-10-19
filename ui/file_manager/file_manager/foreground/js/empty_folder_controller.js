@@ -8,6 +8,7 @@ import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 import {updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
@@ -123,15 +124,13 @@ export class EmptyFolderController {
    * volume metadata through the special root actions request to determine if re
    * authentication is required.
    * @private
-   * @param {import("../../externs/volume_info.js").VolumeInfo} odfsVolumeInfo
+   * @param {VolumeInfo} odfsVolumeInfo
    * @return {Promise<boolean>}
    */
   async checkIfReauthenticationRequired_(odfsVolumeInfo) {
     // Request ODFS root actions to get ODFS metadata.
     return new Promise((fulfill) => {
       chrome.fileManagerPrivate.getCustomActions(
-          // @ts-ignore: error TS2322: Type 'FileSystemEntry | FilesAppEntry' is
-          // not assignable to type 'FileSystemEntry'.
           [util.getODFSMetadataQueryEntry(odfsVolumeInfo)], customActions => {
             if (chrome.runtime.lastError) {
               console.error(
@@ -161,7 +160,6 @@ export class EmptyFolderController {
    * interactive.
    * @private
    */
-  // @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
   onScanFailed_(event) {
     this.isScanning_ = false;
     const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
@@ -320,7 +318,6 @@ export class EmptyFolderController {
     }
 
     const svgUseElement = this.image_.querySelector('.image > svg > use');
-    // @ts-ignore: error TS18047: 'svgUseElement' is possibly 'null'.
     svgUseElement.setAttributeNS(
         'http://www.w3.org/1999/xlink', 'xlink:href', svgRef);
     this.emptyFolder_.hidden = false;

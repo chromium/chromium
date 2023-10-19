@@ -11,7 +11,6 @@ import {Crostini} from '../../externs/background/crostini.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {crostiniPlaceHolderKey} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
-import {FilesToast} from '../elements/files_toast.js';
 
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
@@ -71,8 +70,6 @@ export class CrostiniController {
       getStore().dispatch(removeUiEntry({key: crostiniPlaceHolderKey}));
     }
     if (!util.isNewDirectoryTreeEnabled()) {
-      // @ts-ignore: error TS2322: Type 'NavigationModelFakeItem | null' is not
-      // assignable to type 'NavigationModelFakeItem'.
       this.directoryTree_.dataModel.linuxFilesItem =
           crostiniNavigationModelItem;
       // Redraw the tree to ensure 'Linux files' is added/removed.
@@ -90,8 +87,6 @@ export class CrostiniController {
    */
   async loadSharedPaths(maybeShowToast, filesToast) {
     let showToast = maybeShowToast;
-    // @ts-ignore: error TS7006: Parameter 'vmName' implicitly has an 'any'
-    // type.
     const getSharedPaths = async (vmName) => {
       if (!this.crostini_.isEnabled(vmName)) {
         return 0;
@@ -109,8 +104,6 @@ export class CrostiniController {
       });
     };
 
-    // @ts-ignore: error TS7006: Parameter 'umaItem' implicitly has an 'any'
-    // type.
     const toast = (count, msgSingle, msgPlural, action, subPage, umaItem) => {
       if (!showToast || count == 0) {
         return;

@@ -84,47 +84,27 @@ export class ThumbnailLoader {
 
     this.fallbackUrl_ = null;
     this.thumbnailUrl_ = null;
-    // @ts-ignore: error TS2339: Property 'external' does not exist on type
-    // 'Object'.
     if (opt_metadata.external && opt_metadata.external.customIconUrl) {
-      // @ts-ignore: error TS2339: Property 'external' does not exist on type
-      // 'Object'.
       this.fallbackUrl_ = opt_metadata.external.customIconUrl;
     }
-    // @ts-ignore: error TS2339: Property 'contentMimeType' does not exist on
-    // type 'Object'.
     const mimeType = opt_metadata && opt_metadata.contentMimeType;
 
     for (let i = 0; i < loadTargets.length; i++) {
       switch (loadTargets[i]) {
         case ThumbnailLoader.LoadTarget.CONTENT_METADATA:
-          // @ts-ignore: error TS2339: Property 'thumbnail' does not exist on
-          // type 'Object'.
           if (opt_metadata.thumbnail && opt_metadata.thumbnail.url) {
-            // @ts-ignore: error TS2339: Property 'thumbnail' does not exist on
-            // type 'Object'.
             this.thumbnailUrl_ = opt_metadata.thumbnail.url;
             this.transform_ =
-                // @ts-ignore: error TS2339: Property 'thumbnail' does not exist
-                // on type 'Object'.
                 opt_metadata.thumbnail && opt_metadata.thumbnail.transform;
             this.loadTarget_ = ThumbnailLoader.LoadTarget.CONTENT_METADATA;
           }
           break;
         case ThumbnailLoader.LoadTarget.EXTERNAL_METADATA:
-          // @ts-ignore: error TS2339: Property 'external' does not exist on
-          // type 'Object'.
           if (opt_metadata.external && opt_metadata.external.thumbnailUrl &&
-              // @ts-ignore: error TS2339: Property 'external' does not exist on
-              // type 'Object'.
               (!opt_metadata.external.present ||
                !FileType.isImage(entry, mimeType))) {
-            // @ts-ignore: error TS2339: Property 'external' does not exist on
-            // type 'Object'.
             this.thumbnailUrl_ = opt_metadata.external.thumbnailUrl;
             this.croppedThumbnailUrl_ =
-                // @ts-ignore: error TS2339: Property 'external' does not exist
-                // on type 'Object'.
                 opt_metadata.external.croppedThumbnailUrl;
             this.loadTarget_ = ThumbnailLoader.LoadTarget.EXTERNAL_METADATA;
           }
@@ -136,8 +116,6 @@ export class ThumbnailLoader {
               FileType.isPDF(entry, mimeType)) {
             this.thumbnailUrl_ = entry.toURL();
             this.transform_ =
-                // @ts-ignore: error TS2339: Property 'media' does not exist on
-                // type 'Object'.
                 opt_metadata.media && opt_metadata.media.imageTransform;
             this.loadTarget_ = ThumbnailLoader.LoadTarget.FILE_ENTRY;
           }
@@ -170,8 +148,7 @@ export class ThumbnailLoader {
    *
    * @param {!Element} box Container element.
    * @param {ThumbnailLoader.FillMode} fillMode Fill mode.
-   * @param {function(Image):void} onSuccess Success callback, accepts the
-   *     image.
+   * @param {function(Image)} onSuccess Success callback, accepts the image.
    * @param {number} autoFillThreshold Auto fill threshold.
    * @param {number} boxWidth Container box's width.
    * @param {number} boxHeight Container box's height.
@@ -185,27 +162,12 @@ export class ThumbnailLoader {
 
     this.cancel();
     this.canvasUpToDate_ = false;
-    // @ts-ignore: error TS2322: Type 'HTMLImageElement' is not assignable to
-    // type 'new (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement'.
     this.image_ = new Image();
-    // @ts-ignore: error TS2339: Property 'setAttribute' does not exist on type
-    // 'new (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement'.
     this.image_.setAttribute('alt', this.entry_.name);
-    // @ts-ignore: error TS2339: Property 'onload' does not exist on type 'new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement'.
     this.image_.onload = () => {
       this.attachImage_(box, fillMode, autoFillThreshold, boxWidth, boxHeight);
-      // @ts-ignore: error TS2345: Argument of type 'HTMLImageElement | null' is
-      // not assignable to parameter of type 'new (width?: number | undefined,
-      // height?: number | undefined) => HTMLImageElement'.
       onSuccess(this.image_);
     };
-    // @ts-ignore: error TS2339: Property 'onerror' does not exist on type 'new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement'.
     this.image_.onerror = () => {
       if (this.fallbackUrl_) {
         this.thumbnailUrl_ = this.fallbackUrl_;
@@ -219,26 +181,15 @@ export class ThumbnailLoader {
       }
     };
 
-    // @ts-ignore: error TS2339: Property 'src' does not exist on type 'new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement'.
     if (this.image_.src) {
       console.warn('Thumbnail already loaded: ' + this.thumbnailUrl_);
       return;
     }
 
     // TODO(mtomasz): Smarter calculation of the requested size.
-    // @ts-ignore: error TS6133: 'wasAttached' is declared but its value is
-    // never read.
     const wasAttached = box.ownerDocument.contains(box);
-    // @ts-ignore: error TS2339: Property 'filesystem' does not exist on type
-    // 'Object'.
     const modificationTime = this.metadata_ && this.metadata_.filesystem &&
-        // @ts-ignore: error TS2339: Property 'filesystem' does not exist on
-        // type 'Object'.
         this.metadata_.filesystem.modificationTime &&
-        // @ts-ignore: error TS2339: Property 'filesystem' does not exist on
-        // type 'Object'.
         this.metadata_.filesystem.modificationTime.getTime();
     this.taskId_ = ImageLoaderClient.loadToImage(
         LoadImageRequest.createRequest({
@@ -250,12 +201,7 @@ export class ThumbnailLoader {
           timestamp: modificationTime,
           orientation: this.transform_,
         }),
-        // @ts-ignore: error TS2345: Argument of type '(new (width?: number |
-        // undefined, height?: number | undefined) => HTMLImageElement) | null'
-        // is not assignable to parameter of type 'HTMLImageElement'.
         this.image_, () => {}, () => {
-          // @ts-ignore: error TS2721: Cannot invoke an object which is possibly
-          // 'null'.
           this.image_.onerror(new Event('load-error'));
         });
   }
@@ -294,14 +240,8 @@ export class ThumbnailLoader {
         return;
       }
 
-      // @ts-ignore: error TS2339: Property 'filesystem' does not exist on type
-      // 'Object'.
       const modificationTime = this.metadata_ && this.metadata_.filesystem &&
-          // @ts-ignore: error TS2339: Property 'filesystem' does not exist on
-          // type 'Object'.
           this.metadata_.filesystem.modificationTime &&
-          // @ts-ignore: error TS2339: Property 'filesystem' does not exist on
-          // type 'Object'.
           this.metadata_.filesystem.modificationTime.getTime();
 
       // Load using ImageLoaderClient.
@@ -327,10 +267,6 @@ export class ThumbnailLoader {
         if (!result || result.status !== LoadImageResponseStatus.SUCCESS) {
           reject(result);
         } else {
-          // @ts-ignore: error TS2345: Argument of type 'LoadImageResponse' is
-          // not assignable to parameter of type '{ data: string; width: number;
-          // height: number; } | PromiseLike<{ data: string; width: number;
-          // height: number; }>'.
           resolve(result);
         }
       });
@@ -342,9 +278,7 @@ export class ThumbnailLoader {
    */
   cancel() {
     if (this.taskId_) {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.image_.onload = () => {};
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.image_.onerror = () => {};
       ImageLoaderClient.getInstance().cancel(this.taskId_);
       this.taskId_ = null;
@@ -355,9 +289,6 @@ export class ThumbnailLoader {
    * @return {boolean} True if a valid image is loaded.
    */
   hasValidImage() {
-    // @ts-ignore: error TS2339: Property 'height' does not exist on type 'new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement'.
     return !!(this.image_ && this.image_.width && this.image_.height);
   }
 
@@ -365,7 +296,6 @@ export class ThumbnailLoader {
    * @return {number} Image width.
    */
   getWidth() {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     return this.image_.width;
   }
 
@@ -373,14 +303,13 @@ export class ThumbnailLoader {
    * @return {number} Image height.
    */
   getHeight() {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     return this.image_.height;
   }
 
   /**
    * Load an image but do not attach it.
    *
-   * @param {function(boolean):void} callback Callback, parameter is true if the
+   * @param {function(boolean)} callback Callback, parameter is true if the
    *     image has loaded successfully or a stock icon has been used.
    */
   loadDetachedImage(callback) {
@@ -391,28 +320,13 @@ export class ThumbnailLoader {
 
     this.cancel();
     this.canvasUpToDate_ = false;
-    // @ts-ignore: error TS2322: Type 'HTMLImageElement' is not assignable to
-    // type 'new (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement'.
     this.image_ = new Image();
-    // @ts-ignore: error TS2339: Property 'onload' does not exist on type 'new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement'.
     this.image_.onload = callback.bind(null, true);
-    // @ts-ignore: error TS2339: Property 'onerror' does not exist on type 'new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement'.
     this.image_.onerror = callback.bind(null, false);
 
     // TODO(mtomasz): Smarter calculation of the requested size.
-    // @ts-ignore: error TS2339: Property 'filesystem' does not exist on type
-    // 'Object'.
     const modificationTime = this.metadata_ && this.metadata_.filesystem &&
-        // @ts-ignore: error TS2339: Property 'filesystem' does not exist on
-        // type 'Object'.
         this.metadata_.filesystem.modificationTime &&
-        // @ts-ignore: error TS2339: Property 'filesystem' does not exist on
-        // type 'Object'.
         this.metadata_.filesystem.modificationTime.getTime();
     this.taskId_ = ImageLoaderClient.loadToImage(
         LoadImageRequest.createRequest({
@@ -424,12 +338,7 @@ export class ThumbnailLoader {
           timestamp: modificationTime,
           orientation: this.transform_,
         }),
-        // @ts-ignore: error TS2345: Argument of type '(new (width?: number |
-        // undefined, height?: number | undefined) => HTMLImageElement) | null'
-        // is not assignable to parameter of type 'HTMLImageElement'.
         this.image_, () => {}, () => {
-          // @ts-ignore: error TS2721: Cannot invoke an object which is possibly
-          // 'null'.
           this.image_.onerror(new Event('load-error'));
         });
   }
@@ -452,13 +361,9 @@ export class ThumbnailLoader {
     // At this point, image transformation is not applied because we attach
     // style attribute to an img element in attachImage() instead.
     if (!this.canvasUpToDate_) {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.canvas_.width = this.image_.width;
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.canvas_.height = this.image_.height;
       const context = this.canvas_.getContext('2d');
-      // @ts-ignore: error TS2345: Argument of type 'HTMLImageElement | null' is
-      // not assignable to parameter of type 'CanvasImageSource'.
       context.drawImage(this.image_, 0, 0);
       this.canvasUpToDate_ = true;
     }
@@ -486,23 +391,14 @@ export class ThumbnailLoader {
                                                                  this.image_;
 
     ThumbnailLoader.centerImage_(
-        // @ts-ignore: error TS2345: Argument of type 'HTMLImageElement |
-        // HTMLCanvasElement | null' is not assignable to parameter of type
-        // '(new (width?: number | undefined, height?: number | undefined) =>
-        // HTMLImageElement) | HTMLCanvasElement'.
         box, attachableMedia, fillMode, autoFillThreshold, boxWidth, boxHeight);
 
-    // @ts-ignore: error TS18047: 'attachableMedia' is possibly 'null'.
     if (attachableMedia.parentNode !== box) {
       box.textContent = '';
-      // @ts-ignore: error TS2345: Argument of type 'HTMLImageElement |
-      // HTMLCanvasElement | null' is not assignable to parameter of type
-      // 'Node'.
       box.appendChild(attachableMedia);
     }
 
     if (!this.taskId_) {
-      // @ts-ignore: error TS18047: 'attachableMedia' is possibly 'null'.
       attachableMedia.classList.add('cached');
     }
   }
@@ -514,9 +410,6 @@ export class ThumbnailLoader {
    */
   getImage() {
     this.renderMedia_();
-    // @ts-ignore: error TS2322: Type 'HTMLImageElement | HTMLCanvasElement |
-    // null' is not assignable to type '(new (width?: number | undefined,
-    // height?: number | undefined) => HTMLImageElement) | HTMLCanvasElement'.
     return (this.loaderType_ === ThumbnailLoader.LoaderType.IMAGE) ?
         this.image_ :
         this.canvas_;
@@ -539,16 +432,8 @@ export class ThumbnailLoader {
    * @private
    */
   static centerImage_(
-      // @ts-ignore: error TS6133: 'box' is declared but its value is never
-      // read.
       box, img, fillMode, autoFillThreshold, boxWidth, boxHeight) {
-    // @ts-ignore: error TS2339: Property 'width' does not exist on type '(new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement) | HTMLCanvasElement'.
     const imageWidth = img.width;
-    // @ts-ignore: error TS2339: Property 'height' does not exist on type '(new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement) | HTMLCanvasElement'.
     const imageHeight = img.height;
 
     let fractionX;
@@ -603,27 +488,13 @@ export class ThumbnailLoader {
       }
     }
 
-    // @ts-ignore: error TS7006: Parameter 'fraction' implicitly has an 'any'
-    // type.
     function percent(fraction) {
       return (fraction * 100).toFixed(2) + '%';
     }
 
-    // @ts-ignore: error TS2339: Property 'style' does not exist on type '(new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement) | HTMLCanvasElement'.
     img.style.width = percent(fractionX);
-    // @ts-ignore: error TS2339: Property 'style' does not exist on type '(new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement) | HTMLCanvasElement'.
     img.style.height = percent(fractionY);
-    // @ts-ignore: error TS2339: Property 'style' does not exist on type '(new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement) | HTMLCanvasElement'.
     img.style.left = percent((1 - fractionX) / 2);
-    // @ts-ignore: error TS2339: Property 'style' does not exist on type '(new
-    // (width?: number | undefined, height?: number | undefined) =>
-    // HTMLImageElement) | HTMLCanvasElement'.
     img.style.top = percent((1 - fractionY) / 2);
   }
 }

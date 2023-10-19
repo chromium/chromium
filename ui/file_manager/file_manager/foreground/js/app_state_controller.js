@@ -47,7 +47,7 @@ export class AppStateController {
   }
 
   /**
-   * @return {Promise<void>}
+   * @return {Promise}
    */
   async loadInitialViewOptions() {
     // Load initial view option.
@@ -68,17 +68,9 @@ export class AppStateController {
       }
 
       // Override with window-specific options.
-      // @ts-ignore: error TS2339: Property 'appState' does not exist on type
-      // 'Window & typeof globalThis'.
       if (window.appState && window.appState.viewOptions) {
-        // @ts-ignore: error TS2339: Property 'appState' does not exist on type
-        // 'Window & typeof globalThis'.
         for (const key in window.appState.viewOptions) {
-          // @ts-ignore: error TS2339: Property 'appState' does not exist on
-          // type 'Window & typeof globalThis'.
           if (window.appState.viewOptions.hasOwnProperty(key)) {
-            // @ts-ignore: error TS2339: Property 'appState' does not exist on
-            // type 'Window & typeof globalThis'.
             this.viewOptions_[key] = window.appState.viewOptions[key];
           }
         }
@@ -101,8 +93,6 @@ export class AppStateController {
     const {table} = ui.listContainer;
 
     // Register event listeners.
-    // @ts-ignore: error TS2339: Property 'addEventListener' does not exist on
-    // type 'FileTable'.
     table.addEventListener(
         'column-resize-end', this.saveViewOptions.bind(this));
     directoryModel.getFileList().addEventListener(
@@ -127,13 +117,9 @@ export class AppStateController {
       this.directoryModel_.getFileFilter().setAllAndroidFoldersVisible(true);
     }
     if (this.viewOptions_.columnConfig) {
-      // @ts-ignore: error TS2339: Property 'restoreColumnConfig' does not exist
-      // on type 'TableColumnModel'.
       table.columnModel.restoreColumnConfig(this.viewOptions_.columnConfig);
       // The stored config might not match the current table width, do a
       // normalization here after restoration.
-      // @ts-ignore: error TS2339: Property 'clientWidth' does not exist on type
-      // 'FileTable'.
       table.columnModel.normalizeWidths(table.clientWidth);
     }
   }
@@ -146,30 +132,19 @@ export class AppStateController {
       sortField: this.fileListSortField_,
       sortDirection: this.fileListSortDirection_,
       columnConfig: {},
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       listType: this.ui_.listContainer.currentListType,
       isAllAndroidFoldersVisible:
-          // @ts-ignore: error TS2531: Object is possibly 'null'.
           this.directoryModel_.getFileFilter().isAllAndroidFoldersVisible(),
     };
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const cm = this.ui_.listContainer.table.columnModel;
-    // @ts-ignore: error TS2339: Property 'exportColumnConfig' does not exist on
-    // type 'TableColumnModel'.
     prefs.columnConfig = cm.exportColumnConfig();
     // Save the global default.
     const items = {};
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
     items[this.viewOptionStorageKey_] = JSON.stringify(prefs);
     storage.local.setAsync(items);
 
     // Save the window-specific preference.
-    // @ts-ignore: error TS2339: Property 'appState' does not exist on type
-    // 'Window & typeof globalThis'.
     if (window.appState) {
-      // @ts-ignore: error TS2339: Property 'appState' does not exist on type
-      // 'Window & typeof globalThis'.
       window.appState.viewOptions = prefs;
       appUtil.saveAppState();
     }
@@ -179,7 +154,6 @@ export class AppStateController {
    * @private
    */
   async onFileListSorted_() {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const currentDirectory = this.directoryModel_.getCurrentDirEntry();
     if (!currentDirectory) {
       return;
@@ -188,13 +162,8 @@ export class AppStateController {
     // Update preferred sort field and direction only when the current directory
     // is not Recent folder.
     if (!util.isRecentRoot(currentDirectory)) {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       const currentSortStatus = this.directoryModel_.getFileList().sortStatus;
-      // @ts-ignore: error TS2339: Property 'field' does not exist on type
-      // 'Object'.
       this.fileListSortField_ = currentSortStatus.field;
-      // @ts-ignore: error TS2339: Property 'direction' does not exist on type
-      // 'Object'.
       this.fileListSortDirection_ = currentSortStatus.direction;
     }
     this.saveViewOptions();
@@ -205,7 +174,6 @@ export class AppStateController {
    */
   async onFileFilterChanged_() {
     const isAllAndroidFoldersVisible =
-        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.directoryModel_.getFileFilter().isAllAndroidFoldersVisible();
     if (this.viewOptions_.isAllAndroidFoldersVisible !==
         isAllAndroidFoldersVisible) {
@@ -219,8 +187,6 @@ export class AppStateController {
    * @private
    */
   onDirectoryChanged_(event) {
-    // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on type
-    // 'Event'.
     if (!event.newDirEntry) {
       return;
     }
@@ -228,16 +194,10 @@ export class AppStateController {
     // Sort the file list by:
     // 1) 'date-mofidied' and 'desc' order on Recent folder.
     // 2) preferred field and direction on other folders.
-    // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on type
-    // 'Event'.
     const isOnRecent = util.isRecentRoot(event.newDirEntry);
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const fileListModel = this.directoryModel_.getFileList();
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.listContainer.isOnRecent = isOnRecent;
     const isOnRecentBefore =
-        // @ts-ignore: error TS2339: Property 'previousDirEntry' does not exist
-        // on type 'Event'.
         event.previousDirEntry && util.isRecentRoot(event.previousDirEntry);
     if (isOnRecent != isOnRecentBefore) {
       if (isOnRecent) {
@@ -246,7 +206,6 @@ export class AppStateController {
             AppStateController.DEFAULT_SORT_FIELD,
             AppStateController.DEFAULT_SORT_DIRECTION);
       } else {
-        // @ts-ignore: error TS2531: Object is possibly 'null'.
         const isGridView = this.ui_.listContainer.currentListType ===
             ListContainer.ListType.THUMBNAIL;
         fileListModel.groupByField =
@@ -257,9 +216,7 @@ export class AppStateController {
     }
 
     appUtil.updateAppState(
-        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.directoryModel_.getCurrentDirEntry() ?
-            // @ts-ignore: error TS2531: Object is possibly 'null'.
             this.directoryModel_.getCurrentDirEntry().toURL() :
             '',
         /*selectionURL=*/ '');

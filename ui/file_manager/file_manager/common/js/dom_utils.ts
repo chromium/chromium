@@ -103,8 +103,7 @@ export function createChild(
  *     context object for querySelector.
  */
 export function queryRequiredElement(
-    selectors: string,
-    context?: Document|DocumentFragment|Element|HTMLElement): HTMLElement {
+    selectors: string, context?: Document|DocumentFragment|Element): Element {
   const element = (context || document).querySelector(selectors);
   assertInstanceof(
       element, HTMLElement, 'Missing required element: ' + selectors);

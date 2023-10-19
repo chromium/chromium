@@ -77,12 +77,10 @@ export class ActionsController {
     // Attach listeners to non-user events which will only update the in-memory
     // ActionsModel.
     if (util.isNewDirectoryTreeEnabled()) {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.directoryTree.addEventListener(
           XfTree.events.TREE_SELECTION_CHANGED,
           this.onNavigationListSelectionChanged_.bind(this), true);
     } else {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.directoryTree.addEventListener(
           'change', this.onNavigationListSelectionChanged_.bind(this), true);
     }
@@ -120,29 +118,16 @@ export class ActionsController {
         document.body === element) {
       return this.selectionHandler_.selection.entries;
     }
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     if (this.ui_.directoryTree.contains(element) ||
-        // @ts-ignore: error TS2339: Property 'contextMenuForRootItems' does not
-        // exist on type 'XfTree | DirectoryTree'.
         this.ui_.directoryTree.contextMenuForRootItems.contains(element) ||
-        // @ts-ignore: error TS2339: Property 'contextMenuForSubitems' does not
-        // exist on type 'XfTree | DirectoryTree'.
         this.ui_.directoryTree.contextMenuForSubitems.contains(element)) {
-      // @ts-ignore: error TS2339: Property 'entry' does not exist on type
-      // 'Element'.
       if (element.entry) {
         // DirectoryItem has "entry" attribute.
-        // @ts-ignore: error TS2339: Property 'entry' does not exist on type
-        // 'Element'.
         return [element.entry];
       }
       // DirectoryTree has the focused item.
       const focusedItem = getFocusedTreeItem(element);
-      // @ts-ignore: error TS2339: Property 'entry' does not exist on type
-      // 'XfTreeItem | DirectoryItem'.
       if (focusedItem?.entry) {
-        // @ts-ignore: error TS2339: Property 'entry' does not exist on type
-        // 'XfTreeItem | DirectoryItem'.
         return [focusedItem.entry];
       }
     }
@@ -199,8 +184,6 @@ export class ActionsController {
    * @private
    */
   onContextMenuShow_(event) {
-    // @ts-ignore: error TS2339: Property 'element' does not exist on type
-    // 'Event'.
     this.updateUI_(event.element);
   }
 
@@ -234,8 +217,6 @@ export class ActionsController {
    */
   onNavigationListSelectionChanged_() {
     const focusedItem = getFocusedTreeItem(this.ui_.directoryTree);
-    // @ts-ignore: error TS2339: Property 'entry' does not exist on type
-    // 'XfTreeItem | DirectoryItem'.
     const entry = focusedItem?.entry;
 
     if (!entry) {
@@ -256,22 +237,16 @@ export class ActionsController {
    * @private
    */
   onMetadataUpdated_(event) {
-    // @ts-ignore: error TS2339: Property 'names' does not exist on type
-    // 'Event'.
     if (!event || !event.names.has('pinned')) {
       return;
     }
 
     for (const key of this.readyModels_.keys()) {
-      // @ts-ignore: error TS2339: Property 'entriesMap' does not exist on type
-      // 'Event'.
       if (key.split(';').some(url => event.entriesMap.has(url))) {
         this.readyModels_.delete(key);
       }
     }
     for (const key of this.initializingdModels_.keys()) {
-      // @ts-ignore: error TS2339: Property 'entriesMap' does not exist on type
-      // 'Event'.
       if (key.split(';').some(url => event.entriesMap.has(url))) {
         this.initializingdModels_.delete(key);
       }
@@ -284,8 +259,6 @@ export class ActionsController {
    */
   getInitializedActionsForEntries(entries) {
     const key = this.getEntriesKey_(entries);
-    // @ts-ignore: error TS2322: Type 'ActionsModel | undefined' is not
-    // assignable to type 'ActionsModel | null'.
     return this.readyModels_.get(key);
   }
 
@@ -296,8 +269,6 @@ export class ActionsController {
   getActionsForEntries(entries) {
     const key = this.getEntriesKey_(entries);
     if (!key) {
-      // @ts-ignore: error TS2322: Type 'Promise<void>' is not assignable to
-      // type 'Promise<ActionsModel>'.
       return Promise.resolve();
     }
 
@@ -326,19 +297,12 @@ export class ActionsController {
     // and initialized again.
     const init = actionsModel.initialize().then(() => {
       this.initializingdModels_.delete(key);
-      // @ts-ignore: error TS2345: Argument of type 'ActionsModel | undefined'
-      // is not assignable to parameter of type 'ActionsModel'.
       this.readyModels_.set(key, actionsModel);
       return actionsModel;
     });
 
     // Cache in the waiting initialization map.
-    // @ts-ignore: error TS2345: Argument of type 'Promise<ActionsModel |
-    // undefined>' is not assignable to parameter of type
-    // 'Promise<ActionsModel>'.
     this.initializingdModels_.set(key, init);
-    // @ts-ignore: error TS2322: Type 'Promise<ActionsModel | undefined>' is not
-    // assignable to type 'Promise<ActionsModel>'.
     return init;
   }
 

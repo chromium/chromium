@@ -4,6 +4,7 @@
 
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 import {addVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
@@ -49,12 +50,6 @@ volumeManagerUtil.TIMEOUT_STR_RESOLVE_ISOLATED_ENTRIES =
  */
 volumeManagerUtil.validateError = error => {
   for (const key in VolumeManagerCommon.VolumeError) {
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{ TIMEOUT:
-    // string; UNKNOWN_ERROR: string; INTERNAL_ERROR: string; INVALID_ARGUMENT:
-    // string; INVALID_PATH: string; PATH_ALREADY_MOUNTED: string;
-    // PATH_NOT_MOUNTED: string; DIRECTORY_CREATION_FAILED: string; ... 9 more
-    // ...; BUSY: string; }'.
     if (error === VolumeManagerCommon.VolumeError[key]) {
       return;
     }
@@ -67,12 +62,9 @@ volumeManagerUtil.validateError = error => {
  * Builds the VolumeInfo data from chrome.fileManagerPrivate.VolumeMetadata.
  * @param {chrome.fileManagerPrivate.VolumeMetadata} volumeMetadata Metadata
  * instance for the volume.
- * @return {!Promise<!import("../../externs/volume_info.js").VolumeInfo>}
- *     Promise settled with the VolumeInfo instance.
+ * @return {!Promise<!VolumeInfo>} Promise settled with the VolumeInfo instance.
  */
 volumeManagerUtil.createVolumeInfo = async volumeMetadata => {
-  // @ts-ignore: error TS7034: Variable 'localizedLabel' implicitly has type
-  // 'any' in some locations where its type cannot be determined.
   let localizedLabel;
   switch (volumeMetadata.volumeType) {
     case VolumeManagerCommon.VolumeType.DOWNLOADS:
@@ -137,8 +129,6 @@ volumeManagerUtil.createVolumeInfo = async volumeMetadata => {
             rootDirectoryEntry.filesystem, volumeMetadata.mountCondition,
             volumeMetadata.deviceType, volumeMetadata.devicePath,
             volumeMetadata.isReadOnly, volumeMetadata.isReadOnlyRemovableDevice,
-            // @ts-ignore: error TS7005: Variable 'localizedLabel' implicitly
-            // has an 'any' type.
             volumeMetadata.profile, localizedLabel, volumeMetadata.providerId,
             volumeMetadata.hasMedia, volumeMetadata.configurable,
             volumeMetadata.watchable,
@@ -169,14 +159,10 @@ volumeManagerUtil.createVolumeInfo = async volumeMetadata => {
             return new VolumeInfoImpl(
                 /** @type {VolumeManagerCommon.VolumeType} */
                 (volumeMetadata.volumeType), volumeMetadata.volumeId,
-                // @ts-ignore: error TS2345: Argument of type 'null' is not
-                // assignable to parameter of type 'FileSystem'.
                 null,  // File system is not found.
                 volumeMetadata.mountCondition, volumeMetadata.deviceType,
                 volumeMetadata.devicePath, volumeMetadata.isReadOnly,
                 volumeMetadata.isReadOnlyRemovableDevice,
-                // @ts-ignore: error TS7005: Variable 'localizedLabel'
-                // implicitly has an 'any' type.
                 volumeMetadata.profile, localizedLabel,
                 volumeMetadata.providerId, volumeMetadata.hasMedia,
                 volumeMetadata.configurable, volumeMetadata.watchable,

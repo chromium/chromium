@@ -23,8 +23,6 @@ export class MetadataParser {
     /** @public @const @type {!RegExp} */
     this.urlFilter = urlFilter;
     /** @public @const @type {boolean} */
-    // @ts-ignore: error TS2339: Property 'verbose' does not exist on type
-    // 'MetadataParserLogger'.
     this.verbose = parent.verbose;
     /** @public @type {string} */
     this.mimeType = 'unknown';
@@ -34,11 +32,7 @@ export class MetadataParser {
    * Output an error message.
    * @param {...(Object|string)} var_args Arguments.
    */
-  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
-  // read.
   error(var_args) {
-    // @ts-ignore: error TS2345: Argument of type 'IArguments' is not assignable
-    // to parameter of type '[var_args: string | Object | undefined]'.
     this.parent_.error.apply(this.parent_, arguments);
   }
 
@@ -46,11 +40,7 @@ export class MetadataParser {
    * Output a log message.
    * @param {...(Object|string)} var_args Arguments.
    */
-  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
-  // read.
   log(var_args) {
-    // @ts-ignore: error TS2345: Argument of type 'IArguments' is not assignable
-    // to parameter of type '[var_args: string | Object | undefined]'.
     this.parent_.log.apply(this.parent_, arguments);
   }
 
@@ -58,13 +48,8 @@ export class MetadataParser {
    * Output a log message if |verbose| flag is on.
    * @param {...(Object|string)} var_args Arguments.
    */
-  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
-  // read.
   vlog(var_args) {
     if (this.verbose) {
-      // @ts-ignore: error TS2345: Argument of type 'IArguments' is not
-      // assignable to parameter of type '[var_args: string | Object |
-      // undefined]'.
       this.parent_.log.apply(this.parent_, arguments);
     }
   }
@@ -81,8 +66,8 @@ export class MetadataParser {
    * @param {File} file The file to read.
    * @param {number} begin Starting byte(included).
    * @param {number} end Last byte(excluded).
-   * @param {function(File, ByteReader):void} callback Callback to invoke.
-   * @param {function(string):void} onError Error handler.
+   * @param {function(File, ByteReader)} callback Callback to invoke.
+   * @param {function(string)} onError Error handler.
    */
   static readFileBytes(file, begin, end, callback, onError) {
     const fileReader = new FileReader();

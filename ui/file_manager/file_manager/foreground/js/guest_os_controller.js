@@ -64,8 +64,6 @@ export class GuestOsController {
     for (const uiEntryKey of state.uiEntries) {
       const uiEntry = getEntry(state, uiEntryKey);
       if (uiEntry && 'guest_id' in uiEntry &&
-          // @ts-ignore: error TS2345: Argument of type 'unknown' is not
-          // assignable to parameter of type 'number'.
           !newGuestIdSet.has(uiEntry.guest_id)) {
         store.dispatch(removeUiEntry({key: uiEntryKey}));
       }

@@ -18,22 +18,17 @@ export class MetadataProvider {
     /**
      * Set of valid property names. Key is the name of property and value is
      * always true.
-     * @private @const @type {!Record<string, boolean>}
+     * @private @const @type {!Object<boolean>}
      */
     this.validPropertyNames_ = {};
     for (let i = 0; i < validPropertyNames.length; i++) {
-      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
-      // type.
       this.validPropertyNames_[validPropertyNames[i]] = true;
     }
   }
 
-  // @ts-ignore: error TS7006: Parameter 'names' implicitly has an 'any' type.
   checkPropertyNames(names) {
     // Check if the property name is correct or not.
     for (let i = 0; i < names.length; i++) {
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'any' can't be used to index type '{}'.
       assert(this.validPropertyNames_[names[i]], names[i]);
     }
   }
@@ -47,9 +42,5 @@ export class MetadataProvider {
    *     undefined property for property error, and should return empty
    *     MetadataItem for entry error.
    */
-  // @ts-ignore: error TS6133: 'requests' is declared but its value is never
-  // read.
-  get(requests) {
-    return Promise.resolve([]);
-  }
+  get(requests) {}
 }

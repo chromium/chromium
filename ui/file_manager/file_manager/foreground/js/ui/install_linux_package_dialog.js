@@ -15,8 +15,6 @@ import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 /**
  * Creates dialog in DOM tree.
  */
-// @ts-ignore: error TS2415: Class 'InstallLinuxPackageDialog' incorrectly
-// extends base class 'FileManagerDialogBase'.
 export class InstallLinuxPackageDialog extends FileManagerDialogBase {
   /**
    * @param {HTMLElement} parentNode Node to be parent for this dialog.
@@ -24,12 +22,10 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
   constructor(parentNode) {
     super(parentNode);
 
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.frame.id = 'install-linux-package-dialog';
 
     this.details_frame_ = this.document_.createElement('div');
     this.details_frame_.className = 'install-linux-package-details-frame';
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.frame.insertBefore(this.details_frame_, this.buttons);
 
     this.details_label_ = this.document_.createElement('div');
@@ -42,22 +38,18 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     // customize.
     if (util.isJellyEnabled()) {
       // Need to copy the whole sub tree because we need child elements.
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.installButton_ = this.okButton.cloneNode(true /* deep */);
       // When Jelly is on, we have child elements inside the button, setting
       // textContent of the button will remove all children.
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       this.installButton_.childNodes[0].textContent =
           str('INSTALL_LINUX_PACKAGE_INSTALL_BUTTON');
     } else {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.installButton_ = this.okButton.cloneNode(false /* deep */);
       this.installButton_.textContent =
           str('INSTALL_LINUX_PACKAGE_INSTALL_BUTTON');
     }
     this.installButton_.addEventListener(
         'click', this.onInstallClick_.bind(this));
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.buttons.insertBefore(this.installButton_, this.okButton);
     this.initialFocusElement_ = this.installButton_;
 
@@ -73,17 +65,9 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
   showInstallLinuxPackageDialog(entry) {
     // We re-use the same object, so reset any visual state that may be
     // changed.
-    // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
-    // 'Node'.
     this.installButton_.hidden = false;
-    // @ts-ignore: error TS2339: Property 'disabled' does not exist on type
-    // 'Node'.
     this.installButton_.disabled = true;
-    // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
-    // 'Element'.
     this.okButton.hidden = true;
-    // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
-    // 'Element'.
     this.cancelButton.hidden = false;
 
     this.entry_ = entry;
@@ -109,7 +93,6 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
    * @param {string|null} message The (optional) message to display.
    */
   resetDetailsFrame_(message) {
-    // @ts-ignore: error TS2304: Cannot find name 'trustedTypes'.
     this.details_frame_.innerHTML = trustedTypes.emptyHTML;
     this.details_frame_.appendChild(this.details_label_);
     if (message) {
@@ -140,29 +123,21 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     const details = [
       [
         str('INSTALL_LINUX_PACKAGE_DETAILS_APPLICATION_LABEL'),
-        // @ts-ignore: error TS18048: 'linux_package_info' is possibly
-        // 'undefined'.
         linux_package_info.name,
       ],
       [
         str('INSTALL_LINUX_PACKAGE_DETAILS_VERSION_LABEL'),
-        // @ts-ignore: error TS18048: 'linux_package_info' is possibly
-        // 'undefined'.
         linux_package_info.version,
       ],
     ];
 
     // Summary and description are almost always set, but handle the case
     // where they're missing gracefully.
-    // @ts-ignore: error TS18048: 'linux_package_info' is possibly 'undefined'.
     let description = linux_package_info.summary;
-    // @ts-ignore: error TS18048: 'linux_package_info' is possibly 'undefined'.
     if (linux_package_info.description) {
       if (description) {
         description += '\n\n';
       }
-      // @ts-ignore: error TS18048: 'linux_package_info' is possibly
-      // 'undefined'.
       description += linux_package_info.description;
     }
     if (description) {
@@ -175,8 +150,6 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     this.renderDetails_(details);
 
     // Allow install now.
-    // @ts-ignore: error TS2339: Property 'disabled' does not exist on type
-    // 'Node'.
     this.installButton_.disabled = false;
   }
 
@@ -205,22 +178,12 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
   onInstallClick_() {
     // Add the event listener first to avoid potential races.
     chrome.fileManagerPrivate.installLinuxPackage(
-        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | null'
-        // is not assignable to parameter of type 'FileSystemEntry'.
         assert(this.entry_), this.onInstallLinuxPackage_.bind(this));
 
-    // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
-    // 'Node'.
     this.installButton_.hidden = true;
-    // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
-    // 'Element'.
     this.cancelButton.hidden = true;
 
-    // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
-    // 'Element'.
     this.okButton.hidden = false;
-    // @ts-ignore: error TS2339: Property 'focus' does not exist on type
-    // 'Element'.
     this.okButton.focus();
   }
 
@@ -234,7 +197,6 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
    */
   onInstallLinuxPackage_(response, failure_reason) {
     if (response == 'started') {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.text.textContent = str('INSTALL_LINUX_PACKAGE_INSTALLATION_STARTED');
       return;
     }
@@ -242,9 +204,7 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     // Currently we always display a generic error message. Eventually we'll
     // want a different message for the 'install_already_active' case, and to
     // surface the provided failure reason if one is provided.
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.title.textContent = str('INSTALL_LINUX_PACKAGE_ERROR_TITLE');
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.text.textContent = str('INSTALL_LINUX_PACKAGE_ERROR_DESCRIPTION');
     console.warn('Failed to begin package installation: ' + failure_reason);
   }

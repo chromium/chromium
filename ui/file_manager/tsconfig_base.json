@@ -1,7 +1,6 @@
 {
   "extends": "../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
-    "checkJs": true,
     "lib": ["dom", "ES2015.Generator", "ES2015.Iterable", "ESNext"],
 
     "importsNotUsedAsValues": "preserve",

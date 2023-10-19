@@ -9,9 +9,16 @@
  */
 
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeInfoList} from '../../externs/volume_info_list.js';
 
+// To avoid the import being elided, closure requires this name here because of
+// the @implements.
+export const _unused = VolumeInfoList;
+
+/**
+ * @implements {VolumeInfoList}
+ */
 export class VolumeInfoListImpl implements VolumeInfoList {
   /**
    * Holds VolumeInfo instances.

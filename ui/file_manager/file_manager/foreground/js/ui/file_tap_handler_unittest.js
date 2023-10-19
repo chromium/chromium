@@ -22,9 +22,8 @@ let dummyTarget;
 let events;
 
 /**
- * @type {function(!Event, number, !FileTapHandler.TapEvent):boolean}
+ * @type {function(!Event, number, !FileTapHandler.TapEvent)}
  */
-// @ts-ignore: error TS6133: 'e' is declared but its value is never read.
 const handleTap = (e, index, eventType) => {
   events.push({index: index, eventType: eventType});
   return false;
@@ -72,10 +71,7 @@ export function testTap() {
 
   // A tap event should be emitted for a single tap.
   assertEquals(1, events.length);
-  // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-  // 'Object'.
   assertEquals(FileTapHandler.TapEvent.TAP, events[0].eventType);
-  // @ts-ignore: error TS2339: Property 'index' does not exist on type 'Object'.
   assertEquals(0, events[0].index);
 }
 
@@ -112,7 +108,6 @@ export function testTapMoveTolerance() {
   assertEquals(0, events.length);
 }
 
-// @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any' type.
 export function testLongTap(callback) {
   const touch0 = createTouch(0, 300, 400);
   const touch1 = createTouch(0, 300, 400);  // no movement.
@@ -133,11 +128,7 @@ export function testLongTap(callback) {
       }).then(() => {
         // A long press should be emitted if there was no movement.
         assertEquals(1, events.length);
-        // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-        // 'Object'.
         assertEquals(FileTapHandler.TapEvent.LONG_PRESS, events[0].eventType);
-        // @ts-ignore: error TS2339: Property 'index' does not exist on type
-        // 'Object'.
         assertEquals(0, events[0].index);
         handler.handleTouchEvents(
             new TouchEvent('touchend', {
@@ -149,17 +140,12 @@ export function testLongTap(callback) {
             1, handleTap);
         // A long tap should be emitted if there was no movement.
         assertEquals(2, events.length);
-        // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-        // 'Object'.
         assertEquals(FileTapHandler.TapEvent.LONG_TAP, events[1].eventType);
-        // @ts-ignore: error TS2339: Property 'index' does not exist on type
-        // 'Object'.
         assertEquals(0, events[1].index);
       }),
       callback);
 }
 
-// @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any' type.
 export function testLongTapMoveTolerance(callback) {
   const touch0 = createTouch(0, 300, 400);
   const touch1 = createTouch(0, 303, 404);  // moved slightly
@@ -256,10 +242,7 @@ export function testTwoFingerTap() {
 
   // A two-finger tap event should be emitted, allowing for slight movement.
   assertEquals(1, events.length);
-  // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-  // 'Object'.
   assertEquals(FileTapHandler.TapEvent.TWO_FINGER_TAP, events[0].eventType);
-  // @ts-ignore: error TS2339: Property 'index' does not exist on type 'Object'.
   assertEquals(0, events[0].index);
 
   // case 2: Release the first touch point first.
@@ -298,9 +281,6 @@ export function testTwoFingerTap() {
 
   // A two-finger tap event should be emitted.
   assertEquals(2, events.length);
-  // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-  // 'Object'.
   assertEquals(FileTapHandler.TapEvent.TWO_FINGER_TAP, events[1].eventType);
-  // @ts-ignore: error TS2339: Property 'index' does not exist on type 'Object'.
   assertEquals(10, events[1].index);
 }

@@ -8,8 +8,6 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {str, strf, util} from '../../../common/js/util.js';
 
-import {MenuItem} from './menu_item.js';
-
 /**
  * Selector used by tast tests to identify when the storage meter is empty.
  */
@@ -18,7 +16,6 @@ const tastEmptySpaceId = 'tast-storage-meter-empty';
 /**
  * @typedef {{totalSize: number, usedSize: number, warningMessage: string}}
  */
-// @ts-ignore: error TS7005: Variable 'SpaceInfo' implicitly has an 'any' type.
 export let SpaceInfo;
 
 export class GearMenu {
@@ -27,10 +24,10 @@ export class GearMenu {
    */
   constructor(element) {
     /**
-     * @type {!MenuItem}
+     * @type {!HTMLMenuItemElement}
      * @const
      */
-    this.syncButton = /** @type {!MenuItem} */
+    this.syncButton = /** @type {!HTMLMenuItemElement} */
         (queryRequiredElement('#gear-menu-drive-sync-settings', element));
 
     /**
@@ -92,8 +89,6 @@ export class GearMenu {
      * @type {Promise<SpaceInfo|undefined>}
      * @private
      */
-    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-    // 'Promise<SpaceInfo | undefined>'.
     this.spaceInfoPromise_ = null;
 
     // Initialize attributes.

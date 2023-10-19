@@ -18,8 +18,6 @@ export class ListSelectionModel extends EventTarget {
     this.length_ = opt_length || 0;
     // Even though selectedIndexes_ is really a map we use an array here to
     // get iteration in the order of the indexes.
-    // @ts-ignore: error TS7008: Member 'selectedIndexes_' implicitly has an
-    // 'any[]' type.
     this.selectedIndexes_ = [];
 
     // True if any item could be lead or anchor. False if only selected ones.
@@ -48,9 +46,7 @@ export class ListSelectionModel extends EventTarget {
   /**
    * The selected indexes.
    * Setter also changes lead and anchor indexes if value list is nonempty.
-// @ts-ignore: error TS2314: Generic type 'Array<T>' requires 1 type
-argument(s).
-   * @type {!Array<*>}
+   * @type {!Array}
    */
   get selectedIndexes() {
     return Object.keys(this.selectedIndexes_).map(Number);
@@ -60,51 +56,33 @@ argument(s).
     this.beginChange();
     const unselected = {};
     for (const index in this.selectedIndexes_) {
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'number' can't be used to index type '{}'.
       unselected[index] = true;
     }
 
     for (let i = 0; i < selectedIndexes.length; i++) {
       const index = selectedIndexes[i];
       if (index in this.selectedIndexes_) {
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'any' can't be used to index type '{}'.
         delete unselected[index];
       } else {
         this.selectedIndexes_[index] = true;
         // Mark the index as changed. If previously marked, then unmark,
         // since it just got reverted to the original state.
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         if (index in this.changedIndexes_) {
-          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-          // because expression of type 'any' can't be used to index type '{}'.
           delete this.changedIndexes_[index];
         } else {
-          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-          // because expression of type 'any' can't be used to index type '{}'.
           this.changedIndexes_[index] = true;
         }
       }
     }
 
     for (let index in unselected) {
-      // @ts-ignore: error TS2322: Type 'number' is not assignable to type
-      // 'string'.
       index = +index;
-      // @ts-ignore: error TS7015: Element implicitly has an 'any' type because
-      // index expression is not of type 'number'.
       delete this.selectedIndexes_[index];
       // Mark the index as changed. If previously marked, then unmark,
       // since it just got reverted to the original state.
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       if (index in this.changedIndexes_) {
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
         delete this.changedIndexes_[index];
       } else {
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
         this.changedIndexes_[index] = false;
       }
     }
@@ -151,11 +129,7 @@ argument(s).
 
     let result = Infinity;
     for (const i in this.selectedIndexes_) {
-      // @ts-ignore: error TS2362: The left-hand side of an arithmetic operation
-      // must be of type 'any', 'number', 'bigint' or an enum type.
       if (Math.abs(i - index) < Math.abs(result - index)) {
-        // @ts-ignore: error TS2322: Type 'string' is not assignable to type
-        // 'number'.
         result = i;
       }
     }
@@ -238,8 +212,6 @@ argument(s).
 
     this.beginChange();
 
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'number' can't be used to index type '{}'.
     this.changedIndexes_[index] = b;
 
     // End change dispatches an event which in turn may update the view.
@@ -274,7 +246,6 @@ argument(s).
    * any changes were actually done.
    */
   endChange() {
-    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     this.changeCount_--;
     if (!this.changeCount_) {
       // Calls delayed |dispatchPropertyChange|s, only when |leadIndex| or
@@ -297,13 +268,9 @@ argument(s).
           /** @type {!Object} */ (this.changedIndexes_));
       if (indexes.length) {
         const e = new Event('change');
-        // @ts-ignore: error TS2339: Property 'changes' does not exist on type
-        // 'Event'.
         e.changes = indexes.map(function(index) {
           return {
             index: Number(index),
-            // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
-            // because it does not have a type annotation.
             selected: this.changedIndexes_[index],
           };
         }, this);
@@ -396,13 +363,9 @@ argument(s).
 
     // Will be adjusted in endChange.
     if (oldLeadIndex !== -1) {
-      // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
-      // to type 'number'.
       this.leadIndex = permutation[oldLeadIndex];
     }
     if (oldAnchorIndex !== -1) {
-      // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
-      // to type 'number'.
       this.anchorIndex = permutation[oldAnchorIndex];
     }
 
@@ -413,8 +376,6 @@ argument(s).
       let newSelectedIndex = Math.min(oldLeadIndex, this.length_ - 1);
       for (let i = oldLeadIndex + 1; i < permutation.length; ++i) {
         if (permutation[i] !== -1) {
-          // @ts-ignore: error TS2322: Type 'number | undefined' is not
-          // assignable to type 'number'.
           newSelectedIndex = permutation[i];
           break;
         }

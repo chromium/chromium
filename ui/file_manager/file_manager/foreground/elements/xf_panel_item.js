@@ -8,8 +8,7 @@ import './xf_circular_progress.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// @ts-ignore: error TS6133: 'util' is declared but its value is never read.
-import {str} from '../../common/js/util.js';
+import {str, util} from '../../common/js/util.js';
 
 import {DisplayPanel} from './xf_display_panel.js';
 
@@ -27,7 +26,6 @@ export class PanelItem extends HTMLElement {
     this.attachShadow({mode: 'open'}).appendChild(fragment);
 
     /** @private @type {Element} */
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.indicator_ = this.shadowRoot.querySelector('#indicator');
 
     /**
@@ -46,7 +44,7 @@ export class PanelItem extends HTMLElement {
     /** @private @type {number} */
     this.panelType_ = this.panelTypeDefault;
 
-    /** @private @type {?function(Event):void} */
+    /** @private @type {?function(Event)} */
     this.onclick = this.onClicked_.bind(this);
 
     /** @public @type {?DisplayPanel} */
@@ -54,7 +52,7 @@ export class PanelItem extends HTMLElement {
 
     /**
      * Callback that signals events happening in the panel (e.g. click).
-     * @private @type {!function(*):void}
+     * @private @type {!function(*)}
      */
     this.signal_ = console.log;
 
@@ -69,12 +67,10 @@ export class PanelItem extends HTMLElement {
 
   /**
    * Remove an element from the panel using it's id.
-   * @return {?HTMLElement}
+   * @return {?Element}
    * @private
    */
-  // @ts-ignore: error TS7006: Parameter 'id' implicitly has an 'any' type.
   removePanelElementById_(id) {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const element = this.shadowRoot.querySelector(id);
     if (element) {
       element.remove();
@@ -109,22 +105,18 @@ export class PanelItem extends HTMLElement {
     // Mark the indicator as empty so it recreates on setAttribute.
     this.setAttribute('indicator', 'empty');
 
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const buttonSpacer = this.shadowRoot.querySelector('#button-gap');
 
     // Default the text host to use an alert role.
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const textHost = assert(this.shadowRoot.querySelector('.xf-panel-text'));
-    // @ts-ignore: error TS18047: 'textHost' is possibly 'null'.
     textHost.setAttribute('role', 'alert');
 
     const hasExtraButton = !!this.dataset['extraButtonText'];
     // Setup the panel configuration for the panel type.
     // TOOD(crbug.com/947388) Simplify this switch breaking out common cases.
-    // @ts-ignore: error TS2304: Cannot find name 'XfButton'.
-    /** @type {?XfButton} */
+    /** @type {?Element} */
     let primaryButton = null;
-    /** @type {?HTMLElement} */
+    /** @type {?Element} */
     let secondaryButton = null;
     switch (type) {
       case this.panelTypeProgress:
@@ -132,11 +124,8 @@ export class PanelItem extends HTMLElement {
         secondaryButton = document.createElement('xf-button');
         secondaryButton.id = 'secondary-action';
         secondaryButton.onclick = assert(this.onclick);
-        // @ts-ignore: error TS4111: Property 'category' comes from an index
-        // signature, so it must be accessed with ['category'].
         secondaryButton.dataset.category = 'cancel';
         secondaryButton.setAttribute('aria-label', str('CANCEL_LABEL'));
-        // @ts-ignore: error TS18047: 'buttonSpacer' is possibly 'null'.
         buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
         break;
       case this.panelTypeSummary:
@@ -147,9 +136,7 @@ export class PanelItem extends HTMLElement {
         primaryButton.setAttribute('aria-label', str('FEEDBACK_EXPAND_LABEL'));
         // Remove the 'alert' role to stop screen readers repeatedly
         // reading each progress update.
-        // @ts-ignore: error TS18047: 'textHost' is possibly 'null'.
         textHost.setAttribute('role', '');
-        // @ts-ignore: error TS18047: 'buttonSpacer' is possibly 'null'.
         buttonSpacer.insertAdjacentElement('afterend', primaryButton);
         break;
       case this.panelTypeDone:
@@ -159,10 +146,7 @@ export class PanelItem extends HTMLElement {
         secondaryButton.id =
             (hasExtraButton) ? 'secondary-action' : 'primary-action';
         secondaryButton.onclick = assert(this.onclick);
-        // @ts-ignore: error TS4111: Property 'category' comes from an index
-        // signature, so it must be accessed with ['category'].
         secondaryButton.dataset.category = 'dismiss';
-        // @ts-ignore: error TS18047: 'buttonSpacer' is possibly 'null'.
         buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
         if (hasExtraButton) {
           primaryButton = document.createElement('xf-button');
@@ -170,7 +154,6 @@ export class PanelItem extends HTMLElement {
           primaryButton.dataset['category'] = 'extra-button';
           primaryButton.onclick = assert(this.onclick);
           primaryButton.setExtraButtonText(this.dataset['extraButtonText']);
-          // @ts-ignore: error TS18047: 'buttonSpacer' is possibly 'null'.
           buttonSpacer.insertAdjacentElement('afterend', primaryButton);
         }
         break;
@@ -181,10 +164,7 @@ export class PanelItem extends HTMLElement {
         secondaryButton.id =
             (hasExtraButton) ? 'secondary-action' : 'primary-action';
         secondaryButton.onclick = assert(this.onclick);
-        // @ts-ignore: error TS4111: Property 'category' comes from an index
-        // signature, so it must be accessed with ['category'].
         secondaryButton.dataset.category = 'dismiss';
-        // @ts-ignore: error TS18047: 'buttonSpacer' is possibly 'null'.
         buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
         if (hasExtraButton) {
           primaryButton = document.createElement('xf-button');
@@ -192,7 +172,6 @@ export class PanelItem extends HTMLElement {
           primaryButton.dataset.category = 'extra-button';
           primaryButton.onclick = assert(this.onclick);
           primaryButton.setExtraButtonText(this.dataset['extraButtonText']);
-          // @ts-ignore: error TS18047: 'buttonSpacer' is possibly 'null'.
           buttonSpacer.insertAdjacentElement('afterend', primaryButton);
         }
         break;
@@ -203,10 +182,7 @@ export class PanelItem extends HTMLElement {
         secondaryButton.id =
             (hasExtraButton) ? 'secondary-action' : 'primary-action';
         secondaryButton.onclick = assert(this.onclick);
-        // @ts-ignore: error TS4111: Property 'category' comes from an index
-        // signature, so it must be accessed with ['category'].
         secondaryButton.dataset.category = 'cancel';
-        // @ts-ignore: error TS18047: 'buttonSpacer' is possibly 'null'.
         buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
         if (hasExtraButton) {
           primaryButton = document.createElement('xf-button');
@@ -214,7 +190,6 @@ export class PanelItem extends HTMLElement {
           primaryButton.dataset['category'] = 'extra-button';
           primaryButton.onclick = assert(this.onclick);
           primaryButton.setExtraButtonText(this.dataset['extraButtonText']);
-          // @ts-ignore: error TS18047: 'buttonSpacer' is possibly 'null'.
           buttonSpacer.insertAdjacentElement('afterend', primaryButton);
         }
         break;
@@ -234,8 +209,6 @@ export class PanelItem extends HTMLElement {
    * Registers this instance to listen to these attribute changes.
    * @private
    */
-  // @ts-ignore: error TS6133: 'observedAttributes' is declared but its value is
-  // never read.
   static get observedAttributes() {
     return [
       'count',
@@ -256,12 +229,10 @@ export class PanelItem extends HTMLElement {
    * @param {?string} newValue New value of the attribute.
    * @private
    */
-  // @ts-ignore: error TS6133: 'oldValue' is declared but its value is never
-  // read.
   attributeChangedCallback(name, oldValue, newValue) {
-    /** @type {?HTMLElement} */
+    /** @type {Element} */
     let indicator = null;
-    /** @type {HTMLElement} */
+    /** @type {Element} */
     let textNode;
     // TODO(adanilo) Chop out each attribute handler into a function.
     switch (name) {
@@ -277,7 +248,6 @@ export class PanelItem extends HTMLElement {
         break;
       case 'indicator':
         // Get rid of any existing indicator
-        // @ts-ignore: error TS2531: Object is possibly 'null'.
         const oldIndicator = this.shadowRoot.querySelector('#indicator');
         if (oldIndicator) {
           oldIndicator.remove();
@@ -300,14 +270,10 @@ export class PanelItem extends HTMLElement {
             }
             break;
         }
-        // @ts-ignore: error TS2322: Type 'HTMLElement | null' is not assignable
-        // to type 'Element'.
         this.indicator_ = indicator;
         if (indicator) {
-          // @ts-ignore: error TS2531: Object is possibly 'null'.
           const itemRoot = this.shadowRoot.querySelector('.xf-panel-item');
           indicator.setAttribute('id', 'indicator');
-          // @ts-ignore: error TS18047: 'itemRoot' is possibly 'null'.
           itemRoot.prepend(indicator);
         }
         break;
@@ -319,8 +285,6 @@ export class PanelItem extends HTMLElement {
         break;
       case 'progress':
         if (this.indicator_) {
-          // @ts-ignore: error TS2339: Property 'progress' does not exist on
-          // type 'Element'.
           this.indicator_.progress = Number(newValue);
           if (this.parent && this.parent.updateProgress) {
             this.parent.updateProgress();
@@ -333,7 +297,6 @@ export class PanelItem extends HTMLElement {
         }
         break;
       case 'primary-text':
-        // @ts-ignore: error TS2531: Object is possibly 'null'.
         textNode = this.shadowRoot.querySelector('.xf-panel-label-text');
         if (textNode) {
           textNode.textContent = newValue;
@@ -342,10 +305,8 @@ export class PanelItem extends HTMLElement {
         }
         break;
       case 'secondary-text':
-        // @ts-ignore: error TS2531: Object is possibly 'null'.
         textNode = this.shadowRoot.querySelector('.xf-panel-secondary-text');
         if (!textNode) {
-          // @ts-ignore: error TS2531: Object is possibly 'null'.
           const parent = this.shadowRoot.querySelector('.xf-panel-text');
           if (!parent) {
             return;
@@ -368,24 +329,16 @@ export class PanelItem extends HTMLElement {
    * DOM connected.
    * @private
    */
-  // @ts-ignore: error TS6133: 'connectedCallback' is declared but its value is
-  // never read.
   connectedCallback() {
     this.onclick = this.onClicked_.bind(this);
 
     // Set click event handler references.
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     let button = this.shadowRoot.querySelector('#primary-action');
     if (button) {
-      // @ts-ignore: error TS2339: Property 'onclick' does not exist on type
-      // 'Element'.
       button.onclick = this.onclick;
     }
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     button = this.shadowRoot.querySelector('#secondary-action');
     if (button) {
-      // @ts-ignore: error TS2339: Property 'onclick' does not exist on type
-      // 'Element'.
       button.onclick = this.onclick;
     }
   }
@@ -394,25 +347,17 @@ export class PanelItem extends HTMLElement {
    * DOM disconnected.
    * @private
    */
-  // @ts-ignore: error TS6133: 'disconnectedCallback' is declared but its value
-  // is never read.
   disconnectedCallback() {
     // Replace references to any signal callback.
     this.signal_ = console.log;
 
     // Clear click event handler references.
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     let button = this.shadowRoot.querySelector('#primary-action');
     if (button) {
-      // @ts-ignore: error TS2339: Property 'onclick' does not exist on type
-      // 'Element'.
       button.onclick = null;
     }
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     button = this.shadowRoot.querySelector('#secondary-action');
     if (button) {
-      // @ts-ignore: error TS2339: Property 'onclick' does not exist on type
-      // 'Element'.
       button.onclick = null;
     }
     this.onclick = null;
@@ -425,26 +370,21 @@ export class PanelItem extends HTMLElement {
    * @private
    */
   onClicked_(event) {
-    // @ts-ignore: error TS18047: 'event' is possibly 'null'.
     event.stopImmediatePropagation();
-    // @ts-ignore: error TS18047: 'event' is possibly 'null'.
     event.preventDefault();
 
     // Ignore clicks on the panel item itself.
-    // @ts-ignore: error TS18047: 'event' is possibly 'null'.
     if (event.target === this) {
       return;
     }
 
-    // @ts-ignore: error TS2339: Property 'dataset' does not exist on type
-    // 'EventTarget'.
     const id = assert(event.target.dataset.category);
     this.signal_(id);
   }
 
   /**
    * Sets the callback that triggers signals from events on the panel.
-   * @param {?function(*):void} signal
+   * @param {?function(*)} signal
    */
   set signalCallback(signal) {
     this.signal_ = signal || console.log;
@@ -465,14 +405,10 @@ export class PanelItem extends HTMLElement {
     // If we have an indicator on the panel, then grab the
     // visibility value from that.
     if (this.indicator_) {
-      // @ts-ignore: error TS2339: Property 'errorMarkerVisibility' does not
-      // exist on type 'Element'.
       return this.indicator_.errorMarkerVisibility;
     }
     // If there's no indicator on the panel just return the
     // value of any attribute as a fallback.
-    // @ts-ignore: error TS2322: Type 'string | null' is not assignable to type
-    // 'string'.
     return this.getAttribute('errormark');
   }
 
@@ -488,8 +424,6 @@ export class PanelItem extends HTMLElement {
    *  Getter for the progress indicator.
    */
   get indicator() {
-    // @ts-ignore: error TS2322: Type 'string | null' is not assignable to type
-    // 'string'.
     return this.getAttribute('indicator');
   }
 
@@ -505,8 +439,6 @@ export class PanelItem extends HTMLElement {
    *  Getter for the success/failure indication.
    */
   get status() {
-    // @ts-ignore: error TS2322: Type 'string | null' is not assignable to type
-    // 'string'.
     return this.getAttribute('status');
   }
 
@@ -523,8 +455,6 @@ export class PanelItem extends HTMLElement {
    *  Getter for the progress indicator percentage.
    */
   get progress() {
-    // @ts-ignore: error TS2339: Property 'progress' does not exist on type
-    // 'Element'.
     return this.indicator_.progress || 0;
   }
 
@@ -541,8 +471,6 @@ export class PanelItem extends HTMLElement {
    * @return {string}
    */
   get primaryText() {
-    // @ts-ignore: error TS2322: Type 'string | null' is not assignable to type
-    // 'string'.
     return this.getAttribute('primary-text');
   }
 
@@ -559,8 +487,6 @@ export class PanelItem extends HTMLElement {
    * @return {string}
    */
   get secondaryText() {
-    // @ts-ignore: error TS2322: Type 'string | null' is not assignable to type
-    // 'string'.
     return this.getAttribute('secondary-text');
   }
 
@@ -585,8 +511,6 @@ export class PanelItem extends HTMLElement {
    * @param {number} type Enum value for the panel type.
    */
   set panelType(type) {
-    // @ts-ignore: error TS2345: Argument of type 'number' is not assignable to
-    // parameter of type 'string'.
     this.setAttribute('panel-type', type);
   }
 
@@ -602,7 +526,6 @@ export class PanelItem extends HTMLElement {
    * Getter for the primary action button.
    */
   get primaryButton() {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     return this.shadowRoot.querySelector('#primary-action');
   }
 
@@ -610,7 +533,6 @@ export class PanelItem extends HTMLElement {
    * Getter for the secondary action button.
    */
   get secondaryButton() {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     return this.shadowRoot.querySelector('#secondary-action');
   }
 
@@ -618,7 +540,6 @@ export class PanelItem extends HTMLElement {
    * Getter for the panel text div.
    */
   get textDiv() {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     return this.shadowRoot.querySelector('.xf-panel-text');
   }
 
@@ -627,10 +548,7 @@ export class PanelItem extends HTMLElement {
    * @param {string} text Text to set for the 'aria-label'.
    */
   set closeButtonAriaLabel(text) {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const action = this.shadowRoot.querySelector('#secondary-action');
-    // @ts-ignore: error TS2339: Property 'dataset' does not exist on type
-    // 'Element'.
     if (action && action.dataset.category === 'cancel') {
       action.setAttribute('aria-label', text);
     }

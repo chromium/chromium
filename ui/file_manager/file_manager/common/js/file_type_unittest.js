@@ -13,11 +13,6 @@ import {VolumeManagerCommon} from './volume_manager_types.js';
  * @return {!Entry}
  */
 function makeFakeEntry(name) {
-  // @ts-ignore: error TS2352: Conversion of type '{ isDirectory: false;
-  // rootType: string; name: string; toURL: () => string; }' to type
-  // 'FileSystemEntry' may be a mistake because neither type sufficiently
-  // overlaps with the other. If this was intentional, convert the expression to
-  // 'unknown' first.
   return /** @type {!Entry} */ ({
     isDirectory: false,
     rootType: VolumeManagerCommon.RootType.MY_FILES,
@@ -31,11 +26,6 @@ function makeFakeEntry(name) {
  * @return {!Entry}
  */
 function makeFakeDriveEntry(name) {
-  // @ts-ignore: error TS2352: Conversion of type '{ isDirectory: false;
-  // rootType: string; name: string; toURL: () => string; }' to type
-  // 'FileSystemEntry' may be a mistake because neither type sufficiently
-  // overlaps with the other. If this was intentional, convert the expression to
-  // 'unknown' first.
   return /** @type {!Entry} */ ({
     isDirectory: false,
     rootType: VolumeManagerCommon.RootType.DRIVE,
@@ -69,31 +59,13 @@ export function testDownloadsIcon() {
   const androidRoot = VolumeManagerCommon.RootType.ANDROID_FILES;
 
   const mimetype = undefined;
-  // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined' is
-  // not assignable to parameter of type 'FileSystemEntry | VolumeEntry |
-  // FileData'.
   assertEquals('folder', FileType.getIcon(folder, mimetype, downloadsRoot));
-  // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined' is
-  // not assignable to parameter of type 'FileSystemEntry | VolumeEntry |
-  // FileData'.
   assertEquals('text', FileType.getIcon(fileA, mimetype, downloadsRoot));
-  // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined' is
-  // not assignable to parameter of type 'FileSystemEntry | VolumeEntry |
-  // FileData'.
   assertEquals('text', FileType.getIcon(fileB, mimetype, downloadsRoot));
 
   assertEquals(
-      // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
-      // undefined' is not assignable to parameter of type 'FileSystemEntry |
-      // VolumeEntry | FileData'.
       'downloads', FileType.getIcon(downloads, mimetype, downloadsRoot));
-  // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined' is
-  // not assignable to parameter of type 'FileSystemEntry | VolumeEntry |
-  // FileData'.
   assertEquals('folder', FileType.getIcon(downloads, mimetype, driveRoot));
-  // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined' is
-  // not assignable to parameter of type 'FileSystemEntry | VolumeEntry |
-  // FileData'.
   assertEquals('folder', FileType.getIcon(downloads, mimetype, androidRoot));
 }
 

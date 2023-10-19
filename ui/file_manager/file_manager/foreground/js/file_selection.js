@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
@@ -9,7 +10,6 @@ import {FileType} from '../../common/js/file_type.js';
 import {util} from '../../common/js/util.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
-// @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
 import {Store} from '../../externs/ts/store.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {updateSelection} from '../../state/ducks/current_directory.js';
@@ -31,7 +31,7 @@ export class FileSelection {
    */
   constructor(indexes, entries, volumeManager) {
     /**
-     * @type {!Array<number>}
+     * @public @type {!Array<number>}
      * @const
      */
     this.indexes = indexes;
@@ -43,42 +43,42 @@ export class FileSelection {
     this.entries = entries;
 
     /**
-     * @type {!Array<string>}
+     * @public @type {!Array<string>}
      */
     this.mimeTypes = [];
 
     /**
-     * @type {number}
+     * @public @type {number}
      */
     this.totalCount = 0;
 
     /**
-     * @type {number}
+     * @public @type {number}
      */
     this.fileCount = 0;
 
     /**
-     * @type {number}
+     * @public @type {number}
      */
     this.directoryCount = 0;
 
     /**
-     * @type {boolean}
+     * @public @type {boolean}
      */
     this.anyFilesNotInCache = true;
 
     /**
-     * @type {boolean}
+     * @public @type {boolean}
      */
     this.anyFilesHosted = true;
 
     /**
-     * @type {boolean}
+     * @public @type {boolean}
      */
     this.anyFilesEncrypted = true;
 
     /**
-     * @private @type {?Promise<boolean>}
+     * @private @type {Promise<boolean>}
      */
     this.additionalPromise_ = null;
 
@@ -115,10 +115,6 @@ export class FileSelection {
     return this.hasReadOnlyEntry_;
   }
 
-  /**
-   * @param {!MetadataModel} metadataModel
-   * @return {!Promise<boolean>}
-   */
   computeAdditional(metadataModel) {
     if (!this.additionalPromise_) {
       this.additionalPromise_ =
@@ -126,32 +122,19 @@ export class FileSelection {
               .get(
                   this.entries,
                   constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES)
-              // @ts-ignore: error TS7006: Parameter 'props' implicitly has an
-              // 'any' type.
               .then(props => {
-                // @ts-ignore: error TS7006: Parameter 'p' implicitly has an
-                // 'any' type.
                 this.anyFilesNotInCache = props.some(p => {
                   // If no availableOffline property, then assume it's
                   // available.
                   return ('availableOffline' in p) && !p.availableOffline;
                 });
-                // @ts-ignore: error TS7006: Parameter 'p' implicitly has an
-                // 'any' type.
                 this.anyFilesHosted = props.some(p => {
                   return p.hosted;
                 });
-                // @ts-ignore: error TS7006: Parameter 'i' implicitly has an
-                // 'any' type.
                 this.anyFilesEncrypted = props.some((p, i) => {
                   return FileType.isEncrypted(
-                      // @ts-ignore: error TS2345: Argument of type
-                      // 'FileSystemEntry | undefined' is not assignable to
-                      // parameter of type 'FileSystemEntry | FilesAppEntry'.
                       this.entries[i], p.contentMimeType);
                 });
-                // @ts-ignore: error TS7006: Parameter 'value' implicitly has an
-                // 'any' type.
                 this.mimeTypes = props.map(value => {
                   return value.contentMimeType || '';
                 });
@@ -175,8 +158,6 @@ export class FileSelectionHandler extends EventTarget {
    * @param {!AllowedPaths} allowedPaths
    */
   constructor(
-      // @ts-ignore: error TS6133: 'fileOperationManager' is declared but its
-      // value is never read.
       directoryModel, fileOperationManager, listContainer, metadataModel,
       volumeManager, allowedPaths) {
     super();
@@ -257,8 +238,6 @@ export class FileSelectionHandler extends EventTarget {
 
     if (this.selectionUpdateTimer_) {
       clearTimeout(this.selectionUpdateTimer_);
-      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-      // 'number'.
       this.selectionUpdateTimer_ = null;
     }
 
@@ -281,8 +260,6 @@ export class FileSelectionHandler extends EventTarget {
 
     const selection = this.selection;
     this.selectionUpdateTimer_ = setTimeout(() => {
-      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-      // 'number'.
       this.selectionUpdateTimer_ = null;
       this.updateFileSelectionAsync_(selection);
     }, updateDelay);

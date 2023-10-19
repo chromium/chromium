@@ -4,7 +4,7 @@
 
 /**
  * Handler of the background page for the Drive sync events. Implementations
- * of this interface must @extends {EventTarget}.
+ * of this interface must @extends {cr.EventTarget}.
  *
  * @interface
  */
@@ -13,20 +13,15 @@ export class DriveSyncHandler extends EventTarget {
    * Returns the completed event name.
    * @return {string}
    */
-  getCompletedEventName() {
-    return '';
-  }
+  getCompletedEventName() {}
 
   /**
    * @return {boolean} Whether the handler is syncing items or not.
    */
-  get syncing() {
-    return false;
-  }
+  get syncing() {}
 
   /**
    * @param {Object} model
    */
-  // @ts-ignore: error TS6133: 'model' is declared but its value is never read.
   set metadataModel(model) {}
 }

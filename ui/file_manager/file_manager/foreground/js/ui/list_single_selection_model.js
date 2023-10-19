@@ -43,7 +43,7 @@ export class ListSingleSelectionModel extends EventTarget {
   }
 
   /**
-   * @type {!Array<*>} The selected indexes.
+   * @type {!Array} The selected indexes.
    */
   get selectedIndexes() {
     const i = this.selectedIndex;
@@ -60,8 +60,6 @@ export class ListSingleSelectionModel extends EventTarget {
    * @type {number}
    */
   get selectedIndex() {
-    // @ts-ignore: error TS2322: Type 'number | null' is not assignable to type
-    // 'number'.
     return this.selectedIndex_;
   }
 
@@ -71,9 +69,6 @@ export class ListSingleSelectionModel extends EventTarget {
 
     if (i !== oldSelectedIndex) {
       this.beginChange();
-      // @ts-ignore: error TS7022: 'selectedIndex_' implicitly has type 'any'
-      // because it does not have a type annotation and is referenced directly
-      // or indirectly in its own initializer.
       this.selectedIndex_ = i;
       this.leadIndex = i >= 0 ? i : this.leadIndex;
       this.endChange();
@@ -150,9 +145,6 @@ export class ListSingleSelectionModel extends EventTarget {
   beginChange() {
     if (!this.changeCount_) {
       this.changeCount_ = 0;
-      // @ts-ignore: error TS7022: 'selectedIndexBefore_' implicitly has type
-      // 'any' because it does not have a type annotation and is referenced
-      // directly or indirectly in its own initializer.
       this.selectedIndexBefore_ = this.selectedIndex_;
     }
     this.changeCount_++;
@@ -163,7 +155,6 @@ export class ListSingleSelectionModel extends EventTarget {
    * any changes were actually done.
    */
   endChange() {
-    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     this.changeCount_--;
     if (!this.changeCount_) {
       if (this.selectedIndexBefore_ !== this.selectedIndex_) {
@@ -184,16 +175,12 @@ export class ListSingleSelectionModel extends EventTarget {
   createChangeEvent(eventName) {
     const e = new Event(eventName);
     const indexes = [this.selectedIndexBefore_, this.selectedIndex_];
-    // @ts-ignore: error TS2339: Property 'changes' does not exist on type
-    // 'Event'.
     e.changes =
         indexes
             .filter(function(index) {
               return index !== -1;
             })
             .map(function(index) {
-              // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
-              // because it does not have a type annotation.
               return {index: index, selected: index === this.selectedIndex_};
             }, this);
 
@@ -219,7 +206,6 @@ export class ListSingleSelectionModel extends EventTarget {
     }
   }
 
-  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
   adjustIndex_(index) {
     index = Math.max(-1, Math.min(this.length_ - 1, index));
     if (!this.independentLeadItem_) {
@@ -254,15 +240,11 @@ export class ListSingleSelectionModel extends EventTarget {
    */
   adjustToReordering(permutation) {
     if (this.leadIndex !== -1) {
-      // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
-      // to type 'number'.
       this.leadIndex = permutation[this.leadIndex];
     }
 
     const oldSelectedIndex = this.selectedIndex;
     if (oldSelectedIndex !== -1) {
-      // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
-      // to type 'number'.
       this.selectedIndex = permutation[oldSelectedIndex];
     }
   }

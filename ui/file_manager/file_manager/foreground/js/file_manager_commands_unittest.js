@@ -11,7 +11,8 @@ import {MockDirectoryEntry, MockEntry} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {addVolume, convertVolumeInfoAndMetadataToVolume, updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {addVolume, convertVolumeInfoAndMetadataToVolume, trashRootKey, updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {createMyFilesDataWithVolumeEntry} from '../../state/ducks/volumes_unittest.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../../state/for_tests.js';
 
@@ -31,7 +32,6 @@ function getMetricName(metricIndex) {
 /**
  * Checks that the `toggle-holding-space` command is appropriately enabled/
  * disabled given the current selection state and executes as expected.
- * @param {()=>void} done
  */
 export async function testToggleHoldingSpaceCommand(done) {
   // Verify `toggle-holding-space` command exists.
@@ -49,8 +49,6 @@ export async function testToggleHoldingSpaceCommand(done) {
   const mockChrome = {
     metricsPrivate: mockMetrics,
     fileManagerPrivate: {
-      // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any'
-      // type.
       getHoldingSpaceState: (callback) => {
         callback({itemUrls});
         getHoldingSpaceStateCalled = true;
@@ -80,10 +78,10 @@ export async function testToggleHoldingSpaceCommand(done) {
   const audioFileEntry = new MockEntry(downloadsFileSystem, '/audio.mp3');
   const downloadFileEntry = new MockEntry(downloadsFileSystem, '/download.txt');
   const folderEntry = MockDirectoryEntry.create(downloadsFileSystem, '/folder');
-  new MockEntry(downloadsFileSystem, '/image.png');
+  const imageFileEntry = new MockEntry(downloadsFileSystem, '/image.png');
   const removableFileEntry =
       new MockEntry(removableFileSystem, '/removable.txt');
-  new MockEntry(downloadsFileSystem, 'video.mp4');
+  const videoFileEntry = new MockEntry(downloadsFileSystem, 'video.mp4');
 
   // Define test cases.
   const testCases = [
@@ -197,8 +195,6 @@ export async function testToggleHoldingSpaceCommand(done) {
       canExecute: true,
       command: {
         hidden: false,
-        // @ts-ignore: error TS7006: Parameter 'hidden' implicitly has an 'any'
-        // type.
         setHidden: (hidden) => {
           event.command.hidden = hidden;
         },
@@ -222,9 +218,6 @@ export async function testToggleHoldingSpaceCommand(done) {
 
     // Verify `command.canExecute()` results in expected `event` state.
     getHoldingSpaceStateCalled = false;
-    // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-    // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is
-    // not assignable to parameter of type 'Event'.
     command.canExecute(event, fileManager);
     if (testCase.expect.canExecute) {
       await waitUntil(() => getHoldingSpaceStateCalled);
@@ -243,9 +236,6 @@ export async function testToggleHoldingSpaceCommand(done) {
     let didInteractWithMockPrivateApi = false;
     chrome.fileManagerPrivate.toggleAddedToHoldingSpace = (entries, isAdd) => {
       didInteractWithMockPrivateApi = true;
-      // @ts-ignore: error TS2345: Argument of type 'MockEntry[] |
-      // FileSystemDirectoryEntry[] | undefined' is not assignable to parameter
-      // of type 'any[]'.
       assertArrayEquals(entries, testCase.expect.entries);
       assertEquals(isAdd, testCase.expect.isAdd);
     };
@@ -254,9 +244,6 @@ export async function testToggleHoldingSpaceCommand(done) {
     mockMetrics.metricCalls['FileBrowser.MenuItemSelected'] = [];
 
     // Verify `command.execute()` results in expected mock API interactions.
-    // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-    // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is
-    // not assignable to parameter of type 'Event'.
     command.execute(event, fileManager);
     assertTrue(didInteractWithMockPrivateApi);
 
@@ -277,15 +264,12 @@ export async function testToggleHoldingSpaceCommand(done) {
 /**
  * Checks that the 'extract-all' command is enabled or disabled
  * dependent on the current selection.
- * @param {()=>void} done
  */
 export async function testExtractAllCommand(done) {
   // Check: `extract-all` command exists.
   const command = CommandHandler.getCommand('extract-all');
   assertNotEquals(command, undefined);
 
-  // @ts-ignore: error TS6133: 'startIOTaskCalled' is declared but its value is
-  // never read.
   let startIOTaskCalled = false;
 
   /**
@@ -323,8 +307,6 @@ export async function testExtractAllCommand(done) {
     canExecute: true,
     command: {
       hidden: false,
-      // @ts-ignore: error TS7006: Parameter 'hidden' implicitly has an 'any'
-      // type.
       setHidden: (hidden) => {
         event.command.hidden = hidden;
       },
@@ -354,22 +336,14 @@ export async function testExtractAllCommand(done) {
   };
 
   // Check: canExecute is false and command is hidden with no selection.
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   command.canExecute(event, fileManager);
   assertFalse(event.canExecute);
   assertTrue(event.command.hidden);
 
   // Check: canExecute is true and command is visible with a single ZIP file.
-  // @ts-ignore: error TS2322: Type 'MockEntry' is not assignable to type
-  // 'never'.
   currentSelection.entries = [zipFileEntry];
   currentSelection.iconType = 'archive';
   currentSelection.totalCount = 1;
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   command.canExecute(event, fileManager);
   assertTrue(event.canExecute);
   assertFalse(event.command.hidden);
@@ -379,41 +353,25 @@ export async function testExtractAllCommand(done) {
   assertNotEquals(command, undefined);
 
   // Check: ZIP canExecute is false and command hidden with a single ZIP file.
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   zipCommand.canExecute(event, fileManager);
   assertFalse(event.canExecute);
   assertTrue(event.command.hidden);
 
   // Check: canExecute is false and command hidden for no ZIP multi-selection.
-  // @ts-ignore: error TS2322: Type 'MockEntry' is not assignable to type
-  // 'never'.
   currentSelection.entries = [imageFileEntry, textFileEntry];
   currentSelection.totalCount = 2;
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   command.canExecute(event, fileManager);
   assertFalse(event.canExecute);
   assertTrue(event.command.hidden);
 
   // Check: canExecute is true and command visible for ZIP multiple selection.
-  // @ts-ignore: error TS2322: Type 'MockEntry' is not assignable to type
-  // 'never'.
   currentSelection.entries = [zipFileEntry, textFileEntry];
   currentSelection.totalCount = 2;
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   command.canExecute(event, fileManager);
   assertTrue(event.canExecute);
   assertFalse(event.command.hidden);
 
   // Check: ZIP canExecute is true and command visible for multiple selection.
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   zipCommand.canExecute(event, fileManager);
   assertTrue(event.canExecute);
   assertFalse(event.command.hidden);
@@ -423,7 +381,6 @@ export async function testExtractAllCommand(done) {
 
 /**
  * Tests that rename command should be disabled for Recent entry.
- * @param {()=>void} done
  */
 export async function testRenameCommand(done) {
   // Check: `rename` command exists.
@@ -452,8 +409,6 @@ export async function testRenameCommand(done) {
     },
     command: {
       hidden: false,
-      // @ts-ignore: error TS7006: Parameter 'hidden' implicitly has an 'any'
-      // type.
       setHidden: (hidden) => {
         event.command.hidden = hidden;
       },
@@ -480,10 +435,6 @@ export async function testRenameCommand(done) {
   };
 
   // Check: canExecute is false and command is disabled.
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // target: { entry: FileSystemDirectoryEntry; }; command: { hidden: boolean;
-  // setHidden: (hidden: any) => void; }; }' is not assignable to parameter of
-  // type 'Event'.
   command.canExecute(event, fileManager);
   assertFalse(event.canExecute);
   assertFalse(event.command.hidden);
@@ -494,7 +445,7 @@ export async function testRenameCommand(done) {
 /**
  * Create and add a Downloads volume to the store. Update the volume as
  * non-interactive.
- * @return {!Promise<import("../../externs/volume_info.js").VolumeInfo>}
+ * @return {!Promise<VolumeInfo>}
  */
 async function createAndAddNonInteractiveDownloadsVolume() {
   setUpFileManagerOnWindow();
@@ -549,7 +500,6 @@ async function createAndAddNonInteractiveDownloadsVolume() {
  * disabled and hidden when there are no selected entries but the current
  * directory is on a non-interactive volume (e.g. when the blank space in a
  * non-interactive directory is right clicked).
- * @param {()=>void} done
  */
 export async function testCommandsForNonInteractiveVolumeAndNoEntries(done) {
   const nonInteractiveVolumeInfo =
@@ -611,8 +561,6 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries(done) {
       },
       command: {
         hidden: false,
-        // @ts-ignore: error TS7006: Parameter 'hidden' implicitly has an 'any'
-        // type.
         setHidden: (hidden) => {
           event.command.hidden = hidden;
         },
@@ -620,10 +568,6 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries(done) {
       },
     };
 
-    // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-    // target: { parentElement: { contextElement: null; }; }; command: { hidden:
-    // boolean; setHidden: (hidden: any) => void; id: string; }; }' is not
-    // assignable to parameter of type 'Event'.
     command.canExecute(event, fileManager);
     assertFalse(event.canExecute);
     assertTrue(event.command.hidden);
@@ -636,7 +580,6 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries(done) {
  * Tests that the paste, cut, copy, new-folder, delete, move-to-trash,
  * paste-into-folder, rename, extract-all and zip-selection commands should be
  * disabled and hidden for an entry on a non-interactive volume.
- * @param {()=>void} done
  */
 export async function testCommandsForEntriesOnNonInteractiveVolume(done) {
   // Create non-interactive volume.
@@ -708,8 +651,6 @@ export async function testCommandsForEntriesOnNonInteractiveVolume(done) {
       },
       command: {
         hidden: false,
-        // @ts-ignore: error TS7006: Parameter 'hidden' implicitly has an 'any'
-        // type.
         setHidden: (hidden) => {
           event.command.hidden = hidden;
         },
@@ -717,10 +658,6 @@ export async function testCommandsForEntriesOnNonInteractiveVolume(done) {
       },
     };
 
-    // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-    // target: { entry: FileSystemDirectoryEntry; }; command: { hidden: boolean;
-    // setHidden: (hidden: any) => void; id: string; }; }' is not assignable to
-    // parameter of type 'Event'.
     command.canExecute(event, fileManager);
     assertFalse(event.canExecute);
     assertTrue(event.command.hidden);

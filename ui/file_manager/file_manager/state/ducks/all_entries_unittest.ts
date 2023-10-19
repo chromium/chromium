@@ -11,7 +11,7 @@ import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryType, FileData, State} from '../../externs/ts/state.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
@@ -69,9 +69,9 @@ export function testAllEntries() {
   assertEquals(
       0, allEntriesSize(store.getState()), 'allEntries should start empty');
 
-  const dir1 = fileSystem.entries['/dir-1'] as DirectoryEntry;
-  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
-  const dir2SubDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const dir1 = fileSystem.entries['/dir-1'];
+  const dir2 = fileSystem.entries['/dir-2'];
+  const dir2SubDir = fileSystem.entries['/dir-2/sub-dir'];
   cd(store, dir1);
   assertEquals(1, allEntriesSize(store.getState()), 'dir-1 should be cached');
 
@@ -84,10 +84,10 @@ export function testAllEntries() {
 }
 
 export async function testClearStaleEntries(done: () => void) {
-  const dir1 = fileSystem.entries['/dir-1'] as DirectoryEntry;
-  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
-  const dir3 = fileSystem.entries['/dir-3'] as DirectoryEntry;
-  const dir2SubDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const dir1 = fileSystem.entries['/dir-1'];
+  const dir2 = fileSystem.entries['/dir-2'];
+  const dir3 = fileSystem.entries['/dir-3'];
+  const dir2SubDir = fileSystem.entries['/dir-2/sub-dir'];
   const myFilesRootURL = `filesystem:${fakeMyFilesVolumeId}`;
 
   cd(store, dir1);
@@ -120,8 +120,8 @@ export async function testClearStaleEntries(done: () => void) {
 }
 
 export function testCacheEntries() {
-  const dir1 = fileSystem.entries['/dir-1'] as DirectoryEntry;
-  const file1 = fileSystem.entries['/dir-2/file-1.txt']!;
+  const dir1 = fileSystem.entries['/dir-1'];
+  const file1 = fileSystem.entries['/dir-2/file-1.txt'];
   const md = window.fileManager.metadataModel as unknown as MockMetadataModel;
   md.set(file1, {isRestrictedForDestination: true});
 
@@ -173,9 +173,9 @@ export function testCacheEntries() {
 }
 
 export function testUpdateMetadata() {
-  const dir1 = fileSystem.entries['/dir-1'] as DirectoryEntry;
-  const file1 = fileSystem.entries['/dir-2/file-1.txt']!;
-  const file2 = fileSystem.entries['/dir-2/file-2.txt']!;
+  const dir1 = fileSystem.entries['/dir-1'];
+  const file1 = fileSystem.entries['/dir-2/file-1.txt'];
+  const file2 = fileSystem.entries['/dir-2/file-2.txt'];
   const md = window.fileManager.metadataModel as unknown as MockMetadataModel;
   md.set(file1, {isRestrictedForDestination: true});
   md.set(file2, {isRestrictedForDestination: false});
@@ -276,7 +276,7 @@ export async function testAddChildEntries(done: () => void) {
     '/a/2/',
     '/a/2/b/',
   ]);
-  const aEntry = fileSystem.entries['/a']!;
+  const aEntry = fileSystem.entries['/a'];
   initialState.allEntries[aEntry.toURL()] = convertEntryToFileData(aEntry);
   // Make sure aEntry won't be cleared.
   initialState.uiEntries.push(aEntry.toURL());
@@ -284,8 +284,8 @@ export async function testAddChildEntries(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to add child entries for /aaa/.
-  const a1Entry = fileSystem.entries['/a/1']!;
-  const a2Entry = fileSystem.entries['/a/2']!;
+  const a1Entry = fileSystem.entries['/a/1'];
+  const a2Entry = fileSystem.entries['/a/2'];
   store.dispatch(addChildEntries({
     parentKey: aEntry.toURL(),
     entries: [a1Entry, a2Entry],
@@ -306,7 +306,7 @@ export async function testAddChildEntries(done: () => void) {
   store.getState().allEntries[a2Entry.toURL()].shouldDelayLoadingChildren =
       true;
   // Dispatch an action to add child entries for /a/2.
-  const bEntry = fileSystem.entries['/a/2/b']!;
+  const bEntry = fileSystem.entries['/a/2/b'];
   store.dispatch(addChildEntries({
     parentKey: a2Entry.toURL(),
     entries: [bEntry],
@@ -462,7 +462,7 @@ export async function testConvertFakeEntryToFileData(done: () => void) {
 
 /** Tests converting native file entry into FileData. */
 export async function testConvertNativeFileEntryToFileData(done: () => void) {
-  const fileEntry = fileSystem.entries['/dir-2/file-1.txt']!;
+  const fileEntry = fileSystem.entries['/dir-2/file-1.txt'];
   const got = convertEntryToFileData(fileEntry);
   const want: FileData = {
     entry: fileEntry,
@@ -488,7 +488,7 @@ export async function testConvertNativeFileEntryToFileData(done: () => void) {
 /** Tests converting native directory entry into FileData. */
 export async function testConvertNativeDirectoryEntryToFileData(
     done: () => void) {
-  const directoryEntry = fileSystem.entries['/dir-1']!;
+  const directoryEntry = fileSystem.entries['/dir-1'];
   const got = convertEntryToFileData(directoryEntry);
   const want: FileData = {
     entry: directoryEntry,
@@ -528,7 +528,7 @@ export async function testReadSubDirectories(done: () => void) {
     '/Downloads/b.txt',
     '/Downloads/a/',
   ]);
-  const downloadsEntry = fakeFs.entries['/Downloads']!;
+  const downloadsEntry = fakeFs.entries['/Downloads'];
   // The entry to be read should be in the store before reading.
   const downloadsEntryFileData = convertEntryToFileData(downloadsEntry);
   initialState.allEntries[downloadsEntry.toURL()] = downloadsEntryFileData;
@@ -540,8 +540,8 @@ export async function testReadSubDirectories(done: () => void) {
   store.dispatch(readSubDirectories(downloadsEntry));
 
   // Expect store to have all its sub directories.
-  const aDirEntry = fakeFs.entries['/Downloads/a']!;
-  const cDirEntry = fakeFs.entries['/Downloads/c']!;
+  const aDirEntry = fakeFs.entries['/Downloads/a'];
+  const cDirEntry = fakeFs.entries['/Downloads/c'];
   const want: State['allEntries'] = {
     [downloadsEntry.toURL()]: downloadsEntryFileData,
     [aDirEntry.toURL()]: convertEntryToFileData(aDirEntry),
@@ -573,8 +573,8 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
     '/Downloads/a/111/',
     '/Downloads/b/222/',
   ]);
-  const downloadsEntry = fakeFs.entries['/Downloads']!;
-  const bDirEntry = fakeFs.entries['/Downloads/b']!;
+  const downloadsEntry = fakeFs.entries['/Downloads'];
+  const bDirEntry = fakeFs.entries['/Downloads/b'];
   // The entry to be read should be in the store before reading.
   const downloadsEntryFileData = convertEntryToFileData(downloadsEntry);
   // Set downloadsEntry.expanded = true, so it will be read recursively.
@@ -586,9 +586,9 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
   store.dispatch(readSubDirectories(downloadsEntry, /* recursive= */ true));
 
   // Expect store to have all its sub directories.
-  const aDirEntry = fakeFs.entries['/Downloads/a']!;
-  const dirEntry1 = fakeFs.entries['/Downloads/a/111']!;
-  const dirEntry2 = fakeFs.entries['/Downloads/b/222']!;
+  const aDirEntry = fakeFs.entries['/Downloads/a'];
+  const dirEntry1 = fakeFs.entries['/Downloads/a/111'];
+  const dirEntry2 = fakeFs.entries['/Downloads/b/222'];
   const want: State['allEntries'] = {
     [downloadsEntry.toURL()]: downloadsEntryFileData,
     [aDirEntry.toURL()]: convertEntryToFileData(aDirEntry),
@@ -630,7 +630,7 @@ export async function testReadSubDirectoriesWithNonDirectoryEntry(
   ]);
 
   // Check reading non directory entry will do nothing.
-  store.dispatch(readSubDirectories(fakeFs.entries['/a.txt']!));
+  store.dispatch(readSubDirectories(fakeFs.entries['/a.txt']));
 
   await waitDeepEquals(store, {}, (state) => state.allEntries);
 
@@ -678,10 +678,10 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
       'Shared with me', VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME);
   const offlineEntry =
       new FakeEntryImpl('Offline', VolumeManagerCommon.RootType.DRIVE_OFFLINE);
-  const driveEntry = driveFs.entries['/root']!;
-  const computersEntry = driveFs.entries['/Computers']!;
+  const driveEntry = driveFs.entries['/root'];
+  const computersEntry = driveFs.entries['/Computers'];
   driveRootEntryList.addEntry(driveEntry);
-  driveRootEntryList.addEntry(driveFs.entries['/team_drives']!);
+  driveRootEntryList.addEntry(driveFs.entries['/team_drives']);
   driveRootEntryList.addEntry(computersEntry);
   driveRootEntryList.addEntry(sharedWithMeEntry);
   driveRootEntryList.addEntry(offlineEntry);

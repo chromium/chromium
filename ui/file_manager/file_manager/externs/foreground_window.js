@@ -31,8 +31,6 @@ export class ForegroundWindow {
     this.background;
   }
 
-  // @ts-ignore: error TS2355: A function whose declared type is neither 'void'
-  // nor 'any' must return a value.
   /** @return {boolean} */
   isFocused() {}
 }

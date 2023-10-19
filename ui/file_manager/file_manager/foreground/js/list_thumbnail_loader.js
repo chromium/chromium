@@ -10,8 +10,6 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {DirectoryModel} from './directory_model.js';
-// @ts-ignore: error TS6133: 'FileListModel' is declared but its value is never
-// read.
 import {FileListModel} from './file_list_model.js';
 import {ThumbnailModel} from './metadata/thumbnail_model.js';
 import {ThumbnailLoader} from './thumbnail_loader.js';
@@ -59,7 +57,7 @@ export class ListThumbnailLoader extends EventTarget {
         opt_thumbnailLoaderConstructor || ThumbnailLoader;
 
     /**
-     * @private @type {!Record<string, !ListThumbnailLoader.Task>}
+     * @private @type {!Object<!ListThumbnailLoader.Task>}
      */
     this.active_ = {};
 
@@ -147,7 +145,6 @@ export class ListThumbnailLoader extends EventTarget {
    *
    * @param {!Event} event Event
    */
-  // @ts-ignore: error TS6133: 'event' is declared but its value is never read.
   onScanCompleted_(event) {
     this.cursor_ = this.beginIndex_;
     this.continue_();
@@ -159,7 +156,6 @@ export class ListThumbnailLoader extends EventTarget {
    *
    * @param {!Event} event Event
    */
-  // @ts-ignore: error TS6133: 'event' is declared but its value is never read.
   onSplice_(event) {
     this.cursor_ = this.beginIndex_;
     this.continue_();
@@ -171,7 +167,6 @@ export class ListThumbnailLoader extends EventTarget {
    *
    * @param {!Event} event Event
    */
-  // @ts-ignore: error TS6133: 'event' is declared but its value is never read.
   onSorted_(event) {
     this.cursor_ = this.beginIndex_;
     this.continue_();
@@ -184,8 +179,6 @@ export class ListThumbnailLoader extends EventTarget {
    */
   onChange_(event) {
     // Mark the thumbnail in cache as invalid.
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
     const entry = this.dataModel_.item(event.index);
     const cachedThumbnail = this.cache_.peek(entry.toURL());
     if (cachedThumbnail) {
@@ -218,10 +211,9 @@ export class ListThumbnailLoader extends EventTarget {
    * Returns a thumbnail of an entry if it is in cache. This method returns
    * thumbnail even if the thumbnail is outdated.
    *
-   * @return {?ListThumbnailLoader.ThumbnailData} If the thumbnail is not in
+   * @return {ListThumbnailLoader.ThumbnailData} If the thumbnail is not in
    *     cache, this returns null.
    */
-  // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
   getThumbnailFromCache(entry) {
     // Since we want to evict cache based on high priority range, we use peek
     // here instead of get.
@@ -253,8 +245,6 @@ export class ListThumbnailLoader extends EventTarget {
     // If the entry is a directory, already in cache as valid or fetching, skip.
     const thumbnail = this.cache_.get(entry.toURL());
     if (entry.isDirectory || (thumbnail && !thumbnail.outdated) ||
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
         this.active_[entry.toURL()]) {
       this.cursor_++;
       this.continue_();
@@ -278,13 +268,9 @@ export class ListThumbnailLoader extends EventTarget {
         this.thumbnailLoaderConstructor_);
 
     const url = entry.toURL();
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
     this.active_[url] = task;
 
     task.fetch().then(thumbnail => {
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'string' can't be used to index type '{}'.
       delete this.active_[url];
       this.cache_.put(url, thumbnail);
       this.dispatchThumbnailLoaded_(index, thumbnail);
@@ -445,21 +431,12 @@ ListThumbnailLoader.Task = class {
           // When it failed to read exif header with an IO error, do not
           // generate thumbnail at this time since it may success in the second
           // try. If it failed to read at 0 byte, it would be an IO error.
-          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-          // because expression of type '0' can't be used to index type
-          // 'Object'.
           if (metadatas[0].thumbnail.urlError &&
-              // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-              // because expression of type '0' can't be used to index type
-              // 'Object'.
               metadatas[0].thumbnail.urlError.errorDescription ===
                   'Error: Unexpected EOF @0') {
             ioError = true;
             return Promise.reject();
           }
-          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-          // because expression of type '0' can't be used to index type
-          // 'Object'.
           return metadatas[0];
         })
         .then(metadata => {
@@ -480,7 +457,6 @@ ListThumbnailLoader.Task = class {
             loadTargets.push(ThumbnailLoader.LoadTarget.FILE_ENTRY);
           }
 
-          // @ts-ignore: error TS2351: This expression is not constructable.
           return new this
               .thumbnailLoaderConstructor_(
                   this.entry_, ThumbnailLoader.LoaderType.IMAGE, metadata,

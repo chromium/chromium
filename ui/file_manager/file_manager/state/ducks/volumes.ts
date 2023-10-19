@@ -10,7 +10,7 @@ import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus, State, Volume, VolumeId} from '../../externs/ts/state.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 import {Slice} from '../../lib/base_store.js';
 import {cacheEntries, getMyFiles, updateFileData, volumeNestingEntries} from '../ducks/all_entries.js';
 import {getEntry, getFileData} from '../store.js';

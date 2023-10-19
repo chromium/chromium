@@ -31,7 +31,6 @@ const entryB = /** @type {!Entry} */ ({
   },
 });
 
-/** @param {function(): void} callback */
 export function testFileSystemMetadataProviderBasic(callback) {
   const provider = new FileSystemMetadataProvider();
   const names = [
@@ -65,7 +64,6 @@ export function testFileSystemMetadataProviderBasic(callback) {
       callback);
 }
 
-/** @param {function(): void} callback */
 export function testFileSystemMetadataProviderPartialRequest(callback) {
   const provider = new FileSystemMetadataProvider();
   reportPromise(

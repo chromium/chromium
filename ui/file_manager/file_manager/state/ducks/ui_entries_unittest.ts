@@ -9,7 +9,7 @@ import {FakeEntryImpl, GuestOsPlaceholder, VolumeEntry} from '../../common/js/fi
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, State} from '../../externs/ts/state.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState} from '../store.js';

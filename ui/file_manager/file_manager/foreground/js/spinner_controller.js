@@ -8,11 +8,11 @@
  * spinner invisible.
  */
 export class SpinnerController {
-  /** @param {!HTMLElement} element */
+  /** @param {!Element} element */
   constructor(element) {
     /**
      * The container element of the file list.
-     * @type {!HTMLElement}
+     * @type {!Element}
      * @const
      * @private
      */
@@ -57,7 +57,7 @@ export class SpinnerController {
    * Shows the spinner until hide is called. The returned callback must be
    * called when the spinner is not necessary anymore.
    * @param {number} delay Delay in milliseconds.
-   * @param {function():void} callback Show callback.
+   * @param {function()} callback Show callback.
    * @return {function()} Hide callback.
    */
   showWithDelay(delay, callback) {

@@ -19,8 +19,6 @@ import {positionPopupAtPoint} from './position_util.js';
  * Handles context menus.
  * @implements {EventListener}
  */
-// @ts-ignore: error TS2420: Class 'ContextMenuHandler' incorrectly implements
-// interface 'EventListener'.
 class ContextMenuHandler extends EventTarget {
   constructor() {
     super();
@@ -60,11 +58,7 @@ class ContextMenuHandler extends EventTarget {
     let x;
     let y;
     if (this.keyIsDown_) {
-      // @ts-ignore: error TS2339: Property 'getRectForContextMenu' does not
-      // exist on type 'HTMLElement'.
       const rect = target.getRectForContextMenu ?
-          // @ts-ignore: error TS2339: Property 'getRectForContextMenu' does not
-          // exist on type 'HTMLElement'.
           target.getRectForContextMenu() :
           target.getBoundingClientRect();
       const offset = Math.min(rect.width, rect.height) / 2;
@@ -85,80 +79,40 @@ class ContextMenuHandler extends EventTarget {
    * @param {!Menu} menu The menu to show.
    */
   showMenu(e, menu) {
-    // @ts-ignore: error TS2339: Property 'updateCommands' does not exist on
-    // type 'Menu'.
     menu.updateCommands(assertInstanceof(e.currentTarget, Node));
-    // @ts-ignore: error TS2339: Property 'hasVisibleItems' does not exist on
-    // type 'Menu'.
     if (!menu.hasVisibleItems()) {
       return;
     }
 
     const {x, y} = this.getMenuPosition_(
-        // @ts-ignore: error TS2339: Property 'clientY' does not exist on type
-        // 'Event'.
         /** @type {!HTMLElement} */ (e.currentTarget), e.clientX, e.clientY);
     this.menu_ = menu;
-    // @ts-ignore: error TS2339: Property 'classList' does not exist on type
-    // 'Menu'.
     menu.classList.remove('hide-delayed');
-    // @ts-ignore: error TS2339: Property 'show' does not exist on type 'Menu'.
     menu.show({x, y});
-    // @ts-ignore: error TS2339: Property 'contextElement' does not exist on
-    // type 'Menu'.
     menu.contextElement = e.currentTarget;
 
     // When the menu is shown we steal a lot of events.
-    // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on type
-    // 'Menu'.
     const doc = menu.ownerDocument;
     const win = /** @type {!Window} */ (doc.defaultView);
     if (this.resizeObserver_) {
       this.resizeObserver_.disconnect();
     }
-    // @ts-ignore: error TS6133: 'entries' is declared but its value is never
-    // read.
     this.resizeObserver_ = new ResizeObserver((entries) => {
-      // @ts-ignore: error TS2345: Argument of type 'Menu' is not assignable to
-      // parameter of type 'HTMLElement'.
       positionPopupAtPoint(x, y, menu);
     });
-    // @ts-ignore: error TS2345: Argument of type 'Menu' is not assignable to
-    // parameter of type 'Element'.
     this.resizeObserver_.observe(menu);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
     this.showingEvents_.add(doc, 'keydown', this, true);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
     this.showingEvents_.add(doc, 'mousedown', this, true);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
     this.showingEvents_.add(doc, 'touchstart', this, true);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
     this.showingEvents_.add(doc, 'focus', this);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
     this.showingEvents_.add(win, 'popstate', this);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
     this.showingEvents_.add(win, 'resize', this);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
     this.showingEvents_.add(win, 'blur', this);
-    // @ts-ignore: error TS2345: Argument of type 'Menu' is not assignable to
-    // parameter of type 'EventTarget'.
     this.showingEvents_.add(menu, 'contextmenu', this);
-    // @ts-ignore: error TS2345: Argument of type 'Menu' is not assignable to
-    // parameter of type 'EventTarget'.
     this.showingEvents_.add(menu, 'activate', this);
 
     const ev = new Event('show');
-    // @ts-ignore: error TS2339: Property 'contextElement' does not exist on
-    // type 'Menu'.
     ev.element = menu.contextElement;
-    // @ts-ignore: error TS2339: Property 'menu' does not exist on type 'Event'.
     ev.menu = menu;
     this.dispatchEvent(ev);
   }
@@ -175,26 +129,15 @@ class ContextMenuHandler extends EventTarget {
     }
 
     if (opt_hideType === HideType.DELAYED) {
-      // @ts-ignore: error TS2339: Property 'classList' does not exist on type
-      // 'Menu'.
       menu.classList.add('hide-delayed');
     } else {
-      // @ts-ignore: error TS2339: Property 'classList' does not exist on type
-      // 'Menu'.
       menu.classList.remove('hide-delayed');
     }
-    // @ts-ignore: error TS2339: Property 'hide' does not exist on type 'Menu'.
     menu.hide();
-    // @ts-ignore: error TS2339: Property 'contextElement' does not exist on
-    // type 'Menu'.
     const originalContextElement = menu.contextElement;
-    // @ts-ignore: error TS2339: Property 'contextElement' does not exist on
-    // type 'Menu'.
     menu.contextElement = null;
     this.showingEvents_.removeAll();
     if (this.resizeObserver_) {
-      // @ts-ignore: error TS2345: Argument of type 'Menu' is not assignable to
-      // parameter of type 'Element'.
       this.resizeObserver_.unobserve(menu);
       this.resizeObserver_ = null;
     }
@@ -207,10 +150,7 @@ class ContextMenuHandler extends EventTarget {
     this.hideTimestamp_ = 0;
 
     const ev = new Event('hide');
-    // @ts-ignore: error TS2339: Property 'element' does not exist on type
-    // 'Event'.
     ev.element = originalContextElement;
-    // @ts-ignore: error TS2339: Property 'menu' does not exist on type 'Event'.
     ev.menu = menu;
     this.dispatchEvent(ev);
   }
@@ -224,12 +164,8 @@ class ContextMenuHandler extends EventTarget {
     // reason for the contextmenu event.
     switch (e.type) {
       case 'keydown':
-        // @ts-ignore: error TS2339: Property 'altKey' does not exist on type
-        // 'Event'.
         this.keyIsDown_ = !e.ctrlKey && !e.altKey &&
             // context menu key or Shift-F10
-            // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on
-            // type 'Event'.
             (e.keyCode === 93 && !e.shiftKey || e.key === 'F10' && e.shiftKey);
         break;
 
@@ -245,8 +181,6 @@ class ContextMenuHandler extends EventTarget {
 
     switch (e.type) {
       case 'mousedown':
-        // @ts-ignore: error TS2339: Property 'contains' does not exist on type
-        // 'Menu'.
         if (!this.menu.contains(e.target)) {
           this.hideMenu();
         } else {
@@ -255,16 +189,12 @@ class ContextMenuHandler extends EventTarget {
         break;
 
       case 'touchstart':
-        // @ts-ignore: error TS2339: Property 'contains' does not exist on type
-        // 'Menu'.
         if (!this.menu.contains(e.target)) {
           this.hideMenu();
         }
         break;
 
       case 'keydown':
-        // @ts-ignore: error TS2339: Property 'key' does not exist on type
-        // 'Event'.
         if (e.key === 'Escape') {
           this.hideMenu();
           e.stopPropagation();
@@ -272,11 +202,7 @@ class ContextMenuHandler extends EventTarget {
 
           // If the menu is visible we let it handle all the keyboard events
           // unless Ctrl is held down.
-          // @ts-ignore: error TS2339: Property 'ctrlKey' does not exist on type
-          // 'Event'.
         } else if (this.menu && !e.ctrlKey) {
-          // @ts-ignore: error TS2339: Property 'handleKeyDown' does not exist
-          // on type 'Menu'.
           this.menu.handleKeyDown(e);
           e.preventDefault();
           e.stopPropagation();
@@ -289,8 +215,6 @@ class ContextMenuHandler extends EventTarget {
         break;
 
       case 'focus':
-        // @ts-ignore: error TS2339: Property 'contains' does not exist on type
-        // 'Menu'.
         if (!this.menu.contains(e.target)) {
           this.hideMenu();
         }
@@ -306,12 +230,8 @@ class ContextMenuHandler extends EventTarget {
         break;
 
       case 'contextmenu':
-        // @ts-ignore: error TS2339: Property 'contains' does not exist on type
-        // 'Menu'.
         if ((!this.menu || !this.menu.contains(e.target)) &&
             (!this.hideTimestamp_ || Date.now() - this.hideTimestamp_ > 50)) {
-          // @ts-ignore: error TS2339: Property 'contextMenu' does not exist on
-          // type 'EventTarget'.
           this.showMenu(e, e.currentTarget.contextMenu);
         }
         e.preventDefault();
@@ -386,19 +306,15 @@ class ContextMenuHandler extends EventTarget {
    * @param {!Menu} contextMenu The contextMenu property to be set.
    */
   setContextMenu(element, contextMenu) {
-    // @ts-ignore: error TS2339: Property 'contextMenu' does not exist on type
-    // 'Element'.
     if (!element.contextMenu) {
       this.addContextMenuProperty(element);
     }
-    // @ts-ignore: error TS2339: Property 'contextMenu' does not exist on type
-    // 'Element'.
     element.contextMenu = contextMenu;
   }
 }
 
-/**
- * The singleton context menu handler.
- * @type {!ContextMenuHandler}
- */
-export const contextMenuHandler = new ContextMenuHandler();
+  /**
+   * The singleton context menu handler.
+   * @type {!ContextMenuHandler}
+   */
+  export const contextMenuHandler = new ContextMenuHandler();

@@ -75,8 +75,7 @@ export class DialogActionController {
 
     /**
      * Bound function for onCancel_.
-     * @private @const @type {!function(this:DialogActionController,
-     *     Event):void}
+     * @private @const @type {!function(this:DialogActionController, Event)}
      */
     this.onCancelBound_ = this.processCancelAction_.bind(this);
 
@@ -85,8 +84,6 @@ export class DialogActionController {
     dialogFooter.cancelButton.addEventListener('click', this.onCancelBound_);
     dialogFooter.newFolderButton.addEventListener(
         'click', this.processNewFolderAction_.bind(this));
-    // @ts-ignore: error TS18047: 'dialogFooter.fileTypeSelector' is possibly
-    // 'null'.
     dialogFooter.fileTypeSelector.addEventListener(
         'change', this.onFileTypeFilterChanged_.bind(this));
     dialogFooter.filenameInput.addEventListener(
@@ -98,9 +95,6 @@ export class DialogActionController {
         'drive-connection-changed', this.updateOkButton_.bind(this));
 
     dialogFooter.initFileTypeFilter(
-        // @ts-ignore: error TS2345: Argument of type 'Object[]' is not
-        // assignable to parameter of type '{ extensions: string[]; description:
-        // string; }[]'.
         this.fileTypes_, launchParam.includeAllFiles);
     this.onFileTypeFilterChanged_();
 
@@ -282,18 +276,12 @@ export class DialogActionController {
           'OpenFiles.RootType', currentRootType,
           VolumeManagerCommon.RootTypesForUMA);
     }
-    // @ts-ignore: error TS2339: Property 'multiple' does not exist on type
-    // 'Object'.
     if (selection.multiple) {
       chrome.fileManagerPrivate.selectFiles(
-          // @ts-ignore: error TS2339: Property 'urls' does not exist on type
-          // 'Object'.
           selection.urls, this.allowedPaths_ === AllowedPaths.NATIVE_PATH,
           onFileSelected);
     } else {
       chrome.fileManagerPrivate.selectFile(
-          // @ts-ignore: error TS2339: Property 'filterIndex' does not exist on
-          // type 'Object'.
           selection.urls[0], selection.filterIndex,
           this.dialogType_ !== DialogType.SELECT_SAVEAS_FILE /* for opening */,
           this.allowedPaths_ === AllowedPaths.NATIVE_PATH, onFileSelected);
@@ -311,8 +299,6 @@ export class DialogActionController {
       return null;  // No specific filter selected.
     }
     return new RegExp(
-        // @ts-ignore: error TS2339: Property 'extensions' does not exist on
-        // type 'Object'.
         '\\.(' + this.fileTypes_[selectedIndex - 1].extensions.join('|') + ')$',
         'i');
   }
@@ -335,8 +321,6 @@ export class DialogActionController {
 
     const selectedIndex = this.dialogFooter_.selectedFilterIndex;
     assert(selectedIndex > 0);  // Otherwise there would be no regex.
-    // @ts-ignore: error TS2339: Property 'extensions' does not exist on type
-    // 'Object'.
     const newExtension = this.fileTypes_[selectedIndex - 1].extensions[0];
     if (!newExtension) {
       return;  // No default extension.
@@ -371,7 +355,6 @@ export class DialogActionController {
       return;
     }
 
-    // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
     const filter = entry => entry.isDirectory || regexp.test(entry.name);
     this.fileFilter_.addFilter('fileType', filter);
 
@@ -390,11 +373,8 @@ export class DialogActionController {
     // input text box.
     const selection = this.fileSelectionHandler_.selection;
     if (this.dialogType_ === DialogType.SELECT_SAVEAS_FILE &&
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         selection.totalCount === 1 && selection.entries[0].isFile &&
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         this.dialogFooter_.filenameInput.value !== selection.entries[0].name) {
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       this.dialogFooter_.filenameInput.value = selection.entries[0].name;
     }
 

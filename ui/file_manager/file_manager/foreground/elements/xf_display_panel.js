@@ -21,22 +21,15 @@ export class DisplayPanel extends HTMLElement {
     this.createElement_();
 
     /** @private @type {?Element} */
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.summary_ = this.shadowRoot.querySelector('#summary');
 
     /** @private @type {?Element} */
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.separator_ = this.shadowRoot.querySelector('#separator');
 
     /** @private @type {?Element} */
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.panels_ = this.shadowRoot.querySelector('#panels');
 
-    // @ts-ignore: error TS7014: Function type, which lacks return-type
-    // annotation, implicitly has an 'any' return type.
-    /** @private @type {!function(!Event):void} */
-    // @ts-ignore: error TS2339: Property 'listener_' does not exist on type
-    // 'DisplayPanel'.
+    /** @private @type {!function(!Event)} */
     this.listener_;
 
     /**
@@ -68,8 +61,6 @@ export class DisplayPanel extends HTMLElement {
    * `createElement()`. Set attributes in the connected callback instead.
    * @private
    */
-  // @ts-ignore: error TS6133: 'connectedCallback' is declared but its value is
-  // never read.
   connectedCallback() {
     this.setAriaHidden_();
   }
@@ -79,7 +70,6 @@ export class DisplayPanel extends HTMLElement {
    * @private
    * @return {string}
    */
-  // @ts-ignore: error TS6133: 'html_' is declared but its value is never read.
   static html_() {
     return `<!--_html_template_start_-->
     <!--_html_template_end_-->`;
@@ -89,12 +79,9 @@ export class DisplayPanel extends HTMLElement {
    * Re-enable scrollbar visibility after expand/contract animation.
    * @param {!Event} event
    */
-  // @ts-ignore: error TS6133: 'event' is declared but its value is never read.
   panelExpandFinished(event) {
     this.classList.remove('expanding');
     this.classList.add('expandfinished');
-    // @ts-ignore: error TS2339: Property 'listener_' does not exist on type
-    // 'DisplayPanel'.
     this.removeEventListener('animationend', this.listener_);
   }
 
@@ -102,14 +89,11 @@ export class DisplayPanel extends HTMLElement {
    * Hides the active panel items at end of collapse animation.
    * @param {!Event} event
    */
-  // @ts-ignore: error TS6133: 'event' is declared but its value is never read.
   panelCollapseFinished(event) {
     this.hidden = true;
     this.setAttribute('aria-hidden', 'true');
     this.classList.remove('expanding');
     this.classList.add('expandfinished');
-    // @ts-ignore: error TS2339: Property 'listener_' does not exist on type
-    // 'DisplayPanel'.
     this.removeEventListener('animationend', this.listener_);
   }
 
@@ -117,17 +101,11 @@ export class DisplayPanel extends HTMLElement {
    * Set attributes and style for expanded summary panel.
    * @private
    */
-  // @ts-ignore: error TS7006: Parameter 'expandButton' implicitly has an 'any'
-  // type.
   setSummaryExpandedState(expandButton) {
     expandButton.setAttribute('data-category', 'collapse');
     expandButton.setAttribute('aria-label', str('FEEDBACK_COLLAPSE_LABEL'));
     expandButton.setAttribute('aria-expanded', 'true');
-    // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
-    // 'Element'.
     this.panels_.hidden = false;
-    // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
-    // 'Element'.
     this.separator_.hidden = false;
   }
 
@@ -135,7 +113,6 @@ export class DisplayPanel extends HTMLElement {
    * Event handler to toggle the visible state of panel items.
    * @private
    */
-  // @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
   toggleSummary(event) {
     const panel = event.currentTarget.parent;
     const summaryPanel = panel.summary_.querySelector('xf-panel-item');
@@ -201,7 +178,6 @@ export class DisplayPanel extends HTMLElement {
     if (progressCount > 0) {
       total /= progressCount;
     }
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const summaryPanel = this.summary_.querySelector('xf-panel-item');
     if (!summaryPanel) {
       return;
@@ -210,46 +186,26 @@ export class DisplayPanel extends HTMLElement {
     // error) if no operations are ongoing.
     if (progressCount > 0) {
       // Make sure we have a progress indicator on the summary panel.
-      // @ts-ignore: error TS2339: Property 'indicator' does not exist on type
-      // 'Element'.
       if (summaryPanel.indicator != 'largeprogress') {
-        // @ts-ignore: error TS2339: Property 'indicator' does not exist on type
-        // 'Element'.
         summaryPanel.indicator = 'largeprogress';
       }
-      // @ts-ignore: error TS2339: Property 'primaryText' does not exist on type
-      // 'Element'.
       summaryPanel.primaryText =
           util.strf('PERCENT_COMPLETE', total.toFixed(0));
-      // @ts-ignore: error TS2339: Property 'progress' does not exist on type
-      // 'Element'.
       summaryPanel.progress = total;
-      // @ts-ignore: error TS2345: Argument of type 'number' is not assignable
-      // to parameter of type 'string'.
       summaryPanel.setAttribute('count', progressCount);
-      // @ts-ignore: error TS2339: Property 'errorMarkerVisibility' does not
-      // exist on type 'Element'.
       summaryPanel.errorMarkerVisibility = (errors > 0) ? 'visible' : 'hidden';
       return;
     }
 
-    // @ts-ignore: error TS2339: Property 'indicator' does not exist on type
-    // 'Element'.
     if (summaryPanel.indicator != 'status') {
       // Make sure we have a status indicator on the summary panel.
-      // @ts-ignore: error TS2339: Property 'indicator' does not exist on type
-      // 'Element'.
       summaryPanel.indicator = 'status';
     }
 
     if (errors > 0 && warnings > 0) {
       // Both errors and warnings: show the error indicator, along with counts
       // of both.
-      // @ts-ignore: error TS2339: Property 'status' does not exist on type
-      // 'Element'.
       summaryPanel.status = 'failure';
-      // @ts-ignore: error TS2339: Property 'primaryText' does not exist on type
-      // 'Element'.
       summaryPanel.primaryText =
           util.strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors) + ' ' +
           this.generateWarningMessage_(warnings);
@@ -258,16 +214,10 @@ export class DisplayPanel extends HTMLElement {
 
     if (errors > 0) {
       // Only errors, but no warnings.
-      // @ts-ignore: error TS2339: Property 'status' does not exist on type
-      // 'Element'.
       summaryPanel.status = 'failure';
-      // @ts-ignore: error TS2339: Property 'primaryText' does not exist on type
-      // 'Element'.
       summaryPanel.primaryText =
           util.strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors);
       if (warnings > 0) {
-        // @ts-ignore: error TS2339: Property 'primaryText' does not exist on
-        // type 'Element'.
         summaryPanel.primaryText +=
             ' ' + this.generateWarningMessage_(warnings);
       }
@@ -276,21 +226,13 @@ export class DisplayPanel extends HTMLElement {
 
     if (warnings > 0) {
       // Only warnings, but no errors.
-      // @ts-ignore: error TS2339: Property 'status' does not exist on type
-      // 'Element'.
       summaryPanel.status = 'warning';
-      // @ts-ignore: error TS2339: Property 'primaryText' does not exist on type
-      // 'Element'.
       summaryPanel.primaryText = this.generateWarningMessage_(warnings);
       return;
     }
 
     // No errors or warnings.
-    // @ts-ignore: error TS2339: Property 'status' does not exist on type
-    // 'Element'.
     summaryPanel.status = 'success';
-    // @ts-ignore: error TS2339: Property 'primaryText' does not exist on type
-    // 'Element'.
     summaryPanel.primaryText = util.strf('PERCENT_COMPLETE', 100);
   }
 
@@ -299,9 +241,7 @@ export class DisplayPanel extends HTMLElement {
    * @public
    */
   updateSummaryPanel() {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const summaryHost = this.shadowRoot.querySelector('#summary');
-    // @ts-ignore: error TS18047: 'summaryHost' is possibly 'null'.
     let summaryPanel = summaryHost.querySelector('#summary-panel');
 
     // Make the display panel available by tab if there are panels to
@@ -313,63 +253,44 @@ export class DisplayPanel extends HTMLElement {
     const count = this.connectedPanelItems_().length;
     // If there's only one panel item active, no need for summary.
     if (count <= 1 && summaryPanel) {
-      // @ts-ignore: error TS2339: Property 'primaryButton' does not exist on
-      // type 'Element'.
       const button = summaryPanel.primaryButton;
       if (button) {
         button.removeEventListener('click', this.toggleSummary);
       }
       // For transfer summary details.
-      // @ts-ignore: error TS2339: Property 'textDiv' does not exist on type
-      // 'Element'.
       const textDiv = summaryPanel.textDiv;
       if (textDiv) {
         textDiv.removeEventListener('click', this.toggleSummary);
       }
       summaryPanel.remove();
-      // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
-      // 'Element'.
       this.panels_.hidden = false;
-      // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
-      // 'Element'.
       this.separator_.hidden = true;
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.panels_.classList.remove('collapsed');
       return;
     }
     // Show summary panel if there are more than 1 panel items.
     if (count > 1 && !summaryPanel) {
       summaryPanel = document.createElement('xf-panel-item');
-      // @ts-ignore: error TS2345: Argument of type 'number' is not assignable
-      // to parameter of type 'string'.
       summaryPanel.setAttribute('panel-type', 1);
       summaryPanel.id = 'summary-panel';
       summaryPanel.setAttribute('detailed-summary', '');
-      // @ts-ignore: error TS2339: Property 'primaryButton' does not exist on
-      // type 'Element'.
       const button = summaryPanel.primaryButton;
       if (button) {
         button.parent = this;
         button.addEventListener('click', this.toggleSummary);
       }
-      // @ts-ignore: error TS2339: Property 'textDiv' does not exist on type
-      // 'Element'.
       const textDiv = summaryPanel.textDiv;
       if (textDiv) {
         textDiv.parent = this;
         textDiv.addEventListener('click', this.toggleSummary);
       }
-      // @ts-ignore: error TS18047: 'summaryHost' is possibly 'null'.
       summaryHost.appendChild(summaryPanel);
       // Setup the panels based on expand/collapse state of the summary panel.
       if (this.collapsed_) {
-        // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
-        // 'Element'.
         this.panels_.hidden = true;
         summaryPanel.setAttribute('data-category', 'collapsed');
       } else {
         this.setSummaryExpandedState(button);
-        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.panels_.classList.add('expandfinished');
         summaryPanel.setAttribute('data-category', 'expanded');
       }
@@ -390,8 +311,6 @@ export class DisplayPanel extends HTMLElement {
     panel.id = id;
     // Set the containing parent so the child panel can
     // trigger updates in the parent (e.g. progress summary %).
-    // @ts-ignore: error TS2551: Property 'parent' does not exist on type
-    // 'HTMLElement'. Did you mean 'part'?
     panel.parent = this;
     panel.setAttribute('indicator', 'progress');
     this.items_.push(/** @type {!PanelItem} */ (panel));
@@ -409,7 +328,6 @@ export class DisplayPanel extends HTMLElement {
     const displayPanel = panel.parent;
 
     // Only attach the panel if it hasn't been removed.
-    // @ts-ignore: error TS18047: 'displayPanel' is possibly 'null'.
     const index = displayPanel.items_.indexOf(panel);
     if (index === -1) {
       return;
@@ -420,9 +338,7 @@ export class DisplayPanel extends HTMLElement {
       return;
     }
 
-    // @ts-ignore: error TS18047: 'displayPanel.panels_' is possibly 'null'.
     displayPanel.panels_.appendChild(panel);
-    // @ts-ignore: error TS18047: 'displayPanel' is possibly 'null'.
     displayPanel.updateSummaryPanel();
     this.setAriaHidden_();
   }
@@ -461,8 +377,6 @@ export class DisplayPanel extends HTMLElement {
    */
   setAriaHidden_() {
     const hasItems = this.connectedPanelItems_().length > 0;
-    // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-    // parameter of type 'string'.
     this.setAttribute('aria-hidden', !hasItems);
   }
 
@@ -470,7 +384,6 @@ export class DisplayPanel extends HTMLElement {
    * Find a panel with given 'id'.
    * @public
    */
-  // @ts-ignore: error TS7006: Parameter 'id' implicitly has an 'any' type.
   findPanelItemById(id) {
     for (const item of this.items_) {
       if (item.getAttribute('id') === id) {

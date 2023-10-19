@@ -28,34 +28,18 @@ export class Table {
     this.columnModel_;
 
     /** @protected @type {?TableList} */
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     this.list_;
 
     /** @private @type {TableHeader} */
-    // @ts-ignore: error TS2551: Property 'header_' does not exist on type
-    // 'Table'. Did you mean 'header'?
     this.header_;
 
-    // @ts-ignore: error TS7014: Function type, which lacks return-type
-    // annotation, implicitly has an 'any' return type.
     /** @private @type {function((Event|null))} */
-    // @ts-ignore: error TS2551: Property 'boundHandleChangeList_' does not
-    // exist on type 'Table'. Did you mean 'handleChangeList_'?
     this.boundHandleChangeList_;
 
-    // @ts-ignore: error TS7014: Function type, which lacks return-type
-    // annotation, implicitly has an 'any' return type.
     /** @private @type {function((Event|null))} */
-    // @ts-ignore: error TS2551: Property 'boundHandleSorted_' does not exist on
-    // type 'Table'. Did you mean 'handleSorted_'?
     this.boundHandleSorted_;
 
-    // @ts-ignore: error TS7014: Function type, which lacks return-type
-    // annotation, implicitly has an 'any' return type.
     /** @private @type {function((Event|null))} */
-    // @ts-ignore: error TS2339: Property 'boundResize_' does not exist on type
-    // 'Table'.
     this.boundResize_;
   }
 
@@ -65,63 +49,27 @@ export class Table {
    * @type {ArrayDataModel}
    */
   get dataModel() {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     return this.list_.dataModel;
   }
   set dataModel(dataModel) {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     if (this.list_.dataModel != dataModel) {
-      // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-      // 'Table'. Did you mean 'list'?
       if (this.list_.dataModel) {
-        // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-        // 'Table'. Did you mean 'list'?
         this.list_.dataModel.removeEventListener(
-            // @ts-ignore: error TS2551: Property 'boundHandleSorted_' does not
-            // exist on type 'Table'. Did you mean 'handleSorted_'?
             'sorted', this.boundHandleSorted_);
-        // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-        // 'Table'. Did you mean 'list'?
         this.list_.dataModel.removeEventListener(
-            // @ts-ignore: error TS2551: Property 'boundHandleChangeList_' does
-            // not exist on type 'Table'. Did you mean 'handleChangeList_'?
             'change', this.boundHandleChangeList_);
-        // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-        // 'Table'. Did you mean 'list'?
         this.list_.dataModel.removeEventListener(
-            // @ts-ignore: error TS2551: Property 'boundHandleChangeList_' does
-            // not exist on type 'Table'. Did you mean 'handleChangeList_'?
             'splice', this.boundHandleChangeList_);
       }
-      // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-      // 'Table'. Did you mean 'list'?
       this.list_.dataModel = dataModel;
-      // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-      // 'Table'. Did you mean 'list'?
       if (this.list_.dataModel) {
-        // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-        // 'Table'. Did you mean 'list'?
         this.list_.dataModel.addEventListener(
-            // @ts-ignore: error TS2551: Property 'boundHandleSorted_' does not
-            // exist on type 'Table'. Did you mean 'handleSorted_'?
             'sorted', this.boundHandleSorted_);
-        // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-        // 'Table'. Did you mean 'list'?
         this.list_.dataModel.addEventListener(
-            // @ts-ignore: error TS2551: Property 'boundHandleChangeList_' does
-            // not exist on type 'Table'. Did you mean 'handleChangeList_'?
             'change', this.boundHandleChangeList_);
-        // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-        // 'Table'. Did you mean 'list'?
         this.list_.dataModel.addEventListener(
-            // @ts-ignore: error TS2551: Property 'boundHandleChangeList_' does
-            // not exist on type 'Table'. Did you mean 'handleChangeList_'?
             'splice', this.boundHandleChangeList_);
       }
-      // @ts-ignore: error TS2551: Property 'header_' does not exist on type
-      // 'Table'. Did you mean 'header'?
       this.header_.redraw();
     }
   }
@@ -132,8 +80,6 @@ export class Table {
    * @type {List}
    */
   get list() {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     return this.list_;
   }
 
@@ -148,22 +94,13 @@ export class Table {
   set columnModel(columnModel) {
     if (this.columnModel_ != columnModel) {
       if (this.columnModel_) {
-        // @ts-ignore: error TS2339: Property 'boundResize_' does not exist on
-        // type 'Table'.
         this.columnModel_.removeEventListener('resize', this.boundResize_);
       }
-      // @ts-ignore: error TS7022: 'columnModel_' implicitly has type 'any'
-      // because it does not have a type annotation and is referenced directly
-      // or indirectly in its own initializer.
       this.columnModel_ = columnModel;
 
       if (this.columnModel_) {
-        // @ts-ignore: error TS2339: Property 'boundResize_' does not exist on
-        // type 'Table'.
         this.columnModel_.addEventListener('resize', this.boundResize_);
       }
-      // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-      // 'Table'. Did you mean 'list'?
       this.list_.invalidate();
       this.redraw();
     }
@@ -176,19 +113,13 @@ export class Table {
    * {ListSelectionModel|ListSingleSelectionModel}
    */
   get selectionModel() {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     return this.list_.selectionModel;
   }
   set selectionModel(selectionModel) {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     if (this.list_.selectionModel != selectionModel) {
       if (this.dataModel) {
         selectionModel.adjustLength(this.dataModel.length);
       }
-      // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-      // 'Table'. Did you mean 'list'?
       this.list_.selectionModel = selectionModel;
     }
   }
@@ -199,24 +130,16 @@ export class Table {
    * @type {boolean}
    */
   get autoExpands() {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     return this.list_.autoExpands;
   }
   set autoExpands(autoExpands) {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     this.list_.autoExpands = autoExpands;
   }
 
   get fixedHeight() {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     return this.list_.fixedHeight;
   }
   set fixedHeight(fixedHeight) {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     this.list_.fixedHeight = fixedHeight;
   }
 
@@ -231,14 +154,11 @@ export class Table {
   /**
    * @private
    */
-  // @ts-ignore: error TS7006: Parameter 'table' implicitly has an 'any' type.
   renderFunction_(dataItem, table) {
     // `This` must not be accessed here, since it may be anything, especially
     // not a pointer to this object.
 
     const cm = table.columnModel;
-    // @ts-ignore: error TS2339: Property 'createItem' does not exist on type
-    // 'List'.
     const listItem = List.prototype.createItem.call(table.list, '');
     listItem.className = 'table-row';
 
@@ -271,8 +191,6 @@ export class Table {
     }
 
     this.renderFunction_ = renderFunction;
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'EventTarget'.
     dispatchSimpleEvent(this, 'change');
   }
 
@@ -282,8 +200,6 @@ export class Table {
    * @type {TableColumnModel}
    */
   get header() {
-    // @ts-ignore: error TS2551: Property 'header_' does not exist on type
-    // 'Table'. Did you mean 'header'?
     return this.header_;
   }
 
@@ -292,86 +208,40 @@ export class Table {
    * @param {Element} element
    */
   static decorate(element) {
-    // @ts-ignore: error TS2339: Property '__proto__' does not exist on type
-    // 'Element'.
     element.__proto__ = Table.prototype;
-    // @ts-ignore: error TS2352: Conversion of type 'Element' to type 'Table'
-    // may be a mistake because neither type sufficiently overlaps with the
-    // other. If this was intentional, convert the expression to 'unknown'
-    // first.
     element = /** @type {Table} */ (element);
 
-    // @ts-ignore: error TS2339: Property 'columnModel_' does not exist on type
-    // 'Element'.
     element.columnModel_ = new TableColumnModel([]);
-    // @ts-ignore: error TS2339: Property 'header_' does not exist on type
-    // 'Element'.
     element.header_ =
-        // @ts-ignore: error TS2352: Conversion of type 'HTMLDivElement' to type
-        // 'TableHeader' may be a mistake because neither type sufficiently
-        // overlaps with the other. If this was intentional, convert the
-        // expression to 'unknown' first.
         /** @type {TableHeader} */ (element.ownerDocument.createElement('div'));
-    // @ts-ignore: error TS2339: Property 'list_' does not exist on type
-    // 'Element'.
     element.list_ =
         /** @type {TableList} */ (element.ownerDocument.createElement('list'));
 
-    // @ts-ignore: error TS2339: Property 'header_' does not exist on type
-    // 'Element'.
     element.appendChild(element.header_);
-    // @ts-ignore: error TS2339: Property 'list_' does not exist on type
-    // 'Element'.
     element.appendChild(element.list_);
 
-    // @ts-ignore: error TS2339: Property 'list_' does not exist on type
-    // 'Element'.
     TableList.decorate(element.list_);
-    // @ts-ignore: error TS2339: Property 'list_' does not exist on type
-    // 'Element'.
     element.list_.selectionModel = new ListSelectionModel();
-    // @ts-ignore: error TS2339: Property 'list_' does not exist on type
-    // 'Element'.
     element.list_.table = element;
-    // @ts-ignore: error TS2339: Property 'list_' does not exist on type
-    // 'Element'.
     element.list_.addEventListener(
-        // @ts-ignore: error TS2339: Property 'handleScroll_' does not exist on
-        // type 'Element'.
         'scroll', element.handleScroll_.bind(element));
 
-    // @ts-ignore: error TS2339: Property 'header_' does not exist on type
-    // 'Element'.
     TableHeader.decorate(element.header_);
-    // @ts-ignore: error TS2339: Property 'header_' does not exist on type
-    // 'Element'.
     element.header_.table = element;
 
     element.classList.add('table');
 
-    // @ts-ignore: error TS2339: Property 'resize' does not exist on type
-    // 'Element'.
     element.boundResize_ = element.resize.bind(element);
-    // @ts-ignore: error TS2339: Property 'handleSorted_' does not exist on type
-    // 'Element'.
     element.boundHandleSorted_ = element.handleSorted_.bind(element);
-    // @ts-ignore: error TS2339: Property 'handleChangeList_' does not exist on
-    // type 'Element'.
     element.boundHandleChangeList_ = element.handleChangeList_.bind(element);
 
     // The contained list should be focusable, not the table itself.
     if (element.hasAttribute('tabindex')) {
-      // @ts-ignore: error TS2339: Property 'list_' does not exist on type
-      // 'Element'.
       element.list_.setAttribute('tabindex', element.getAttribute('tabindex'));
       element.removeAttribute('tabindex');
     }
 
-    // @ts-ignore: error TS2339: Property 'handleElementFocus_' does not exist
-    // on type 'Element'.
     element.addEventListener('focus', element.handleElementFocus_, true);
-    // @ts-ignore: error TS2339: Property 'handleElementBlur_' does not exist on
-    // type 'Element'.
     element.addEventListener('blur', element.handleElementBlur_, true);
   }
 
@@ -379,29 +249,17 @@ export class Table {
    * Redraws the table.
    */
   redraw() {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     this.list_.redraw();
-    // @ts-ignore: error TS2551: Property 'header_' does not exist on type
-    // 'Table'. Did you mean 'header'?
     this.header_.redraw();
   }
 
   startBatchUpdates() {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     this.list_.startBatchUpdates();
-    // @ts-ignore: error TS2551: Property 'header_' does not exist on type
-    // 'Table'. Did you mean 'header'?
     this.header_.startBatchUpdates();
   }
 
   endBatchUpdates() {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     this.list_.endBatchUpdates();
-    // @ts-ignore: error TS2551: Property 'header_' does not exist on type
-    // 'Table'. Did you mean 'header'?
     this.header_.endBatchUpdates();
   }
 
@@ -410,11 +268,7 @@ export class Table {
    */
   resize() {
     // We resize columns only instead of full redraw.
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     this.list_.resize();
-    // @ts-ignore: error TS2551: Property 'header_' does not exist on type
-    // 'Table'. Did you mean 'header'?
     this.header_.resize();
   }
 
@@ -423,8 +277,6 @@ export class Table {
    * @param {number} i The index of the item to scroll into view.
    */
   scrollIndexIntoView(i) {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     this.list_.scrollIndexIntoView(i);
   }
 
@@ -434,8 +286,6 @@ export class Table {
    * @return {ListItem} The found list item or null if not found.
    */
   getListItemByIndex(index) {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     return this.list_.getListItemByIndex(index);
   }
 
@@ -444,10 +294,7 @@ export class Table {
    * After sorting we need to redraw header
    * @param {Event} e The 'sorted' event.
    */
-  // @ts-ignore: error TS6133: 'e' is declared but its value is never read.
   handleSorted_(e) {
-    // @ts-ignore: error TS2551: Property 'header_' does not exist on type
-    // 'Table'. Did you mean 'header'?
     this.header_.redraw();
     // If we have 'focus-outline-visible' on the root HTML element and focus
     // has reverted to the body element it means this sort header creation
@@ -456,8 +303,6 @@ export class Table {
     if (document.querySelector('html.focus-outline-visible') &&
         (document.activeElement instanceof HTMLBodyElement)) {
       const sortButton =
-          // @ts-ignore: error TS2551: Property 'header_' does not exist on type
-          // 'Table'. Did you mean 'header'?
           this.header_.querySelector('cr-icon-button[tabindex="0"]');
       if (sortButton) {
         sortButton.focus();
@@ -478,10 +323,7 @@ export class Table {
    * re-calculation the width of column headers.
    * @param {Event} e The 'change' or 'splice' event.
    */
-  // @ts-ignore: error TS6133: 'e' is declared but its value is never read.
   handleChangeList_(e) {
-    // @ts-ignore: error TS2551: Property 'header_' does not exist on type
-    // 'Table'. Did you mean 'header'?
     requestAnimationFrame(this.header_.updateWidth.bind(this.header_));
   }
 
@@ -489,10 +331,7 @@ export class Table {
    * This handles list 'scroll' events. Scrolls the header accordingly.
    * @param {Event} e Scroll event.
    */
-  // @ts-ignore: error TS6133: 'e' is declared but its value is never read.
   handleScroll_(e) {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     this.header_.style.marginLeft = -this.list_.scrollLeft + 'px';
   }
 
@@ -502,26 +341,14 @@ export class Table {
    */
   sort(i) {
     const cm = this.columnModel_;
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     const sortStatus = this.list_.dataModel.sortStatus;
-    // @ts-ignore: error TS2339: Property 'field' does not exist on type
-    // 'Object'.
     if (sortStatus.field == cm.getId(i)) {
-      // @ts-ignore: error TS2339: Property 'direction' does not exist on type
-      // 'Object'.
       const sortDirection = sortStatus.direction == 'desc' ? 'asc' : 'desc';
-      // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-      // 'Table'. Did you mean 'list'?
       this.list_.dataModel.sort(sortStatus.field, sortDirection);
     } else {
-      // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-      // 'Table'. Did you mean 'list'?
       this.list_.dataModel.sort(cm.getId(i), cm.getDefaultOrder(i));
     }
     if (this.selectionModel.selectedIndex == -1) {
-      // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-      // 'Table'. Did you mean 'list'?
       this.list_.scrollTop = 0;
     }
   }
@@ -532,13 +359,10 @@ export class Table {
    * @param {Event} e The focus event.
    * @private
    */
-  // @ts-ignore: error TS6133: 'e' is declared but its value is never read.
   handleElementFocus_(e) {
     if (!this.hasElementFocus) {
       this.hasElementFocus = true;
       // Force styles based on hasElementFocus to take effect.
-      // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-      // 'Table'. Did you mean 'list'?
       this.list_.redraw();
     }
   }
@@ -550,27 +374,18 @@ export class Table {
    * @param {Event} e The blur event.
    * @private
    */
-  // @ts-ignore: error TS6133: 'handleElementBlur_' is declared but its value is
-  // never read.
   handleElementBlur_(e) {
     // When the blur event happens we do not know who is getting focus so we
     // delay this a bit until we know if the new focus node is outside the
     // table.
     const table = this;
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     const list = this.list_;
-    // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on type
-    // 'EventTarget'.
     const doc = e.target.ownerDocument;
     window.setTimeout(function() {
       const activeElement = doc.activeElement;
-      // @ts-ignore: error TS2339: Property 'contains' does not exist on type
-      // 'Table'.
       if (!table.contains(activeElement)) {
         table.hasElementFocus = false;
         // Force styles based on hasElementFocus to take effect.
-        // @ts-ignore: error TS18047: 'list' is possibly 'null'.
         list.redraw();
       }
     }, 0);
@@ -581,17 +396,12 @@ export class Table {
    * @param {number} index Index of the column to adjust width.
    */
   fitColumn(index) {
-    // @ts-ignore: error TS2551: Property 'list_' does not exist on type
-    // 'Table'. Did you mean 'list'?
     const list = this.list_;
-    // @ts-ignore: error TS18047: 'list' is possibly 'null'.
     const listHeight = list.clientHeight;
 
     const cm = this.columnModel_;
     const dm = this.dataModel;
     const columnId = cm.getId(index);
-    // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on type
-    // 'Table'.
     const doc = this.ownerDocument;
     const render = cm.getRenderFunction(index);
     const table = this;
@@ -608,7 +418,6 @@ export class Table {
     // Ensure all needed data available.
     dm.prepareSort(columnId, function() {
       // Select at most MAXIMUM_ROWS_TO_MEASURE items around visible area.
-      // @ts-ignore: error TS18047: 'list' is possibly 'null'.
       const items = list.getItemsInViewPort(list.scrollTop, listHeight);
       const firstIndex = Math.floor(Math.max(
           0, (items.last + items.first - MAXIMUM_ROWS_TO_MEASURE) / 2));
@@ -618,26 +427,18 @@ export class Table {
         const item = dm.item(i);
         const div = doc.createElement('div');
         div.className = 'table-row-cell';
-        // @ts-ignore: error TS2345: Argument of type 'this' is not assignable
-        // to parameter of type 'Element'.
         div.appendChild(render(item, columnId, table));
         container.appendChild(div);
       }
-      // @ts-ignore: error TS18047: 'list' is possibly 'null'.
       list.appendChild(container);
       const width = parseFloat(window.getComputedStyle(container).width);
-      // @ts-ignore: error TS18047: 'list' is possibly 'null'.
       list.removeChild(container);
       cm.setWidth(index, width);
     });
   }
 
   normalizeColumns() {
-    // @ts-ignore: error TS2339: Property 'clientWidth' does not exist on type
-    // 'Table'.
     this.columnModel.normalizeWidths(this.clientWidth);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'EventTarget'.
     dispatchSimpleEvent(this, 'column-resize-end', /*bubbles=*/ true);
   }
 }

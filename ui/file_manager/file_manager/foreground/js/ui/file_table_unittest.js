@@ -209,8 +209,7 @@ export function testNormalizeWidth() {
   ];
 
   for (let i = 0; i < model.size; i++) {
-    /** @type {number} */
-    const colWidth = initialWidths[i] || 0;
+    const colWidth = initialWidths[i];
     model.setWidth(i, colWidth);
     newContentWidth += colWidth;
   }

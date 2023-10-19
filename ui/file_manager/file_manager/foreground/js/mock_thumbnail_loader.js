@@ -17,11 +17,7 @@ export class MockThumbnailLoader {
    * @param {number=} opt_priority Priority.
    */
   constructor(
-      // @ts-ignore: error TS6133: 'opt_loadTargets' is declared but its value
-      // is never read.
       entry, opt_loaderType, opt_metadata, opt_mediaType, opt_loadTargets,
-      // @ts-ignore: error TS6133: 'opt_priority' is declared but its value is
-      // never read.
       opt_priority) {
     this.entry_ = entry;
   }
@@ -49,8 +45,6 @@ export class MockThumbnailLoader {
  * Data url of test image.
  * @private @type {?string}
  */
-// @ts-ignore: error TS2341: Property 'testImageDataUrl' is private and only
-// accessible within class 'MockThumbnailLoader'.
 MockThumbnailLoader.testImageDataUrl = null;
 
 /**

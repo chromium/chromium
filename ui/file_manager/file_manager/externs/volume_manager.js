@@ -6,6 +6,8 @@ import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 
 import {EntryLocation} from './entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from './files_app_entry_interfaces.js';
+import {VolumeInfo} from './volume_info.js';
+import {VolumeInfoList} from './volume_info_list.js';
 
 /**
  * VolumeManager is responsible for tracking list of mounted volumes.
@@ -15,7 +17,7 @@ export class VolumeManager {
   constructor() {
     /**
      * The list of VolumeInfo instances for each mounted volume.
-     * @type {import('./volume_info_list.js').VolumeInfoList}
+     * @type {VolumeInfoList}
      */
     this.volumeInfoList;
   }
@@ -26,9 +28,7 @@ export class VolumeManager {
    * implemented by {FilteredVolumeManager} override.
    * @return {boolean}
    */
-  getFuseBoxOnlyFilterEnabled() {
-    return false;
-  }
+  getFuseBoxOnlyFilterEnabled() {}
 
   /**
    * Gets the 'media-store-files-only' filter state: true if enabled, false if
@@ -36,9 +36,7 @@ export class VolumeManager {
    * implemented by {FilteredVolumeManager} override.
    * @return {boolean}
    */
-  getMediaStoreFilesOnlyFilterEnabled() {
-    return false;
-  }
+  getMediaStoreFilesOnlyFilterEnabled() {}
 
   /**
    * Disposes the instance. After the invocation of this method, any other
@@ -50,35 +48,23 @@ export class VolumeManager {
    * Obtains a volume info containing the passed entry.
    * @param {!Entry|!FilesAppEntry} entry Entry on the volume to be
    *     returned. Can be fake.
-   * @return {?import('./volume_info.js').VolumeInfo} The VolumeInfo instance or
-   *     null if not found.
+   * @return {?VolumeInfo} The VolumeInfo instance or null if not found.
    */
-  // @ts-ignore: error TS6133: 'entry' is declared but its value is never read.
-  getVolumeInfo(entry) {
-    return null;
-  }
+  getVolumeInfo(entry) {}
 
   /**
    * Returns the drive connection state.
    * @return {chrome.fileManagerPrivate.DriveConnectionState} Connection state.
    */
-  getDriveConnectionState() {
-    // @ts-ignore: error TS2322: Type 'string' is not assignable to type
-    // 'DriveConnectionState'.
-    return chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE;
-  }
+  getDriveConnectionState() {}
 
   /**
    * @param {string} fileUrl File url to the archive file.
    * @param {string=} password Password to decrypt archive file.
-   * @return {!Promise<!import('./volume_info.js').VolumeInfo>} Fulfilled on
-   *     success, otherwise rejected with a VolumeManagerCommon.VolumeError.
+   * @return {!Promise<!VolumeInfo>} Fulfilled on success, otherwise rejected
+   *     with a VolumeManagerCommon.VolumeError.
    */
-  // @ts-ignore: error TS6133: 'password' is declared but its value is never
-  // read.
-  mountArchive(fileUrl, password) {
-    return Promise.reject('to be implemented');
-  }
+  mountArchive(fileUrl, password) {}
 
   /**
    * Cancels mounting an archive.
@@ -86,49 +72,31 @@ export class VolumeManager {
    * @return {!Promise<void>} Fulfilled on success, otherwise rejected
    *     with a VolumeManagerCommon.VolumeError.
    */
-  // @ts-ignore: error TS6133: 'fileUrl' is declared but its value is never
-  // read.
-  cancelMounting(fileUrl) {
-    return Promise.resolve();
-  }
+  cancelMounting(fileUrl) {}
 
   /**
    * Unmounts a volume.
-   * @param {!import('./volume_info.js').VolumeInfo} volumeInfo Volume to be
-   *     unmounted.
+   * @param {!VolumeInfo} volumeInfo Volume to be unmounted.
    * @return {!Promise<void>} Fulfilled on success, otherwise rejected with a
    *     VolumeManagerCommon.VolumeError.
    */
-  // @ts-ignore: error TS6133: 'volumeInfo' is declared but its value is never
-  // read.
-  unmount(volumeInfo) {
-    return Promise.reject('to be implementend');
-  }
+  unmount(volumeInfo) {}
 
   /**
    * Configures a volume.
-   * @param {!import('./volume_info.js').VolumeInfo} volumeInfo Volume to be
-   *     configured.
-   * @return {!Promise<void>} Fulfilled on success, otherwise rejected with an
-   *     error message.
+   * @param {!VolumeInfo} volumeInfo Volume to be configured.
+   * @return {!Promise} Fulfilled on success, otherwise rejected with an error
+   *     message.
    */
-  // @ts-ignore: error TS6133: 'volumeInfo' is declared but its value is never
-  // read.
-  configure(volumeInfo) {
-    return Promise.resolve();
-  }
+  configure(volumeInfo) {}
 
   /**
    * Obtains volume information of the current profile.
    *
    * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
-   * @return {?import('./volume_info.js').VolumeInfo} Volume info.
+   * @return {?VolumeInfo} Volume info.
    */
-  // @ts-ignore: error TS6133: 'volumeType' is declared but its value is never
-  // read.
-  getCurrentProfileVolumeInfo(volumeType) {
-    return null;
-  }
+  getCurrentProfileVolumeInfo(volumeType) {}
 
   /**
    * Obtains location information from an entry.
@@ -137,28 +105,21 @@ export class VolumeManager {
    *     can be a fake entry.
    * @return {?EntryLocation} Location information.
    */
-  // @ts-ignore: error TS6133: 'entry' is declared but its value is never read.
-  getLocationInfo(entry) {
-    return null;
-  }
+  getLocationInfo(entry) {}
 
   /**
    * Adds an event listener to the target.
    * @param {string} type The name of the event.
-   * @param {function(!Event):void} handler The handler for the event. This is
+   * @param {function(!Event)} handler The handler for the event. This is
    *     called when the event is dispatched.
    */
-  // @ts-ignore: error TS6133: 'handler' is declared but its value is never
-  // read.
   addEventListener(type, handler) {}
 
   /**
    * Removes an event listener from the target.
    * @param {string} type The name of the event.
-   * @param {function(!Event):void} handler The handler for the event.
+   * @param {function(!Event)} handler The handler for the event.
    */
-  // @ts-ignore: error TS6133: 'handler' is declared but its value is never
-  // read.
   removeEventListener(type, handler) {}
 
   /**
@@ -168,82 +129,57 @@ export class VolumeManager {
    * @return {boolean} Whether the default action was prevented. If someone
    *     calls preventDefault on the event object then this returns false.
    */
-  // @ts-ignore: error TS6133: 'event' is declared but its value is never read.
-  dispatchEvent(event) {
-    return false;
-  }
+  dispatchEvent(event) {}
 
   /**
    * Searches the information of the volume that exists on the given device
    * path.
    * @param {string} devicePath Path of the device to search.
-   * @return {?import('./volume_info.js').VolumeInfo} The volume's information,
-   *     or null if not found.
+   * @return {?VolumeInfo} The volume's information, or null if not found.
    */
-  // @ts-ignore: error TS6133: 'devicePath' is declared but its value is never
-  // read.
-  findByDevicePath(devicePath) {
-    return null;
-  }
+  findByDevicePath(devicePath) {}
 
   /**
    * Returns a promise that will be resolved when volume info, identified
    * by {@code volumeId} is created.
    *
    * @param {string} volumeId
-   * @return {!Promise<!import('./volume_info.js').VolumeInfo>} The VolumeInfo.
-   *     Will not resolve if the volume is never mounted.
+   * @return {!Promise<!VolumeInfo>} The VolumeInfo. Will not resolve
+   *     if the volume is never mounted.
    */
-  // @ts-ignore: error TS6133: 'volumeId' is declared but its value is never
-  // read.
-  whenVolumeInfoReady(volumeId) {
-    return Promise.reject('to be implemented');
-  }
+  whenVolumeInfoReady(volumeId) {}
 
   /**
    * Obtains the default display root entry.
-   * @param {function((DirectoryEntry|FilesAppDirEntry)):void} callback
+   * @param {function(DirectoryEntry)|function(FilesAppDirEntry)} callback
    * Callback passed the default display root.
    */
-  // @ts-ignore: error TS6133: 'callback' is declared but its value is never
-  // read.
   getDefaultDisplayRoot(callback) {}
 
   /**
    * Checks if any volumes are disabled for selection.
    * @return {boolean} Whether any volumes are disabled for selection.
    */
-  hasDisabledVolumes() {
-    return false;
-  }
+  hasDisabledVolumes() {}
 
   /**
    * Checks whether the given volume is disabled for selection.
    * @param {!VolumeManagerCommon.VolumeType} volume Volume to check.
    * @return {boolean} Whether the volume is disabled or not.
    */
-  // @ts-ignore: error TS6133: 'volume' is declared but its value is never read.
-  isDisabled(volume) {
-    return false;
-  }
+  isDisabled(volume) {}
 
   /**
    * Checks if a volume is allowed.
    *
-   * @param {!import('./volume_info.js').VolumeInfo} volumeInfo
+   * @param {!VolumeInfo} volumeInfo
    * @return {boolean}
    */
-  // @ts-ignore: error TS6133: 'volumeInfo' is declared but its value is never
-  // read.
-  isAllowedVolume(volumeInfo) {
-    return true;
-  }
+  isAllowedVolume(volumeInfo) {}
 }
 
 /**
- * Event object which is dispatched with 'externally-unmounted' event.
- * @typedef {!CustomEvent<!import('./volume_info.js').VolumeInfo>}
+ * Event object which is dispached with 'externally-unmounted' event.
+ * @typedef {!CustomEvent<!VolumeInfo>}
  */
-// @ts-ignore: error TS7005: Variable 'ExternallyUnmountedEvent' implicitly has
-// an 'any' type.
 export let ExternallyUnmountedEvent;

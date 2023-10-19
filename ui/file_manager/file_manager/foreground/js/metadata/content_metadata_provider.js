@@ -40,8 +40,7 @@ export class ContentMetadataProvider extends MetadataProvider {
      * Map from Entry.toURL() to callback.
      * Note that simultaneous requests for same url are handled in
      * MetadataCache.
-     * @private @const @type {!Record<!string,
-     *     !Array<function(!MetadataItem):void>>}
+     * @private @const @type {!Object<!string, !Array<function(!MetadataItem)>>}
      */
     this.callbacks_ = {};
 
@@ -77,8 +76,6 @@ export class ContentMetadataProvider extends MetadataProvider {
     const options =
         ContentMetadataProvider.loadAsModule_ ? {type: 'module'} : {};
 
-    // @ts-ignore: error TS2345: Argument of type 'TrustedScriptURL' is not
-    // assignable to parameter of type 'string | URL'.
     const worker = new SharedWorker(getSanitizedScriptUrl(script), options);
     worker.onerror = () => {
       console.warn(
@@ -114,38 +111,18 @@ export class ContentMetadataProvider extends MetadataProvider {
    */
   static convertContentMetadata(metadata) {
     const item = new MetadataItem();
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type '"imageTransform"' can't be used to index type
-    // 'Object'.
     item.contentImageTransform = metadata['imageTransform'];
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type '"thumbnailTransform"' can't be used to index type
-    // 'Object'.
     item.contentThumbnailTransform = metadata['thumbnailTransform'];
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type '"thumbnailURL"' can't be used to index type 'Object'.
     item.contentThumbnailUrl = metadata['thumbnailURL'];
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type '"littleEndian"' can't be used to index type 'Object'.
     item.exifLittleEndian = metadata['littleEndian'];
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type '"ifd"' can't be used to index type 'Object'.
     item.ifd = metadata['ifd'];
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type '"height"' can't be used to index type 'Object'.
     item.imageHeight = metadata['height'];
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type '"width"' can't be used to index type 'Object'.
     item.imageWidth = metadata['width'];
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type '"mimeType"' can't be used to index type 'Object'.
     item.mediaMimeType = metadata['mimeType'];
     return item;
   }
 
   /** @override */
-  // @ts-ignore: error TS7006: Parameter 'requests' implicitly has an 'any'
-  // type.
   get(requests) {
     if (!requests.length) {
       return Promise.resolve([]);
@@ -153,11 +130,7 @@ export class ContentMetadataProvider extends MetadataProvider {
 
     const promises = [];
     for (let i = 0; i < requests.length; i++) {
-      // @ts-ignore: error TS7006: Parameter 'fulfill' implicitly has an 'any'
-      // type.
       promises.push(new Promise(function(request, fulfill) {
-        // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
-        // does not have a type annotation.
         this.getImpl_(request.entry, request.names, fulfill);
       }.bind(this, requests[i])));
     }
@@ -169,12 +142,10 @@ export class ContentMetadataProvider extends MetadataProvider {
    * Fetches the entry metadata.
    * @param {!Entry} entry File entry.
    * @param {!Array<string>} names Requested metadata types.
-   * @param {function(!MetadataItem):void} callback MetadataItem callback. Note
+   * @param {function(!MetadataItem)} callback MetadataItem callback. Note
    *     this callback is called asynchronously.
    * @private
    */
-  // @ts-ignore: error TS6133: 'getImpl_' is declared but its value is never
-  // read.
   getImpl_(entry, names, callback) {
     if (entry.isDirectory) {
       const cause = 'Directories do not have a thumbnail.';
@@ -188,15 +159,9 @@ export class ContentMetadataProvider extends MetadataProvider {
     if (type && type.type === 'image') {
       // Parse the image using the Worker image metadata parsers.
       const url = entry.toURL();
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'string' can't be used to index type '{}'.
       if (this.callbacks_[url]) {
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
         this.callbacks_[url].push(callback);
       } else {
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
         this.callbacks_[url] = [callback];
         this.dispatcher_.postMessage({verb: 'request', arguments: [url]});
       }
@@ -218,18 +183,12 @@ export class ContentMetadataProvider extends MetadataProvider {
         const url = fileEntry.toURL();
         const step = 'read file entry';
         const item = new MetadataItem();
-        // @ts-ignore: error TS2339: Property 'ifdError' does not exist on type
-        // 'MetadataItem'.
         item.ifdError = new ContentMetadataProvider.Error(url, step, error);
         return item;
       }
 
       new Promise((resolve, reject) => {
-        // @ts-ignore: error TS2339: Property 'file' does not exist on type
-        // 'FileSystemEntry'.
         entry.file(
-            // @ts-ignore: error TS7006: Parameter 'file' implicitly has an
-            // 'any' type.
             file => {
               const request = LoadImageRequest.createForUrl(entry.toURL());
               request.maxWidth = ThumbnailLoader.THUMBNAIL_MAX_WIDTH;
@@ -239,8 +198,6 @@ export class ContentMetadataProvider extends MetadataProvider {
               request.priority = 0;
               ImageLoaderClient.getInstance().load(request, resolve);
             },
-            // @ts-ignore: error TS7006: Parameter 'error' implicitly has an
-            // 'any' type.
             error => {
               callback(createIfdError(entry, error.toString()));
               reject();
@@ -282,8 +239,6 @@ export class ContentMetadataProvider extends MetadataProvider {
      * First step is to determine the sniffed content mime type of |entry|.
      * @const @type {!Promise<!MetadataItem>}
      */
-    // @ts-ignore: error TS6133: 'reject' is declared but its value is never
-    // read.
     const getContentMimeType = new Promise((resolve, reject) => {
       chrome.fileManagerPrivate.getContentMimeType(entry, resolve);
     }).then(mimeType => {
@@ -326,13 +281,9 @@ export class ContentMetadataProvider extends MetadataProvider {
       if (extract === null) {
         return item;  // done: no more media metadata to extract.
       }
-      // @ts-ignore: error TS6133: 'reject' is declared but its value is never
-      // read.
       return new Promise((resolve, reject) => {
         const contentMimeType = assert(item.contentMimeType);
         chrome.fileManagerPrivate.getContentMetadata(
-            // @ts-ignore: error TS2345: Argument of type 'string | undefined'
-            // is not assignable to parameter of type 'string'.
             entry, contentMimeType, !!extract, resolve);
       }).then(metadata => {
         if (chrome.runtime.lastError) {
@@ -352,8 +303,6 @@ export class ContentMetadataProvider extends MetadataProvider {
    * @private
    */
   onMessage_(event) {
-    // @ts-ignore: error TS2339: Property 'data' does not exist on type
-    // 'Object'.
     const data = event.data;
     switch (data.verb) {
       case 'initialized':
@@ -405,16 +354,9 @@ export class ContentMetadataProvider extends MetadataProvider {
    * @private
    */
   onResult_(url, metadataItem) {
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
     const callbacks = this.callbacks_[url];
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
     delete this.callbacks_[url];
-    // @ts-ignore: error TS18048: 'callbacks' is possibly 'undefined'.
     for (let i = 0; i < callbacks.length; i++) {
-      // @ts-ignore: error TS2722: Cannot invoke an object which is possibly
-      // 'undefined'.
       callbacks[i](metadataItem);
     }
   }
@@ -438,8 +380,6 @@ export class ContentMetadataProvider extends MetadataProvider {
    * @private
    */
   convertMediaMetadataToMetadataItem_(entry, metadata) {
-    // @ts-ignore: error TS6133: 'reject' is declared but its value is never
-    // read.
     return new Promise((resolve, reject) => {
       if (!metadata) {
         resolve(this.createError_(
@@ -491,24 +431,12 @@ export class ContentMetadataProvider extends MetadataProvider {
       if (metadata.rawTags) {
         metadata.rawTags.forEach(entry => {
           if (entry.type === 'mp3') {
-            // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-            // because expression of type '"date"' can't be used to index type
-            // 'Object'.
             if (entry.tags['date']) {
-              // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-              // because expression of type '"date"' can't be used to index type
-              // 'Object'.
               item.mediaYearRecorded = entry.tags['date'];
             }
             // It is possible that metadata['track'] is undefined but this is
             // defined.
-            // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-            // because expression of type '"track"' can't be used to index type
-            // 'Object'.
             if (entry.tags['track']) {
-              // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-              // because expression of type '"track"' can't be used to index
-              // type 'Object'.
               item.mediaTrack = entry.tags['track'];
             }
           }
@@ -516,7 +444,6 @@ export class ContentMetadataProvider extends MetadataProvider {
       }
 
       if (metadata.attachedImages && metadata.attachedImages.length > 0) {
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         item.contentThumbnailUrl = metadata.attachedImages[0].data;
       }
 
@@ -588,8 +515,6 @@ ContentMetadataProvider.PROPERTY_NAMES = [
  * The metadata Worker script URL.
  * @const @private @type {string}
  */
-// @ts-ignore: error TS2341: Property 'DEFAULT_WORKER_SCRIPT_' is private and
-// only accessible within class 'ContentMetadataProvider'.
 ContentMetadataProvider.DEFAULT_WORKER_SCRIPT_ =
     'foreground/js/metadata/metadata_dispatcher.js';
 
@@ -597,14 +522,10 @@ ContentMetadataProvider.DEFAULT_WORKER_SCRIPT_ =
  * Worker script URL that is overwritten by client code.
  * @private @type {?string}
  */
-// @ts-ignore: error TS2341: Property 'workerScript_' is private and only
-// accessible within class 'ContentMetadataProvider'.
 ContentMetadataProvider.workerScript_ = null;
 
 /**
  * Sets if the SharedWorker should start as a JS Module.
  * @private @type {boolean}
  */
-// @ts-ignore: error TS2341: Property 'loadAsModule_' is private and only
-// accessible within class 'ContentMetadataProvider'.
 ContentMetadataProvider.loadAsModule_ = true;

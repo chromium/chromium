@@ -56,7 +56,6 @@
     const popupRect = popupElement.getBoundingClientRect();
     let availRect;
     const ownerDoc = popupElement.ownerDocument;
-    // @ts-ignore: error TS18047: 'ownerDoc.defaultView' is possibly 'null'.
     const cs = ownerDoc.defaultView.getComputedStyle(popupElement);
     const docElement = ownerDoc.documentElement;
 
@@ -72,8 +71,6 @@
         right: docElement.clientWidth,
       };
     } else {
-      // @ts-ignore: error TS18047: 'popupElement.offsetParent' is possibly
-      // 'null'.
       availRect = popupElement.offsetParent.getBoundingClientRect();
     }
 

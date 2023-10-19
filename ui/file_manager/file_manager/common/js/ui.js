@@ -26,8 +26,6 @@
 
     for (let i = 0, el; el = elements[i]; i++) {
       if (!(el instanceof constr)) {
-        // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
-        // 'Function'.
         constr.decorate(el);
       }
     }
@@ -36,7 +34,6 @@
   /**
    * Helper function for creating new element for define.
    */
-  // @ts-ignore: error TS7006: Parameter 'opt_bag' implicitly has an 'any' type.
   function createElementHelper(tagName, opt_bag) {
     // Allow passing in ownerDocument to create in a different document.
     let doc;
@@ -71,11 +68,7 @@
    *     {@code decorate} method added to it.
    */
   export function define(tagNameOrFunction) {
-    // @ts-ignore: error TS7034: Variable 'createFunction' implicitly has type
-    // 'any' in some locations where its type cannot be determined.
     let createFunction;
-    // @ts-ignore: error TS7034: Variable 'tagName' implicitly has type 'any' in
-    // some locations where its type cannot be determined.
     let tagName;
     if (typeof tagNameOrFunction === 'function') {
       createFunction = tagNameOrFunction;
@@ -94,14 +87,9 @@
      * @constructor
      */
     function f(opt_propertyBag) {
-      // @ts-ignore: error TS7005: Variable 'tagName' implicitly has an 'any'
-      // type.
       const el = createFunction(tagName, opt_propertyBag);
       f.decorate(el);
       for (const propertyName in opt_propertyBag) {
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type
-        // 'Object'.
         el[propertyName] = opt_propertyBag[propertyName];
       }
       return el;
@@ -112,20 +100,12 @@
      * @param {!Element} el The element to decorate.
      */
     f.decorate = function(el) {
-      // @ts-ignore: error TS2339: Property '__proto__' does not exist on type
-      // 'Element'.
       el.__proto__ = f.prototype;
-      // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
-      // 'Element'.
       if (el.decorate) {
-        // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
-        // 'Element'.
         el.decorate();
       }
     };
 
-    // @ts-ignore: error TS2322: Type 'typeof f' is not assignable to type
-    // '(arg0?: Object | undefined) => Element'.
     return f;
   }
 
@@ -144,9 +124,7 @@
     el.style.width = '10px';
     const doc = el.ownerDocument;
     const win = doc.defaultView;
-    // @ts-ignore: error TS18047: 'win' is possibly 'null'.
     const computedStyle = win.getComputedStyle(el);
-    // @ts-ignore: error TS18047: 'win' is possibly 'null'.
     const parentComputedStyle = win.getComputedStyle(parentEl);
     const rtl = computedStyle.direction === 'rtl';
 
@@ -176,8 +154,6 @@
       if (el.scrollWidth > max) {
         el.style.width = max + 'px';
       } else {
-        // @ts-ignore: error TS2322: Type 'number' is not assignable to type
-        // 'string'.
         el.style.width = 0;
         const sw = el.scrollWidth;
         if (sw < min) {
@@ -212,16 +188,12 @@
    * @param {MouseEvent} e Initial click event.
    */
   export function swallowDoubleClick(e) {
-    // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on type
-    // 'EventTarget'.
     const doc = e.target.ownerDocument;
     let counter = Math.min(1, e.detail);
-    // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
     function swallow(e) {
       e.stopPropagation();
       e.preventDefault();
     }
-    // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
     function onclick(e) {
       if (e.detail > counter) {
         counter = e.detail;

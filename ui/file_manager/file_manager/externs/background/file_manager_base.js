@@ -15,7 +15,7 @@ import {ProgressCenter} from './progress_center.js';
  */
 export class FileManagerBaseInterface {
   constructor() {
-    /** @type {!Record<string, !Window>} */
+    /** @type {!Object<!Window>} */
     this.dialogs;
 
     /**
@@ -30,7 +30,7 @@ export class FileManagerBaseInterface {
 
     /**
      * String assets.
-     * @type {?Record<string, string>}
+     * @type {Object<string>}
      */
     this.stringData;
 
@@ -45,8 +45,6 @@ export class FileManagerBaseInterface {
     this.crostini;
   }
 
-  // @ts-ignore: error TS2355: A function whose declared type is neither 'void'
-  // nor 'any' must return a value.
   /** @return {!Promise<!VolumeManager>} */
   getVolumeManager() {}
 
@@ -55,17 +53,14 @@ export class FileManagerBaseInterface {
    * page. If the initialization is already done, the callback is invoked
    * immediately.
    *
-   * @param {function():void} callback
+   * @param {function()} callback
    */
-  // @ts-ignore: error TS6133: 'callback' is declared but its value is never
-  // read.
   ready(callback) {}
 
   /**
    * Forces File Operation Util to return error for automated tests.
    * @param {boolean} enable
    */
-  // @ts-ignore: error TS6133: 'enable' is declared but its value is never read.
   forceFileOperationErrorForTest(enable) {}
 
   /**
@@ -74,7 +69,6 @@ export class FileManagerBaseInterface {
    * in the background page.
    * @param {!Window} window
    */
-  // @ts-ignore: error TS6133: 'window' is declared but its value is never read.
   registerDialog(window) {}
 
   /**
@@ -83,7 +77,5 @@ export class FileManagerBaseInterface {
    * @param {!FilesAppState=} appState App state.
    * @return {!Promise<void>} Resolved when the new window is opened.
    */
-  // @ts-ignore: error TS2739: Type '{}' is missing the following properties
-  // from type 'FilesAppState': currentDirectoryURL, selectionURL
   async launchFileManager(appState = {}) {}
 }
