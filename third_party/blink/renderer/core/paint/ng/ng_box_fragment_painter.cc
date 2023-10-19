@@ -367,11 +367,12 @@ void PaintFragment(const NGPhysicalBoxFragment& fragment,
   if (!fragment.IsFirstForNode() && !CanPaintMultipleFragments(fragment))
     return;
 
-  // In case this object generated multiple fragments (e.g. repeated table
-  // headers / footers), set a fragment ID now, to help the legacy code look up
-  // the right FragmentData object (to use the right paint offset).
+  // We are about to enter legacy paint code. This means that the node is
+  // monolithic. However, that doesn't necessarily mean that it only has one
+  // fragment. Repeated table headers / footers may cause multiple fragments,
+  // for instance. Set the FragmentData, to use the right paint offset.
   PaintInfo modified_paint_info(paint_info);
-  modified_paint_info.SetFragmentID(fragment.GetFragmentData()->FragmentID());
+  modified_paint_info.SetFragmentDataOverride(fragment.GetFragmentData());
 
   auto* layout_object = fragment.GetLayoutObject();
   DCHECK(layout_object);
@@ -554,7 +555,8 @@ bool NGBoxFragmentPainter::PaintOverflowControls(
     return false;
 
   return ScrollableAreaPainter(*PhysicalFragment().Layer()->GetScrollableArea())
-      .PaintOverflowControls(paint_info, ToRoundedVector2d(paint_offset));
+      .PaintOverflowControls(paint_info, ToRoundedVector2d(paint_offset),
+                             box_fragment_.GetFragmentData());
 }
 
 void NGBoxFragmentPainter::RecordScrollHitTestData(
@@ -563,7 +565,8 @@ void NGBoxFragmentPainter::RecordScrollHitTestData(
   if (!box_fragment_.GetLayoutObject()->IsBox())
     return;
   BoxPainter(To<LayoutBox>(*box_fragment_.GetLayoutObject()))
-      .RecordScrollHitTestData(paint_info, background_client);
+      .RecordScrollHitTestData(paint_info, background_client,
+                               box_fragment_.GetFragmentData());
 }
 
 bool NGBoxFragmentPainter::ShouldRecordHitTestData(
@@ -807,7 +810,6 @@ void NGBoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
                                               PhysicalOffset paint_offset) {
   DCHECK(!box_fragment_.IsInlineFormattingContext());
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
-  paint_info_for_descendants.SetIsInFragmentTraversal();
   for (const NGLink& child : box_fragment_.Children()) {
     const NGPhysicalFragment& child_fragment = *child;
     DCHECK(child_fragment.IsBox());
@@ -890,7 +892,7 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
   absl::optional<ScopedPaintState> paint_state;
   absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
   if (const auto* box = DynamicTo<LayoutBox>(container.GetLayoutObject())) {
-    paint_state.emplace(container, paint_info);
+    paint_state.emplace(To<NGPhysicalBoxFragment>(container), paint_info);
     contents_paint_state.emplace(*paint_state, *box);
     local_paint_info = &contents_paint_state->GetPaintInfo();
   }
@@ -1025,7 +1027,8 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
     const LayoutBox& layout_box = To<LayoutBox>(layout_object);
     paint_rect = layout_box.PhysicalLayoutOverflowRect();
 
-    contents_paint_state.emplace(paint_info, paint_offset, layout_box);
+    contents_paint_state.emplace(paint_info, paint_offset, layout_box,
+                                 box_fragment_.GetFragmentData());
     paint_rect.Move(contents_paint_state->PaintOffset());
 
     // The background painting code assumes that the borders are part of the
@@ -1742,7 +1745,6 @@ void NGBoxFragmentPainter::PaintBoxItem(
   // Block-in-inline
   DCHECK(!child_fragment.GetLayoutObject()->IsInline());
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
-  paint_info_for_descendants.SetIsInFragmentTraversal();
   PaintBlockChild({&child_fragment, item.OffsetInContainerFragment()},
                   paint_info, paint_info_for_descendants, paint_offset);
 }

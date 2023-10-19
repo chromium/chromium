@@ -38,7 +38,6 @@ void NGFrameSetPainter::PaintObject(const PaintInfo& paint_info,
     return;
 
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
-  paint_info_for_descendants.SetIsInFragmentTraversal();
   PaintChildren(paint_info_for_descendants);
 
   PaintBorders(paint_info, paint_offset);

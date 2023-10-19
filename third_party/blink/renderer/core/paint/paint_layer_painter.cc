@@ -397,7 +397,9 @@ void PaintLayerPainter::PaintFragmentWithPhase(
     NGInlineBoxFragmentPainter::PaintAllFragments(
         *layout_inline, fragment_data, fragment_data_idx, paint_info);
   } else {
-    paint_info.SetFragmentID(fragment_data.FragmentID());
+    // We are about to enter legacy paint code. Set the right FragmentData
+    // object, to use the right paint offset.
+    paint_info.SetFragmentDataOverride(&fragment_data);
     paint_layer_.GetLayoutObject().Paint(paint_info);
   }
 }

@@ -15,6 +15,7 @@ class Vector2d;
 namespace blink {
 
 class CullRect;
+class FragmentData;
 class GraphicsContext;
 class Scrollbar;
 struct PaintInfo;
@@ -33,7 +34,8 @@ class ScrollableAreaPainter {
 
   // Returns true if the overflow controls are painted.
   bool PaintOverflowControls(const PaintInfo&,
-                             const gfx::Vector2d& paint_offset);
+                             const gfx::Vector2d& paint_offset,
+                             const FragmentData*);
   void PaintResizer(GraphicsContext&,
                     const gfx::Vector2d& paint_offset,
                     const CullRect&);
