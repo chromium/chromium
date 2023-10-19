@@ -7,9 +7,6 @@
 
 #include "base/feature_list.h"
 
-// Feature to enable the new overflow menu.
-BASE_DECLARE_FEATURE(kNewOverflowMenu);
-
 // Feature to add the Price Tracking destination (with Smart Sorting) to the new
 // overflow menu.
 BASE_DECLARE_FEATURE(kSmartSortingPriceTrackingDestination);

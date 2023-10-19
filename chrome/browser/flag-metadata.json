@@ -5334,11 +5334,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "new-overflow-menu",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "notification-interaction-history",
     "owners": [
       "sideyilmaz@chromium.org",

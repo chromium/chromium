@@ -6,10 +6,6 @@
 
 #import "components/password_manager/core/common/password_manager_features.h"
 
-BASE_FEATURE(kNewOverflowMenu,
-             "NewOverflowMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSmartSortingPriceTrackingDestination,
              "kSmartSortingPriceTrackingDestination",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -20,7 +16,7 @@ BASE_FEATURE(kOverflowMenuCustomization,
 
 bool IsNewOverflowMenuEnabled() {
   if (@available(iOS 15, *)) {
-    return base::FeatureList::IsEnabled(kNewOverflowMenu);
+    return true;
   }
   // The new overflow menu isn't available on iOS <= 14 because it relies on
   // `UISheetPresentationController`, which was introduced in iOS 15.
