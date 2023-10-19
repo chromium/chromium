@@ -208,9 +208,12 @@ class RenderViewContextMenu
   // RenderViewContextMenuBase:
   // If called in Ash when Lacros is the only browser, this open the URL in
   // Lacros. In that case, only the |url| and some values of |disposition| are
-  // respected - other parameters are ignored.
+  // respected - other parameters are ignored. The |initiator| parameter is the
+  // origin that supplied the URL being navigated to; it may be an opaque origin
+  // with no precursor if the URL came from the browser itself or the user.
   void OpenURLWithExtraHeaders(const GURL& url,
                                const GURL& referring_url,
+                               const url::Origin& initiator,
                                WindowOpenDisposition disposition,
                                ui::PageTransition transition,
                                const std::string& extra_headers,
