@@ -492,7 +492,6 @@ crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gle
 ## Metal Common ##
 # Common to all GPU types (both AMD and Intel, at least)
 
-crbug.com/angleproject/7079 [ angle-metal mac mac-x86_64 passthrough ] deqp/functional/gles3/fboinvalidate/sub.html [ Failure ]
 crbug.com/angleproject/7079 [ angle-metal mac mac-x86_64 passthrough ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
 
 ## Metal AMD ##
@@ -661,7 +660,6 @@ crbug.com/1450355 [ amd angle-opengl mac ] deqp/functional/gles3/occlusionquery_
 ## Mac Intel ##
 
 crbug.com/679692 [ angle-metal intel mac no-asan ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
-crbug.com/641209 [ angle-metal intel mac no-asan ] deqp/functional/gles3/fbomultisample* [ Failure ]
 crbug.com/606074 [ angle-opengl intel mac ] deqp/functional/gles3/texturefiltering/2d_combinations_01.html [ Failure ]
 crbug.com/606074 [ angle-opengl intel mac ] deqp/functional/gles3/texturefiltering/cube_combinations_01.html [ Failure ]
 crbug.com/606074 [ angle-opengl intel mac ] deqp/functional/gles3/texturefiltering/2d_array_combinations_01.html [ Failure ]
