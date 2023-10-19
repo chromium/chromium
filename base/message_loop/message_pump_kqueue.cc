@@ -277,13 +277,13 @@ bool MessagePumpKqueue::WatchMachReceivePort(
   return true;
 }
 
-TimeTicks MessagePumpKqueue::AjdustDelayedRunTime(TimeTicks earliest_time,
+TimeTicks MessagePumpKqueue::AdjustDelayedRunTime(TimeTicks earliest_time,
                                                   TimeTicks run_time,
                                                   TimeTicks latest_time) {
   if (g_timer_slack.load(std::memory_order_relaxed)) {
     return earliest_time;
   }
-  return MessagePump::AjdustDelayedRunTime(earliest_time, run_time,
+  return MessagePump::AdjustDelayedRunTime(earliest_time, run_time,
                                            latest_time);
 }
 

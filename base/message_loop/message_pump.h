@@ -261,7 +261,7 @@ class BASE_EXPORT MessagePump {
       const Delegate::NextWorkInfo& next_work_info) = 0;
 
   // Returns an adjusted |run_time| based on alignment policies of the pump.
-  virtual TimeTicks AjdustDelayedRunTime(TimeTicks earliest_time,
+  virtual TimeTicks AdjustDelayedRunTime(TimeTicks earliest_time,
                                          TimeTicks run_time,
                                          TimeTicks latest_time);
 };
