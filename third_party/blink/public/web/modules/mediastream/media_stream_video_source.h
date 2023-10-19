@@ -182,7 +182,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   virtual void Crop(
       const base::Token& crop_id,
       uint32_t crop_version,
-      base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback);
 
   // If a new |crop_version| can be assigned, returns it.
   // Otherwise, returns nullopt. (Can happen if the source does not support

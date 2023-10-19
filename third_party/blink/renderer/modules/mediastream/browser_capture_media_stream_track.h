@@ -71,7 +71,7 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
 
     const Member<ScriptPromiseResolverWithTracker<CropToResult>>
         promise_resolver;
-    absl::optional<media::mojom::CropRequestResult> crop_result;
+    absl::optional<media::mojom::ApplySubCaptureTargetResult> result;
     bool crop_version_observed = false;
   };
 
@@ -84,8 +84,9 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
   // identifies this specific cropTo() invocation. When the browser process
   // responds with the result of the cropTo() invocation, it triggers
   // a call to OnResultFromBrowserProcess() with that |crop_version|.
-  void OnResultFromBrowserProcess(uint32_t crop_version,
-                                  media::mojom::CropRequestResult result);
+  void OnResultFromBrowserProcess(
+      uint32_t crop_version,
+      media::mojom::ApplySubCaptureTargetResult result);
 
   // OnCropVersionObserved() is posted as a callback, bound to a unique
   // |crop_version|. This callback be invoked when the first frame is observed

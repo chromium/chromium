@@ -388,15 +388,16 @@ struct VideoCaptureDeviceInfo {
   array<VideoCaptureFormat> supported_formats;
 };
 
-// The result of an attempt by the client to start/stop cropping.
+// The result of an attempt by the client to start/stop cropping,
+// restricting or otherwise applying a sub-capture target.
 // TODO(crbug.com/1264849): Remove kNotImplemented.
-enum CropRequestResult {
+enum ApplySubCaptureTargetResult {
   kSuccess,
   kErrorGeneric,
   kUnsupportedCaptureDevice,
   kNotImplemented,
-  kNonIncreasingCropVersion,
-  kInvalidCropTarget,
+  kNonIncreasingVersion,
+  kInvalidTarget,
 };
 
 enum DeviceEnumerationResult {

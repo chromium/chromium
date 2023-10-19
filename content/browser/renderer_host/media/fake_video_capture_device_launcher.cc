@@ -47,8 +47,8 @@ class FakeLaunchedVideoCaptureDevice
   void ResumeDevice() override { device_->Resume(); }
   void Crop(const base::Token& crop_id,
             uint32_t crop_version,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
-      override {
+            base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+                callback) override {
     device_->Crop(crop_id, crop_version, std::move(callback));
   }
   void RequestRefreshFrame() override { device_->RequestRefreshFrame(); }

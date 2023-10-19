@@ -263,7 +263,7 @@ interface MediaStreamDispatcherHost {
   Crop(mojo_base.mojom.UnguessableToken device_id,
        mojo_base.mojom.Token crop_id,
        uint32 crop_version)
-    => (media.mojom.CropRequestResult crop_result);
+    => (media.mojom.ApplySubCaptureTargetResult result);
 
   // Get a MediaStreamDevice metadata object which refers to the same flow of
   // media backing an existing MediaStreamDevice.

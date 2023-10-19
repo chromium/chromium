@@ -52,7 +52,7 @@ void RaiseCropException(
 void ResolveCropPromiseHelper(
     ScriptPromiseResolverWithTracker<
         BrowserCaptureMediaStreamTrack::CropToResult>* resolver,
-    media::mojom::CropRequestResult result) {
+    media::mojom::ApplySubCaptureTargetResult result) {
   DCHECK(IsMainThread());
 
   if (!resolver) {
@@ -60,18 +60,18 @@ void ResolveCropPromiseHelper(
   }
 
   switch (result) {
-    case media::mojom::CropRequestResult::kSuccess:
+    case media::mojom::ApplySubCaptureTargetResult::kSuccess:
       // TODO(crbug.com/1264849): Delay reporting success to the Web-application
       // until "seeing" the last frame cropped to the previous crop-target.
       resolver->Resolve();
       return;
-    case media::mojom::CropRequestResult::kErrorGeneric:
+    case media::mojom::ApplySubCaptureTargetResult::kErrorGeneric:
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
                          "Unknown error.",
                          BrowserCaptureMediaStreamTrack::CropToResult::
                              kRejectedWithErrorGeneric);
       return;
-    case media::mojom::CropRequestResult::kUnsupportedCaptureDevice:
+    case media::mojom::ApplySubCaptureTargetResult::kUnsupportedCaptureDevice:
       // Note that this is an unsupported device; not an unsupported Element.
       // This should essentially not happen. If it happens, it indicates
       // something in the capture pipeline has been changed.
@@ -80,7 +80,7 @@ void ResolveCropPromiseHelper(
                          BrowserCaptureMediaStreamTrack::CropToResult::
                              kRejectedWithUnsupportedCaptureDevice);
       return;
-    case media::mojom::CropRequestResult::kNotImplemented:
+    case media::mojom::ApplySubCaptureTargetResult::kNotImplemented:
       // Unimplemented codepath reached, OTHER than lacking support for
       // a specific Element subtype.
       RaiseCropException(resolver, DOMExceptionCode::kOperationError,
@@ -88,7 +88,7 @@ void ResolveCropPromiseHelper(
                          BrowserCaptureMediaStreamTrack::CropToResult::
                              kRejectedWithNotImplemented);
       return;
-    case media::mojom::CropRequestResult::kNonIncreasingCropVersion:
+    case media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion:
       // This should rarely happen, as the browser process would issue
       // a BadMessage in this case. But if that message has to hop from
       // the IO thread to the UI thread, it could theoretically happen
@@ -99,7 +99,7 @@ void ResolveCropPromiseHelper(
                          BrowserCaptureMediaStreamTrack::CropToResult::
                              kNonIncreasingCropVersion);
       return;
-    case media::mojom::CropRequestResult::kInvalidCropTarget:
+    case media::mojom::ApplySubCaptureTargetResult::kInvalidTarget:
       RaiseCropException(
           resolver, DOMExceptionCode::kNotAllowedError, "Invalid CropTarget.",
           BrowserCaptureMediaStreamTrack::CropToResult::kInvalidCropTarget);
@@ -242,7 +242,7 @@ BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(
 #if !BUILDFLAG(IS_ANDROID)
 void BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess(
     uint32_t crop_version,
-    media::mojom::CropRequestResult result) {
+    media::mojom::ApplySubCaptureTargetResult result) {
   DCHECK(IsMainThread());
   DCHECK_GT(crop_version, 0u);
 
@@ -252,8 +252,8 @@ void BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess(
   }
   CropPromiseInfo* const info = iter->value;
 
-  DCHECK(!info->crop_result.has_value()) << "Invoked twice.";
-  info->crop_result = result;
+  DCHECK(!info->result.has_value()) << "Invoked twice.";
+  info->result = result;
 
   MaybeFinalizeCropPromise(iter);
 }
@@ -282,15 +282,15 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
 
   CropPromiseInfo* const info = iter->value;
 
-  if (!info->crop_result.has_value()) {
+  if (!info->result.has_value()) {
     return;
   }
 
-  const media::mojom::CropRequestResult result = info->crop_result.value();
+  const media::mojom::ApplySubCaptureTargetResult result = info->result.value();
 
   // Failure can be reported immediately, but success is only reported once
   // the new crop-version is observed.
-  if (result == media::mojom::CropRequestResult::kSuccess &&
+  if (result == media::mojom::ApplySubCaptureTargetResult::kSuccess &&
       !info->crop_version_observed) {
     return;
   }
@@ -298,7 +298,7 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
   // When `result == kSuccess`, the callback will be removed by the track
   // itself as it invokes it. For failure, we remove the callback immediately,
   // since there's no need to wait.
-  if (result != media::mojom::CropRequestResult::kSuccess) {
+  if (result != media::mojom::ApplySubCaptureTargetResult::kSuccess) {
     MediaStreamTrackPlatform* const native_track =
         MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(Component()));
     if (native_track) {

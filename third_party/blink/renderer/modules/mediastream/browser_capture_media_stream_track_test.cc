@@ -99,8 +99,10 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidIdResultFirst) {
   EXPECT_CALL(*media_stream_video_source, Crop(GUIDToToken(valid_id), _, _))
       .Times(1)
       .WillOnce(::testing::WithArg<2>(::testing::Invoke(
-          [](base::OnceCallback<void(media::mojom::CropRequestResult)> cb) {
-            std::move(cb).Run(media::mojom::CropRequestResult::kSuccess);
+          [](base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+                 cb) {
+            std::move(cb).Run(
+                media::mojom::ApplySubCaptureTargetResult::kSuccess);
           })));
 
   BrowserCaptureMediaStreamTrack* const track =
@@ -137,8 +139,10 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
   EXPECT_CALL(*media_stream_video_source, Crop(GUIDToToken(valid_id), _, _))
       .Times(1)
       .WillOnce(::testing::WithArg<2>(::testing::Invoke(
-          [](base::OnceCallback<void(media::mojom::CropRequestResult)> cb) {
-            std::move(cb).Run(media::mojom::CropRequestResult::kErrorGeneric);
+          [](base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+                 cb) {
+            std::move(cb).Run(
+                media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
           })));
 
   BrowserCaptureMediaStreamTrack* const track =

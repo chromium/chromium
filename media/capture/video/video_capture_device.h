@@ -361,7 +361,8 @@ class CAPTURE_EXPORT VideoCaptureDevice
   virtual void Crop(
       const base::Token& crop_id,
       uint32_t crop_version,
-      base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback);
 
   // Deallocates the video capturer, possibly asynchronously.
   //

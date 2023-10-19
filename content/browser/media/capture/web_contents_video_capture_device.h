@@ -48,10 +48,10 @@ class CONTENT_EXPORT WebContentsVideoCaptureDevice
       const std::string& device_id);
 
   // VideoCaptureDevice overrides.
-  void Crop(
-      const base::Token& crop_id,
-      uint32_t crop_version,
-      base::OnceCallback<void(media::mojom::CropRequestResult)> callback) final;
+  void Crop(const base::Token& crop_id,
+            uint32_t crop_version,
+            base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+                callback) final;
 
   // FrameSinkVideoConsumer overrides.
   void OnFrameCaptured(

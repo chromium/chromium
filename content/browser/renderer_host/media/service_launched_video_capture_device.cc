@@ -81,10 +81,12 @@ void ServiceLaunchedVideoCaptureDevice::ResumeDevice() {
 void ServiceLaunchedVideoCaptureDevice::Crop(
     const base::Token& crop_id,
     uint32_t crop_version,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+    base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/1264849): Implement if necessary.
-  std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
+  std::move(callback).Run(
+      media::mojom::ApplySubCaptureTargetResult::kNotImplemented);
 }
 
 void ServiceLaunchedVideoCaptureDevice::RequestRefreshFrame() {

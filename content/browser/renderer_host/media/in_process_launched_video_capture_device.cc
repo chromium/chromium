@@ -119,7 +119,8 @@ void InProcessLaunchedVideoCaptureDevice::ResumeDevice() {
 void InProcessLaunchedVideoCaptureDevice::Crop(
     const base::Token& crop_id,
     uint32_t crop_version,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+    base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+        callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Unretained() is safe to use here because |device| would be null if it
   // was scheduled for shutdown and destruction, and because this task is

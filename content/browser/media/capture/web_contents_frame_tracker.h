@@ -138,7 +138,8 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // to the desired target sequence as necessary.
   void Crop(const base::Token& crop_id,
             uint32_t crop_version,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
+            base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+                callback);
 
   // WebContents are retrieved on the UI thread normally, from the render IDs,
   // so this method is provided for tests to set the web contents directly.

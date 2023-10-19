@@ -434,7 +434,8 @@ void WebContentsFrameTracker::SetWebContentsAndContextFromRoutingId(
 void WebContentsFrameTracker::Crop(
     const base::Token& crop_id,
     uint32_t crop_version,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+    base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
@@ -443,7 +444,7 @@ void WebContentsFrameTracker::Crop(
     // (MediaStreamDispatcherHost knows the capturer, whereas here we know
     // the capturee.)
     std::move(callback).Run(
-        media::mojom::CropRequestResult::kNonIncreasingCropVersion);
+        media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion);
     return;
   }
 
@@ -462,15 +463,17 @@ void WebContentsFrameTracker::Crop(
       FROM_HERE,
       base::BindOnce(
           [](const viz::VideoCaptureTarget& target, uint32_t crop_version,
-             base::OnceCallback<void(media::mojom::CropRequestResult)> callback,
+             base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+                 callback,
              base::WeakPtr<WebContentsVideoCaptureDevice> device) {
             if (!device) {
               std::move(callback).Run(
-                  media::mojom::CropRequestResult::kErrorGeneric);
+                  media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
               return;
             }
             device->OnTargetChanged(target, crop_version);
-            std::move(callback).Run(media::mojom::CropRequestResult::kSuccess);
+            std::move(callback).Run(
+                media::mojom::ApplySubCaptureTargetResult::kSuccess);
           },
           target, crop_version_, std::move(callback), device_));
 }

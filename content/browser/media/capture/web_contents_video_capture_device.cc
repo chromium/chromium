@@ -55,7 +55,8 @@ WebContentsVideoCaptureDevice::Create(const std::string& device_id) {
 void WebContentsVideoCaptureDevice::Crop(
     const base::Token& crop_id,
     uint32_t crop_version,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+    base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
@@ -63,7 +64,7 @@ void WebContentsVideoCaptureDevice::Crop(
       .WithArgs(crop_id, crop_version,
                 mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                     std::move(callback),
-                    media::mojom::CropRequestResult::kErrorGeneric));
+                    media::mojom::ApplySubCaptureTargetResult::kErrorGeneric));
 }
 
 void WebContentsVideoCaptureDevice::OnFrameCaptured(

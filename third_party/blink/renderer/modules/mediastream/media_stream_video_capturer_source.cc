@@ -199,12 +199,14 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
 void MediaStreamVideoCapturerSource::Crop(
     const base::Token& crop_id,
     uint32_t crop_version,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+    base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+        callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const absl::optional<base::UnguessableToken>& session_id =
       device().serializable_session_id();
   if (!session_id.has_value()) {
-    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    std::move(callback).Run(
+        media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
     return;
   }
   GetMediaStreamDispatcherHost()->Crop(session_id.value(), crop_id,

@@ -95,8 +95,8 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
 #if !BUILDFLAG(IS_ANDROID)
   void Crop(const base::Token& crop_id,
             uint32_t crop_version,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
-      override;
+            base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+                callback) override;
   absl::optional<uint32_t> GetNextCropVersion() override;
 #endif
   uint32_t GetCropVersion() const override;

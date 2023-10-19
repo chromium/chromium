@@ -32,10 +32,12 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   MOCK_METHOD1(OnCapturingLinkSecured, void(bool));
   MOCK_METHOD1(OnSourceCanDiscardAlpha, void(bool can_discard_alpha));
   MOCK_CONST_METHOD0(SupportsEncodedOutput, bool());
-  MOCK_METHOD3(Crop,
-               void(const base::Token&,
-                    uint32_t,
-                    base::OnceCallback<void(media::mojom::CropRequestResult)>));
+  MOCK_METHOD3(
+      Crop,
+      void(
+          const base::Token&,
+          uint32_t,
+          base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>));
   MOCK_METHOD0(GetNextCropVersion, absl::optional<uint32_t>());
   MOCK_METHOD(uint32_t, GetCropVersion, (), (const, override));
 

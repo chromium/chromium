@@ -101,7 +101,8 @@ class CONTENT_EXPORT VideoCaptureManager
   void Crop(const base::UnguessableToken& session_id,
             const base::Token& crop_id,
             uint32_t crop_version,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
+            base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+                callback);
 
   // Called by VideoCaptureHost to locate a capture device for `capture_params`,
   // adding the Host as a client of the device's controller if successful. The

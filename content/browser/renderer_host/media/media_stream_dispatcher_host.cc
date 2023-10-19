@@ -133,9 +133,9 @@ MediaStreamDispatcherHost::CropCallback WrapCropCallback(
   return base::BindOnce(
       [](MediaStreamDispatcherHost::CropCallback callback,
          mojo::ReportBadMessageCallback bad_message_callback,
-         media::mojom::CropRequestResult result) {
+         media::mojom::ApplySubCaptureTargetResult result) {
         if (result ==
-            media::mojom::CropRequestResult::kNonIncreasingCropVersion) {
+            media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion) {
           std::move(bad_message_callback).Run("Non-increasing crop-version.");
           // Intentionally avoid returning. Instead, continue execution and
           // invoke the callback. If the callback were allowed to "drop" that
@@ -696,7 +696,7 @@ void MediaStreamDispatcherHost::OnCropValidationComplete(
 
   if (!crop_id_passed_validation) {
     std::move(callback).Run(
-        media::mojom::CropRequestResult::kInvalidCropTarget);
+        media::mojom::ApplySubCaptureTargetResult::kInvalidTarget);
     return;
   }
 
