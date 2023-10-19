@@ -103,6 +103,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
   PopupRowView(AccessibilitySelectionDelegate& a11y_selection_delegate,
                SelectionDelegate& selection_delegate,
                base::WeakPtr<AutofillPopupController> controller,
+               int line_number,
                std::unique_ptr<PopupRowStrategy> strategy,
                std::optional<ScopedNewBadgeTrackerWithAcceptAction>
                    new_badge_tracker = std::nullopt);
@@ -167,6 +168,8 @@ class PopupRowView : public views::View, public views::ViewObserver {
   const raw_ref<SelectionDelegate> selection_delegate_;
   // The controller for the parent view.
   const base::WeakPtr<AutofillPopupController> controller_;
+  // The position of the row in the vertical list of suggestions.
+  const int line_number_;
   // A tracker for "new" badges inside a cell. If set, it logs a performed
   // action on accepting the suggestion.
   std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker_;

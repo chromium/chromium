@@ -40,6 +40,7 @@ class PopupRowStrategy {
   // row. It will be `nullptr` by default for most types of popup suggestions.
   virtual std::unique_ptr<PopupCellView> CreateControl() = 0;
 
+ private:
   // Returns the line number of the popup row that this strategy is for.
   virtual int GetLineNumber() const = 0;
 };
