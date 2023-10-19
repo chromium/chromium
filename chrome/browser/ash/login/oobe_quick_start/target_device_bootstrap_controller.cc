@@ -187,7 +187,7 @@ void TargetDeviceBootstrapController::OnConnectionRejected() {
 
 void TargetDeviceBootstrapController::OnConnectionClosed(
     TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
-  if (status_.step == Step::CONNECTING_TO_WIFI) {
+  if (status_.step == Step::REQUESTING_WIFI_CREDENTIALS) {
     quick_start_metrics::RecordWifiTransferResult(
         /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
             WifiTransferResultFailureReason::kConnectionDroppedDuringAttempt);
@@ -285,7 +285,7 @@ void TargetDeviceBootstrapController::OnUserVerificationResult(
 }
 
 void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
-  status_.step = Step::CONNECTING_TO_WIFI;
+  status_.step = Step::REQUESTING_WIFI_CREDENTIALS;
   status_.payload.emplace<absl::monostate>();
 
   WaitForUserVerification(base::BindOnce(
@@ -301,7 +301,7 @@ void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
 
 void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
     absl::optional<mojom::WifiCredentials> credentials) {
-  CHECK_EQ(status_.step, Step::CONNECTING_TO_WIFI);
+  CHECK_EQ(status_.step, Step::REQUESTING_WIFI_CREDENTIALS);
   if (!credentials.has_value()) {
     status_.step = Step::ERROR;
     status_.payload = ErrorCode::WIFI_CREDENTIALS_NOT_RECEIVED;
@@ -411,8 +411,8 @@ std::ostream& operator<<(std::ostream& stream,
     case TargetDeviceBootstrapController::Step::CONNECTED:
       stream << "[connected]";
       break;
-    case TargetDeviceBootstrapController::Step::CONNECTING_TO_WIFI:
-      stream << "[connecting to wifi]";
+    case TargetDeviceBootstrapController::Step::REQUESTING_WIFI_CREDENTIALS:
+      stream << "[requesting wifi credentials]";
       break;
     case TargetDeviceBootstrapController::Step::WIFI_CREDENTIALS_RECEIVED:
       stream << "[wifi credentials received]";

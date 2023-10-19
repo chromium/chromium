@@ -175,7 +175,7 @@ void QuickStartController::OnStatusChanged(
     case Step::ERROR:
       NOTIMPLEMENTED();
       return;
-    case Step::CONNECTING_TO_WIFI:
+    case Step::REQUESTING_WIFI_CREDENTIALS:
       UpdateUiState(UiState::CONNECTING_TO_WIFI);
       quick_start::quick_start_metrics::RecordScreenOpened(
           quick_start_metrics::ScreenName::kConnectingToWifi);
