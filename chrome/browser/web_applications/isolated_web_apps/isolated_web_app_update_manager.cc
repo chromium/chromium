@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -50,9 +51,69 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace web_app {
+
+// This helper class acts similarly to `IsolatedWebAppUpdateDiscoveryTask`, the
+// difference being that this class is for discovering local updates for
+// dev-mode installed IWAs.
+class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
+ public:
+  using Callback =
+      base::OnceCallback<void(base::expected<base::Version, std::string>)>;
+
+  LocalDevModeUpdateDiscoverer(Profile& profile, WebAppProvider& provider)
+      : profile_(profile), provider_(provider) {}
+
+  void DiscoverLocalUpdate(const IsolatedWebAppLocation& location,
+                           const IsolatedWebAppUrlInfo& url_info,
+                           Callback callback) {
+    if (!absl::holds_alternative<DevModeProxy>(location) &&
+        !absl::holds_alternative<DevModeBundle>(location)) {
+      std::move(callback).Run(
+          base::unexpected("Discovering a local update is only supported for "
+                           "dev mode-installed apps."));
+      return;
+    }
+
+    auto keep_alive = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::ISOLATED_WEB_APP_UPDATE,
+        KeepAliveRestartOption::DISABLED);
+    auto profile_keep_alive =
+        profile_->IsOffTheRecord()
+            ? nullptr
+            : std::make_unique<ScopedProfileKeepAlive>(
+                  &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
+
+    provider_->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
+        IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
+            location, /*expected_version=*/absl::nullopt),
+        url_info, /*optional_keep_alive=*/nullptr,
+        /*optional_profile_keep_alive=*/nullptr,
+        base::BindOnce(&LocalDevModeUpdateDiscoverer::OnUpdatePrepared,
+                       weak_factory_.GetWeakPtr(), std::move(keep_alive),
+                       std::move(profile_keep_alive), std::move(callback)));
+  }
+
+ private:
+  void OnUpdatePrepared(
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+      Callback callback,
+      IsolatedWebAppUpdatePrepareAndStoreCommandResult result) {
+    std::move(callback).Run(
+        result
+            .transform(
+                [](const auto& success) { return success.update_version; })
+            .transform_error([](const auto& error) { return error.message; }));
+  }
+
+  raw_ref<Profile> profile_;
+  raw_ref<WebAppProvider> provider_;
+  base::WeakPtrFactory<LocalDevModeUpdateDiscoverer> weak_factory_{this};
+};
 
 IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
     Profile& profile,
@@ -83,6 +144,8 @@ IsolatedWebAppUpdateManager::~IsolatedWebAppUpdateManager() = default;
 void IsolatedWebAppUpdateManager::SetProvider(base::PassKey<WebAppProvider>,
                                               WebAppProvider& provider) {
   provider_ = &provider;
+  local_dev_mode_update_discoverer_ =
+      std::make_unique<LocalDevModeUpdateDiscoverer>(*profile_, provider);
 }
 
 void IsolatedWebAppUpdateManager::Start() {
@@ -202,16 +265,30 @@ bool IsolatedWebAppUpdateManager::IsUpdateBeingApplied(
 void IsolatedWebAppUpdateManager::PrioritizeUpdateAndWait(
     base::PassKey<IsolatedWebAppURLLoaderFactory>,
     const webapps::AppId& app_id,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(IsolatedWebAppUpdateApplyTask::CompletionStatus)>
+        callback) {
+  PrioritizeUpdateAndWaitImpl(app_id, std::move(callback));
+}
+
+void IsolatedWebAppUpdateManager::PrioritizeUpdateAndWaitImpl(
+    const webapps::AppId& app_id,
+    base::OnceCallback<void(IsolatedWebAppUpdateApplyTask::CompletionStatus)>
+        callback) {
   bool task_has_started =
       task_queue_.EnsureQueuedUpdateApplyTaskHasStarted(app_id);
   if (task_has_started) {
     on_update_finished_callbacks_
-        .try_emplace(app_id, std::make_unique<base::OnceCallbackList<void()>>())
+        .try_emplace(app_id,
+                     std::make_unique<base::OnceCallbackList<void(
+                         IsolatedWebAppUpdateApplyTask::CompletionStatus)>>())
         .first->second->AddUnsafe(std::move(callback));
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            base::unexpected(IsolatedWebAppApplyUpdateCommandError{
+                .message = "Update is not currently being applied."})));
   }
 }
 
@@ -242,6 +319,18 @@ size_t IsolatedWebAppUpdateManager::DiscoverUpdatesNow() {
     update_discovery_timer_.Reset();
   }
   return QueueUpdateDiscoveryTasks();
+}
+
+void IsolatedWebAppUpdateManager::DiscoverApplyAndPrioritizeLocalDevModeUpdate(
+    const IsolatedWebAppLocation& location,
+    const IsolatedWebAppUrlInfo& url_info,
+    base::OnceCallback<void(base::expected<base::Version, std::string>)>
+        callback) {
+  local_dev_mode_update_discoverer_->DiscoverLocalUpdate(
+      location, url_info,
+      base::BindOnce(&IsolatedWebAppUpdateManager::OnLocalUpdateDiscovered,
+                     weak_factory_.GetWeakPtr(), url_info,
+                     std::move(callback)));
 }
 
 bool IsolatedWebAppUpdateManager::IsAnyIwaInstalled() {
@@ -344,7 +433,8 @@ void IsolatedWebAppUpdateManager::MaybeStopUpdateDiscoveryTimer() {
 }
 
 void IsolatedWebAppUpdateManager::CreateUpdateApplyWaiter(
-    const IsolatedWebAppUrlInfo& url_info) {
+    const IsolatedWebAppUrlInfo& url_info,
+    base::OnceClosure on_update_apply_task_created) {
   const webapps::AppId& app_id = url_info.app_id();
   if (update_apply_waiters_.contains(app_id)) {
     return;
@@ -356,7 +446,8 @@ void IsolatedWebAppUpdateManager::CreateUpdateApplyWaiter(
   it->second->Wait(
       &*profile_,
       base::BindOnce(&IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished,
-                     weak_factory_.GetWeakPtr(), url_info));
+                     weak_factory_.GetWeakPtr(), url_info,
+                     std::move(on_update_apply_task_created)));
 }
 
 void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
@@ -373,6 +464,7 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
 
 void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
     IsolatedWebAppUrlInfo url_info,
+    base::OnceClosure on_update_apply_task_created,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive) {
   update_apply_waiters_.erase(url_info.app_id());
@@ -380,6 +472,7 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
   task_queue_.Push(std::make_unique<IsolatedWebAppUpdateApplyTask>(
       url_info, std::move(keep_alive), std::move(profile_keep_alive),
       provider_->scheduler()));
+  std::move(on_update_apply_task_created).Run();
 
   task_queue_.MaybeStartNextTask();
 }
@@ -390,13 +483,52 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
   auto callbacks_it =
       on_update_finished_callbacks_.find(task->url_info().app_id());
   if (callbacks_it != on_update_finished_callbacks_.end()) {
-    callbacks_it->second->Notify();
+    callbacks_it->second->Notify(status);
     if (callbacks_it->second->empty()) {
       on_update_finished_callbacks_.erase(callbacks_it);
     }
   }
 
   task_queue_.MaybeStartNextTask();
+}
+
+void IsolatedWebAppUpdateManager::OnLocalUpdateDiscovered(
+    IsolatedWebAppUrlInfo url_info,
+    base::OnceCallback<void(base::expected<base::Version, std::string>)>
+        callback,
+    base::expected<base::Version, std::string> update_discovery_result) {
+  ASSIGN_OR_RETURN(auto update_version, update_discovery_result,
+                   [&](const auto& error) {
+                     std::move(callback).Run(base::unexpected(error));
+                   });
+
+  CreateUpdateApplyWaiter(
+      url_info,
+      /*on_update_apply_task_created=*/base::BindOnce(
+          &IsolatedWebAppUpdateManager::OnLocalUpdateApplyTaskCreated,
+          weak_factory_.GetWeakPtr(), url_info, std::move(update_version),
+          std::move(callback)));
+}
+
+void IsolatedWebAppUpdateManager::OnLocalUpdateApplyTaskCreated(
+    IsolatedWebAppUrlInfo url_info,
+    base::Version update_version,
+    base::OnceCallback<void(base::expected<base::Version, std::string>)>
+        callback) {
+  auto transform_status =
+      [](base::Version update_version,
+         IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
+        return status.transform([&]() { return update_version; })
+            .transform_error(
+                [](const IsolatedWebAppApplyUpdateCommandError& error) {
+                  return error.message;
+                });
+      };
+
+  PrioritizeUpdateAndWaitImpl(
+      url_info.app_id(),
+      base::BindOnce(std::move(transform_status), std::move(update_version))
+          .Then(std::move(callback)));
 }
 
 IsolatedWebAppUpdateManager::TaskQueue::TaskQueue(

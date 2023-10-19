@@ -4,11 +4,19 @@
 
 module mojom;
 
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 struct InstallIsolatedWebAppResult {
   bool success;  // true if app was installed successfully.
   string error;  // should only be set if the app failed to install.
+};
+
+struct IwaDevProxyAppInfo {
+  string app_id;
+  string name;
+  url.mojom.Origin proxy_origin;
+  string installed_version;
 };
 
 // Handles requests from chrome://web-app-internals.
@@ -28,4 +36,9 @@ interface WebAppInternalsHandler {
   // Triggers update discovery for installed non-dev-mode Isolated Web Apps.
   // Returns a string containing a success or error message.
   SearchForIsolatedWebAppUpdates() => (string result);
+  // Returns information about installed dev mode proxy apps.
+  GetIsolatedWebAppDevModeProxyAppInfo() => (array<IwaDevProxyAppInfo> apps);
+  // Triggers an update for a dev mode proxy app. Returns a string containing a
+  // success or error message.
+  UpdateDevProxyIsolatedWebApp(string app_id) => (string result);
 };

@@ -13,6 +13,7 @@
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -21,6 +22,7 @@
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
@@ -93,9 +95,11 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   // Use of this method should be limited to the
   // `IsolatedWebAppURLLoaderFactory`. If you have a different use case, please
   // talk to iwa-dev@chromium.org first.
-  void PrioritizeUpdateAndWait(base::PassKey<IsolatedWebAppURLLoaderFactory>,
-                               const webapps::AppId& app_id,
-                               base::OnceClosure callback);
+  void PrioritizeUpdateAndWait(
+      base::PassKey<IsolatedWebAppURLLoaderFactory>,
+      const webapps::AppId& app_id,
+      base::OnceCallback<void(IsolatedWebAppUpdateApplyTask::CompletionStatus)>
+          callback);
 
   bool AreAutomaticUpdatesEnabled() const { return automatic_updates_enabled_; }
 
@@ -114,6 +118,15 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   // Used to queue update discovery tasks manually from the
   // chrome://web-app-internals page. Returns the number of tasks queued.
   size_t DiscoverUpdatesNow();
+
+  // Tells the update system about a locally available update for a dev-mode app
+  // (as opposed to an update discovered through the Update Manifest of a
+  // production app), and prioritizes applying it.
+  void DiscoverApplyAndPrioritizeLocalDevModeUpdate(
+      const IsolatedWebAppLocation& location,
+      const IsolatedWebAppUrlInfo& url_info,
+      base::OnceCallback<void(base::expected<base::Version, std::string>)>
+          callback);
 
  private:
   // This queue manages update discovery and apply tasks. Tasks can be added to
@@ -205,7 +218,14 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   void MaybeStartUpdateDiscoveryTimer();
   void MaybeStopUpdateDiscoveryTimer();
 
-  void CreateUpdateApplyWaiter(const IsolatedWebAppUrlInfo& url_info);
+  void CreateUpdateApplyWaiter(
+      const IsolatedWebAppUrlInfo& url_info,
+      base::OnceClosure on_update_apply_task_created = base::DoNothing());
+
+  void PrioritizeUpdateAndWaitImpl(
+      const webapps::AppId& app_id,
+      base::OnceCallback<void(IsolatedWebAppUpdateApplyTask::CompletionStatus)>
+          callback);
 
   void OnUpdateDiscoveryTaskCompleted(
       std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task,
@@ -213,12 +233,25 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
   void OnUpdateApplyWaiterFinished(
       IsolatedWebAppUrlInfo url_info,
+      base::OnceClosure on_update_apply_task_created,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive);
 
   void OnUpdateApplyTaskCompleted(
       std::unique_ptr<IsolatedWebAppUpdateApplyTask> task,
       IsolatedWebAppUpdateApplyTask::CompletionStatus status);
+
+  void OnLocalUpdateDiscovered(
+      IsolatedWebAppUrlInfo url_info,
+      base::OnceCallback<void(base::expected<base::Version, std::string>)>
+          callback,
+      base::expected<base::Version, std::string> update_discovery_result);
+
+  void OnLocalUpdateApplyTaskCreated(
+      IsolatedWebAppUrlInfo url_info,
+      base::Version update_version,
+      base::OnceCallback<void(base::expected<base::Version, std::string>)>
+          callback);
 
   raw_ref<Profile> profile_;
   bool automatic_updates_enabled_;
@@ -239,11 +272,17 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   // Callbacks that are run once an update apply task for a given app id has
   // finished (successfully or unsuccessfully).
   base::flat_map<webapps::AppId,
-                 std::unique_ptr<base::OnceCallbackList<void()>>>
+                 std::unique_ptr<base::OnceCallbackList<void(
+                     IsolatedWebAppUpdateApplyTask::CompletionStatus)>>>
       on_update_finished_callbacks_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
+
+  class LocalDevModeUpdateDiscoverer;
+  std::unique_ptr<LocalDevModeUpdateDiscoverer>
+      local_dev_mode_update_discoverer_;
+
   base::WeakPtrFactory<IsolatedWebAppUpdateManager> weak_factory_{this};
 };
 

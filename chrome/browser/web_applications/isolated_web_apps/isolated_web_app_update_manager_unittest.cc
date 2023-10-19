@@ -18,6 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -69,6 +70,7 @@ namespace {
 
 using base::test::DictionaryHasValue;
 using base::test::ToVector;
+using base::test::ValueIs;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::ExplainMatchResult;
@@ -82,6 +84,7 @@ using ::testing::NotNull;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::SizeIs;
+using ::testing::VariantWith;
 using ::testing::WithArg;
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
@@ -204,6 +207,89 @@ class IsolatedWebAppUpdateManagerTest : public WebAppTest {
   ScopedNaClBrowserDelegate nacl_browser_delegate_;
 #endif  // BUILDFLAG(ENABLE_NACL)
 };
+
+class IsolatedWebAppUpdateManagerDevModeUpdateTest
+    : public IsolatedWebAppUpdateManagerTest {
+ public:
+  IsolatedWebAppUpdateManagerDevModeUpdateTest()
+      : IsolatedWebAppUpdateManagerTest(
+            {{features::kIsolatedWebApps, true},
+             {features::kIsolatedWebAppDevMode, true}}) {}
+
+  void SetUp() override {
+    IsolatedWebAppUpdateManagerTest::SetUp();
+
+    fake_provider().SetEnableAutomaticIwaUpdates(
+        FakeWebAppProvider::AutomaticIwaUpdateStrategy::kForceEnabled);
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
+  }
+
+  void CreateInstallPageState(const IsolatedWebAppUrlInfo& url_info) {
+    GURL install_url = url_info.origin().GetURL().Resolve(
+        "/.well-known/_generated_install_page.html");
+    auto& page_state =
+        fake_web_contents_manager().GetOrCreatePageState(install_url);
+    page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+    page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
+    page_state.manifest_url =
+        url_info.origin().GetURL().Resolve("manifest.webmanifest");
+    page_state.valid_manifest_for_web_app = true;
+    page_state.opt_manifest = CreateDefaultManifest(
+        url_info.origin().GetURL(), u"updated iwa", base::Version("2.0.0"));
+  }
+
+ protected:
+  base::ScopedTempDir temp_dir_;
+};
+
+TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
+       DiscoversLocalDevModeUpdate) {
+  auto key_pair = web_package::WebBundleSigner::KeyPair::CreateRandom();
+  TestSignedWebBundle update_bundle = TestSignedWebBundleBuilder::BuildDefault(
+      TestSignedWebBundleBuilder::BuildOptions()
+          .SetVersion(base::Version("2.0.0"))
+          .SetAppName("updated iwa")
+          .SetKeyPair(key_pair));
+
+  ASSERT_THAT(temp_dir_.CreateUniqueTempDir(), IsTrue());
+  base::FilePath path = temp_dir_.GetPath().AppendASCII("bundle.swbn");
+  base::WriteFile(path, update_bundle.data);
+  DevModeBundle location{.path = path};
+
+  IsolatedWebAppUrlInfo url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+          web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+              key_pair.public_key));
+
+  AddDummyIsolatedAppToRegistry(
+      profile(), url_info.origin().GetURL(),
+      "installed iwa 1 (dev mode bundle)",
+      WebApp::IsolationData(DevModeBundle{.path = base::FilePath()},
+                            base::Version("1.0.0")));
+
+  CreateInstallPageState(url_info);
+
+  base::test::TestFuture<base::expected<base::Version, std::string>> future;
+  fake_provider()
+      .iwa_update_manager()
+      .DiscoverApplyAndPrioritizeLocalDevModeUpdate(location, url_info,
+                                                    future.GetCallback());
+
+  EXPECT_THAT(future.Get(), ValueIs(Eq(base::Version("2.0.0"))));
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(url_info.app_id()),
+              test::IwaIs(Eq("updated iwa"),
+                          test::IsolationDataIs(
+                              VariantWith<DevModeBundle>(Eq(location)),
+                              Eq(base::Version("2.0.0")),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(absl::nullopt))));
+
+  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
+  fake_provider().Shutdown();
+  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
+      ->Shutdown();
+}
 
 class IsolatedWebAppUpdateManagerUpdateTest
     : public IsolatedWebAppUpdateManagerTest {

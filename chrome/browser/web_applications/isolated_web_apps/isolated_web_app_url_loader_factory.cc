@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,6 +19,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
@@ -413,11 +415,16 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
   if (update_manager.IsUpdateBeingApplied(pass_key, url_info.app_id())) {
     update_manager.PrioritizeUpdateAndWait(
         pass_key, url_info.app_id(),
-        base::BindOnce(&IsolatedWebAppURLLoaderFactory::HandleRequest,
-                       weak_factory_.GetWeakPtr(), url_info, location,
-                       /*is_pending_install=*/false, std::move(loader_receiver),
-                       resource_request, std::move(loader_client),
-                       traffic_annotation));
+        // We ignore whether or not the update was applied successfully - if it
+        // succeeds, we send the request to the updated version. If it fails, we
+        // send the request to the previous version and rely on the update
+        // system to retry the update at a later point.
+        base::IgnoreArgs<IsolatedWebAppUpdateApplyTask::CompletionStatus>(
+            base::BindOnce(&IsolatedWebAppURLLoaderFactory::HandleRequest,
+                           weak_factory_.GetWeakPtr(), url_info, location,
+                           /*is_pending_install=*/false,
+                           std::move(loader_receiver), resource_request,
+                           std::move(loader_client), traffic_annotation)));
     return;
   }
 
