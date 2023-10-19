@@ -1263,7 +1263,7 @@ dictionary ParsedTrashInfoFile {
 };
 
 // The current progress of the bulk pinning manager. This is a subset of the
-// Progress struct in chromeos/ash/components/drivefs/drivefs_pin_manager.h
+// Progress struct in chromeos/ash/components/drivefs/drivefs_pinning_manager.h
 dictionary BulkPinProgress {
   // The stage the bulk pin manager is in.
   BulkPinStage stage;
