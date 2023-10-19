@@ -1362,6 +1362,48 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   EXPECT_EQ(inset_normal, inset_in_overview_mode);
 }
 
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
+                       ToggleTabletModeWhileImmersiveModeEnabled) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ImmersiveModeController* immersive_mode_controller =
+      browser_view->immersive_mode_controller();
+  ASSERT_FALSE(immersive_mode_controller->IsEnabled());
+  ASSERT_FALSE(browser_view->IsFullscreen());
+
+  // Enter immersive mode.
+  ToggleFullscreenModeAndWait(browser());
+  ASSERT_TRUE(immersive_mode_controller->IsEnabled());
+  ASSERT_TRUE(browser_view->IsFullscreen());
+
+  // Enable tablet mode.
+  ASSERT_NO_FATAL_FAILURE(
+      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
+
+  // Should exit immersive mode + fullscreen when tablet mode is enabled.
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
+  EXPECT_FALSE(browser_view->IsFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
+                       ToggleImmersiveModeWhileTabletModeEnabled) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ImmersiveModeController* immersive_mode_controller =
+      browser_view->immersive_mode_controller();
+  ASSERT_FALSE(immersive_mode_controller->IsEnabled());
+  ASSERT_FALSE(browser_view->IsFullscreen());
+
+  // Enter tablet mode.
+  ASSERT_NO_FATAL_FAILURE(
+      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
+
+  // Enter immersive mode.
+  ToggleFullscreenModeAndWait(browser());
+  // Should be able to enter immersive mode even when the tablet mode is
+  // enabled.
+  ASSERT_TRUE(immersive_mode_controller->IsEnabled());
+  ASSERT_TRUE(browser_view->IsFullscreen());
+}
+
 // TODO(b/270175923): Consider using WebUiTabStripOverrideTest, since it
 // makes sense for it to always be enabled.
 using FloatBrowserNonClientFrameViewChromeOSTest =
@@ -1606,11 +1648,16 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
   BrowserNonClientFrameViewChromeOS* frame_view =
       GetFrameViewChromeOS(browser_view);
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
+  ImmersiveModeController* immersive_mode_controller =
+      browser_view->immersive_mode_controller();
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 
   // Tablet mode doesn't affect app's caption button's visibility.
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(true));
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
+  EXPECT_FALSE(browser_view->IsFullscreen());
+  EXPECT_TRUE(immersive_mode_controller->IsEnabled());
 
   // However, overview mode does.
   StartOverview();
@@ -1621,6 +1668,8 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(false));
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
+  EXPECT_FALSE(browser_view->IsFullscreen());
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 }
 
 namespace {

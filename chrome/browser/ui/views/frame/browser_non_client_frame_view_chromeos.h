@@ -206,6 +206,9 @@ class BrowserNonClientFrameViewChromeOS
   // Helper to check whether we should enable immersive mode.
   bool ShouldEnableImmersiveModeController() const;
 
+  // Helper to check whether we should enable fullscreen mode.
+  bool ShouldEnableFullscreenMode() const;
+
   // True if the the associated browser window should be using the WebUI tab
   // strip.
   bool UseWebUITabStrip() const;
