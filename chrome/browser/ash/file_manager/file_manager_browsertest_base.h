@@ -185,9 +185,6 @@ class FileManagerBrowserTestBase
     // connector.
     bool bypass_requires_justification = false;
 
-    // Whether tests should enable V2 of search.
-    bool enable_search_v2 = false;
-
     // Whether tests should enable local image search by query.
     bool enable_local_image_search = false;
 

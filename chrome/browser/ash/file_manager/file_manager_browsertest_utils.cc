@@ -170,11 +170,6 @@ TestCase& TestCase::BypassRequiresJustification() {
   return *this;
 }
 
-TestCase& TestCase::EnableSearchV2() {
-  options.enable_search_v2 = true;
-  return *this;
-}
-
 TestCase& TestCase::EnableLocalImageSearch() {
   options.enable_local_image_search = true;
   return *this;
@@ -277,10 +272,6 @@ std::string TestCase::GetFullName() const {
 
   if (options.file_transfer_connector_report_only) {
     full_name += "_ReportOnly";
-  }
-
-  if (options.enable_search_v2) {
-    full_name += "_SearchV2";
   }
 
   if (options.enable_local_image_search) {
