@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.hub;
 
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
@@ -17,8 +20,10 @@ public interface Pane extends BackPressHandler {
     View getRootView();
 
     /** Returns button data for the primary action on the page, such as adding a tab. */
+    @Nullable
     ObservableSupplier<FullButtonData> getActionButtonDataSupplier();
 
     /** Returns the visuals for creating a button to navigate to this pane. */
+    @NonNull
     DisplayButtonData getReferenceButtonData();
 }

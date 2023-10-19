@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
-
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -12,11 +12,17 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class HubPaneHostCoordinator {
     private final HubPaneHostMediator mMediator;
 
-    /** Eagerly creates the component, but will not be rooted in the view tree yet. */
-    public HubPaneHostCoordinator(HubPaneHostView hubPaneHostView) {
+    /**
+     * Eagerly creates the component, but will not be rooted in the view tree yet.
+     *
+     * @param hubPaneHostView The root view of this component. Inserted into hierarchy for us.
+     * @param paneSupplier A way to observe and get the current {@link Pane}.
+     */
+    public HubPaneHostCoordinator(
+            HubPaneHostView hubPaneHostView, ObservableSupplier<Pane> paneSupplier) {
         PropertyModel model = new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(model, hubPaneHostView, HubPaneHostViewBinder::bind);
-        mMediator = new HubPaneHostMediator(model);
+        mMediator = new HubPaneHostMediator(model, paneSupplier);
     }
 
     /** Cleans up observers and resources. */

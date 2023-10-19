@@ -63,9 +63,9 @@ public class HubManagerImplUnitTest {
 
         PaneManager paneManager = hubManager.getPaneManager();
         assertNotNull(paneManager);
-        assertNull(paneManager.getFocusedPane());
+        assertNull(paneManager.getFocusedPaneSupplier().get());
         assertTrue(paneManager.focusPane(PaneId.TAB_SWITCHER));
-        assertEquals(mTabSwitcherPane, paneManager.getFocusedPane());
+        assertEquals(mTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
     }
 
     @Test

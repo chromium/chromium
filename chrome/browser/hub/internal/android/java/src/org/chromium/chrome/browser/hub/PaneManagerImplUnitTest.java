@@ -40,16 +40,16 @@ public class PaneManagerImplUnitTest {
                                 PaneId.INCOGNITO_TAB_SWITCHER, () -> mIncognitoTabSwitcherPane);
         PaneManager paneManager = new PaneManagerImpl(builder);
 
-        assertNull(paneManager.getFocusedPane());
+        assertNull(paneManager.getFocusedPaneSupplier().get());
 
         assertTrue(paneManager.focusPane(PaneId.TAB_SWITCHER));
-        assertEquals(mTabSwitcherPane, paneManager.getFocusedPane());
+        assertEquals(mTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
 
         assertTrue(paneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
-        assertEquals(mIncognitoTabSwitcherPane, paneManager.getFocusedPane());
+        assertEquals(mIncognitoTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
 
         assertTrue(paneManager.focusPane(PaneId.TAB_SWITCHER));
-        assertEquals(mTabSwitcherPane, paneManager.getFocusedPane());
+        assertEquals(mTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
     }
 
     @Test
@@ -60,16 +60,16 @@ public class PaneManagerImplUnitTest {
                         .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane);
         PaneManager paneManager = new PaneManagerImpl(builder);
 
-        assertNull(paneManager.getFocusedPane());
+        assertNull(paneManager.getFocusedPaneSupplier().get());
 
         assertFalse(paneManager.focusPane(PaneId.BOOKMARKS));
-        assertNull(paneManager.getFocusedPane());
+        assertNull(paneManager.getFocusedPaneSupplier().get());
 
         assertTrue(paneManager.focusPane(PaneId.TAB_SWITCHER));
-        assertEquals(mTabSwitcherPane, paneManager.getFocusedPane());
+        assertEquals(mTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
 
         assertFalse(paneManager.focusPane(PaneId.BOOKMARKS));
-        assertEquals(mTabSwitcherPane, paneManager.getFocusedPane());
+        assertEquals(mTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
     }
 
     @Test
@@ -81,15 +81,15 @@ public class PaneManagerImplUnitTest {
                         .registerPane(PaneId.BOOKMARKS, () -> null);
         PaneManager paneManager = new PaneManagerImpl(builder);
 
-        assertNull(paneManager.getFocusedPane());
+        assertNull(paneManager.getFocusedPaneSupplier().get());
 
         assertFalse(paneManager.focusPane(PaneId.BOOKMARKS));
-        assertNull(paneManager.getFocusedPane());
+        assertNull(paneManager.getFocusedPaneSupplier().get());
 
         assertTrue(paneManager.focusPane(PaneId.TAB_SWITCHER));
-        assertEquals(mTabSwitcherPane, paneManager.getFocusedPane());
+        assertEquals(mTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
 
         assertFalse(paneManager.focusPane(PaneId.BOOKMARKS));
-        assertEquals(mTabSwitcherPane, paneManager.getFocusedPane());
+        assertEquals(mTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
     }
 }

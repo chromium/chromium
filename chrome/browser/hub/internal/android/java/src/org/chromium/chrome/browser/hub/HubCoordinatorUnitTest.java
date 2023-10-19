@@ -14,19 +14,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.TestActivity;
 
 /** Tests for {@link HubCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HubCoordinatorUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public @Rule ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    private ObservableSupplierImpl<Pane> mPaneSupplier = new ObservableSupplierImpl<>();
     private FrameLayout mRootView;
 
     @Before
@@ -42,7 +41,7 @@ public class HubCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testCreateAndDestroy() {
-        HubCoordinator hubCoordinator = new HubCoordinator(mRootView);
+        HubCoordinator hubCoordinator = new HubCoordinator(mRootView, mPaneSupplier);
         mRootView.getChildCount();
         Assert.assertNotEquals(0, mRootView.getChildCount());
         hubCoordinator.destroy();

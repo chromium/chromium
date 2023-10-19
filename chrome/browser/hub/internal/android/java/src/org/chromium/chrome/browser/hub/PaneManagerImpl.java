@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.hub;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import com.google.common.collect.ImmutableMap;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 
 /**
@@ -16,7 +18,8 @@ import org.chromium.base.supplier.Supplier;
 public class PaneManagerImpl implements PaneManager {
     private final ImmutableMap<Integer, Supplier<Pane>> mPanes;
 
-    private Pane mCurrentPane;
+    private final ObservableSupplierImpl<Pane> mCurrentPaneSupplierImpl =
+            new ObservableSupplierImpl<>();
 
     /**
      * Create a {@link PaneManagerImpl}.
@@ -28,8 +31,8 @@ public class PaneManagerImpl implements PaneManager {
     }
 
     @Override
-    public @Nullable Pane getFocusedPane() {
-        return mCurrentPane;
+    public @NonNull ObservableSupplier<Pane> getFocusedPaneSupplier() {
+        return mCurrentPaneSupplierImpl;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class PaneManagerImpl implements PaneManager {
         Pane nextPane = nextPaneSupplier.get();
         if (nextPane == null) return false;
 
-        mCurrentPane = nextPane;
+        mCurrentPaneSupplierImpl.set(nextPane);
         return true;
     }
 }
