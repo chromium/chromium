@@ -10,7 +10,6 @@
 #import "base/json/json_writer.h"
 #import "components/grit/policy_resources.h"
 #import "components/grit/policy_resources_map.h"
-#import "components/policy/core/common/policy_logger.h"
 #import "components/strings/grit/components_branded_strings.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
@@ -127,15 +126,10 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
   source->AddResourcePaths(
       base::make_span(kPolicyResources, kPolicyResourcesSize));
 
-  source->AddBoolean(
-      "loggingEnabled",
-      policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
+  std::string variations_json_value;
+  base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
+  source->AddString("versionInfo", variations_json_value);
 
-  if (policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
-    std::string variations_json_value;
-    base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
-    source->AddString("versionInfo", variations_json_value);
-  }
   source->AddResourcePath("logs/policy_logs.js",
                           IDR_POLICY_LOGS_POLICY_LOGS_JS);
   source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);

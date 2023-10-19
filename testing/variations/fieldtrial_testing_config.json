@@ -12465,21 +12465,6 @@
             ]
         }
     ],
-    "PolicyLogsPageIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PolicyLogsPageIOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "PopulateVisitedLinkDatabase": [
         {
             "platforms": [

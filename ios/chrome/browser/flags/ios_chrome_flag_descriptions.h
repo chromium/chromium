@@ -741,10 +741,6 @@ extern const char kUseAnnotationsForLanguageDetectionDescription[];
 extern const char kPasswordReuseDetectionName[];
 extern const char kPasswordReuseDetectionDescription[];
 
-// Title and description for the flag to enable chrome://policy/logs on iOS
-extern const char kPolicyLogsPageIOSName[];
-extern const char kPolicyLogsPageIOSDescription[];
-
 // Title and description for the flag to enable the post restore default browser
 // promo.
 extern const char kPostRestoreDefaultBrowserPromoName[];

@@ -844,11 +844,6 @@ const char kPasswordReuseDetectionDescription[] =
     "Displays warning when user types or pastes a saved password into a "
     "phishing website.";
 
-const char kPolicyLogsPageIOSName[] = "Policy Logs Page on IOS";
-const char kPolicyLogsPageIOSDescription[] =
-    "Enable the new chrome://policy/logs page containing logs for debugging "
-    "policy related issues on IOS.";
-
 const char kPostRestoreDefaultBrowserPromoName[] =
     "Post Restore Default Browser Promo";
 const char kPostRestoreDefaultBrowserPromoDescription[] =

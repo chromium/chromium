@@ -25,7 +25,6 @@
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_loader_common.h"
-#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_utils.h"
 #include "components/policy/policy_constants.h"
@@ -159,16 +158,10 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kPolicyLogsStrings);
 
-  source->AddBoolean(
-      "loggingEnabled",
-      policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
+  std::string variations_json_value;
+  base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
 
-  if (policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
-    std::string variations_json_value;
-    base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
-
-    source->AddString("versionInfo", variations_json_value);
-  }
+  source->AddString("versionInfo", variations_json_value);
 
   source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
   source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);

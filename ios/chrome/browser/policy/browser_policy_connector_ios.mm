@@ -50,9 +50,7 @@ ConfigurationPolicyProvider* BrowserPolicyConnectorIOS::GetPlatformProvider() {
 void BrowserPolicyConnectorIOS::Init(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  if (policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
-    policy::PolicyLogger::GetInstance()->EnableLogDeletion();
-  }
+  policy::PolicyLogger::GetInstance()->EnableLogDeletion();
   std::unique_ptr<policy::DeviceManagementService::Configuration> configuration(
       new policy::DeviceManagementServiceConfigurationIOS(
           GetDeviceManagementUrl(), GetRealtimeReportingUrl(),

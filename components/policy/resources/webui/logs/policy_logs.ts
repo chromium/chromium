@@ -72,13 +72,6 @@ async function fetchLogs() {
 }
 
 function initialize() {
-  // TODO(b/251799119): Add instructions on how to enable the page.
-  if (!loadTimeData.getBoolean('loggingEnabled')) {
-    getRequiredElement('logs-disabled-container').hidden = false;
-    getRequiredElement('logs-enabled-container').hidden = true;
-    return;
-  }
-
   displayVersionInfo();
 
   const fetchLogsAndDisplay = () => fetchLogs().then(displayList);

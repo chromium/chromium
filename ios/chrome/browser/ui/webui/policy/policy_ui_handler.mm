@@ -175,7 +175,6 @@ void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
 }
 
 void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
-  DCHECK(policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
   web_ui()->ResolveJavascriptCallback(
       args[0], policy::PolicyLogger::GetInstance()->GetAsList());
 }
