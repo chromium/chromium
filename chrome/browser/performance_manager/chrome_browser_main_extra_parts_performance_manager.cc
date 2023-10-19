@@ -39,7 +39,7 @@
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/metrics/tab_revisit_tracker.h"
+#include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
