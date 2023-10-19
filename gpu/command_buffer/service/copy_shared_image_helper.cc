@@ -89,6 +89,38 @@ GrGLenum GetSurfaceColorFormat(GrGLenum format, GrGLenum type) {
   return format;
 }
 
+// Returns an SkSurface wrapping `texture_id`. Assumes the presence of a Ganesh
+// GL context to do the wrapping.
+sk_sp<SkSurface> CreateSkSurfaceWrappingGLTexture(
+    SharedContextState* shared_context_state,
+    GLuint texture_id,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y) {
+  CHECK_NE(texture_id, 0u);
+  CHECK(shared_context_state->GrContextIsGL());
+  GrGLTextureInfo texture_info;
+  texture_info.fID = texture_id;
+  texture_info.fTarget = target;
+  // Get the surface color format similar to that in VideoFrameYUVConverter.
+  texture_info.fFormat = GetSurfaceColorFormat(internal_format, type);
+  auto backend_texture = GrBackendTextures::MakeGL(
+      width, height, skgpu::Mipmapped::kNo, texture_info);
+
+  auto dest_color_space = SkColorSpace::MakeSRGB();
+  GrDirectContext* direct_context = shared_context_state->gr_context();
+  CHECK(direct_context);
+  return SkSurfaces::WrapBackendTexture(
+      direct_context, backend_texture,
+      flip_y ? GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin
+             : GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
+      /*sampleCnt=*/1, GetCompatibleSurfaceColorType(texture_info.fFormat),
+      dest_color_space, nullptr);
+}
+
 // Return true if all of `sk_yuv_color_space`, `sk_plane_config`,
 // `sk_subsampling`, `rgba_image` (if `populate_rgba_image` is true),
 // `num_yuva_images`, and `yuva_images` were successfully populated. Return
@@ -809,31 +841,18 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
     GLsizei height,
     GLboolean flip_y,
     const volatile GLbyte* src_mailbox) {
-  CHECK(shared_context_state_->gr_context());
   Mailbox source_mailbox = Mailbox::FromVolatile(
       reinterpret_cast<const volatile Mailbox*>(src_mailbox)[0]);
   DLOG_IF(ERROR, !source_mailbox.Verify())
       << "CopySharedImageToGLTexture was passed an invalid mailbox";
 
-  CHECK_NE(dest_texture_id, 0u);
-  CHECK(shared_context_state_->GrContextIsGL());
-  GrGLTextureInfo texture_info;
-  texture_info.fID = dest_texture_id;
-  texture_info.fTarget = target;
-  // Get the surface color format similar to that in VideoFrameYUVConverter.
-  texture_info.fFormat = GetSurfaceColorFormat(internal_format, type);
-  auto backend_texture = GrBackendTextures::MakeGL(
-      width, height, skgpu::Mipmapped::kNo, texture_info);
-
-  auto dest_color_space = SkColorSpace::MakeSRGB();
   GrDirectContext* direct_context = shared_context_state_->gr_context();
   CHECK(direct_context);
-  sk_sp<SkSurface> dest_surface = SkSurfaces::WrapBackendTexture(
-      direct_context, backend_texture,
-      flip_y ? GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin
-             : GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
-      /*sampleCnt=*/1, GetCompatibleSurfaceColorType(texture_info.fFormat),
-      dest_color_space, nullptr);
+
+  sk_sp<SkSurface> dest_surface = CreateSkSurfaceWrappingGLTexture(
+      shared_context_state_, dest_texture_id, target, internal_format, type,
+      width, height, flip_y);
+
   if (!dest_surface) {
     return base::unexpected<GLError>(
         GLError(GL_INVALID_VALUE, "glCopySharedImageToTexture",
