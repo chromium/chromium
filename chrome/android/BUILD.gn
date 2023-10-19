@@ -756,8 +756,10 @@ if (current_toolchain == default_toolchain) {
     }
 
     if (enable_supervised_users) {
-      deps +=
-          [ "//chrome/browser/supervised_user:website_parent_approval_java" ]
+      deps += [
+        "//chrome/browser/supervised_user:website_parent_approval_java",
+        "//components/supervised_user/android:supervised_user_preferences_java",
+      ]
     }
 
     if (page_info_use_internal_android_resources) {
@@ -1183,6 +1185,7 @@ if (current_toolchain == default_toolchain) {
       "//components/signin/core/browser:signin_enums_java",
       "//components/signin/public/android:java",
       "//components/signin/public/android:signin_java_test_support",
+      "//components/supervised_user/android:supervised_user_preferences_java",
       "//components/sync/android:sync_java",
       "//components/sync_device_info:sync_device_info_java",
       "//components/translate/content/android:junit",
