@@ -88,8 +88,11 @@ class MenuRunnerTest : public ViewsTestBase {
   }
 #endif
 
+  void ResetMenuItemView() { menu_item_view_ = nullptr; }
+
   // ViewsTestBase:
   void TearDown() override {
+    ResetMenuItemView();
     if (owner_)
       owner_->CloseNow();
 
@@ -114,7 +117,7 @@ class MenuRunnerTest : public ViewsTestBase {
 
  private:
   // Owned by menu_runner_.
-  raw_ptr<views::TestMenuItemView, DanglingUntriaged> menu_item_view_ = nullptr;
+  raw_ptr<views::TestMenuItemView> menu_item_view_ = nullptr;
 
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;
@@ -364,8 +367,8 @@ class MenuLauncherEventHandler : public ui::EventHandler {
     }
   }
 
-  raw_ptr<MenuRunner> runner_;
-  raw_ptr<Widget, DanglingUntriaged> owner_;
+  const raw_ptr<MenuRunner> runner_;
+  const raw_ptr<Widget> owner_;
 };
 
 }  // namespace
@@ -373,13 +376,18 @@ class MenuLauncherEventHandler : public ui::EventHandler {
 // Test harness that includes a parent Widget and View invoking the menu.
 class MenuRunnerWidgetTest : public MenuRunnerTest {
  public:
+  static constexpr int kEventCountViewID = 123;
+
   MenuRunnerWidgetTest() = default;
 
   MenuRunnerWidgetTest(const MenuRunnerWidgetTest&) = delete;
   MenuRunnerWidgetTest& operator=(const MenuRunnerWidgetTest&) = delete;
 
   Widget* widget() { return widget_; }
-  EventCountView* event_count_view() { return event_count_view_; }
+  EventCountView* event_count_view() {
+    return static_cast<EventCountView*>(
+        widget()->GetRootView()->GetViewByID(kEventCountViewID));
+  }
 
   std::unique_ptr<ui::test::EventGenerator> EventGeneratorForWidget(
       Widget* widget) {
@@ -390,7 +398,7 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
   void AddMenuLauncherEventHandler(Widget* widget) {
     consumer_ =
         std::make_unique<MenuLauncherEventHandler>(menu_runner(), widget);
-    event_count_view_->AddPostTargetHandler(consumer_.get());
+    event_count_view()->AddPostTargetHandler(consumer_.get());
   }
 
   // ViewsTestBase:
@@ -402,21 +410,22 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
     widget_->Show();
     widget_->SetSize(gfx::Size(300, 300));
 
-    event_count_view_ = new EventCountView();
-    event_count_view_->SetBounds(0, 0, 300, 300);
-    widget_->GetRootView()->AddChildView(event_count_view_.get());
+    auto event_count_view = std::make_unique<EventCountView>();
+    event_count_view->SetBounds(0, 0, 300, 300);
+    event_count_view->SetID(kEventCountViewID);
+    widget_->GetRootView()->AddChildView(std::move(event_count_view));
 
     InitMenuRunner(0);
   }
 
   void TearDown() override {
-    widget_->CloseNow();
+    consumer_.reset();
+    widget_.ExtractAsDangling()->CloseNow();
     MenuRunnerTest::TearDown();
   }
 
  private:
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
-  raw_ptr<EventCountView, DanglingUntriaged> event_count_view_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
   std::unique_ptr<MenuLauncherEventHandler> consumer_;
 };
 
@@ -527,6 +536,7 @@ TEST_F(MenuRunnerImplTest, NestedMenuRunnersDestroyedOutOfOrder) {
 
   // This should not access the destroyed MenuController
   menu_runner2->Release();
+  ResetMenuItemView();
   menu_runner->Release();
 }
 
@@ -562,6 +572,7 @@ TEST_F(MenuRunnerImplTest, MenuRunnerDestroyedWithNoActiveController) {
   menu_runner2->Release();
   // Even though there is no active menu, this should still cleanup the
   // controller that it created.
+  ResetMenuItemView();
   menu_runner->Release();
 
   // This is not expected to run, however this is from the origin ASAN stack
@@ -583,20 +594,11 @@ class MenuRunnerDestructionTest : public MenuRunnerTest {
 
   ~MenuRunnerDestructionTest() override = default;
 
-  ReleaseRefTestViewsDelegate* test_views_delegate() {
-    return test_views_delegate_;
-  }
-
   base::WeakPtr<internal::MenuRunnerImpl> MenuRunnerAsWeakPtr(
       internal::MenuRunnerImpl* menu_runner);
 
   // ViewsTestBase:
   void SetUp() override;
-
- private:
-  // Not owned
-  raw_ptr<ReleaseRefTestViewsDelegate, DanglingUntriaged> test_views_delegate_ =
-      nullptr;
 };
 
 base::WeakPtr<internal::MenuRunnerImpl>
@@ -606,8 +608,7 @@ MenuRunnerDestructionTest::MenuRunnerAsWeakPtr(
 }
 
 void MenuRunnerDestructionTest::SetUp() {
-  test_views_delegate_ =
-      set_views_delegate(std::make_unique<ReleaseRefTestViewsDelegate>());
+  set_views_delegate(std::make_unique<ReleaseRefTestViewsDelegate>());
   MenuRunnerTest::SetUp();
   InitMenuViews();
 }
@@ -621,9 +622,10 @@ TEST_F(MenuRunnerDestructionTest, MenuRunnerDestroyedDuringReleaseRef) {
                          MenuAnchorPosition::kTopLeft, 0, nullptr);
 
   base::RunLoop run_loop;
-  test_views_delegate()->set_release_ref_callback(
-      base::BindLambdaForTesting([&]() {
+  static_cast<ReleaseRefTestViewsDelegate*>(test_views_delegate())
+      ->set_release_ref_callback(base::BindLambdaForTesting([&]() {
         run_loop.Quit();
+        ResetMenuItemView();
         menu_runner->Release();
       }));
 
@@ -684,6 +686,7 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuClose) {
   button->GetViewAccessibility().set_accessibility_events_callback(
       base::DoNothing());
 
+  ResetMenuItemView();
   menu_runner->Release();
 }
 
@@ -739,6 +742,7 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
 
   EXPECT_TRUE(focus_after_menu_close_sent);
   focus_after_menu_close_sent = false;
+  ResetMenuItemView();
   menu_runner->Release();
 
   EXPECT_TRUE(focus_after_menu_close_sent);
