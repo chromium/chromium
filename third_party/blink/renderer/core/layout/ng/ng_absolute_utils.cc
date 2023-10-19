@@ -476,11 +476,14 @@ bool ComputeOutOfFlowInlineDimensions(
                        /* block_start */ true, /* block_end */ false)
           .InlineStart();
 
+  // Determines if this is the block axis in the containing block.
+  const bool is_block_direction = !IsParallelWritingMode(
+      container_writing_direction.GetWritingMode(), style.GetWritingMode());
+
   ComputeMargins(space.PercentageResolutionInlineSizeForParentWritingMode(),
                  imcb.InlineSize(), style.MarginStart(), style.MarginEnd(),
                  inline_size, has_auto_inline_inset, is_margin_start_dominant,
-                 false /* is_block_direction */,
-                 &dimensions->margins.inline_start,
+                 is_block_direction, &dimensions->margins.inline_start,
                  &dimensions->margins.inline_end);
 
   ComputeInsets(space.AvailableSize().inline_size, imcb.inline_start,
@@ -599,11 +602,14 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
                        /* block_start */ true, /* block_end */ false)
           .BlockStart();
 
+  // Determines if this is the block axis in the containing block.
+  const bool is_block_direction = IsParallelWritingMode(
+      container_writing_direction.GetWritingMode(), style.GetWritingMode());
+
   ComputeMargins(space.PercentageResolutionInlineSizeForParentWritingMode(),
                  imcb.BlockSize(), style.MarginBefore(), style.MarginAfter(),
                  block_size, has_auto_block_inset, is_margin_start_dominant,
-                 true /* is_block_direction */,
-                 &dimensions->margins.block_start,
+                 is_block_direction, &dimensions->margins.block_start,
                  &dimensions->margins.block_end);
 
   ComputeInsets(space.AvailableSize().block_size, imcb.block_start,
