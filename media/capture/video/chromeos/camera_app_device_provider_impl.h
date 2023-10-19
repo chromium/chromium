@@ -44,6 +44,7 @@ class CAPTURE_EXPORT CameraAppDeviceProviderImpl
       SetVirtualDeviceEnabledCallback callback) override;
   void IsDeviceInUse(const std::string& source_id,
                      IsDeviceInUseCallback callback) override;
+  void IsSWPrivacySwitchOn(IsSWPrivacySwitchOnCallback callback) override;
 
  private:
   void GetCameraAppDeviceWithDeviceId(

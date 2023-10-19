@@ -62,6 +62,9 @@ interface CameraAppDeviceProvider {
 
   // Check if the device with |source_id| is in use.
   IsDeviceInUse(string source_id) => (bool in_use);
+
+  // Check the state of the SW privacy switch.
+  IsSWPrivacySwitchOn() => (bool is_on);
 };
 
 // Inner interface that used to communicate between browser process (Remote) and
@@ -85,6 +88,9 @@ interface CameraAppDeviceBridge {
 
   // Check if the device with |device_id| is in use.
   IsDeviceInUse(string device_id) => (bool in_use);
+
+  // Check the state of the SW privacy switch.
+  IsSWPrivacySwitchOn() => (bool is_on);
 };
 
 // Interface for communication from the Chrome Camera App (Remote) to the camera
