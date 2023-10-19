@@ -1769,6 +1769,28 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan ini tidak ditetapkan, fitur Click to Call akan diaktifkan secara default.</translation>
 <translation id="2482676533225429905">Perpesanan Asli</translation>
 <translation id="2483146640187052324">Prediksi tindakan jaringan di koneksi jaringan apa pun</translation>
+<translation id="2487495476672607707">Sinkronisasi file <ph name="PRODUCT_OS_NAME" /> secara otomatis
+membuat file <ph name="GOOGLE_DRIVE_NAME" /> di “Drive
+Saya” milik pengguna tersedia secara offline (jika ruang penyimpanan cukup)
+di perangkat <ph name="CHROMEBOOK_PLUS_NAME" />.
+
+Setelah fitur ini diaktifkan, semua file baru
+juga akan otomatis tersedia secara offline. Jika nantinya tidak ada ruang penyimpanan yang cukup, semua file baru akan otomatis berhenti
+tersedia secara offline. Namun, pengguna tetap dapat
+secara manual membuat item tersedia secara offline.
+
+Jika kebijakan disetel ke <ph name="POLICY_VALUE_VISIBLE" />: Menampilkan
+sinkronisasi file di aplikasi File dan Setelan. Pengguna dapat mengaktifkan atau
+menonaktifkan sinkronisasi file.
+
+Jika kebijakan disetel ke <ph name="POLICY_VALUE_DISABLEDE" />: Menonaktifkan
+sinkronisasi file jika sebelumnya diaktifkan oleh pengguna. Menyembunyikan fitur
+dari aplikasi File dan Setelan sehingga pengguna tidak dapat mengaktifkannya kembali. File
+yang sudah dibuat tersedia secara offline oleh pengguna akan tetap tersedia
+secara offline. Pengguna tetap dapat secara manual membuat item tersedia secara offline.
+
+Jika kebijakan tidak disetel: <ph name="POLICY_VALUE_VISIBLE" /> adalah
+pilihan default.</translation>
 <translation id="2489558694350871332">Izinkan perangkat menjalankan mesin virtual</translation>
 <translation id="2492240920793040106">Aktifkan pelaporan informasi sistem dan konten halaman untuk membantu meningkatkan Safe Browsing</translation>
 <translation id="2496180316473517155">Histori penjelajahan</translation>
@@ -3384,6 +3406,7 @@ Kebijakan ini adalah solusi sementara dan akan dihapus dalam beberapa milestone 
 
       Jika kebijakan tidak disetel atau dikosongkan, batasan tidak akan berlaku.</translation>
 <translation id="3799417300383048419">Simpan data profil di disk saat sesi pengguna berakhir</translation>
+<translation id="3799436555130241393">Sinkronisasi file <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">Jangan izinkan situs apa pun memuat konten campuran</translation>
 <translation id="3808945828600697669">Tentukan daftar plugin yang dinonaktifkan</translation>
 <translation id="3810642039169532482">Mengaktifkan fitur aksesibilitas dikte di layar login.
@@ -3713,6 +3736,7 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, li
 <translation id="4098920079809952737">Izinkan pencetakan dengan dan tanpa grafis latar belakang</translation>
 <translation id="410061592404122032">Tanyakan setiap kali situs ingin mendapatkan izin Pengelolaan Jendela</translation>
 <translation id="410068710490553233">Mengizinkan Login ke Akun Google Tambahan</translation>
+<translation id="4101222634611892813">Pengguna dapat menggunakan fitur sinkronisasi file <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4101282687722389021">Stempel waktu UTC untuk terakhir kali entri ini diperbarui. Dikirim sebagai string karena stempel waktu tidak cocok dengan bilangan bulat</translation>
 <translation id="4102347680024644994">Melaporkan peristiwa deteksi dan respons yang diperluas (XDR)</translation>
 <translation id="4105989332710272578">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar URL</translation>
@@ -3747,6 +3771,7 @@ API ini.</translation>
 
 Jika tidak disetel, interval default 1 hari akan berlaku.</translation>
 <translation id="4121350739760194865">Mencegah promosi apl muncul di halaman tab baru</translation>
+<translation id="4122432898152851612">Pengguna tidak dapat melihat UI yang terkait dengan fitur sinkronisasi file <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4122473079291425973">Halaman Tab Baru akan menampilkan kartu jika konten tersedia, tetapi izinkan pengguna untuk mengubah setelan ini</translation>
 <translation id="4122565688998751716">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />'.
 

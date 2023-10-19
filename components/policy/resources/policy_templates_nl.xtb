@@ -1737,6 +1737,15 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
       Als je dit beleid niet instelt, staat de functie 'Click-to-call' standaard aan.</translation>
 <translation id="2482676533225429905">Systeemeigen berichten</translation>
 <translation id="2483146640187052324">Netwerkacties voorspellen voor elke netwerkverbinding</translation>
+<translation id="2487495476672607707">Met de bestandssynchronisatie van <ph name="PRODUCT_OS_NAME" /> worden <ph name="GOOGLE_DRIVE_NAME" />-bestanden in de Mijn Drive van een gebruiker automatisch offline beschikbaar gemaakt (als er genoeg ruimte is) op ondersteunde <ph name="CHROMEBOOK_PLUS_NAME" />-apparaten.
+
+Zodra de functie aanstaat, zijn alle nieuwe bestanden ook automatisch offline beschikbaar. Als er later onvoldoende ruimte is, worden alle nieuwe bestanden niet meer automatisch offline beschikbaar gemaakt. De gebruiker kan bestanden nog wel handmatig offline beschikbaar maken.
+
+Als je het beleid instelt op <ph name="POLICY_VALUE_VISIBLE" />, wordt de bestandssynchronisatie getoond in de Bestanden-app en in Instellingen. De gebruiker kan bestandssynchronisatie aan- of uitzetten.
+
+Als je het beleid instelt op <ph name="POLICY_VALUE_DISABLEDE" />, wordt bestandssynchronisatie uitgezet als deze eerder was aangezet door de gebruiker. Hiermee verberg je de functie in de app Bestanden en in Instellingen, zodat de gebruiker deze niet opnieuw kan aanzetten. Bestaande bestanden die de gebruiker offline beschikbaar heeft gemaakt, blijven offline beschikbaar. De gebruiker kan bestanden nog steeds handmatig offline beschikbaar maken.
+
+Als je het beleid niet instelt, is <ph name="POLICY_VALUE_VISIBLE" /> de standaardselectie.</translation>
 <translation id="2489558694350871332">Het apparaat toestaan virtuele machines uit te voeren</translation>
 <translation id="2492240920793040106">Rapportage van systeemgegevens en paginacontent aanzetten om Safe Browsing te helpen verbeteren</translation>
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
@@ -3300,6 +3309,7 @@ Dit beleid is een tijdelijke oplossing en wordt na bepaalde tijd verwijderd (de 
 
       Als je dit beleid niet instelt of leeg laat, zijn er geen beperkingen.</translation>
 <translation id="3799417300383048419">Profielgegevens op schijf behouden als gebruikerssessie eindigt</translation>
+<translation id="3799436555130241393">Bestandssynchronisatie van <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">Niet toestaan dat sites gemengde content laden</translation>
 <translation id="3808945828600697669">Lijst met uitgezette plug-ins specificeren</translation>
 <translation id="3810642039169532482">Zet de toegankelijkheidsfunctie voor dicteren op het inlogscherm aan.
@@ -3625,6 +3635,7 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
 <translation id="4098920079809952737">Afdrukken zowel met als zonder achtergrondbeelden toestaan</translation>
 <translation id="410061592404122032">Altijd toestemming vragen als een site het recht voor vensterbeheer wil hebben</translation>
 <translation id="410068710490553233">Inloggen op aanvullende Google-accounts toestaan</translation>
+<translation id="4101222634611892813">De gebruiker kan de functie Bestandssynchronisatie van <ph name="PRODUCT_OS_NAME" /> gebruiken.</translation>
 <translation id="4101282687722389021">UTC-tijdstempel voor de laatste tijd waarop dit item is geüpdatet. Gestuurd als tekenreeks omdat het tijdstempel niet past in een geheel getal.</translation>
 <translation id="4102347680024644994">Rapporteren over XDR-gebeurtenissen (Extended Detection and Response)</translation>
 <translation id="4105989332710272578">Handhaving van Certificaattransparantie voor een lijst met URL's uitzetten</translation>
@@ -3651,6 +3662,7 @@ Als je dit beleid niet instelt, is voor alle oorsprongen een eerder gebruikersge
 
 Als je dit niet instelt, is de standaardsnelheid van 1 dag van toepassing.</translation>
 <translation id="4121350739760194865">Voorkomen dat app-promoties worden weergegeven op de pagina 'Nieuw tabblad'</translation>
+<translation id="4122432898152851612">De gebruiker kan de UI voor de functie Bestandssynchronisatie van <ph name="PRODUCT_OS_NAME" /> niet zien.</translation>
 <translation id="4122473079291425973">De pagina Nieuw tabblad laat kaarten zien als er content beschikbaar is, maar gebruikers mogen deze instelling wijzigen</translation>
 <translation id="4122565688998751716">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />.
 

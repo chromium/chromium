@@ -250,6 +250,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="235789365079050412">Datenschutzerklärung von Google</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2362083820973145409">Angemeldet als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Die Einstellungen werden geöffnet.</translation>
+<translation id="2364539095045928896">Schaltfläche zum Schließen der Datenschutzhinweise der Seitenstatistiken.</translation>
 <translation id="2386938421315164605">Themen ein- und ausblenden</translation>
 <translation id="2390510615457643724">Möchtest du <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) noch einmal herunterladen?</translation>
 <translation id="2394602618534698961">Dateien, die du herunterlädst, werden hier angezeigt</translation>
@@ -873,6 +874,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5458366071038729214">Hier erscheinen Websites, denen du folgst</translation>
 <translation id="5468068603361015296">Möchtest du <ph name="FILE_NAME" /> trotzdem herunterladen?</translation>
 <translation id="548278423535722844">In einer Karten-App öffnen</translation>
+<translation id="5486841595534124508">Logo der Datenschutzhinweise der Seitenstatistiken, das auf die Seite „Meine Aktivitäten“ weiterleitet.</translation>
 <translation id="5487521232677179737">Daten löschen</translation>
 <translation id="5492637351392383067">Verschlüsselung auf dem Gerät</translation>
 <translation id="5514904542973294328">Vom Administrator dieses Geräts deaktiviert</translation>
@@ -1347,6 +1349,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7810647596859435254">Öffnen mit…</translation>
 <translation id="7815484226266492798">Langer Screenshot</translation>
 <translation id="7822705602465980873">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, wie beispielsweise nach einem Sicherheitsvorfall in Gmail.</translation>
+<translation id="782705168687182233">Deine Aktivitäten werden in deinem <ph name="BEGIN_LINK" />Google-Konto<ph name="END_LINK" /> gespeichert.</translation>
 <translation id="78270725016672455">Dein Computer möchte dieses Gerät für die Anmeldung bei einer Website registrieren</translation>
 <translation id="7844171778363018843">Keine Daten zum Synchronisieren ausgewählt</translation>
 <translation id="7846296061357476882">Google-Dienste</translation>

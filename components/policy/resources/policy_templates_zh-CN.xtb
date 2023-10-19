@@ -1730,6 +1730,15 @@
       如果未设置此政策，“点击通话”功能会默认处于启用状态。</translation>
 <translation id="2482676533225429905">本地消息传递</translation>
 <translation id="2483146640187052324">采用任何网络连接时，均预测网络操作</translation>
+<translation id="2487495476672607707">在 <ph name="CHROMEBOOK_PLUS_NAME" /> 设备上，<ph name="PRODUCT_OS_NAME" /> 的文件同步功能会自动将用户的“我的云端硬盘”中的 <ph name="GOOGLE_DRIVE_NAME" />文件设为可离线使用（在空间允许的情况下）。
+
+如果开启了该功能，所有新文件也会自动设为可离线使用。如果之后空间不足，系统会停止将所有新文件自动设为可离线使用。但是，用户仍可手动将文件设为可离线使用。
+
+如果此政策设为“<ph name="POLICY_VALUE_VISIBLE" />”：“文件”应用和“设置”中会显示文件同步功能。用户可以开启或关闭文件同步功能。
+
+如果此政策设为“<ph name="POLICY_VALUE_DISABLEDE" />”：如果用户之前开启了文件同步功能，系统将会关闭该功能，并会在“文件”应用和“设置”中隐藏该功能以防用户重新开启。已被用户设为可离线使用的现有文件仍可离线使用。用户仍可手动将文件设为可离线使用。
+
+如果此政策未设置，“<ph name="POLICY_VALUE_VISIBLE" />”是默认选项。</translation>
 <translation id="2489558694350871332">允许设备运行虚拟机</translation>
 <translation id="2492240920793040106">允许为帮助改进安全浏览功能而报告系统信息和网页内容</translation>
 <translation id="2496180316473517155">浏览记录</translation>
@@ -3290,6 +3299,7 @@
 
       如果您未设置此政策或将其留空，则打印模式不受限制。</translation>
 <translation id="3799417300383048419">当用户会话结束时保留磁盘上的个人资料数据</translation>
+<translation id="3799436555130241393"><ph name="PRODUCT_OS_NAME" /> 的文件同步功能</translation>
 <translation id="3803171355925844705">不允许任何网站加载混合内容</translation>
 <translation id="3808945828600697669">指定已停用插件的列表</translation>
 <translation id="3810642039169532482">在登录屏幕上启用“语音输入”无障碍功能。
@@ -3616,6 +3626,7 @@
 <translation id="4098920079809952737">始终允许打印（无论是否有背景图片）</translation>
 <translation id="410061592404122032">每当网站想获得窗口管理权限时都询问</translation>
 <translation id="410068710490553233">允许登录其他 Google 账号</translation>
+<translation id="4101222634611892813">用户可以使用 <ph name="PRODUCT_OS_NAME" /> 的文件同步功能。</translation>
 <translation id="4101282687722389021">时间戳（采用世界协调时间），用于表明此条目的上次更新时间。将以字符串的形式发送，因为该时间戳不能表示为整数</translation>
 <translation id="4102347680024644994">报告扩展检测和响应 (XDR) 事件</translation>
 <translation id="4105989332710272578">对于指定的一系列网址，不强制要求必须符合证书透明度政策</translation>
@@ -3642,6 +3653,7 @@
 
 如果此政策未设置，系统会应用默认时间间隔（1 天）。</translation>
 <translation id="4121350739760194865">阻止在新标签页上显示应用宣传信息</translation>
+<translation id="4122432898152851612">用户看不到与 <ph name="PRODUCT_OS_NAME" /> 的文件同步功能相关的任何界面。</translation>
 <translation id="4122473079291425973">“新标签页”页面会显示卡片（若有可用内容），但用户可以更改此设置</translation>
 <translation id="4122565688998751716">此政策已被弃用，请改用“<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />”政策。
 

@@ -239,7 +239,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1432581352905426595">Arama motorlarını yönet</translation>
 <translation id="1433225466058025572">Dosyalarınızı tekrar taşımayı deneyin</translation>
 <translation id="1434317006812369578">Chrome, internette gezinirken sizi koruyacak Google Güvenli Tarama gibi yerleşik güvenlik özelliklerine sahiptir. Güvenli Tarama kısa süre önce, ziyaret etmeye çalıştığınız siteye yerleştirilmiş <ph name="BEGIN_LINK" /><ph name="SITE" /> sitesinde kötü amaçlı yazılım tespit etti<ph name="END_LINK" />.</translation>
-<translation id="1435940442311036198">Farklı bir cihazdaki şifre anahtarını kullanın</translation>
+<translation id="1435940442311036198">Farklı bir cihazdaki geçiş anahtarını kullanın</translation>
 <translation id="1436185428532214179">Cihazınızdaki dosyaları veya klasörleri düzenlemek isteyebilir</translation>
 <translation id="1442386063175183758">Sağa doğru iki kırımlı katlama</translation>
 <translation id="1442987760062738829">Delik</translation>
@@ -2322,7 +2322,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> adresine gönder</translation>
 <translation id="5765072501007116331">Teslimat yöntemlerini ve gereksinimleri görmek için bir adres seçin</translation>
 <translation id="57689295674415555">Sanal kart numarası doldurulmadı mı?</translation>
-<translation id="5772086939108830423">Farklı bir cihazdaki şifre anahtarını kullanın</translation>
+<translation id="5772086939108830423">Farklı bir cihazdaki geçiş anahtarını kullanın</translation>
 <translation id="5776313857861697733">Öncelik</translation>
 <translation id="5776574724412881956">Sanal kart doldurulmadı mı? Sanal kart bilgilerini tıklayarak panoya kopyalayın. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Deneme etkin</translation>
