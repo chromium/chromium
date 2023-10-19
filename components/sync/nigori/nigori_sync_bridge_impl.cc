@@ -8,14 +8,12 @@
 
 #include "base/base64.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/time.h"
@@ -328,6 +326,10 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
   // Restore data.
   state_ = syncer::NigoriState::CreateFromLocalProto(
       deserialized_data->nigori_model());
+
+  base::UmaHistogramBoolean(
+      "Sync.CrossUserSharingPublicPrivateKeyInitializedOnStartup",
+      state_.cross_user_sharing_public_key.has_value());
 
   // Restore metadata.
   NigoriMetadataBatch metadata_batch;
