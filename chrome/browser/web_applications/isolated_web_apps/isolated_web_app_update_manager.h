@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_error_or.h"
@@ -19,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -111,10 +112,6 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
 
-  const base::RepeatingTimer& GetUpdateDiscoveryTimerForTesting() const {
-    return update_discovery_timer_;
-  }
-
   // Used to queue update discovery tasks manually from the
   // chrome://web-app-internals page. Returns the number of tasks queued.
   size_t DiscoverUpdatesNow();
@@ -127,6 +124,10 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
       const IsolatedWebAppUrlInfo& url_info,
       base::OnceCallback<void(base::expected<base::Version, std::string>)>
           callback);
+
+  absl::optional<base::TimeTicks> GetNextUpdateDiscoveryTimeForTesting() const {
+    return next_update_discovery_check_.GetScheduledTime();
+  }
 
  private:
   // This queue manages update discovery and apply tasks. Tasks can be added to
@@ -215,8 +216,8 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   base::flat_map<web_package::SignedWebBundleId, GURL>
   GetForceInstalledBundleIdToUpdateManifestUrlMap();
 
-  void MaybeStartUpdateDiscoveryTimer();
-  void MaybeStopUpdateDiscoveryTimer();
+  void MaybeScheduleUpdateDiscoveryCheck();
+  void MaybeResetScheduledUpdateDiscoveryCheck();
 
   void CreateUpdateApplyWaiter(
       const IsolatedWebAppUrlInfo& url_info,
@@ -260,8 +261,28 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
   bool has_started_ = false;
 
+  class NextUpdateDiscoveryCheck {
+   public:
+    NextUpdateDiscoveryCheck();
+    ~NextUpdateDiscoveryCheck();
+
+    void ScheduleWithJitter(const base::TimeDelta& base_delay,
+                            base::OnceClosure callback);
+
+    absl::optional<base::TimeTicks> GetScheduledTime() const;
+    bool IsScheduled() const;
+    void Reset();
+
+    base::Value AsDebugValue() const;
+
+   private:
+    absl::optional<std::pair<base::TimeTicks,
+                             std::unique_ptr<base::CancelableOnceClosure>>>
+        next_check_;
+  };
+
   base::TimeDelta update_discovery_frequency_;
-  base::RepeatingTimer update_discovery_timer_;
+  NextUpdateDiscoveryCheck next_update_discovery_check_;
 
   TaskQueue task_queue_;
 

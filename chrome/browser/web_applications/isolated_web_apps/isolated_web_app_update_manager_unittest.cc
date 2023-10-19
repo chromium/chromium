@@ -73,13 +73,19 @@ using base::test::DictionaryHasValue;
 using base::test::ToVector;
 using base::test::ValueIs;
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Each;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
+using ::testing::Ge;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
+using ::testing::Le;
+using ::testing::Ne;
 using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Optional;
@@ -539,7 +545,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        {dev_bundle_url_info, "https://example.com/update_manifest.json"},
        {dev_proxy_url_info, "https://example.com/update_manifest.json"}});
 
-  task_environment()->FastForwardBy(base::Hours(5));
+  task_environment()->FastForwardBy(
+      *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
+      base::TimeTicks::Now());
   task_environment()->RunUntilIdle();
 
   EXPECT_THAT(
@@ -577,19 +585,18 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
   SetIwaForceInstallPolicy(
       {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()}});
 
-  // After three hours, there should be two hours left until updates are being
-  // automatically discovered.
-  task_environment()->FastForwardBy(base::Hours(3));
-  EXPECT_THAT(
-      update_manager().GetUpdateDiscoveryTimerForTesting().desired_run_time(),
-      Eq(base::TimeTicks::Now() + base::Hours(2)));
+  // After one hour, the update should not yet have run, but still be scheduled
+  // (i.e. containing a value in the `absl::optional`).
+  task_environment()->FastForwardBy(base::Hours(1));
+  auto old_update_discovery_time =
+      update_manager().GetNextUpdateDiscoveryTimeForTesting();
+  EXPECT_THAT(old_update_discovery_time.has_value(), IsTrue());
 
   // Once we manually trigger update discovery, the update discovery timer
-  // should reset to 5 hours.
+  // should reset to a different time in the future.
   EXPECT_THAT(update_manager().DiscoverUpdatesNow(), Eq(1ul));
-  EXPECT_THAT(
-      update_manager().GetUpdateDiscoveryTimerForTesting().desired_run_time(),
-      Eq(base::TimeTicks::Now() + base::Hours(5)));
+  EXPECT_THAT(update_manager().GetNextUpdateDiscoveryTimeForTesting(),
+              AllOf(Ne(old_update_discovery_time), Ge(base::TimeTicks::Now())));
 
   task_environment()->RunUntilIdle();
 
@@ -987,50 +994,79 @@ class IsolatedWebAppUpdateManagerDiscoveryTimerTest
 
 TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
        DoesNotStartUpdateDiscoveryIfNoIwaIsInstalled) {
-  EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
-              IsFalse());
+  EXPECT_THAT(
+      update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
+      IsFalse());
 }
 
 TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
-       StartsUpdateDiscoveryTimerWithAppropriateFrequency) {
-  AddDummyIsolatedAppToRegistry(profile(), GURL("isolated-app://a"), "iwa");
+       StartsUpdateDiscoveryTimerWithJitter) {
+  std::vector<base::TimeTicks> times;
+  for (int i = 0; i < 10; ++i) {
+    webapps::AppId app_id = AddDummyIsolatedAppToRegistry(
+        profile(), GURL("isolated-app://a"), "iwa");
+    auto time = update_manager().GetNextUpdateDiscoveryTimeForTesting();
+    EXPECT_THAT(time,
+                Optional(AllOf(Ge(base::TimeTicks::Now() + base::Hours(4)),
+                               Le(base::TimeTicks::Now() + base::Hours(6)))));
+    if (time.has_value()) {
+      // Check that the time is truly random (and thus different) from all
+      // previously generated times.
+      EXPECT_THAT(times, Each(Ne(*time)));
+      times.push_back(*time);
+    }
 
-  EXPECT_THAT(
-      update_manager().GetUpdateDiscoveryTimerForTesting().GetCurrentDelay(),
-      Eq(base::Hours(5)));
+    test::UninstallWebApp(profile(), app_id);
+    EXPECT_THAT(
+        update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
+        IsFalse());
+  }
+
+  // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
+  // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
+  fake_provider().Shutdown();
+  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
+      ->Shutdown();
 }
 
 TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
        RunsUpdateDiscoveryWhileIwaIsInstalled) {
-  EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
-              IsFalse());
+  EXPECT_THAT(
+      update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
+      IsFalse());
 
   webapps::AppId non_iwa_id =
       test::InstallDummyWebApp(profile(), "non-iwa", GURL("https://a"));
-  EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
-              IsFalse());
+  EXPECT_THAT(
+      update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
+      IsFalse());
 
   webapps::AppId iwa_app_id1 = AddDummyIsolatedAppToRegistry(
       profile(), GURL("isolated-app://a"), "iwa1");
-  EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
-              IsTrue());
+  EXPECT_THAT(
+      update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
+      IsTrue());
 
   webapps::AppId iwa_app_id2 = AddDummyIsolatedAppToRegistry(
       profile(), GURL("isolated-app://b"), "iwa2");
-  EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
-              IsTrue());
+  EXPECT_THAT(
+      update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
+      IsTrue());
 
   test::UninstallWebApp(profile(), iwa_app_id1);
-  EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
-              IsTrue());
+  EXPECT_THAT(
+      update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
+      IsTrue());
 
   test::UninstallWebApp(profile(), non_iwa_id);
-  EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
-              IsTrue());
+  EXPECT_THAT(
+      update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
+      IsTrue());
 
   test::UninstallWebApp(profile(), iwa_app_id2);
-  EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
-              IsFalse());
+  EXPECT_THAT(
+      update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
+      IsFalse());
 }
 
 struct FeatureFlagParam {
@@ -1060,8 +1096,9 @@ TEST_P(IsolatedWebAppUpdateManagerFeatureFlagTest,
        DoesUpdateDiscoveryIfFeatureFlagsAreEnabled) {
   AddDummyIsolatedAppToRegistry(profile(), GURL("isolated-app://a"), "iwa");
 
-  EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
-              Eq(GetParam().expected_result));
+  EXPECT_THAT(
+      update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
+      Eq(GetParam().expected_result));
 }
 
 INSTANTIATE_TEST_SUITE_P(
