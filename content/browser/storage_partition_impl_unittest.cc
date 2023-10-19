@@ -22,6 +22,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -289,8 +290,8 @@ class RemoveInterestGroupTester {
   }
 
  private:
-  void GetInterestGroupsCallback(std::vector<StorageInterestGroup> groups) {
-    get_interest_group_success_ = groups.size() > 0;
+  void GetInterestGroupsCallback(scoped_refptr<StorageInterestGroups> groups) {
+    get_interest_group_success_ = groups->size() > 0;
     await_completion_.Notify();
   }
 

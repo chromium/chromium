@@ -18,7 +18,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -26,6 +25,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
@@ -51,6 +51,7 @@
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
+#include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
@@ -640,8 +641,6 @@ void InterestGroupAuction::PostAuctionSignals::
   }
 }
 
-InterestGroupAuction::BidState::BidState() = default;
-
 InterestGroupAuction::BidState::~BidState() {
   if (trace_id.has_value()) {
     EndTracing();
@@ -653,8 +652,9 @@ InterestGroupAuction::BidState::~BidState() {
 
 InterestGroupAuction::BidState::BidState(BidState&&) = default;
 
-InterestGroupAuction::BidState& InterestGroupAuction::BidState::operator=(
-    BidState&&) = default;
+InterestGroupAuction::BidState::BidState(
+    const SingleStorageInterestGroup&& bidder)
+    : bidder(std::move(bidder)) {}
 
 void InterestGroupAuction::BidState::BeginTracing() {
   DCHECK(!trace_id.has_value());
@@ -774,21 +774,21 @@ class InterestGroupAuction::BuyerHelper
  public:
   // `auction` is expected to own the BuyerHelper, and therefore outlive it.
   BuyerHelper(InterestGroupAuction* auction,
-              std::vector<StorageInterestGroup> interest_groups)
-      : auction_(auction), owner_(interest_groups[0].interest_group.owner) {
+              std::vector<SingleStorageInterestGroup>&& interest_groups)
+      : auction_(auction), owner_(interest_groups[0]->interest_group.owner) {
     DCHECK(!interest_groups.empty());
 
     // Move interest groups to `bid_states_` and update priorities using
     // `priority_vector`, if present. Delete groups where the calculation
     // results in a priority < 0.
-    for (auto& bidder : interest_groups) {
-      double priority = bidder.interest_group.priority;
+    for (SingleStorageInterestGroup& bidder : interest_groups) {
+      double priority = bidder->interest_group.priority;
 
-      if (bidder.interest_group.priority_vector &&
-          !bidder.interest_group.priority_vector->empty()) {
+      if (bidder->interest_group.priority_vector &&
+          !bidder->interest_group.priority_vector->empty()) {
         priority = CalculateInterestGroupPriority(
-            *auction_->config_, bidder, auction_->auction_start_time_,
-            *bidder.interest_group.priority_vector);
+            *auction_->config_, *bidder, auction_->auction_start_time_,
+            *bidder->interest_group.priority_vector);
         // Only filter interest groups with priority < 0 if the negative
         // priority is the result of a `priority_vector` multiplication.
         //
@@ -801,12 +801,10 @@ class InterestGroupAuction::BuyerHelper
         }
       }
 
-      if (bidder.interest_group.enable_bidding_signals_prioritization) {
+      if (bidder->interest_group.enable_bidding_signals_prioritization) {
         enable_bidding_signals_prioritization_ = true;
       }
-
-      auto state = std::make_unique<BidState>();
-      state->bidder = std::make_unique<StorageInterestGroup>(std::move(bidder));
+      auto state = std::make_unique<BidState>(std::move(bidder));
       state->calculated_priority = priority;
       bid_states_.emplace_back(std::move(state));
     }
@@ -889,7 +887,7 @@ class InterestGroupAuction::BuyerHelper
     absl::optional<double> new_priority;
     if (!priority_vector.empty()) {
       new_priority = CalculateInterestGroupPriority(
-          *auction_->config_, *state->bidder, auction_->auction_start_time_,
+          *auction_->config_, *(state->bidder), auction_->auction_start_time_,
           priority_vector,
           (interest_group.priority_vector &&
            !interest_group.priority_vector->empty())
@@ -1080,7 +1078,7 @@ class InterestGroupAuction::BuyerHelper
 
     auction_worklet::mojom::KAnonymityBidMode kanon_mode =
         auction_->kanon_mode();
-    bid_state->kanon_keys = ComputeKAnon(*bid_state->bidder, kanon_mode);
+    bid_state->kanon_keys = ComputeKAnon(bid_state->bidder, kanon_mode);
 
     // Check bid validity.
     const blink::InterestGroup& interest_group =
@@ -1222,7 +1220,7 @@ class InterestGroupAuction::BuyerHelper
   }
 
   base::flat_map<std::string, bool> ComputeKAnon(
-      const StorageInterestGroup& storage_interest_group,
+      const SingleStorageInterestGroup& storage_interest_group,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode) {
     if (kanon_mode == auction_worklet::mojom::KAnonymityBidMode::kNone) {
       return {};
@@ -1233,13 +1231,13 @@ class InterestGroupAuction::BuyerHelper
     base::Time start_time = auction_->auction_start_time_;
 
     std::vector<std::pair<std::string, bool>> kanon_entries;
-    for (const auto& ad_kanon : storage_interest_group.bidding_ads_kanon) {
+    for (const auto& ad_kanon : storage_interest_group->bidding_ads_kanon) {
       if (IsKAnonymous(ad_kanon, start_time)) {
         kanon_entries.emplace_back(ad_kanon.key, true);
       }
     }
     for (const auto& component_ad_kanon :
-         storage_interest_group.component_ads_kanon) {
+         storage_interest_group->component_ads_kanon) {
       if (IsKAnonymous(component_ad_kanon, start_time)) {
         kanon_entries.emplace_back(component_ad_kanon.key, true);
       }
@@ -1272,7 +1270,7 @@ class InterestGroupAuction::BuyerHelper
             bid_state);
     auction_worklet::mojom::KAnonymityBidMode kanon_mode =
         auction_->kanon_mode();
-    bid_state->kanon_keys = ComputeKAnon(*bid_state->bidder, kanon_mode);
+    bid_state->kanon_keys = ComputeKAnon(bid_state->bidder, kanon_mode);
     SubresourceUrlBuilder* url_builder =
         auction_->SubresourceUrlBuilderIfReady();
     if (url_builder) {
@@ -2293,14 +2291,8 @@ InterestGroupAuction::CreateReporter(
 
   const LeaderInfo& leader = leader_info();
   InterestGroupAuction::ScoredBid* winner = leader.top_bid.get();
-  InterestGroupAuctionReporter::WinningBidInfo winning_bid_info;
-  // TODO(https://crbug.com/1394777): Moving `bidder` out of the winning bid
-  // state is not very safe. We should modify the InterestGroupAuction API so
-  // that values are returned directly to the AuctionRunner, instead of being
-  // pulled out, and create the reporter last, to avoid and UAF issues with the
-  // winning interest group.
-  winning_bid_info.storage_interest_group =
-      std::move(winner->bid->bid_state->bidder);
+  InterestGroupAuctionReporter::WinningBidInfo winning_bid_info(
+      winner->bid->bid_state->bidder);
   winning_bid_info.render_url = winner->bid->ad_descriptor.url;
   winning_bid_info.ad_components = winner->bid->GetAdComponentUrls();
   winning_bid_info.allowed_reporting_origins =
@@ -3280,32 +3272,35 @@ InterestGroupAuction::LeaderInfo::LeaderInfo() = default;
 InterestGroupAuction::LeaderInfo::~LeaderInfo() = default;
 
 void InterestGroupAuction::OnInterestGroupRead(
-    std::vector<StorageInterestGroup> interest_groups) {
+    scoped_refptr<StorageInterestGroups> read_interest_groups) {
   ++num_owners_loaded_;
-  if (interest_groups.empty()) {
+  if (read_interest_groups->size() == 0) {
     OnOneLoadCompleted();
     return;
   }
-  for (const StorageInterestGroup& group : interest_groups) {
-    if (ReportInterestGroupCount(group.interest_group,
-                                 interest_groups.size())) {
+  std::vector<SingleStorageInterestGroup> interest_groups =
+      read_interest_groups->GetInterestGroups();
+  for (const SingleStorageInterestGroup& group : interest_groups) {
+    if (ReportInterestGroupCount(group->interest_group,
+                                 read_interest_groups->size())) {
       break;
     }
   }
-  post_auction_update_owners_.push_back(
-      interest_groups[0].interest_group.owner);
-  for (const auto& bidder : interest_groups) {
+
+  post_auction_update_owners_.emplace_back(
+      interest_groups[0]->interest_group.owner);
+  for (const SingleStorageInterestGroup& bidder : interest_groups) {
     // Report freshness metrics.
-    if (bidder.interest_group.update_url.has_value()) {
+    if (bidder->interest_group.update_url.has_value()) {
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Ads.InterestGroup.Auction.GroupFreshness.WithDailyUpdates",
-          (base::Time::Now() - bidder.last_updated).InMinutes(),
+          (base::Time::Now() - bidder->last_updated).InMinutes(),
           kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
           kGroupFreshnessBuckets);
     } else {
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Ads.InterestGroup.Auction.GroupFreshness.NoDailyUpdates",
-          (base::Time::Now() - bidder.last_updated).InMinutes(),
+          (base::Time::Now() - bidder->last_updated).InMinutes(),
           kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
           kGroupFreshnessBuckets);
     }
@@ -3315,29 +3310,30 @@ void InterestGroupAuction::OnInterestGroupRead(
   // This needs to happen before dropping IGs w/o scripts and ads, since
   // negative targeting IGs may lack those.
   if (MayHaveAdditionalBids()) {
-    for (const StorageInterestGroup& group : interest_groups) {
-      if (group.interest_group.additional_bid_key.has_value()) {
+    for (const SingleStorageInterestGroup& group : interest_groups) {
+      if (group->interest_group.additional_bid_key.has_value()) {
         negative_targeter_->AddInterestGroupInfo(
-            group.interest_group.owner, group.interest_group.name,
-            group.joining_origin, *group.interest_group.additional_bid_key);
+            group->interest_group.owner, group->interest_group.name,
+            group->joining_origin, *group->interest_group.additional_bid_key);
       }
     }
   }
 
   // Ignore interest groups with no bidding script or no ads.
-  base::EraseIf(interest_groups, [](const StorageInterestGroup& bidder) {
-    return !bidder.interest_group.bidding_url || !bidder.interest_group.ads ||
-           bidder.interest_group.ads->empty();
+  base::EraseIf(interest_groups, [](const SingleStorageInterestGroup& bidder) {
+    return !bidder->interest_group.bidding_url || !bidder->interest_group.ads ||
+           bidder->interest_group.ads->empty();
   });
 
   // Ignore interest groups that don't provide the requested seller
   // capabilities.
-  base::EraseIf(interest_groups, [this](const StorageInterestGroup& bidder) {
-    return !GroupSatisfiesAllCapabilities(
-        bidder.interest_group,
-        config_->non_shared_params.required_seller_capabilities,
-        config_->seller);
-  });
+  base::EraseIf(interest_groups,
+                [this](const SingleStorageInterestGroup& bidder) {
+                  return !GroupSatisfiesAllCapabilities(
+                      bidder->interest_group,
+                      config_->non_shared_params.required_seller_capabilities,
+                      config_->seller);
+                });
 
   // If there are no interest groups left, nothing else to do.
   if (interest_groups.empty()) {
@@ -3347,8 +3343,7 @@ void InterestGroupAuction::OnInterestGroupRead(
 
   ++num_owners_with_interest_groups_;
   auction_metrics_recorder_->ReportBuyer(
-      interest_groups[0].interest_group.owner);
-
+      interest_groups[0]->interest_group.owner);
   auto buyer_helper =
       std::make_unique<BuyerHelper>(this, std::move(interest_groups));
 
@@ -3660,7 +3655,6 @@ void InterestGroupAuction::HandleDecodedAdditionalBid(
                   valid_signatures, config_->seller, errors_)) {
       ok = false;
     }
-
     if (ok) {
       bid_states_for_additional_bids_.push_back(
           std::move(maybe_bid->bid_state));
@@ -4392,9 +4386,8 @@ void InterestGroupAuction::OnLoadedWinningGroup(
   }
   all_bids_scored_ = true;
 
-  std::vector<StorageInterestGroup> groups;
+  std::vector<SingleStorageInterestGroup> groups;
   groups.emplace_back(std::move(*maybe_group));
-
   auto buyer_helper = std::make_unique<BuyerHelper>(this, std::move(groups));
   std::unique_ptr<Bid> bid = buyer_helper->TryToCreateBidFromServerResponse(
       Bid::BidRole::kUnenforcedKAnon,  // TODO(behamilton): Fix this.

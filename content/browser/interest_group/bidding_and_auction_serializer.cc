@@ -14,6 +14,8 @@
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "content/browser/interest_group/interest_group_caching_storage.h"
+#include "content/browser/interest_group/storage_interest_group.h"
 #include "content/public/common/content_switches.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/bits.h"
@@ -61,48 +63,49 @@ cbor::Value SerializeAds(const std::vector<blink::InterestGroup::Ad>& ads,
 // This serialization is sent to the B&A server, so the format is standardized.
 // We can't add fields to this format without coordinating with the B&A team.
 cbor::Value SerializeInterestGroup(base::Time start_time,
-                                   const StorageInterestGroup& group) {
+                                   const SingleStorageInterestGroup& group) {
   cbor::Value::MapValue group_obj;
-  group_obj[cbor::Value("name")] = cbor::Value(group.interest_group.name);
-  if (group.interest_group.trusted_bidding_signals_keys) {
+  group_obj[cbor::Value("name")] = cbor::Value(group->interest_group.name);
+  if (group->interest_group.trusted_bidding_signals_keys) {
     cbor::Value::ArrayValue bidding_signal_keys;
     bidding_signal_keys.reserve(
-        group.interest_group.trusted_bidding_signals_keys->size());
-    for (const auto& key : *group.interest_group.trusted_bidding_signals_keys) {
+        group->interest_group.trusted_bidding_signals_keys->size());
+    for (const auto& key :
+         *group->interest_group.trusted_bidding_signals_keys) {
       bidding_signal_keys.emplace_back(key);
     }
     group_obj[cbor::Value("biddingSignalsKeys")] =
         cbor::Value(std::move(bidding_signal_keys));
   }
-  if (group.interest_group.user_bidding_signals) {
+  if (group->interest_group.user_bidding_signals) {
     group_obj[cbor::Value("userBiddingSignals")] =
-        cbor::Value(*group.interest_group.user_bidding_signals);
+        cbor::Value(*group->interest_group.user_bidding_signals);
   }
-  if (!group.interest_group.auction_server_request_flags.Has(
+  if (!group->interest_group.auction_server_request_flags.Has(
           blink::AuctionServerRequestFlagsEnum::kOmitAds)) {
-    if (group.interest_group.ads) {
+    if (group->interest_group.ads) {
       group_obj[cbor::Value("ads")] = SerializeAds(
-          *group.interest_group.ads,
-          group.interest_group.auction_server_request_flags.Has(
+          *group->interest_group.ads,
+          group->interest_group.auction_server_request_flags.Has(
               blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
     }
-    if (group.interest_group.ad_components) {
+    if (group->interest_group.ad_components) {
       group_obj[cbor::Value("components")] = SerializeAds(
-          *group.interest_group.ad_components,
-          group.interest_group.auction_server_request_flags.Has(
+          *group->interest_group.ad_components,
+          group->interest_group.auction_server_request_flags.Has(
               blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
     }
   }
   cbor::Value::MapValue browser_signals;
   browser_signals[cbor::Value("bidCount")] =
-      cbor::Value(group.bidding_browser_signals->bid_count);
+      cbor::Value(group->bidding_browser_signals->bid_count);
   // joinCount and recency are noised and binned on the server.
   browser_signals[cbor::Value("joinCount")] =
-      cbor::Value(group.bidding_browser_signals->join_count);
+      cbor::Value(group->bidding_browser_signals->join_count);
   browser_signals[cbor::Value("recency")] =
-      cbor::Value((start_time - group.join_time).InSeconds());
+      cbor::Value((start_time - group->join_time).InSeconds());
   cbor::Value::ArrayValue prev_wins;
-  for (const auto& prev_win : group.bidding_browser_signals->prev_wins) {
+  for (const auto& prev_win : group->bidding_browser_signals->prev_wins) {
     cbor::Value::ArrayValue tuple;
     tuple.emplace_back((start_time - prev_win->time).InSeconds());
     // We trust this ad_json because we wrote it ourselves.
@@ -119,7 +122,7 @@ cbor::Value SerializeInterestGroup(base::Time start_time,
       // Just do our best regardless.
       continue;
     }
-    if (group.interest_group.auction_server_request_flags.Has(
+    if (group->interest_group.auction_server_request_flags.Has(
             blink::AuctionServerRequestFlagsEnum::kIncludeFullAds)) {
       cbor::Value::MapValue obj;
       for (const auto kv : ad->GetDict()) {
@@ -177,14 +180,17 @@ BiddingAndAuctionSerializer::BiddingAndAuctionSerializer(
 BiddingAndAuctionSerializer::~BiddingAndAuctionSerializer() = default;
 
 void BiddingAndAuctionSerializer::AddGroups(
-    url::Origin owner,
-    std::vector<StorageInterestGroup> groups) {
-  base::EraseIf(groups, [](const StorageInterestGroup& group) {
-    return (!group.interest_group.ads) ||
-           (group.interest_group.ads->size() == 0);
+    const url::Origin& owner,
+    scoped_refptr<StorageInterestGroups> groups) {
+  std::vector<SingleStorageInterestGroup> groups_to_add =
+      groups->GetInterestGroups();
+  base::EraseIf(groups_to_add, [](const SingleStorageInterestGroup& group) {
+    return (!group->interest_group.ads) ||
+           (group->interest_group.ads->size() == 0);
   });
-  if (groups.size() > 0) {
-    accumulated_groups_.emplace_back(std::move(owner), std::move(groups));
+  if (groups_to_add.size() > 0) {
+    accumulated_groups_.emplace_back(std::move(owner),
+                                     std::move(groups_to_add));
   }
 }
 
@@ -208,10 +214,10 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   for (const auto& bidder_groups : accumulated_groups_) {
     cbor::Value::ArrayValue groups;
     std::vector<std::string> names;
-    for (const auto& group : bidder_groups.second) {
+    for (const SingleStorageInterestGroup& group : bidder_groups.second) {
       cbor::Value group_obj = SerializeInterestGroup(start_time_, group);
       groups.emplace_back(std::move(group_obj));
-      names.push_back(group.interest_group.name);
+      names.push_back(group->interest_group.name);
     }
     cbor::Value groups_obj(std::move(groups));
     absl::optional<std::vector<uint8_t>> maybe_sub_message =

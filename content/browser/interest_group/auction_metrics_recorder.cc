@@ -238,7 +238,7 @@ void AuctionMetricsRecorder::SetNumSellersWithBidders(
       GetExponentialBucketMinForCounts1000(num_sellers_with_bidders));
 }
 
-void AuctionMetricsRecorder::ReportBuyer(url::Origin& owner) {
+void AuctionMetricsRecorder::ReportBuyer(const url::Origin& owner) {
   buyers_.emplace(owner);
 }
 

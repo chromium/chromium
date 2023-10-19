@@ -60,7 +60,7 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
 
   // Reports an InterestGroup owner, used to determine the number of distinct
   // Buyers across all component auctions in a multi-seller auction.
-  void ReportBuyer(url::Origin& owner);
+  void ReportBuyer(const url::Origin& owner);
 
   // Reports a Bidder WorkletKey, used to count the number of distinct
   // BidderWorklets in use by this auction, which might be more than the number

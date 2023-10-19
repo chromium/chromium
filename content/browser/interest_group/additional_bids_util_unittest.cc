@@ -494,7 +494,6 @@ TEST_F(AdditionalBidsUtilTest, MinimalValid) {
   const InterestGroupAuction::Bid* bid = result->bid.get();
 
   EXPECT_TRUE(bid_state->made_bid);
-  ASSERT_TRUE(bid_state->bidder);
   EXPECT_EQ("trainfans", bid_state->bidder->interest_group.name);
   ASSERT_TRUE(bid_state->additional_bid_buyer.has_value());
   EXPECT_EQ(bid_state->bidder->interest_group.owner,

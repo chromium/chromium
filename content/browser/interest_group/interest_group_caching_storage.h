@@ -18,6 +18,32 @@
 
 namespace content {
 
+class StorageInterestGroups;
+// SingleStorageInterestGroup ensures that pointers to values inside
+// StorageInterestGroups are accompanied by a
+// scoped_refptr<StorageInterestGroups> to prevent dangling pointers and
+// ensures the scoped_refptr<StorageInterestGroups>  and
+// raw_ptr<StorageInterestGroup> are destructed in the correct order.
+class CONTENT_EXPORT SingleStorageInterestGroup {
+ public:
+  explicit SingleStorageInterestGroup(
+      scoped_refptr<StorageInterestGroups> storage_interest_groups_for_owner,
+      const StorageInterestGroup* storage_interest_group);
+  SingleStorageInterestGroup(const SingleStorageInterestGroup& other);
+  // Create a SingleStorageInterestGroup from scratch, including generating a
+  // StorageInterestGroups featuring just `interest_group`.
+  explicit SingleStorageInterestGroup(StorageInterestGroup&& interest_group);
+  ~SingleStorageInterestGroup();
+  SingleStorageInterestGroup& operator=(SingleStorageInterestGroup&& other) =
+      default;
+  const StorageInterestGroup* operator->() const;
+  const StorageInterestGroup& operator*() const;
+
+ private:
+  scoped_refptr<StorageInterestGroups> storage_interest_groups_for_owner;
+  raw_ptr<const StorageInterestGroup> storage_interest_group;
+};
+
 // StorageInterestGroups is needed for InterestGroupCachingStorage
 // because it requires weak pointers and ref counted pointers to
 // std::vector<StorageInterestGroup>.
@@ -30,11 +56,13 @@ class CONTENT_EXPORT StorageInterestGroups
 
   base::WeakPtr<StorageInterestGroups> GetWeakPtr();
 
-  std::vector<const StorageInterestGroup*> GetInterestGroups() {
-    std::vector<const StorageInterestGroup*> storage_interest_groups;
+  size_t size() { return storage_interest_groups_.size(); }
+
+  std::vector<SingleStorageInterestGroup> GetInterestGroups() {
+    std::vector<SingleStorageInterestGroup> storage_interest_groups;
     for (const StorageInterestGroup& interest_group :
          storage_interest_groups_) {
-      storage_interest_groups.push_back(&interest_group);
+      storage_interest_groups.emplace_back(this, &interest_group);
     }
     return storage_interest_groups;
   }
@@ -50,7 +78,7 @@ class CONTENT_EXPORT StorageInterestGroups
 // InterestGroupCachingStorage controls access to the Interest Group Database
 // through its owned InterestGroupStorage. InterestGroupStorage should
 // not be accessed outside of this class. InterestGroupCachingStorage provides a
-// pointers to in-memory values for GetInterestGroupsForOwner when available and
+// pointer to in-memory values for GetInterestGroupsForOwner when available and
 // invalidates the cached values when necessary (when an update to the values
 // occurs).
 class CONTENT_EXPORT InterestGroupCachingStorage {

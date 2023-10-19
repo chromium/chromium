@@ -203,6 +203,11 @@ BASE_FEATURE(kFledgeLimitNumAuctions,
 const base::FeatureParam<int> kFledgeLimitNumAuctionsParam{
     &kFledgeLimitNumAuctions, "max_auctions_per_page", 8};
 
+// Enables caching when loading interest groups for a bidder in an auction.
+BASE_FEATURE(kFledgeUseInterestGroupCache,
+             "FledgeUseInterestGroupCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
 // enables a font indexer on Android which we need to test in the field first.

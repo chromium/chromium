@@ -68,17 +68,18 @@ bool IsEventLevelReportingUrlValid(const GURL& url) {
 }
 
 const blink::InterestGroup::Ad& ChosenAd(
-    const StorageInterestGroup& storage_interest_group,
+    const SingleStorageInterestGroup& storage_interest_group,
     const GURL& winning_ad_url) {
   auto chosen_ad = base::ranges::find(
-      *storage_interest_group.interest_group.ads, winning_ad_url,
+      *storage_interest_group->interest_group.ads, winning_ad_url,
       [](const blink::InterestGroup::Ad& ad) { return ad.render_url; });
-  CHECK(chosen_ad != storage_interest_group.interest_group.ads->end());
+  CHECK(chosen_ad != storage_interest_group->interest_group.ads->end());
   return *chosen_ad;
 }
 
-bool IsKAnonForReporting(const StorageInterestGroup& storage_interest_group,
-                         const blink::InterestGroup::Ad& chosen_ad) {
+bool IsKAnonForReporting(
+    const SingleStorageInterestGroup& storage_interest_group,
+    const blink::InterestGroup::Ad& chosen_ad) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kFledgeConsiderKAnonymity) ||
       !base::FeatureList::IsEnabled(
@@ -87,13 +88,13 @@ bool IsKAnonForReporting(const StorageInterestGroup& storage_interest_group,
   }
 
   std::string reporting_key = KAnonKeyForAdNameReporting(
-      storage_interest_group.interest_group, chosen_ad);
+      storage_interest_group->interest_group, chosen_ad);
   auto kanon = base::ranges::find(
-      storage_interest_group.reporting_ads_kanon, reporting_key,
+      storage_interest_group->reporting_ads_kanon, reporting_key,
       [](const StorageInterestGroup::KAnonymityData& data) {
         return data.key;
       });
-  if (kanon == storage_interest_group.reporting_ads_kanon.end() ||
+  if (kanon == storage_interest_group->reporting_ads_kanon.end() ||
       !kanon->is_k_anonymous) {
     return false;
   }
@@ -123,7 +124,9 @@ InterestGroupAuctionReporter::SellerWinningBidInfo&
 InterestGroupAuctionReporter::SellerWinningBidInfo::operator=(
     SellerWinningBidInfo&&) = default;
 
-InterestGroupAuctionReporter::WinningBidInfo::WinningBidInfo() = default;
+InterestGroupAuctionReporter::WinningBidInfo::WinningBidInfo(
+    const SingleStorageInterestGroup& storage_interest_group)
+    : storage_interest_group(std::move(storage_interest_group)) {}
 InterestGroupAuctionReporter::WinningBidInfo::WinningBidInfo(WinningBidInfo&&) =
     default;
 InterestGroupAuctionReporter::WinningBidInfo::~WinningBidInfo() = default;
@@ -431,10 +434,10 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
   // Send in buyer_and_seller_reporting_id if it's configured on the winning
   // ad and sufficiently k-anonymous.
   absl::optional<std::string> browser_signal_buyer_and_seller_reporting_id;
-  auto chosen_ad = ChosenAd(*winning_bid_info_.storage_interest_group,
+  auto chosen_ad = ChosenAd(winning_bid_info_.storage_interest_group,
                             winning_bid_info_.render_url);
   if (chosen_ad.buyer_and_seller_reporting_id.has_value() &&
-      IsKAnonForReporting(*winning_bid_info_.storage_interest_group,
+      IsKAnonForReporting(winning_bid_info_.storage_interest_group,
                           chosen_ad)) {
     browser_signal_buyer_and_seller_reporting_id =
         *chosen_ad.buyer_and_seller_reporting_id;
@@ -650,7 +653,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   auction_worklet::mojom::ReportingIdField reporting_id_field =
       auction_worklet::mojom::ReportingIdField::kInterestGroupName;
 
-  auto chosen_ad = ChosenAd(*winning_bid_info_.storage_interest_group,
+  auto chosen_ad = ChosenAd(winning_bid_info_.storage_interest_group,
                             winning_bid_info_.render_url);
   if (chosen_ad.buyer_and_seller_reporting_id.has_value()) {
     reporting_id_field =
@@ -669,7 +672,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   // An exception to this is contextual bids, which have access to page
   // information anyway.
   if (!winning_bid_info_.provided_as_additional_bid &&
-      !IsKAnonForReporting(*winning_bid_info_.storage_interest_group,
+      !IsKAnonForReporting(winning_bid_info_.storage_interest_group,
                            chosen_ad)) {
     reporting_id = "";
     reporting_id_field =

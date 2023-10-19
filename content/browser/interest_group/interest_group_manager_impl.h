@@ -22,6 +22,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_permissions_checker.h"
 #include "content/browser/interest_group/interest_group_update.h"
@@ -251,7 +252,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // associated with the provided owner.
   void GetInterestGroupsForOwner(
       const url::Origin& owner,
-      base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
+      base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback);
 
   // Clear out storage for the matching owning storage key. If the matcher is
   // empty then apply to all storage keys.
@@ -490,8 +491,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
                           bool parse_failure);
 
   void OnGetInterestGroupsComplete(
-      base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback,
-      std::vector<StorageInterestGroup> groups);
+      base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback,
+      scoped_refptr<StorageInterestGroups> groups);
 
   // Dequeues and sends the first report request in `report_requests_` queue,
   // if the queue is not empty.
@@ -516,7 +517,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       AdAuctionDataLoaderState state,
       std::vector<url::Origin> owners,
       url::Origin owner,
-      std::vector<StorageInterestGroup> groups);
+      scoped_refptr<StorageInterestGroups> groups);
 
   // Constructs the AuctionAdata when the load is complete and calls the
   // provided callback.
@@ -529,9 +530,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const url::Origin& owner_origin,
       const std::string& name);
 
-  // Owns and manages access to the InterestGroupStorage living on a different
-  // thread.
-  base::SequenceBound<InterestGroupStorage> impl_;
+  // Controls access to the Interest Group Database through its owned
+  // InterestGroupStorage. Returns cached values for GetInterestGroupsForOwner
+  // when available.
+  InterestGroupCachingStorage caching_storage_;
 
   // Stored as pointer so that tests can override it.
   std::unique_ptr<AuctionProcessManager> auction_process_manager_;

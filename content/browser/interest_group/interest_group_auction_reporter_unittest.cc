@@ -110,7 +110,7 @@ class InterestGroupAuctionReporterTest
     : public RenderViewHostTestHarness,
       public AuctionWorkletManager::Delegate {
  public:
-  InterestGroupAuctionReporterTest() {
+  InterestGroupAuctionReporterTest() : winning_bid_info_(GetWinningBidInfo()) {
     feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kPrivateAggregationApi,
         {{"fledge_extensions_enabled", "true"}});
@@ -133,17 +133,6 @@ class InterestGroupAuctionReporterTest
 
     auction_config_->seller = kSellerOrigin;
     auction_config_->decision_logic_url = kSellerScriptUrl;
-
-    winning_bid_info_.storage_interest_group =
-        std::make_unique<StorageInterestGroup>();
-    winning_bid_info_.storage_interest_group->interest_group =
-        blink::TestInterestGroupBuilder(kWinningBidderOrigin,
-                                        kWinningBidderName)
-            .SetBiddingUrl(kWinningBidderScriptUrl)
-            // A non-empty ad list is needed by KAnonKeyForAdBid().
-            .SetAds({{{GURL("https://ad.render.url.test/"),
-                       "\"This be metadata\""}}})
-            .Build();
 
     // Join the interest groups that "won" and "lost" the auction - this matters
     // for tests that make sure the interest group is updated correctly.
@@ -417,6 +406,25 @@ class InterestGroupAuctionReporterTest
   std::string TakeBadMessage() { return std::move(bad_message_); }
 
  protected:
+  InterestGroupAuctionReporter::WinningBidInfo GetWinningBidInfo() {
+    StorageInterestGroup storage_interest_group;
+    storage_interest_group.interest_group =
+        blink::TestInterestGroupBuilder(kWinningBidderOrigin,
+                                        kWinningBidderName)
+            .SetBiddingUrl(kWinningBidderScriptUrl)
+            // A non-empty ad list is needed by KAnonKeyForAdBid().
+            .SetAds({{{GURL("https://ad.render.url.test/"),
+                       "\"This be metadata\""}}})
+            .Build();
+    std::vector<StorageInterestGroup> vec;
+    vec.push_back(std::move(storage_interest_group));
+    auto owner_igs =
+        base::MakeRefCounted<StorageInterestGroups>(std::move(vec));
+    InterestGroupAuctionReporter::WinningBidInfo winning_bid_info(
+        owner_igs->GetInterestGroups()[0]);
+    return winning_bid_info;
+  }
+
   void OnBadMessage(const std::string& reason) {
     // No test expects multiple bad messages at a time
     EXPECT_EQ(std::string(), bad_message_);

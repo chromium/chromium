@@ -13,10 +13,41 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "content/common/features.h"
 #include "url/origin.h"
 
 namespace content {
+
+SingleStorageInterestGroup::SingleStorageInterestGroup(
+    scoped_refptr<StorageInterestGroups> storage_interest_groups_for_owner,
+    const StorageInterestGroup* storage_interest_group)
+    : storage_interest_groups_for_owner(storage_interest_groups_for_owner),
+      storage_interest_group(storage_interest_group) {}
+
+SingleStorageInterestGroup::SingleStorageInterestGroup(
+    const SingleStorageInterestGroup& other) = default;
+
+SingleStorageInterestGroup::SingleStorageInterestGroup(
+    StorageInterestGroup&& interest_group) {
+  std::vector<StorageInterestGroup> storage_interest_groups_vec;
+  storage_interest_groups_vec.push_back(std::move(interest_group));
+  storage_interest_groups_for_owner =
+      base::MakeRefCounted<StorageInterestGroups>(
+          std::move(storage_interest_groups_vec));
+  storage_interest_group =
+      storage_interest_groups_for_owner->GetInterestGroups()[0]
+          .storage_interest_group;
+}
+
+SingleStorageInterestGroup::~SingleStorageInterestGroup() = default;
+
+const StorageInterestGroup* SingleStorageInterestGroup::operator->() const {
+  return storage_interest_group;
+}
+
+const StorageInterestGroup& SingleStorageInterestGroup::operator*() const {
+  return *storage_interest_group;
+}
 
 StorageInterestGroups::StorageInterestGroups(
     std::vector<StorageInterestGroup>&& interest_groups)
@@ -43,7 +74,8 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
     const url::Origin& owner,
     base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback) {
   auto it = cached_interest_groups_.find(owner);
-  if (it != cached_interest_groups_.end() && it->second.MaybeValid()) {
+  if (base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache) &&
+      it != cached_interest_groups_.end() && it->second.MaybeValid()) {
     std::move(callback).Run(
         scoped_refptr<StorageInterestGroups>(it->second.get()));
     return;

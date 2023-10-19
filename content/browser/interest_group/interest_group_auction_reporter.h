@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
@@ -149,11 +150,12 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   // Information about the winning bit that is not specific to a seller.
   struct CONTENT_EXPORT WinningBidInfo {
-    WinningBidInfo();
+    explicit WinningBidInfo(
+        const SingleStorageInterestGroup& storage_interest_group);
     WinningBidInfo(WinningBidInfo&&);
     ~WinningBidInfo();
 
-    std::unique_ptr<StorageInterestGroup> storage_interest_group;
+    const SingleStorageInterestGroup storage_interest_group;
 
     GURL render_url;
     std::vector<GURL> ad_components;

@@ -15,6 +15,7 @@
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -161,11 +162,10 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
          "' rejected due to invalid origin of biddingLogicURL."}));
   }
 
-  auto synth_interest_group = std::make_unique<StorageInterestGroup>();
-  synth_interest_group->interest_group.name = *ig_name;
-  synth_interest_group->interest_group.owner = std::move(ig_owner).value();
-  synth_interest_group->interest_group.bidding_url = std::move(ig_bidding_url);
-
+  auto synth_interest_group = StorageInterestGroup();
+  synth_interest_group.interest_group.name = *ig_name;
+  synth_interest_group.interest_group.owner = std::move(ig_owner).value();
+  synth_interest_group.interest_group.bidding_url = std::move(ig_bidding_url);
   // Add ads.
   const base::Value::Dict* bid_dict = result_dict->FindDict("bid");
   if (!bid_dict) {
@@ -186,9 +186,9 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
   }
 
   // Create ad vector and its first entry.
-  synth_interest_group->interest_group.ads.emplace();
-  synth_interest_group->interest_group.ads.value().emplace_back();
-  synth_interest_group->interest_group.ads.value()[0].render_url = render_url;
+  synth_interest_group.interest_group.ads.emplace();
+  synth_interest_group.interest_group.ads.value().emplace_back();
+  synth_interest_group.interest_group.ads.value()[0].render_url = render_url;
 
   absl::optional<double> bid_val = bid_dict->FindDouble("bid");
   if (!bid_val || bid_val.value() <= 0) {
@@ -264,7 +264,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
            "' rejected due to too many ad component URLs."}));
     }
 
-    synth_interest_group->interest_group.ad_components.emplace();
+    synth_interest_group.interest_group.ad_components.emplace();
     for (const base::Value& ad_component : *ad_components_list) {
       const std::string* ad_component_str = ad_component.GetIfString();
       GURL ad_component_url;
@@ -278,7 +278,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       }
       ad_components.emplace_back(ad_component_url);
       // TODO(http://crbug.com/1464874): What's the story with dimensions?
-      synth_interest_group->interest_group.ad_components->emplace_back(
+      synth_interest_group.interest_group.ad_components->emplace_back(
           std::move(ad_component_url), /*metadata=*/absl::nullopt);
     }
   }
@@ -348,11 +348,12 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       result.negative_target_interest_group_names.push_back(*negative_ig_str);
     }
   }
-
-  result.bid_state = std::make_unique<InterestGroupAuction::BidState>();
+  SingleStorageInterestGroup storage_interest_group(
+      std::move(synth_interest_group));
+  result.bid_state = std::make_unique<InterestGroupAuction::BidState>(
+      std::move(storage_interest_group));
   result.bid_state->additional_bid_buyer =
-      synth_interest_group->interest_group.owner;
-  result.bid_state->bidder = std::move(synth_interest_group);
+      result.bid_state->bidder->interest_group.owner;
   result.bid_state->made_bid = true;
   result.bid_state->BeginTracing();
 

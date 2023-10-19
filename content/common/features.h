@@ -49,6 +49,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmIdpSigninStatusMetrics);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeLimitNumAuctions);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kFledgeLimitNumAuctionsParam;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeUseInterestGroupCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontSrcLocalMatching);
 #if !BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kForwardMemoryPressureEventsToGpuProcess);
