@@ -113,8 +113,8 @@ TEST_F(AutofillI18nApiTest, GetLegacyAddressHierarchy) {
   auto legacy_address_hierarchy_es =
       CreateAddressComponentModel(AddressCountryCode("ES"));
 
-  auto legacy_address_hierarchy_xx = CreateAddressComponentModel(
-      AddressCountryCode(std::string(kLegacyHierarchyCountryCode)));
+  auto legacy_address_hierarchy_xx =
+      CreateAddressComponentModel(kLegacyHierarchyCountryCode);
   legacy_address_hierarchy_xx->SetValueForType(ADDRESS_HOME_COUNTRY, u"ES",
                                                VerificationStatus::kObserved);
   EXPECT_TRUE(
@@ -146,7 +146,7 @@ TEST_F(AutofillI18nApiTest, GetFormattingExpressions) {
 
         } else {
           auto* legacy_it = kAutofillFormattingRulesMap.find(
-              {kLegacyHierarchyCountryCode, field_type});
+              {kLegacyHierarchyCountryCode.value(), field_type});
           expected = legacy_it != kAutofillFormattingRulesMap.end()
                          ? std::u16string(legacy_it->second)
                          : u"";
@@ -177,9 +177,9 @@ TEST_F(AutofillI18nApiTest, ParseValueByI18nRegularExpression) {
   EXPECT_EQ(ParseValueByI18nRegularExpression(street_address,
                                               ADDRESS_HOME_STREET_ADDRESS,
                                               AddressCountryCode("DE")),
-            ParseValueByI18nRegularExpression(
-                street_address, ADDRESS_HOME_STREET_ADDRESS,
-                AddressCountryCode(std::string(kLegacyHierarchyCountryCode))));
+            ParseValueByI18nRegularExpression(street_address,
+                                              ADDRESS_HOME_STREET_ADDRESS,
+                                              kLegacyHierarchyCountryCode));
 }
 
 TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {

@@ -180,14 +180,16 @@ TreeEdgesList GetTreeEdges(AddressCountryCode country_code) {
   // Always use legacy rules while `kAutofillUseI18nAddressModel` is not rolled
   // out.
   if (!base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
-    return kAutofillModelRules.find(kLegacyHierarchyCountryCode)->second;
+    return kAutofillModelRules.find(kLegacyHierarchyCountryCode.value())
+        ->second;
   }
 
   auto* it = kAutofillModelRules.find(country_code.value());
 
   // If the entry is not defined, use the legacy rules.
   return it == kAutofillModelRules.end()
-             ? kAutofillModelRules.find(kLegacyHierarchyCountryCode)->second
+             ? kAutofillModelRules.find(kLegacyHierarchyCountryCode.value())
+                   ->second
              : it->second;
 }
 
@@ -233,7 +235,7 @@ std::u16string GetFormattingExpression(ServerFieldType field_type,
 
     // Otherwise return a legacy formatting expression that exists.
     auto* legacy_it = kAutofillFormattingRulesMap.find(
-        {kLegacyHierarchyCountryCode, field_type});
+        {kLegacyHierarchyCountryCode.value(), field_type});
     return legacy_it != kAutofillFormattingRulesMap.end()
                ? std::u16string(legacy_it->second)
                : u"";
@@ -256,8 +258,8 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
   }
 
   // Otherwise try using a legacy parsing expression (if exist).
-  auto* legacy_it =
-      kAutofillParsingRulesMap.find({kLegacyHierarchyCountryCode, field_type});
+  auto* legacy_it = kAutofillParsingRulesMap.find(
+      {kLegacyHierarchyCountryCode.value(), field_type});
   return legacy_it != kAutofillParsingRulesMap.end()
              ? legacy_it->second->Parse(value)
              : absl::nullopt;
