@@ -10,6 +10,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -35,6 +36,9 @@
 namespace ash {
 
 namespace {
+
+const char kKeyboardSettingsLearnMoreLink[] =
+    "https://support.google.com/chromebook?p=keyboard_settings";
 
 using SimulateRightClickModifier = ui::mojom::SimulateRightClickModifier;
 using SixPackShortcutModifier = ui::mojom::SixPackShortcutModifier;
@@ -287,6 +291,13 @@ void ShowTouchpadSettings() {
   Shell::Get()->system_tray_model()->client()->ShowTouchpadSettings();
 }
 
+void OnLearnMoreClicked() {
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kKeyboardSettingsLearnMoreLink),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
 }  // namespace
 
 InputDeviceSettingsNotificationController::
@@ -390,7 +401,7 @@ void InputDeviceSettingsNotificationController::
       ShowRemapKeysSubpage(device_id);
       break;
     case NotificationButtonIndex::BUTTON_LEARN_MORE:
-      // TODO(b/279503977): Add link to learn more page.
+      OnLearnMoreClicked();
       break;
   }
   PreventNotificationFromShowingAgain(pref_name);
@@ -414,7 +425,7 @@ void InputDeviceSettingsNotificationController::
       ShowTouchpadSettings();
       break;
     case NotificationButtonIndex::BUTTON_LEARN_MORE:
-      // TODO(b/279503977): Add link to learn more page.
+      OnLearnMoreClicked();
       break;
   }
   PreventNotificationFromShowingAgain(
