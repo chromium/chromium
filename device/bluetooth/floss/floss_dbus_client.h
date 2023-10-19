@@ -36,265 +36,318 @@ extern DEVICE_BLUETOOTH_EXPORT int kDBusTimeoutMs;
 extern DEVICE_BLUETOOTH_EXPORT int kAdapterEnabledTimeoutMs;
 
 // TODO(b/189499077) - Expose via floss package
-extern DEVICE_BLUETOOTH_EXPORT const char kAdapterService[];
-extern DEVICE_BLUETOOTH_EXPORT const char kManagerService[];
+inline constexpr char kAdapterService[] = "org.chromium.bluetooth";
+inline constexpr char kManagerService[] = "org.chromium.bluetooth.Manager";
 
-extern DEVICE_BLUETOOTH_EXPORT const char kAdapterLoggingObjectFormat[];
-extern DEVICE_BLUETOOTH_EXPORT const char kAdapterObjectFormat[];
-extern DEVICE_BLUETOOTH_EXPORT const char kBatteryManagerObjectFormat[];
-extern DEVICE_BLUETOOTH_EXPORT const char kBluetoothTelephonyFormat[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGattObjectFormat[];
-extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];
-extern DEVICE_BLUETOOTH_EXPORT const char kMediaObjectFormat[];
+inline constexpr char kAdapterLoggingObjectFormat[] =
+    "/org/chromium/bluetooth/hci%d/logging";
+inline constexpr char kAdapterObjectFormat[] =
+    "/org/chromium/bluetooth/hci%d/adapter";
+inline constexpr char kAdminObjectFormat[] =
+    "/org/chromium/bluetooth/hci%d/admin";
+inline constexpr char kBatteryManagerObjectFormat[] =
+    "/org/chromium/bluetooth/hci%d/battery_manager";
+inline constexpr char kBluetoothTelephonyObjectFormat[] =
+    "/org/chromium/bluetooth/hci%d/telephony";
+inline constexpr char kGattObjectFormat[] =
+    "/org/chromium/bluetooth/hci%d/gatt";
+inline constexpr char kManagerObject[] = "/org/chromium/bluetooth/Manager";
+inline constexpr char kMediaObjectFormat[] =
+    "/org/chromium/bluetooth/hci%d/media";
 
-extern DEVICE_BLUETOOTH_EXPORT const char kAdapterInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kAdapterLoggingInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kAdminInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kBatteryManagerInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kBluetoothTelephonyInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kExperimentalInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGattInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kManagerInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSocketManagerInterface[];
+inline constexpr char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
+inline constexpr char kAdapterLoggingInterface[] =
+    "org.chromium.bluetooth.Logging";
+inline constexpr char kAdminInterface[] =
+    "org.chromium.bluetooth.BluetoothAdmin";
+inline constexpr char kBatteryManagerInterface[] =
+    "org.chromium.bluetooth.BatteryManager";
+inline constexpr char kBluetoothTelephonyInterface[] =
+    "org.chromium.bluetooth.BluetoothTelephony";
+inline constexpr char kExperimentalInterface[] =
+    "org.chromium.bluetooth.Experimental";
+inline constexpr char kGattInterface[] = "org.chromium.bluetooth.BluetoothGatt";
+inline constexpr char kManagerInterface[] = "org.chromium.bluetooth.Manager";
+inline constexpr char kSocketManagerInterface[] =
+    "org.chromium.bluetooth.SocketManager";
 
 namespace adapter {
-extern DEVICE_BLUETOOTH_EXPORT const char kGetAddress[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetName[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetName[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetDiscoverable[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetDiscoverableTimeout[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetDiscoverable[];
-extern DEVICE_BLUETOOTH_EXPORT const char kStartDiscovery[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCancelDiscovery[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCreateBond[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCancelBondProcess[];
-extern DEVICE_BLUETOOTH_EXPORT const char kRemoveBond[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteType[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteClass[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteAppearance[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteVendorProductInfo[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetConnectionState[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteUuids[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetBondState[];
-extern DEVICE_BLUETOOTH_EXPORT const char kConnectAllEnabledProfiles[];
-extern DEVICE_BLUETOOTH_EXPORT const char kDisconnectAllEnabledProfiles[];
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterConnectionCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterConnectionCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterScanner[];
-extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterScanner[];
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterScannerCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterScannerCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kStartScan[];
-extern DEVICE_BLUETOOTH_EXPORT const char kStopScan[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kConnectionCallbackInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetPairingConfirmation[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetPin[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetPasskey[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetBondedDevices[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetConnectedDevices[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSdpSearch[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCreateSdpRecord[];
-extern DEVICE_BLUETOOTH_EXPORT const char kRemoveSdpRecord[];
+inline constexpr char kGetAddress[] = "GetAddress";
+inline constexpr char kGetName[] = "GetName";
+inline constexpr char kSetName[] = "SetName";
+inline constexpr char kGetDiscoverable[] = "GetDiscoverable";
+inline constexpr char kGetDiscoverableTimeout[] = "GetDiscoverableTimeout";
+inline constexpr char kSetDiscoverable[] = "SetDiscoverable";
+inline constexpr char kStartDiscovery[] = "StartDiscovery";
+inline constexpr char kCancelDiscovery[] = "CancelDiscovery";
+inline constexpr char kCreateBond[] = "CreateBond";
+inline constexpr char kCancelBondProcess[] = "CancelBondProcess";
+inline constexpr char kRemoveBond[] = "RemoveBond";
+inline constexpr char kGetRemoteType[] = "GetRemoteType";
+inline constexpr char kGetRemoteClass[] = "GetRemoteClass";
+inline constexpr char kGetRemoteAppearance[] = "GetRemoteAppearance";
+inline constexpr char kGetRemoteVendorProductInfo[] =
+    "GetRemoteVendorProductInfo";
+inline constexpr char kGetConnectionState[] = "GetConnectionState";
+inline constexpr char kGetRemoteUuids[] = "GetRemoteUuids";
+inline constexpr char kGetBondState[] = "GetBondState";
+inline constexpr char kConnectAllEnabledProfiles[] =
+    "ConnectAllEnabledProfiles";
+inline constexpr char kDisconnectAllEnabledProfiles[] =
+    "DisconnectAllEnabledProfiles";
+inline constexpr char kRegisterCallback[] = "RegisterCallback";
+inline constexpr char kUnregisterCallback[] = "UnregisterCallback";
+inline constexpr char kRegisterConnectionCallback[] =
+    "RegisterConnectionCallback";
+inline constexpr char kUnregisterConnectionCallback[] =
+    "UnregisterConnectionCallback";
+inline constexpr char kRegisterScanner[] = "RegisterScanner";
+inline constexpr char kUnregisterScanner[] = "UnregisterScanner";
+inline constexpr char kRegisterScannerCallback[] = "RegisterScannerCallback";
+inline constexpr char kUnregisterScannerCallback[] =
+    "UnregisterScannerCallback";
+inline constexpr char kStartScan[] = "StartScan";
+inline constexpr char kStopScan[] = "StopScan";
+inline constexpr char kSetPairingConfirmation[] = "SetPairingConfirmation";
+inline constexpr char kSetPin[] = "SetPin";
+inline constexpr char kSetPasskey[] = "SetPasskey";
+inline constexpr char kGetBondedDevices[] = "GetBondedDevices";
+inline constexpr char kGetConnectedDevices[] = "GetConnectedDevices";
+inline constexpr char kSdpSearch[] = "SdpSearch";
+inline constexpr char kCreateSdpRecord[] = "CreateSdpRecord";
+inline constexpr char kRemoveSdpRecord[] = "RemoveSdpRecord";
 
-extern DEVICE_BLUETOOTH_EXPORT const char kOnAdapterPropertyChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnAddressChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnNameChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnDiscoverableChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceFound[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceCleared[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnDevicePropertiesChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnDiscoveringChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnSspRequest[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnPinDisplay[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnPinRequest[];
+// TODO(abps) - Rename this to AdapterCallback in platform and here
+inline constexpr char kCallbackInterface[] =
+    "org.chromium.bluetooth.BluetoothCallback";
+inline constexpr char kConnectionCallbackInterface[] =
+    "org.chromium.bluetooth.BluetoothConnectionCallback";
 
-extern DEVICE_BLUETOOTH_EXPORT const char kOnBondStateChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnSdpSearchComplete[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnSdpRecordCreated[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceConnected[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceDisconnected[];
+inline constexpr char kOnAdapterPropertyChanged[] = "OnAdapterPropertyChanged";
+inline constexpr char kOnAddressChanged[] = "OnAddressChanged";
+inline constexpr char kOnNameChanged[] = "OnNameChanged";
+inline constexpr char kOnDiscoverableChanged[] = "OnDiscoverableChanged";
+inline constexpr char kOnDeviceFound[] = "OnDeviceFound";
+inline constexpr char kOnDeviceCleared[] = "OnDeviceCleared";
+inline constexpr char kOnDevicePropertiesChanged[] =
+    "OnDevicePropertiesChanged";
+inline constexpr char kOnDiscoveringChanged[] = "OnDiscoveringChanged";
+inline constexpr char kOnSspRequest[] = "OnSspRequest";
+inline constexpr char kOnPinDisplay[] = "OnPinDisplay";
+inline constexpr char kOnPinRequest[] = "OnPinRequest";
 
-extern DEVICE_BLUETOOTH_EXPORT const char kOnScannerRegistered[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnScanResult[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisementFound[];
-// TODO(b/269343922): Rename this to OnAdvertisementLost for better symmetry
-// with OnAdvertisementFound.
-extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisementLost[];
+inline constexpr char kOnBondStateChanged[] = "OnBondStateChanged";
+inline constexpr char kOnSdpSearchComplete[] = "OnSdpSearchComplete";
+inline constexpr char kOnSdpRecordCreated[] = "OnSdpRecordCreated";
+inline constexpr char kOnDeviceConnected[] = "OnDeviceConnected";
+inline constexpr char kOnDeviceDisconnected[] = "OnDeviceDisconnected";
+
+inline constexpr char kOnScannerRegistered[] = "OnScannerRegistered";
+inline constexpr char kOnScanResult[] = "OnScanResult";
+inline constexpr char kOnAdvertisementFound[] = "OnAdvertisementFound";
+inline constexpr char kOnAdvertisementLost[] = "OnAdvertisementLost";
 }  // namespace adapter
 
 namespace manager {
-extern DEVICE_BLUETOOTH_EXPORT const char kStart[];
-extern DEVICE_BLUETOOTH_EXPORT const char kStop[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetFlossEnabled[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetFlossEnabled[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetState[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetAvailableAdapters[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetDefaultAdapter[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetDesiredDefaultAdapter[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetFlossApiVersion[];
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
-
-extern DEVICE_BLUETOOTH_EXPORT const char kOnHciDeviceChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnHciEnabledChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnDefaultAdapterChanged[];
+inline constexpr char kStart[] = "Start";
+inline constexpr char kStop[] = "Stop";
+inline constexpr char kGetFlossEnabled[] = "GetFlossEnabled";
+inline constexpr char kSetFlossEnabled[] = "SetFlossEnabled";
+inline constexpr char kGetState[] = "GetState";
+inline constexpr char kGetAvailableAdapters[] = "GetAvailableAdapters";
+inline constexpr char kGetDefaultAdapter[] = "GetDefaultAdapter";
+inline constexpr char kSetDesiredDefaultAdapter[] = "SetDesiredDefaultAdapter";
+inline constexpr char kGetFlossApiVersion[] = "GetFlossApiVersion";
+inline constexpr char kRegisterCallback[] = "RegisterCallback";
+inline constexpr char kCallbackInterface[] =
+    "org.chromium.bluetooth.ManagerCallback";
+inline constexpr char kOnHciDeviceChanged[] = "OnHciDeviceChanged";
+inline constexpr char kOnHciEnabledChanged[] = "OnHciEnabledChanged";
+inline constexpr char kOnDefaultAdapterChanged[] = "OnDefaultAdapterChanged";
 }  // namespace manager
 
 namespace socket_manager {
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingInsecureL2capChannel[];
-extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingInsecureL2capLeChannel[];
-extern DEVICE_BLUETOOTH_EXPORT const char
-    kListenUsingInsecureRfcommWithServiceRecord[];
-extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingL2capChannel[];
-extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingL2capLeChannel[];
-extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingRfcomm[];
-extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingRfcommWithServiceRecord[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCreateInsecureL2capChannel[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCreateInsecureL2capLeChannel[];
-extern DEVICE_BLUETOOTH_EXPORT const char
-    kCreateInsecureRfcommSocketToServiceRecord[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCreateL2capChannel[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCreateL2capLeChannel[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCreateRfcommSocketToServiceRecord[];
-extern DEVICE_BLUETOOTH_EXPORT const char kAccept[];
-extern DEVICE_BLUETOOTH_EXPORT const char kClose[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
+inline constexpr char kRegisterCallback[] = "RegisterCallback";
+inline constexpr char kUnregisterCallback[] = "UnregisterCallback";
+inline constexpr char kListenUsingInsecureL2capChannel[] =
+    "ListenUsingInsecureL2capChannel";
+inline constexpr char kListenUsingInsecureL2capLeChannel[] =
+    "ListenUsingInsecureL2capLeChannel";
+inline constexpr char kListenUsingInsecureRfcommWithServiceRecord[] =
+    "ListenUsingInsecureRfcommWithServiceRecord";
+inline constexpr char kListenUsingL2capChannel[] = "ListenUsingL2capChannel";
+inline constexpr char kListenUsingL2capLeChannel[] =
+    "ListenUsingL2capLeChannel";
+inline constexpr char kListenUsingRfcomm[] = "ListenUsingRfcomm";
+inline constexpr char kListenUsingRfcommWithServiceRecord[] =
+    "ListenUsingRfcommWithServiceRecord";
+inline constexpr char kCreateInsecureL2capChannel[] =
+    "CreateInsecureL2capChannel";
+inline constexpr char kCreateInsecureL2capLeChannel[] =
+    "CreateInsecureL2capLeChannel";
+inline constexpr char kCreateInsecureRfcommSocketToServiceRecord[] =
+    "CreateInsecureRfcommSocketToServiceRecord";
+inline constexpr char kCreateL2capChannel[] = "CreateL2capChannel";
+inline constexpr char kCreateL2capLeChannel[] = "CreateL2capLeChannel";
+inline constexpr char kCreateRfcommSocketToServiceRecord[] =
+    "CreateRfcommSocketToServiceRecord";
+inline constexpr char kAccept[] = "Accept";
+inline constexpr char kClose[] = "Close";
+inline constexpr char kCallbackInterface[] =
+    "org.chromium.bluetooth.SocketManagerCallback";
 
-extern DEVICE_BLUETOOTH_EXPORT const char kOnIncomingSocketReady[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnIncomingSocketClosed[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnHandleIncomingConnection[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnOutgoingConnectionResult[];
+inline constexpr char kOnIncomingSocketReady[] = "OnIncomingSocketReady";
+inline constexpr char kOnIncomingSocketClosed[] = "OnIncomingSocketClosed";
+inline constexpr char kOnHandleIncomingConnection[] =
+    "OnHandleIncomingConnection";
+inline constexpr char kOnOutgoingConnectionResult[] =
+    "OnOutgoingConnectionResult";
 }  // namespace socket_manager
 
 namespace gatt {
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterClient[];
-extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterClient[];
-extern DEVICE_BLUETOOTH_EXPORT const char kClientConnect[];
-extern DEVICE_BLUETOOTH_EXPORT const char kClientDisconnect[];
-extern DEVICE_BLUETOOTH_EXPORT const char kRefreshDevice[];
-extern DEVICE_BLUETOOTH_EXPORT const char kDiscoverServices[];
-extern DEVICE_BLUETOOTH_EXPORT const char kDiscoverServiceByUuid[];
-extern DEVICE_BLUETOOTH_EXPORT const char kReadCharacteristic[];
-extern DEVICE_BLUETOOTH_EXPORT const char kReadUsingCharacteristicUuid[];
-extern DEVICE_BLUETOOTH_EXPORT const char kWriteCharacteristic[];
-extern DEVICE_BLUETOOTH_EXPORT const char kReadDescriptor[];
-extern DEVICE_BLUETOOTH_EXPORT const char kWriteDescriptor[];
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterForNotification[];
-extern DEVICE_BLUETOOTH_EXPORT const char kBeginReliableWrite[];
-extern DEVICE_BLUETOOTH_EXPORT const char kEndReliableWrite[];
-extern DEVICE_BLUETOOTH_EXPORT const char kReadRemoteRssi[];
-extern DEVICE_BLUETOOTH_EXPORT const char kConfigureMtu[];
-extern DEVICE_BLUETOOTH_EXPORT const char kConnectionParameterUpdate[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kServerCallbackInterface[];
+inline constexpr char kRegisterClient[] = "RegisterClient";
+inline constexpr char kUnregisterClient[] = "UnregisterClient";
+inline constexpr char kClientConnect[] = "ClientConnect";
+inline constexpr char kClientDisconnect[] = "ClientDisconnect";
+inline constexpr char kRefreshDevice[] = "RefreshDevice";
+inline constexpr char kDiscoverServices[] = "DiscoverServices";
+inline constexpr char kDiscoverServiceByUuid[] = "DiscoverServiceByUuid";
+inline constexpr char kReadCharacteristic[] = "ReadCharacteristic";
+inline constexpr char kReadUsingCharacteristicUuid[] =
+    "ReadUsingCharacteristicUuid";
+inline constexpr char kWriteCharacteristic[] = "WriteCharacteristic";
+inline constexpr char kReadDescriptor[] = "ReadDescriptor";
+inline constexpr char kWriteDescriptor[] = "WriteDescriptor";
+inline constexpr char kRegisterForNotification[] = "RegisterForNotification";
+inline constexpr char kBeginReliableWrite[] = "BeginReliableWrite";
+inline constexpr char kEndReliableWrite[] = "EndReliableWrite";
+inline constexpr char kReadRemoteRssi[] = "ReadRemoteRssi";
+inline constexpr char kConfigureMtu[] = "ConfigureMtu";
+inline constexpr char kConnectionParameterUpdate[] =
+    "ConnectionParameterUpdate";
+inline constexpr char kCallbackInterface[] =
+    "org.chromium.bluetooth.BluetoothGattCallback";
+inline constexpr char kServerCallbackInterface[] =
+    "org.chromium.bluetooth.BluetoothGattServerCallback";
 
-extern DEVICE_BLUETOOTH_EXPORT const char kOnClientRegistered[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnClientConnectionState[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnPhyUpdate[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnPhyRead[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnSearchComplete[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnCharacteristicRead[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnCharacteristicWrite[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnExecuteWrite[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnDescriptorRead[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnDescriptorWrite[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnNotify[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnReadRemoteRssi[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnConfigureMtu[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnConnectionUpdated[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServiceChanged[];
+inline constexpr char kOnClientRegistered[] = "OnClientRegistered";
+inline constexpr char kOnClientConnectionState[] = "OnClientConnectionState";
+inline constexpr char kOnPhyUpdate[] = "OnPhyUpdate";
+inline constexpr char kOnPhyRead[] = "OnPhyRead";
+inline constexpr char kOnSearchComplete[] = "OnSearchComplete";
+inline constexpr char kOnCharacteristicRead[] = "OnCharacteristicRead";
+inline constexpr char kOnCharacteristicWrite[] = "OnCharacteristicWrite";
+inline constexpr char kOnExecuteWrite[] = "OnExecuteWrite";
+inline constexpr char kOnDescriptorRead[] = "OnDescriptorRead";
+inline constexpr char kOnDescriptorWrite[] = "OnDescriptorWrite";
+inline constexpr char kOnNotify[] = "OnNotify";
+inline constexpr char kOnReadRemoteRssi[] = "OnReadRemoteRssi";
+inline constexpr char kOnConfigureMtu[] = "OnConfigureMtu";
+inline constexpr char kOnConnectionUpdated[] = "OnConnectionUpdated";
+inline constexpr char kOnServiceChanged[] = "OnServiceChanged";
 
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterServer[];
-extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterServer[];
-extern DEVICE_BLUETOOTH_EXPORT const char kServerConnect[];
-extern DEVICE_BLUETOOTH_EXPORT const char kServerDisconnect[];
-extern DEVICE_BLUETOOTH_EXPORT const char kServerSetPreferredPhy[];
-extern DEVICE_BLUETOOTH_EXPORT const char kServerReadPhy[];
-extern DEVICE_BLUETOOTH_EXPORT const char kAddService[];
-extern DEVICE_BLUETOOTH_EXPORT const char kRemoveService[];
-extern DEVICE_BLUETOOTH_EXPORT const char kClearServices[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSendResponse[];
-extern DEVICE_BLUETOOTH_EXPORT const char kServerSendNotification[];
+inline constexpr char kRegisterServer[] = "RegisterServer";
+inline constexpr char kUnregisterServer[] = "UnregisterServer";
+inline constexpr char kServerConnect[] = "ServerConnect";
+inline constexpr char kServerDisconnect[] = "ServerDisconnect";
+inline constexpr char kServerSetPreferredPhy[] = "ServerSetPreferredPhy";
+inline constexpr char kServerReadPhy[] = "ServerReadPhy";
+inline constexpr char kAddService[] = "AddService";
+inline constexpr char kRemoveService[] = "RemoveService";
+inline constexpr char kClearServices[] = "ClearServices";
+inline constexpr char kSendResponse[] = "SendResponse";
+inline constexpr char kServerSendNotification[] = "SendNotification";
 
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServerRegistered[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServerConnectionState[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServerServiceAdded[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServerServiceRemoved[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServerCharacteristicReadRequest[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServerDescriptorReadRequest[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServerCharacteristicWriteRequest[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServerDescriptorWriteRequest[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServerNotificationSent[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServerMtuChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServerSubrateChange[];
+inline constexpr char kOnServerRegistered[] = "OnServerRegistered";
+inline constexpr char kOnServerConnectionState[] = "OnServerConnectionState";
+inline constexpr char kOnServerServiceAdded[] = "OnServiceAdded";
+inline constexpr char kOnServerServiceRemoved[] = "OnServiceRemoved";
+inline constexpr char kOnServerCharacteristicReadRequest[] =
+    "OnCharacteristicReadRequest";
+inline constexpr char kOnServerDescriptorReadRequest[] =
+    "OnDescriptorReadRequest";
+inline constexpr char kOnServerCharacteristicWriteRequest[] =
+    "OnCharacteristicWriteRequest";
+inline constexpr char kOnServerDescriptorWriteRequest[] =
+    "OnDescriptorWriteRequest";
+inline constexpr char kOnServerNotificationSent[] = "OnNotificationSent";
+inline constexpr char kOnServerMtuChanged[] = "OnMtuChanged";
+inline constexpr char kOnServerSubrateChange[] = "OnSubrateChange";
 }  // namespace gatt
 
 namespace advertiser {
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kStartAdvertisingSet[];
-extern DEVICE_BLUETOOTH_EXPORT const char kStopAdvertisingSet[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetOwnAddress[];
-extern DEVICE_BLUETOOTH_EXPORT const char kEnableAdvertisingSet[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetAdvertisingData[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetScanResponseData[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetAdvertisingParameters[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetPeriodicAdvertisingParameters[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetPeriodicAdvertisingData[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetPeriodicAdvertisingEnable[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
+inline constexpr char kRegisterCallback[] = "RegisterAdvertiserCallback";
+inline constexpr char kUnregisterCallback[] = "UnregisterAdvertiserCallback";
+inline constexpr char kStartAdvertisingSet[] = "StartAdvertisingSet";
+inline constexpr char kStopAdvertisingSet[] = "StopAdvertisingSet";
+inline constexpr char kGetOwnAddress[] = "GetOwnAddress";
+inline constexpr char kEnableAdvertisingSet[] = "EnableAdvertisingSet";
+inline constexpr char kSetAdvertisingData[] = "SetAdvertisingData";
+inline constexpr char kSetScanResponseData[] = "SetScanResponseData";
+inline constexpr char kSetAdvertisingParameters[] = "SetAdvertisingParameters";
+inline constexpr char kSetPeriodicAdvertisingParameters[] =
+    "SetPeriodicAdvertisingParameters";
+inline constexpr char kSetPeriodicAdvertisingData[] =
+    "SetPeriodicAdvertisingData";
+inline constexpr char kSetPeriodicAdvertisingEnable[] =
+    "SetPeriodicAdvertisingEnable";
 
-extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisingSetStarted[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnOwnAddressRead[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisingSetStopped[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisingEnabled[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisingDataSet[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnScanResponseDataSet[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisingParametersUpdated[];
-extern DEVICE_BLUETOOTH_EXPORT const char
-    kOnPeriodicAdvertisingParametersUpdated[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnPeriodicAdvertisingDataSet[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnPeriodicAdvertisingEnabled[];
+inline constexpr char kCallbackInterface[] =
+    "org.chromium.bluetooth.AdvertisingSetCallback";
+inline constexpr char kOnAdvertisingSetStarted[] = "OnAdvertisingSetStarted";
+inline constexpr char kOnOwnAddressRead[] = "OnOwnAddressRead";
+inline constexpr char kOnAdvertisingSetStopped[] = "OnAdvertisingSetStopped";
+inline constexpr char kOnAdvertisingEnabled[] = "OnAdvertisingEnabled";
+inline constexpr char kOnAdvertisingDataSet[] = "OnAdvertisingDataSet";
+inline constexpr char kOnScanResponseDataSet[] = "OnScanResponseDataSet";
+inline constexpr char kOnAdvertisingParametersUpdated[] =
+    "OnAdvertisingParametersUpdated";
+inline constexpr char kOnPeriodicAdvertisingParametersUpdated[] =
+    "OnPeriodicAdvertisingParametersUpdated";
+inline constexpr char kOnPeriodicAdvertisingDataSet[] =
+    "OnPeriodicAdvertisingDataSet";
+inline constexpr char kOnPeriodicAdvertisingEnabled[] =
+    "OnPeriodicAdvertisingEnabled";
 }  // namespace advertiser
 
 namespace battery_manager {
-extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterBatteryCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterBatteryCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetBatteryInformation[];
+inline constexpr char kCallbackInterface[] =
+    "org.chromium.bluetooth.BatteryManagerCallback";
+inline constexpr char kRegisterBatteryCallback[] = "RegisterBatteryCallback";
+inline constexpr char kUnregisterBatteryCallback[] =
+    "UnregisterBatteryCallback";
+inline constexpr char kGetBatteryInformation[] = "GetBatteryInformation";
 
-extern DEVICE_BLUETOOTH_EXPORT const char kOnBatteryInfoUpdated[];
+inline constexpr char kOnBatteryInfoUpdated[] = "OnBatteryInfoUpdated";
 }  // namespace battery_manager
 
 namespace bluetooth_telephony {
-extern DEVICE_BLUETOOTH_EXPORT const char kSetPhoneOpsEnabled[];
+inline constexpr char kSetPhoneOpsEnabled[] = "SetPhoneOpsEnabled";
 }  // namespace bluetooth_telephony
 
-namespace experimental {
-extern DEVICE_BLUETOOTH_EXPORT const char kSetLLPrivacy[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetDevCoredump[];
-}  // namespace experimental
-
 namespace admin {
-extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterCallback[];
-extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnServiceAllowlistChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnDevicePolicyEffectChanged[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetAllowedServices[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetAllowedServices[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGetDevicePolicyEffect[];
+inline constexpr char kRegisterCallback[] = "RegisterAdminPolicyCallback";
+inline constexpr char kUnregisterCallback[] = "UnregisterAdminPolicyCallback";
+inline constexpr char kCallbackInterface[] =
+    "org.chromium.bluetooth.AdminPolicyCallback";
+inline constexpr char kOnServiceAllowlistChanged[] =
+    "OnServiceAllowlistChanged";
+inline constexpr char kOnDevicePolicyEffectChanged[] =
+    "OnDevicePolicyEffectChanged";
+inline constexpr char kSetAllowedServices[] = "SetAllowedServices";
+inline constexpr char kGetAllowedServices[] = "GetAllowedServices";
+inline constexpr char kGetDevicePolicyEffect[] = "GetDevicePolicyEffect";
 }  // namespace admin
 
 namespace adapter_logging {
-extern DEVICE_BLUETOOTH_EXPORT const char kIsDebugEnabled[];
-extern DEVICE_BLUETOOTH_EXPORT const char kSetDebugLogging[];
+inline constexpr char kIsDebugEnabled[] = "IsDebugEnabled";
+inline constexpr char kSetDebugLogging[] = "SetDebugLogging";
 }  // namespace adapter_logging
+
+namespace experimental {
+inline constexpr char kSetLLPrivacy[] = "SetLLPrivacy";
+inline constexpr char kSetDevCoredump[] = "SetDevCoredump";
+}  // namespace experimental
 
 // BluetoothDevice structure for DBus apis.
 struct DEVICE_BLUETOOTH_EXPORT FlossDeviceId {
