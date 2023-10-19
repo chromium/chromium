@@ -5,20 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_UTIL_H_
 #define IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_UTIL_H_
 
+#import "base/time/time.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
 // Returns the time since the most recent tab was opened.
-NSTimeInterval GetTimeSinceMostRecentTabWasOpenForSceneState(
+base::TimeDelta GetTimeSinceMostRecentTabWasOpenForSceneState(
     SceneState* sceneState);
 
 // Checks whether the Start Surface should be shown for the given scene state.
-bool ShouldShowStartSurfaceForSceneState(SceneState* sceneState);
+bool ShouldShowStartSurfaceForSceneState(SceneState* scene_state);
 
 // Returns the string label containing the time since the most recent tab was
 // open. Will return empty string if not applicable.
-NSString* GetRecentTabTileTimeLabelForSceneState(SceneState* sceneState);
+NSString* GetRecentTabTileTimeLabelForSceneState(SceneState* scene_state);
 
 // Sets the session related objects for the Start Surface.
-void SetStartSurfaceSessionObjectForSceneState(SceneState* sceneState);
+void SetStartSurfaceSessionObjectForSceneState(SceneState* scene_state);
 
 #endif  // IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_UTIL_H_.
