@@ -126,7 +126,7 @@ ActionInvocationContext::ContextBuilder::operator=(ContextBuilder&&) = default;
 ActionInvocationContext::ContextBuilder::ContextBuilder::~ContextBuilder() =
     default;
 
-ActionInvocationContext ActionInvocationContext::ContextBuilder::Build() {
+ActionInvocationContext ActionInvocationContext::ContextBuilder::Build() && {
   return std::move(*context_);
 }
 

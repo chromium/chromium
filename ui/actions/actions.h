@@ -121,7 +121,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionInvocationContext
       return std::move(*this);
     }
 
-    [[nodiscard]] ActionInvocationContext Build();
+    [[nodiscard]] ActionInvocationContext Build() &&;
 
    private:
     friend class ActionInvocationContext;
