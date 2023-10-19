@@ -65,6 +65,7 @@ class TrackingProtectionOnboardingTest : public testing::Test {
   std::unique_ptr<TrackingProtectionOnboarding>
       tracking_protection_onboarding_service_;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(TrackingProtectionOnboardingTest,
@@ -931,6 +932,137 @@ TEST_F(TrackingProtectionOnboardingTest, OnboardingLastShownToAckedDuration) {
   histogram_tester_.ExpectTimeBucketCount(
       "PrivacySandbox.TrackingProtection.Onboarding.LastShownToAckedDuration",
       last_shown_to_acked_duration, 1);
+}
+
+TEST_F(TrackingProtectionOnboardingTest, OnboardingMaybeMarkEligibleHistogram) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
+
+  // Action
+  tracking_protection_onboarding_service_->MaybeMarkEligible();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible", false,
+      1);
+
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
+
+  // Action
+  tracking_protection_onboarding_service_->MaybeMarkEligible();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible", true,
+      1);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       OnboardingMaybeMarkIneligibleHistogram) {
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
+
+  // Action
+  tracking_protection_onboarding_service_->MaybeMarkIneligible();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible", false,
+      1);
+
+  // Setup
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
+
+  // Action
+  tracking_protection_onboarding_service_->MaybeMarkIneligible();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible", true,
+      1);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       OnboardingDidNoticeShownOnboardHistogram) {
+  // Action
+  tracking_protection_onboarding_service_->OnboardingNoticeShown();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard",
+      false, 1);
+
+  // Setup
+  tracking_protection_onboarding_service_->MaybeMarkEligible();
+
+  // Action
+  tracking_protection_onboarding_service_->OnboardingNoticeShown();
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard",
+      true, 1);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       OnboardingDidNoticeActionAckowledgeHistogram) {
+  // Setup
+  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
+
+  // Action
+  tracking_protection_onboarding_service_->OnboardingNoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kOther);
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge",
+      false, 1);
+
+  // Setup
+  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, false);
+
+  // Action
+  tracking_protection_onboarding_service_->OnboardingNoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kOther);
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge",
+      true, 1);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       OnboardingMarkedEligibleDueToForcedFlagHistogram) {
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding."
+      "MarkedEligibleDueToForcedFlag",
+      false, 1);
+
+  // Setup
+  feature_list_.InitAndEnableFeature(
+      privacy_sandbox::kTrackingProtectionOnboardingForceEligibility);
+
+  // Action
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+
+  // Verification
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding."
+      "MarkedEligibleDueToForcedFlag",
+      true, 1);
 }
 }  // namespace
 }  // namespace privacy_sandbox

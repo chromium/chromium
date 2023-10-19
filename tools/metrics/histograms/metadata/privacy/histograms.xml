@@ -897,6 +897,28 @@ reviewer.
 </histogram>
 
 <histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge"
+    enum="BooleanShown" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records a boolean for whether or not the NoticeActionTaken function marked
+    the user to have acknowledged the onboarding notice.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard"
+    enum="BooleanShown" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records a boolean for whether or not the NoticeShown function changed the
+    user from eligible to onboarded.
+  </summary>
+</histogram>
+
+<histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.EligibleToOnboardedDuration"
     units="ms" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
@@ -915,6 +937,39 @@ reviewer.
   <summary>
     Records the duration it takes to acknowledge the notice from the last time
     it was shown. This occurs once during the process of onboarding.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.MarkedEligibleDueToForcedFlag"
+    enum="BooleanShown" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records a boolean for whether or not status was marked eligible due to the
+    forced eligibility flag.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible"
+    enum="BooleanShown" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records a boolean for whether or not the MaybeMarkEligible function changed
+    the user to eligible.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible"
+    enum="BooleanShown" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records a boolean for whether or not the MaybeMarkIneligible function
+    changed the user to ineligible.
   </summary>
 </histogram>
 
