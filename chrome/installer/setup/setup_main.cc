@@ -18,8 +18,10 @@
 #include <string>
 
 #include "base/at_exit.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
+#include "base/debug/alias.h"
 #include "base/debug/handle_hooks_win.h"
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
@@ -104,6 +106,10 @@
 #include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(CLANG_PROFILING)
+#include "base/test/clang_profiling.h"
+#endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/installer/util/google_update_util.h"
@@ -1754,8 +1760,37 @@ int WINAPI wWinMain(HINSTANCE instance,
                     HINSTANCE prev_instance,
                     wchar_t* command_line,
                     int show_command) {
+  const auto process_exit_code = SetupMain();
+
   // https://crbug.com/896565: Graceful shutdown sometimes fails for reasons out
   // of the installer's control. Crashes from such failures are inactionable, so
-  // terminate the process forthwith.
-  base::Process::TerminateCurrentProcessImmediately(SetupMain());
+  // terminate the process forthwith. Do not use
+  // base::Process::TerminateCurrentProcessImmediately because it will crash the
+  // process with int 3 in cases where ::TerminateProcess returns; see
+  // https://crbug.com/1489598. It is better for the installer to try to return
+  // the actual exit code (risking the original crash).
+#if BUILDFLAG(CLANG_PROFILING)
+  base::WriteClangProfilingProfile();
+#endif
+
+  ::SetLastError(ERROR_SUCCESS);
+  const auto terminate_result = ::TerminateProcess(
+      ::GetCurrentProcess(), static_cast<UINT>(process_exit_code));
+
+  // It is unexpected that this code is reached. In the event that it is,
+  // capture error information left behind by TerminateProcess in case the
+  // process crashes during exit and put it on the stack in the hopes that
+  // we can find it in a post-return crash dump.
+  const auto terminate_error_code = ::GetLastError();
+
+  DWORD exit_codes[] = {
+      0xDEADBECF,
+      static_cast<DWORD>(process_exit_code),
+      static_cast<DWORD>(terminate_result),
+      terminate_error_code,
+      0xDEADBEDF,
+  };
+  base::debug::Alias(exit_codes);
+
+  return process_exit_code;
 }
