@@ -13,6 +13,7 @@ tags must be opened and closed on the same line to avoid validation errors.
 
 * Chrome: `<ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>`
 * ChromeOS: `<ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>`
+* ChromeOS Flex: `<ph name="PRODUCT_OS_FLEX_NAME">Google ChromeOS Flex</ph>`
 * Chrome Browser Cloud Management: `<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>`
 * Chrome Cleanup: `<ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph>`
 * Chrome Sync: `<ph name="CHROME_SYNC_NAME">Chrome Sync</ph>`

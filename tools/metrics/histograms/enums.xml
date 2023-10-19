@@ -34053,6 +34053,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1172" label="IPv6ReachabilityOverrideEnabled"/>
   <int value="1173" label="UserFeedbackWithLowLevelDebugDataAllowed"/>
   <int value="1174" label="MicrosoftOneDriveAccountRestrictions"/>
+  <int value="1175" label="DeviceFlexHwDataForProductImprovementEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

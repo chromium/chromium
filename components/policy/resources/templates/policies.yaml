@@ -1173,6 +1173,7 @@ policies:
   1172: IPv6ReachabilityOverrideEnabled
   1173: UserFeedbackWithLowLevelDebugDataAllowed
   1174: MicrosoftOneDriveAccountRestrictions
+  1175: DeviceFlexHwDataForProductImprovementEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
