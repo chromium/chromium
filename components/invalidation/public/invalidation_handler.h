@@ -13,8 +13,6 @@
 
 namespace invalidation {
 
-class TopicInvalidationMap;
-
 class INVALIDATION_EXPORT InvalidationHandler {
  public:
   InvalidationHandler() = default;
@@ -25,10 +23,9 @@ class INVALIDATION_EXPORT InvalidationHandler {
   // Called when the invalidator state changes.
   virtual void OnInvalidatorStateChange(InvalidatorState state) = 0;
 
-  // Called when a invalidation is received. Note that this may be called
+  // Called when an invalidation is received. Note that this may be called
   // regardless of the current invalidator state.
-  virtual void OnIncomingInvalidation(
-      const TopicInvalidationMap& invalidation_map) = 0;
+  virtual void OnIncomingInvalidation(const Invalidation& invalidation) = 0;
 
   // Returned value must be unique for the handlers using the same invalidation
   // service.

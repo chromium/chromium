@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
@@ -257,25 +256,12 @@ void CloudPolicyInvalidator::OnInvalidatorStateChange(
 }
 
 void CloudPolicyInvalidator::OnIncomingInvalidation(
-    const invalidation::TopicInvalidationMap& invalidation_map) {
+    const invalidation::Invalidation& invalidation) {
   DCHECK(state_ == STARTED);
   DCHECK(thread_checker_.CalledOnValidThread());
-  const invalidation::SingleTopicInvalidationSet& list =
-      invalidation_map.ForTopic(topic_);
-  if (list.IsEmpty()) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(invalidation.topic() == topic_);
 
-  // Acknowledge all except the invalidation with the highest version.
-  auto it = list.rbegin();
-  ++it;
-  for ( ; it != list.rend(); ++it) {
-    it->Acknowledge();
-  }
-
-  // Handle the highest version invalidation.
-  HandleInvalidation(list.back());
+  HandleInvalidation(invalidation);
 }
 
 std::string CloudPolicyInvalidator::GetOwnerName() const {

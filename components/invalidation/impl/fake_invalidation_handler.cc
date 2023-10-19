@@ -15,9 +15,14 @@ InvalidatorState FakeInvalidationHandler::GetInvalidatorState() const {
   return state_;
 }
 
-const TopicInvalidationMap& FakeInvalidationHandler::GetLastInvalidationMap()
-    const {
-  return last_invalidation_map_;
+const std::map<Topic, Invalidation>&
+FakeInvalidationHandler::GetReceivedInvalidations() const {
+  return received_invalidations_;
+}
+
+void FakeInvalidationHandler::ClearReceivedInvalidations() {
+  invalidation_count_ = 0;
+  received_invalidations_.clear();
 }
 
 int FakeInvalidationHandler::GetInvalidationCount() const {
@@ -33,8 +38,8 @@ void FakeInvalidationHandler::OnInvalidatorStateChange(InvalidatorState state) {
 }
 
 void FakeInvalidationHandler::OnIncomingInvalidation(
-    const TopicInvalidationMap& invalidation_map) {
-  last_invalidation_map_ = invalidation_map;
+    const Invalidation& invalidation) {
+  received_invalidations_.emplace(invalidation.topic(), invalidation);
   ++invalidation_count_;
 }
 

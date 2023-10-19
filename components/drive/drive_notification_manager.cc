@@ -16,8 +16,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/drive/drive_notification_observer.h"
+#include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 
 namespace drive {
 
@@ -84,29 +84,32 @@ void DriveNotificationManager::OnInvalidatorStateChange(
 }
 
 void DriveNotificationManager::OnIncomingInvalidation(
-    const invalidation::TopicInvalidationMap& invalidation_map) {
+    const invalidation::Invalidation& invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "XMPP Drive Notification Received";
 
-  for (const auto& topic : invalidation_map.GetTopics()) {
-    // Empty string indicates default change list.
-    std::string unpacked_id;
-    if (topic != GetDriveInvalidationTopic()) {
-      unpacked_id = ExtractTeamDriveId(topic);
-      DCHECK(!unpacked_id.empty()) << "Unexpected topic " << topic;
-    }
-    const auto invalidations = invalidation_map.ForTopic(topic);
-    DCHECK(!invalidations.IsEmpty());
-    // The `invalidations` are sorted by version in ascending order. We want the
-    // latest version.
-    invalidated_change_ids_.emplace(unpacked_id,
-                                    invalidations.rbegin()->version());
+  const auto& topic = invalidation.topic();
+  // Empty string indicates default change list.
+  std::string unpacked_id;
+  if (topic != GetDriveInvalidationTopic()) {
+    unpacked_id = ExtractTeamDriveId(topic);
+    DCHECK(!unpacked_id.empty()) << "Unexpected topic " << topic;
+  }
+
+  // Compare the version of the incoming invalidation with the latest known id
+  // (if any) and store it if the incoming version is higher. We want the latest
+  // version.
+  auto it = invalidated_change_ids_.find(unpacked_id);
+  if (it == invalidated_change_ids_.end()) {
+    invalidated_change_ids_.emplace(unpacked_id, invalidation.version());
+  } else if (invalidation.version() > it->second) {
+    it->second = invalidation.version();
   }
 
   // This effectively disables 'local acks'.  It tells the invalidations system
   // to not bother saving invalidations across restarts for us.
   // See crbug.com/320878.
-  invalidation_map.AcknowledgeAll();
+  invalidation.Acknowledge();
 
   if (!batch_timer_.IsRunning() && !invalidated_change_ids_.empty()) {
     // Stop the polling timer as we'll be sending a batch soon.

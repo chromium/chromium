@@ -9,7 +9,8 @@
 #include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
+#include "components/invalidation/public/invalidation.h"
+#include "components/invalidation/public/invalidation_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace drive {

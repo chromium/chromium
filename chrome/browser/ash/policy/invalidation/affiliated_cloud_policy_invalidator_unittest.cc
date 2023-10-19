@@ -18,7 +18,6 @@
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -122,9 +121,7 @@ TEST(AffiliatedCloudPolicyInvalidatorTest, CreateUseDestroy) {
   invalidation::Invalidation invalidation = invalidation::Invalidation::Init(
       kPolicyInvalidationTopic, invalidation_version, "dummy payload");
 
-  invalidation::TopicInvalidationMap invalidation_map;
-  invalidation_map.Insert(invalidation);
-  invalidator->OnIncomingInvalidation(invalidation_map);
+  invalidator->OnIncomingInvalidation(invalidation);
 
   // Allow the invalidation to be handled.
   policy_client->SetFetchedInvalidationVersion(invalidation_version);

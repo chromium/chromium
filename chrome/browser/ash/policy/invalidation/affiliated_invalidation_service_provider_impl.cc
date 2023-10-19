@@ -61,7 +61,7 @@ class AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver
   // public invalidation::InvalidationHandler:
   void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
   void OnIncomingInvalidation(
-      const invalidation::TopicInvalidationMap& invalidation_map) override;
+      const invalidation::Invalidation& invalidation) override;
   std::string GetOwnerName() const override;
 
  private:
@@ -123,8 +123,7 @@ void AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
 }
 
 void AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
-    OnIncomingInvalidation(
-        const invalidation::TopicInvalidationMap& invalidation_map) {}
+    OnIncomingInvalidation(const invalidation::Invalidation& invalidation) {}
 
 std::string AffiliatedInvalidationServiceProviderImpl::
     InvalidationServiceObserver::GetOwnerName() const {

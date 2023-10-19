@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
+#include "components/invalidation/public/invalidation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

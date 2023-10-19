@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "base/values.h"
+#include "components/invalidation/public/single_topic_invalidation_set.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -210,13 +211,34 @@ void InvalidatorRegistrarWithMemory::DispatchInvalidationsToHandlers(
     return;
   }
 
-  for (const auto& handler_and_topics : registered_handler_to_topics_map_) {
-    TopicInvalidationMap topics_to_emit = invalidation_map.GetSubsetWithTopics(
-        ConvertTopicSetToLegacyTopicMap(handler_and_topics.second));
-    if (topics_to_emit.Empty()) {
-      continue;
+  const auto invalidation_topics = invalidation_map.GetTopics();
+
+  // Each handler has a set of registered topics. In order to send the incoming
+  // invalidations to the correct handlers we are going through each handler and
+  // each of their sets of topics.
+  for (const auto& [handler, registered_topics] :
+       registered_handler_to_topics_map_) {
+    for (const auto& registered_topic : registered_topics) {
+      // If a registered topic is present in the incoming invalidations, then we
+      // extract all invalidations for that topic from the map and send the one
+      // with the highest version to the respective handler.
+      if (!invalidation_topics.contains(registered_topic.name)) {
+        continue;
+      }
+      SingleTopicInvalidationSet invalidations =
+          invalidation_map.ForTopic(registered_topic.name);
+      if (invalidations.IsEmpty()) {
+        continue;
+      }
+      handler->OnIncomingInvalidation(invalidations.back());
+
+      // Acknowledge all except the invalidation with the highest version.
+      auto it = invalidations.rbegin();
+      ++it;
+      for (; it != invalidations.rend(); ++it) {
+        it->Acknowledge();
+      }
     }
-    handler_and_topics.first->OnIncomingInvalidation(topics_to_emit);
   }
 }
 

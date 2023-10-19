@@ -11,9 +11,10 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
+#include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 namespace ash::cert_provisioning {
@@ -128,24 +129,18 @@ void CertProvisioningInvalidationHandler::OnInvalidatorStateChange(
 }
 
 void CertProvisioningInvalidationHandler::OnIncomingInvalidation(
-    const invalidation::TopicInvalidationMap& invalidation_map) {
+    const invalidation::Invalidation& invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!state_.is_invalidation_service_enabled) {
     LOG(WARNING) << "Unexpected invalidation received.";
   }
 
-  const invalidation::SingleTopicInvalidationSet& list =
-      invalidation_map.ForTopic(topic_);
-  if (list.IsEmpty()) {
-    NOTREACHED() << "Incoming invlaidation does not contain invalidation"
-                    " for certificate topic";
-    return;
-  }
+  CHECK(invalidation.topic() == topic_)
+      << "Incoming invlaidation does not contain invalidation"
+         " for certificate topic";
 
-  for (const auto& it : list) {
-    it.Acknowledge();
-  }
+  invalidation.Acknowledge();
 
   on_invalidation_callback_.Run();
 }

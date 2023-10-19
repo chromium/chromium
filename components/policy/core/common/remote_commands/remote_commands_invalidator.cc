@@ -13,8 +13,6 @@
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/invalidation/public/single_topic_invalidation_set.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/policy_invalidation_util.h"
 
@@ -82,7 +80,7 @@ void RemoteCommandsInvalidator::OnInvalidatorStateChange(
 }
 
 void RemoteCommandsInvalidator::OnIncomingInvalidation(
-    const invalidation::TopicInvalidationMap& invalidation_map) {
+    const invalidation::Invalidation& invalidation) {
   DCHECK_EQ(STARTED, state_);
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -92,19 +90,11 @@ void RemoteCommandsInvalidator::OnIncomingInvalidation(
     LOG(WARNING) << "Unexpected invalidation received.";
   }
 
-  const invalidation::SingleTopicInvalidationSet& list =
-      invalidation_map.ForTopic(topic_);
-  if (list.IsEmpty()) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(invalidation.topic() == topic_);
 
-  // Acknowledge all invalidations.
-  for (const auto& it : list) {
-    it.Acknowledge();
-  }
+  invalidation.Acknowledge();
 
-  DoRemoteCommandsFetch(list.back());
+  DoRemoteCommandsFetch(invalidation);
 }
 
 std::string RemoteCommandsInvalidator::GetOwnerName() const {

@@ -44,7 +44,7 @@
 //     // observers of the InvalidationService implementation with the given
 //     // parameters.
 //     void TriggerOnIncomingInvalidation(
-//         const TopicInvalidationMap& invalidation_map) {
+//         const Invalidation& invalidation) {
 //       ...
 //     }
 //   };
@@ -78,6 +78,20 @@
 
 namespace invalidation {
 
+template <class Delegate, class... Inv>
+void TriggerOnIncomingInvalidation(Delegate& delegate, Inv... inv) {
+  TopicInvalidationMap invalidation_map;
+  (invalidation_map.Insert(inv), ...);
+  delegate.TriggerOnIncomingInvalidation(invalidation_map);
+}
+
+template <class... Inv>
+std::map<Topic, Invalidation> ExpectedInvalidations(Inv... inv) {
+  std::map<Topic, Invalidation> expected_invalidations;
+  (expected_invalidations.emplace(inv.topic(), inv), ...);
+  return expected_invalidations;
+}
+
 template <typename InvalidatorTestDelegate>
 class InvalidationServiceTest : public testing::Test {
  protected:
@@ -110,13 +124,12 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
 
   invalidator->RegisterInvalidationHandler(&handler);
 
-  TopicInvalidationMap invalidation_map;
-  invalidation_map.Insert(Invalidation::Init(this->topic1, 1, "1"));
-  invalidation_map.Insert(Invalidation::Init(this->topic2, 2, "2"));
-  invalidation_map.Insert(Invalidation::Init(this->topic3, 3, "3"));
+  const auto inv1 = Invalidation::Init(this->topic1, 1, "1");
+  const auto inv2 = Invalidation::Init(this->topic2, 2, "2");
+  const auto inv3 = Invalidation::Init(this->topic3, 3, "3");
 
   // Should be ignored since no IDs are registered to |handler|.
-  this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
+  TriggerOnIncomingInvalidation(this->delegate_, inv1, inv2, inv3);
   EXPECT_EQ(0, handler.GetInvalidationCount());
 
   TopicSet topics;
@@ -127,26 +140,22 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
   this->delegate_.TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
 
-  TopicInvalidationMap expected_invalidations;
-  expected_invalidations.Insert(Invalidation::Init(this->topic1, 1, "1"));
-  expected_invalidations.Insert(Invalidation::Init(this->topic2, 2, "2"));
-
-  this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
-  EXPECT_EQ(1, handler.GetInvalidationCount());
-  EXPECT_EQ(expected_invalidations, handler.GetLastInvalidationMap());
+  TriggerOnIncomingInvalidation(this->delegate_, inv1, inv2, inv3);
+  EXPECT_EQ(2, handler.GetInvalidationCount());
+  EXPECT_EQ(ExpectedInvalidations(inv1, inv2),
+            handler.GetReceivedInvalidations());
+  handler.ClearReceivedInvalidations();
 
   topics.erase(this->topic1);
   topics.insert(this->topic3);
   EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler, topics));
 
-  expected_invalidations = TopicInvalidationMap();
-  expected_invalidations.Insert(Invalidation::Init(this->topic2, 2, "2"));
-  expected_invalidations.Insert(Invalidation::Init(this->topic3, 3, "3"));
-
   // Removed Topics should not be notified, newly-added ones should.
-  this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
+  TriggerOnIncomingInvalidation(this->delegate_, inv1, inv2, inv3);
   EXPECT_EQ(2, handler.GetInvalidationCount());
-  EXPECT_EQ(expected_invalidations, handler.GetLastInvalidationMap());
+  EXPECT_EQ(ExpectedInvalidations(inv2, inv3),
+            handler.GetReceivedInvalidations());
+  handler.ClearReceivedInvalidations();
 
   this->delegate_.TriggerOnInvalidatorStateChange(TRANSIENT_INVALIDATION_ERROR);
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler.GetInvalidatorState());
@@ -157,8 +166,8 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
   invalidator->UnregisterInvalidationHandler(&handler);
 
   // Should be ignored since |handler| isn't registered anymore.
-  this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
-  EXPECT_EQ(2, handler.GetInvalidationCount());
+  TriggerOnIncomingInvalidation(this->delegate_, inv1, inv2, inv3);
+  EXPECT_EQ(0, handler.GetInvalidationCount());
 }
 
 // Register handlers and some topics for those handlers, register a handler
@@ -210,25 +219,18 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler4.GetInvalidatorState());
 
   {
-    TopicInvalidationMap invalidation_map;
-    invalidation_map.Insert(Invalidation::Init(this->topic1, 1, "1"));
-    invalidation_map.Insert(Invalidation::Init(this->topic2, 2, "2"));
-    invalidation_map.Insert(Invalidation::Init(this->topic3, 3, "3"));
-    invalidation_map.Insert(Invalidation::Init(this->topic4, 4, "4"));
-    this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
+    const auto inv1 = Invalidation::Init(this->topic1, 1, "1");
+    const auto inv2 = Invalidation::Init(this->topic2, 2, "2");
+    const auto inv3 = Invalidation::Init(this->topic3, 3, "3");
+    const auto inv4 = Invalidation::Init(this->topic4, 4, "4");
+    TriggerOnIncomingInvalidation(this->delegate_, inv1, inv2, inv3, inv4);
 
-    TopicInvalidationMap expected_invalidations;
-    expected_invalidations.Insert(Invalidation::Init(this->topic1, 1, "1"));
-    expected_invalidations.Insert(Invalidation::Init(this->topic2, 2, "2"));
-
-    EXPECT_EQ(1, handler1.GetInvalidationCount());
-    EXPECT_EQ(expected_invalidations, handler1.GetLastInvalidationMap());
-
-    expected_invalidations = TopicInvalidationMap();
-    expected_invalidations.Insert(Invalidation::Init(this->topic3, 3, "3"));
+    EXPECT_EQ(2, handler1.GetInvalidationCount());
+    EXPECT_EQ(ExpectedInvalidations(inv1, inv2),
+              handler1.GetReceivedInvalidations());
 
     EXPECT_EQ(1, handler2.GetInvalidationCount());
-    EXPECT_EQ(expected_invalidations, handler2.GetLastInvalidationMap());
+    EXPECT_EQ(ExpectedInvalidations(inv3), handler2.GetReceivedInvalidations());
 
     EXPECT_EQ(0, handler3.GetInvalidationCount());
     EXPECT_EQ(0, handler4.GetInvalidationCount());
@@ -304,11 +306,10 @@ TYPED_TEST_P(InvalidationServiceTest, EmptySetUnregisters) {
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler2.GetInvalidatorState());
 
   {
-    TopicInvalidationMap invalidation_map;
-    invalidation_map.Insert(Invalidation::Init(this->topic1, 1, "1"));
-    invalidation_map.Insert(Invalidation::Init(this->topic2, 2, "2"));
-    invalidation_map.Insert(Invalidation::Init(this->topic3, 3, "3"));
-    this->delegate_.TriggerOnIncomingInvalidation(invalidation_map);
+    const auto inv1 = Invalidation::Init(this->topic1, 1, "1");
+    const auto inv2 = Invalidation::Init(this->topic2, 2, "2");
+    const auto inv3 = Invalidation::Init(this->topic3, 3, "3");
+    TriggerOnIncomingInvalidation(this->delegate_, inv1, inv2, inv3);
     EXPECT_EQ(0, handler1.GetInvalidationCount());
     EXPECT_EQ(1, handler2.GetInvalidationCount());
   }
