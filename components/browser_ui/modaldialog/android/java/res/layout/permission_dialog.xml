@@ -18,6 +18,6 @@ found in the LICENSE file.
         android:textDirection="locale"
         android:paddingBottom="24dp"
         android:drawablePadding="8dp"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
         app:chromeDrawableTint="@macro/default_icon_color_accent1" />
 </LinearLayout>
