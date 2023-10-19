@@ -1591,6 +1591,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 
   if ([parcelItems count] > 0) {
+    _parcelTrackingItems = parcelItems;
     _latestMagicStackOrder =
         base::FeatureList::IsEnabled(segmentation_platform::features::
                                          kSegmentationPlatformIosModuleRanker)

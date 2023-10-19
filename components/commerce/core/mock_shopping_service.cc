@@ -53,6 +53,7 @@ MockShoppingService::MockShoppingService()
       std::vector<const bookmarks::BookmarkNode*>());
   SetIsPriceInsightsEligible(true);
   SetResponseForGetPriceInsightsInfoForUrl(absl::nullopt);
+  SetGetAllParcelStatusesCallbackValue(std::vector<ParcelTrackingStatus>());
 }
 
 MockShoppingService::~MockShoppingService() = default;
@@ -251,6 +252,19 @@ void MockShoppingService::SetBookmarkModelUsedForSync(
 void MockShoppingService::SetIsParcelTrackingEligible(bool is_eligible) {
   ON_CALL(*this, IsParcelTrackingEligible)
       .WillByDefault(testing::Return(is_eligible));
+}
+
+void MockShoppingService::SetGetAllParcelStatusesCallbackValue(
+    std::vector<ParcelTrackingStatus> parcels) {
+  ON_CALL(*this, GetAllParcelStatuses)
+      .WillByDefault(
+          [parcels = std::move(parcels)](GetParcelStatusCallback callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    std::move(callback), true,
+                    make_unique<std::vector<ParcelTrackingStatus>>(parcels)));
+          });
 }
 
 }  // namespace commerce

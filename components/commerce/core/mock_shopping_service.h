@@ -113,6 +113,10 @@ class MockShoppingService : public commerce::ShoppingService {
               GetBookmarkModelUsedForSync,
               (),
               (override));
+  MOCK_METHOD(void,
+              GetAllParcelStatuses,
+              (GetParcelStatusCallback callback),
+              (override));
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
@@ -141,6 +145,8 @@ class MockShoppingService : public commerce::ShoppingService {
   void SetResponseForGetDiscountInfoForUrls(const DiscountsMap& discounts_map);
   void SetBookmarkModelUsedForSync(bookmarks::BookmarkModel* bookmark_model);
   void SetIsParcelTrackingEligible(bool is_eligible);
+  void SetGetAllParcelStatusesCallbackValue(
+      std::vector<ParcelTrackingStatus> parcels);
 
  private:
   // Since the discount API wants a const ref to some map, keep a default

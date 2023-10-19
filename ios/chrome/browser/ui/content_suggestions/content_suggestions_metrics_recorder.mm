@@ -26,11 +26,9 @@
 
 namespace {
 
-// Max value for kMagicStackModuleEngagementMostVisitedIndexHistogram. Do not
-// change.
 const float kMaxModuleEngagementIndex = 50;
 
-}  // namespace
+}
 
 @implementation ContentSuggestionsMetricsRecorder {
   PrefService* _localState;

@@ -432,7 +432,7 @@ class ShoppingService : public KeyedService,
       GetParcelStatusCallback callback);
 
   // Gets the status of all parcel status stored in the db.
-  void GetAllParcelStatuses(GetParcelStatusCallback callback);
+  virtual void GetAllParcelStatuses(GetParcelStatusCallback callback);
 
   // Called to stop tracking a given parcel.
   // DEPRECATED: use StopTrackingParcels() below()

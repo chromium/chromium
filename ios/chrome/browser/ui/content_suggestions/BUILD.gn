@@ -319,6 +319,7 @@ source_set("unit_tests") {
     ":metrics",
     "//base",
     "//base/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
     "//components/favicon/core",
     "//components/favicon/core/test:test_support",
     "//components/ntp_tiles",

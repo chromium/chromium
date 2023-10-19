@@ -10,6 +10,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_timeouts.h"
 #import "base/time/default_clock.h"
+#import "components/commerce/core/mock_shopping_service.h"
 #import "components/favicon/core/large_icon_service_impl.h"
 #import "components/favicon/core/test/mock_favicon_service.h"
 #import "components/ntp_tiles/icon_cacher.h"
@@ -57,6 +58,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
@@ -164,6 +166,22 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
     histogram_tester_ = std::make_unique<base::HistogramTester>();
+
+    shopping_service_ = std::make_unique<commerce::MockShoppingService>();
+    std::vector<commerce::ParcelTrackingStatus> parcels;
+    commerce::ParcelTrackingStatus new_status;
+    new_status.carrier = commerce::ParcelIdentifier::UPS;
+    new_status.state = commerce::ParcelStatus::NEW;
+    new_status.tracking_id = "abc";
+    parcels.emplace_back(new_status);
+
+    commerce::ParcelTrackingStatus delivered_status;
+    delivered_status.carrier = commerce::ParcelIdentifier::USPS;
+    delivered_status.state = commerce::ParcelStatus::FINISHED;
+    delivered_status.tracking_id = "def";
+    parcels.emplace_back(delivered_status);
+
+    shopping_service_->SetGetAllParcelStatusesCallbackValue(parcels);
   }
 
   ~ContentSuggestionsMediatorTest() override { [mediator_ disconnect]; }
@@ -204,9 +222,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
                           syncService:sync_service
                 authenticationService:authentication_service
                       identityManager:identityManager
-                      shoppingService:commerce::ShoppingServiceFactory::
-                                          GetForBrowserState(
-                                              chrome_browser_state_.get())
+                      shoppingService:shopping_service_.get()
                               browser:browser_.get()];
     mediator_.dispatcher = dispatcher_;
     mediator_.webStateList = browser_.get()->GetWebStateList();
@@ -269,6 +285,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   FakeUrlLoadingBrowserAgent* url_loader_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;
+  std::unique_ptr<commerce::MockShoppingService> shopping_service_;
 };
 
 // Tests that the command is sent to the dispatcher when opening the Reading
@@ -602,4 +619,61 @@ TEST_F(ContentSuggestionsMediatorTest, TestModuleClickIndexMetric) {
                   atIndex:0];
   histogram_tester_->ExpectUniqueSample("IOS.MagicStack.Module.Click.Shortcuts",
                                         4, 1);
+}
+
+// Tests that the mediator handles the parcels returned from
+// ShoppingService::GetAllParcelStatuses by sending up the parcels to the
+// consumer and includes the parcel tracking module type correctly in the magic
+// stack order.
+TEST_F(ContentSuggestionsMediatorTest, TestParcelTrackingReceived) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
+       {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
+        {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
+       {kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}},
+       {kIOSParcelTracking, {}}},
+      {kIOSSetUpList});
+  [mediator_ disconnect];
+  SetUpMediator();
+  consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
+  mediator_.segmentationService =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetForBrowserState(chrome_browser_state_.get());
+
+  OCMExpect(
+      [consumer_ setMagicStackOrder:[OCMArg checkWithBlock:^BOOL(id value) {
+                   NSArray<NSNumber*>* magicStackOrder = (NSArray*)value;
+                   // Ensure MVT, Shortcuts, and two Parcel Tracking items are
+                   // in the ranking.
+                   return [magicStackOrder count] == 4 &&
+                          0 == [magicStackOrder[0] intValue] &&
+                          1 == [magicStackOrder[1] intValue] &&
+                          11 == [magicStackOrder[2] intValue] &&
+                          11 == [magicStackOrder[3] intValue];
+                 }]]);
+  OCMExpect([consumer_ showParcelTrackingItems:[OCMArg any]]);
+  mediator_.consumer = consumer_;
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return [[mediator_ parcelTrackingItems] count] == 2;
+      }));
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return mediator_.hasReceivedMagicStackResponse;
+      }));
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  NSArray<ParcelTrackingItem*>* items = [mediator_ parcelTrackingItems];
+  ParcelTrackingItem* newStatusItem = items[0];
+  EXPECT_EQ(newStatusItem.parcelType, ParcelType::kUPS);
+  EXPECT_EQ(newStatusItem.status, ParcelState::kNew);
+
+  ParcelTrackingItem* finishedItem = items[1];
+  EXPECT_EQ(finishedItem.parcelType, ParcelType::kUSPS);
+  EXPECT_EQ(finishedItem.status, ParcelState::kFinished);
 }
