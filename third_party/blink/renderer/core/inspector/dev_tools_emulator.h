@@ -26,6 +26,8 @@ class CORE_EXPORT DevToolsEmulator final
     : public GarbageCollected<DevToolsEmulator> {
  public:
   explicit DevToolsEmulator(WebViewImpl*);
+  ~DevToolsEmulator();
+
   void Trace(Visitor*) const;
 
   // Settings overrides.
@@ -84,6 +86,8 @@ class CORE_EXPORT DevToolsEmulator final
   gfx::Transform ResetViewportForTesting() { return ResetViewport(); }
 
  private:
+  class ScopedGlobalOverrides;
+
   void EnableMobileEmulation();
   void DisableMobileEmulation();
 
@@ -100,11 +104,15 @@ class CORE_EXPORT DevToolsEmulator final
 
   void ApplyViewportOverride(gfx::Transform*);
   gfx::Transform ComputeRootLayerTransform();
+  bool emulate_mobile_enabled() const {
+    CHECK(!global_overrides_ || device_metrics_enabled_);
+    return !!global_overrides_;
+  }
 
   WebViewImpl* web_view_;
 
   bool device_metrics_enabled_;
-  bool emulate_mobile_enabled_;
+  scoped_refptr<ScopedGlobalOverrides> global_overrides_;
   DeviceEmulationParams emulation_params_;
 
   struct ViewportOverride {
