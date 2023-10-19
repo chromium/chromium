@@ -670,6 +670,34 @@ public class PageInfoViewTest {
         mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_Toggle_On");
     }
 
+    /** Tests the cookies page of the PageInfo UI with the Tracking Protection UI enabled. */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    public void testShowCookiesSubpageTrackingProtection() throws IOException {
+        enableTrackingProtection();
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(containsString("Chrome limits most sites from using")),
+                        isDisplayed()));
+        // Verify that the pref was recorded successfully.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                    .getBoolean(IN_CONTEXT_COOKIE_CONTROLS_OPENED));
+                });
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Toggle_Off");
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Toggle_On");
+    }
+
     /** Tests the history page of the PageInfo UI. */
     @Test
     @MediumTest
@@ -722,6 +750,35 @@ public class PageInfoViewTest {
     @MediumTest
     @EnableFeatures({PageInfoFeatures.USER_BYPASS_UI_NAME})
     public void testClearCookiesOnSubpageUserBypass() throws Exception {
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        // Create cookies.
+        expectHasCookies(false);
+        createCookies();
+        expectHasCookies(true);
+        // Go to cookies subpage.
+        openPageInfo(PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        // Check that cookies usage is displayed.
+        onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        // Clear cookies in page info.
+        onView(withText(containsString("stored data"))).perform(click());
+        onViewWaiting(allOf(withText("Delete"), isDisplayed()));
+        onView(withText("Delete")).perform(click());
+        // Wait until the UI navigates back and check cookies are deleted.
+        onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
+        expectHasCookies(false);
+    }
+
+    /** Tests clearing cookies on the Tracking Protection page of the PageInfo UI. */
+    @Test
+    @MediumTest
+    @EnableFeatures({PageInfoFeatures.USER_BYPASS_UI_NAME})
+    public void testClearCookiesOnSubpageTrackingProtection() throws Exception {
+        enableTrackingProtection();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.

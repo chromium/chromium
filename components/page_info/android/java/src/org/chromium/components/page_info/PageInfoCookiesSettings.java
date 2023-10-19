@@ -18,9 +18,9 @@ import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.FPSCookieInfo;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -53,6 +53,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private int mBlockedSites;
     private CharSequence mHostName;
     private FPSCookieInfo mFPSInfo;
+    private boolean mTrackingProtectionUI;
 
     /**  Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
@@ -64,6 +65,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         public Callback<Activity> onFeedbackLinkClicked;
         public boolean disableCookieDeletion;
         public CharSequence hostName;
+        public boolean showTrackingProtectionUI;
     }
 
     @Override
@@ -96,11 +98,16 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     public void setParams(PageInfoCookiesViewParams params) {
+        mTrackingProtectionUI = params.showTrackingProtectionUI;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
         NoUnderlineClickableSpan linkSpan = new NoUnderlineClickableSpan(
                 getContext(), (view) -> { params.onCookieSettingsLinkClicked.run(); });
         cookieSummary.setSummary(
-                SpanApplier.applySpans(getString(R.string.page_info_cookies_description),
+                SpanApplier.applySpans(
+                        getString(
+                                mTrackingProtectionUI
+                                        ? R.string.page_info_tracking_protection_description
+                                        : R.string.page_info_cookies_description),
                         new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
 
         // TODO(crbug.com/1077766): Set a ManagedPreferenceDelegate?
@@ -231,6 +238,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         }
 
         updateCookieSwitch();
+        updateStorageSubtitle();
     }
 
     public void setCookiesCount(int allowedCookies, int blockedCookies) {
@@ -252,6 +260,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mDataUsed |= allowedSites != 0;
         updateCookieDeleteButton();
         updateCookieSwitch();
+        updateStorageSubtitle();
     }
 
     public void setStorageUsage(long storageUsage) {
@@ -328,11 +337,56 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             : "This should only be invoked when UserBypassUI is enabled.";
         // TODO(crbug.com/1446230): Update the strings for when FPS are on.
         if (!mCookieSwitch.isChecked()) {
-            mCookieSwitch.setSummary(getContext().getResources().getQuantityString(
-                    R.plurals.page_info_sites_blocked, mBlockedSites, mBlockedSites));
+            if (mTrackingProtectionUI) {
+                mCookieSwitch.setSummary(
+                        getContext()
+                                .getString(R.string.page_info_tracking_protection_toggle_limited));
+            } else {
+                mCookieSwitch.setSummary(
+                        getContext()
+                                .getResources()
+                                .getQuantityString(
+                                        R.plurals.page_info_sites_blocked,
+                                        mBlockedSites,
+                                        mBlockedSites));
+            }
         } else {
-            mCookieSwitch.setSummary(getContext().getResources().getQuantityString(
-                    R.plurals.page_info_sites_allowed, mAllowedSites, mAllowedSites));
+            if (mTrackingProtectionUI) {
+                mCookieSwitch.setSummary(
+                        getContext()
+                                .getString(R.string.page_info_tracking_protection_toggle_allowed));
+            } else {
+                mCookieSwitch.setSummary(
+                        getContext()
+                                .getResources()
+                                .getQuantityString(
+                                        R.plurals.page_info_sites_allowed,
+                                        mAllowedSites,
+                                        mAllowedSites));
+            }
+        }
+    }
+
+    private void updateStorageSubtitle() {
+        assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
+                : "This should only be invoked when UserBypassUI is enabled.";
+        if (!mTrackingProtectionUI) return;
+        if (!mCookieSwitch.isChecked()) {
+            mCookieInUse.setSummary(
+                    getContext()
+                            .getResources()
+                            .getQuantityString(
+                                    R.plurals.page_info_sites_blocked,
+                                    mBlockedSites,
+                                    mBlockedSites));
+        } else {
+            mCookieInUse.setSummary(
+                    getContext()
+                            .getResources()
+                            .getQuantityString(
+                                    R.plurals.page_info_sites_allowed,
+                                    mAllowedSites,
+                                    mAllowedSites));
         }
     }
 

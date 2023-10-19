@@ -146,6 +146,9 @@ public abstract class PageInfoControllerDelegate {
      */
     public abstract void showCookieSettings();
 
+    /** Show Tracking Protection settings. */
+    public abstract void showTrackingProtectionSettings();
+
     /**
      * Shows cookie feedback UI.
      * @param activity The Activity where the feedback is shown.

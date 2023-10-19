@@ -618,6 +618,12 @@
       <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_BLOCKED" desc="Description text in the Page Info dialog to indicate that third-party cookies are blocked on this site.">
         Third-party cookies blocked
       </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_LIMITED" desc="" translateable="false">
+        Limited
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_ALLOWED" desc="" translateable="false">
+        Allowed
+      </message>
       <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_BLOCKED_HIGH_CONFIDENCE" desc="Description text in the Page Info dialog to indicate that third-party cookies are blocked on a site that has a high breakage confidence level.">
         Site not working? Third-party cookies blocked
       </message>
@@ -626,6 +632,9 @@
       </message>
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE" desc="" translateable="false">
         Tracking Protection
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="" translateable="false">
+        Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SUBTITLE_COOKIES_LIMITED" desc="" translateable="false">
         Third-party cookies limited

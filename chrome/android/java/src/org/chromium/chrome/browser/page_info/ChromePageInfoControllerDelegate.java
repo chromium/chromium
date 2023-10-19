@@ -58,6 +58,7 @@ import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.components.page_info.PageInfoView;
+import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -210,10 +211,18 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         return mContext.getString(R.string.page_info_connection_paint_preview);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void showCookieSettings() {
         SiteSettingsHelper.showCategorySettings(
                 mContext, mProfile, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void showTrackingProtectionSettings() {
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(mContext, TrackingProtectionSettings.class);
     }
 
     @Override

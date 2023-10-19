@@ -114,10 +114,14 @@ public class PageInfoCookiesController
         params.thirdPartyCookieBlockingEnabled = getDelegate().cookieControlsShown();
         params.onThirdPartyCookieToggleChanged = this::onThirdPartyCookieToggleChanged;
         params.onClearCallback = this::onClearCookiesClicked;
-        params.onCookieSettingsLinkClicked = getDelegate()::showCookieSettings;
+        params.onCookieSettingsLinkClicked =
+                mTrackingProtectionUI
+                        ? getDelegate()::showTrackingProtectionSettings
+                        : getDelegate()::showCookieSettings;
         params.onFeedbackLinkClicked = getDelegate()::showCookieFeedback;
         params.disableCookieDeletion = isDeletionDisabled();
         params.hostName = mMainController.getURL().getHost();
+        params.showTrackingProtectionUI = mTrackingProtectionUI;
         mSubPage.setParams(params);
         if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
             mSubPage.setCookieStatus(mStatus, mIsEnforced, mExpiration);
