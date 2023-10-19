@@ -24,8 +24,8 @@ class ActionTypeButton : public ash::OptionButtonBase {
   ActionTypeButton& operator=(const ActionTypeButton&) = delete;
   ~ActionTypeButton() override;
 
-  // Used by the button group to change text color.
-  void RefreshTextColor();
+  // Used by the button group to change colors.
+  void RefreshColors();
 
  private:
   // ash::OptionButtonBase:
