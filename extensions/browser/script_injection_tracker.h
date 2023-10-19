@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_CONTENT_SCRIPT_TRACKER_H_
-#define EXTENSIONS_BROWSER_CONTENT_SCRIPT_TRACKER_H_
+#ifndef EXTENSIONS_BROWSER_SCRIPT_INJECTION_TRACKER_H_
+#define EXTENSIONS_BROWSER_SCRIPT_INJECTION_TRACKER_H_
 
 #include "base/types/pass_key.h"
 #include "extensions/common/extension_id.h"
@@ -45,9 +45,7 @@ class ScriptExecutor;
 //   tracked)
 //
 // This class may only be used on the UI thread.
-// TODO(https://crbug.com/1429408): Rename this to ScriptInjectionTracker or
-// similar? It's not just content scripts, per se.
-class ContentScriptTracker {
+class ScriptInjectionTracker {
  public:
   // The type of script being executed. We make this distinction because these
   // scripts have different privileges associated with them.
@@ -68,7 +66,7 @@ class ContentScriptTracker {
   };
 
   // Only static methods.
-  ContentScriptTracker() = delete;
+  ScriptInjectionTracker() = delete;
 
   // Answers whether the `process` has ever in the past run a content script
   // from an extension with the given `extension_id`.
@@ -88,8 +86,8 @@ class ContentScriptTracker {
       const content::RenderProcessHost& process);
 
   // The few methods below are called by ExtensionWebContentsObserver to notify
-  // ContentScriptTracker about various events.  The methods correspond directly
-  // to methods of content::WebContentsObserver with the same names.
+  // ScriptInjectionTracker about various events.  The methods correspond
+  // directly to methods of content::WebContentsObserver with the same names.
   static void ReadyToCommitNavigation(
       base::PassKey<ExtensionWebContentsObserver> pass_key,
       content::NavigationHandle* navigation);
@@ -128,7 +126,7 @@ class ContentScriptTracker {
       content::RenderProcessHost& process);
 
  private:
-  using PassKey = base::PassKey<ContentScriptTracker>;
+  using PassKey = base::PassKey<ScriptInjectionTracker>;
 
   // See the doc comment of DoContentScriptsMatch in the .cc file.
   friend class ContentScriptMatchingBrowserTest;
@@ -139,4 +137,4 @@ class ContentScriptTracker {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_CONTENT_SCRIPT_TRACKER_H_
+#endif  // EXTENSIONS_BROWSER_SCRIPT_INJECTION_TRACKER_H_

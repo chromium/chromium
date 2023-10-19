@@ -35,7 +35,6 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api_activity_monitor.h"
 #include "extensions/browser/bad_message.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -44,6 +43,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/quota_service.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/context_type_adapter.h"
 #include "extensions/common/extension_api.h"
@@ -119,9 +119,9 @@ bool CanRendererActOnBehalfOfExtension(
   // corresponding type (e.g. Feature::CONTENT_SCRIPT_CONTEXT). We evaluate this
   // later in ProcessMap::CanProcessHostContextType(), but we could be stricter
   // by including it here.
-  if (ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+  if (ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
           render_process_host, extension_id) ||
-      ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+      ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
           render_process_host, extension_id)) {
     return true;
   }

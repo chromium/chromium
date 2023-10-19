@@ -9,10 +9,10 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map_factory.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 
@@ -158,11 +158,11 @@ bool ProcessMap::CanProcessHostContextType(
     case Feature::CONTENT_SCRIPT_CONTEXT:
       // Currently, we assume any process can host a content script.
       // TODO(crbug.com/1186557): This could be better by looking at
-      // ContentScriptTracker, as we do for user scripts below.
+      // ScriptInjectionTracker, as we do for user scripts below.
       return !!extension;
     case Feature::USER_SCRIPT_CONTEXT:
       return extension &&
-             ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+             ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
                  process, extension->id());
     case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
       // Lock screen contexts are essentially blessed contexts that run on the

@@ -10,9 +10,9 @@
 #include "base/ranges/algorithm.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
@@ -151,7 +151,7 @@ void MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
 
 // static
 void URLLoaderFactoryManager::WillInjectContentScriptsWhenNavigationCommits(
-    base::PassKey<ContentScriptTracker> pass_key,
+    base::PassKey<ScriptInjectionTracker> pass_key,
     content::NavigationHandle* navigation,
     const std::vector<const Extension*>& extensions) {
   // Same-document navigations do not send URLLoaderFactories to the renderer
@@ -181,7 +181,7 @@ void URLLoaderFactoryManager::WillInjectContentScriptsWhenNavigationCommits(
 
 // static
 void URLLoaderFactoryManager::WillProgrammaticallyInjectContentScript(
-    base::PassKey<ContentScriptTracker> pass_key,
+    base::PassKey<ScriptInjectionTracker> pass_key,
     content::RenderFrameHost* frame,
     const Extension& extension) {
   if (!ShouldCreateSeparateFactoryForContentScripts(extension))

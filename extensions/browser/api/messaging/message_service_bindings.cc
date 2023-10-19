@@ -14,8 +14,8 @@
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/bad_message.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/trace_util.h"
@@ -72,7 +72,7 @@ bool IsValidMessagingSource(RenderProcessHost& process,
         return false;
       }
       bool is_content_script_expected =
-          ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+          ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
               process, *source_endpoint.extension_id);
       if (!is_content_script_expected) {
         bad_message::ReceivedBadMessage(
@@ -89,7 +89,7 @@ bool IsValidMessagingSource(RenderProcessHost& process,
         return false;
       }
       bool is_user_script_expected =
-          ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+          ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
               process, *source_endpoint.extension_id);
       if (!is_user_script_expected) {
         bad_message::ReceivedBadMessage(

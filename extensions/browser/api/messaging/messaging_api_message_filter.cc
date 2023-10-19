@@ -15,7 +15,6 @@
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/bad_message.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_features.h"
