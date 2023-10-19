@@ -37,7 +37,7 @@ bool StructTraits<autofill::mojom::FrameTokenWithPredecessorDataView,
   if (!data.ReadToken(&out->token))
     return false;
   out->predecessor = data.predecessor();
-  return true;
+  return out->predecessor >= -1;
 }
 
 // static
@@ -297,7 +297,13 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
   out->is_gaia_with_skip_save_password_form =
       data.is_gaia_with_skip_save_password_form();
 
-  return true;
+  return base::ranges::all_of(
+      out->child_frames,
+      [&](int predecessor) {
+        return predecessor == -1 ||
+               base::checked_cast<size_t>(predecessor) < out->fields.size();
+      },
+      &autofill::FrameTokenWithPredecessor::predecessor);
 }
 
 // static
