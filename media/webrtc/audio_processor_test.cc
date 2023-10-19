@@ -59,7 +59,7 @@ const int kNumberOfPacketsForTest = 100;
 
 void ReadDataFromSpeechFile(char* data, int length) {
   base::FilePath file;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &file));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file));
   file = file.Append(FILE_PATH_LITERAL("media"))
              .Append(FILE_PATH_LITERAL("test"))
              .Append(FILE_PATH_LITERAL("data"))

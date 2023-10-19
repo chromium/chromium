@@ -110,7 +110,7 @@ class Mp4MuxerDelegateTest : public testing::Test {
  private:
   base::FilePath GetTestDataFilePath(base::StringPiece name) {
     base::FilePath file_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
     file_path = file_path.Append(FILE_PATH_LITERAL("media"))
                     .Append(FILE_PATH_LITERAL("test"))
                     .Append(FILE_PATH_LITERAL("data"))
