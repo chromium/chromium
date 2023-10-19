@@ -125,28 +125,34 @@ TEST_F(AutofillI18nApiTest, GetFormattingExpressions) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
   for (const std::string& country_code : country_data_map->country_codes()) {
     AddressCountryCode address_country_code{country_code};
+
     for (std::underlying_type_t<ServerFieldType> i = 0;
          i < MAX_VALID_FIELD_TYPE; ++i) {
       if (ServerFieldType field_type = ToSafeServerFieldType(i, NO_SERVER_DATA);
           field_type != NO_SERVER_DATA) {
-        auto* it = kAutofillFormattingRulesMap.find({country_code, field_type});
-        // The expected value is contained in `kAutofillFormattingRulesMap`. If
-        // no entry is found, it is expected to fallback to the legacy string
-        // (country XX).
-        if (it != kAutofillFormattingRulesMap.end()) {
+        std::u16string expected;
+        if (IsCustomHierarchyAvailableForCountry(address_country_code)) {
+          // The expected value is contained in `kAutofillFormattingRulesMap`.
+          // If no entry is found, it should *not* fallback to a legacy
+          // expression.
+          auto* it =
+              kAutofillFormattingRulesMap.find({country_code, field_type});
+          expected = it != kAutofillFormattingRulesMap.end()
+                         ? std::u16string(it->second)
+                         : u"";
+
           EXPECT_EQ(GetFormattingExpression(field_type, address_country_code),
-                    std::u16string(it->second));
+                    expected);
+
         } else {
           auto* legacy_it = kAutofillFormattingRulesMap.find(
               {kLegacyHierarchyCountryCode, field_type});
-          std::u16string expected =
-              legacy_it != kAutofillFormattingRulesMap.end()
-                  ? std::u16string(legacy_it->second)
-                  : StructuredAddressesFormatProvider::GetInstance()
-                        ->GetPattern(field_type, country_code);
-          EXPECT_EQ(GetFormattingExpression(field_type, address_country_code),
-                    expected);
+          expected = legacy_it != kAutofillFormattingRulesMap.end()
+                         ? std::u16string(legacy_it->second)
+                         : u"";
         }
+        EXPECT_EQ(GetFormattingExpression(field_type, address_country_code),
+                  expected);
       }
     }
   }

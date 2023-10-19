@@ -219,20 +219,24 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
 std::u16string GetFormattingExpression(ServerFieldType field_type,
                                        AddressCountryCode country_code) {
   if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
-    auto* it =
-        kAutofillFormattingRulesMap.find({country_code.value(), field_type});
-    // If `country_code` is specified, return a custom formatting expression if
-    // exists.
-    if (!country_code->empty() && it != kAutofillFormattingRulesMap.end()) {
-      return std::u16string(it->second);
+    // If `country_code` is specified, return the corresponding formatting
+    // expression if they exist. Note that it should not fallback to a legacy
+    // expression, as these ones refer to a different hierarchy.
+    if (IsCustomHierarchyAvailableForCountry(country_code)) {
+      auto* it =
+          kAutofillFormattingRulesMap.find({country_code.value(), field_type});
+
+      return it != kAutofillFormattingRulesMap.end()
+                 ? std::u16string(it->second)
+                 : u"";
     }
 
     // Otherwise return a legacy formatting expression that exists.
     auto* legacy_it = kAutofillFormattingRulesMap.find(
         {kLegacyHierarchyCountryCode, field_type});
-    if (legacy_it != kAutofillFormattingRulesMap.end()) {
-      return std::u16string(legacy_it->second);
-    }
+    return legacy_it != kAutofillFormattingRulesMap.end()
+               ? std::u16string(legacy_it->second)
+               : u"";
   }
 
   auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
