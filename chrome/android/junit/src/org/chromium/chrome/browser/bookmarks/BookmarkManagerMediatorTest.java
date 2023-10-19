@@ -1255,7 +1255,7 @@ public class BookmarkManagerMediatorTest {
 
         finishLoading();
         mMediator.openFolder(mFolderId1);
-        assertEquals(3, mModelList.size());
+        verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3);
 
         // Setup selection mock to make it seem like folder 2 is selected.
         when(mSelectionDelegate.isItemSelected(mFolderId2)).thenReturn(true);
@@ -1269,6 +1269,56 @@ public class BookmarkManagerMediatorTest {
 
         // Mostly just verifying that #syncAdapterAndSelectionDelegate() doesn't crash.
         assertEquals(2, mModelList.size());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testDeleteMultipleDuringSelection() {
+        // Inspired by https://crbug.com/1490506 where deleting multiple items were unselected one
+        // by one. But this caused selection notifications with deleted items to still reach other
+        // components.
+
+        String queryString = "test";
+        when(mBookmarkModel.searchBookmarks(eq(queryString), anyInt()))
+                .thenReturn(Arrays.asList(mFolderId2, mFolderId3, mBookmarkId21));
+
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        PropertyModel searchBoxModel = mModelList.get(0).model;
+        searchBoxModel
+                .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK)
+                .onResult(queryString);
+        assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
+        verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3, mBookmarkId21);
+
+        // Setup selection mock to make it seem like everything is selected
+        when(mSelectionDelegate.isItemSelected(mFolderId2)).thenReturn(true);
+        when(mSelectionDelegate.isItemSelected(mFolderId3)).thenReturn(true);
+        when(mSelectionDelegate.isItemSelected(mBookmarkId21)).thenReturn(true);
+        doReturn(Arrays.asList(mFolderId2, mFolderId3, mBookmarkId21))
+                .when(mSelectionDelegate)
+                .getSelectedItemsAsList();
+
+        // Pretend to delete folder 2 and folder 3. Pause the looper to get the removes to dedupe.
+        ShadowPostTask.reset();
+        doReturn(Arrays.asList(mBookmarkId21)).when(mBookmarkModel).getChildIds(mFolderId1);
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        when(mBookmarkModel.searchBookmarks(eq(queryString), anyInt()))
+                .thenReturn(Arrays.asList(mBookmarkId21));
+        mBookmarkModelObserverArgumentCaptor
+                .getValue()
+                .bookmarkNodeRemoved(
+                        mFolderItem1, 0, mFolderItem2, /*isDoingExtensiveChanges*/ false);
+        mBookmarkModelObserverArgumentCaptor
+                .getValue()
+                .bookmarkNodeRemoved(
+                        mFolderItem1, 0, mFolderItem3, /*isDoingExtensiveChanges*/ false);
+
+        ShadowLooper.idleMainLooper();
+        verifyCurrentBookmarkIds(null, mBookmarkId21);
+        // Only 1 selection update should be sent out. This minimizes event notification spam and
+        // complexity for observers.
+        verify(mSelectionDelegate).setSelectedItems(Collections.singleton(mBookmarkId21));
     }
 
     @Test

@@ -870,10 +870,18 @@ class BookmarkManagerMediator
      * still be stored by {@link #mSelectionDelegate}, which causes incorrect selection counting.
      */
     private void syncAdapterAndSelectionDelegate() {
-        for (BookmarkId node : mSelectionDelegate.getSelectedItemsAsList()) {
+        List<BookmarkId> selectedItems = mSelectionDelegate.getSelectedItemsAsList();
+        Set<BookmarkId> removedIds = new HashSet<>();
+        for (BookmarkId node : selectedItems) {
             if (mSelectionDelegate.isItemSelected(node) && getPositionForBookmark(node) == -1) {
-                mSelectionDelegate.toggleSelectionForItem(node);
+                removedIds.add(node);
             }
+        }
+
+        if (!removedIds.isEmpty()) {
+            Set<BookmarkId> retainIds = new HashSet<>(selectedItems);
+            retainIds.removeAll(removedIds);
+            mSelectionDelegate.setSelectedItems(retainIds);
         }
     }
 
