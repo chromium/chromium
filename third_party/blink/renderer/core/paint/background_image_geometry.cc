@@ -530,11 +530,9 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     PhysicalBoxStrut& snapped_box_outset) const {
   switch (fill_layer.Origin()) {
     case EFillBox::kFillBox:
-    case EFillBox::kStrokeBox:
-    case EFillBox::kViewBox:
-      // TODO(pdr): These are not yet implemented for origin.
-      NOTREACHED();
-      break;
+    // Spec: For elements with associated CSS layout box, the used values for
+    // fill-box compute to content-box.
+    // https://drafts.fxtf.org/css-masking/#the-mask-clip
     case EFillBox::kContent:
       // If the PaddingOutsets are zero then this is equivalent to
       // kPadding and we should apply the snapping logic.
@@ -572,6 +570,11 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
                                     LayoutUnit(inner_border_rect.bottom());
       }
       return;
+    case EFillBox::kStrokeBox:
+    case EFillBox::kViewBox:
+    // Spec: For elements with associated CSS layout box, ... stroke-box and
+    // view-box compute to border-box.
+    // https://drafts.fxtf.org/css-masking/#the-mask-clip
     case EFillBox::kBorder:
       // All adjustments remain 0.
       snapped_box_outset = unsnapped_box_outset = PhysicalBoxStrut();
