@@ -50,7 +50,7 @@ function registerTest(testName, module, caseName) {
     /** @override */
     get browsePreload() {
       return `chrome://scanning/test_loader.html` +
-          `?module=chromeos/scanning/${module}&host=test`;
+          `?module=chromeos/scanning/${module}`;
     }
   };
   TEST_F(className, caseName || 'All', () => mocha.run());
