@@ -1478,10 +1478,7 @@ bool CanPaintMultipleFragments(const LayoutObject& layout_object) {
   if (!layout_box)
     return true;
 
-  // If the object has been laid out inside the legacy engine, always return
-  // true.
-  if (!layout_box->PhysicalFragmentCount())
-    return true;
+  DCHECK(!layout_box->IsFragmentLessBox());
 
   // If the object isn't monolithic, we're good.
   if (!layout_box->IsMonolithic()) {

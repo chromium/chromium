@@ -929,10 +929,10 @@ void PaintLayer::AppendSingleFragmentForHitTesting(
 
 const LayoutBox* PaintLayer::GetLayoutBoxWithBlockFragments() const {
   const LayoutBox* layout_box = GetLayoutBox();
-  if (!layout_box || !layout_box->CanTraversePhysicalFragments() ||
-      layout_box->IsFragmentLessBox()) {
+  if (!layout_box || !layout_box->CanTraversePhysicalFragments()) {
     return nullptr;
   }
+  DCHECK(!layout_box->IsFragmentLessBox());
   return layout_box;
 }
 

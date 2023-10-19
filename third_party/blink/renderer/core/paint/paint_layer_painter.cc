@@ -128,6 +128,10 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   if (object.GetFrameView()->ShouldThrottleRendering())
     return kFullyPainted;
 
+  if (object.IsFragmentLessBox()) {
+    return kFullyPainted;
+  }
+
   // Non self-painting layers without self-painting descendants don't need to be
   // painted as their layoutObject() should properly paint itself.
   if (!paint_layer_.IsSelfPaintingLayer() &&
