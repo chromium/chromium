@@ -428,8 +428,34 @@ void PrerenderManager::StartPrerenderSearchResult(
                                            preloading_attempt)) {
     return;
   }
-  StartPrerenderSearchResultInternal(canonical_search_url, prerendering_url,
-                                     preloading_attempt);
+
+  // web_contents() owns the instance that stores this callback, so it is safe
+  // to call std::ref.
+  base::RepeatingCallback<bool(const GURL&)> url_match_predicate =
+      base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
+                          web_contents()->GetBrowserContext());
+
+  content::PreloadingHoldbackStatus holdback_status_override =
+      content::PreloadingHoldbackStatus::kUnspecified;
+  if (base::FeatureList::IsEnabled(features::kPrerenderDSEHoldback)) {
+    holdback_status_override = content::PreloadingHoldbackStatus::kHoldback;
+  }
+
+  std::unique_ptr<content::PrerenderHandle> prerender_handle =
+      web_contents()->StartPrerendering(
+          prerendering_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDefaultSearchEngineMetricSuffix,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          holdback_status_override, preloading_attempt.get(),
+          std::move(url_match_predicate));
+
+  if (prerender_handle) {
+    CHECK(!search_prerender_task_)
+        << "SearchPrerenderTask should be reset before setting a new one.";
+    search_prerender_task_ = std::make_unique<SearchPrerenderTask>(
+        canonical_search_url, std::move(prerender_handle));
+  }
 }
 
 void PrerenderManager::StopPrerenderSearchResult(
@@ -536,41 +562,6 @@ bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(
       PrerenderPredictionStatus::kCancelled);
   search_prerender_task_.reset();
   return true;
-}
-
-// TODO(https://crbug.com/1485775): Merge this function into
-// StartPrerenderSearchResult().
-void PrerenderManager::StartPrerenderSearchResultInternal(
-    const GURL& canonical_search_url,
-    const GURL& prerendering_url,
-    base::WeakPtr<content::PreloadingAttempt> attempt) {
-  // web_contents() owns the instance that stores this callback, so it is safe
-  // to call std::ref.
-  base::RepeatingCallback<bool(const GURL&)> url_match_predicate =
-      base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
-                          web_contents()->GetBrowserContext());
-
-  content::PreloadingHoldbackStatus holdback_status_override =
-      content::PreloadingHoldbackStatus::kUnspecified;
-  if (base::FeatureList::IsEnabled(features::kPrerenderDSEHoldback)) {
-    holdback_status_override = content::PreloadingHoldbackStatus::kHoldback;
-  }
-
-  std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      web_contents()->StartPrerendering(
-          prerendering_url, content::PrerenderTriggerType::kEmbedder,
-          prerender_utils::kDefaultSearchEngineMetricSuffix,
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          holdback_status_override,
-          /*preloading_attempt=*/attempt.get(), std::move(url_match_predicate));
-
-  if (prerender_handle) {
-    CHECK(!search_prerender_task_)
-        << "SearchPrerenderTask should be reset before setting a new one.";
-    search_prerender_task_ = std::make_unique<SearchPrerenderTask>(
-        canonical_search_url, std::move(prerender_handle));
-  }
 }
 
 PrerenderManager::PrerenderManager(content::WebContents* web_contents)

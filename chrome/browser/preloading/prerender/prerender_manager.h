@@ -136,11 +136,6 @@ class PrerenderManager : public content::WebContentsObserver,
       const GURL& canonical_search_url,
       base::WeakPtr<content::PreloadingAttempt> attempt);
 
-  void StartPrerenderSearchResultInternal(
-      const GURL& canonical_search_url,
-      const GURL& prerendering_url,
-      base::WeakPtr<content::PreloadingAttempt> attempt);
-
   // Stops search prefetch from being upgraded to prerender.
   void UnregisterSearchPrerender();
 
