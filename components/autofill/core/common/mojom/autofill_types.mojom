@@ -432,6 +432,7 @@ struct FormFieldDataPredictions {
 struct FormDataPredictions {
   FormData data;
   string signature;
+  string alternative_signature;
   array<FormFieldDataPredictions> fields;
 };
 

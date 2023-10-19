@@ -499,6 +499,11 @@ struct StructTraits<autofill::mojom::FormDataPredictionsDataView,
     return r.signature;
   }
 
+  static const std::string& alternative_signature(
+      const autofill::FormDataPredictions& r) {
+    return r.alternative_signature;
+  }
+
   static const std::vector<autofill::FormFieldDataPredictions>& fields(
       const autofill::FormDataPredictions& r) {
     return r.fields;
