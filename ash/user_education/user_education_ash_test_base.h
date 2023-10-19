@@ -18,6 +18,11 @@ class MockUserEducationDelegate;
 // * Installs a `MockUserEducationDelegate` during `SetUp()`.
 // * Does NOT add user sessions during `SetUp()`.
 class UserEducationAshTestBase : public NoSessionAshTestBase {
+ public:
+  explicit UserEducationAshTestBase(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::SYSTEM_TIME);
+
  protected:
   // NoSessionAshTestBase:
   void SetUp() override;

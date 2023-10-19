@@ -22,6 +22,7 @@
 #include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/user_education/holding_space_tour/holding_space_tour_prefs.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_types.h"
@@ -127,6 +128,28 @@ WallpaperView* GetWallpaperViewNearestPoint(
                  GetDisplayNearestPoint(location_in_screen).id()))
       ->wallpaper_widget_controller()
       ->wallpaper_view();
+}
+
+// Indicates whether the tour should be shown based on when it was last shown
+// and how many times total it's been shown. It should be no more than once
+// in a 24 hour period, and no more than 3 times total.
+bool TourShouldBeShown() {
+  if (!features::IsHoldingSpaceTourRateLimitingEnabled()) {
+    return true;
+  }
+
+  PrefService* const prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  const auto time_of_last_tour =
+      holding_space_tour_prefs::GetLastTimeTourWasShown(prefs);
+  const auto tour_shown_count =
+      holding_space_tour_prefs::GetTourShownCount(prefs);
+
+  bool tour_shown_recently =
+      time_of_last_tour.has_value() &&
+      base::Time::Now() - time_of_last_tour.value() < base::Hours(24);
+
+  return tour_shown_count < 3u && !tour_shown_recently;
 }
 
 // Highlight -------------------------------------------------------------------
@@ -354,10 +377,10 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     Shelf* shelf = GetShelfNearestPoint(location_in_screen.value());
     CHECK(shelf);
 
-    // Ensure the shelf is visible on the active display while the observed
-    // drag-and-drop sequence is in progress.
-    if (!disable_shelf_auto_hide_ ||
-        (disable_shelf_auto_hide_->weak_shelf() != shelf)) {
+    // If the shelf is currently being force-shown on the wrong display (i.e.
+    // the file has been dragged to a new display), switch to the correct one.
+    if (disable_shelf_auto_hide_ &&
+        disable_shelf_auto_hide_->weak_shelf() != shelf) {
       disable_shelf_auto_hide_ =
           std::make_unique<Shelf::ScopedDisableAutoHide>(shelf);
     }
@@ -369,9 +392,19 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
           std::make_unique<HoldingSpaceController::ScopedForceShowInShelf>();
     }
 
+    if (!TourShouldBeShown()) {
+      return;
+    }
+
+    // Ensure the shelf is visible on the active display while the observed
+    // drag-and-drop sequence is in progress.
+    if (!disable_shelf_auto_hide_) {
+      disable_shelf_auto_hide_ =
+          std::make_unique<Shelf::ScopedDisableAutoHide>(shelf);
+    }
+
     // Cache the `holding_space_tray` nearest the `location_in_screen` so that
     // we can show an associated help bubble.
-    // TODO(http://b/283169466): Rate limit showing the help bubble.
     HoldingSpaceTray* const holding_space_tray =
         GetHoldingSpaceTrayNearestPoint(location_in_screen.value());
 
@@ -401,6 +434,9 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
                 views::ElementTrackerViews::GetContextForView(
                     holding_space_tray),
                 std::move(close_callback))) {
+      holding_space_tour_prefs::MarkTourShown(
+          Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+
       // If we successfully created a help bubble, then it is safe to replace
       // the current `base::ScopedClosureRunner` because any previous help
       // bubbles have already closed.

@@ -43,6 +43,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
@@ -235,53 +236,37 @@ class DraggableView : public views::View {
 // HoldingSpaceTourControllerTest ----------------------------------------------
 
 // Base class for tests of the `HoldingSpaceTourController`.
-class HoldingSpaceTourControllerTest : public UserEducationAshTestBase {
+class HoldingSpaceTourControllerTestBase : public UserEducationAshTestBase {
  public:
-  explicit HoldingSpaceTourControllerTest(
-      absl::optional<bool> drop_to_pin_enabled) {
+  HoldingSpaceTourControllerTestBase(
+      absl::optional<bool> drop_to_pin_enabled,
+      bool rate_limiting_enabled,
+      base::test::TaskEnvironment::TimeSource time_source)
+      : UserEducationAshTestBase(time_source) {
     // NOTE: The `HoldingSpaceTourController` exists only when the Holding Space
     // Tour feature is enabled. Controller existence is verified in test
     // coverage for the controller's owner.
+    std::vector<base::test::FeatureRefAndParams> enabled;
+    std::vector<base::test::FeatureRef> disabled;
+
     if (drop_to_pin_enabled.has_value()) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      enabled.push_back(base::test::FeatureRefAndParams(
           features::kHoldingSpaceTour,
-          {{"drop-to-pin", drop_to_pin_enabled.value() ? "true" : "false"}});
+          {{"drop-to-pin", drop_to_pin_enabled.value() ? "true" : "false"}}));
     } else {
-      scoped_feature_list_.InitAndEnableFeature(features::kHoldingSpaceTour);
+      enabled.emplace_back(features::kHoldingSpaceTour,
+                           base::FieldTrialParams());
     }
+
+    if (rate_limiting_enabled) {
+      disabled.emplace_back(features::kHoldingSpaceTourIgnoreRateLimiting);
+    } else {
+      enabled.emplace_back(features::kHoldingSpaceTourIgnoreRateLimiting,
+                           base::FieldTrialParams());
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// HoldingSpaceTourControllerDragAndDropTest -----------------------------------
-
-// Base class for drag-and-drop tests of the `HoldingSpaceTourController`,
-// parameterized by (a) whether the drop-to-pin param is available and enabled,
-// (b) whether to drag Files app data, and (c) whether to complete the drop (as
-// opposed to cancelling it).
-class HoldingSpaceTourControllerDragAndDropTest
-    : public HoldingSpaceTourControllerTest,
-      public testing::WithParamInterface<
-          std::tuple</*drop_to_pin_enabled=*/absl::optional<bool>,
-                     /*drag_files_app_data=*/bool,
-                     /*complete_drop=*/bool>> {
- public:
-  HoldingSpaceTourControllerDragAndDropTest()
-      : HoldingSpaceTourControllerTest(drop_to_pin_enabled()) {}
-
-  // Whether the drop-to-pin feature param is enabled.
-  absl::optional<bool> drop_to_pin_enabled() const {
-    return std::get<0>(GetParam());
-  }
-
-  // Whether to drag Files app data given test parameterization.
-  bool drag_files_app_data() const { return std::get<1>(GetParam()); }
-
-  // Whether to complete the drop (as opposed to cancelling it) given test
-  // parameterization.
-  bool complete_drop() const { return std::get<2>(GetParam()); }
 
   // Moves the mouse to the center of the specified `widget`.
   void MoveMouseTo(views::Widget* widget) {
@@ -327,9 +312,9 @@ class HoldingSpaceTourControllerDragAndDropTest
   }
 
  private:
-  // HoldingSpaceTourControllerTest:
+  // UserEducationAshTestBase:
   void SetUp() override {
-    HoldingSpaceTourControllerTest::SetUp();
+    UserEducationAshTestBase::SetUp();
 
     // Prevent blocking during drag-and-drop sequences.
     ShellTestApi().drag_drop_controller()->SetDisableNestedLoopForTesting(true);
@@ -373,6 +358,8 @@ class HoldingSpaceTourControllerDragAndDropTest
             }));
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   // Used to mock help bubble creation given that user education services in
   // the browser are non-existent for unit tests in Ash.
   user_education::test::TestHelpBubbleDelegate help_bubble_delegate_;
@@ -386,6 +373,38 @@ class HoldingSpaceTourControllerDragAndDropTest
   // Used to scale animation durations.
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
       scoped_animation_duration_scale_mode_;
+};
+
+// HoldingSpaceTourControllerDragAndDropTest -----------------------------------
+
+// Base class for drag-and-drop tests of the `HoldingSpaceTourController`,
+// parameterized by (a) whether the drop-to-pin param is available and enabled,
+// (b) whether to drag Files app data, and (c) whether to complete the drop (as
+// opposed to cancelling it).
+class HoldingSpaceTourControllerDragAndDropTest
+    : public HoldingSpaceTourControllerTestBase,
+      public testing::WithParamInterface<
+          std::tuple</*drop_to_pin_enabled=*/absl::optional<bool>,
+                     /*drag_files_app_data=*/bool,
+                     /*complete_drop=*/bool>> {
+ public:
+  HoldingSpaceTourControllerDragAndDropTest()
+      : HoldingSpaceTourControllerTestBase(
+            drop_to_pin_enabled(),
+            /*rate_limiting_enabled=*/false,
+            base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
+
+  // Whether the drop-to-pin feature param is enabled.
+  absl::optional<bool> drop_to_pin_enabled() const {
+    return std::get<0>(GetParam());
+  }
+
+  // Whether to drag Files app data given test parameterization.
+  bool drag_files_app_data() const { return std::get<1>(GetParam()); }
+
+  // Whether to complete the drop (as opposed to cancelling it) given test
+  // parameterization.
+  bool complete_drop() const { return std::get<2>(GetParam()); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -626,6 +645,155 @@ TEST_P(HoldingSpaceTourControllerDragAndDropTest, DragAndDrop) {
     EXPECT_TRUE(secondary_tray->GetBubbleWidget()->IsVisible());
     secondary_tray->GetBubbleWidget()->CloseNow();
   }
+
+  // Clean up holding space controller.
+  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+      account_id, /*client=*/nullptr, /*model=*/nullptr);
+}
+
+// HoldingSpaceTourControllerRateLimitingTest ----------------------------------
+
+// Base class for tests that verify the Holding Space Tour is properly rate
+// limited to avoid spamming the user.
+class HoldingSpaceTourControllerRateLimitingTest
+    : public HoldingSpaceTourControllerTestBase,
+      public testing::WithParamInterface<
+          /*drop_to_pin_enabled=*/absl::optional<bool>> {
+ public:
+  HoldingSpaceTourControllerRateLimitingTest()
+      : HoldingSpaceTourControllerTestBase(
+            drop_to_pin_enabled(),
+            /*rate_limiting_enabled=*/true,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  // Whether the drop-to-pin feature param is enabled.
+  absl::optional<bool> drop_to_pin_enabled() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceTourControllerRateLimitingTest,
+                         testing::Values(absl::nullopt, false, true));
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that the Holding Space Tour is only shown once per day, and a
+// maximum total of three times.
+TEST_P(HoldingSpaceTourControllerRateLimitingTest, RateLimiting) {
+  const int64_t display_id = GetPrimaryDisplay().id();
+
+  // Log in a regular user.
+  const AccountId& account_id = AccountId::FromUserEmail("user@test");
+  SimulateUserLogin(account_id);
+
+  // Register a model and client for holding space.
+  HoldingSpaceModel holding_space_model;
+  testing::StrictMock<MockHoldingSpaceClient> holding_space_client;
+  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+      account_id, &holding_space_client, &holding_space_model);
+
+  // Configure the client to crack file system URLs.
+  EXPECT_CALL(holding_space_client, CrackFileSystemUrl)
+      .WillRepeatedly(Invoke([](const GURL& file_system_url) {
+        return base::FilePath(base::StrCat(
+            {"//path/to/", std::string(&file_system_url.spec().back())}));
+      }));
+
+  // Create and show a widget from which data can be drag-and-dropped.
+  auto widget = CreateTestWidgetForDisplayId(display_id);
+  widget->SetContentsView(std::make_unique<DraggableView>(
+      base::BindLambdaForTesting([&](ui::OSExchangeData* data) {
+        data->SetString(u"Payload");
+        SetFilesAppData(data, u"file-system:a\nfile-system:b");
+      })));
+  widget->CenterWindow(gfx::Size(100, 100));
+  widget->Show();
+
+  auto* const shelf = GetShelfForDisplayId(display_id);
+  auto* const tray = GetHoldingSpaceTrayForShelf(shelf);
+
+  // Autohide the shelf so that the shelf visibility behavior can be verified.
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  EXPECT_FALSE(shelf->IsVisible());
+  EXPECT_FALSE(tray->GetVisible());
+
+  for (size_t day = 0; day < 3; ++day) {
+    // Ensure a non-zero animation duration so there is sufficient time to
+    // detect pings before they are automatically destroyed on animation
+    // completion.
+    SetAnimationDurationMultiplier(
+        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+    // Drag data from the `widget` to the wallpaper.
+    MoveMouseTo(widget.get());
+    PressLeftButton();
+    MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
+
+    // Expect the holding space tray to have a help bubble and a ping.
+    EXPECT_TRUE(HasHelpBubble(tray));
+    EXPECT_TRUE(HasPing(tray));
+
+    // The shelf and holding space tray should show if the tour is showing.
+    EXPECT_TRUE(shelf->IsVisible());
+    EXPECT_TRUE(tray->GetVisible());
+
+    // The wallpaper highlight should also show if drop-to-pin is enabled.
+    EXPECT_EQ(HasWallpaperHighlight(display_id),
+              drop_to_pin_enabled().value_or(false));
+
+    // Reset the UI state, using zero-scaled animations to save time.
+    SetAnimationDurationMultiplier(
+        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    PressAndReleaseKey(ui::VKEY_ESCAPE);
+    ReleaseLeftButton();
+    WaitForHelpBubbleClose();
+    FlushMessageLoop();
+
+    // Drag data again, now that the tour has already been shown recently.
+    SetAnimationDurationMultiplier(
+        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    MoveMouseTo(widget.get());
+    PressLeftButton();
+    MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
+
+    // Now the tour should not be shown, as it was shown in the last 24 hours.
+    EXPECT_FALSE(HasHelpBubble(tray));
+    EXPECT_FALSE(HasPing(tray));
+
+    // The shelf should be hidden if the tour is not showing, but the tray
+    // should always be visible so users can use the holding space after
+    // learning about it.
+    EXPECT_FALSE(shelf->IsVisible());
+    EXPECT_TRUE(tray->GetVisible());
+
+    // Even if not showing the tour, the wallpaper highlight should be shown if
+    // drop-to-pin is enabled.
+    EXPECT_EQ(HasWallpaperHighlight(display_id),
+              drop_to_pin_enabled().value_or(false));
+
+    // Reset the UI state, using zero-scaled animations to save time.
+    SetAnimationDurationMultiplier(
+        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    PressAndReleaseKey(ui::VKEY_ESCAPE);
+    ReleaseLeftButton();
+    FlushMessageLoop();
+
+    // Every 24 hours, it should be possible for the tour to show again once.
+    task_environment()->AdvanceClock(base::Hours(24));
+  }
+
+  // After the 3rd time, the tour should not show again even after 24 hours.
+  SetAnimationDurationMultiplier(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  MoveMouseTo(widget.get());
+  PressLeftButton();
+  MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
+
+  EXPECT_FALSE(HasHelpBubble(tray));
+  EXPECT_FALSE(HasPing(tray));
+  EXPECT_FALSE(shelf->IsVisible());
+  EXPECT_TRUE(tray->GetVisible());
+  EXPECT_EQ(HasWallpaperHighlight(display_id),
+            drop_to_pin_enabled().value_or(false));
 
   // Clean up holding space controller.
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(

@@ -47,6 +47,10 @@ class RefCountedMap : public base::RefCounted<RefCountedMap<K, V>> {
 
 // UserEducationAshTestBase ----------------------------------------------------
 
+UserEducationAshTestBase::UserEducationAshTestBase(
+    base::test::TaskEnvironment::TimeSource time_source)
+    : NoSessionAshTestBase(time_source) {}
+
 void UserEducationAshTestBase::SetUp() {
   // Mock the `user_education_delegate_`.
   auto shell_delegate = std::make_unique<TestShellDelegate>();
