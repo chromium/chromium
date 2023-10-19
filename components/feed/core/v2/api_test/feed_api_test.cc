@@ -747,8 +747,8 @@ void TestFeedNetwork::CancelRequests() {
 }
 
 void TestFeedNetwork::InjectRealFeedQueryResponse() {
-  base::FilePath response_file_path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &response_file_path));
+  base::FilePath response_file_path =
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
   response_file_path = response_file_path.AppendASCII(
       "components/test/data/feed/response.binarypb");
   std::string response_data;
@@ -761,8 +761,8 @@ void TestFeedNetwork::InjectRealFeedQueryResponse() {
 }
 
 void TestFeedNetwork::InjectRealFeedQueryResponseWithNoContent() {
-  base::FilePath response_file_path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &response_file_path));
+  base::FilePath response_file_path =
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
   response_file_path = response_file_path.AppendASCII(
       "components/test/data/feed/response.binarypb");
   std::string response_data;

@@ -24,7 +24,7 @@ namespace {
 
 base::FilePath GetArchivePath(const base::StringPiece archive_name) {
   base::FilePath path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+  EXPECT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
   return path.AppendASCII("components")
       .AppendASCII("test")
       .AppendASCII("data")

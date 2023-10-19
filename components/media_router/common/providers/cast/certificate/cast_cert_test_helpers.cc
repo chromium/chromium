@@ -23,7 +23,7 @@ base::FilePath GetCastCertificateDirectoryFromPathService() {
   base::FilePath src_root;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root);
   }
   CHECK(!src_root.empty());
 

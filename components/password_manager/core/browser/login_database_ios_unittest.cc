@@ -320,7 +320,8 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
   // Creates the database from |sql_file|.
   void CreateDatabase(base::StringPiece sql_file) {
     base::FilePath database_dump;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &database_dump));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &database_dump));
     database_dump = database_dump.AppendASCII("components")
                         .AppendASCII("test")
                         .AppendASCII("data")

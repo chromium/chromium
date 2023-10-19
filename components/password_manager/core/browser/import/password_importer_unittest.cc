@@ -1197,7 +1197,7 @@ TEST_P(PasswordImporterTest, CSVImportHitMaxPasswordsLimit) {
 TEST_P(PasswordImporterTest, CSVImportNonExistingFile) {
   base::HistogramTester histogram_tester;
   base::FilePath src_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
   static const base::FilePath kTestsDirectory(FILE_PATH_LITERAL(
       "components/password_manager/core/browser/import/test"));
   base::FilePath input_path =

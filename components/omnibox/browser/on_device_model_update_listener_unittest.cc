@@ -19,7 +19,7 @@ static const char kHeadModelFilename[] = "on_device_head_test_model_index.bin";
 
 const base::FilePath GetTestDataDir() {
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
   file_path = file_path.AppendASCII("components/test/data/omnibox");
   return file_path;
 }

@@ -111,7 +111,7 @@ class BrowsingTopicsAnnotatorImplTest : public testing::Test {
   void SendModelToAnnotatorSkipWaiting(
       const absl::optional<optimization_guide::proto::Any>& model_metadata) {
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     base::FilePath model_file_path =
         source_root_dir.AppendASCII("components")
             .AppendASCII("test")
@@ -592,7 +592,7 @@ class BrowsingTopicsAnnotatorOverrideListTest
     model_metadata.SerializeToString(any_metadata.mutable_value());
 
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     base::FilePath model_file_path =
         source_root_dir.AppendASCII("components")
             .AppendASCII("test")

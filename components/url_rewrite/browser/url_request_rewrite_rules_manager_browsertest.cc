@@ -63,7 +63,7 @@ class UrlRequestRewriteRulesManagerBrowserTest
 
   void SetUpOnMainThread() override {
     base::FilePath root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir);
     embedded_test_server()->ServeFilesFromDirectory(
         root_dir.AppendASCII("components/test/data/url_rewrite"));
     ASSERT_TRUE(embedded_test_server()->Start());

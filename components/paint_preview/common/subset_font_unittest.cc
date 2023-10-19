@@ -64,7 +64,7 @@ TEST(PaintPreviewSubsetFontTest, TestVariantSubset) {
   // This is a variant font. Loading it from a file isn't entirely
   // straightforward in a platform generic way.
   base::FilePath base_path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path));
   auto final_path = base_path.AppendASCII(
       "components/test/data/paint_preview/Roboto-Regular.ttf");
   std::string data_str;

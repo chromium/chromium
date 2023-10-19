@@ -43,7 +43,7 @@ const char16_t kFolder2Title[] = u"folder2";
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
     base::FilePath dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")
         .AppendASCII("test")
         .AppendASCII("data");

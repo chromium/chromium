@@ -1971,7 +1971,8 @@ class LoginDatabaseMigrationTest : public testing::TestWithParam<int> {
   // Creates the database from |sql_file|.
   void CreateDatabase(base::StringPiece sql_file) {
     base::FilePath database_dump;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &database_dump));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &database_dump));
     database_dump =
         database_dump.Append(database_dump_location_).AppendASCII(sql_file);
     ASSERT_TRUE(

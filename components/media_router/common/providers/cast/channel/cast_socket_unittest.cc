@@ -105,7 +105,7 @@ CastMessage CreateTestMessage() {
 
 base::FilePath GetTestCertsDirectory() {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   path = path.Append(FILE_PATH_LITERAL("components"));
   path = path.Append(FILE_PATH_LITERAL("test"));
   path = path.Append(FILE_PATH_LITERAL("data"));

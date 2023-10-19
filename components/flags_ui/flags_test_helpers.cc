@@ -31,7 +31,7 @@ constexpr char kNeverExpireFileName[] = "flag-never-expire-list.json";
 // interpreted as a JSON value.
 base::Value ReadFileContentsAsJSON(const std::string& filename) {
   base::FilePath metadata_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &metadata_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &metadata_path);
   JSONFileValueDeserializer deserializer(
       metadata_path.AppendASCII("chrome").AppendASCII("browser").AppendASCII(
           filename));

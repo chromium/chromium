@@ -185,7 +185,7 @@ INSTANTIATE_TEST_SUITE_P(All, ClientSidePhishingModelTest, testing::Bool());
 
 TEST_P(ClientSidePhishingModelTest, ValidModel) {
   base::FilePath model_file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &model_file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &model_file_path);
   model_file_path = model_file_path.AppendASCII("components")
                         .AppendASCII("test")
                         .AppendASCII("data")
@@ -193,7 +193,7 @@ TEST_P(ClientSidePhishingModelTest, ValidModel) {
                         .AppendASCII("client_model.pb");
 
   base::FilePath additional_files_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &additional_files_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &additional_files_path);
   additional_files_path = additional_files_path.AppendASCII("components")
                               .AppendASCII("test")
                               .AppendASCII("data")
@@ -214,7 +214,7 @@ TEST_P(ClientSidePhishingModelTest, ValidModel) {
   EXPECT_TRUE(service()->IsEnabled());
   if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder)) {
     base::FilePath image_embedding_model_file_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT,
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
                            &image_embedding_model_file_path);
     image_embedding_model_file_path =
         image_embedding_model_file_path.AppendASCII("components")
@@ -236,7 +236,7 @@ TEST_P(ClientSidePhishingModelTest, InvalidModelDueToInvalidPath) {
   base::WriteFile(model_file_path, "INVALID MODEL DATA");
 
   base::FilePath additional_files_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &additional_files_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &additional_files_path);
   additional_files_path = additional_files_path.AppendASCII("components")
                               .AppendASCII("test")
                               .AppendASCII("data")

@@ -28,7 +28,7 @@ const char* kTopBucketSeparator = "###END_TOP_BUCKET###";
 
 base::FilePath GetPath(base::StringPiece basename) {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   return path.Append(FILE_PATH_LITERAL("components"))
       .Append(FILE_PATH_LITERAL("url_formatter"))
       .Append(FILE_PATH_LITERAL("spoof_checks"))

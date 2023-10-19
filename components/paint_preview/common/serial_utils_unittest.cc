@@ -350,7 +350,7 @@ static void TrySerialAndDeserial(sk_sp<SkData> image_data) {
 
 TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodePng) {
   base::FilePath path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
   FileRStream stream(base::File(
       path.AppendASCII("components/test/data/paint_preview/test.png"),
       base::File::FLAG_OPEN | base::File::FLAG_READ));
@@ -361,7 +361,7 @@ TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodePng) {
 
 TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeJpeg) {
   base::FilePath path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
   FileRStream stream(base::File(
       path.AppendASCII("components/test/data/paint_preview/test.jpg"),
       base::File::FLAG_OPEN | base::File::FLAG_READ));
@@ -372,7 +372,7 @@ TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeJpeg) {
 
 TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeWebp) {
   base::FilePath path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
   FileRStream stream(base::File(
       path.AppendASCII("components/test/data/paint_preview/test.webp"),
       base::File::FLAG_OPEN | base::File::FLAG_READ));
@@ -383,7 +383,7 @@ TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeWebp) {
 
 TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeGif) {
   base::FilePath path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
   FileRStream stream(base::File(
       path.AppendASCII("components/test/data/paint_preview/test.gif"),
       base::File::FLAG_OPEN | base::File::FLAG_READ));
@@ -394,7 +394,7 @@ TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeGif) {
 
 TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeBmp) {
   base::FilePath path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
   FileRStream stream(base::File(
       path.AppendASCII("components/test/data/paint_preview/test.bmp"),
       base::File::FLAG_OPEN | base::File::FLAG_READ));

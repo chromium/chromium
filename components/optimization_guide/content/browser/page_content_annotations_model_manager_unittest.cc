@@ -123,7 +123,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
       return;
 
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     // We know that the model executor itself works fine (that's tested
     // elsewhere), so just make sure that all the plumbing for the model
     // execution: job, queue, background sequences, etc, are working correctly.
@@ -145,7 +145,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     }
 
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     // We know that the model executor itself works fine (that's tested
     // elsewhere), so just make sure that all the plumbing for the model
     // execution: job, queue, background sequences, etc, are working correctly.

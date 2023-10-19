@@ -3362,7 +3362,7 @@ TEST(ServiceWorkerDatabaseTest, PolicyContainerPoliciesStoreRestore) {
 // impl can still be correctly read by the blink::StorageKey impl.
 TEST(ServiceWorkerDatabaseTest, StorageKeyImplCanReadPreviousOriginImplDB) {
   base::FilePath root_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
   base::FilePath database_dir = root_path.AppendASCII(
       "components/test/data/service_worker/created_by_origin_impl/Database/");
 
