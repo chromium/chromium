@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/os_settings_metrics_provider.h"
+#include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -11,7 +11,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/settings/ash/settings_user_action_tracker.h"
+#include "chrome/browser/ui/webui/ash/settings/services/metrics/settings_user_action_tracker.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/metrics/metrics_service.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/per_session_settings_user_action_tracker.h"
+#include "chrome/browser/ui/webui/ash/settings/services/metrics/per_session_settings_user_action_tracker.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_metrics_provider.h"
+#include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"

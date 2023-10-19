@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/settings_user_action_tracker.h"
+#include "chrome/browser/ui/webui/ash/settings/services/metrics/settings_user_action_tracker.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_hierarchy.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_os_settings_section.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_os_settings_sections.h"
-#include "chrome/browser/ui/webui/settings/ash/per_session_settings_user_action_tracker.h"
+#include "chrome/browser/ui/webui/ash/settings/services/metrics/per_session_settings_user_action_tracker.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

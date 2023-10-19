@@ -168,7 +168,7 @@
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_metrics_provider.h"
+#include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
 #include "components/metrics/structured/structured_metrics_provider.h"  // nogncheck
 #include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
