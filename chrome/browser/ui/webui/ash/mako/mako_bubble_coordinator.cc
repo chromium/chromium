@@ -62,6 +62,7 @@ class MakoRewriteView : public WebUIBubbleDialogView {
 
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override {
+    WebUIBubbleDialogView::ResizeDueToAutoResize(source, new_size);
     const gfx::Rect screen_work_area = display::Screen::GetScreen()
                                            ->GetDisplayMatching(caret_bounds_)
                                            .work_area();
@@ -70,36 +71,38 @@ class MakoRewriteView : public WebUIBubbleDialogView {
     if (new_size.height() > kMakoRewriteHeightThreshold) {
       SetArrowWithoutResizing(views::BubbleBorder::FLOAT);
       SetAnchorRect(screen_work_area);
-      WebUIBubbleDialogView::ResizeDueToAutoResize(source, new_size);
       return;
     }
 
     // Otherwise, try to place it near the selection. First, try to left align
     // with the selection, but adjust to keep on screen if needed.
-    int x = std::min(caret_bounds_.x(), screen_work_area.right() -
-                                            new_size.width() - kMakoUIPadding);
+    const gfx::Size widget_size = GetWidget()->GetWindowBoundsInScreen().size();
+    int x =
+        std::min(caret_bounds_.x(), screen_work_area.right() -
+                                        widget_size.width() - kMakoUIPadding);
 
     // Then, try to place the mako UI just under the top of the selection.
     int y = caret_bounds_.y() + kMakoUIPadding;
     // If that puts it offscreen, try placing it above the selection instead.
-    if (y + new_size.height() + kMakoUIPadding > screen_work_area.bottom()) {
-      y = caret_bounds_.y() - kMakoUIPadding - new_size.height();
+    if (y + widget_size.height() + kMakoUIPadding > screen_work_area.bottom()) {
+      y = caret_bounds_.y() - kMakoUIPadding - widget_size.height();
     }
+
     // If it's still offscreen, place it at the bottom of the screen and adjust
     // the horizontal position to try to move it out of the way of the
     // selection.
     if (y < screen_work_area.y() + kMakoUIPadding) {
-      y = screen_work_area.bottom() - kMakoUIPadding - new_size.height();
+      y = screen_work_area.bottom() - kMakoUIPadding - widget_size.height();
       // Place it at the right of the selection edge if there is space
       // (including padding), otherwise, place it to the left of the selection.
       x = screen_work_area.right() - caret_bounds_.x() >
-                  new_size.width() + 2 * kMakoUIPadding
+                  widget_size.width() + 2 * kMakoUIPadding
               ? caret_bounds_.x() + kMakoUIPadding
-              : caret_bounds_.x() - kMakoUIPadding - new_size.width();
+              : caret_bounds_.x() - kMakoUIPadding - widget_size.width();
     }
 
     // If necessary, adjust again to ensure the UI is onscreen.
-    gfx::Rect widget_bounds({x, y}, new_size);
+    gfx::Rect widget_bounds({x, y}, widget_size);
     widget_bounds.AdjustToFit(screen_work_area);
 
     GetWidget()->SetBounds(widget_bounds);
