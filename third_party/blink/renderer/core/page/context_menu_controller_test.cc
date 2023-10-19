@@ -1850,10 +1850,8 @@ TEST_F(ContextMenuControllerTest, CheckRendererIdFromContextMenuOnTextField) {
     EXPECT_TRUE(ShowContextMenuForElement(form_element, kMenuSourceMouse));
     ContextMenuData context_menu_data =
         GetWebFrameClient().GetContextMenuData();
-    EXPECT_EQ(context_menu_data.form_renderer_id.has_value(),
+    EXPECT_EQ(context_menu_data.form_renderer_id != 0,
               is_form_renderer_id_present);
-    EXPECT_EQ(context_menu_data.field_renderer_id.has_value(),
-              is_field_renderer_id_present);
     EXPECT_EQ(context_menu_data.input_field_type, input_field_type);
   }
 }

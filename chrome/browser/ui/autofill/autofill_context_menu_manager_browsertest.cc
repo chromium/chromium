@@ -47,6 +47,7 @@ content::ContextMenuParams CreateContextMenuParams(
   rv.is_editable = true;
   rv.page_url = GURL("http://test.page/");
   rv.input_field_type = blink::mojom::ContextMenuDataInputFieldType::kPlainText;
+  rv.form_control_type = blink::mojom::FormControlType::kInputText;
   if (form_renderer_id) {
     rv.form_renderer_id = form_renderer_id->value();
   }

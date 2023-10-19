@@ -49,24 +49,46 @@ constexpr char kFeedbackPlaceholder[] =
     "\n"
     "What happened instead? (Please include the screenshot below)";
 
+bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
+  if (!params.form_control_type) {
+    return false;
+  }
+  // Return true on text fields.
+  // TODO(crbug.com/1492339): Unify with functions from form_autofill_util.cc.
+  switch (*params.form_control_type) {
+    case blink::mojom::FormControlType::kInputEmail:
+    case blink::mojom::FormControlType::kInputMonth:
+    case blink::mojom::FormControlType::kInputNumber:
+    case blink::mojom::FormControlType::kInputPassword:
+    case blink::mojom::FormControlType::kInputSearch:
+    case blink::mojom::FormControlType::kInputTelephone:
+    case blink::mojom::FormControlType::kInputText:
+    case blink::mojom::FormControlType::kInputUrl:
+    case blink::mojom::FormControlType::kTextArea:
+      return true;
+    default:
+      return false;
+  }
+}
+
 base::Value::Dict LoadTriggerFormAndFieldLogs(
     AutofillManager& manager,
     const LocalFrameToken& frame_token,
     const content::ContextMenuParams& params) {
-  if (!params.form_renderer_id) {
+  if (!ShouldShowAutofillContextMenu(params)) {
     return base::Value::Dict();
   }
 
   FormGlobalId form_global_id = {frame_token,
-                                 FormRendererId(*params.form_renderer_id)};
+                                 FormRendererId(params.form_renderer_id)};
 
   base::Value::Dict trigger_form_logs;
   if (FormStructure* form = manager.FindCachedFormById(form_global_id)) {
     trigger_form_logs.Set("triggerFormSignature", form->FormSignatureAsStr());
 
-    if (params.field_renderer_id) {
+    if (params.form_control_type) {
       FieldGlobalId field_global_id = {
-          frame_token, FieldRendererId(*params.field_renderer_id)};
+          frame_token, FieldRendererId(params.field_renderer_id)};
       auto field =
           base::ranges::find_if(*form, [&field_global_id](const auto& field) {
             return field->global_id() == field_global_id;
@@ -125,16 +147,12 @@ void AutofillContextMenuManager::AppendItems() {
   if (!driver || !driver->CanShowAutofillUi())
     return;
 
-  if (params_.field_renderer_id) {
+  if (ShouldShowAutofillContextMenu(params_)) {
     const LocalFrameToken frame_token = driver->GetFrameToken();
     // Formless fields have default form renderer id.
-    FormGlobalId form_global_id = {
-        frame_token, params_.form_renderer_id
-                         ? FormRendererId(*params_.form_renderer_id)
-                         : FormRendererId()};
     driver->OnContextMenuShownInField(
-        form_global_id,
-        {frame_token, FieldRendererId(*params_.field_renderer_id)});
+        {frame_token, FormRendererId(params_.form_renderer_id)},
+        {frame_token, FieldRendererId(params_.field_renderer_id)});
   }
 
   // Includes the option of submitting feedback on Autofill.
@@ -232,7 +250,7 @@ void AutofillContextMenuManager::
 
 bool AutofillContextMenuManager::ShouldAddAutofillManualFallbackItem(
     ContentAutofillDriver& driver) {
-  if (!params_.field_renderer_id) {
+  if (!ShouldShowAutofillContextMenu(params_)) {
     // Autofill entries are only available in input or text area fields
     return false;
   }
@@ -286,12 +304,11 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(
 AutofillField* AutofillContextMenuManager::GetAutofillField(
     AutofillManager& manager,
     const LocalFrameToken& frame_token) const {
-  // Formless forms don't have a renderer ID.
+  CHECK(ShouldShowAutofillContextMenu(params_));
   FormStructure* form = manager.FindCachedFormById(
-      {frame_token, FormRendererId(params_.form_renderer_id.value_or(0))});
-  CHECK(params_.field_renderer_id);
+      {frame_token, FormRendererId(params_.form_renderer_id)});
   return form ? form->GetFieldById(
-                    {frame_token, FieldRendererId(*params_.field_renderer_id)})
+                    {frame_token, FieldRendererId(params_.field_renderer_id)})
               : nullptr;
 }
 

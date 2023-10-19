@@ -3297,7 +3297,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         // TODO(b/305798770): Use appropriate parameters once the Autofill Form
         // Extraction API is available.
         compose_manager->OpenComposeFromContextMenu(
-            frame_token, autofill::FieldRendererId(*params_.field_renderer_id),
+            frame_token, autofill::FieldRendererId(params_.field_renderer_id),
             gfx::RectF(params_.x, params_.y, 50, 50));
       }
       break;
