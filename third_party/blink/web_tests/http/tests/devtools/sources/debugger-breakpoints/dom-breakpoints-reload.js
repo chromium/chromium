@@ -10,7 +10,6 @@ import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debug
 
 (async function() {
   TestRunner.addResult(`Tests DOM breakpoints.`);
-  await TestRunner.loadLegacyModule('panels/browser_debugger');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/dom-breakpoints.html');

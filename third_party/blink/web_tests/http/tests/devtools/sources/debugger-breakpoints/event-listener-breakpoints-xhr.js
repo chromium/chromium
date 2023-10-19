@@ -7,7 +7,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests event listener breakpoints on XHRs.\n`);
-  await TestRunner.loadLegacyModule('panels/browser_debugger');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()

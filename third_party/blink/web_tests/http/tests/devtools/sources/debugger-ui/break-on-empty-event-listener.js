@@ -7,7 +7,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that scheduled pause is cleared after processing event with empty handler.\n`);
-  await TestRunner.loadLegacyModule('panels/browser_debugger');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <div id="myDiv"></div>

@@ -9,7 +9,6 @@ import * as Coverage from 'devtools/panels/coverage/coverage.js';
 
 (async function() {
   TestRunner.addResult(`Tests the if events are getting emitted when coverage changes.\n`);
-  await TestRunner.loadLegacyModule('panels/coverage');
 
 
   TestRunner.addResult('Should have coverage information even when not covered yet');
