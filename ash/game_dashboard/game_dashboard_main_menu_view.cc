@@ -59,7 +59,7 @@ constexpr int kMainMenuFixedWidth = 416;
 constexpr float kBackgroundRadius = 12;
 
 // Creates an individual Game Dashboard Tile.
-std::unique_ptr<FeatureTile> CreateTile(
+std::unique_ptr<FeatureTile> CreateFeatureTile(
     base::RepeatingClosure callback,
     bool is_togglable,
     FeatureTile::TileType type,
@@ -413,7 +413,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
   container->SetBetweenChildSpacing(kCenterPadding);
 
   const bool toolbar_visible = context_->IsToolbarVisible();
-  toolbar_tile_ = container->AddChildView(CreateTile(
+  toolbar_tile_ = container->AddChildView(CreateFeatureTile(
       base::BindRepeating(&GameDashboardMainMenuView::OnToolbarTilePressed,
                           base::Unretained(this)),
       /*is_togglable=*/true, FeatureTile::TileType::kCompact,
@@ -429,7 +429,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
 
   if (base::FeatureList::IsEnabled(
           features::kFeatureManagementGameDashboardRecordGame)) {
-    record_game_tile_ = container->AddChildView(CreateTile(
+    record_game_tile_ = container->AddChildView(CreateFeatureTile(
         base::BindRepeating(&GameDashboardMainMenuView::OnRecordGameTilePressed,
                             base::Unretained(this)),
         /*is_togglable=*/true, FeatureTile::TileType::kCompact,
@@ -448,7 +448,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
         GameDashboardController::Get()->active_recording_context() == context_);
   }
 
-  container->AddChildView(CreateTile(
+  container->AddChildView(CreateFeatureTile(
       base::BindRepeating(&GameDashboardMainMenuView::OnScreenshotTilePressed,
                           base::Unretained(this)),
       /*is_togglable=*/true, FeatureTile::TileType::kCompact,
@@ -480,7 +480,7 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
 
   // Add the game controls tile which shows and hides the game controls mapping
   // hint.
-  game_controls_tile_ = container->AddChildView(CreateTile(
+  game_controls_tile_ = container->AddChildView(CreateFeatureTile(
       base::BindRepeating(&GameDashboardMainMenuView::OnGameControlsTilePressed,
                           base::Unretained(this)),
       /*is_togglable=*/true, FeatureTile::TileType::kCompact,
