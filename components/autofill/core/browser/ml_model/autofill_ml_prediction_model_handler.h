@@ -69,6 +69,18 @@ class AutofillMlPredictionModelHandler
   AutofillModelExecutor::ModelInput VectorizeForm(
       const FormStructure& form) const;
 
+  // Computes the `GetMostLikelyType()` from every element of `outputs` and
+  // asssigns it to the corresponding field of the `form`.
+  void AssignMostLikelyTypes(
+      FormStructure& form,
+      const AutofillModelExecutor::ModelOutput& output) const;
+
+  // Given the confidences returned by the ML model, returns the most likely
+  // type. This is currently just the argmax of `model_output`, mapped to the
+  // corresponding ServerFieldType.
+  ServerFieldType GetMostLikelyType(
+      const std::vector<float>& model_output) const;
+
   // Initialized once the model is loaded.
   std::unique_ptr<AutofillModelVectorizer> vectorizer_;
 

@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_EXECUTOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_EXECUTOR_H_
 
+#include <optional>
 #include <vector>
 
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
 #include "components/optimization_guide/core/base_model_executor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -22,7 +22,7 @@ namespace autofill {
 // `kMaxNumberOfFields` many fields.
 class AutofillModelExecutor
     : public optimization_guide::BaseModelExecutor<
-          std::vector<ServerFieldType>,
+          std::vector<std::vector<float>>,
           const std::vector<
               std::array<AutofillModelVectorizer::TokenId,
                          AutofillModelVectorizer::kOutputSequenceLength>>&> {
@@ -32,88 +32,34 @@ class AutofillModelExecutor
   using ModelInput =
       std::vector<std::array<AutofillModelVectorizer::TokenId,
                              AutofillModelVectorizer::kOutputSequenceLength>>;
-  using ModelOutput = std::vector<ServerFieldType>;
+
+  // One element per `ModelInput::size()`, representing the raw model outputs
+  // for the different field types. They don't have any meaning per-se, but
+  // higher means more confidence. Since the model might not support all
+  // ServerFieldTypes, the indices don't map to field types directly. See
+  // `AutofillMlPredictionModelHandler`.
+  using ModelOutput = std::vector<std::vector<float>>;
+
+  // Maximum number of fields in one form that can be used as input.
+  static constexpr size_t kMaxNumberOfFields = 20;
 
   AutofillModelExecutor();
   ~AutofillModelExecutor() override;
 
  protected:
-  // Array describes how the output of the ML model is interpreted.
-  // Some of the types that the model was trained on are not supported by the
-  // client. Index 0 is UNKNOWN_TYPE, while the others are non-supported types.
-  // TODO(crbug.com/1465926): Download dynamically from the server instead.
-  static constexpr std::array<ServerFieldType, 57> kSupportedFieldTypes = {
-      UNKNOWN_TYPE,
-      EMAIL_ADDRESS,
-      UNKNOWN_TYPE,
-      UNKNOWN_TYPE,
-      UNKNOWN_TYPE,
-      UNKNOWN_TYPE,
-      CREDIT_CARD_NUMBER,
-      CONFIRMATION_PASSWORD,
-      UNKNOWN_TYPE,
-      PHONE_HOME_EXTENSION,
-      PHONE_HOME_WHOLE_NUMBER,
-      PHONE_HOME_COUNTRY_CODE,
-      UNKNOWN_TYPE,
-      NAME_FIRST,
-      ADDRESS_HOME_DEPENDENT_LOCALITY,
-      ADDRESS_HOME_CITY,
-      ADDRESS_HOME_STREET_ADDRESS,
-      PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
-      UNKNOWN_TYPE,
-      NAME_HONORIFIC_PREFIX,
-      CREDIT_CARD_EXP_2_DIGIT_YEAR,
-      ADDRESS_HOME_STATE,
-      UNKNOWN_TYPE,
-      CREDIT_CARD_NAME_LAST,
-      ACCOUNT_CREATION_PASSWORD,
-      ADDRESS_HOME_HOUSE_NUMBER,
-      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
-      CREDIT_CARD_TYPE,
-      CREDIT_CARD_NAME_FULL,
-      ADDRESS_HOME_APT_NUM,
-      CREDIT_CARD_NAME_FIRST,
-      ADDRESS_HOME_FLOOR,
-      UNKNOWN_TYPE,
-      ADDRESS_HOME_LANDMARK,
-      UNKNOWN_TYPE,
-      ADDRESS_HOME_STREET_NAME,
-      ADDRESS_HOME_COUNTRY,
-      CREDIT_CARD_EXP_4_DIGIT_YEAR,
-      DELIVERY_INSTRUCTIONS,
-      PHONE_HOME_NUMBER,
-      CREDIT_CARD_VERIFICATION_CODE,
-      NAME_LAST,
-      CREDIT_CARD_EXP_MONTH,
-      ADDRESS_HOME_OVERFLOW,
-      UNKNOWN_TYPE,
-      NAME_FULL,
-      COMPANY_NAME,
-      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-      PHONE_HOME_CITY_AND_NUMBER,
-      PHONE_HOME_CITY_CODE,
-      ADDRESS_HOME_LINE2,
-      ADDRESS_HOME_STREET_LOCATION,
-      ADDRESS_HOME_ZIP,
-      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-      ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
-      ADDRESS_HOME_LINE3,
-      ADDRESS_HOME_LINE1};
-
-  // Maximum number of fields in one form that can be used as input.
-  static constexpr size_t kMaxNumberOfFields = 20;
-
   // optimization_guide::BaseModelExecutor:
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   const ModelInput& input) override;
   absl::optional<ModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 
-  // Stores the number of fields in the given to 'Preprocess()' FormData if it
-  // is less than `kMaxNumberOfFields`. It will be used in `Postprocess()` to
-  // return the first `fields_count_` predictions from the model.
-  size_t fields_count_ = 0;
+  // Stores the number of fields sent to the model via `Preprocess()`. This will
+  // be min(number of fields provided, kMaxNumberOfFields). `Postprocess()`
+  // relies on this information to construct the output.
+  // Nullopt indicates that no query is currently processing.
+  // Since multiple queries are executed sequentially, ensuring that this value
+  // only corresponds to a single query at a time.
+  std::optional<size_t> fields_count_;
 };
 
 }  // namespace autofill

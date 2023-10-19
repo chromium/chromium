@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
@@ -25,7 +24,7 @@ bool AutofillModelExecutor::Preprocess(
   CHECK_EQ(2u, input_tensors.size());
   CHECK_EQ(kTfLiteFloat32, input_tensors[0]->type);
   CHECK_EQ(kTfLiteBool, input_tensors[1]->type);
-  CHECK_EQ(fields_count_, 0u);
+  CHECK(!fields_count_);
   fields_count_ = std::min(input.size(), kMaxNumberOfFields);
   // `input_tensors[0]` is a 3D vector. The first dimension is used for
   // batching, which the ML model declares with size 1 so only one form
@@ -87,23 +86,16 @@ AutofillModelExecutor::Postprocess(
   CHECK_EQ(kTfLiteFloat32, output_tensors[0]->type);
   CHECK_EQ(output_tensors[0]->dims->data[1],
            static_cast<int>(kMaxNumberOfFields));
-  CHECK_EQ(output_tensors[0]->dims->data[2],
-           static_cast<int>(kSupportedFieldTypes.size()));
-
-  ModelOutput model_predictions(fields_count_);
+  const size_t num_outputs = output_tensors[0]->dims->data[2];
+  ModelOutput model_predictions(*fields_count_,
+                                std::vector<float>(num_outputs));
   for (size_t i = 0; i < fields_count_; ++i) {
-    std::vector<float> output(kSupportedFieldTypes.size());
-    for (size_t j = 0; j < kSupportedFieldTypes.size(); ++j) {
-      output[j] = tflite::GetTensorData<float>(
-          output_tensors[0])[i * kSupportedFieldTypes.size() + j];
+    for (size_t j = 0; j < num_outputs; ++j) {
+      model_predictions[i][j] =
+          tflite::GetTensorData<float>(output_tensors[0])[i * num_outputs + j];
     }
-    // Get index of greatest value in the array. This will be the index of the
-    // server field type prediction in `kSupportedFieldTypes`
-    size_t max_index =
-        std::distance(output.begin(), base::ranges::max_element(output));
-    model_predictions[i] = kSupportedFieldTypes[max_index];
   }
-  fields_count_ = 0;
+  fields_count_.reset();
   return model_predictions;
 }
 

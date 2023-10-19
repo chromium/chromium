@@ -4,11 +4,13 @@
 
 #include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -20,6 +22,73 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 
 namespace autofill {
+
+namespace {
+
+// Array describing how the output of the ML model is interpreted.
+// Some of the types that the model was trained on are not supported by the
+// client. Index 0 is UNKNOWN_TYPE, while the others are non-supported types.
+// TODO(crbug.com/1465926): Retrieve from model metadata.
+constexpr std::array<ServerFieldType, 57> kSupportedFieldTypes = {
+    UNKNOWN_TYPE,
+    EMAIL_ADDRESS,
+    UNKNOWN_TYPE,
+    UNKNOWN_TYPE,
+    UNKNOWN_TYPE,
+    UNKNOWN_TYPE,
+    CREDIT_CARD_NUMBER,
+    CONFIRMATION_PASSWORD,
+    UNKNOWN_TYPE,
+    PHONE_HOME_EXTENSION,
+    PHONE_HOME_WHOLE_NUMBER,
+    PHONE_HOME_COUNTRY_CODE,
+    UNKNOWN_TYPE,
+    NAME_FIRST,
+    ADDRESS_HOME_DEPENDENT_LOCALITY,
+    ADDRESS_HOME_CITY,
+    ADDRESS_HOME_STREET_ADDRESS,
+    PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
+    UNKNOWN_TYPE,
+    NAME_HONORIFIC_PREFIX,
+    CREDIT_CARD_EXP_2_DIGIT_YEAR,
+    ADDRESS_HOME_STATE,
+    UNKNOWN_TYPE,
+    CREDIT_CARD_NAME_LAST,
+    ACCOUNT_CREATION_PASSWORD,
+    ADDRESS_HOME_HOUSE_NUMBER,
+    PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+    CREDIT_CARD_TYPE,
+    CREDIT_CARD_NAME_FULL,
+    ADDRESS_HOME_APT_NUM,
+    CREDIT_CARD_NAME_FIRST,
+    ADDRESS_HOME_FLOOR,
+    UNKNOWN_TYPE,
+    ADDRESS_HOME_LANDMARK,
+    UNKNOWN_TYPE,
+    ADDRESS_HOME_STREET_NAME,
+    ADDRESS_HOME_COUNTRY,
+    CREDIT_CARD_EXP_4_DIGIT_YEAR,
+    DELIVERY_INSTRUCTIONS,
+    PHONE_HOME_NUMBER,
+    CREDIT_CARD_VERIFICATION_CODE,
+    NAME_LAST,
+    CREDIT_CARD_EXP_MONTH,
+    ADDRESS_HOME_OVERFLOW,
+    UNKNOWN_TYPE,
+    NAME_FULL,
+    COMPANY_NAME,
+    CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+    PHONE_HOME_CITY_AND_NUMBER,
+    PHONE_HOME_CITY_CODE,
+    ADDRESS_HOME_LINE2,
+    ADDRESS_HOME_STREET_LOCATION,
+    ADDRESS_HOME_ZIP,
+    CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+    ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+    ADDRESS_HOME_LINE3,
+    ADDRESS_HOME_LINE1};
+
+}  // namespace
 
 AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider)
@@ -56,20 +125,19 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
       VectorizeForm(*form_structure);
   ExecuteModelWithInput(
       base::BindOnce(
-          [](std::unique_ptr<FormStructure> form_structure,
+          [](base::WeakPtr<AutofillMlPredictionModelHandler> self,
+             std::unique_ptr<FormStructure> form_structure,
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
              const absl::optional<AutofillModelExecutor::ModelOutput>& output) {
-            CHECK(output);
-            // The model only outputs type for the first
-            // `AutofillModelExecutor::kMaxNumberOfFields` many fields.
-            CHECK_LE(output->size(), form_structure->field_count());
-            for (size_t i = 0; i < output->size(); i++) {
-              form_structure->field(i)->set_heuristic_type(
-                  HeuristicSource::kMachineLearning, (*output)[i]);
+            if (!self) {
+              return;
             }
+            CHECK(output);
+            self->AssignMostLikelyTypes(*form_structure, *output);
             std::move(callback).Run(std::move(form_structure));
           },
-          std::move(form_structure), std::move(callback)),
+          weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
+          std::move(callback)),
       std::move(vectorized_input));
 }
 
@@ -129,6 +197,26 @@ AutofillMlPredictionModelHandler::VectorizeForm(
     vectorized_form[i] = vectorizer_->Vectorize(form.field(i)->label);
   }
   return vectorized_form;
+}
+
+void AutofillMlPredictionModelHandler::AssignMostLikelyTypes(
+    FormStructure& form,
+    const AutofillModelExecutor::ModelOutput& output) const {
+  // The model only outputs type for the first
+  // `AutofillModelExecutor::kMaxNumberOfFields` many fields.
+  CHECK_EQ(output.size(), std::min(form.field_count(),
+                                   AutofillModelExecutor::kMaxNumberOfFields));
+  for (size_t i = 0; i < output.size(); i++) {
+    form.field(i)->set_heuristic_type(HeuristicSource::kMachineLearning,
+                                      GetMostLikelyType(output[i]));
+  }
+}
+
+ServerFieldType AutofillMlPredictionModelHandler::GetMostLikelyType(
+    const std::vector<float>& model_output) const {
+  size_t max_index =
+      base::ranges::max_element(model_output) - model_output.begin();
+  return kSupportedFieldTypes[max_index];
 }
 
 }  // namespace autofill
