@@ -672,6 +672,56 @@ TEST_F(SearchEngineTableViewControllerTest, EditingMode) {
   CheckCustomItem(kEngineC2Name, kEngineC2Url, false, 1, 1);
 }
 
+// Tests that prepopulated engines are correctly displayed when enabling and
+// disabling edit mode for users who are eligible for the search engine choice
+// screen.
+TEST_F(SearchEngineTableViewControllerTest,
+       EditingModeForChoiceScreenSettings) {
+  SetupForChoiceScreenDisplay();
+
+  const std::string kEngineC1Name = "custom-1";
+  const GURL kEngineC1Url = GURL("https://c1.com?q={searchTerms}");
+  const std::string kEngineC2Name = "custom-2";
+  const GURL kEngineC2Url = GURL("https://c2.com?q={searchTerms}");
+  AddCustomSearchEngine(kEngineC2Name, kEngineC2Url,
+                        base::Time::Now() - base::Minutes(10), true);
+  AddCustomSearchEngine(kEngineC1Name, kEngineC1Url,
+                        base::Time::Now() - base::Seconds(10), false);
+
+  SearchEngineTableViewController* searchEngineController =
+      static_cast<SearchEngineTableViewController*>(controller());
+  EXPECT_TRUE([searchEngineController editButtonEnabled]);
+
+  // Set the first prepopulated engine as default engine using
+  // `template_url_service_`. This will reload the table and move C2 to the
+  // second list.
+  std::vector<std::unique_ptr<TemplateURL>> urls_for_choice_screen =
+      template_url_service_->GetTemplateURLsForChoiceScreen();
+  // The first engine in the list is C2.
+  template_url_service_->SetUserSelectedDefaultSearchProvider(
+      urls_for_choice_screen[1].get());
+  CheckRealItem(urls_for_choice_screen[1].get(), true, 0, 0);
+
+  // Enable editing mode
+  [searchEngineController setEditing:YES animated:NO];
+  // Prepopulated engines should be disabled with checkmark removed.
+  for (size_t i = 1; i < urls_for_choice_screen.size(); i++) {
+    CheckRealItem(urls_for_choice_screen[i].get(), false, 0, i - 1, false);
+  }
+  CheckCustomItem(kEngineC1Name, kEngineC1Url, false, 1, 0);
+  CheckCustomItem(kEngineC2Name, kEngineC2Url, false, 1, 1);
+
+  // Disable editing mode
+  [searchEngineController setEditing:NO animated:NO];
+  // Prepopulated engines should be re-enabled and the checkmark should be back.
+  CheckRealItem(urls_for_choice_screen[1].get(), true, 0, 0);
+  for (size_t i = 2; i < urls_for_choice_screen.size(); i++) {
+    CheckRealItem(urls_for_choice_screen[i].get(), false, 0, i - 1);
+  }
+  CheckCustomItem(kEngineC1Name, kEngineC1Url, false, 1, 0);
+  CheckCustomItem(kEngineC2Name, kEngineC2Url, false, 1, 1);
+}
+
 // Tests that custom search engines can be deleted, and if default engine is
 // deleted it will be reset to the first prepopulated engine.
 TEST_F(SearchEngineTableViewControllerTest, DeleteItems) {

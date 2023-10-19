@@ -713,8 +713,9 @@ const char kUmaSelectDefaultSearchEngine[] =
     SearchEngineItem* engineItem =
         base::apple::ObjCCastStrict<SearchEngineItem>(item);
     engineItem.enabled = !editing;
-    if (!editing && _firstList[indexPath.item] ==
-                        _templateURLService->GetDefaultSearchProvider()) {
+    if (!editing && [self isItem:engineItem
+                        equalForTemplateURL:_templateURLService
+                                                ->GetDefaultSearchProvider()]) {
       engineItem.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
       engineItem.accessoryType = UITableViewCellAccessoryNone;
