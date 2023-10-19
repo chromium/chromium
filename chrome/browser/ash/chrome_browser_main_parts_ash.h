@@ -96,6 +96,10 @@ class VideoConferenceAshFeatureClient;
 class WebKioskAppManager;
 class KioskAppManager;
 
+namespace carrier_lock {
+class CarrierLockManager;
+}
+
 namespace cros_healthd::internal {
 class DataCollector;
 }
@@ -201,6 +205,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<ShutdownPolicyForwarder> shutdown_policy_forwarder_;
 
   std::unique_ptr<EventRewriterDelegateImpl> event_rewriter_delegate_;
+
+  std::unique_ptr<carrier_lock::CarrierLockManager> carrier_lock_manager_;
 
   // Handles event dispatch to the accessibility component extensions.
   std::unique_ptr<AccessibilityEventRewriterDelegateImpl>

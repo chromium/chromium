@@ -3984,6 +3984,7 @@ source_set("ash") {
     "//chrome/services/qrcode_generator/public/cpp",
     "//chromeos/ash/components/account_manager",
     "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/components/carrier_lock",
     "//chromeos/ash/components/chaps_util",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus:plugin_vm_service_proto",

@@ -5316,6 +5316,7 @@ static_library("browser") {
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/audio/public/mojom",
+      "//chromeos/ash/components/carrier_lock",
       "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/attestation",
       "//chromeos/ash/components/dbus/attestation:attestation_proto",

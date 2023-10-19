@@ -220,6 +220,7 @@
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
+#include "chromeos/ash/components/carrier_lock/carrier_lock_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -1466,6 +1467,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ChromeOSMetricsProvider::RegisterPrefs(registry);
   ash::ArcKioskAppManager::RegisterPrefs(registry);
   ash::AudioDevicesPrefHandlerImpl::RegisterPrefs(registry);
+  ash::carrier_lock::CarrierLockManager::RegisterLocalPrefs(registry);
   ash::cert_provisioning::RegisterLocalStatePrefs(registry);
   ash::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(registry);
   ash::ManagedCellularPrefHandler::RegisterLocalStatePrefs(registry);

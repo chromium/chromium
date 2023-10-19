@@ -200,6 +200,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/carrier_lock/carrier_lock_manager.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
@@ -1042,6 +1043,13 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
 
   multi_capture_notifications_ = std::make_unique<MultiCaptureNotifications>();
+
+  // Initialize Cellular Carrier Lock provisioning manager before login
+  if (base::FeatureList::IsEnabled(features::kCellularCarrierLock)) {
+    carrier_lock_manager_ = carrier_lock::CarrierLockManager::Create(
+        g_browser_process->local_state(), g_browser_process->gcm_driver(),
+        g_browser_process->shared_url_loader_factory());
+  }
 
   if (immediate_login) {
     const user_manager::CryptohomeId cryptohome_id(
