@@ -49,6 +49,12 @@ static ColorParseResult ParseColor(Color& parsed_color,
     return ColorParseResult::kColor;
   if (CSSParser::ParseSystemColor(parsed_color, color_string, color_scheme))
     return ColorParseResult::kColor;
+  if (auto* color_mix_value =
+          DynamicTo<cssvalue::CSSColorMixValue>(CSSParser::ParseSingleValue(
+              CSSPropertyID::kColor, color_string,
+              StrictCSSParserContext(SecureContextMode::kInsecureContext)))) {
+    return ColorParseResult::kColorMix;
+  }
   return ColorParseResult::kParseFailed;
 }
 
@@ -65,6 +71,7 @@ bool ParseCanvasColorString(const String& color_string, Color& parsed_color) {
       color_string, mojom::blink::ColorScheme::kLight, parsed_color);
   switch (parse_result) {
     case ColorParseResult::kColor:
+    case ColorParseResult::kColorMix:
       return true;
     case ColorParseResult::kCurrentColor:
       parsed_color = Color::kBlack;
