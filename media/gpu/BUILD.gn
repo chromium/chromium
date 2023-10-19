@@ -320,6 +320,10 @@ source_set("common") {
     "accelerated_video_decoder.h",
     "codec_picture.cc",
     "codec_picture.h",
+    "exponential_moving_average.cc",
+    "exponential_moving_average.h",
+    "frame_size_estimator.cc",
+    "frame_size_estimator.h",
     "gpu_video_decode_accelerator_helpers.cc",
     "gpu_video_decode_accelerator_helpers.h",
     "gpu_video_encode_accelerator_helpers.cc",
@@ -586,6 +590,8 @@ source_set("unit_tests") {
     "//ui/gl:test_support",
   ]
   sources = [
+    "exponential_moving_average_unittest.cc",
+    "frame_size_estimator_unittest.cc",
     "h264_decoder_unittest.cc",
     "hrd_buffer_unittest.cc",
   ]
