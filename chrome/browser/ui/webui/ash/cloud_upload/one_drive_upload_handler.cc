@@ -219,15 +219,17 @@ void OneDriveUploadHandler::OnIOTaskStatus(
 void OneDriveUploadHandler::OnGetReauthenticationRequired(
     base::expected<ODFSMetadata, base::File::Error> metadata_or_error) {
   std::string error_message = GetGenericErrorMessage();
+  OfficeFilesUploadResult upload_result =
+      OfficeFilesUploadResult::kCloudAccessDenied;
   if (!metadata_or_error.has_value()) {
     LOG(ERROR) << "Failed to get reauthentication required state: "
                << metadata_or_error.error();
   } else if (metadata_or_error->reauthentication_required) {
     // Show the reauthentication required error notification.
     error_message = GetReauthenticationRequiredMessage();
+    upload_result = OfficeFilesUploadResult::kCloudReauthRequired;
   }
-  OnEndUpload(base::unexpected(error_message),
-              OfficeFilesUploadResult::kCloudAuthError);
+  OnEndUpload(base::unexpected(error_message), upload_result);
 }
 
 void OneDriveUploadHandler::ShowAccessDeniedError() {
@@ -235,7 +237,7 @@ void OneDriveUploadHandler::ShowAccessDeniedError() {
       GetODFS(profile_);
   if (!file_system) {
     OnEndUpload(base::unexpected(GetGenericErrorMessage()),
-                OfficeFilesUploadResult::kCloudAuthError);
+                OfficeFilesUploadResult::kCloudAccessDenied);
     return;
   }
   GetODFSMetadata(

@@ -79053,13 +79053,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Copy operation error"/>
   <int value="8" label="Copy operation needs password"/>
   <int value="9" label="Pinning failed due to low disk space"/>
-  <int value="10" label="Cloud authentication error"/>
+  <int value="10" label="Cloud access denied"/>
   <int value="11" label="Bad metadata received from cloud"/>
   <int value="12" label="Cloud quota full"/>
   <int value="13" label="Cloud error"/>
   <int value="14" label="No connectivity to cloud or sync disabled"/>
   <int value="15" label="Failed to generate destination folder URL"/>
   <int value="16" label="Invalid uploaded file URL"/>
+  <int value="17" label="Cloud re-authentication required"/>
 </enum>
 
 <enum name="OfficeFilesUseOutsideDriveHook">

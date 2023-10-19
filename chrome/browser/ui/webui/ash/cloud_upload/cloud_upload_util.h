@@ -149,14 +149,15 @@ enum class OfficeFilesUploadResult {
   kCopyOperationError = 7,
   kCopyOperationNeedPassword = 8,
   kPinningFailedDiskFull = 9,
-  kCloudAuthError = 10,
+  kCloudAccessDenied = 10,
   kCloudMetadataError = 11,
   kCloudQuotaFull = 12,
   kCloudError = 13,
   kNoConnection = 14,
   kDestinationUrlError = 15,
   kInvalidURL = 16,
-  kMaxValue = kInvalidURL,
+  kCloudReauthRequired = 17,
+  kMaxValue = kCloudReauthRequired,
 };
 
 // Query actions for this path to get ODFS Metadata.
