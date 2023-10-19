@@ -197,4 +197,9 @@ bool PermissionsClient::CanRequestDevicePermission(
   return false;
 }
 
+favicon::FaviconService* PermissionsClient::GetFaviconService(
+    content::BrowserContext* browser_context) {
+  return nullptr;
+}
+
 }  // namespace permissions

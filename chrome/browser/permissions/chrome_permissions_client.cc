@@ -61,6 +61,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/permissions/notification_blocked_message_delegate_android.h"
 #include "chrome/browser/permissions/permission_infobar_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
@@ -560,6 +561,14 @@ void ChromePermissionsClient::RepromptForAndroidPermissions(
 int ChromePermissionsClient::MapToJavaDrawableId(int resource_id) {
   return ResourceMapper::MapToJavaDrawableId(resource_id);
 }
+
+favicon::FaviconService* ChromePermissionsClient::GetFaviconService(
+    content::BrowserContext* browser_context) {
+  return FaviconServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context),
+      ServiceAccessType::EXPLICIT_ACCESS);
+}
+
 #else
 std::unique_ptr<permissions::PermissionPrompt>
 ChromePermissionsClient::CreatePrompt(

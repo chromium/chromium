@@ -1,5 +1,6 @@
 include_rules = [
   "+components/browser_ui/util/android",
+  "+components/browser_ui/widget/android",
   "+components/infobars/core",
   "+components/location/android",
   "+components/messages/android",

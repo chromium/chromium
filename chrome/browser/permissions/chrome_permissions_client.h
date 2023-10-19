@@ -120,6 +120,8 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       const std::vector<std::string>& optional_permissions,
       PermissionsUpdatedCallback callback) override;
   int MapToJavaDrawableId(int resource_id) override;
+  favicon::FaviconService* GetFaviconService(
+      content::BrowserContext* browser_context) override;
 #else
   std::unique_ptr<permissions::PermissionPrompt> CreatePrompt(
       content::WebContents* web_contents,

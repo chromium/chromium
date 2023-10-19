@@ -78,6 +78,7 @@ android_resources("java_resources") {
     "res/layout/item_chooser_dialog.xml",
     "res/layout/item_chooser_dialog_row.xml",
     "res/layout/update_permissions_dialog.xml",
+    "res/values/dimens.xml",
     "res/values/styles.xml",
   ]
   deps = [
@@ -122,6 +123,7 @@ android_library("java") {
     "//build/android:build_java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/util/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/omnibox/browser:scheme_classifier_java",
     "//content/public/android:content_java",

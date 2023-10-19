@@ -109,6 +109,7 @@ source_set("permissions") {
     "//components/back_forward_cache",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
+    "//components/favicon/core:core",
     "//components/keyed_service/content",
     "//components/permissions/prediction_service",
     "//components/permissions/vector_icons",
@@ -172,6 +173,7 @@ source_set("permissions") {
       "contexts/nfc_permission_context_android.h",
     ]
     deps += [
+      "//components/favicon_base:favicon_base",
       "//components/infobars/core",
       "//components/location/android:location_settings_dialog_enums_java",
       "//components/location/android:settings",

@@ -44,9 +44,10 @@ public class TextViewWithCompoundDrawables extends AppCompatTextView {
 
     /**
      * Set the tint color of the compound drawables.
-     * @param color The tint color.
+     *
+     * @param color The tint color. May be null to clear the tint color.
      */
-    public void setDrawableTintColor(ColorStateList color) {
+    public void setDrawableTintColor(@Nullable ColorStateList color) {
         mDrawableTint = color;
         setDrawableTint(getCompoundDrawablesRelative());
     }
@@ -120,8 +121,13 @@ public class TextViewWithCompoundDrawables extends AppCompatTextView {
             if (drawable == null) continue;
 
             drawable.mutate();
-            drawable.setColorFilter(
-                    mDrawableTint.getColorForState(getDrawableState(), 0), PorterDuff.Mode.SRC_IN);
+            if (mDrawableTint == null) {
+                drawable.clearColorFilter();
+            } else {
+                drawable.setColorFilter(
+                        mDrawableTint.getColorForState(getDrawableState(), 0),
+                        PorterDuff.Mode.SRC_IN);
+            }
         }
     }
 

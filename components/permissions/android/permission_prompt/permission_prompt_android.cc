@@ -145,4 +145,18 @@ std::u16string PermissionPromptAndroid::GetMessageText() const {
           delegate_->GetRequestingOrigin(),
           url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }
+
+bool PermissionPromptAndroid::ShouldUseRequestingOriginFavicon() const {
+  const std::vector<PermissionRequest*>& requests = delegate_->Requests();
+  CHECK_GT(requests.size(), 0U);
+
+  return requests[0]->request_type() == RequestType::kStorageAccess &&
+         base::FeatureList::IsEnabled(
+             permissions::features::kPermissionStorageAccessAPI);
+}
+
+GURL PermissionPromptAndroid::GetRequestingOrigin() const {
+  return delegate_->GetRequestingOrigin();
+}
+
 }  // namespace permissions

@@ -4,6 +4,8 @@
 
 package org.chromium.components.permissions;
 
+import android.graphics.Bitmap;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -105,7 +107,20 @@ public class PermissionDialogDelegate {
      */
     @CalledByNative
     private void dismissFromNative() {
+        assert mDialogController != null;
         mDialogController.dismissFromNative(this);
+    }
+
+    @CalledByNative
+    private void updateIcon(Bitmap icon) {
+        assert mDialogController != null;
+        mDialogController.updateIcon(icon);
+    }
+
+    @CalledByNative
+    private int getIconSizeInPx() {
+        assert mDialogController != null;
+        return mDialogController.getIconSizeInPx();
     }
 
     /**

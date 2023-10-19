@@ -59,7 +59,9 @@ class PermissionPromptAndroid : public PermissionPrompt {
   ContentSettingsType GetContentSettingType(size_t position) const;
   int GetIconId() const;
   std::u16string GetMessageText() const;
+  bool ShouldUseRequestingOriginFavicon() const;
 
+  GURL GetRequestingOrigin() const;
   content::WebContents* web_contents() { return web_contents_; }
 
  private:

@@ -21,7 +21,10 @@ class MockPermissionDialogJavaDelegate : public PermissionDialogJavaDelegate {
               (content::WebContents * web_contents,
                PermissionDialogDelegate* owner),
               (override));
-  MOCK_METHOD(void, CreateDialog, (), (override));
+  MOCK_METHOD(void,
+              CreateDialog,
+              (content::WebContents * web_contents),
+              (override));
   MOCK_METHOD(void, DismissDialog, (), (override));
 };
 

@@ -6,6 +6,9 @@ package org.chromium.components.permissions;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.view.View;
 
 import androidx.annotation.IntDef;
 
@@ -13,6 +16,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ObserverList;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.WindowAndroid;
@@ -178,9 +182,7 @@ public class PermissionDialogController
         assert mState == State.NOT_SHOWING;
 
         mDialogDelegate = mRequestQueue.remove(0);
-        // Use the context to access resources instead of the activity because the activity may not
-        // have the correct resources in some cases (e.g. WebLayer).
-        Context context = mDialogDelegate.getWindow().getContext().get();
+        Context context = getContext();
 
         // It's possible for the context to be null if we reach here just after the user
         // backgrounds the browser and cleanup has happened. In that case, we can't show a prompt,
@@ -264,6 +266,30 @@ public class PermissionDialogController
             mRequestQueue.remove(delegate);
         }
         delegate.destroy();
+    }
+
+    // TODO(crbug.com/1478113): Refractor these classes to use an actual MVC model.
+    public void updateIcon(Bitmap icon) {
+        if (mDialogModel == null) {
+            return;
+        }
+
+        View customView = mDialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        TextViewWithCompoundDrawables messageTextView = customView.findViewById(R.id.text);
+        messageTextView.setDrawableTintColor(null);
+        messageTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                new BitmapDrawable(getContext().getResources(), icon), null, null, null);
+    }
+
+    public int getIconSizeInPx() {
+        return getContext().getResources().getDimensionPixelSize(R.dimen.large_favicon_size);
+    }
+
+    private Context getContext() {
+        assert mDialogDelegate != null;
+        // Use the context to access resources instead of the activity because the activity may not
+        // have the correct resources in some cases (e.g. WebLayer).
+        return mDialogDelegate.getWindow().getContext().get();
     }
 
     @Override

@@ -1,6 +1,8 @@
 include_rules = [
   "+components/back_forward_cache",
   "+components/content_settings/core",
+  "+components/favicon/core",
+  "+components/favicon_base",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/messages/android",
