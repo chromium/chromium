@@ -539,7 +539,10 @@ source_set("web_applications") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos/constants:constants" ]
+    deps += [
+      "//chromeos/components/mgs",
+      "//chromeos/constants:constants",
+    ]
   }
 
   public_deps = [

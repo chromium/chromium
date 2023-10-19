@@ -4069,6 +4069,7 @@ source_set("ash") {
     "//chromeos/components/disks:prefs",
     "//chromeos/components/kcer:key_permissions_proto",
     "//chromeos/components/kiosk",
+    "//chromeos/components/mgs",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/sensors",

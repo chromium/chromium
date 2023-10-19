@@ -3678,6 +3678,7 @@ static_library("ui") {
       "//chromeos/ash/services/nearby/public/mojom",
       "//chromeos/ash/services/recording/public/mojom",
       "//chromeos/components/kiosk",
+      "//chromeos/components/mgs",
       "//chromeos/components/onc",
       "//chromeos/components/quick_answers",
       "//chromeos/components/quick_answers/public/cpp:cpp",
@@ -6033,6 +6034,7 @@ static_library("ui") {
       ]
       deps += [
         "//chromeos/components/kiosk",
+        "//chromeos/components/mgs",
         "//components/arc/common:arc_intent_helper_constants",
       ]
     }

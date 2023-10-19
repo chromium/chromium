@@ -18,6 +18,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif
 
 namespace {
@@ -75,7 +76,7 @@ bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
 
   bool is_regular_profile = profile.IsRegularProfile();
 #if BUILDFLAG(IS_CHROMEOS)
-  is_regular_profile &= !profiles::IsManagedGuestSession() &&
+  is_regular_profile &= !chromeos::IsManagedGuestSession() &&
                         !chromeos::IsKioskSession() &&
                         !profiles::IsChromeAppKioskSession();
 #endif

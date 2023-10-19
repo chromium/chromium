@@ -70,8 +70,8 @@
 #include "chrome/browser/ash/extensions/signin_screen_policy_provider.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -155,8 +155,9 @@ void ExtensionSystemImpl::Shared::RegisterManagementPolicyProviders() {
     management_policy_->RegisterProvider(
         device_local_account_management_policy_provider_.get());
   }
-  if (signin_screen_policy_provider_)
+  if (signin_screen_policy_provider_) {
     management_policy_->RegisterProvider(signin_screen_policy_provider_.get());
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   management_policy_->RegisterProvider(InstallVerifier::Get(profile_));
@@ -198,8 +199,8 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
 
   user_script_manager_ = std::make_unique<UserScriptManager>(profile_);
 
-  bool autoupdate_enabled = !profile_->IsGuestSession() &&
-                            !profile_->IsSystemProfile();
+  bool autoupdate_enabled =
+      !profile_->IsGuestSession() && !profile_->IsSystemProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!extensions_enabled ||
       ash::ProfileHelper::IsLockScreenAppProfile(profile_)) {
@@ -228,8 +229,9 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
     mode = std::max(mode,
                     ChromeContentVerifierDelegate::VerifyInfo::Mode::BOOTSTRAP);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    if (mode >= ChromeContentVerifierDelegate::VerifyInfo::Mode::BOOTSTRAP)
+    if (mode >= ChromeContentVerifierDelegate::VerifyInfo::Mode::BOOTSTRAP) {
       content_verifier_->Start();
+    }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // This class is used to check the permissions of the force-installed
     // extensions inside the managed guest session. It updates the local state
@@ -237,7 +239,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
     // or the normal one should be displayed. The next time on the login screen
     // of the managed guest sessions the warning will be decided according to
     // the value saved from the last session.
-    if (profiles::IsManagedGuestSession()) {
+    if (chromeos::IsManagedGuestSession()) {
       extensions_permissions_tracker_ =
           std::make_unique<ExtensionsPermissionsTracker>(
               ExtensionRegistry::Get(profile_), profile_);
@@ -259,8 +261,8 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
   skip_session_extensions = !ash::LoginState::Get()->IsUserLoggedIn() ||
                             !ash::ProfileHelper::IsUserProfile(profile_);
   if (chrome::IsRunningInForcedAppMode()) {
-    extension_service_->component_loader()->
-        AddDefaultComponentExtensionsForKioskMode(skip_session_extensions);
+    extension_service_->component_loader()
+        ->AddDefaultComponentExtensionsForKioskMode(skip_session_extensions);
   } else {
     extension_service_->component_loader()->AddDefaultComponentExtensions(
         skip_session_extensions);
@@ -289,10 +291,12 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
 }
 
 void ExtensionSystemImpl::Shared::Shutdown() {
-  if (content_verifier_.get())
+  if (content_verifier_.get()) {
     content_verifier_->Shutdown();
-  if (extension_service_)
+  }
+  if (extension_service_) {
     extension_service_->Shutdown();
+  }
 }
 
 ServiceWorkerManager* ExtensionSystemImpl::Shared::service_worker_manager() {
@@ -344,8 +348,7 @@ ContentVerifier* ExtensionSystemImpl::Shared::content_verifier() {
 // ExtensionSystemImpl
 //
 
-ExtensionSystemImpl::ExtensionSystemImpl(Profile* profile)
-    : profile_(profile) {
+ExtensionSystemImpl::ExtensionSystemImpl(Profile* profile) : profile_(profile) {
   shared_ = ExtensionSystemSharedFactory::GetForBrowserContext(profile);
 
   if (!profile->IsOffTheRecord()) {
@@ -355,14 +358,14 @@ ExtensionSystemImpl::ExtensionSystemImpl(Profile* profile)
 
 ExtensionSystemImpl::~ExtensionSystemImpl() = default;
 
-void ExtensionSystemImpl::Shutdown() {
-}
+void ExtensionSystemImpl::Shutdown() {}
 
 void ExtensionSystemImpl::InitForRegularProfile(bool extensions_enabled) {
   TRACE_EVENT0("browser,startup", "ExtensionSystemImpl::InitForRegularProfile");
 
-  if (user_script_manager() || extension_service())
+  if (user_script_manager() || extension_service()) {
     return;  // Already initialized.
+  }
 
   shared_->Init(extensions_enabled);
 }

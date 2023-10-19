@@ -9,8 +9,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"  // nogncheck crbug.com/1420759
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"  // nogncheck crbug.com/1420759
 #include "content/public/browser/browser_thread.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
@@ -33,7 +36,7 @@ std::string DetermineUserType(Profile* profile) {
     return kUserTypeChild;
   if (profile->GetProfilePolicyConnector()->IsManaged()) {
 #if BUILDFLAG(IS_CHROMEOS)
-    if (profiles::IsManagedGuestSession()) {
+    if (chromeos::IsManagedGuestSession()) {
       return kUserTypeManagedGuest;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)

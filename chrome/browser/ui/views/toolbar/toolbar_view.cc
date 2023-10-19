@@ -129,6 +129,10 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif
+
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -462,7 +466,7 @@ void ToolbarView::Init() {
       (browser_->profile()->IsOffTheRecord() &&
        browser_->profile()->GetOTRProfileID().IsCaptivePortal());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  show_avatar_toolbar_button = !profiles::IsManagedGuestSession();
+  show_avatar_toolbar_button = !chromeos::IsManagedGuestSession();
 #endif
   avatar_->SetVisible(show_avatar_toolbar_button);
 

@@ -20,6 +20,7 @@
 #include "base/types/optional_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -92,7 +93,7 @@ bool IsRegularProfile(profile_metrics::BrowserProfileType profile_type) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Any Device Local account, which is a CrOS concept powering things like
   // Kiosks and Managed Guest Sessions, is not considered regular.
-  return !profiles::IsManagedGuestSession() && !chromeos::IsKioskSession() &&
+  return !chromeos::IsManagedGuestSession() && !chromeos::IsKioskSession() &&
          !profiles::IsChromeAppKioskSession();
 #else
   return true;

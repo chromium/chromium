@@ -708,6 +708,7 @@ static_library("test_support") {
       "base/chromeos/crosier:proto",
       "//base/test:proto_test_support",
       "//chrome/browser/chromeos",
+      "//chromeos/components/mgs",
       "//chromeos/dbus/constants",
     ]
     public_deps += [ "//chromeos/constants" ]
@@ -9007,6 +9008,7 @@ test("unit_tests") {
         "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
         "//chrome/common/chromeos/extensions",
         "//chromeos/ash/components/dbus/image_burner",
+        "//chromeos/components/mgs:test_support",
         "//content/public/browser",
         "//net",
         "//net:test_support",
@@ -9292,6 +9294,9 @@ test("unit_tests") {
       "../browser/ui/webui/management/management_ui_handler_unittest.cc",
     ]
     deps += [ "../browser/enterprise/connectors/test:test_support" ]
+    if (is_chromeos) {
+      deps += [ "//chromeos/components/mgs" ]
+    }
   }
 
   if (is_linux || is_chromeos_ash || is_mac || is_win) {

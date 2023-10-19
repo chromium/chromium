@@ -43,11 +43,11 @@
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -549,7 +549,7 @@ bool IsArcTermsOfServiceOobeNegotiationNeeded() {
 bool IsArcStatsReportingEnabled() {
   // Managed guest session users never saw the consent for stats reporting even
   // if the admin forced the pref by a policy.
-  if (profiles::IsManagedGuestSession()) {
+  if (chromeos::IsManagedGuestSession()) {
     return false;
   }
 

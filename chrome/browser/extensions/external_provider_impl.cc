@@ -42,7 +42,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -57,6 +56,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif  // BUIDLFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -684,7 +685,7 @@ void ExternalProviderImpl::CreateExternalProviders(
     }
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::IsKioskSession() || profiles::IsManagedGuestSession()) {
+  if (chromeos::IsKioskSession() || chromeos::IsManagedGuestSession()) {
     if (DeviceLocalAccountExtensionInstallerLacros::Get()) {
       external_loader =
           DeviceLocalAccountExtensionInstallerLacros::Get()->extension_loader();

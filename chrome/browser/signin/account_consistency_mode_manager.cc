@@ -30,6 +30,10 @@
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_MIRROR)
 #error "Dice and Mirror cannot be both enabled."
 #endif
@@ -192,7 +196,7 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Account consistency is unavailable on Guest and Managed Guest Sessions.
-  if (profiles::IsManagedGuestSession() || profile->IsGuestSession()) {
+  if (chromeos::IsManagedGuestSession() || profile->IsGuestSession()) {
     return AccountConsistencyMethod::kDisabled;
   }
 #endif

@@ -183,6 +183,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -458,6 +459,14 @@ BrowserView::DevToolsDockedPlacement GetDevToolsDockedPlacement(
   }
 
   return BrowserView::DevToolsDockedPlacement::kUnknown;
+}
+
+bool IsManagedGuestSession() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return chromeos::IsManagedGuestSession();
+#else
+  return false;
+#endif
 }
 
 // Overlay view that owns TopContainerView in some cases (such as during
@@ -879,10 +888,9 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   // In order to do feature promos, the browser must have a UI and not be an
   // "off-the-record" or in a demo or guest mode.
-  bool is_profile_type_without_iph = GetIncognito() || GetGuestSession() ||
-                                     profiles::IsManagedGuestSession() ||
-                                     profiles::IsDemoSession() ||
-                                     profiles::IsChromeAppKioskSession();
+  bool is_profile_type_without_iph =
+      GetIncognito() || GetGuestSession() || IsManagedGuestSession() ||
+      profiles::IsDemoSession() || profiles::IsChromeAppKioskSession();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   is_profile_type_without_iph |= profiles::IsWebKioskSession();
 #endif
@@ -1889,8 +1897,8 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
   // Immersive mode allows the toolbar to be shown, so do not show the bubble.
   // However, do show the bubble in a managed guest session (see
   // crbug.com/741069).
-  bool immersive_not_public = ShouldUseImmersiveFullscreenForUrl(url) &&
-                              !profiles::IsManagedGuestSession();
+  bool immersive_not_public =
+      ShouldUseImmersiveFullscreenForUrl(url) && !IsManagedGuestSession();
 
   // Whether we should remove the bubble if it exists, or not show the bubble.
   // TODO(jamescook): Figure out what to do with mouse-lock.

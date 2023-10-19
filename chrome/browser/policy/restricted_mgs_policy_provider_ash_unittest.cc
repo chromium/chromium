@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/certificates_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/components/mgs/managed_guest_session_test_utils.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -124,10 +125,8 @@ TEST_F(RestrictedMGSPolicyProviderAshTest, CreateRestrictedMGSPolicyProvider) {
   auto policy_provider = RestrictedMGSPolicyProvider::Create();
   EXPECT_FALSE(policy_provider);
 
-  // Gets created for a Managed Guest Session.
-  ash::LoginState::Get()->SetLoggedInState(
-      ash::LoginState::LOGGED_IN_ACTIVE,
-      ash::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
+  chromeos::FakeManagedGuestSession managed_guest_session(
+      /*initialize_login_state=*/false);
   policy_provider = RestrictedMGSPolicyProvider::Create();
   EXPECT_TRUE(policy_provider);
 }

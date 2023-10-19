@@ -16,7 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/version.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -82,7 +82,7 @@ IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
 void IsolatedWebAppPolicyManager::InstallEphemeralApps() {
-  if (!profiles::IsManagedGuestSession()) {
+  if (!chromeos::IsManagedGuestSession()) {
     LOG(ERROR) << "The IWAs should be installed only in managed guest session.";
     SetResultForAllAndFinish(
         EphemeralAppInstallResult::kErrorNotEphemeralSession);
