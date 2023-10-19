@@ -222,4 +222,11 @@ BASE_FEATURE(kWebAuthnPRFEvalDuringCreate,
              "WebAuthenticationPRFEvalDuringCreate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Not yet enabled by default.
+BASE_FEATURE(kChromeOsPasskeys,
+             "WebAuthenticationCrosPasskeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace device

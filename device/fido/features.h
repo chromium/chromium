@@ -182,6 +182,12 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidIncognitoConfirmation);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnPRFEvalDuringCreate);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Enable ChromeOS native passkey support.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kChromeOsPasskeys);
+#endif
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
