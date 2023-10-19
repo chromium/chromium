@@ -142,22 +142,76 @@ CloudOpenMetrics::~CloudOpenMetrics() {
     }
   }
 
-  // TODO(cassycc): Log the rest of the companion metrics once the rest of the
-  // consistency checks have been implemented.
+  if (transfer_required_.logged()) {
+    if (transfer_required_.value == OfficeFilesTransferRequired::kNotRequired) {
+      ExpectNotLogged(upload_result_);
+      if (google_drive) {
+        ExpectLogged(drive_open_error_);
+        ExpectLoggedWith(source_volume_,
+                         {OfficeFilesSourceVolume::kGoogleDrive});
+      } else {
+        ExpectLogged(one_drive_open_error_);
+        ExpectLoggedWith(source_volume_,
+                         {OfficeFilesSourceVolume::kMicrosoftOneDrive});
+      }
+    } else {
+      if (google_drive) {
+        ExpectNotLoggedWith(source_volume_,
+                            {OfficeFilesSourceVolume::kGoogleDrive});
+      } else {
+        ExpectNotLoggedWith(source_volume_,
+                            {OfficeFilesSourceVolume::kMicrosoftOneDrive});
+      }
+      if (task_result_.logged() &&
+          task_result_.value != OfficeTaskResult::kCancelledAtConfirmation) {
+        ExpectLogged(upload_result_);
+      }
+    }
+  }
+
+  if (upload_result_.logged()) {
+    if (upload_result_.value == OfficeFilesUploadResult::kCopyOperationError) {
+      ExpectLogged(copy_error_);
+    } else if (upload_result_.value ==
+               OfficeFilesUploadResult::kMoveOperationError) {
+      ExpectLogged(move_error_);
+    }
+  }
+
+  if (copy_error_.logged() || move_error_.logged()) {
+    ExpectLogged(upload_result_);
+  }
+
   if (google_drive) {
+    base::UmaHistogramEnumeration(kGoogleDriveCopyErrorMetricStateMetricName,
+                                  copy_error_.state);
+    base::UmaHistogramEnumeration(kGoogleDriveMoveErrorMetricStateMetricName,
+                                  move_error_.state);
+    base::UmaHistogramEnumeration(kDriveErrorMetricStateMetricName,
+                                  drive_open_error_.state);
     base::UmaHistogramEnumeration(kDriveOpenSourceVolumeMetricStateMetric,
                                   source_volume_.state);
     base::UmaHistogramEnumeration(kGoogleDriveTaskResultMetricStateMetricName,
                                   task_result_.state);
     base::UmaHistogramEnumeration(kDriveTransferRequiredMetricStateMetric,
                                   transfer_required_.state);
+    base::UmaHistogramEnumeration(kGoogleDriveUploadResultMetricStateMetricName,
+                                  upload_result_.state);
   } else {
+    base::UmaHistogramEnumeration(kOneDriveCopyErrorMetricStateMetricName,
+                                  copy_error_.state);
+    base::UmaHistogramEnumeration(kOneDriveMoveErrorMetricStateMetricName,
+                                  move_error_.state);
+    base::UmaHistogramEnumeration(kOneDriveErrorMetricStateMetricName,
+                                  one_drive_open_error_.state);
     base::UmaHistogramEnumeration(kOneDriveOpenSourceVolumeMetricStateMetric,
                                   source_volume_.state);
     base::UmaHistogramEnumeration(kOneDriveTaskResultMetricStateMetricName,
                                   task_result_.state);
     base::UmaHistogramEnumeration(kOneDriveTransferRequiredMetricStateMetric,
                                   transfer_required_.state);
+    base::UmaHistogramEnumeration(kOneDriveUploadResultMetricStateMetricName,
+                                  upload_result_.state);
   }
 }
 
