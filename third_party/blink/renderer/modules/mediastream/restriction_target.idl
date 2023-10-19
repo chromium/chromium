@@ -4,8 +4,7 @@
 
 // https://screen-share.github.io/element-capture/#dom-restrictiontarget
 
-// TODO(1418194): Make RestrictionTarget tokens Serializable.
-[Exposed=(Window,Worker), RuntimeEnabled = ElementCapture]
+[Exposed=(Window,Worker), Serializable, RuntimeEnabled = ElementCapture]
 interface RestrictionTarget {
   [
     Exposed=Window,

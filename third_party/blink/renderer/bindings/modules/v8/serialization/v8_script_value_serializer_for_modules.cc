@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_source_handle.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
+#include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
@@ -313,6 +315,20 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
       return false;
     }
     return WriteCropTarget(crop_target);
+  }
+  if (auto* restriction_target =
+          dispatcher.ToMostDerived<RestrictionTarget>()) {
+    if (!RuntimeEnabledFeatures::ElementCaptureEnabled(
+            ExecutionContext::From(GetScriptState()))) {
+      return false;
+    }
+    if (IsForStorage()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "A RestrictionTarget cannot be serialized for storage.");
+      return false;
+    }
+    return WriteRestrictionTarget(restriction_target);
   }
   if (auto* media_source_handle =
           dispatcher.ToMostDerived<MediaSourceHandleImpl>()) {
@@ -683,6 +699,16 @@ bool V8ScriptValueSerializerForModules::WriteCropTarget(
   const String& id = crop_target->GetId();
   CHECK(!id.empty());
   WriteAndRequireInterfaceTag(kCropTargetTag);
+  WriteUTF8String(id);
+  return true;
+}
+
+bool V8ScriptValueSerializerForModules::WriteRestrictionTarget(
+    RestrictionTarget* restriction_target) {
+  CHECK(restriction_target);
+  const String& id = restriction_target->GetId();
+  CHECK(!id.empty());
+  WriteAndRequireInterfaceTag(kRestrictionTargetTag);
   WriteUTF8String(id);
   return true;
 }
