@@ -357,8 +357,7 @@ void HTMLAnchorElement::SetHref(const AtomicString& value) {
 
 KURL HTMLAnchorElement::Url() const {
   KURL href = Href();
-  if (RuntimeEnabledFeatures::AnchorHrefCheckInvalidURLEnabled() &&
-      !href.IsValid()) {
+  if (!href.IsValid()) {
     return KURL();
   }
   return href;
