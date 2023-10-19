@@ -800,6 +800,20 @@ bool RealboxHandler::IsRemoteBound() const {
   return page_set_;
 }
 
+void RealboxHandler::AddObserver(OmniboxWebUIPopupChangeObserver* observer) {
+  observers_.AddObserver(observer);
+  observer->OnPopupElementSizeChanged(webui_size_);
+}
+
+void RealboxHandler::RemoveObserver(OmniboxWebUIPopupChangeObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+bool RealboxHandler::HasObserver(
+    const OmniboxWebUIPopupChangeObserver* observer) const {
+  return observers_.HasObserver(observer);
+}
+
 void RealboxHandler::SetPage(
     mojo::PendingRemote<omnibox::mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
@@ -887,6 +901,13 @@ void RealboxHandler::OnNavigationLikely(
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
     search_prefetch_service->OnNavigationLikely(
         line, *match, navigation_predictor, web_contents_);
+  }
+}
+
+void RealboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
+  webui_size_ = size;
+  for (OmniboxWebUIPopupChangeObserver& observer : observers_) {
+    observer.OnPopupElementSizeChanged(size);
   }
 }
 

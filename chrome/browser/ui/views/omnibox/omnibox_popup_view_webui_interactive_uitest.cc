@@ -68,10 +68,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, PopupLoadsAndAcceptsCalls) {
   WaitForHandler();
+  popup_view()->presenter_->Show();
   popup_view()->UpdatePopupAppearance();
   OmniboxPopupSelection selection(OmniboxPopupSelection::kNoMatch);
   popup_view()->OnSelectionChanged(selection, selection);
   popup_view()->ProvideButtonFocusHint(0);
+  popup_view()->presenter_->Hide();
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

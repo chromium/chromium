@@ -929,6 +929,7 @@ mojom("mojo_bindings") {
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 }
