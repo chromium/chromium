@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
   const std::string cross_origin_url =
       embedded_test_server()->GetURL("a.com", "/title1.html").spec();
 
-  const std::string script =
+  static constexpr char kScript[] =
       "var evt = new MouseEvent('click', {"
       "  view : window,"
 #if BUILDFLAG(IS_MAC)
@@ -272,8 +272,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest,
   content::TestNavigationObserver tab_under_observer(opener, 1);
   navigation_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
-      opener,
-      base::StringPrintf(script.c_str(), cross_origin_url.c_str()).c_str()));
+      opener, base::StringPrintf(kScript, cross_origin_url.c_str()).c_str()));
   navigation_observer.Wait();
   tab_under_observer.Wait();
   EXPECT_FALSE(tab_under_observer.last_navigation_succeeded());

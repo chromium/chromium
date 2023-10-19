@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchOnStableChannelBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
                        LaunchTypeMultipleClients) {
   // Create a manifest that includes `{"launch_type": "multiple-clients"}`.
-  std::string manifest = R"({
+  static constexpr char kManifest[] = R"({
     "name": "Test",
     "version": "0.0.1",
     "manifest_version": 3,
@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
     ]
   })";
 
-  const char* kScript = R"(
+  static constexpr char kScript[] = R"(
         chrome.test.assertTrue('launchQueue' in window);
         launchQueue.setConsumer((launchParams) => {
           chrome.test.assertEq(%d, launchParams.files.length);
@@ -656,7 +656,8 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
         });
       )";
 
-  const char* kScriptTag = R"(<script src="%s"></script><body>Test</body>)";
+  static constexpr char kScriptTag[] =
+      R"(<script src="%s"></script><body>Test</body>)";
 
   // Create files.
   base::flat_map<std::string, std::string> files = {
@@ -667,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
   };
 
   // Load extension.
-  auto* extension = WriteCustomDirForFileHandlingExtension(manifest, files);
+  auto* extension = WriteCustomDirForFileHandlingExtension(kManifest, files);
   ASSERT_TRUE(extension);
 
   auto VerifyLaunch =
