@@ -176,7 +176,7 @@ bool LoadingPredictor::PrepareForPageLoad(
   ++total_hints_activated_;
   active_hints_.emplace(url, base::TimeTicks::Now());
   if (IsPreconnectAllowed(profile_))
-    MaybeAddPreconnect(url, std::move(prediction), origin);
+    MaybeAddPreconnect(url, std::move(prediction));
   return has_local_preconnect_prediction || preconnect_prediction;
 }
 
@@ -315,8 +315,7 @@ void LoadingPredictor::CleanupAbandonedHintsAndNavigations(
 }
 
 void LoadingPredictor::MaybeAddPreconnect(const GURL& url,
-                                          PreconnectPrediction prediction,
-                                          HintOrigin origin) {
+                                          PreconnectPrediction prediction) {
   DCHECK(!shutdown_);
   if (!prediction.prefetch_requests.empty()) {
     DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
