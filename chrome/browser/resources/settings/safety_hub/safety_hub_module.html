@@ -3,6 +3,7 @@
     display: block;
     padding: 8px 16px;
 
+    --separator-line-height: 16px;
     /**
      * The |animation-duration| parameter corresponds to MODEL_UPDATE_DELAY_MS
      * in the .ts file.
@@ -28,6 +29,11 @@
 
   #header {
     font-weight: 500;
+  }
+
+  #header-wrapper {
+    /* Always at least three lines tall (with 154% line-height). */
+    min-height: calc(3em * 1.54);
   }
 
   iron-icon {
@@ -56,6 +62,14 @@
 
   .list-item {
     --cr-icon-button-margin-end: initial;
+
+    /**
+     * As the animation decreases max-height of rows, it can push content out
+     * of the bounding box of the item, which will appear as a quick flash
+     * on top of a neighboring item. Prevent this by cropping everything outside
+     * the bounding box.
+     */
+    clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0);
   }
 
   .display-name {
@@ -68,14 +82,26 @@
   }
 
   #line {
-    height: 1px;
-    background-color: var(--google-grey-300);
+    box-sizing: border-box;
+    height: var(--separator-line-height);
+    border-bottom: 1px solid var(--google-grey-300);
     flex: 1;
-    margin-top: 16px;
   }
 
   .link a[href] {
     text-decoration: none;
+  }
+
+  @keyframes line-hiding-animation {
+    0% {
+      height: var(--separator-line-height);
+      opacity: 1;
+    }
+    100% {
+      height: 0;
+      opacity: 0;
+      visibility: hidden;
+    }
   }
 
   /**
@@ -86,14 +112,10 @@
    * of a slightly larger height is not a problem since this animation uses
    * |max-height| and not |height| directly.
    */
-  @keyframes hiding-animation {
+  @keyframes item-hiding-animation {
     0% {
       max-height: calc(1.6 * 2em + 2 * var(--cr-section-vertical-padding));
       opacity: 1;
-    }
-    20% {
-      max-height: calc(1.6 * 2em + 2 * var(--cr-section-vertical-padding));
-      opacity: 0;
     }
     100% {
       max-height: 0;
@@ -126,19 +148,25 @@
   }
 
   /**
-   * Showing and hiding animations are symmetrical. They only differ
-   * in the direction.
+   * Showing and hiding animations are largely symmetrical. They only differ
+   * in the direction and timing.
    */
   .hiding, .showing {
     animation-duration: var(--animation-duration);
     animation-fill-mode: forwards;
     animation-iteration-count: 1;
-    animation-name: hiding-animation;
+    animation-name: item-hiding-animation;
+    animation-timing-function: cubic-bezier(0, 0.8, 0, 1);
     min-height: 0;
   }
 
   .showing {
     animation-direction: reverse;
+    animation-timing-function: cubic-bezier(1, 0, 1, 0.4);
+  }
+
+  #line.hiding, #line.showing {
+    animation-name: line-hiding-animation;
   }
 
   paper-tooltip {

@@ -172,6 +172,13 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
             ({...site, detail: site.notificationInfoString}));
   }
 
+  private async setHeaderToCompletionState_() {
+    this.headerString_ =
+        this.i18n('safetyCheckNotificationPermissionReviewDoneLabel');
+    this.subheaderString_ = '';
+    this.headerIconString_ = 'cr:check';
+  }
+
   private async onSitesChanged_() {
     if (this.sites_ === null) {
       return;
@@ -185,12 +192,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     this.renderedOrigins_ = this.sites_.map(site => site.origin);
 
     if (this.shouldShowCompletionInfo_) {
-      // In the completion state, the header string should be replaced with
-      // completion string.
-      this.headerString_ =
-          this.i18n('safetyCheckNotificationPermissionReviewDoneLabel');
-      this.subheaderString_ = '';
-      this.headerIconString_ = 'cr:check';
+      this.setHeaderToCompletionState_();
       return;
     }
 
@@ -256,6 +258,13 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     // origins that were blocked.
     assert(this.sites_);
     this.lastOrigins_ = this.sites_.map(site => site.origin);
+
+    // Pre-emptively set the header to the completion state, as that is the
+    // state we expect at the end of the animation. In the corner case that
+    // another site was added to the list at exactly the same time as the
+    // animation runs, the callback will still re-render the header correctly.
+    this.setHeaderToCompletionState_();
+
     this.$.module.animateHide(
         /* all origins */ null,
         this.browserProxy_.blockNotificationPermissionForOrigins.bind(

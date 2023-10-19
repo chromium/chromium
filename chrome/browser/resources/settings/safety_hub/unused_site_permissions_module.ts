@@ -227,6 +227,13 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     assert(this.sites_ !== null);
     this.lastUserAction_ = Action.GOT_IT;
     this.lastUnusedSitePermissionsListAcknowledged_ = this.sites_;
+
+    // Pre-emptively set the header to the completion state, as that is the
+    // state we expect at the end of the animation. In the corner case that
+    // another site was added to the list at exactly the same time as the
+    // animation runs, the callback will still re-render the header correctly.
+    this.setHeaderToCompletionState_();
+
     this.$.module.animateHide(
         /* all origins */ null,
         this.browserProxy_.acknowledgeRevokedUnusedSitePermissionsList.bind(
@@ -256,6 +263,12 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
             ({...site, detail: this.getPermissionsText_(site.permissions)}));
   }
 
+  private setHeaderToCompletionState_() {
+    this.headerString_ = this.i18n('safetyCheckUnusedSitePermissionsDoneLabel');
+    this.subheaderString_ = '';
+    this.headerIconString_ = 'cr:check';
+  }
+
   private async onSitesChanged_() {
     if (this.sites_ === null) {
       return;
@@ -269,12 +282,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     this.renderedOrigins_ = this.sites_.map(site => site.origin);
 
     if (this.shouldShowCompletionInfo_) {
-      // In the completion state, the header string should be replaced with
-      // completion string.
-      this.headerString_ =
-          this.i18n('safetyCheckUnusedSitePermissionsDoneLabel');
-      this.subheaderString_ = '';
-      this.headerIconString_ = 'cr:check';
+      this.setHeaderToCompletionState_();
       return;
     }
 
