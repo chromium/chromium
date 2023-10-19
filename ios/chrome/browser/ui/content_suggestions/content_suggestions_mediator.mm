@@ -104,6 +104,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
@@ -1581,7 +1582,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     NSDate* estimatedDeliveryTime = iter->estimated_delivery_time.ToNSDate();
     if ([estimatedDeliveryTime
             compare:[NSDate dateWithTimeIntervalSinceNow:-kTwoDays]] ==
-        NSOrderedAscending) {
+        NSOrderedDescending) {
       // Parcel was delivered more than two days ago, make this the last time it
       // is shown by stopping tracking.
       _shoppingService->StopTrackingParcel(iter->tracking_id,
@@ -1592,6 +1593,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
   if ([parcelItems count] > 0) {
     _parcelTrackingItems = parcelItems;
+    [self logParcelTrackingFreshnessSignalIfApplicable];
     _latestMagicStackOrder =
         base::FeatureList::IsEnabled(segmentation_platform::features::
                                          kSegmentationPlatformIosModuleRanker)
@@ -1610,6 +1612,20 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       }
     }
     [self.consumer showParcelTrackingItems:parcelItems];
+  }
+}
+
+// Logs a freshness signal for the Parcel Tracking module if there is at least
+// one parcel with an estimated delivery date within the next two days.
+- (void)logParcelTrackingFreshnessSignalIfApplicable {
+  for (ParcelTrackingItem* item in _parcelTrackingItems) {
+    base::Time now = base::Time::Now();
+    if (item.estimatedDeliveryTime > now &&
+        item.estimatedDeliveryTime < now + base::Days(2)) {
+      RecordModuleFreshnessSignal(
+          ContentSuggestionsModuleType::kParcelTracking);
+      return;
+    }
   }
 }
 

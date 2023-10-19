@@ -53,6 +53,16 @@ void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type) {
           base::UserMetricsAction("IOSMagicStackTabResumptionFreshSignal"));
       break;
     }
+    case ContentSuggestionsModuleType::kParcelTracking: {
+      PrefService* local_state = GetApplicationContext()->GetLocalState();
+      local_state->SetInteger(
+          prefs::
+              kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness,
+          0);
+      base::RecordAction(
+          base::UserMetricsAction("IOSMagicStackParcelTrackingFreshSignal"));
+      break;
+    }
     default:
       break;
   }

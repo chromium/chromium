@@ -64,6 +64,8 @@ source_set("util") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/web/public/annotations:custom_text_check_result",
   ]
 }

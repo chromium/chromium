@@ -10,6 +10,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_timeouts.h"
 #import "base/time/default_clock.h"
+#import "base/time/time.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/favicon/core/large_icon_service_impl.h"
 #import "components/favicon/core/test/mock_favicon_service.h"
@@ -46,6 +47,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -169,16 +171,20 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
 
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
     std::vector<commerce::ParcelTrackingStatus> parcels;
-    commerce::ParcelTrackingStatus new_status;
-    new_status.carrier = commerce::ParcelIdentifier::UPS;
-    new_status.state = commerce::ParcelStatus::NEW;
-    new_status.tracking_id = "abc";
-    parcels.emplace_back(new_status);
+    commerce::ParcelTrackingStatus out_for_delivery;
+    out_for_delivery.carrier = commerce::ParcelIdentifier::UPS;
+    out_for_delivery.state = commerce::ParcelStatus::OUT_FOR_DELIVERY;
+    out_for_delivery.tracking_id = "abc";
+    out_for_delivery.estimated_delivery_time =
+        base::Time::Now() + base::Hours(3);
+    parcels.emplace_back(out_for_delivery);
 
     commerce::ParcelTrackingStatus delivered_status;
     delivered_status.carrier = commerce::ParcelIdentifier::USPS;
     delivered_status.state = commerce::ParcelStatus::FINISHED;
     delivered_status.tracking_id = "def";
+    delivered_status.estimated_delivery_time =
+        base::Time::Now() - base::Hours(3);
     parcels.emplace_back(delivered_status);
 
     shopping_service_->SetGetAllParcelStatusesCallbackValue(parcels);
@@ -641,6 +647,11 @@ TEST_F(ContentSuggestionsMediatorTest, TestParcelTrackingReceived) {
       segmentation_platform::SegmentationPlatformServiceFactory::
           GetForBrowserState(chrome_browser_state_.get());
 
+  int parcel_tracking_freshness_impression_count =
+      local_state_.Get()->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
+  EXPECT_EQ(parcel_tracking_freshness_impression_count, -1);
   OCMExpect(
       [consumer_ setMagicStackOrder:[OCMArg checkWithBlock:^BOOL(id value) {
                    NSArray<NSNumber*>* magicStackOrder = (NSArray*)value;
@@ -669,11 +680,15 @@ TEST_F(ContentSuggestionsMediatorTest, TestParcelTrackingReceived) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 
   NSArray<ParcelTrackingItem*>* items = [mediator_ parcelTrackingItems];
-  ParcelTrackingItem* newStatusItem = items[0];
-  EXPECT_EQ(newStatusItem.parcelType, ParcelType::kUPS);
-  EXPECT_EQ(newStatusItem.status, ParcelState::kNew);
+  ParcelTrackingItem* outForDeliveryItem = items[0];
+  EXPECT_EQ(outForDeliveryItem.parcelType, ParcelType::kUPS);
+  EXPECT_EQ(outForDeliveryItem.status, ParcelState::kOutForDelivery);
 
   ParcelTrackingItem* finishedItem = items[1];
   EXPECT_EQ(finishedItem.parcelType, ParcelType::kUSPS);
   EXPECT_EQ(finishedItem.status, ParcelState::kFinished);
+
+  parcel_tracking_freshness_impression_count = local_state_.Get()->GetInteger(
+      prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
+  EXPECT_EQ(parcel_tracking_freshness_impression_count, 0);
 }

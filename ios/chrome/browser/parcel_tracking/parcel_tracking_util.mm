@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 
 BASE_FEATURE(kIOSParcelTracking,
              "IOSParcelTracking",
@@ -66,6 +68,8 @@ void TrackParcels(
              std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>>
                  parcel_status) {
             if (success && display_infobar) {
+              RecordModuleFreshnessSignal(
+                  ContentSuggestionsModuleType::kParcelTracking);
               [parcel_tracking_commands_handler
                   showParcelTrackingInfobarWithParcels:parcels
                                                forStep:ParcelTrackingStep::

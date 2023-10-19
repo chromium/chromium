@@ -12973,6 +12973,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSMagicStackParcelTrackingFreshSignal" not_user_triggered="true">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when there is a new parcel being tracked or a tracked parcel has an
+    updated status.
+  </description>
+</action>
+
 <action name="IOSMagicStackSafetyCheckFreshSignal" not_user_triggered="true">
   <owner>thegreenfrog@google.com</owner>
   <owner>bling-team@google.com</owner>
