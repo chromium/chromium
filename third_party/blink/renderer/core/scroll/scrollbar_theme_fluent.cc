@@ -6,6 +6,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -125,6 +126,10 @@ bool ScrollbarThemeFluent::UsesOverlayScrollbars() const {
   return is_fluent_overlay_scrollbar_enabled_;
 }
 
+bool ScrollbarThemeFluent::UsesFluentOverlayScrollbars() const {
+  return UsesOverlayScrollbars();
+}
+
 base::TimeDelta ScrollbarThemeFluent::OverlayScrollbarFadeOutDelay() const {
   return style_.fade_out_delay;
 }
@@ -193,6 +198,22 @@ gfx::Rect ScrollbarThemeFluent::InsetButtonRect(const Scrollbar& scrollbar,
 
 int ScrollbarThemeFluent::ScrollbarTrackInsetPx(float scale) {
   return base::ClampRound(scale * scrollbar_track_inset_);
+}
+
+gfx::Rect ScrollbarThemeFluent::ShrinkMainThreadedMinimalModeThumbRect(
+    Scrollbar& scrollbar,
+    gfx::Rect& rect) const {
+  CHECK(UsesOverlayScrollbars());
+  if (scrollbar.Orientation() == kHorizontalScrollbar) {
+    rect.set_y(rect.y() + rect.height() * (1 - kIdleThicknessScale));
+    rect.set_height(rect.height() * kIdleThicknessScale);
+  } else {
+    if (!scrollbar.IsLeftSideVerticalScrollbar()) {
+      rect.set_x(rect.x() + rect.width() * (1 - kIdleThicknessScale));
+    }
+    rect.set_width(rect.width() * kIdleThicknessScale);
+  }
+  return rect;
 }
 
 }  // namespace blink

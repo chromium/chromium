@@ -30,6 +30,15 @@ bool FakeScrollbar::IsSolidColor() const {
 
 bool FakeScrollbar::IsOverlay() const { return is_overlay_; }
 
+bool FakeScrollbar::IsFluentOverlayScrollbarMinimalMode() const {
+  return false;
+}
+
+gfx::Rect FakeScrollbar::ShrinkMainThreadedMinimalModeThumbRect(
+    gfx::Rect& rect) const {
+  return rect;
+}
+
 bool FakeScrollbar::HasThumb() const { return has_thumb_; }
 
 gfx::Rect FakeScrollbar::ThumbRect() const {

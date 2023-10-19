@@ -556,12 +556,22 @@ void Scrollbar::MouseMoved(const WebMouseEvent& evt) {
 void Scrollbar::MouseEntered() {
   if (scrollable_area_)
     scrollable_area_->MouseEnteredScrollbar(*this);
+  if (theme_.UsesFluentOverlayScrollbars() && scrollable_area_) {
+    scrollable_area_->GetLayoutBox()
+        ->GetFrameView()
+        ->SetPaintArtifactCompositorNeedsUpdate();
+  }
 }
 
 void Scrollbar::MouseExited() {
   if (scrollable_area_)
     scrollable_area_->MouseExitedScrollbar(*this);
   SetHoveredPart(kNoPart);
+  if (theme_.UsesFluentOverlayScrollbars() && scrollable_area_) {
+    scrollable_area_->GetLayoutBox()
+        ->GetFrameView()
+        ->SetPaintArtifactCompositorNeedsUpdate();
+  }
 }
 
 void Scrollbar::MouseUp(const WebMouseEvent& mouse_event) {
@@ -768,6 +778,11 @@ bool Scrollbar::IsSolidColor() const {
 
 bool Scrollbar::IsOverlayScrollbar() const {
   return theme_.UsesOverlayScrollbars();
+}
+
+bool Scrollbar::IsFluentOverlayScrollbarMinimalMode() const {
+  return theme_.UsesFluentOverlayScrollbars() && hovered_part_ == kNoPart &&
+         pressed_part_ != kThumbPart;
 }
 
 bool Scrollbar::ShouldParticipateInHitTesting() {

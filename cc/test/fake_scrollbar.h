@@ -24,6 +24,7 @@ class FakeScrollbar : public Scrollbar {
   bool IsLeftSideVerticalScrollbar() const override;
   bool IsSolidColor() const override;
   bool IsOverlay() const override;
+  bool IsFluentOverlayScrollbarMinimalMode() const override;
   bool HasThumb() const override;
   gfx::Rect ThumbRect() const override;
   gfx::Rect BackButtonRect() const override;
@@ -42,6 +43,8 @@ class FakeScrollbar : public Scrollbar {
   bool UsesNinePatchThumbResource() const override;
   gfx::Size NinePatchThumbCanvasSize() const override;
   gfx::Rect NinePatchThumbAperture() const override;
+  gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
+      gfx::Rect& rect) const override;
 
   void set_should_paint(bool b) { should_paint_ = b; }
   void set_has_thumb(bool b) { has_thumb_ = b; }

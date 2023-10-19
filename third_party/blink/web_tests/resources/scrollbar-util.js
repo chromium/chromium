@@ -13,7 +13,7 @@ function fluentOverlayScrollbarsEnabled() {
 // Helper to calculate track-width for non-custom standard
 // scrollbars.
 function calculateScrollbarThickness() {
-    if(fluentOverlayScrollbarsEnabled()) {
+    if (fluentOverlayScrollbarsEnabled()) {
       return FLUENT_TRACK_WIDTH;
     }
 

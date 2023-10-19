@@ -51,9 +51,18 @@ PaintRecord ScrollbarDisplayItem::Paint() const {
   recorder.beginRecording();
   auto* canvas = recorder.getRecordingCanvas();
   auto* scrollbar = data_->scrollbar_.get();
-  scrollbar->PaintPart(canvas, cc::ScrollbarPart::kTrackButtonsTickmarks, rect);
+
+  // Skip track and button painting for Minimal mode Fluent scrollbars.
+  if (!scrollbar->IsFluentOverlayScrollbarMinimalMode()) {
+    scrollbar->PaintPart(canvas, cc::ScrollbarPart::kTrackButtonsTickmarks,
+                         rect);
+  }
+
   gfx::Rect thumb_rect = scrollbar->ThumbRect();
   thumb_rect.Offset(rect.OffsetFromOrigin());
+  if (scrollbar->IsFluentOverlayScrollbarMinimalMode()) {
+    thumb_rect = scrollbar->ShrinkMainThreadedMinimalModeThumbRect(thumb_rect);
+  }
   scrollbar->PaintPart(canvas, cc::ScrollbarPart::kThumb, thumb_rect);
 
   scrollbar->ClearNeedsUpdateDisplay();

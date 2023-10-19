@@ -28,6 +28,7 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
   bool HasThumb() const override;
   bool IsSolidColor() const override;
   bool IsOverlay() const override;
+  bool IsFluentOverlayScrollbarMinimalMode() const override;
   bool SupportsDragSnapBack() const override;
   bool JumpOnTrackClick() const override;
 
@@ -49,6 +50,8 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
   bool UsesNinePatchThumbResource() const override;
   gfx::Size NinePatchThumbCanvasSize() const override;
   gfx::Rect NinePatchThumbAperture() const override;
+  gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
+      gfx::Rect& rect) const override;
 
  private:
   ~ScrollbarLayerDelegate() override;

@@ -129,6 +129,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   // IsPlatformOverlayScrollbar() but we don't bother it because
   // overflow:overlay might be deprecated soon.
   virtual bool IsOverlayScrollbar() const;
+  virtual bool IsFluentOverlayScrollbarMinimalMode() const;
 
   bool ShouldParticipateInHitTesting();
 

@@ -74,6 +74,12 @@ class CORE_EXPORT ScrollbarTheme {
 
   virtual bool IsSolidColor() const { return false; }
   virtual bool UsesOverlayScrollbars() const { return false; }
+  virtual bool UsesFluentOverlayScrollbars() const { return false; }
+  virtual gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
+      Scrollbar&,
+      gfx::Rect& rect) const {
+    return rect;
+  }
   virtual void UpdateScrollbarOverlayColorTheme(const Scrollbar&) {}
 
   // If true, scrollbars that become invisible (i.e. overlay scrollbars that

@@ -70,6 +70,16 @@ bool ScrollbarLayerDelegate::IsOverlay() const {
   return scrollbar_->IsOverlayScrollbar();
 }
 
+bool ScrollbarLayerDelegate::IsFluentOverlayScrollbarMinimalMode() const {
+  return scrollbar_->IsFluentOverlayScrollbarMinimalMode();
+}
+
+gfx::Rect ScrollbarLayerDelegate::ShrinkMainThreadedMinimalModeThumbRect(
+    gfx::Rect& rect) const {
+  return scrollbar_->GetTheme().ShrinkMainThreadedMinimalModeThumbRect(
+      *scrollbar_, rect);
+}
+
 gfx::Rect ScrollbarLayerDelegate::ThumbRect() const {
   gfx::Rect thumb_rect = scrollbar_->GetTheme().ThumbRect(*scrollbar_);
   thumb_rect.Offset(-scrollbar_->Location().OffsetFromOrigin());

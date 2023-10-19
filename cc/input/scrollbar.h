@@ -49,6 +49,7 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual bool IsLeftSideVerticalScrollbar() const = 0;
   virtual bool IsSolidColor() const = 0;
   virtual bool IsOverlay() const = 0;
+  virtual bool IsFluentOverlayScrollbarMinimalMode() const = 0;
   virtual bool HasThumb() const = 0;
   virtual bool SupportsDragSnapBack() const = 0;
   virtual bool JumpOnTrackClick() const = 0;
@@ -86,6 +87,8 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual bool UsesNinePatchThumbResource() const = 0;
   virtual gfx::Size NinePatchThumbCanvasSize() const = 0;
   virtual gfx::Rect NinePatchThumbAperture() const = 0;
+  virtual gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
+      gfx::Rect& rect) const = 0;
 
  protected:
   friend class base::RefCounted<Scrollbar>;
