@@ -55,7 +55,8 @@
   </settings-toggle-button>
 </template>
 <div id="connectedDeviceCountRow"
-    class="settings-box settings-box-text two-line single-column stretch">
+    class="settings-box settings-box-text two-line single-column stretch"
+    hidden$="[[hideConnectedDeviceCount_(hotspotInfo)]]">
   <div id="connectedDeviceCountLabel">
       $i18n{hotspotConnectedDeviceCountLabel}
   </div>

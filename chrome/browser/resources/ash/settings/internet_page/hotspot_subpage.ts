@@ -158,6 +158,11 @@ export class SettingsHotspotSubpageElement extends
     return ssid || '';
   }
 
+  private hideConnectedDeviceCount_(): boolean {
+    return this.hotspotInfo?.state !== HotspotState.kEnabled &&
+        this.hotspotInfo?.state !== HotspotState.kDisabling;
+  }
+
   private getHotspotConnectedDeviceCount_(clientCount: number|
                                           undefined): number {
     return clientCount || 0;
