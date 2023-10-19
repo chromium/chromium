@@ -700,6 +700,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // running javascript is allowed). See ContentSettingsType for more details.
   virtual void SetContentSettings(
       blink::mojom::RendererContentSettingsPtr content_settings) = 0;
+
+  // Makes a copy of the content settings.
+  virtual blink::mojom::RendererContentSettingsPtr
+  GetContentSettingsForTesting() = 0;
 };
 
 }  // namespace content

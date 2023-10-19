@@ -440,6 +440,8 @@ class CONTENT_EXPORT NavigationRequest
       override;
   void SetContentSettings(
       blink::mojom::RendererContentSettingsPtr content_settings) override;
+  blink::mojom::RendererContentSettingsPtr GetContentSettingsForTesting()
+      override;
   // End of NavigationHandle implementation.
 
   // mojom::NavigationRendererCancellationListener implementation:

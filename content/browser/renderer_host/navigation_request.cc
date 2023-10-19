@@ -3339,6 +3339,11 @@ void NavigationRequest::SetContentSettings(
   commit_params_->content_settings = std::move(content_settings);
 }
 
+blink::mojom::RendererContentSettingsPtr
+NavigationRequest::GetContentSettingsForTesting() {
+  return commit_params_->content_settings->Clone();
+}
+
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
   // Check whether an origin-keyed agent cluster is explicitly requested, either
   // opting in or out, before attempting to isolate it. If an explicit request

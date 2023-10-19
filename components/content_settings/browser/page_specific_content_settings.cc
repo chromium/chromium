@@ -55,6 +55,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -394,6 +395,8 @@ void WebContentsHandler::ReadyToCommitNavigation(
   RendererContentSettingRules rules;
   content_settings::GetRendererContentSettingRules(map_, &rules);
   delegate()->SetDefaultRendererContentSettingRules(rfh, &rules);
+  // This logic should use top frame, not parent frame.
+  // https://crbug.com/1493239.
   const GURL& primary_url =
       navigation_handle->GetParentFrameOrOuterDocument()
           ? navigation_handle->GetParentFrameOrOuterDocument()
@@ -408,6 +411,35 @@ void WebContentsHandler::ReadyToCommitNavigation(
   // in the renderer, and b) they could leak the embedder origin to embedded
   // pages like fenced frames.
   agent->SendRendererContentSettingRules(std::move(rules));
+
+  const GURL& secondary_url = navigation_handle->GetURL();
+
+  auto content_settings = blink::mojom::RendererContentSettings::New();
+  content_settings->allow_script =
+      map_->GetContentSetting(primary_url, secondary_url,
+                              ContentSettingsType::JAVASCRIPT) ==
+      CONTENT_SETTING_ALLOW;
+  content_settings->allow_popup =
+      map_->GetContentSetting(primary_url, secondary_url,
+                              ContentSettingsType::POPUPS) ==
+      CONTENT_SETTING_ALLOW;
+#if BUILDFLAG(IS_ANDROID)
+  content_settings->allow_auto_dark =
+      map_->GetContentSetting(primary_url, secondary_url,
+                              ContentSettingsType::AUTO_DARK_WEB_CONTENT) ==
+      CONTENT_SETTING_ALLOW;
+#else
+  content_settings->allow_image =
+      map_->GetContentSetting(primary_url, secondary_url,
+                              ContentSettingsType::IMAGES) ==
+      CONTENT_SETTING_ALLOW;
+  content_settings->allow_mixed_content =
+      map_->GetContentSetting(primary_url, secondary_url,
+                              ContentSettingsType::MIXEDSCRIPT) ==
+      CONTENT_SETTING_ALLOW;
+#endif
+
+  navigation_handle->SetContentSettings(std::move(content_settings));
 }
 
 void WebContentsHandler::DidFinishNavigation(
