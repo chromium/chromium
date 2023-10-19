@@ -870,6 +870,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // group.
   virtual View* GetSelectedViewForGroup(int group);
 
+  // Returns the name of this particular instance of the class. This is useful
+  // to identify multiple instances of the same class within the same view
+  // hierarchy. The default value returned is GetClassName().
+  // Note: GetClassName() will eventually be made non-virtual. Override this
+  // method instead to provide a more unique object name for the instance.
+  virtual std::string GetObjectName() const;
+
   // Coordinate conversion -----------------------------------------------------
 
   // Note that the utility coordinate conversions functions always operate on

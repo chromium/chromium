@@ -992,6 +992,10 @@ View* View::GetSelectedViewForGroup(int group) {
   return views.empty() ? nullptr : views[0];
 }
 
+std::string View::GetObjectName() const {
+  return GetClassName();
+}
+
 // Coordinate conversion -------------------------------------------------------
 
 // static
@@ -3684,6 +3688,7 @@ ADD_READONLY_PROPERTY_METADATA(gfx::Size, MaximumSize)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, MinimumSize)
 ADD_PROPERTY_METADATA(bool, Mirrored)
 ADD_PROPERTY_METADATA(bool, NotifyEnterExitOnChild)
+ADD_READONLY_PROPERTY_METADATA(std::string, ObjectName)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Tooltip)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_PROPERTY_METADATA(bool, CanProcessEventsWithinSubtree)
