@@ -27,7 +27,7 @@ var certificateErrorPageController;
 
 // Should match security_interstitials::SecurityInterstitialCommand
 /** @enum {number} */
-export const SecurityInterstitialCommandId = {
+const SecurityInterstitialCommandId = {
   CMD_DONT_PROCEED: 0,
   CMD_PROCEED: 1,
   // Ways for user to get more information
@@ -49,13 +49,13 @@ export const SecurityInterstitialCommandId = {
   CMD_OPEN_ENHANCED_PROTECTION_SETTINGS: 13,
 };
 
-export const HIDDEN_CLASS = 'hidden';
+const HIDDEN_CLASS = 'hidden';
 
 /**
  * A convenience method for sending commands to the parent page.
  * @param {SecurityInterstitialCommandId} cmd  The command to send.
  */
-export function sendCommand(cmd) {
+function sendCommand(cmd) {
   if (window.certificateErrorPageController) {
     switch (cmd) {
       case SecurityInterstitialCommandId.CMD_DONT_PROCEED:
@@ -121,7 +121,7 @@ export function sendCommand(cmd) {
  * Call this to stop clicks on <a href="#"> links from scrolling to the top of
  * the page (and possibly showing a # in the link).
  */
-export function preventDefaultOnPoundLinkClicks() {
+function preventDefaultOnPoundLinkClicks() {
   const anchors = document.body.querySelectorAll('a[href="#"]');
   for (const anchor of anchors) {
     anchor.addEventListener('click', e => e.preventDefault());
