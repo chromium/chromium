@@ -85,6 +85,7 @@
 //media/test/data/bear-1280x720-hevc-8bit-422.mp4
 //media/test/data/bear-1280x720-hevc-no-audio.mp4
 //media/test/data/bear-1280x720-hevc.mp4
+//media/test/data/bear-1280x720-hls-clear-mpl.m3u8
 //media/test/data/bear-1280x720-hls-sample-aes.ts
 //media/test/data/bear-1280x720-hls-with-CAT.bin
 //media/test/data/bear-1280x720-hls.ts

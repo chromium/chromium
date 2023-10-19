@@ -53,8 +53,13 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 #if BUILDFLAG(IS_ANDROID)
     features::kLogJsConsoleMessages,
 #endif
+
 #if BUILDFLAG(IS_CHROMEOS)
     media::kCrOSLegacyMediaFormats,
+#endif
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+    media::kBuiltInHlsPlayer,
 #endif
   };
 
@@ -304,6 +309,13 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMovPcmS24be) {
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+IN_PROC_BROWSER_TEST_P(MediaTest, HLSSingleFileBear) {
+  REQUIRE_ACCELERATION_ON_ANDROID();
+  PlayVideo("bear-1280x720-hls-clear-mpl.m3u8");
+}
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4) {
   REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("bear.mp4");
