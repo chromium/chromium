@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ssl/ios_ssl_blocking_page.h"
+#import "ios/chrome/browser/ssl/model/ios_ssl_blocking_page.h"
 
 #import <utility>
 

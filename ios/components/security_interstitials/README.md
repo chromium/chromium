@@ -25,4 +25,4 @@ The central classes on iOS are:
 
 This directory is not an exhaustive container of all security interstitials on
 iOS. Some interstitials are implemented in more specific directories (such as
-the SSL interstitial in `ios/chrome/browser/ssl/`).
+the SSL interstitial in `ios/chrome/browser/ssl/model/`).

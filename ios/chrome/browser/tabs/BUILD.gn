@@ -103,7 +103,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sharing/model",
     "//ios/chrome/browser/snapshots/model",
-    "//ios/chrome/browser/ssl",
+    "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/store_kit/model",
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/sync/model",

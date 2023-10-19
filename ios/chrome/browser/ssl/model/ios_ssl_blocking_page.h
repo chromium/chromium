@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SSL_IOS_SSL_BLOCKING_PAGE_H_
-#define IOS_CHROME_BROWSER_SSL_IOS_SSL_BLOCKING_PAGE_H_
+#ifndef IOS_CHROME_BROWSER_SSL_MODEL_IOS_SSL_BLOCKING_PAGE_H_
+#define IOS_CHROME_BROWSER_SSL_MODEL_IOS_SSL_BLOCKING_PAGE_H_
 
 #include <string>
 #include <vector>
@@ -67,4 +67,4 @@ class IOSSSLBlockingPage
   std::unique_ptr<security_interstitials::SSLErrorUI> ssl_error_ui_;
 };
 
-#endif  // IOS_CHROME_BROWSER_SSL_IOS_SSL_BLOCKING_PAGE_H_
+#endif  // IOS_CHROME_BROWSER_SSL_MODEL_IOS_SSL_BLOCKING_PAGE_H_

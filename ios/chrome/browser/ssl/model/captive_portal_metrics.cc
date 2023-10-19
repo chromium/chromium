@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ssl/captive_portal_metrics.h"
+#include "ios/chrome/browser/ssl/model/captive_portal_metrics.h"
 
 #include "base/notreached.h"
 

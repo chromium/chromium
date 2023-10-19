@@ -22,7 +22,7 @@ source_set("interstitials") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/ssl",
+    "//ios/chrome/browser/ssl/model",
     "//ios/components/security_interstitials",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/web/public/security",

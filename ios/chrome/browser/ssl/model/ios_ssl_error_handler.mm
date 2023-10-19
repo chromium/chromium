@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
+#import "ios/chrome/browser/ssl/model/ios_ssl_error_handler.h"
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
@@ -15,9 +15,9 @@
 #import "components/security_interstitials/core/ssl_error_options_mask.h"
 #import "components/security_interstitials/core/ssl_error_ui.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/ssl/captive_portal_metrics.h"
-#import "ios/chrome/browser/ssl/ios_captive_portal_blocking_page.h"
-#import "ios/chrome/browser/ssl/ios_ssl_blocking_page.h"
+#import "ios/chrome/browser/ssl/model/captive_portal_metrics.h"
+#import "ios/chrome/browser/ssl/model/ios_captive_portal_blocking_page.h"
+#import "ios/chrome/browser/ssl/model/ios_ssl_blocking_page.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/browser_state.h"

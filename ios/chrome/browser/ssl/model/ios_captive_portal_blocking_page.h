@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SSL_IOS_CAPTIVE_PORTAL_BLOCKING_PAGE_H_
-#define IOS_CHROME_BROWSER_SSL_IOS_CAPTIVE_PORTAL_BLOCKING_PAGE_H_
+#ifndef IOS_CHROME_BROWSER_SSL_MODEL_IOS_CAPTIVE_PORTAL_BLOCKING_PAGE_H_
+#define IOS_CHROME_BROWSER_SSL_MODEL_IOS_CAPTIVE_PORTAL_BLOCKING_PAGE_H_
 
 #include "base/functional/callback.h"
 #include "ios/components/security_interstitials/ios_security_interstitial_page.h"
@@ -45,4 +45,4 @@ class IOSCaptivePortalBlockingPage
   const GURL landing_url_;
 };
 
-#endif  // IOS_CHROME_BROWSER_SSL_IOS_CAPTIVE_PORTAL_BLOCKING_PAGE_H_
+#endif  // IOS_CHROME_BROWSER_SSL_MODEL_IOS_CAPTIVE_PORTAL_BLOCKING_PAGE_H_

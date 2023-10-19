@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ssl/ios_captive_portal_blocking_page.h"
+#import "ios/chrome/browser/ssl/model/ios_captive_portal_blocking_page.h"
 
 #import "base/i18n/rtl.h"
 #import "base/metrics/histogram_macros.h"
@@ -13,7 +13,7 @@
 #import "components/security_interstitials/core/controller_client.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/url_formatter.h"
-#import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
 #import "ui/base/l10n/l10n_util.h"
 
 IOSCaptivePortalBlockingPage::IOSCaptivePortalBlockingPage(

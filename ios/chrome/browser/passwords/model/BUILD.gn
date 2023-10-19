@@ -85,7 +85,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/ssl",
+    "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model/glue",
     "//ios/chrome/browser/translate/model:model",
