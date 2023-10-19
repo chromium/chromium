@@ -42,7 +42,7 @@ constexpr T AlignDown(T size, T alignment) {
 
 // Move |ptr| back to the previous multiple of alignment, which must be a power
 // of two. Defined for types where sizeof(T) is one byte.
-template <typename T, typename = typename std::enable_if<sizeof(T) == 1>::type>
+template <typename T, typename = std::enable_if_t<sizeof(T) == 1>>
 inline T* AlignDown(T* ptr, uintptr_t alignment) {
   return reinterpret_cast<T*>(
       AlignDown(reinterpret_cast<uintptr_t>(ptr), alignment));
@@ -57,7 +57,7 @@ constexpr T AlignUp(T size, T alignment) {
 
 // Advance |ptr| to the next multiple of alignment, which must be a power of
 // two. Defined for types where sizeof(T) is one byte.
-template <typename T, typename = typename std::enable_if<sizeof(T) == 1>::type>
+template <typename T, typename = std::enable_if_t<sizeof(T) == 1>>
 inline T* AlignUp(T* ptr, uintptr_t alignment) {
   return reinterpret_cast<T*>(
       AlignUp(reinterpret_cast<uintptr_t>(ptr), alignment));

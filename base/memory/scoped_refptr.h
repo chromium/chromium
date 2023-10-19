@@ -246,9 +246,8 @@ class TRIVIAL_ABI scoped_refptr {
   scoped_refptr(const scoped_refptr& r) : scoped_refptr(r.ptr_) {}
 
   // Copy conversion constructor.
-  template <
-      typename U,
-      typename = typename std::enable_if<std::is_convertible_v<U*, T*>>::type>
+  template <typename U,
+            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
   scoped_refptr(const scoped_refptr<U>& r) : scoped_refptr(r.ptr_) {}
 
   // Move constructor. This is required in addition to the move conversion
@@ -256,9 +255,8 @@ class TRIVIAL_ABI scoped_refptr {
   scoped_refptr(scoped_refptr&& r) noexcept : ptr_(r.ptr_) { r.ptr_ = nullptr; }
 
   // Move conversion constructor.
-  template <
-      typename U,
-      typename = typename std::enable_if<std::is_convertible_v<U*, T*>>::type>
+  template <typename U,
+            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
   scoped_refptr(scoped_refptr<U>&& r) noexcept : ptr_(r.ptr_) {
     r.ptr_ = nullptr;
   }

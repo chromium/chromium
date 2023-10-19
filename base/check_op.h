@@ -69,10 +69,10 @@ BASE_EXPORT char* StreamValToStr(const void* v,
 #endif
 
 template <typename T>
-inline typename std::enable_if<
+inline std::enable_if_t<
     base::internal::SupportsOstreamOperator<const T&> &&
         !std::is_function_v<typename std::remove_pointer<T>::type>,
-    char*>::type
+    char*>
 CheckOpValueStr(const T& v) {
   auto f = [](std::ostream& s, const void* p) {
     s << *reinterpret_cast<const T*>(p);
@@ -95,10 +95,9 @@ CheckOpValueStr(const T& v) {
 
 // Overload for types that have no operator<< but do have .ToString() defined.
 template <typename T>
-inline typename std::enable_if<
-    !base::internal::SupportsOstreamOperator<const T&> &&
-        base::internal::SupportsToString<const T&>,
-    char*>::type
+inline std::enable_if_t<!base::internal::SupportsOstreamOperator<const T&> &&
+                            base::internal::SupportsToString<const T&>,
+                        char*>
 CheckOpValueStr(const T& v) {
   // .ToString() may not return a std::string, e.g. blink::WTF::String.
   return CheckOpValueStr(v.ToString());
@@ -110,9 +109,9 @@ CheckOpValueStr(const T& v) {
 // standards-conforming here and converts function pointers to regular
 // pointers, so this is a no-op for MSVC.)
 template <typename T>
-inline typename std::enable_if<
+inline std::enable_if_t<
     std::is_function_v<typename std::remove_pointer<T>::type>,
-    char*>::type
+    char*>
 CheckOpValueStr(const T& v) {
   return CheckOpValueStr(reinterpret_cast<const void*>(v));
 }
@@ -120,9 +119,9 @@ CheckOpValueStr(const T& v) {
 // We need overloads for enums that don't support operator<<.
 // (i.e. scoped enums where no operator<< overload was declared).
 template <typename T>
-inline typename std::enable_if<
-    !base::internal::SupportsOstreamOperator<const T&> && std::is_enum_v<T>,
-    char*>::type
+inline std::enable_if_t<!base::internal::SupportsOstreamOperator<const T&> &&
+                            std::is_enum_v<T>,
+                        char*>
 CheckOpValueStr(const T& v) {
   return CheckOpValueStr(
       static_cast<typename std::underlying_type<T>::type>(v));

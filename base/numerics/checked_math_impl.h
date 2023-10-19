@@ -45,10 +45,10 @@ template <typename T, typename U, class Enable = void>
 struct CheckedAddOp {};
 
 template <typename T, typename U>
-struct CheckedAddOp<T,
-                    U,
-                    typename std::enable_if<std::is_integral_v<T> &&
-                                            std::is_integral_v<U>>::type> {
+struct CheckedAddOp<
+    T,
+    U,
+    std::enable_if_t<std::is_integral_v<T> && std::is_integral_v<U>>> {
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
@@ -109,10 +109,10 @@ template <typename T, typename U, class Enable = void>
 struct CheckedSubOp {};
 
 template <typename T, typename U>
-struct CheckedSubOp<T,
-                    U,
-                    typename std::enable_if<std::is_integral_v<T> &&
-                                            std::is_integral_v<U>>::type> {
+struct CheckedSubOp<
+    T,
+    U,
+    std::enable_if_t<std::is_integral_v<T> && std::is_integral_v<U>>> {
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
@@ -175,10 +175,10 @@ template <typename T, typename U, class Enable = void>
 struct CheckedMulOp {};
 
 template <typename T, typename U>
-struct CheckedMulOp<T,
-                    U,
-                    typename std::enable_if<std::is_integral_v<T> &&
-                                            std::is_integral_v<U>>::type> {
+struct CheckedMulOp<
+    T,
+    U,
+    std::enable_if_t<std::is_integral_v<T> && std::is_integral_v<U>>> {
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
@@ -220,10 +220,10 @@ template <typename T, typename U, class Enable = void>
 struct CheckedDivOp {};
 
 template <typename T, typename U>
-struct CheckedDivOp<T,
-                    U,
-                    typename std::enable_if<std::is_integral_v<T> &&
-                                            std::is_integral_v<U>>::type> {
+struct CheckedDivOp<
+    T,
+    U,
+    std::enable_if_t<std::is_integral_v<T> && std::is_integral_v<U>>> {
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
@@ -261,10 +261,10 @@ template <typename T, typename U, class Enable = void>
 struct CheckedModOp {};
 
 template <typename T, typename U>
-struct CheckedModOp<T,
-                    U,
-                    typename std::enable_if<std::is_integral_v<T> &&
-                                            std::is_integral_v<U>>::type> {
+struct CheckedModOp<
+    T,
+    U,
+    std::enable_if_t<std::is_integral_v<T> && std::is_integral_v<U>>> {
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
@@ -298,10 +298,10 @@ struct CheckedLshOp {};
 // of bits in the promoted type are undefined. Shifts of negative values
 // are undefined. Otherwise it is defined when the result fits.
 template <typename T, typename U>
-struct CheckedLshOp<T,
-                    U,
-                    typename std::enable_if<std::is_integral_v<T> &&
-                                            std::is_integral_v<U>>::type> {
+struct CheckedLshOp<
+    T,
+    U,
+    std::enable_if_t<std::is_integral_v<T> && std::is_integral_v<U>>> {
   using result_type = T;
   template <typename V>
   static constexpr bool Do(T x, U shift, V* result) {
@@ -332,10 +332,10 @@ struct CheckedRshOp {};
 // of bits in the promoted type are undefined. Otherwise, it is always defined,
 // but a right shift of a negative value is implementation-dependent.
 template <typename T, typename U>
-struct CheckedRshOp<T,
-                    U,
-                    typename std::enable_if<std::is_integral_v<T> &&
-                                            std::is_integral_v<U>>::type> {
+struct CheckedRshOp<
+    T,
+    U,
+    std::enable_if_t<std::is_integral_v<T> && std::is_integral_v<U>>> {
   using result_type = T;
   template <typename V>
   static constexpr bool Do(T x, U shift, V* result) {
@@ -358,10 +358,10 @@ struct CheckedAndOp {};
 
 // For simplicity we support only unsigned integer results.
 template <typename T, typename U>
-struct CheckedAndOp<T,
-                    U,
-                    typename std::enable_if<std::is_integral_v<T> &&
-                                            std::is_integral_v<U>>::type> {
+struct CheckedAndOp<
+    T,
+    U,
+    std::enable_if_t<std::is_integral_v<T> && std::is_integral_v<U>>> {
   using result_type = typename std::make_unsigned<
       typename MaxExponentPromotion<T, U>::type>::type;
   template <typename V>
@@ -380,10 +380,10 @@ struct CheckedOrOp {};
 
 // For simplicity we support only unsigned integers.
 template <typename T, typename U>
-struct CheckedOrOp<T,
-                   U,
-                   typename std::enable_if<std::is_integral_v<T> &&
-                                           std::is_integral_v<U>>::type> {
+struct CheckedOrOp<
+    T,
+    U,
+    std::enable_if_t<std::is_integral_v<T> && std::is_integral_v<U>>> {
   using result_type = typename std::make_unsigned<
       typename MaxExponentPromotion<T, U>::type>::type;
   template <typename V>
@@ -402,10 +402,10 @@ struct CheckedXorOp {};
 
 // For simplicity we support only unsigned integers.
 template <typename T, typename U>
-struct CheckedXorOp<T,
-                    U,
-                    typename std::enable_if<std::is_integral_v<T> &&
-                                            std::is_integral_v<U>>::type> {
+struct CheckedXorOp<
+    T,
+    U,
+    std::enable_if_t<std::is_integral_v<T> && std::is_integral_v<U>>> {
   using result_type = typename std::make_unsigned<
       typename MaxExponentPromotion<T, U>::type>::type;
   template <typename V>
@@ -425,10 +425,10 @@ template <typename T, typename U, class Enable = void>
 struct CheckedMaxOp {};
 
 template <typename T, typename U>
-struct CheckedMaxOp<T,
-                    U,
-                    typename std::enable_if<std::is_arithmetic_v<T> &&
-                                            std::is_arithmetic_v<U>>::type> {
+struct CheckedMaxOp<
+    T,
+    U,
+    std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U>>> {
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
@@ -448,10 +448,10 @@ template <typename T, typename U, class Enable = void>
 struct CheckedMinOp {};
 
 template <typename T, typename U>
-struct CheckedMinOp<T,
-                    U,
-                    typename std::enable_if<std::is_arithmetic_v<T> &&
-                                            std::is_arithmetic_v<U>>::type> {
+struct CheckedMinOp<
+    T,
+    U,
+    std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U>>> {
   using result_type = typename LowestValuePromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
@@ -467,22 +467,21 @@ struct CheckedMinOp<T,
 
 // This is just boilerplate that wraps the standard floating point arithmetic.
 // A macro isn't the nicest solution, but it beats rewriting these repeatedly.
-#define BASE_FLOAT_ARITHMETIC_OPS(NAME, OP)                         \
-  template <typename T, typename U>                                 \
-  struct Checked##NAME##Op<                                         \
-      T, U,                                                         \
-      typename std::enable_if<std::is_floating_point_v<T> ||        \
-                              std::is_floating_point_v<U>>::type> { \
-    using result_type = typename MaxExponentPromotion<T, U>::type;  \
-    template <typename V>                                           \
-    static constexpr bool Do(T x, U y, V* result) {                 \
-      using Promotion = typename MaxExponentPromotion<T, U>::type;  \
-      const Promotion presult = x OP y;                             \
-      if (!IsValueInRangeForNumericType<V>(presult))                \
-        return false;                                               \
-      *result = static_cast<V>(presult);                            \
-      return true;                                                  \
-    }                                                               \
+#define BASE_FLOAT_ARITHMETIC_OPS(NAME, OP)                                 \
+  template <typename T, typename U>                                         \
+  struct Checked##NAME##Op<T, U,                                            \
+                           std::enable_if_t<std::is_floating_point_v<T> ||  \
+                                            std::is_floating_point_v<U>>> { \
+    using result_type = typename MaxExponentPromotion<T, U>::type;          \
+    template <typename V>                                                   \
+    static constexpr bool Do(T x, U y, V* result) {                         \
+      using Promotion = typename MaxExponentPromotion<T, U>::type;          \
+      const Promotion presult = x OP y;                                     \
+      if (!IsValueInRangeForNumericType<V>(presult))                        \
+        return false;                                                       \
+      *result = static_cast<V>(presult);                                    \
+      return true;                                                          \
+    }                                                                       \
   };
 
 BASE_FLOAT_ARITHMETIC_OPS(Add, +)

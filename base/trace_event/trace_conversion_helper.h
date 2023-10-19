@@ -103,7 +103,7 @@ std::string ValueToStringHelper(base::internal::priority_tag<0>,
 // is also |std::is_integral|, so we need to test |bool| before testing for
 // integral.
 template <typename T>
-typename std::enable_if<std::is_same_v<T, bool>>::type SetTracedValueArgHelper(
+std::enable_if_t<std::is_same_v<T, bool>> SetTracedValueArgHelper(
     base::internal::priority_tag<6>,
     TracedValue* traced_value,
     const char* name,
@@ -115,7 +115,7 @@ typename std::enable_if<std::is_same_v<T, bool>>::type SetTracedValueArgHelper(
 // This needs to be considered only when T is not bool (has higher
 // base::internal::priority_tag).
 template <typename T>
-typename std::enable_if<std::is_integral_v<T>>::type SetTracedValueArgHelper(
+std::enable_if_t<std::is_integral_v<T>> SetTracedValueArgHelper(
     base::internal::priority_tag<5>,
     TracedValue* traced_value,
     const char* name,
@@ -131,17 +131,17 @@ typename std::enable_if<std::is_integral_v<T>>::type SetTracedValueArgHelper(
 
 // Any floating point type is converted to double.
 template <typename T>
-typename std::enable_if<std::is_floating_point_v<T>>::type
-SetTracedValueArgHelper(base::internal::priority_tag<4>,
-                        TracedValue* traced_value,
-                        const char* name,
-                        const T& value) {
+std::enable_if_t<std::is_floating_point_v<T>> SetTracedValueArgHelper(
+    base::internal::priority_tag<4>,
+    TracedValue* traced_value,
+    const char* name,
+    const T& value) {
   traced_value->SetDouble(name, static_cast<double>(value));
 }
 
 // |void*| is traced natively.
 template <typename T>
-typename std::enable_if<std::is_same_v<T, void*>>::type SetTracedValueArgHelper(
+std::enable_if_t<std::is_same_v<T, void*>> SetTracedValueArgHelper(
     base::internal::priority_tag<3>,
     TracedValue* traced_value,
     const char* name,
@@ -151,11 +151,11 @@ typename std::enable_if<std::is_same_v<T, void*>>::type SetTracedValueArgHelper(
 
 // |const char*| is traced natively.
 template <typename T>
-typename std::enable_if<std::is_same_v<T, const char*>>::type
-SetTracedValueArgHelper(base::internal::priority_tag<2>,
-                        TracedValue* traced_value,
-                        const char* name,
-                        const T& value) {
+std::enable_if_t<std::is_same_v<T, const char*>> SetTracedValueArgHelper(
+    base::internal::priority_tag<2>,
+    TracedValue* traced_value,
+    const char* name,
+    const T& value) {
   traced_value->SetString(name, value);
 }
 

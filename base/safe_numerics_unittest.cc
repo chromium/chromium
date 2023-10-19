@@ -255,9 +255,9 @@ template <typename Dst>
 static void TestSpecializedArithmetic(
     const char* dst,
     int line,
-    typename std::enable_if<numeric_limits<Dst>::is_integer &&
-                                numeric_limits<Dst>::is_signed,
-                            int>::type = 0) {
+    std::enable_if_t<numeric_limits<Dst>::is_integer &&
+                         numeric_limits<Dst>::is_signed,
+                     int> = 0) {
   using DstLimits = SaturationDefaultLimits<Dst>;
   TEST_EXPECTED_FAILURE(-CheckedNumeric<Dst>(DstLimits::lowest()));
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(DstLimits::lowest()).Abs());
@@ -460,9 +460,9 @@ template <typename Dst>
 static void TestSpecializedArithmetic(
     const char* dst,
     int line,
-    typename std::enable_if<numeric_limits<Dst>::is_integer &&
-                                !numeric_limits<Dst>::is_signed,
-                            int>::type = 0) {
+    std::enable_if_t<numeric_limits<Dst>::is_integer &&
+                         !numeric_limits<Dst>::is_signed,
+                     int> = 0) {
   using DstLimits = SaturationDefaultLimits<Dst>;
   TEST_EXPECTED_SUCCESS(-CheckedNumeric<Dst>(DstLimits::lowest()));
   TEST_EXPECTED_SUCCESS(CheckedNumeric<Dst>(DstLimits::lowest()).Abs());
@@ -618,7 +618,7 @@ template <typename Dst>
 void TestSpecializedArithmetic(
     const char* dst,
     int line,
-    typename std::enable_if<numeric_limits<Dst>::is_iec559, int>::type = 0) {
+    std::enable_if_t<numeric_limits<Dst>::is_iec559, int> = 0) {
   using DstLimits = SaturationDefaultLimits<Dst>;
   TEST_EXPECTED_SUCCESS(-CheckedNumeric<Dst>(DstLimits::lowest()));
 

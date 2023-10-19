@@ -338,18 +338,18 @@ union BASE_EXPORT TraceValue {
   struct TypeFor;
 
   template <typename T>
-  struct TypeFor<T,
-                 typename std::enable_if<HasHelperSupport<
-                     typename InnerType<T>::type>::value>::type> {
+  struct TypeFor<
+      T,
+      std::enable_if_t<HasHelperSupport<typename InnerType<T>::type>::value>> {
     using ValueType = typename InnerType<T>::type;
     static const unsigned char value = Helper<ValueType>::kType;
   };
   template <typename T>
-  struct TypeFor<T,
-                 typename std::enable_if<
-                     !HasHelperSupport<typename InnerType<T>::type>::value &&
-                     perfetto::internal::has_traced_value_support<
-                         typename InnerType<T>::type>::value>::type> {
+  struct TypeFor<
+      T,
+      std::enable_if_t<!HasHelperSupport<typename InnerType<T>::type>::value &&
+                       perfetto::internal::has_traced_value_support<
+                           typename InnerType<T>::type>::value>> {
     static const unsigned char value = TRACE_VALUE_TYPE_PROTO;
   };
 
@@ -380,18 +380,16 @@ union BASE_EXPORT TraceValue {
   //
   // NOTE: For ConvertableToTraceFormat values, see the notes above.
   template <class T>
-  typename std::enable_if<
-      HasHelperSupport<typename InnerType<T>::type>::value>::type
-  Init(T&& value) {
+  std::enable_if_t<HasHelperSupport<typename InnerType<T>::type>::value> Init(
+      T&& value) {
     using ValueType = typename InnerType<T>::type;
     Helper<ValueType>::SetValue(this, std::forward<T>(value));
   }
 
   template <class T>
-  typename std::enable_if<
-      !HasHelperSupport<typename InnerType<T>::type>::value &&
-      perfetto::internal::has_traced_value_support<
-          typename InnerType<T>::type>::value>::type
+  std::enable_if_t<!HasHelperSupport<typename InnerType<T>::type>::value &&
+                   perfetto::internal::has_traced_value_support<
+                       typename InnerType<T>::type>::value>
   Init(T&& value) {
     as_proto = new protozero::HeapBuffered<
         perfetto::protos::pbzero::DebugAnnotation>();
@@ -403,9 +401,8 @@ union BASE_EXPORT TraceValue {
 
 // TraceValue::Helper for integers and enums.
 template <typename T>
-struct TraceValue::Helper<
-    T,
-    typename std::enable_if<std::is_integral_v<T> || std::is_enum_v<T>>::type> {
+struct TraceValue::
+    Helper<T, std::enable_if_t<std::is_integral_v<T> || std::is_enum_v<T>>> {
   static constexpr unsigned char kType =
       std::is_signed_v<T> ? TRACE_VALUE_TYPE_INT : TRACE_VALUE_TYPE_UINT;
   static inline void SetValue(TraceValue* v, T value) {
@@ -415,8 +412,7 @@ struct TraceValue::Helper<
 
 // TraceValue::Helper for floating-point types
 template <typename T>
-struct TraceValue::
-    Helper<T, typename std::enable_if<std::is_floating_point_v<T>>::type> {
+struct TraceValue::Helper<T, std::enable_if_t<std::is_floating_point_v<T>>> {
   static constexpr unsigned char kType = TRACE_VALUE_TYPE_DOUBLE;
   static inline void SetValue(TraceValue* v, T value) { v->as_double = value; }
 };
@@ -469,10 +465,10 @@ struct TraceValue::Helper<std::string> {
 // IMPORTANT: This takes an std::unique_ptr<CONVERTABLE_TYPE> value, and takes
 // ownership of the pointed object!
 template <typename CONVERTABLE_TYPE>
-struct TraceValue::Helper<std::unique_ptr<CONVERTABLE_TYPE>,
-                          typename std::enable_if<std::is_convertible_v<
-                              CONVERTABLE_TYPE*,
-                              ConvertableToTraceFormat*>>::type> {
+struct TraceValue::Helper<
+    std::unique_ptr<CONVERTABLE_TYPE>,
+    std::enable_if_t<
+        std::is_convertible_v<CONVERTABLE_TYPE*, ConvertableToTraceFormat*>>> {
   static constexpr unsigned char kType = TRACE_VALUE_TYPE_CONVERTABLE;
   static inline void SetValue(TraceValue* v,
                               std::unique_ptr<CONVERTABLE_TYPE> value) {
@@ -485,9 +481,9 @@ struct TraceValue::Helper<std::unique_ptr<CONVERTABLE_TYPE>,
 template <typename T>
 struct TraceValue::Helper<
     T,
-    typename std::enable_if<std::is_same_v<T, base::Time> ||
-                            std::is_same_v<T, base::TimeTicks> ||
-                            std::is_same_v<T, base::ThreadTicks>>::type> {
+    std::enable_if_t<std::is_same_v<T, base::Time> ||
+                     std::is_same_v<T, base::TimeTicks> ||
+                     std::is_same_v<T, base::ThreadTicks>>> {
   static constexpr unsigned char kType = TRACE_VALUE_TYPE_INT;
   static inline void SetValue(TraceValue* v, const T& value) {
     v->as_int = value.ToInternalValue();

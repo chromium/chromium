@@ -212,11 +212,10 @@ struct HasEMU : std::false_type {};
 // EstimateMemoryUsage(const T&) that returns size_t. Simpler ways to
 // achieve this don't work on MSVC.
 template <class T>
-struct HasEMU<
-    T,
-    typename std::enable_if<std::is_same_v<
-        size_t,
-        decltype(EstimateMemoryUsage(std::declval<const T&>()))>>::type>
+struct HasEMU<T,
+              std::enable_if_t<std::is_same_v<size_t,
+                                              decltype(EstimateMemoryUsage(
+                                                  std::declval<const T&>()))>>>
     : std::true_type {};
 
 // EMUCaller<T> does three things:
@@ -244,7 +243,7 @@ struct EMUCaller {
 };
 
 template <class T>
-struct EMUCaller<T, typename std::enable_if<HasEMU<T>::value>::type> {
+struct EMUCaller<T, std::enable_if_t<HasEMU<T>::value>> {
   static size_t Call(const T& value) { return EstimateMemoryUsage(value); }
 };
 

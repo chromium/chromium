@@ -47,15 +47,13 @@ struct PositionOfSignBit {
 
 // Determines if a numeric value is negative without throwing compiler
 // warnings on: unsigned(value) < 0.
-template <typename T,
-          typename std::enable_if<std::is_signed_v<T>>::type* = nullptr>
+template <typename T, std::enable_if_t<std::is_signed_v<T>>* = nullptr>
 constexpr bool IsValueNegative(T value) {
   static_assert(std::is_arithmetic_v<T>, "Argument must be numeric.");
   return value < 0;
 }
 
-template <typename T,
-          typename std::enable_if<!std::is_signed_v<T>>::type* = nullptr>
+template <typename T, std::enable_if_t<!std::is_signed_v<T>>* = nullptr>
 constexpr bool IsValueNegative(T) {
   static_assert(std::is_arithmetic_v<T>, "Argument must be numeric.");
   return false;
@@ -236,8 +234,7 @@ struct NarrowingRange {
        SrcLimits::digits < DstLimits::digits)
           ? (DstLimits::digits - SrcLimits::digits)
           : 0;
-  template <typename T,
-            typename std::enable_if<std::is_integral_v<T>>::type* = nullptr>
+  template <typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
 
   // Masks out the integer bits that are beyond the precision of the
   // intermediate type used for comparison.
@@ -250,9 +247,8 @@ struct NarrowingRange {
         IsValueNegative(value)));
   }
 
-  template <
-      typename T,
-      typename std::enable_if<std::is_floating_point_v<T>>::type* = nullptr>
+  template <typename T,
+            std::enable_if_t<std::is_floating_point_v<T>>* = nullptr>
   static constexpr T Adjust(T value) {
     static_assert(std::is_same_v<T, Dst>, "");
     static_assert(kShift == 0, "");
