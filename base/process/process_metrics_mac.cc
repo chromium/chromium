@@ -22,44 +22,12 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-namespace {
-
-// This is a standin for the private pm_task_energy_data_t struct.
-struct OpaquePMTaskEnergyData {
-  // Empirical size of the private struct.
-  uint8_t data[408];
-};
-
-// Sample everything but network usage, since fetching network
-// usage can hang.
-constexpr uint8_t kPMSampleFlags = 0xff & ~0x8;
-
-}  // namespace
-
-extern "C" {
-
-// From libpmsample.dylib
-int pm_sample_task(mach_port_t task,
-                   OpaquePMTaskEnergyData* pm_energy,
-                   uint64_t mach_time,
-                   uint8_t flags);
-
-// From libpmenergy.dylib
-double pm_energy_impact(OpaquePMTaskEnergyData* pm_energy);
-
-}  // extern "C"
-
 namespace base {
 
 namespace {
 
 double GetEnergyImpactInternal(mach_port_t task, uint64_t mach_time) {
-  OpaquePMTaskEnergyData energy_info{};
-
-  if (pm_sample_task(task, &energy_info, mach_time, kPMSampleFlags) != 0) {
-    return 0.0;
-  }
-  return pm_energy_impact(&energy_info);
+  return 0;
 }
 
 }  // namespace
