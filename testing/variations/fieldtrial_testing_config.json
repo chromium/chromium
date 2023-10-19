@@ -1924,7 +1924,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230919",
+                    "name": "Enabled",
                     "enable_features": [
                         "AutofillUseDomNodeIdForRendererId"
                     ]
