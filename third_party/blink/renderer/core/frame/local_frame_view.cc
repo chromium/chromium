@@ -3232,6 +3232,7 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
 
   auto LayoutForPrinting = [&layout_view]() {
     Document& document = layout_view->GetDocument();
+    document.GetStyleEngine().UpdateViewportSize();
     document.MarkViewportUnitsDirty();
     layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kPrintingChanged);

@@ -2769,8 +2769,6 @@ const ComputedStyle* Document::StyleForPage(uint32_t page_index) {
 
 const ComputedStyle* Document::StyleForPage(uint32_t page_index,
                                             const AtomicString& page_name) {
-  GetStyleEngine().UpdateViewportSize();
-  GetStyleEngine().UpdateActiveStyle();
   return GetStyleEngine().GetStyleResolver().StyleForPage(page_index,
                                                           page_name);
 }
