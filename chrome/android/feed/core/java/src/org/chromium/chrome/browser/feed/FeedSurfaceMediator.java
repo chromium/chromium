@@ -1012,7 +1012,9 @@ public class FeedSurfaceMediator
     private ModelList buildMenuItems() {
         ModelList itemList = new ModelList();
         int iconId = 0;
-        if (FeedServiceBridge.isSignedIn()) {
+
+        // Do not display Manage menu items for the supervised-user feed.
+        if (FeedServiceBridge.isSignedIn() && !mCoordinator.shouldDisplaySupervisedFeed()) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
                 itemList.add(buildMenuListItem(
                         R.string.ntp_manage_feed, R.id.ntp_feed_header_menu_item_manage, iconId));

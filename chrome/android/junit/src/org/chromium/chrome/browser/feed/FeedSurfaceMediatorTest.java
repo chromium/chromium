@@ -70,10 +70,12 @@ import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayS
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -291,6 +293,45 @@ public class FeedSurfaceMediatorTest {
         assertEquals(
                 FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 model.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+    }
+
+    @Test
+    public void testMenuItems_supervisedFeedOn() {
+        when(mFeedSurfaceCoordinator.shouldDisplaySupervisedFeed()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+
+        MVCListAdapter.ModelList menuItemList =
+                model.get(SectionHeaderListProperties.MENU_MODEL_LIST_KEY);
+
+        assertEquals(2, menuItemList.size());
+        assertEquals(
+                R.string.learn_more,
+                menuItemList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.string.ntp_turn_off_feed,
+                menuItemList.get(1).model.get(ListMenuItemProperties.TITLE_ID));
+    }
+
+    @Test
+    public void testMenuItems_supervisedFeedOff() {
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+
+        MVCListAdapter.ModelList menuItemList =
+                model.get(SectionHeaderListProperties.MENU_MODEL_LIST_KEY);
+
+        assertTrue(menuItemList.size() > 2);
     }
 
     @Test
