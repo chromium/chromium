@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
 #include "build/blink_buildflags.h"
@@ -254,6 +255,9 @@ CookieSettingsBase::GetCookieSettingInternal(
     bool is_third_party_request,
     net::CookieSettingOverrides overrides,
     SettingInfo* info) const {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "ContentSettings.GetCookieSettingInternal.Duration");
+
   // Auto-allow in extensions or for WebUI embedding a secure origin.
   if (ShouldAlwaysAllowCookies(url, first_party_url)) {
     return {/*cookie_setting=*/CONTENT_SETTING_ALLOW,
