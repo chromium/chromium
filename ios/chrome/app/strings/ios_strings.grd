@@ -4160,9 +4160,6 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_3" desc="Text of the row indicating the third step of Share Highlight in What's New. [iOS only]">
         Enter Site and Password, Then Save
       </message>
-      <message name="IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_BUTTON_TITLE" desc="Text of the primary button of Share Highlight in What's New. [iOS only]">
-        Open Settings
-      </message>
       <message name="IDS_IOS_WHATS_CHROME_TIP_CHROME_DEFAULT_TITLE" desc="Use Chrome By Default title displayed in What's New. [iOS only]">
         Use Chrome By Default
       </message>
@@ -4178,9 +4175,6 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_3" desc="Text of the row indicating the third step of Use Chrome By Default in What's New. [iOS only]">
         Select Chrome
       </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_BUTTON_TITLE" desc="Text of the primary button of Use Chrome By Default in What's New. [iOS only]">
-        Make Default in Settings...
-      </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_TITLE" desc="Passwords In Other Apps title displayed in What's New. [iOS only]">
         Passwords in Other Apps
       </message>
@@ -4193,14 +4187,17 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_1_IOS16" desc="Text of the row indicating the first step of Passwords In Other Apps in What's New. [iOS only]">
         Open Password Options
       </message>
+      <message name="IDS_IOS_OPEN_CHROME_SETTINGS" desc="Text of the primary button to open chrome settings page. [iOS only]">
+        Open Settings
+      </message>
+      <message name="IDS_IOS_OPEN_IOS_SETTINGS" desc="Text of the primary button to open iOS settings page. [iOS only]">
+        Go To Settings...
+      </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_2_IOS16" desc="Text of the row indicating the first step of shortened instruction of of turning on iOS auto-fill from Chrome password manager on iOS 16 and above [iOS only]">
         Turn on AutoFill Passwords
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_2" desc="Text of the row indicating the second step of Passwords In Other Apps in What's New. [iOS only]">
         Select Chrome
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_BUTTON_TITLE" desc="Text of the primary button of Passwords In Other Apps in What's New. [iOS only]">
-        Open Settings
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_TITLE" desc="Autofill title displayed in What's New. [iOS only]">
         Autofill
@@ -4222,9 +4219,6 @@ Try to use a unique password for every site.
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SUBTITLE" desc="Open in incognito tabs from other apps subtitle displayed in What's New. [iOS only]">
         You can choose to open incoming URLs from other apps in Incognito.
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_GOT_TO_SETTINGS_BUTTON_TITLE" desc="Text of the primary button to open the chrome settings page. [iOS only]">
-        Open Settings
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SCREENSHOT_TEXT_OPEN_IN_INCOGNITO" desc="Text in image asking the user to open a url in incognito. [iOS only]">
         Open in Incognito?
@@ -4267,9 +4261,6 @@ Try to use a unique password for every site.
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_TITLE" desc="Incognito Lock title displayed in What's New. [iOS only]">
         Incognito Lock
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_BUTTON_TITLE" desc="Text of the primary button of Incognito Lock to open chrome settings page. [iOS only]">
-        Open Settings
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_SCREENSHOT_TEXT_UNLOCK" desc="Text in image indicating the user to unlock with face ID. [iOS only]">
         Unlock With Face ID
