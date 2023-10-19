@@ -228,7 +228,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         final Resources resources = context.getResources();
         int paddingBottom =
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_bottom);
-        ViewCompat.setPaddingRelative(this, 0, 0, 0, paddingBottom);
+        int paddingTop =
+                resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
+        ViewCompat.setPaddingRelative(this, 0, paddingTop, 0, paddingBottom);
 
         mStandardBgColor =
                 shouldShowModernizeVisualUpdate

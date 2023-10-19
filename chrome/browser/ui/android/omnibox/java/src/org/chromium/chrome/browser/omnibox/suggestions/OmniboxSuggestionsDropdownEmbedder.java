@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -50,8 +52,19 @@ public interface OmniboxSuggestionsDropdownEmbedder {
             return other.left == this.left
                     && other.top == this.top
                     && other.width == this.width
+                    && other.height == this.height
                     && other.paddingLeft == this.paddingLeft
                     && other.paddingRight == this.paddingRight;
+        }
+
+        @SuppressLint("DefaultLocale")
+        @NonNull
+        @Override
+        public String toString() {
+            return String.format(
+                    "OmniboxAlignment left: %d top: %d width: %d height: %d paddingLeft: %d"
+                            + " paddingRight: %d",
+                    left, top, width, height, paddingLeft, paddingRight);
         }
 
         /**

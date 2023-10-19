@@ -245,8 +245,12 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                 mDeferredIMEWindowInsetApplicationCallback != null
                         ? mDeferredIMEWindowInsetApplicationCallback.getCurrentKeyboardHeight()
                         : 0;
+        int windowHeight = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp);
+        int minSpaceAboveWindowBottom =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_min_space_above_window_bottom);
         int windowSpace =
-                DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp) - keyboardHeight;
+                Math.min(windowHeight - keyboardHeight, windowHeight - minSpaceAboveWindowBottom);
         // If content view is null, then omnibox might not be in the activity content.
         int contentSpace =
                 contentView == null ? Integer.MAX_VALUE : contentView.getMeasuredHeight();
