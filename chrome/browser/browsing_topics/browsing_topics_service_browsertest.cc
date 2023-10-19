@@ -693,7 +693,18 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, BrowsingTopicsStateOnStart) {
             now + base::Days(7));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, CalculationResultUkm) {
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class BrowsingTopicsBrowserTestNoTestingConfig
+    : public BrowsingTopicsBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BrowsingTopicsBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTestNoTestingConfig,
+                       CalculationResultUkm) {
   auto entries = ukm_recorder_->GetEntriesByName(
       ukm::builders::BrowsingTopics_EpochTopicsCalculationResult::kEntryName);
 
