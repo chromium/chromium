@@ -838,8 +838,9 @@ TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContext_Cast) {
   EXPECT_EQ(kStartPresentationUrl, route_request_result()->presentation_url());
 }
 
+// TODO(crbug.com/1494156) Test is flaky on all platforms.
 TEST_F(MediaRouteStarterTest,
-       StartRoute_StartPresentationContext_RemotePlayback) {
+       DISABLED_StartRoute_StartPresentationContext_RemotePlayback) {
   auto start_presentation_context = CreateStartPresentationContext(
       CreatePresentationRequest(kRemotePlaybackUrl, kStartOriginUrl));
 
