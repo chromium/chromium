@@ -2163,7 +2163,7 @@ TEST_F(DisplayConfiguratorTest, SetVrrEnabled) {
   int vertical_offset = outputs_[0]->native_mode()->size().height() +
                         DisplayConfigurator::kVerticalGap;
   EXPECT_EQ(JoinActions(
-                kTestModesetStr,
+                kTestModesetStr, kSeamlessModesetStr,
                 GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
                                outputs_[0]->native_mode(), /*enable_vrr=*/true})
                     .c_str(),
@@ -2171,7 +2171,7 @@ TEST_F(DisplayConfiguratorTest, SetVrrEnabled) {
                     {outputs_[1]->display_id(), gfx::Point(0, vertical_offset),
                      outputs_[1]->native_mode(), /*enable_vrr=*/false})
                     .c_str(),
-                kModesetOutcomeSuccess, kCommitModesetStr,
+                kModesetOutcomeSuccess, kCommitModesetStr, kSeamlessModesetStr,
                 GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
                                outputs_[0]->native_mode(), /*enable_vrr=*/true})
                     .c_str(),
@@ -2190,7 +2190,7 @@ TEST_F(DisplayConfiguratorTest, SetVrrEnabled) {
   EXPECT_FALSE(outputs_[1]->IsVrrEnabled());
   EXPECT_EQ(
       JoinActions(
-          kTestModesetStr,
+          kTestModesetStr, kSeamlessModesetStr,
           GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
                          outputs_[0]->native_mode(), /*enable_vrr=*/false})
               .c_str(),
@@ -2198,7 +2198,7 @@ TEST_F(DisplayConfiguratorTest, SetVrrEnabled) {
                          gfx::Point(0, vertical_offset),
                          outputs_[1]->native_mode(), /*enable_vrr=*/false})
               .c_str(),
-          kModesetOutcomeSuccess, kCommitModesetStr,
+          kModesetOutcomeSuccess, kCommitModesetStr, kSeamlessModesetStr,
           GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
                          outputs_[0]->native_mode(), /*enable_vrr=*/false})
               .c_str(),
@@ -2257,19 +2257,19 @@ TEST_F(DisplayConfiguratorTest, RefreshRateThrottle_VrrEnabled) {
                                                  kRefreshRateThrottleEnabled);
   EXPECT_EQ(60.0f, outputs_[0]->current_mode()->refresh_rate());
   EXPECT_EQ(1, observer_.num_changes());
-  // As long as VRR is enabled, throttling should trigger full (not seamless)
-  // modesets.
-  EXPECT_EQ(
-      JoinActions(kTestModesetStr,
-                  GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
-                                 modes[1].get(), /*enable_vrr=*/true})
-                      .c_str(),
-                  kModesetOutcomeSuccess, kCommitModesetStr,
-                  GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
-                                 modes[1].get(), /*enable_vrr=*/true})
-                      .c_str(),
-                  kModesetOutcomeSuccess, nullptr),
-      log_->GetActionsAndClear());
+  // Throttling should be unaffected by the internal display VRR state and still
+  // result in seamless modesets.
+  EXPECT_EQ(JoinActions(
+                kTestModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[1].get(), /*enable_vrr=*/true})
+                    .c_str(),
+                kModesetOutcomeSuccess, kCommitModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[1].get(), /*enable_vrr=*/true})
+                    .c_str(),
+                kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
   observer_.Reset();
 
   // Set throttle state disabled.
@@ -2277,19 +2277,19 @@ TEST_F(DisplayConfiguratorTest, RefreshRateThrottle_VrrEnabled) {
                                                  kRefreshRateThrottleDisabled);
   EXPECT_EQ(120.0f, outputs_[0]->current_mode()->refresh_rate());
   EXPECT_EQ(1, observer_.num_changes());
-  // As long as VRR is enabled, unthrottling should trigger full (not seamless)
-  // modesets.
-  EXPECT_EQ(
-      JoinActions(kTestModesetStr,
-                  GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
-                                 modes[0].get(), /*enable_vrr=*/true})
-                      .c_str(),
-                  kModesetOutcomeSuccess, kCommitModesetStr,
-                  GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
-                                 modes[0].get(), /*enable_vrr=*/true})
-                      .c_str(),
-                  kModesetOutcomeSuccess, nullptr),
-      log_->GetActionsAndClear());
+  // Unthrottling should be unaffected by the internal display VRR state and
+  // still result in seamless modesets.
+  EXPECT_EQ(JoinActions(
+                kTestModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[0].get(), /*enable_vrr=*/true})
+                    .c_str(),
+                kModesetOutcomeSuccess, kCommitModesetStr, kSeamlessModesetStr,
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[0].get(), /*enable_vrr=*/true})
+                    .c_str(),
+                kModesetOutcomeSuccess, nullptr),
+            log_->GetActionsAndClear());
 }
 
 TEST_F(DisplayConfiguratorTest,
