@@ -62,7 +62,7 @@ cargo_crate("lib") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.7"
+  cargo_pkg_version = "0.1.8"
   cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>, Michael Bolin <bolinfest@gmail.com>, Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "serde_json_lenient"
   cargo_pkg_description = "A lenient JSON serialization file format"
