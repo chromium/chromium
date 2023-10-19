@@ -458,6 +458,10 @@ absl::optional<base::TimeTicks> ActionItem::GetLastInvokeTime() const {
   return last_invoke_time_;
 }
 
+base::WeakPtr<ActionItem> ActionItem::GetAsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 // static
 ActionItem::ActionItemBuilder ActionItem::Builder(
     InvokeActionCallback callback) {
@@ -732,7 +736,11 @@ void ActionManager::ResetActionItemInitializerList() {
 base::CallbackListSubscription ActionManager::AppendActionItemInitializer(
     ActionItemInitializerList::CallbackType initializer) {
   DCHECK(initializer_list_);
-  ResetActions();
+  // If an initializer is added after items have already been added, just run
+  // the initializer immediately.
+  if (!root_action_parent_.GetChildren().children().empty()) {
+    initializer.Run(this);
+  }
 
   return initializer_list_->Add(std::move(initializer));
 }

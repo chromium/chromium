@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
@@ -128,6 +129,15 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
     ActionItemBuilder&& CopyAddressTo(ActionPtr* action_address) && {
       return std::move(this->CopyAddressTo(action_address));
     }
+    template <typename Action>
+    ActionItemBuilder& CopyWeakPtrTo(base::WeakPtr<Action>* weak_ptr) & {
+      *weak_ptr = action_item_->GetAsWeakPtr();
+      return *this;
+    }
+    template <typename Action>
+    ActionItemBuilder&& CopyWeakPtrTo(base::WeakPtr<Action>* weak_ptr) && {
+      return std::move(this->CopyWeakPtrTo(weak_ptr));
+    }
 
     template <typename T>
     ActionItemBuilder& SetProperty(const ui::ClassProperty<T>* property,
@@ -235,6 +245,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   int GetInvokeCount() const;
   absl::optional<base::TimeTicks> GetLastInvokeTime() const;
 
+  base::WeakPtr<ActionItem> GetAsWeakPtr();
+
  protected:
   // ActionList::Delegate override.
   void ActionListChanged() override;
@@ -264,6 +276,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   InvokeActionCallback callback_;
   int invoke_count_ = 0;
   absl::optional<base::TimeTicks> last_invoke_time_;
+  base::WeakPtrFactory<ActionItem> weak_ptr_factory_{this};
 };
 
 class COMPONENT_EXPORT(ACTIONS) ActionManager
@@ -301,7 +314,9 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   // Resets the current `initializer_list_`.
   void ResetActionItemInitializerList();
 
-  // Appends `initializer` to the end of the current `initializer_list_`.
+  // Appends `initializer` to the end of the current `initializer_list_`. If the
+  // initializers have already been run or actions have already been added to
+  // the manager, the initializer will be run immediately.
   [[nodiscard]] base::CallbackListSubscription AppendActionItemInitializer(
       ActionItemInitializerList::CallbackType initializer);
 
