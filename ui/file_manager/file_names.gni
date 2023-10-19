@@ -329,6 +329,7 @@ ts_files = [
 # Closure is failing to recognize the generated JS from the TS.
 # JS targets should rely on externs to type check the Polymer elements from TS.
 ts_polymer = [
+  "file_manager/foreground/elements/files_format_dialog.ts",
   "file_manager/foreground/elements/files_quick_view.ts",
   "file_manager/foreground/elements/files_metadata_box.ts",
   "file_manager/foreground/elements/files_safe_media.ts",
@@ -442,6 +443,7 @@ foreach(_t, ts_templates) {
 
 # Generated in foregorund/elements folder.
 ts_generated_templates += [
+  "file_manager/foreground/elements/files_format_dialog.html.ts",
   "file_manager/foreground/elements/files_metadata_box.html.ts",
   "file_manager/foreground/elements/files_metadata_entry.html.ts",
   "file_manager/foreground/elements/files_quick_view.html.ts",
@@ -478,7 +480,6 @@ generated_js_files = [
   "file_manager/common/js/file_types_data.js",
 
   # Elements:
-  "file_manager/foreground/elements/files_format_dialog.js",
   "file_manager/foreground/elements/files_spinner.js",
   "file_manager/foreground/elements/icons.js",
   "file_manager/foreground/elements/xf_button.js",

@@ -195,6 +195,10 @@ export class EntryList {
     return this.label_;
   }
 
+  get devicePath() {
+    return this.devicePath_;
+  }
+
   get isNativeType() {
     return false;
   }

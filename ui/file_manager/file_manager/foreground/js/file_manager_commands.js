@@ -941,7 +941,7 @@ CommandHandler.COMMANDS_['erase-device'] = new (class extends FilesCommand {
     const root = CommandUtil.getEventEntry(event, fileManager);
 
     if (root && root instanceof EntryList) {
-      /** @type {FilesFormatDialogElement} */ (fileManager.ui.formatDialog)
+      /** @type {FilesFormatDialog} */ (fileManager.ui.formatDialog)
           .showEraseModal(root);
     }
   }

@@ -432,7 +432,6 @@ js_unittest("empty_folder_controller_unittest") {
 js_library("deferred_elements") {
   visibility += [ "//ui/file_manager:*" ]
   deps = [
-    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
     "//ui/file_manager/file_manager/foreground/elements:files_spinner",
     "//ui/file_manager/file_manager/foreground/elements:xf_button",
     "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress",
@@ -554,6 +553,7 @@ js_library("file_manager_commands") {
     "ui:files_confirm_dialog",
     "ui:list",
     "//ash/webui/common/resources:assert",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
@@ -564,7 +564,10 @@ js_library("file_manager_commands") {
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
+  ]
+  externs_list = [
+    "//ui/file_manager/file_manager/externs/polymer_elements/files_format_dialog.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
   ]
 }
 

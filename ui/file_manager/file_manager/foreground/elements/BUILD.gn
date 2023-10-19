@@ -35,7 +35,6 @@ js_type_check("closure_compile_jsmodules") {
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
   deps = [
-    ":files_format_dialog",
     ":files_spinner",
     ":xf_button",
     ":xf_circular_progress",
@@ -47,7 +46,6 @@ js_type_check("closure_compile_jsmodules") {
 html_to_js("web_components") {
   visibility += [ "//ui/file_manager/*" ]
   js_files = [
-    "files_format_dialog.js",
     "files_spinner.js",
     "icons.js",
     "xf_button.js",
@@ -57,30 +55,13 @@ html_to_js("web_components") {
   ]
 }
 
-js_library("files_format_dialog") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/file_manager/file_manager/foreground/js:file_rename",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
-}
-
 js_library("files_spinner") {
 }
 
 html_to_wrapper("polymer_elements") {
   visibility += [ "//ui/file_manager/*" ]
   in_files = [
+    "files_format_dialog.html",
     "files_metadata_box.html",
     "files_toast.html",
     "files_tooltip.html",
