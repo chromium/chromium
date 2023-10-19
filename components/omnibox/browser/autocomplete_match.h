@@ -434,6 +434,10 @@ struct AutocompleteMatch {
   // set `stripped_destination_url` to avoid repeating the computation later.
   bool IsDocumentSuggestion();
 
+  // Checks if this match is a trend suggestion based on the match type and
+  // subtypes.
+  bool IsTrendSuggestion() const;
+
   // Returns true if this match may attach one or more `actions`.
   // This method is used to keep actions off of matches with types that don't
   // mix well with Pedals or other actions (e.g. entities).

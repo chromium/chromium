@@ -527,9 +527,10 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
                                       : omnibox::kPageIcon;
 
     case Type::SEARCH_SUGGEST: {
-      if (subtypes.contains(/*SUBTYPE_TRENDS=*/143))
+      if (IsTrendSuggestion()) {
         return use_chrome_refresh_icons ? omnibox::kTrendingUpChromeRefreshIcon
                                         : omnibox::kTrendingUpIcon;
+      }
       return use_chrome_refresh_icons ? vector_icons::kSearchChromeRefreshIcon
                                       : vector_icons::kSearchIcon;
     }
@@ -1307,6 +1308,11 @@ bool AutocompleteMatch::IsOnDeviceSearchSuggestion() const {
 bool AutocompleteMatch::IsUrlScoringEligible() const {
   return scoring_signals.has_value() &&
          type != AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+}
+
+bool AutocompleteMatch::IsTrendSuggestion() const {
+  return type == AutocompleteMatchType::SEARCH_SUGGEST &&
+         subtypes.contains(/*omnibox::SUBTYPE_TRENDS=*/143);
 }
 
 void AutocompleteMatch::FilterOmniboxActions(

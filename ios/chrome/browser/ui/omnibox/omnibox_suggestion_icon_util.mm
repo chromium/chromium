@@ -53,6 +53,10 @@ UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon_type) {
     case OmniboxSuggestionIconType::kFallbackAnswer:
       symbol_name = kSearchSymbol;
       break;
+    case OmniboxSuggestionIconType::kSearchTrend:
+      symbol_name = kUpTrendSymbol;
+      default_symbol = false;
+      break;
     case OmniboxSuggestionIconType::kCount:
       NOTREACHED();
       if (@available(iOS 15, *)) {
