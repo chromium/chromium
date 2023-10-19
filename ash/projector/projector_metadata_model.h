@@ -28,6 +28,12 @@ enum class ASH_EXPORT RecognitionStatus : int {
   kError = 2
 };
 
+enum class ASH_EXPORT MetadataVersionNumber : int {
+  kUnknown = 0,
+  kV1 = 1,
+  kV2 = 2
+};
+
 // Base class to describe a metadata item.
 class MetadataItem {
  public:
@@ -104,6 +110,7 @@ class ASH_EXPORT ProjectorMetadata {
   void SetSpeechRecognitionStatus(RecognitionStatus status);
   // Marks a beginning of a key idea. The timing info of the next transcript
   // will be used as the timing of the key idea.
+  void SetMetadataVersionNumber(MetadataVersionNumber version);
   void MarkKeyIdea();
   // Serializes the metadata for storage.
   std::string Serialize();
@@ -123,6 +130,7 @@ class ASH_EXPORT ProjectorMetadata {
 
   // The speech recognition status.
   RecognitionStatus speech_recognition_status_ = RecognitionStatus::kIncomplete;
+  MetadataVersionNumber metadata_version_number_;
 };
 
 }  // namespace ash

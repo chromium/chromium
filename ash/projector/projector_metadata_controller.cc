@@ -4,6 +4,8 @@
 
 #include "ash/projector/projector_metadata_controller.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/projector/projector_metadata_model.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/projector_ui_controller.h"
 #include "ash/public/cpp/projector/projector_controller.h"
@@ -55,6 +57,9 @@ void ProjectorMetadataController::OnRecordingStarted() {
   metadata_ = std::make_unique<ProjectorMetadata>();
   metadata_->SetCaptionLanguage(
       GetFormattedLangauge(icu::Locale::getDefault()));
+  if (ash::features::IsProjectorV2Enabled()) {
+    metadata_->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+  }
 }
 
 void ProjectorMetadataController::RecordTranscription(

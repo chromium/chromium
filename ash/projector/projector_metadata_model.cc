@@ -4,6 +4,7 @@
 
 #include "ash/projector/projector_metadata_model.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/json/json_writer.h"
 
 namespace ash {
@@ -18,6 +19,7 @@ constexpr base::StringPiece kCaptionsKey = "captions";
 constexpr base::StringPiece kKeyIdeasKey = "tableOfContent";
 constexpr base::StringPiece kOffset = "offset";
 constexpr base::StringPiece kRecognitionStatus = "recognitionStatus";
+constexpr base::StringPiece kMetadataVersionNumber = "version";
 
 base::Value::Dict HypothesisPartsToDict(
     const media::HypothesisParts& hypothesis_parts) {
@@ -141,6 +143,11 @@ void ProjectorMetadata::SetSpeechRecognitionStatus(RecognitionStatus status) {
   speech_recognition_status_ = status;
 }
 
+void ProjectorMetadata::SetMetadataVersionNumber(
+    MetadataVersionNumber version) {
+  metadata_version_number_ = version;
+}
+
 void ProjectorMetadata::MarkKeyIdea() {
   should_mark_key_idea_ = true;
 }
@@ -179,6 +186,7 @@ std::string ProjectorMetadata::Serialize() {
 //      },
 //    ],
 //    "recognitionStatus": 0,
+//    "version": 2,
 //  }
 //
 // Which is:
@@ -204,6 +212,10 @@ base::Value::Dict ProjectorMetadata::ToJson() {
   metadata.Set(kKeyIdeasKey, std::move(key_ideas_list));
   metadata.Set(kRecognitionStatus,
                static_cast<int>(speech_recognition_status_));
+  if (ash::features::IsProjectorV2Enabled()) {
+    metadata.Set(kMetadataVersionNumber,
+                 static_cast<int>(metadata_version_number_));
+  }
   return metadata;
 }
 

@@ -9,12 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -96,6 +96,65 @@ constexpr char kCompleteMetadataTemplate[] = R"({
     ]
   })";
 
+constexpr char kCompleteMetadataV2Template[] = R"({
+    "captions": [
+      {
+        "endOffset": 3000,
+        "hypothesisParts": [
+          {
+            "offset": 1000,
+            "text": [
+              "transcript"
+            ]
+          },
+          {
+            "offset": 2000,
+            "text": [
+              "text"
+            ]
+          }
+        ],
+        "startOffset": 1000,
+        "text": "transcript text"
+      },
+      {
+        "endOffset": 5000,
+        "hypothesisParts": [
+          {
+            "offset": 3200,
+            "text": [
+              "transcript"
+            ]
+          },
+          {
+            "offset": 4200,
+            "text": [
+              "text"
+            ]
+          },
+          {
+            "offset": 4500,
+            "text": [
+              "2"
+            ]
+          }
+        ],
+        "startOffset": 3000,
+        "text": "transcript text 2"
+      }
+    ],
+    "captionLanguage": "en",
+    "recognitionStatus": %i,
+    "version": 2,
+    "tableOfContent": [
+      {
+        "endOffset": 5000,
+        "startOffset": 3000,
+        "text": ""
+      }
+    ]
+  })";
+
 void AssertSerializedString(const std::string& expected,
                             const std::string& actual) {
   absl::optional<base::Value> expected_value = base::JSONReader::Read(expected);
@@ -149,6 +208,37 @@ std::string BuildTranscriptJson(
   return base::StringPrintf(kSerializedTranscriptTemplate, end_offset,
                             start_offset, text.c_str(),
                             BuildHypothesisPartsList(hypothesis_part).c_str());
+}
+
+void populateMetadata(ProjectorMetadata& metadata) {
+  metadata.SetCaptionLanguage("en");
+  metadata.SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+
+  std::vector<media::HypothesisParts> first_transcript;
+  first_transcript.emplace_back(std::vector<std::string>({"transcript"}),
+                                base::Milliseconds(1000));
+  first_transcript.emplace_back(std::vector<std::string>({"text"}),
+                                base::Milliseconds(2000));
+
+  metadata.AddTranscript(std::make_unique<ProjectorTranscript>(
+      /*start_time=*/base::Milliseconds(1000),
+      /*end_time=*/base::Milliseconds(3000), "transcript text",
+      std::move(first_transcript)));
+
+  metadata.MarkKeyIdea();
+
+  std::vector<media::HypothesisParts> second_transcript;
+  second_transcript.emplace_back(std::vector<std::string>({"transcript"}),
+                                 base::Milliseconds(3200));
+  second_transcript.emplace_back(std::vector<std::string>({"text"}),
+                                 base::Milliseconds(4200));
+  second_transcript.emplace_back(std::vector<std::string>({"2"}),
+                                 base::Milliseconds(4500));
+
+  metadata.AddTranscript(std::make_unique<ProjectorTranscript>(
+      /*start_time=*/base::Milliseconds(3000),
+      /*end_time=*/base::Milliseconds(5000), "transcript text 2",
+      std::move(second_transcript)));
 }
 
 }  // namespace
@@ -220,37 +310,17 @@ class ProjectorMetadataTest : public testing::Test {
 
   ProjectorMetadataTest(const ProjectorMetadataTest&) = delete;
   ProjectorMetadataTest& operator=(const ProjectorMetadataTest&) = delete;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ProjectorMetadataTest, Serialize) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kProjectorV2});
   ProjectorMetadata metadata;
-  metadata.SetCaptionLanguage("en");
-
-  std::vector<media::HypothesisParts> first_transcript;
-  first_transcript.emplace_back(std::vector<std::string>({"transcript"}),
-                                base::Milliseconds(1000));
-  first_transcript.emplace_back(std::vector<std::string>({"text"}),
-                                base::Milliseconds(2000));
-
-  metadata.AddTranscript(std::make_unique<ProjectorTranscript>(
-      /*start_time=*/base::Milliseconds(1000),
-      /*end_time=*/base::Milliseconds(3000), "transcript text",
-      std::move(first_transcript)));
-
-  metadata.MarkKeyIdea();
-
-  std::vector<media::HypothesisParts> second_transcript;
-  second_transcript.emplace_back(std::vector<std::string>({"transcript"}),
-                                 base::Milliseconds(3200));
-  second_transcript.emplace_back(std::vector<std::string>({"text"}),
-                                 base::Milliseconds(4200));
-  second_transcript.emplace_back(std::vector<std::string>({"2"}),
-                                 base::Milliseconds(4500));
-
-  metadata.AddTranscript(std::make_unique<ProjectorTranscript>(
-      /*start_time=*/base::Milliseconds(3000),
-      /*end_time=*/base::Milliseconds(5000), "transcript text 2",
-      std::move(second_transcript)));
+  populateMetadata(metadata);
 
   metadata.SetSpeechRecognitionStatus(RecognitionStatus::kIncomplete);
   AssertSerializedString(
@@ -268,6 +338,28 @@ TEST_F(ProjectorMetadataTest, Serialize) {
   AssertSerializedString(
       base::StringPrintf(kCompleteMetadataTemplate,
                          static_cast<int>(RecognitionStatus::kError)),
+      metadata.Serialize());
+
+  metadata.SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+  // V2 feature flag not enabled, setting version number has no effort.
+  AssertSerializedString(
+      base::StringPrintf(kCompleteMetadataTemplate,
+                         static_cast<int>(RecognitionStatus::kError)),
+      metadata.Serialize());
+}
+
+TEST_F(ProjectorMetadataTest, SerializeV2) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kProjectorV2},
+      /*disabled_features=*/{});
+  ProjectorMetadata metadata;
+  populateMetadata(metadata);
+  metadata.SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+
+  metadata.SetSpeechRecognitionStatus(RecognitionStatus::kComplete);
+  AssertSerializedString(
+      base::StringPrintf(kCompleteMetadataV2Template,
+                         static_cast<int>(RecognitionStatus::kComplete)),
       metadata.Serialize());
 }
 
