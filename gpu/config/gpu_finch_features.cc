@@ -183,11 +183,6 @@ BASE_FEATURE(kDefaultEnableANGLEValidation,
              "DefaultEnableANGLEValidation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disables MSAA in Graphite if MSAA is reported as being slow for the device.
-BASE_FEATURE(kDisableSlowMSAAInGraphite,
-             "DisableSlowMSAAInGraphite",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables canvas to free its resources by default when it's running in
 // the background.
 BASE_FEATURE(kCanvasContextLostInBackground,

@@ -794,11 +794,6 @@ const char kCreateShortcutIgnoresManifestDescription[] =
     "the current page, ignoring any web app manifest information that may be "
     "available.";
 
-const char kDisableSlowMSAAInGraphiteName[] = "Disable Slow MSAA in Graphite";
-const char kDisableSlowMSAAInGraphiteDescription[] =
-    "Configure Graphite to use single sampling if the device is detected as "
-    "having slow MSAA.";
-
 const char kDeviceForceScheduledRebootName[] =
     "Enable DeviceScheduledReboot policy for all sessions.";
 const char kDeviceForceScheduledRebootDescription[] =

@@ -1706,11 +1706,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "disable-slow-msaa-in-graphite",
-    "owners": [ "blundell" ],
-    "expiry_milestone": 127
-  },
-  {
     "name": "disable-virtual-keyboard",
     "owners": [ "dvallet", "essential-inputs-team@google.com" ],
     "expiry_milestone": 116

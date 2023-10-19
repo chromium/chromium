@@ -9094,11 +9094,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDefaultPassthroughCommandDecoder)},
 #endif  // BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 
-    {"disable-slow-msaa-in-graphite",
-     flag_descriptions::kDisableSlowMSAAInGraphiteName,
-     flag_descriptions::kDisableSlowMSAAInGraphiteDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kDisableSlowMSAAInGraphite)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"focus-follows-cursor", flag_descriptions::kFocusFollowsCursorName,
      flag_descriptions::kFocusFollowsCursorDescription, kOsCrOS,
