@@ -481,6 +481,11 @@ void SignInAndEnableSync() {
 }
 
 - (void)testTappingLearnMoreInFirstRunExperienceView {
+  // TODO(crbug.com/1488977): Test fails on iPad simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad Simulator");
+  }
+
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
