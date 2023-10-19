@@ -5556,7 +5556,6 @@ source_set("unit_tests") {
     "nearby/bluetooth_adapter_manager_unittest.cc",
     "nearby/nearby_process_manager_impl_unittest.cc",
     "nearby/presence/credential_storage/nearby_presence_credential_storage_unittest.cc",
-    "nearby/quick_start_connectivity_service_impl_unittest.cc",
     "net/apn_migrator_unittest.cc",
     "net/client_cert_store_ash_unittest.cc",
     "net/dns_over_https/templates_uri_resolver_impl_unittest.cc",
