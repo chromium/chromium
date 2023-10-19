@@ -5,17 +5,19 @@
 #include "media/audio/android/aaudio_input.h"
 
 #include "base/task/bind_post_task.h"
-#include "base/thread_annotations.h"
-#include "base/trace_event/trace_event.h"
-#include "media/audio/android/aaudio_stubs.h"
 #include "media/audio/android/audio_manager_android.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_bus.h"
 
 namespace media {
 
 AAudioInputStream::AAudioInputStream(AudioManagerAndroid* manager,
                                      const AudioParameters& params)
-    : audio_manager_(manager), params_(params) {
+    : audio_manager_(manager),
+      params_(params),
+      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
+                                         base::Unretained(audio_manager_),
+                                         /*trace_start=*/true)) {
   CHECK(audio_manager_);
 
   handle_device_change_on_main_sequence_ =
@@ -124,6 +126,8 @@ bool AAudioInputStream::OnAudioDataRequested(void* audio_data,
 
   audio_bus_->FromInterleaved<Float32SampleTypeTraits>(
       reinterpret_cast<float*>(audio_data), num_frames);
+
+  peak_detector_.FindPeak(audio_bus_.get());
 
   const base::TimeTicks capture_time = stream_wrapper_->GetCaptureTimestamp();
 
