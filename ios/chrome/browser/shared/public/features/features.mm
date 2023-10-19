@@ -116,7 +116,7 @@ const char kIOSEditMenuSearchWithTitleSearchWithParam[] = "SearchWith";
 const char kIOSEditMenuSearchWithTitleWebSearchParam[] = "WebSearch";
 BASE_FEATURE(kIOSEditMenuSearchWith,
              "IOSEditMenuSearchWith",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSearchWithEnabled() {
   if (@available(iOS 16, *)) {
@@ -127,7 +127,7 @@ bool IsSearchWithEnabled() {
 
 BASE_FEATURE(kIOSEditMenuHideSearchWeb,
              "IOSEditMenuHideSearchWeb",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSNewOmniboxImplementation,
              "kIOSNewOmniboxImplementation",
