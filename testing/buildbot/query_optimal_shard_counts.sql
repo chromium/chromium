@@ -1,6 +1,8 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+# TODO(crbug/1493793): Split up this query into two: one for calculating
+# shard counts and the other for test overheads
 WITH
 # Get swarming task IDs of builds that occurred between lookback dates.
 build_task_ids AS (
@@ -47,24 +49,39 @@ avg_builds_per_hour_count AS (
 deduped_tasks AS (
   SELECT DISTINCT
     request.parent_task_id AS parent_task_id,
-   (
-      SELECT
-        SPLIT(tag, ':')[offset(1)]
+    (
+      SELECT SPLIT(tag, ':')[offset(1)]
       FROM UNNEST(request.tags) tag
       WHERE REGEXP_CONTAINS(tag, 'waterfall_builder_group:')
     ) AS waterfall_builder_group,
     (
-      SELECT
-        SPLIT(tag, ':')[offset(1)]
+      SELECT SPLIT(tag, ':')[offset(1)]
       FROM UNNEST(request.tags) tag
       WHERE REGEXP_CONTAINS(tag, 'waterfall_buildername:')
     ) AS waterfall_builder_name,
     (
-      SELECT
-        SPLIT(tag, ':')[offset(1)]
+      SELECT SPLIT(tag, ':')[offset(1)]
       FROM UNNEST(request.tags) tag
       WHERE REGEXP_CONTAINS(tag, 'test_suite:')
     ) AS test_suite,
+    # experimental_shard_count will be NULL for regular builds
+    # See go/nplus1shardsproposal
+    CAST(
+      (
+        SELECT SPLIT(tag, ':')[offset(1)]
+        FROM UNNEST(request.tags) tag
+        WHERE STARTS_WITH(tag, 'experimental_shard_count:')
+      )
+      AS INT64) AS experimental_shard_count,
+    # normally_assigned_shard_count will be NULL for regular builds
+    # See go/nplus1shardsproposal
+    CAST(
+      (
+        SELECT SPLIT(tag, ':')[offset(1)]
+        FROM UNNEST(request.tags) tag
+        WHERE STARTS_WITH(tag, 'normally_assigned_shard_count:')
+      )
+      AS INT64) AS normally_assigned_shard_count,
     # Excludes task setup overhead
     duration AS running_duration_sec,
     # This is the time it takes for the swarming bot to get ready to run
@@ -75,7 +92,8 @@ deduped_tasks AS (
     TIMESTAMP_DIFF(
       start_time, create_time, SECOND) pending_time_sec,
   FROM `chromium-swarm.swarming.task_results_summary`
-  WHERE request.parent_task_id IS NOT NULL
+  WHERE
+    request.parent_task_id IS NOT NULL
     # Ignore all retry and flakiness step level runs
     # TODO(sshrimp): this is fragile and should be handled another way
     AND request.name NOT LIKE '%retry shards%'
@@ -97,86 +115,178 @@ tasks AS (
   JOIN deduped_tasks c
     ON p.build_task_id = c.parent_task_id
 ),
-# Get a variety of durations and shard counts for each build's triggered
-# suites.
-suite_durations AS (
+# For each build, test_suite, waterfall_builder_group, waterfall_builder_name,
+# and regular/experimental shard_count calculate required durations
+durations_per_build AS (
   SELECT
-    build_task_id,
     test_suite,
+    try_builder,
     waterfall_builder_group,
     waterfall_builder_name,
-    try_builder,
+    experimental_shard_count,
+    normally_assigned_shard_count,
     MAX(running_duration_sec) max_shard_duration_sec,
     MAX(task_setup_overhead_sec) max_task_setup_overhead_sec,
     MAX(pending_time_sec) max_pending_time_sec,
-    COUNT(*) shard_count
+    SUM(running_duration_sec) total_shard_duration,
+    COUNT(*) shard_count,
   FROM tasks
   GROUP BY
     build_task_id,
     test_suite,
-    waterfall_builder_group,
-    waterfall_builder_name,
-    try_builder
-),
-# Group suite_durations by test suite, builder, and shard count
-# Calculate percentiles for a variety of durations.
-# Filter out rows that don't exceed the duration threshold and don't satisfy
-# the sample size requirement.
-long_poles AS (
-  SELECT
-    test_suite,
-    waterfall_builder_group,
-    waterfall_builder_name,
     try_builder,
-    shard_count,
+    waterfall_builder_group,
+    waterfall_builder_name,
+    experimental_shard_count,
+    normally_assigned_shard_count
+),
+# Aggregate all durations for each builder, test_suite,
+# waterfall_builder_group, waterfall_builder_name, and regular/experimental
+# shard_count
+suite_and_builder_durations AS (
+  SELECT
     COUNT(*) sample_size,
+    d.test_suite,
+    d.try_builder,
+    d.waterfall_builder_group,
+    d.waterfall_builder_name,
+    shard_count,
+    experimental_shard_count,
+    normally_assigned_shard_count,
     ROUND(
-      APPROX_QUANTILES(
-        max_shard_duration_sec, 1000)[OFFSET({percentile}0)] / 60, 2)
+      APPROX_QUANTILES(max_shard_duration_sec, 1000)[OFFSET({percentile}0)] / 60, 2)
       AS percentile_duration_minutes,
     AVG(max_task_setup_overhead_sec) avg_task_setup_overhead_sec,
     ROUND(AVG(max_pending_time_sec), 1) avg_pending_time_sec,
     ROUND(
-      APPROX_QUANTILES(
-        max_pending_time_sec, 1000)[OFFSET(500)], 1) AS p50_pending_time_sec,
+    APPROX_QUANTILES(
+      max_pending_time_sec, 1000)[OFFSET(500)], 1) AS p50_pending_time_sec,
     ROUND(
       APPROX_QUANTILES(
         max_pending_time_sec, 1000)[OFFSET(900)], 1) AS p90_pending_time_sec,
-    IF(
-      try_builder LIKE 'android%',
-      {android_overhead_sec}/60,
-      {default_overhead_sec}/60
-    ) test_overhead_min
-  FROM suite_durations
+    ROUND(APPROX_QUANTILES(total_shard_duration, 100)[OFFSET(50)])
+      AS p50_total_duration_sec,
+  FROM durations_per_build d
   WHERE
-    waterfall_builder_group IS NOT NULL
+    # Regular builds
+    (
+      experimental_shard_count IS NULL
+      OR
+        # Experimental builds where the shard_count (an integer) is equal to the experimental
+        # shard count. This ensures that we filter out weird builds where the triggered shards
+        # don’t match up with the experimental_shard_count quantity its supposed to use.
+        shard_count = experimental_shard_count
+     )
   GROUP BY
     test_suite,
+    try_builder,
     waterfall_builder_group,
     waterfall_builder_name,
-    try_builder,
+    experimental_shard_count,
+    normally_assigned_shard_count,
     shard_count
-  HAVING
-    # Filters out suites that obviously don't need to be sharded more
-    # and prevents optimal_shard_count from being 0, causing a division
-    # by 0 error.
-    percentile_duration_minutes > 5
-    AND sample_size > {min_sample_size}
-  ORDER BY sample_size DESC, percentile_duration_minutes DESC
 ),
 # If a suite had its shards updated within the past lookback_days, there
 # will be multiple rows for multiple shard counts. To be able to know which
-# one to use, we'll attach a "most_used_shard_count" to indicate what
+# one to use, we will attach a "most_used_shard_count" to indicate what
 # shard_count is currently being used (a best guess).
 most_used_shard_counts AS (
-    SELECT
+  SELECT
     ARRAY_AGG(
-      shard_count ORDER BY sample_size DESC)[OFFSET(0)]
+      shard_count ORDER BY sample_size DESC)[
+      OFFSET(0)]
       AS most_used_shard_count,
     test_suite,
     try_builder
-  FROM long_poles
+  FROM suite_and_builder_durations
+  WHERE
+    experimental_shard_count IS NULL
+    AND normally_assigned_shard_count IS NULL
   GROUP BY test_suite, try_builder
+),
+# Get aggregated durations for the experimental shard counts and filter out rows using old
+# unused shard counts
+experimental AS (
+  SELECT l.*
+  FROM suite_and_builder_durations l
+  INNER JOIN most_used_shard_counts m
+    ON
+      l.try_builder = m.try_builder
+      AND l.test_suite = m.test_suite
+      AND l.normally_assigned_shard_count = m.most_used_shard_count
+  WHERE
+    experimental_shard_count IS NOT NULL
+    AND normally_assigned_shard_count IS NOT NULL
+),
+# Get aggregated durations for non-experimental shard counts and filter out rows using old
+# unused shard counts
+regular AS (
+  SELECT l.*
+  FROM suite_and_builder_durations l
+  INNER JOIN most_used_shard_counts m
+    ON
+      l.try_builder = m.try_builder
+      AND l.test_suite = m.test_suite
+      AND l.shard_count = m.most_used_shard_count
+  WHERE
+    experimental_shard_count IS NULL
+    AND normally_assigned_shard_count IS NULL
+),
+# Calculate overheads by comparing durations of experimental vs regular
+test_overheads AS (
+  SELECT
+    exp.test_suite,
+    exp.try_builder,
+    exp.experimental_shard_count,
+    exp.normally_assigned_shard_count,
+    reg.avg_task_setup_overhead_sec avg_task_setup_overhead_sec,
+    exp.sample_size,
+    # Subtract task setup overhead, so only test harness overhead is calculated
+    # Use p50 instead of avg, so the small experimental sample size isn’t so affected by outliers
+    (exp.p50_total_duration_sec - reg.p50_total_duration_sec)
+      / (exp.experimental_shard_count - exp.normally_assigned_shard_count)
+      - reg.avg_task_setup_overhead_sec AS p50_test_harness_overhead_sec,
+  FROM experimental exp
+  INNER JOIN regular reg
+    ON (
+      reg.shard_count = exp.normally_assigned_shard_count
+      AND reg.try_builder = exp.try_builder
+      AND reg.test_suite = exp.test_suite)
+  ORDER BY p50_test_harness_overhead_sec DESC
+),
+long_poles_with_overheads AS (
+  SELECT
+    f.*,
+    # test_overhead_min is the total test overhead encompassing task setup
+    # + test harness overhead
+    IF(
+      (o.p50_test_harness_overhead_sec IS NOT NULL AND o.avg_task_setup_overhead_sec IS NOT NULL),
+      ROUND((o.p50_test_harness_overhead_sec + o.avg_task_setup_overhead_sec) / 60, 2),
+      # N plus 1 shards experiment is not enabled on some builders,
+      # so use default overheads for those.
+      IF(
+        f.try_builder LIKE 'android%',
+        {android_overhead_sec}/ 60,
+        {default_overhead_sec}/ 60)) AS test_overhead_min,
+  FROM
+    (
+      SELECT
+        r.*,
+        m.most_used_shard_count
+      FROM
+        suite_and_builder_durations r
+      # Only look at the most recent durations
+      INNER JOIN most_used_shard_counts m
+        ON (
+          r.try_builder = m.try_builder
+          AND r.test_suite = m.test_suite
+          AND r.shard_count = m.most_used_shard_count)
+    ) AS f
+  LEFT JOIN test_overheads o
+    ON (
+      f.try_builder = o.try_builder
+      AND f.test_suite = o.test_suite
+      AND f.shard_count = o.normally_assigned_shard_count)
 ),
 # Using the percentile and estimated test overhead durations from the
 # long_poles query above, calculate the optimal shard_count per suite and
@@ -184,34 +294,33 @@ most_used_shard_counts AS (
 optimal_shard_counts AS (
   SELECT
     l.*,
-    CAST(CEILING(
-      (percentile_duration_minutes * shard_count -
-      (test_overhead_min * shard_count))
-      / ({desired_runtime_min} - test_overhead_min))
-    AS INT64) optimal_shard_count,
+    CAST(
+      CEILING(
+        (percentile_duration_minutes * shard_count - (test_overhead_min * shard_count))
+        / ({desired_runtime_min} - test_overhead_min))
+      AS INT64)
+      optimal_shard_count,
     (
       SELECT
         avg_count
       FROM avg_builds_per_hour_count a
       WHERE a.try_builder = l.try_builder
     ) avg_num_builds_per_peak_hour
-  FROM long_poles l
+  FROM long_poles_with_overheads l
 )
 # Return optimal_shard_counts with a simulated shard duration and estimated
 # bot hour cost.
 SELECT
   o.*,
-  m.most_used_shard_count,
   ROUND(
     percentile_duration_minutes * shard_count / optimal_shard_count, 2)
     AS simulated_max_shard_duration,
   ROUND(
     (optimal_shard_count - shard_count)
-    * (avg_task_setup_overhead_sec / 60 + test_overhead_min) /
-    60 * avg_num_builds_per_peak_hour,
+    * (test_overhead_min / 60) * avg_num_builds_per_peak_hour,
     2) estimated_bot_hour_cost
 FROM
   optimal_shard_counts o
-  INNER JOIN most_used_shard_counts m
-  ON o.try_builder = m.try_builder AND
-  o.test_suite = m.test_suite
+WHERE
+  optimal_shard_count > 0
+  AND sample_size > {min_sample_size}

@@ -32,6 +32,7 @@ DEFAULT_DICT = {
     'percentile_duration_minutes': 20,
     'sample_size': 9508,
     'most_used_shard_count': 10,
+    'test_overhead_min': 1.5,
 }
 
 

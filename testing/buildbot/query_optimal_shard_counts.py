@@ -283,6 +283,7 @@ def main(args):
           'prev_shard_count': r['shard_count'],
           'simulated_max_shard_duration': r['simulated_max_shard_duration'],
           'try_builder': r['try_builder'],
+          'test_overhead_min': r['test_overhead_min'],
       }
       shard_dict[r['test_suite']]['debug'] = debug_dict
     data.setdefault(builder_group, {}).setdefault(builder_name,
