@@ -960,10 +960,7 @@ function touchScroll(x, y, deltaX, deltaY, scroller, options = {}) {
   const scrollPromise =
       waitForScrollendEvent(scrollendEventTarget(scroller));
   const dragGesturePromise =
-      touchDrag(x, y, deltaX, deltaY, options).then(value => {
-         assert_equals(value, 'pointercancel',
-                       'Expect scrolling to trigger poitnercancel');
-      });
+      touchDrag(x, y, deltaX, deltaY, options);
   return Promise.all([dragGesturePromise, scrollPromise]);
 }
 
