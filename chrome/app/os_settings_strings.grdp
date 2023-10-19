@@ -4536,6 +4536,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE" desc="Title of a section of settings. This section describes settings for devices that are connected to the Chromebook, like phones.">
     Connected devices
   </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION" desc="Description for the Multidevice menu item in the left menu when no phone connected.">
+    Phone Hub, Nearby Share
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_PHONE_CONNECTED" desc="Description for the Multidevice menu item in the left menu when there is a phone connected.">
+    Connected to <ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_DEVICE_NAME_MISSING" desc="Description for the Multidevice menu item in the left menu when there is a phone connected but the device name is missing.">
+    Connected to Android phone
+  </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_SETUP_BUTTON" desc="Label of the button that opens a menu to the user that allows them to set up a connection between the user's phone and their Chromebook to give them access to special features.">
     Set up
   </message>
@@ -4551,7 +4560,7 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_SETUP_ITEM_HEADING" desc="Heading for settings item that allows the user to connect their phone to their Chromebook.">
     Android phone
   </message>
-   <message name="IDS_OS_SETTINGS_MULTIDEVICE_SUBPAGE_TITLE" desc="Title for the multidevice detail subpage.">
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_SUBPAGE_TITLE" desc="Title for the multidevice detail subpage.">
     Android phone (<ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>)
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_ENABLED" desc="Text to tell user multidevice features are turned on">

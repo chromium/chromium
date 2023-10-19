@@ -28,6 +28,8 @@ import {getInputDeviceSettingsProvider} from '../device_page/input_device_mojo_i
 import {InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from '../device_page/input_device_settings_types.js';
 import {KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import * as routesMojom from '../mojom-webui/routes.mojom-webui.js';
+import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from '../multidevice_page/multidevice_browser_proxy.js';
+import {MultiDevicePageContentData, MultiDeviceSettingsMode} from '../multidevice_page/multidevice_constants.js';
 import {OsPageAvailability} from '../os_page_availability.js';
 import {AccountManagerBrowserProxyImpl} from '../os_people_page/account_manager_browser_proxy.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -95,7 +97,8 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         type: Array,
         computed: 'computeBasicMenuItems_(pageAvailability.*,' +
             'accountsMenuItemDescription_,' +
-            'deviceMenuItemDescription_)',
+            'deviceMenuItemDescription_,' +
+            'multideviceMenuItemDescription_)',
         readOnly: true,
       },
 
@@ -150,6 +153,11 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         computed: 'computeDeviceMenuItemDescription_(hasKeyboard_,' +
             'hasMouse_, hasPointingStick_, hasTouchpad_, hasHapticTouchpad_)',
       },
+
+      multideviceMenuItemDescription_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -162,7 +170,11 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   private aboutMenuItemPath_: string;
   private accountsMenuItemDescription_: string;
 
-  // Device section members
+  // Multidevice section members.
+  private multideviceBrowserProxy_: MultiDeviceBrowserProxy;
+  private multideviceMenuItemDescription_: string;
+
+  // Device section members.
   private deviceMenuItemDescription_: string;
   private hasKeyboard_: boolean|undefined;
   private hasMouse_: boolean|undefined;
@@ -182,6 +194,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     super();
 
     this.inputDeviceSettingsProvider_ = getInputDeviceSettingsProvider();
+    this.multideviceBrowserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
   }
 
   override connectedCallback(): void {
@@ -199,6 +212,11 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       this.observeMouseSettings_();
       this.observePointingStickSettings_();
       this.observeTouchpadSettings_();
+
+      // Multidevice menu item.
+      this.addWebUiListener(
+          'settings.updateMultidevicePageContentData',
+          this.updateMultideviceMenuItemDescription_.bind(this));
     }
   }
 
@@ -218,6 +236,11 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     // Force render menu items so the matching item can be selected when the
     // page initially loads.
     this.$.topMenuRepeat.render();
+
+    if (this.isRevampWayfindingEnabled_) {
+      this.multideviceBrowserProxy_.getPageContentData().then(
+          this.updateMultideviceMenuItemDescription_.bind(this));
+    }
   }
 
   override currentRouteChanged(newRoute: Route): void {
@@ -272,6 +295,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
           icon: 'os-settings:connected-devices',
           label: this.i18n('multidevicePageTitle'),
+          sublabel: this.multideviceMenuItemDescription_,
         },
         {
           section: Section.kPeople,
@@ -495,6 +519,31 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
 
   private boolToString_(bool: boolean): string {
     return bool.toString();
+  }
+
+  /**
+   * Updates the "Multidevice" menu item description to one of the following:
+   * - If there is a phone connected, show "Connected to <phone name>".
+   * - If there is a phone connected but the device name is missing, show
+   *   "Connected to Android phone".
+   * - If there is no phone connected, show "Phone Hub, Nearby Share".
+   */
+  private updateMultideviceMenuItemDescription_(
+      pageContentData: MultiDevicePageContentData): void {
+    if (pageContentData.mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED) {
+      if (pageContentData.hostDeviceName) {
+        this.multideviceMenuItemDescription_ = this.i18n(
+            'multideviceMenuItemDescriptionPhoneConnected',
+            pageContentData.hostDeviceName);
+      } else {
+        this.multideviceMenuItemDescription_ =
+            this.i18n('multideviceMenuItemDescriptionDeviceNameMissing');
+      }
+      return;
+    }
+
+    this.multideviceMenuItemDescription_ =
+        this.i18n('multideviceMenuItemDescription');
   }
 
   /**

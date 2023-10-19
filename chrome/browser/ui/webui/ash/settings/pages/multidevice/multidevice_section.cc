@@ -343,6 +343,12 @@ void MultiDeviceSection::AddLoadTimeData(
   html_source_ = html_source;
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"multidevicePageTitle", IDS_SETTINGS_MULTIDEVICE},
+      {"multideviceMenuItemDescription",
+       IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION},
+      {"multideviceMenuItemDescriptionPhoneConnected",
+       IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_PHONE_CONNECTED},
+      {"multideviceMenuItemDescriptionDeviceNameMissing",
+       IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_DEVICE_NAME_MISSING},
       {"multideviceSetupButton", IDS_SETTINGS_MULTIDEVICE_SETUP_BUTTON},
       {"multideviceVerifyButton", IDS_SETTINGS_MULTIDEVICE_VERIFY_BUTTON},
       {"multideviceSetupButtonA11yLabel",

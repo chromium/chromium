@@ -10,13 +10,14 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {Account, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createPageAvailabilityForTesting, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, OsSettingsMenuElement, OsSettingsMenuItemElement, routesMojom, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, MultiDeviceBrowserProxyImpl, MultiDevicePageContentData, MultiDeviceSettingsMode, OsSettingsMenuElement, OsSettingsMenuItemElement, routesMojom, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {createFakePageContentData, TestMultideviceBrowserProxy} from '../multidevice_page/test_multidevice_browser_proxy.js';
 import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
 
 const {Section} = routesMojom;
@@ -424,6 +425,154 @@ suite('<os-settings-menu>', () => {
       const deviceMenuItem = getDeviceMenuItem();
       assertEquals('Touchpad, print, display', deviceMenuItem.sublabel);
     });
+  });
+
+
+  suite('Multidevice menu item', () => {
+    let multideviceBrowserProxy: TestMultideviceBrowserProxy;
+
+    function getMultideviceMenuItem(): OsSettingsMenuItemElement {
+      const multideviceMenuItem =
+          queryMenuItemByPath(`/${routesMojom.MULTI_DEVICE_SECTION_PATH}`);
+      assertTrue(!!multideviceMenuItem);
+      return multideviceMenuItem;
+    }
+
+    /**
+     * Sets pageContentData via WebUI Listener and flushes.
+     */
+    function setPageContentData(newPageContentData: MultiDevicePageContentData):
+        void {
+      webUIListenerCallback(
+          'settings.updateMultidevicePageContentData', newPageContentData);
+      flush();
+    }
+
+    setup(() => {
+      multideviceBrowserProxy = new TestMultideviceBrowserProxy();
+      MultiDeviceBrowserProxyImpl.setInstanceForTesting(
+          multideviceBrowserProxy);
+    });
+
+    test('Default description shows for NO_ELIGIBLE_HOSTS status', async () => {
+      await createMenu();
+
+      const multideviceMenuItem = getMultideviceMenuItem();
+
+      setPageContentData(
+          createFakePageContentData(MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS));
+      assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+    });
+
+
+    test('Default description shows for NO_HOST_SET status', async () => {
+      await createMenu();
+
+      const multideviceMenuItem = getMultideviceMenuItem();
+
+      setPageContentData(
+          createFakePageContentData(MultiDeviceSettingsMode.NO_HOST_SET));
+      assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+    });
+
+    test(
+        'Default description shows for HOST_SET_WAITING_FOR_SERVER status',
+        async () => {
+          await createMenu();
+
+          const multideviceMenuItem = getMultideviceMenuItem();
+
+          setPageContentData(createFakePageContentData(
+              MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER));
+          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+        });
+
+    test(
+        'Default description shows for HOST_SET_WAITING_FOR_VERIFICATION status',
+        async () => {
+          await createMenu();
+
+          const multideviceMenuItem = getMultideviceMenuItem();
+
+          setPageContentData(createFakePageContentData(
+              MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION));
+          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+        });
+
+    test(
+        'Phone connected description shows for HOST_SET_VERIFIED status',
+        async () => {
+          await createMenu();
+
+          const multideviceMenuItem = getMultideviceMenuItem();
+
+          const deviceName = 'Google pixel phone';
+          setPageContentData(createFakePageContentData(
+              MultiDeviceSettingsMode.HOST_SET_VERIFIED, deviceName));
+          assertEquals(
+              `Connected to ${deviceName}`, multideviceMenuItem.sublabel);
+        });
+
+    test(
+        'Android phone connected description shows when the device name is missing',
+        async () => {
+          await createMenu();
+
+          const multideviceMenuItem = getMultideviceMenuItem();
+
+          const pageContentData = createFakePageContentData(
+              MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+          pageContentData.hostDeviceName = '';
+          setPageContentData(pageContentData);
+          assertEquals(
+              `Connected to Android phone`, multideviceMenuItem.sublabel);
+        });
+
+    test(
+        'Multidevice menu item description updates on device connection changes',
+        async () => {
+          await createMenu();
+
+          const multideviceMenuItem = getMultideviceMenuItem();
+
+          // No eligible device found, show the default description "Phone Hub,
+          // Nearby Share".
+          setPageContentData(createFakePageContentData(
+              MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS));
+          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+
+          // No device connected, show the default description "Phone Hub,
+          // Nearby Share".
+          setPageContentData(
+              createFakePageContentData(MultiDeviceSettingsMode.NO_HOST_SET));
+          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+
+          // Device connection is waiting for server, show the default
+          // description "Phone Hub, Nearby Share".
+          setPageContentData(createFakePageContentData(
+              MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER));
+          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+
+          // Device connection is waiting for verification, show the default
+          // description "Phone Hub, Nearby Share".
+          setPageContentData(createFakePageContentData(
+              MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION));
+          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+
+          // Device is connected, show the phone connected description
+          // "Connected to <phone name>".
+          const deviceName = 'Google pixel phone';
+          setPageContentData(createFakePageContentData(
+              MultiDeviceSettingsMode.HOST_SET_VERIFIED, deviceName));
+          assertEquals(
+              `Connected to ${deviceName}`, multideviceMenuItem.sublabel);
+
+          // Disconnect the Device, the description should be updated to the
+          // default "Phone Hub, Nearby Share".
+          setPageContentData(
+              createFakePageContentData(MultiDeviceSettingsMode.NO_HOST_SET));
+          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+        });
   });
 
   suite('Privacy menu item', () => {
