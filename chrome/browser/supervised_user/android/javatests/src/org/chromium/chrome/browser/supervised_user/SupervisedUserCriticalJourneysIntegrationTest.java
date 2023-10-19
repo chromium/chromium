@@ -110,6 +110,8 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         SupervisedUserSettingsTestUtils.setUpTestUrlLoaderFactoryHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    SupervisedUserSettingsTestUtils.setKidsManagementResponseForTesting(
+                            Profile.getLastUsedRegularProfile(), /* isAllowed= */ false);
                     SupervisedUserSettingsTestUtils.setSafeSearchResponseForTesting(
                             Profile.getLastUsedRegularProfile(), /* isAllowed= */ false);
                 });

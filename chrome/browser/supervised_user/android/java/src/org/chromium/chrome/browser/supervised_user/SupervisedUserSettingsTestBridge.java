@@ -26,6 +26,12 @@ class SupervisedUserSettingsTestBridge {
     }
 
     /** Sets response to the kids management API */
+    static void setKidsManagementResponseForTesting(Profile profile, boolean isAllowed) {
+        SupervisedUserSettingsTestBridgeJni.get()
+                .setKidsManagementResponseForTesting(profile, isAllowed);
+    }
+
+    /** Sets response to the safe sites API */
     static void setSafeSearchResponseForTesting(Profile profile, boolean isAllowed) {
         SupervisedUserSettingsTestBridgeJni.get().setSafeSearchResponseForTesting(profile, isAllowed);
     }
@@ -48,6 +54,9 @@ class SupervisedUserSettingsTestBridge {
     interface Natives {
         void setFilteringBehavior(Profile profile, int setting);
         void setManualFilterForHost(Profile profile, String host, boolean allowlist);
+
+        void setKidsManagementResponseForTesting(Profile profile, boolean siteIsAllowed); // IN-TEST
+
         void setSafeSearchResponseForTesting(Profile profile, boolean siteIsAllowed); // IN-TEST
         void setUpTestUrlLoaderFactoryHelper();
         void tearDownTestUrlLoaderFactoryHelper();

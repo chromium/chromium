@@ -45,6 +45,10 @@ BASE_DECLARE_FEATURE(kUseBuiltInRetryingMechanismForListFamilyMembers);
 // Only affects Desktop platforms.
 BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
 
+// Runs a shadow no-op safe-sites call alongside kids-api call, to compare
+// latencies.
+BASE_DECLARE_FEATURE(kShadowKidsApiWithSafeSites);
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web
@@ -68,6 +72,9 @@ bool IsChildAccountSupervisionEnabled();
 // Returns whether the experiment to display a kid-friendly content stream on
 // the New Tab page has been enabled.
 bool IsKidFriendlyContentFeedAvailable();
+
+// Returns whether to shadow safe-sites call with kids-api call.
+bool IsShadowKidsApiWithSafeSitesEnabled();
 
 }  // namespace supervised_user
 

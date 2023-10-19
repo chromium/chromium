@@ -12,11 +12,16 @@ class SupervisedUserSettingsTestUtils {
     static void addUrlToBlocklist(Profile profile, String url) {
         SupervisedUserSettingsTestBridge.setManualFilterForHost(profile, url, false);
     }
+
     /** Sets the kids management API response so that it blocks/allows the site */
+    public static void setKidsManagementResponseForTesting(Profile profile, boolean isAllowed) {
+        SupervisedUserSettingsTestBridge.setKidsManagementResponseForTesting(profile, isAllowed);
+    }
+
+    /** Sets the safe search API response so that it blocks/allows the site */
     public static void setSafeSearchResponseForTesting(Profile profile, boolean isAllowed) {
         SupervisedUserSettingsTestBridge.setSafeSearchResponseForTesting(profile, isAllowed);
     }
-
     /**
      * This method sets up the TestUrlLoaderFactoryHelper which is used to keep the instance of
      * TestUrlLoaderFactory within scope throughout the test

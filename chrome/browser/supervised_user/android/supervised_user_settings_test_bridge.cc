@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 
 #include "base/android/jni_string.h"
@@ -80,7 +81,7 @@ class TestUrlLoaderFactoryHelper {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 };
 
-void JNI_SupervisedUserSettingsTestBridge_SetSafeSearchResponseForTesting(  // IN-TEST
+void JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  // IN-TEST
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     jboolean is_allowed) {
@@ -113,6 +114,18 @@ void JNI_SupervisedUserSettingsTestBridge_SetSafeSearchResponseForTesting(  // I
       SupervisedUserServiceFactory::GetForProfile(profile);
   supervised_user_service->GetURLFilter()->InitAsyncURLChecker(
       test_kids_chrome_management_client_.get());
+}
+
+void JNI_SupervisedUserSettingsTestBridge_SetSafeSearchResponseForTesting(  // IN-TEST
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    jboolean is_allowed) {
+  TestUrlLoaderFactoryHelper::SharedInstance()
+      ->test_url_loader_factory()
+      ->AddResponse(
+          "https://safesearch.googleapis.com/v1:classify",
+          base::StringPrintf(R"json({"displayClassification": "%s"})json",
+                             (is_allowed ? "allowed" : "restricted")));
 }
 
 void JNI_SupervisedUserSettingsTestBridge_SetUpTestUrlLoaderFactoryHelper(

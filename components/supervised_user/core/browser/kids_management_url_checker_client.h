@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "components/safe_search_api/safe_search/safe_search_url_checker_client.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
@@ -54,6 +55,7 @@ class KidsManagementURLCheckerClient
       KidsChromeManagementClient::ErrorCode error_code);
 
   raw_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
+  safe_search_api::SafeSearchURLCheckerClient safe_search_client_;
   const std::string country_;
 
   supervised_user::ParallelFetchManager<

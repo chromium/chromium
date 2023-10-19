@@ -94,6 +94,12 @@ BASE_FEATURE(kEnableManagedByParentUi,
              "EnableManagedByParentUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Runs a shadow no-op safe-sites call alongside kids-api call, to compare
+// latencies.
+BASE_FEATURE(kShadowKidsApiWithSafeSites,
+             "ShadowKidsApiWithSafeSites",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool CanDisplayFirstTimeInterstitialBanner() {
   return base::FeatureList::IsEnabled(
       kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
@@ -141,6 +147,10 @@ bool IsChildAccountSupervisionEnabled() {
 
 bool IsKidFriendlyContentFeedAvailable() {
   return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);
+}
+
+bool IsShadowKidsApiWithSafeSitesEnabled() {
+  return base::FeatureList::IsEnabled(kShadowKidsApiWithSafeSites);
 }
 
 }  // namespace supervised_user
