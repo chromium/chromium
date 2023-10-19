@@ -291,6 +291,13 @@ void TrackingProtectionOnboarding::NoticeShown(NoticeType notice_type) {
       prefs::kTrackingProtectionOnboardingStatus,
       static_cast<int>(
           TrackingProtectionOnboarding::OnboardingStatus::kOnboarded));
+  auto eligible_to_onboarded_duration =
+      pref_service_->GetTime(prefs::kTrackingProtectionOnboardedSince) -
+      pref_service_->GetTime(prefs::kTrackingProtectionEligibleSince);
+  CreateTimingHistogramOnboardingStartup(
+      "PrivacySandbox.TrackingProtection.Onboarding."
+      "EligibleToOnboardedDuration",
+      eligible_to_onboarded_duration);
 }
 
 void TrackingProtectionOnboarding::OnboardingNoticeActionTaken(
@@ -312,6 +319,18 @@ void TrackingProtectionOnboarding::NoticeActionTaken(NoticeType notice_type,
   pref_service_->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
   pref_service_->SetInteger(prefs::kTrackingProtectionOnboardingAckAction,
                             static_cast<int>(ToInternalAckAction(action)));
+  auto onboarding_to_acked_duration =
+      base::Time::Now() -
+      pref_service_->GetTime(prefs::kTrackingProtectionOnboardedSince);
+  auto last_shown_to_acked_duration =
+      base::Time::Now() -
+      pref_service_->GetTime(prefs::kTrackingProtectionNoticeLastShown);
+  CreateTimingHistogramOnboardingStartup(
+      "PrivacySandbox.TrackingProtection.Onboarding.OnboardedToAckedDuration",
+      onboarding_to_acked_duration);
+  CreateTimingHistogramOnboardingStartup(
+      "PrivacySandbox.TrackingProtection.Onboarding.LastShownToAckedDuration",
+      last_shown_to_acked_duration);
 }
 
 bool TrackingProtectionOnboarding::ShouldShowOnboardingNotice() {

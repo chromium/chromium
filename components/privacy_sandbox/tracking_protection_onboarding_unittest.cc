@@ -62,6 +62,7 @@ class TrackingProtectionOnboardingTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<TrackingProtectionOnboarding>
       tracking_protection_onboarding_service_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(TrackingProtectionOnboardingTest,
@@ -679,6 +680,60 @@ TEST_F(TrackingProtectionOnboardingStartupStateTest,
       "PrivacySandbox.TrackingProtection.OnboardingStartup."
       "EligibleToOnboardedDuration",
       eligible_to_onboarded_duration, 1);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       OnboardingEligibleToOnboardingDuration) {
+  tracking_protection_onboarding_service_->MaybeMarkEligible();
+  tracking_protection_onboarding_service_->OnboardingNoticeShown();
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+
+  auto eligible_to_onboarded_duration =
+      prefs()->GetTime(prefs::kTrackingProtectionOnboardedSince) -
+      prefs()->GetTime(prefs::kTrackingProtectionEligibleSince);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding."
+      "EligibleToOnboardedDuration",
+      eligible_to_onboarded_duration, 1);
+}
+
+TEST_F(TrackingProtectionOnboardingTest, OnboardingOnboardedToAckedDuration) {
+  tracking_protection_onboarding_service_->MaybeMarkEligible();
+  tracking_protection_onboarding_service_->OnboardingNoticeShown();
+  tracking_protection_onboarding_service_->OnboardingNoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kOther);
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+
+  auto onboarding_to_acked_duration =
+      base::Time::Now() -
+      prefs()->GetTime(prefs::kTrackingProtectionOnboardedSince);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.OnboardedToAckedDuration",
+      onboarding_to_acked_duration, 1);
+}
+
+TEST_F(TrackingProtectionOnboardingTest, OnboardingLastShownToAckedDuration) {
+  tracking_protection_onboarding_service_->MaybeMarkEligible();
+  tracking_protection_onboarding_service_->OnboardingNoticeShown();
+  tracking_protection_onboarding_service_->OnboardingNoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kOther);
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+
+  auto last_shown_to_acked_duration =
+      prefs()->GetTime(prefs::kTrackingProtectionNoticeLastShown) -
+      base::Time::Now();
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.LastShownToAckedDuration",
+      last_shown_to_acked_duration, 1);
 }
 }  // namespace
 }  // namespace privacy_sandbox
