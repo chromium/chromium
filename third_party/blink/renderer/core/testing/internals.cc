@@ -2543,16 +2543,6 @@ unsigned Internals::numberOfScrollableAreas(Document* document) {
   return count;
 }
 
-bool Internals::isPageBoxVisible(Document* document, int page_number) {
-  DCHECK(document);
-  // Named pages aren't supported here, because this function may be called
-  // without laying out first.
-  const ComputedStyle* style =
-      document->StyleForPage(page_number, /* page_name */ AtomicString());
-  return style->Visibility() !=
-         EVisibility::kHidden;  // display property doesn't apply to @page.
-}
-
 String Internals::layerTreeAsText(Document* document,
                                   ExceptionState& exception_state) const {
   return layerTreeAsText(document, 0, exception_state);
@@ -2714,26 +2704,6 @@ String Internals::pageProperty(String property_name,
 
   return PrintContext::PageProperty(GetFrame(), property_name.Utf8().c_str(),
                                     page_number);
-}
-
-String Internals::pageSizeAndMarginsInPixels(
-    unsigned page_number,
-    int width,
-    int height,
-    int margin_top,
-    int margin_right,
-    int margin_bottom,
-    int margin_left,
-    ExceptionState& exception_state) const {
-  if (!GetFrame()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
-                                      "No frame is available.");
-    return String();
-  }
-
-  return PrintContext::PageSizeAndMarginsInPixels(
-      GetFrame(), page_number, width, height, margin_top, margin_right,
-      margin_bottom, margin_left);
 }
 
 float Internals::pageScaleFactor(ExceptionState& exception_state) {

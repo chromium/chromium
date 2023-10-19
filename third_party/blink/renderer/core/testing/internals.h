@@ -349,8 +349,6 @@ class Internals final : public ScriptWrappable {
 
   unsigned numberOfScrollableAreas(Document*);
 
-  bool isPageBoxVisible(Document*, int page_number);
-
   InternalSettings* settings() const;
   InternalRuntimeFlags* runtimeFlags() const;
   unsigned workerThreadCount() const;
@@ -393,16 +391,6 @@ class Internals final : public ScriptWrappable {
   String pageProperty(String,
                       unsigned,
                       ExceptionState& = ASSERT_NO_EXCEPTION) const;
-  String pageSizeAndMarginsInPixels(
-      unsigned,
-      int,
-      int,
-      int,
-      int,
-      int,
-      int,
-      ExceptionState& = ASSERT_NO_EXCEPTION) const;
-
   float pageScaleFactor(ExceptionState&);
   void setPageScaleFactor(float scale_factor, ExceptionState&);
   void setPageScaleFactorLimits(float min_scale_factor,
