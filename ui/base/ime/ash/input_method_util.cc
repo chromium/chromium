@@ -389,6 +389,21 @@ const struct InputMethodNameMap {
     {"__MSG_TRANSLITERATION_UR__", IDS_IME_NAME_TRANSLITERATION_UR},
 };
 
+// Inserts {key, value} into the multimap if it does not exist.
+void MultimapDeduplicatedInsert(LanguageCodeToIdsMap& multimap,
+                                const std::string& key,
+                                const std::string& value) {
+  using It = LanguageCodeToIdsMap::const_iterator;
+  std::pair<It, It> range = multimap.equal_range(key);
+  It it = range.first;
+  for (; it != range.second; ++it) {
+    if (it->second == value) {
+      return;
+    }
+  }
+  multimap.insert(it, {key, value});
+}
+
 }  // namespace
 
 InputMethodUtil::InputMethodUtil(InputMethodDelegate* delegate)
@@ -750,21 +765,6 @@ bool InputMethodUtil::IsLoginKeyboard(const std::string& input_method_id)
   const InputMethodDescriptor* ime =
       GetInputMethodDescriptorFromId(input_method_id);
   return ime ? ime->is_login_keyboard() : false;
-}
-
-// Inserts {key, value} into the multimap if it does not exist.
-void MultimapDeduplicatedInsert(LanguageCodeToIdsMap& multimap,
-                                const std::string& key,
-                                const std::string& value) {
-  using It = LanguageCodeToIdsMap::const_iterator;
-  std::pair<It, It> range = multimap.equal_range(key);
-  It it = range.first;
-  for (; it != range.second; ++it) {
-    if (it->second == value) {
-      return;
-    }
-  }
-  multimap.insert(it, {key, value});
 }
 
 void InputMethodUtil::AppendInputMethods(const InputMethodDescriptors& imes) {
