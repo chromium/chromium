@@ -1138,6 +1138,7 @@ grit("generate_components_resources") {
     "//components/resources:about_credits",
     "//components/resources/ssl/ssl_error_assistant:make_ssl_error_assistant_protobuf",
     "//components/security_interstitials/content/resources:build_ts",
+    "//components/security_interstitials/core/browser/resources:bundle_js",
   ]
 
   if (safe_browsing_mode != 0) {
