@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -22,8 +21,6 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -64,49 +61,25 @@ class InactiveTabsUtilsTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_active_;
   std::unique_ptr<TestBrowser> browser_inactive_;
 
+  std::unique_ptr<web::FakeWebState> CreateTab(
+      web::WebStateID unique_identifier,
+      NSString* stable_identifier,
+      base::Time last_active_time) {
+    std::unique_ptr<web::FakeWebState> web_state =
+        std::make_unique<web::FakeWebState>(unique_identifier,
+                                            stable_identifier);
+    web_state->SetLastActiveTime(last_active_time);
+    return web_state;
+  }
+
   std::unique_ptr<web::FakeWebState> CreateActiveTab() {
-    std::unique_ptr<web::FakeWebState> web_state =
-        std::make_unique<web::FakeWebState>();
-    web_state->SetLastActiveTime(base::Time::Now());
-    return web_state;
+    return CreateTab(web::WebStateID::NewUnique(), [[NSUUID UUID] UUIDString],
+                     base::Time::Now());
   }
 
-  std::unique_ptr<web::FakeWebState> CreateInactiveTab(
-      int inactivity_days_number) {
-    std::unique_ptr<web::FakeWebState> web_state =
-        std::make_unique<web::FakeWebState>();
-    web_state->SetLastActiveTime(base::Time::Now() -
-                                 base::Days(inactivity_days_number));
-    return web_state;
-  }
-
-  CRWSessionStorage* SessionStorage() {
-    CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-    session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-    session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
-    // Create an item storage.
-    CRWNavigationItemStorage* item_storage =
-        [[CRWNavigationItemStorage alloc] init];
-    item_storage.virtualURL = GURL("http://init.test");
-    item_storage.referrer =
-        web::Referrer(GURL("http://referrer.url"), web::ReferrerPolicyDefault);
-    item_storage.timestamp = base::Time::Now();
-    item_storage.title = base::SysNSStringToUTF16(@"Title");
-    item_storage.HTTPRequestHeaders = @{@"HeaderKey" : @"HeaderValue"};
-    session_storage.itemStorages = @[ item_storage ];
-    session_storage.lastCommittedItemIndex = 0;
-    return session_storage;
-  }
-
-  int InsertNewWebStateWithSessionStorage(Browser* browser,
-                                          CRWSessionStorage* session_storage) {
-    std::unique_ptr<web::WebState> web_state =
-        web::WebState::CreateWithStorageSession(
-            web::WebState::CreateParams(browser->GetBrowserState()),
-            session_storage);
-    return browser->GetWebStateList()->InsertWebState(
-        0, std::move(web_state), WebStateList::INSERT_ACTIVATE,
-        WebStateOpener());
+  std::unique_ptr<web::FakeWebState> CreateInactiveTab(base::TimeDelta delta) {
+    return CreateTab(web::WebStateID::NewUnique(), [[NSUUID UUID] UUIDString],
+                     base::Time::Now() - delta);
   }
 
   void CheckOrder(WebStateList* web_state_list,
@@ -174,7 +147,7 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabAreMovedFromActiveList) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add a new inactive tab (10 days with no activity) in the active browser.
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(10),
+  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
                                         WebStateList::INSERT_ACTIVATE,
                                         WebStateOpener());
 
@@ -239,7 +212,7 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add a new inactive tab (10 days without activity) in the inactive browser.
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(10),
+  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
                                           WebStateList::INSERT_ACTIVATE,
                                           WebStateOpener());
 
@@ -261,7 +234,7 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add a new inactive tab (10 days without activity) in the inactive browser.
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(10),
+  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
                                           WebStateList::INSERT_ACTIVATE,
                                           WebStateOpener());
 
@@ -299,34 +272,38 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
   // Add a new inactive and active tabs in the inactive browser.
   inactive_web_state_list->InsertWebState(
       0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(10),
+  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
                                           WebStateList::INSERT_ACTIVATE,
                                           WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(30),
+  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(30)),
                                           WebStateList::INSERT_ACTIVATE,
                                           WebStateOpener());
-  inactive_web_state_list->InsertWebState(
-      0, CreateInactiveTab(2), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(16),
+  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(2)),
+                                          WebStateList::INSERT_ACTIVATE,
+                                          WebStateOpener());
+  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(16)),
                                           WebStateList::INSERT_ACTIVATE,
                                           WebStateOpener());
   inactive_web_state_list->InsertWebState(
       0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Add a new inactive and active tabs in the active browser.
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(22),
+  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(22)),
                                         WebStateList::INSERT_ACTIVATE,
                                         WebStateOpener());
   active_web_state_list->InsertWebState(
       0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  active_web_state_list->InsertWebState(
-      0, CreateInactiveTab(9), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(9)),
+                                        WebStateList::INSERT_ACTIVATE,
+                                        WebStateOpener());
   active_web_state_list->InsertWebState(
       0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  active_web_state_list->InsertWebState(
-      0, CreateInactiveTab(18), WebStateList::INSERT_PINNED, WebStateOpener());
-  active_web_state_list->InsertWebState(
-      0, CreateInactiveTab(3), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(18)),
+                                        WebStateList::INSERT_PINNED,
+                                        WebStateOpener());
+  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(3)),
+                                        WebStateList::INSERT_ACTIVATE,
+                                        WebStateOpener());
 
   EXPECT_EQ(active_web_state_list->count(), 6);
   EXPECT_EQ(inactive_web_state_list->count(), 6);
@@ -387,15 +364,16 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
   // Add a new inactive and active tabs in the inactive browser.
   inactive_web_state_list->InsertWebState(
       0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(10),
+  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
                                           WebStateList::INSERT_ACTIVATE,
                                           WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(30),
+  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(30)),
                                           WebStateList::INSERT_ACTIVATE,
                                           WebStateOpener());
-  inactive_web_state_list->InsertWebState(
-      0, CreateInactiveTab(2), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(16),
+  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(2)),
+                                          WebStateList::INSERT_ACTIVATE,
+                                          WebStateOpener());
+  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(16)),
                                           WebStateList::INSERT_ACTIVATE,
                                           WebStateOpener());
   inactive_web_state_list->InsertWebState(
@@ -404,8 +382,9 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
   // Add pinned and active tab in the active browser.
   active_web_state_list->InsertWebState(
       0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  active_web_state_list->InsertWebState(
-      0, CreateInactiveTab(18), WebStateList::INSERT_PINNED, WebStateOpener());
+  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(18)),
+                                        WebStateList::INSERT_PINNED,
+                                        WebStateOpener());
 
   EXPECT_EQ(active_web_state_list->count(), 2);
   EXPECT_EQ(inactive_web_state_list->count(), 6);
@@ -501,12 +480,13 @@ TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add tabs in the active browser.
-  active_web_state_list->InsertWebState(
-      0, CreateInactiveTab(3), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(10),
+  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(3)),
                                         WebStateList::INSERT_ACTIVATE,
                                         WebStateOpener());
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(30),
+  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
+                                        WebStateList::INSERT_ACTIVATE,
+                                        WebStateOpener());
+  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(30)),
                                         WebStateList::INSERT_ACTIVATE,
                                         WebStateOpener());
 
@@ -535,14 +515,20 @@ TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
 // Checks that Inactive Tabs migration method RestoreAllInactiveTabs filters out
 // duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
-  // Create a session storage.
-  CRWSessionStorage* session_storage = SessionStorage();
+  // Create known identifiers and last_active_time.
+  NSString* const stable_identifier = [[NSUUID UUID] UUIDString];
+  const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
+  const base::Time last_active_time = base::Time::Now();
 
-  // Create and insert an active tab with the session storage.
-  InsertNewWebStateWithSessionStorage(browser_active_.get(), session_storage);
+  // Create and insert an active tab with known identifiers.
+  browser_active_->GetWebStateList()->InsertWebState(
+      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
-  // Create and insert an inactive tab with the same session storage.
-  InsertNewWebStateWithSessionStorage(browser_inactive_.get(), session_storage);
+  // Create and insert an inactive tab with the same identifiers.
+  browser_inactive_->GetWebStateList()->InsertWebState(
+      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Migrate back all inactive tabs to the active browser.
   RestoreAllInactiveTabs(browser_inactive_.get(), browser_active_.get());
@@ -566,15 +552,20 @@ TEST_F(InactiveTabsUtilsTest,
   feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
                                                   parameters);
 
-  // Create a session storage for a recent tab.
-  CRWSessionStorage* session_storage = SessionStorage();
-  session_storage.lastActiveTime = base::Time::Now();
+  // Create known identifiers and last_active_time.
+  NSString* const stable_identifier = [[NSUUID UUID] UUIDString];
+  const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
+  const base::Time last_active_time = base::Time::Now();
 
-  // Create and insert an active tab with the session storage.
-  InsertNewWebStateWithSessionStorage(browser_active_.get(), session_storage);
+  // Create and insert an active tab with known identifiers.
+  browser_active_->GetWebStateList()->InsertWebState(
+      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
-  // Create and insert an inactive tab with the same session storage.
-  InsertNewWebStateWithSessionStorage(browser_inactive_.get(), session_storage);
+  // Create and insert an inactive tab with the same identifiers.
+  browser_inactive_->GetWebStateList()->InsertWebState(
+      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Migrate back all inactive tabs to the active browser.
   MoveTabsFromInactiveToActive(browser_inactive_.get(), browser_active_.get());
@@ -598,15 +589,20 @@ TEST_F(InactiveTabsUtilsTest,
   feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
                                                   parameters);
 
-  // Create a session storage for an old tab.
-  CRWSessionStorage* session_storage = SessionStorage();
-  session_storage.lastActiveTime = base::Time::Now() - base::Days(10);
+  // Create known identifiers and last_active_time.
+  NSString* const stable_identifier = [[NSUUID UUID] UUIDString];
+  const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
+  const base::Time last_active_time = base::Time::Now() - base::Days(10);
 
-  // Create and insert an active tab with the session storage.
-  InsertNewWebStateWithSessionStorage(browser_active_.get(), session_storage);
+  // Create and insert an active tab with known identifiers.
+  browser_active_->GetWebStateList()->InsertWebState(
+      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
-  // Create and insert an inactive tab with the same session storage.
-  InsertNewWebStateWithSessionStorage(browser_inactive_.get(), session_storage);
+  // Create and insert an inactive tab with the same identifiers.
+  browser_inactive_->GetWebStateList()->InsertWebState(
+      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Migrate back all inactive tabs to the active browser.
   MoveTabsFromActiveToInactive(browser_active_.get(), browser_inactive_.get());
