@@ -63,6 +63,7 @@ class MEDIA_EXPORT VideoEncoder {
   };
 
   enum class LatencyMode { Realtime, Quality };
+  enum class ContentHint { Camera, Screen };
 
   struct MEDIA_EXPORT Options {
     Options();
@@ -78,6 +79,8 @@ class MEDIA_EXPORT VideoEncoder {
     LatencyMode latency_mode = LatencyMode::Realtime;
 
     absl::optional<SVCScalabilityMode> scalability_mode;
+
+    absl::optional<ContentHint> content_hint;
 
     // Only used for H264 encoding.
     AvcOptions avc;

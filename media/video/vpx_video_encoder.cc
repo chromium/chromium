@@ -385,6 +385,11 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     if (codec_config_.rc_end_usage == VPX_CBR) {
       vpx_codec_control(codec.get(), VP9E_SET_AQ_MODE, 3);
     }
+
+    if (options.content_hint == ContentHint::Screen) {
+      vpx_codec_control(codec.get(), VP9E_SET_TUNE_CONTENT,
+                        VP9E_CONTENT_SCREEN);
+    }
   }
 
   options_ = options;
