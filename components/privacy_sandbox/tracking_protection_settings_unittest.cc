@@ -44,6 +44,10 @@ class TrackingProtectionSettingsTest : public testing::Test {
     return tracking_protection_settings_.get();
   }
 
+  TrackingProtectionOnboarding* onboarding_service() {
+    return onboarding_service_.get();
+  }
+
   TestingPrefServiceSimple* prefs() { return &prefs_; }
 
  private:
@@ -138,6 +142,24 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForBlockAll3pc) {
   EXPECT_CALL(observer, OnBlockAllThirdPartyCookiesChanged());
   prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+class TrackingProtectionSettingsStartupTest
+    : public TrackingProtectionSettingsTest {
+ public:
+  void SetUp() override {
+    // Profiles gets onboarded before the settings service is started.
+    onboarding_service()->MaybeMarkEligible();
+    onboarding_service()->NoticeShown(
+        TrackingProtectionOnboarding::NoticeType::kOnboarding);
+    TrackingProtectionSettingsTest::SetUp();
+  }
+};
+
+TEST_F(TrackingProtectionSettingsStartupTest,
+       SetsTrackingProtection3pcdStatusUsingOnboardingServiceOnStartup) {
+  EXPECT_TRUE(
+      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
 }
 
 }  // namespace

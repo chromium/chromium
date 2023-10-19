@@ -53,16 +53,10 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           base::Unretained(this)));
 
   if (onboarding_service_) {
+    // Onboarding status may change based on a flag before this service starts up.
+    OnTrackingProtectionOnboardingUpdated(
+        onboarding_service_->GetOnboardingStatus());
     onboarding_observation_.Observe(onboarding_service_);
-
-    // It's possible the user was offboarded while profile was shut down.
-    // TODO(fmacintosh): Remove this if the behavior ends up being that
-    // we offboard only after seeing notice.
-    if (onboarding_service_->IsOffboarded() &&
-        IsTrackingProtection3pcdEnabled()) {
-      OnTrackingProtectionOnboardingUpdated(
-          onboarding_service_->GetOnboardingStatus());
-    }
   }
 
   // It's possible enterprise status changed while profile was shut down.
