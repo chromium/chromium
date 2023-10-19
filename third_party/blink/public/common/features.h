@@ -131,6 +131,11 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
     AutomaticLazyFrameLoadingToEmbedLoadingStrategy>
     kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam;
 
+// https://crbug.com/1472970
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAutoSpeculationRules);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kAutoSpeculationRulesConfig;
+
 // Switch to enabling rendering of gainmap-based AVIF HDR images.
 // For this feature to work, kGainmapHdrImages must also be enabled.
 // Tracker: https://crbug.com/1451889

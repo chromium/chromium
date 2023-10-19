@@ -161,6 +161,13 @@ BASE_FEATURE(kAutomaticLazyFrameLoadingToAds,
              "AutomaticLazyFrameLoadingToAds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// https://crbug.com/1472970
+BASE_FEATURE(kAutoSpeculationRules,
+             "AutoSpeculationRules",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kAutoSpeculationRulesConfig{
+    &kAutoSpeculationRules, "config", "{}"};
+
 // The timeout value that forces loading iframes that are lazy loaded by
 // LazyAds. After this timeout, the frame loading is triggered even when the
 // intersection observer does not trigger iframe loading.
