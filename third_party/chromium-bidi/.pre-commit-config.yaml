@@ -23,7 +23,7 @@
 default_stages: [pre-push, manual]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-docstring-first
       - id: check-executables-have-shebangs
@@ -36,7 +36,7 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v2.3.0
+    rev: v2.4.0
     hooks:
       # Most common ones: [build, chore, ci, docs, feat, fix, refactor, test]
       # https://conventionalcommits.org
@@ -47,7 +47,7 @@ repos:
     hooks:
       - id: flake8
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0
+    rev: v3.0.3
     hooks:
       - id: prettier
   - repo: https://github.com/google/yapf
@@ -63,12 +63,12 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.4.1
+    rev: v1.6.1
     hooks:
       - id: mypy
         additional_dependencies: [types-requests]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.10.1
+    rev: v3.15.0
     hooks:
       - id: pyupgrade
         args: [--py310-plus]
@@ -78,11 +78,11 @@ repos:
       - id: bandit
         args: [--ini, .bandit]
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.9.0.5
+    rev: v0.9.0.6
     hooks:
       - id: shellcheck
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.5
+    rev: v2.2.6
     hooks:
       - id: codespell
         # skip false positives
@@ -123,7 +123,7 @@ repos:
 
   # ESLint is the slowest hook, so keep it last.
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.46.0
+    rev: v8.51.0
     hooks:
       - id: eslint
         files: \.[jt]s$
