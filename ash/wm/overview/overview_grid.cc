@@ -2271,6 +2271,13 @@ SavedDeskSaveDeskButtonContainer* OverviewGrid::GetSaveDeskButtonContainer()
 void OverviewGrid::OnSplitViewStateChanged(
     SplitViewController::State previous_state,
     SplitViewController::State state) {
+  if (features::IsFasterSplitScreenSetupEnabled()) {
+    // When an activated is auto snapped, it will send a state change and try to
+    // end overview here. Ignore split view state when `kFasterSplitScreenSetup`
+    // is enabled.
+    return;
+  }
+
   // Do nothing if overview is being shutdown.
   OverviewController* overview_controller = OverviewController::Get();
   if (!overview_controller->InOverviewSession())

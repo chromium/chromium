@@ -176,7 +176,67 @@ gfx::Rect GetOverviewGridBounds() {
   return overview_session->grid_list()[0]->bounds_for_testing();
 }
 
+void SnapOneTestWindow(aura::Window* window,
+                       chromeos::WindowStateType state_type) {
+  WindowState* window_state = WindowState::Get(window);
+  const WindowSnapWMEvent snap_type(
+      state_type == chromeos::WindowStateType::kPrimarySnapped
+          ? WM_EVENT_SNAP_PRIMARY
+          : WM_EVENT_SNAP_SECONDARY);
+  window_state->OnWMEvent(&snap_type);
+  EXPECT_EQ(state_type, window_state->GetStateType());
+}
+
+// Verifies that `window` is in split view overview, where `window` is
+// excluded from overview, and overview occupies the work area opposite of
+// `window`.
+void VerifySplitViewOverviewSession(aura::Window* window) {
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(
+      overview_controller->overview_session()->IsWindowInOverview(window));
+  EXPECT_TRUE(
+      RootWindowController::ForWindow(window)->split_view_overview_session());
+  gfx::Rect expected_grid_bounds = work_area_bounds();
+  expected_grid_bounds.Subtract(window->GetBoundsInScreen());
+  EXPECT_EQ(expected_grid_bounds, GetOverviewGridBounds());
+}
+
 }  // namespace
+
+using FasterSplitScreenTest = AshTestBase;
+
+TEST_F(FasterSplitScreenTest, Basic) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kFasterSplitScreenSetup);
+
+  // Create two test windows, snap `w1`. Test `w1` is snapped and excluded from
+  // overview while `w2` is in overview.
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(
+      overview_controller->overview_session()->IsWindowInOverview(w2.get()));
+
+  // Select `w2` from overview. Test `w2` auto snaps.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(GetOverviewItemForWindow(w2.get())
+                              ->GetTransformedBounds()
+                              .CenterPoint()));
+  event_generator->ClickLeftButton();
+  WaitForOverviewExitAnimation();
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+
+  // TODO(sophiewen): Test multiple snapped windows on top of `w1` and `w2`.
+  std::unique_ptr<aura::Window> w3(CreateTestWindow());
+  SnapOneTestWindow(w3.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w3.get());
+}
 
 class SnapGroupTest : public AshTestBase {
  public:
@@ -432,6 +492,7 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
 
     // Snap `window1` to trigger the overview session shown on the other side of
     // the screen.
+    UpdateDisplay("800x600");
     SnapOneTestWindow(
         window1,
         /*state_type=*/chromeos::WindowStateType::kPrimarySnapped);

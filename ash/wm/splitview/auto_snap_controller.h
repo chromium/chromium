@@ -19,12 +19,21 @@ namespace ash {
 class AutoSnapController : public wm::ActivationChangeObserver,
                            public aura::WindowObserver {
  public:
-  explicit AutoSnapController(aura::Window* root_window);
+  // If `is_activation_observer` is true, `this` will observe window activation
+  // changes, which is needed in tablet mode. In clamshell mode, observing
+  // window activation may not be needed, since `this` will be notified by
+  // `OverviewSession` instead; see `OnWindowActivatingFromOverview()`.
+  AutoSnapController(aura::Window* root_window, bool is_activation_observer);
 
   AutoSnapController(const AutoSnapController&) = delete;
   AutoSnapController& operator=(const AutoSnapController&) = delete;
 
   ~AutoSnapController() override;
+
+  // Called by `OverviewSession` when the `gained_active` window is being
+  // activated. Returns true if `gained_active` was snapped, false otherwise.
+  bool OnWindowActivatingFromOverview(ActivationReason reason,
+                                      aura::Window* gained_active);
 
   // wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
@@ -40,7 +49,8 @@ class AutoSnapController : public wm::ActivationChangeObserver,
 
  private:
   // Auto-snaps `window` in split view upon gaining active or becoming visible.
-  void AutoSnapWindowIfNeeded(aura::Window* window);
+  // Returns true if `window` was snapped, false otherwise.
+  bool AutoSnapWindowIfNeeded(aura::Window* window);
 
   void AddWindow(aura::Window* window);
   void RemoveWindow(aura::Window* window);

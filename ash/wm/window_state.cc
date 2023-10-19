@@ -547,8 +547,16 @@ void WindowState::OnWMEvent(const WMEvent* event) {
   if (event->IsBoundsEvent())
     UpdateSnapRatio();
 
-  if (IsSnapGroupEnabledInClamshellMode() && event->IsSnapEvent()) {
-    SnapGroupController::Get()->OnWindowSnapped(window());
+  if (event->IsSnapEvent()) {
+    // TODO(b/306218235): Replace `event->IsSnapEvent()` with `IsSnapped()`.
+    if (features::IsFasterSplitScreenSetupEnabled()) {
+      window_util::MaybeStartSplitViewOverview(window());
+      return;
+    }
+
+    if (IsSnapGroupEnabledInClamshellMode()) {
+      SnapGroupController::Get()->OnWindowSnapped(window());
+    }
   }
 }
 

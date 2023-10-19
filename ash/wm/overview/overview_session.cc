@@ -38,6 +38,8 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_float_container_stacker.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
+#include "ash/wm/splitview/auto_snap_controller.h"
+#include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
@@ -900,6 +902,24 @@ void OverviewSession::OnWindowActivating(
     RestoreWindowActivation(false);
     EndOverview(OverviewEndAction::kAppListActivatedInClamshell);
     return;
+  }
+
+  if (auto* split_view_overview_session =
+          RootWindowController::ForWindow(gained_active)
+              ->split_view_overview_session()) {
+    base::AutoReset<bool> ignore(&ignore_activations_, true);
+    if (auto* auto_snap_controller =
+            split_view_overview_session->auto_snap_controller();
+        auto_snap_controller &&
+        auto_snap_controller->OnWindowActivatingFromOverview(reason,
+                                                             gained_active)) {
+      // If `SplitViewOverviewSession` created `AutoSnapController`, let it
+      // handle `OnWindowActivatingFromOverview()` first in case it needs to
+      // auto snap the window, before we fall through to `EndOverview()`.
+      RestoreWindowActivation(false);
+      EndOverview(OverviewEndAction::kWindowActivating);
+      return;
+    }
   }
 
   // Do not cancel overview mode if the window activation happens when split

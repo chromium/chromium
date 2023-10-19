@@ -14,6 +14,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "ui/compositor/layer.h"
 
 namespace ash {
@@ -52,9 +53,9 @@ SplitViewOverviewSession::SplitViewOverviewSession(aura::Window* window)
   window_observation_.Observe(window);
   WindowState::Get(window)->AddObserver(this);
 
-  if (IsSnapGroupEnabledInClamshellMode()) {
-    auto_snap_controller_ =
-        std::make_unique<AutoSnapController>(window->GetRootWindow());
+  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+    auto_snap_controller_ = std::make_unique<AutoSnapController>(
+        window->GetRootWindow(), /*is_activation_observer=*/false);
   }
 }
 

@@ -46,6 +46,9 @@ class SplitViewOverviewSession : public aura::WindowObserver,
 
   const aura::Window* window() const { return window_; }
   chromeos::WindowStateType GetWindowStateType() const;
+  AutoSnapController* auto_snap_controller() {
+    return auto_snap_controller_.get();
+  }
 
   // aura::WindowObserver:
   void OnResizeLoopStarted(aura::Window* window) override;

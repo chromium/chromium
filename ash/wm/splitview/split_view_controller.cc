@@ -785,17 +785,20 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
       Shell::Get()->activation_client()->AddObserver(this);
     }
 
-    if (!IsSnapGroupEnabledInClamshellMode()) {
+    const bool is_flag_enabled =
+        window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled();
+
+    if (!is_flag_enabled) {
       // AutoSnapController will end overview in clamshell split view if a
       // window is not in transitional state. See
       // `AutoSnapController::AutoSnapWindowIfNeeded()`.
       // TODO(b/302397864): Handle this logic in
       // `OverviewSession::OnWindowActivating()`.
-      auto_snap_controller_ =
-          std::make_unique<AutoSnapController>(root_window_);
+      auto_snap_controller_ = std::make_unique<AutoSnapController>(
+          root_window_, /*is_activation_observer=*/true);
     }
 
-    if (!IsInTabletMode() && IsInOverviewSession()) {
+    if (!IsInTabletMode() && IsInOverviewSession() && !is_flag_enabled) {
       // Start the clamshell split overview session. It is too late to create
       // this in `OnOverviewModeStarting()`, since overview will already have
       // started and we are dragging `window` into split view.
