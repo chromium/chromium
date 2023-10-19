@@ -20,9 +20,14 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
     : public GarbageCollected<
           ScriptPromiseResolverWithTracker<ResultEnumType>> {
  public:
-  // If the targeted histograms are "WebRTC.EnumerateDevices.Result" and
-  // "WebRTC.EnumerateDevices.Latency", the input to |metric_name_prefix| should
-  // be "WebRTC.EnumerateDevices".
+  // For a given metric |metric_name_prefix|, this class will record
+  // "|metric_name_prefix|.Result" and "|metric_name_prefix|.Latency",
+  // or "|metric_name_prefix|.|result_suffix_|" if a custom result-suffix
+  // is specified.
+  //
+  // For example, if the targeted histograms are
+  // "WebRTC.EnumerateDevices.Result" and "WebRTC.EnumerateDevices.Latency",
+  // then |metric_name_prefix| should be provided as "WebRTC.EnumerateDevices".
   //
   // |timeout_interval| is the timeout limit after which a
   // ResultEnumType::kTimedOut response is recorded in the Result histogram.
@@ -54,6 +59,7 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
               timeout_interval);
     }
   }
+
   ScriptPromiseResolverWithTracker(const ScriptPromiseResolverWithTracker&) =
       delete;
   ScriptPromiseResolverWithTracker& operator=(
@@ -70,6 +76,11 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
   void Reject(T value, ResultEnumType result) {
     RecordResultAndLatency(result);
     resolver_->Reject(value);
+  }
+
+  void SetResultSuffix(std::string result_suffix) {
+    CHECK(!result_suffix.empty());
+    result_suffix_ = std::move(result_suffix);
   }
 
   void RecordAndThrowDOMException(ExceptionState& exception_state,
@@ -99,7 +110,8 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
       return;
 
     is_result_recorded_ = true;
-    base::UmaHistogramEnumeration(metric_name_prefix_ + ".Result", result);
+    base::UmaHistogramEnumeration(metric_name_prefix_ + "." + result_suffix_,
+                                  result);
   }
 
   void RecordLatency() {
@@ -126,6 +138,7 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
   const base::TimeDelta min_latency_bucket_;
   const base::TimeDelta max_latency_bucket_;
   const size_t n_buckets_;
+  std::string result_suffix_ = "Result";  // Mutable through SetResultSuffix().
   bool is_latency_recorded_ = false;
   bool is_result_recorded_ = false;
 };

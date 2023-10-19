@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver_with_tracker.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -82,9 +83,11 @@ class ScriptPromiseResolverWithTrackerTest : public testing::Test {
     return result_tracker;
   }
 
-  void CheckResultHistogram(int expected_count) {
-    histogram_tester_.ExpectTotalCount(metric_name_prefix_ + ".Result",
-                                       expected_count);
+  void CheckResultHistogram(int expected_count,
+                            const std::string& result_string = "Result") {
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({metric_name_prefix_, ".", result_string}),
+        expected_count);
   }
 
   void CheckLatencyHistogram(int expected_count) {
@@ -177,6 +180,19 @@ TEST_F(ScriptPromiseResolverWithTrackerTest, timeout) {
   // Rejected result is not logged again as it was rejected after the timeout
   // had passed. It is still logged in the latency though.
   CheckResultHistogram(/*expected_count=*/1);
+  CheckLatencyHistogram(/*expected_count=*/1);
+}
+
+TEST_F(ScriptPromiseResolverWithTrackerTest, SetResultSuffix) {
+  String on_fulfilled, on_rejected;
+  auto* result_tracker = CreateResultTracker(on_fulfilled, on_rejected);
+  result_tracker->SetResultSuffix("NewResultSuffix");
+  result_tracker->Resolve(/*value=*/"hello", /*result=*/TestEnum::kOk);
+  PerformMicrotaskCheckpoint();
+
+  EXPECT_EQ("hello", on_fulfilled);
+  EXPECT_EQ(String(), on_rejected);
+  CheckResultHistogram(/*expected_count=*/1, "NewResultSuffix");
   CheckLatencyHistogram(/*expected_count=*/1);
 }
 
