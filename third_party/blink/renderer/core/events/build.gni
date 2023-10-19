@@ -35,6 +35,8 @@ blink_core_sources_events = [
   "hash_change_event.h",
   "input_event.cc",
   "input_event.h",
+  "invoke_event.cc",
+  "invoke_event.h",
   "keyboard_event.cc",
   "keyboard_event.h",
   "message_event.cc",

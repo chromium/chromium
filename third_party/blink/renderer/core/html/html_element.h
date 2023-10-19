@@ -297,6 +297,12 @@ class CORE_EXPORT HTMLElement : public Element {
       mojom::blink::FocusType,
       InputDeviceCapabilities* source_capabilities) override;
 
+  // This allows customization of how Invokes are handled, per element.
+  // The default HTMLElement has no default invoke behaviour, but specific
+  // element subclasses, such as HTMLDialogElement, do.
+  // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
+  virtual void HandleInvokeInternal(AtomicString& action) {}
+
  protected:
   bool SupportsFocus() const override;
 

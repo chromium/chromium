@@ -113,6 +113,8 @@
     "inert",
     "inputmode",
     "integrity",
+    "invokeaction",
+    "invoketarget",
     "is",
     "ismap",
     "itemprop",

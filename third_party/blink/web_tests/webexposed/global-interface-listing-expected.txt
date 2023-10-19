@@ -3530,6 +3530,8 @@ interface HTMLButtonElement : HTMLElement
     getter formMethod
     getter formNoValidate
     getter formTarget
+    getter invokeAction
+    getter invokeTargetElement
     getter labels
     getter name
     getter popoverTargetAction
@@ -3549,6 +3551,8 @@ interface HTMLButtonElement : HTMLElement
     setter formMethod
     setter formNoValidate
     setter formTarget
+    setter invokeAction
+    setter invokeTargetElement
     setter name
     setter popoverTargetAction
     setter popoverTargetElement
@@ -4209,6 +4213,8 @@ interface HTMLInputElement : HTMLElement
     getter height
     getter incremental
     getter indeterminate
+    getter invokeAction
+    getter invokeTargetElement
     getter labels
     getter list
     getter max
@@ -4268,6 +4274,8 @@ interface HTMLInputElement : HTMLElement
     setter height
     setter incremental
     setter indeterminate
+    setter invokeAction
+    setter invokeTargetElement
     setter max
     setter maxLength
     setter min
@@ -5438,6 +5446,11 @@ interface IntersectionObserverEntry
     getter rootBounds
     getter target
     getter time
+    method constructor
+interface InvokeEvent : Event
+    attribute @@toStringTag
+    getter action
+    getter invoker
     method constructor
 interface Keyboard
     attribute @@toStringTag

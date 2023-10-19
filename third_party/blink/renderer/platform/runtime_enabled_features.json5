@@ -2064,6 +2064,13 @@
       status: "stable",
       base_feature: "none",
     },
+    // Adds support for the experimental `invoketarget` and `invokeaction`
+    // attributes, as specified in the open-ui "Invokers" explainer.
+    // https://open-ui.org/components/invokers.explainer/
+    {
+      name: "HTMLInvokeTargetAttribute",
+      status: "experimental",
+    },
     {
       // A flag, just for local testing to make the
       // HTML parser yield more often and take longer to resume.

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/events/invoke_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -406,40 +407,74 @@ void HTMLFormControlElement::setPopoverTargetAction(const AtomicString& value) {
   setAttribute(html_names::kPopovertargetactionAttr, value);
 }
 
+AtomicString HTMLFormControlElement::invokeAction() const {
+  DCHECK(RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled());
+  const AtomicString& attribute_value =
+      FastGetAttribute(html_names::kInvokeactionAttr);
+  if (attribute_value && !attribute_value.IsNull() &&
+      !attribute_value.empty()) {
+    return attribute_value;
+  }
+  return keywords::kAuto;
+}
+void HTMLFormControlElement::setInvokeAction(const AtomicString& value) {
+  setAttribute(html_names::kInvokeactionAttr, value);
+}
+
 void HTMLFormControlElement::DefaultEventHandler(Event& event) {
-  if (!IsDisabledFormControl()) {
-    auto popover = popoverTargetElement();
-    if (popover.popover) {
-      auto& document = GetDocument();
-      auto trigger_support = SupportsPopoverTriggering();
-      CHECK_NE(popover.action, PopoverTriggerAction::kNone);
-      CHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
-      // Note that the order is: `mousedown` which runs popover light dismiss
-      // code, then (for clicked elements) focus is set to the clicked
-      // element, then |DOMActivate| runs here. Also note that the light
-      // dismiss code will not hide popovers when an activating element is
-      // clicked. Taking that together, if the clicked control is a triggering
-      // element for a popover, light dismiss will do nothing, focus will be set
-      // to the triggering element, then this code will run and will set focus
-      // to the previously focused element. If instead the clicked control is
-      // not a triggering element, then the light dismiss code will hide the
-      // popover and set focus to the previously focused element, then the
-      // normal focus management code will reset focus to the clicked control.
-      bool can_show = popover.popover->IsPopoverReady(
-                          PopoverTriggerAction::kShow,
-                          /*exception_state=*/nullptr,
-                          /*include_event_handler_text=*/true, &document) &&
-                      (popover.action == PopoverTriggerAction::kToggle ||
-                       popover.action == PopoverTriggerAction::kShow ||
-                       popover.action == PopoverTriggerAction::kHover);
-      bool can_hide = popover.popover->IsPopoverReady(
-                          PopoverTriggerAction::kHide,
-                          /*exception_state=*/nullptr,
-                          /*include_event_handler_text=*/true, &document) &&
-                      (popover.action == PopoverTriggerAction::kToggle ||
-                       popover.action == PopoverTriggerAction::kHide);
-      if (event.type() == event_type_names::kDOMActivate &&
-          (!Form() || !IsSuccessfulSubmitButton())) {
+  if (event.type() == event_type_names::kDOMActivate && IsInTreeScope() &&
+      !IsDisabledFormControl() && (!Form() || !IsSuccessfulSubmitButton())) {
+    HTMLElement* invokee = DynamicTo<HTMLElement>(
+        GetElementAttribute(html_names::kInvoketargetAttr));
+    if (invokee) {
+      if (popoverTargetElement().popover) {
+        ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "popovertarget is ignored on elements with invoketarget set.");
+        console_message->SetNodes(GetDocument().GetFrame(),
+                                  {this->GetDomNodeId()});
+        GetDocument().AddConsoleMessage(console_message);
+      }
+      auto action = invokeAction();
+      Event* invokeEvent =
+          InvokeEvent::Create(event_type_names::kInvoke, action, this);
+      invokee->DispatchEvent(*invokeEvent);
+      if (!invokeEvent->defaultPrevented()) {
+        invokee->HandleInvokeInternal(action);
+      }
+    } else {
+      auto popover = popoverTargetElement();
+      if (popover.popover) {
+        auto& document = GetDocument();
+        auto trigger_support = SupportsPopoverTriggering();
+        CHECK_NE(popover.action, PopoverTriggerAction::kNone);
+        CHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
+        // Note that the order is: `mousedown` which runs popover light dismiss
+        // code, then (for clicked elements) focus is set to the clicked
+        // element, then |DOMActivate| runs here. Also note that the light
+        // dismiss code will not hide popovers when an activating element is
+        // clicked. Taking that together, if the clicked control is a triggering
+        // element for a popover, light dismiss will do nothing, focus will be
+        // set to the triggering element, then this code will run and will set
+        // focus to the previously focused element. If instead the clicked
+        // control is not a triggering element, then the light dismiss code will
+        // hide the popover and set focus to the previously focused element,
+        // then the normal focus management code will reset focus to the clicked
+        // control.
+        bool can_show = popover.popover->IsPopoverReady(
+                            PopoverTriggerAction::kShow,
+                            /*exception_state=*/nullptr,
+                            /*include_event_handler_text=*/true, &document) &&
+                        (popover.action == PopoverTriggerAction::kToggle ||
+                         popover.action == PopoverTriggerAction::kShow ||
+                         popover.action == PopoverTriggerAction::kHover);
+        bool can_hide = popover.popover->IsPopoverReady(
+                            PopoverTriggerAction::kHide,
+                            /*exception_state=*/nullptr,
+                            /*include_event_handler_text=*/true, &document) &&
+                        (popover.action == PopoverTriggerAction::kToggle ||
+                         popover.action == PopoverTriggerAction::kHide);
         if (can_hide) {
           popover.popover->HidePopoverInternal(
               HidePopoverFocusBehavior::kFocusPreviousElement,
