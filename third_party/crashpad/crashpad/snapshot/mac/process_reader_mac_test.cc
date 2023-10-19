@@ -836,9 +836,7 @@ bool ExpectCLKernels() {
          MacOSVersionNumber() >= 10'07'00;
 }
 
-// Disabled to investigate crbug.com/1268776.
-// TODO(crbug.com/1268776): Re-enable or remove if no longer relevant.
-TEST(ProcessReaderMac, DISABLED_SelfModules) {
+TEST(ProcessReaderMac, SelfModules) {
   ScopedOpenCLNoOpKernel ensure_cl_kernels;
   ASSERT_NO_FATAL_FAILURE(ensure_cl_kernels.SetUp());
 
