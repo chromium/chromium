@@ -28,6 +28,10 @@ found in the LICENSE file.
     margin-inline-start: 12px;
     margin-top: -8px;
   }
+
+  .select-all-button {
+    margin-bottom: 8px;
+  }
 </style>
 
 <h1 tabindex="0">$i18n{urlGeneratorPageTitle}</h1>
@@ -46,6 +50,9 @@ found in the LICENSE file.
     </cr-checkbox>
   </template>
 </div>
+<cr-button class="select-all-button" on-click="onSelectAllClick_">
+  [[getSelectAllButtonLabel_(selectAll_)]]
+</cr-button>
 
 <div class="support-tool-title" tabindex="0">$i18n{getLinkText}</div>
 <div>

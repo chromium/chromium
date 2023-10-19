@@ -43,7 +43,7 @@ const char kDataCollectorProtoEnum[] = "protoEnum";
 const char kDataCollectorIncluded[] = "isIncluded";
 
 const char kSupportTokenGenerationResultSuccess[] = "success";
-const char kSupportTokenGenerationResultToken[] = "result";
+const char kSupportTokenGenerationResultToken[] = "token";
 const char kSupportTokenGenerationResultErrorMessage[] = "errorMessage";
 
 }  // namespace support_tool_ui
@@ -172,7 +172,7 @@ std::string GetDataCollectionModuleQuery(
 // Returns a URL generation result in the type Support Tool UI expects.
 // type SupportTokenGenerationResult = {
 //   success: boolean,
-//   result: string,
+//   token: string,
 //   errorMessage: string,
 // }
 base::Value::Dict GetSupportTokenGenerationResult(bool success,

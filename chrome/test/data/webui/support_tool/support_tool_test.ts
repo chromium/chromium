@@ -238,6 +238,20 @@ suite('SupportToolTest', function() {
       assertEquals(listItem.isIncluded, DATA_COLLECTORS[i]!.isIncluded);
       assertEquals(listItem.protoEnum, DATA_COLLECTORS[i]!.protoEnum);
     }
+
+    // Verify that the select all functionality works.
+    supportTool.$.dataCollectors.shadowRoot!.getElementById(
+                                                'selectAllButton')!.click();
+    for (let i = 0; i < ironListItems.length; i++) {
+      assertTrue(ironListItems[i].isIncluded);
+    }
+
+    // Verify that the unselect all functionality works.
+    supportTool.$.dataCollectors.shadowRoot!.getElementById(
+                                                'selectAllButton')!.click();
+    for (let i = 0; i < ironListItems.length; i++) {
+      assertFalse(ironListItems[i].isIncluded);
+    }
   });
 
   test('take and remove screenshot', async () => {

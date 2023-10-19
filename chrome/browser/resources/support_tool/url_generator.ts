@@ -67,6 +67,10 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
         type: Boolean,
         value: () => !loadTimeData.getBoolean('enableCopyTokenButton'),
       },
+      selectAll_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -77,6 +81,7 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
   private hideTokenButton_: boolean;
   private copiedToastMessage_: string;
   private dataCollectors_: DataCollectorItem[];
+  private selectAll_: boolean;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {
@@ -120,6 +125,14 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
     }
   }
 
+  private getSelectAllButtonLabel_(selectAllClicked: boolean): string {
+    if (selectAllClicked) {
+      return this.i18n('selectNone');
+    } else {
+      return this.i18n('selectAll');
+    }
+  }
+
   private onUrlGenerationResult_(result: SupportTokenGenerationResult) {
     this.showGenerationResult(result, this.i18n('linkCopied'));
   }
@@ -140,6 +153,17 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
 
   private onErrorMessageToastCloseClicked_() {
     this.$.errorMessageToast.hide();
+  }
+
+  private onSelectAllClick_() {
+    this.selectAll_ = !this.selectAll_;
+    // Update this.dataCollectors_ to reflect the selection choice.
+    for (let index = 0; index < this.dataCollectors_.length; index++) {
+      // Mutate the array observably. See:
+      // https://polymer-library.polymer-project.org/3.0/docs/devguide/data-system#make-observable-changes
+      this.set(`dataCollectors_.${index}.isIncluded`, this.selectAll_);
+    }
+    this.onDataCollectorItemChange_();
   }
 }
 
