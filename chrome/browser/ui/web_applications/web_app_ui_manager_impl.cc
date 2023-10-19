@@ -61,6 +61,13 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 #if !BUILDFLAG(IS_MAC)
 #include "ui/aura/window.h"
 #endif  // !BUILDFLAG(IS_MAC)
@@ -466,6 +473,20 @@ void WebAppUiManagerImpl::PresentUserUninstallDialog(
 void WebAppUiManagerImpl::LaunchIsolatedWebAppInstaller(
     const base::FilePath& bundle_path) {
   ::web_app::LaunchIsolatedWebAppInstaller(profile_, bundle_path);
+}
+
+void WebAppUiManagerImpl::MaybeCreateEnableSupportedLinksInfobar(
+    content::WebContents* web_contents,
+    const std::string& launch_name) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<apps::EnableLinkCapturingInfoBarDelegate> delegate =
+      apps::EnableLinkCapturingInfoBarDelegate::MaybeCreate(web_contents,
+                                                            launch_name);
+  if (delegate) {
+    infobars::ContentInfoBarManager::FromWebContents(web_contents)
+        ->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {

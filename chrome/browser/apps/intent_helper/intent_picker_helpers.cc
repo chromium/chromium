@@ -12,15 +12,13 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
-#include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
-#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/share/share_attempt.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/infobar.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
@@ -62,13 +60,11 @@ void LaunchAppFromIntentPicker(content::WebContents* web_contents,
     case apps::PickerEntryType::kWeb:
       web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
       if (base::FeatureList::IsEnabled(features::kDesktopPWAsLinkCapturing)) {
-        std::unique_ptr<EnableLinkCapturingInfoBarDelegate> delegate =
-            EnableLinkCapturingInfoBarDelegate::MaybeCreate(web_contents,
-                                                            launch_name);
-        if (delegate) {
-          infobars::ContentInfoBarManager::FromWebContents(web_contents)
-              ->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
-        }
+        web_app::WebAppProvider* web_app_provider =
+            web_app::WebAppProvider::GetForWebApps(profile);
+        CHECK(web_app_provider);
+        web_app_provider->ui_manager().MaybeCreateEnableSupportedLinksInfobar(
+            web_contents, launch_name);
       }
       break;
     case apps::PickerEntryType::kMacOs:

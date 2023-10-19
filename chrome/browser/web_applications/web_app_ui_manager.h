@@ -238,6 +238,12 @@ class WebAppUiManager {
   virtual void LaunchIsolatedWebAppInstaller(
       const base::FilePath& bundle_path) = 0;
 
+  // Creates the EnableSupportedLinksInfobar in an app window when the app is
+  // launched via link capturing from a link.
+  virtual void MaybeCreateEnableSupportedLinksInfobar(
+      content::WebContents* web_contents,
+      const std::string& launch_name) = 0;
+
  private:
   base::ObserverList<WebAppUiManagerObserver, /*check_empty=*/true> observers_;
 

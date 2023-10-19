@@ -140,6 +140,10 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   void LaunchIsolatedWebAppInstaller(
       const base::FilePath& bundle_path) override;
 
+  void MaybeCreateEnableSupportedLinksInfobar(
+      content::WebContents* web_contents,
+      const std::string& launch_name) override;
+
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;

@@ -209,4 +209,8 @@ void FakeWebAppUiManager::PresentUserUninstallDialog(
 void FakeWebAppUiManager::LaunchIsolatedWebAppInstaller(
     const base::FilePath& bundle_path) {}
 
+void FakeWebAppUiManager::MaybeCreateEnableSupportedLinksInfobar(
+    content::WebContents* web_contents,
+    const std::string& launch_name) {}
+
 }  // namespace web_app

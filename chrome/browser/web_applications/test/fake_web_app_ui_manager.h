@@ -119,6 +119,10 @@ class FakeWebAppUiManager : public WebAppUiManager {
   void LaunchIsolatedWebAppInstaller(
       const base::FilePath& bundle_path) override;
 
+  void MaybeCreateEnableSupportedLinksInfobar(
+      content::WebContents* web_contents,
+      const std::string& launch_name) override;
+
  private:
   base::flat_map<webapps::AppId, size_t> app_id_to_num_windows_map_;
   // Closures waiting to be called when all windows for a given `webapps::AppId`
