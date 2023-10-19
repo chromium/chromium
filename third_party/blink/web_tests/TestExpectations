@@ -5210,10 +5210,6 @@ crbug.com/1339051 [ Linux ] virtual/backface-visibility-interop/external/wpt/css
 crbug.com/1339051 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-createImageBitmap-out-of-bounds-src.html [ Failure ]
 crbug.com/1339051 [ Linux ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces.html [ Failure ]
 
-crbug.com/1423007 external/wpt/css/css-transforms/transform-translate-background-001.html [ Failure ]
-crbug.com/1423007 external/wpt/css/css-transforms/transform-translate-background-002.html [ Failure ]
-
-
 # Sheriff 2021-10-01
 crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure Pass ]
 
