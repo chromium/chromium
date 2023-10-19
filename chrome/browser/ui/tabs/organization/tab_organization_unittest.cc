@@ -196,6 +196,13 @@ TEST_F(TabOrganizationTest, TabDataWebContentsDeletionIsNotValidForOrganizing) {
 
 // TabOrganization tests.
 
+TEST_F(TabOrganizationTest, TabOrganizationIDs) {
+  TabOrganization organization_1({}, {u"default_name"}, 0, absl::nullopt);
+  TabOrganization organization_2({}, {u"default_name"}, 0, absl::nullopt);
+
+  EXPECT_NE(organization_1.organization_id(), organization_2.organization_id());
+}
+
 TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
   TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
   EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 0);
@@ -343,6 +350,14 @@ TEST_F(TabOrganizationTest, TabOrganizationRequestOnCancelRequest) {
 }
 
 // TabOrganizationSession Tests.
+
+TEST_F(TabOrganizationTest, TabOrganizationSessionIDs) {
+  std::unique_ptr<TabOrganizationSession> session1 =
+      std::make_unique<TabOrganizationSession>();
+  std::unique_ptr<TabOrganizationSession> session2 =
+      std::make_unique<TabOrganizationSession>();
+  EXPECT_NE(session1->session_id(), session2->session_id());
+}
 
 TEST_F(TabOrganizationTest,
        TabOrganizationSessionDestructionCancelsRequestIfStarted) {

@@ -12,12 +12,18 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 
+namespace {
+int kNextSessionID = 1;
+}  // anonymous namespace
+
 TabOrganizationSession::TabOrganizationSession()
     : TabOrganizationSession(std::make_unique<TabOrganizationRequest>()) {}
 
 TabOrganizationSession::TabOrganizationSession(
     std::unique_ptr<TabOrganizationRequest> request)
-    : request_(std::move(request)) {}
+    : request_(std::move(request)), session_id_(kNextSessionID) {
+  kNextSessionID++;
+}
 
 TabOrganizationSession::~TabOrganizationSession() = default;
 

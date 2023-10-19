@@ -14,6 +14,8 @@
 
 class TabOrganization {
  public:
+  // TODO(dpenning): Make this a base::Token.
+  using ID = int;
   using TabDatas = std::vector<std::unique_ptr<TabData>>;
 
   enum class UserChoice {
@@ -35,6 +37,7 @@ class TabOrganization {
     return current_name_;
   }
   const absl::optional<UserChoice> choice() const { return choice_; }
+  ID organization_id() const { return organization_id_; }
   const std::u16string GetDisplayName() const;
 
   bool IsValidForOrganizing() const;
@@ -50,6 +53,7 @@ class TabOrganization {
   std::vector<std::u16string> names_;
   absl::variant<size_t, std::u16string> current_name_;
   absl::optional<UserChoice> choice_;
+  ID organization_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_H_

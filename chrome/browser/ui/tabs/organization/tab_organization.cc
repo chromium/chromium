@@ -15,6 +15,7 @@
 
 namespace {
 constexpr int kMinValidTabsForOrganizing = 2;
+int kNextOrganizationID = 1;
 }
 
 TabOrganization::TabOrganization(
@@ -25,7 +26,10 @@ TabOrganization::TabOrganization(
     : tab_datas_(std::move(tab_datas)),
       names_(names),
       current_name_(current_name),
-      choice_(choice) {}
+      choice_(choice),
+      organization_id_(kNextOrganizationID) {
+  kNextOrganizationID++;
+}
 TabOrganization::TabOrganization(TabOrganization&& organization) = default;
 TabOrganization::~TabOrganization() = default;
 
