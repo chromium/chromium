@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,17 +25,30 @@ namespace {
 // Used to control the behavior of the controller's `plus_address_service_`
 // (though mocking would also be fine). Most importantly, this avoids the
 // requirement to mock the identity portions of the `PlusAddressService`.
-class MockPlusAddressService : public PlusAddressService {
+class FakePlusAddressService : public PlusAddressService {
  public:
-  MockPlusAddressService() = default;
+  FakePlusAddressService() = default;
 
   void OfferPlusAddressCreation(const url::Origin& origin,
-                                PlusAddressCallback callback) override {
-    std::move(callback).Run("plus+plus@plus.plus");
+                                PlusAddressCallback on_completed) override {
+    std::move(on_completed).Run(plus_address_);
   }
 
+  void ReservePlusAddress(const url::Origin& origin,
+                          PlusAddressCallback on_completed) override {
+    std::move(on_completed).Run(plus_address_);
+  }
+
+  void ConfirmPlusAddress(const url::Origin& origin,
+                          const std::string& plus_address,
+                          PlusAddressCallback on_completed) override {
+    std::move(on_completed).Run(plus_address);
+  }
+
+  std::string plus_address_ = "plus+plus@plus.plus";
+
   absl::optional<std::string> GetPrimaryEmail() override {
-    return "plus+plus@plus.plus";
+    return "plus+primary@plus.plus";
   }
 };
 }  // namespace
@@ -69,7 +83,7 @@ class PlusAddressCreationDialogTest : public DialogBrowserTest {
 
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
-    return std::make_unique<MockPlusAddressService>();
+    return std::make_unique<FakePlusAddressService>();
   }
 
  protected:

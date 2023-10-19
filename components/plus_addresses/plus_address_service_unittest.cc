@@ -107,11 +107,17 @@ TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
 
-  base::MockOnceCallback<void(const std::string&)> callback;
-  // Ensure that the lambda wasn't called since there is no signed-in account.
-  EXPECT_CALL(callback, Run(testing::_)).Times(0);
-
-  service.OfferPlusAddressCreation(no_subdomain_origin, callback.Get());
+  base::MockOnceCallback<void(const std::string&)> offer_callback;
+  base::MockOnceCallback<void(const std::string&)> reserve_callback;
+  base::MockOnceCallback<void(const std::string&)> confirm_callback;
+  // Ensure that the lambdas aren't called since there is no signed-in account.
+  EXPECT_CALL(offer_callback, Run).Times(0);
+  service.OfferPlusAddressCreation(no_subdomain_origin, offer_callback.Get());
+  EXPECT_CALL(reserve_callback, Run).Times(0);
+  service.ReservePlusAddress(no_subdomain_origin, reserve_callback.Get());
+  EXPECT_CALL(confirm_callback, Run).Times(0);
+  service.ConfirmPlusAddress(no_subdomain_origin, "unused",
+                             confirm_callback.Get());
 }
 
 TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
@@ -124,11 +130,17 @@ TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
 
-  base::MockOnceCallback<void(const std::string&)> callback;
-  // Ensure that the lambda wasn't called since the email address is invalid.
-  EXPECT_CALL(callback, Run(testing::_)).Times(0);
-
-  service.OfferPlusAddressCreation(no_subdomain_origin, callback.Get());
+  base::MockOnceCallback<void(const std::string&)> offer_callback;
+  base::MockOnceCallback<void(const std::string&)> reserve_callback;
+  base::MockOnceCallback<void(const std::string&)> confirm_callback;
+  // Ensure that the lambdas aren't called since there is no signed-in account.
+  EXPECT_CALL(offer_callback, Run).Times(0);
+  service.OfferPlusAddressCreation(no_subdomain_origin, offer_callback.Get());
+  EXPECT_CALL(reserve_callback, Run).Times(0);
+  service.ReservePlusAddress(no_subdomain_origin, reserve_callback.Get());
+  EXPECT_CALL(confirm_callback, Run).Times(0);
+  service.ConfirmPlusAddress(no_subdomain_origin, "unused",
+                             confirm_callback.Get());
 }
 
 // Tests the PlusAddressService ability to make network requests.
@@ -142,11 +154,15 @@ class PlusAddressServiceRequestsTest : public ::testing::Test {
             &test_url_loader_factory);
     plus_profiles_endpoint =
         server_url.Resolve(kServerPlusProfileEndpoint).spec();
+    reserve_plus_address_endpoint =
+        server_url.Resolve(kServerReservePlusAddressEndpoint).spec();
+    confirm_plus_address_endpoint =
+        server_url.Resolve(kServerCreatePlusAddressEndpoint).spec();
   }
 
  protected:
-  std::string MakeCreateResponse(const std::string& facet,
-                                 const std::string& plus_address) {
+  std::string MakePlusProfileResponse(const std::string& facet,
+                                      const std::string& plus_address) {
     return base::ReplaceStringPlaceholders(R"({
           "plusProfile":  {
               "facet": "$1",
@@ -166,6 +182,8 @@ class PlusAddressServiceRequestsTest : public ::testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory;
   std::string plus_profiles_endpoint;
+  std::string reserve_plus_address_endpoint;
+  std::string confirm_plus_address_endpoint;
 
  private:
   // Required for `IdentityTestEnvironment` and `InProcessDataDecoder` to work.
@@ -194,7 +212,7 @@ TEST_F(PlusAddressServiceRequestsTest, OfferPlusAddressCreation) {
   ASSERT_FALSE(future.IsReady());
   test_url_loader_factory.SimulateResponseForPendingRequest(
       plus_profiles_endpoint,
-      MakeCreateResponse("test.example", "plus+remote@plus.plus"));
+      MakePlusProfileResponse("test.example", "plus+remote@plus.plus"));
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), "plus+remote@plus.plus");
 
@@ -206,6 +224,67 @@ TEST_F(PlusAddressServiceRequestsTest, OfferPlusAddressCreation) {
                                    second_future.GetCallback());
   ASSERT_TRUE(second_future.IsReady());
   EXPECT_EQ(second_future.Get(), "plus+remote@plus.plus");
+}
+
+TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress) {
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             std::move(client));
+
+  base::test::TestFuture<const std::string&> future;
+  const url::Origin no_subdomain_origin =
+      url::Origin::Create(GURL("https://test.example"));
+  service.ReservePlusAddress(no_subdomain_origin, future.GetCallback());
+
+  // Check that the future callback is still blocked, and unblock it.
+  ASSERT_FALSE(future.IsReady());
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      reserve_plus_address_endpoint,
+      MakePlusProfileResponse("test.example", "plus+remote@plus.plus"));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), "plus+remote@plus.plus");
+}
+
+TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress) {
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             std::move(client));
+
+  std::string plus_address = "plus+remote@plus.plus";
+
+  base::test::TestFuture<const std::string&> future;
+  const url::Origin no_subdomain_origin =
+      url::Origin::Create(GURL("https://test.example"));
+  service.ConfirmPlusAddress(no_subdomain_origin, plus_address,
+                             future.GetCallback());
+
+  // Check that the future callback is still blocked, and unblock it.
+  ASSERT_FALSE(future.IsReady());
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      confirm_plus_address_endpoint,
+      MakePlusProfileResponse("test.example", plus_address));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), plus_address);
+
+  // Assert that ensuing calls to the same facet do not make a network request.
+  const url::Origin subdomain_origin =
+      url::Origin::Create(GURL("https://subdomain.test.example"));
+  base::test::TestFuture<const std::string&> second_future;
+  service.ConfirmPlusAddress(no_subdomain_origin, plus_address,
+                             second_future.GetCallback());
+  ASSERT_TRUE(second_future.IsReady());
+  EXPECT_EQ(second_future.Get(), plus_address);
 }
 
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
@@ -242,7 +321,7 @@ TEST_F(PlusAddressServiceRequestsTest,
   ASSERT_FALSE(future.IsReady());
   test_url_loader_factory.SimulateResponseForPendingRequest(
       plus_profiles_endpoint,
-      MakeCreateResponse("test.example", "plus+remote@plus.plus"));
+      MakePlusProfileResponse("test.example", "plus+remote@plus.plus"));
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), "plus+remote@plus.plus");
 }
@@ -283,7 +362,7 @@ TEST_F(PlusAddressServiceRequestsTest,
   ASSERT_FALSE(future.IsReady());
   test_url_loader_factory.SimulateResponseForPendingRequest(
       plus_profiles_endpoint,
-      MakeCreateResponse("test.example", "plus+remote@plus.plus"));
+      MakePlusProfileResponse("test.example", "plus+remote@plus.plus"));
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), "plus+remote@plus.plus");
 }

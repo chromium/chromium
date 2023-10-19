@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -34,13 +35,19 @@ constexpr char kPlusAddressModalEventHistogram[] =
 // Used to control the behavior of the controller's `plus_address_service_`
 // (though mocking would also be fine). Most importantly, this avoids the
 // requirement to mock the identity portions of the `PlusAddressService`.
-class MockPlusAddressService : public PlusAddressService {
+class FakePlusAddressService : public PlusAddressService {
  public:
-  MockPlusAddressService() = default;
+  FakePlusAddressService() = default;
 
-  void OfferPlusAddressCreation(const url::Origin& origin,
-                                PlusAddressCallback callback) override {
+  void ReservePlusAddress(const url::Origin& origin,
+                          PlusAddressCallback callback) override {
     std::move(callback).Run("plus+plus@plus.plus");
+  }
+
+  void ConfirmPlusAddress(const url::Origin& origin,
+                          const std::string& plus_address,
+                          PlusAddressCallback callback) override {
+    std::move(callback).Run(plus_address);
   }
 
   absl::optional<std::string> GetPrimaryEmail() override {
@@ -72,7 +79,7 @@ class PlusAddressCreationControllerDesktopEnabledTest
 
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
-    return std::make_unique<MockPlusAddressService>();
+    return std::make_unique<FakePlusAddressService>();
   }
 
  protected:
@@ -94,11 +101,13 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
       PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
 
-  base::MockOnceCallback<void(const std::string&)> callback;
-  EXPECT_CALL(callback, Run).Times(1);
+  base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
-      url::Origin::Create(GURL("https://mattwashere.example")), callback.Get());
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
   controller->OnConfirmed();
+  EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
       BucketsAre(

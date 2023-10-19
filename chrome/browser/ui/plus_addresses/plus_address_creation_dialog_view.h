@@ -18,7 +18,8 @@ namespace plus_addresses {
 void ShowPlusAddressCreationDialogView(
     content::WebContents* web_contents,
     base::WeakPtr<PlusAddressCreationController> controller,
-    const std::string& primary_email_address);
+    const std::string& primary_email_address,
+    const std::string& plus_address);
 
 }  // namespace plus_addresses
 

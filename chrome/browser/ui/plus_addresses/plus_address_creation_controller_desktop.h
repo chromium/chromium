@@ -40,12 +40,19 @@ class PlusAddressCreationControllerDesktop
   friend class content::WebContentsUserData<
       PlusAddressCreationControllerDesktop>;
 
+  // Creates and shows the modal  with `primary_email_address` and
+  // `plus_address`, and also stores the latter to be used in OnConfirmed().
+  void OnPlusAddressReserved(const std::string& primary_email_address,
+                             const std::string& plus_address);
+  // Autofills `plus_address` in the targeted field by running callback_.
+  void OnPlusAddressConfirmed(const std::string& plus_address);
+
   base::WeakPtr<PlusAddressCreationControllerDesktop> GetWeakPtr();
 
   url::Origin relevant_origin_;
+  std::string plus_address_;
   PlusAddressCallback callback_;
   bool ui_modal_showing_ = false;
-
   bool suppress_ui_for_testing_ = false;
 
   base::WeakPtrFactory<PlusAddressCreationControllerDesktop> weak_ptr_factory_{

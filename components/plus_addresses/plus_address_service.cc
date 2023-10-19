@@ -117,6 +117,45 @@ void PlusAddressService::OfferPlusAddressCreation(
               base::Unretained(this), origin)));
 }
 
+void PlusAddressService::ReservePlusAddress(const url::Origin& origin,
+                                            PlusAddressCallback on_completed) {
+  if (!is_enabled()) {
+    return;
+  }
+  plus_address_client_.ReservePlusAddress(
+      GetEtldPlusOne(origin),
+      base::BindOnce(
+          [](PlusAddressCallback callback, const std::string& plus_address) {
+            std::move(callback).Run(plus_address);
+          },
+          std::move(on_completed)));
+}
+
+void PlusAddressService::ConfirmPlusAddress(const url::Origin& origin,
+                                            const std::string& plus_address,
+                                            PlusAddressCallback on_completed) {
+  if (!is_enabled()) {
+    return;
+  }
+  // Check the local mapping before attempting to confirm plus_address.
+  if (absl::optional<std::string> stored_plus_address = GetPlusAddress(origin);
+      stored_plus_address) {
+    std::move(on_completed).Run(stored_plus_address.value());
+    return;
+  }
+  plus_address_client_.ConfirmPlusAddress(
+      GetEtldPlusOne(origin), plus_address,
+      base::BindOnce(
+          [](PlusAddressService* service, const url::Origin& origin,
+             PlusAddressCallback callback, const std::string& plus_address) {
+            std::move(callback).Run(plus_address);
+            service->SavePlusAddress(origin, plus_address);
+          },
+          // base::Unretained is safe here since PlusAddressService owns
+          // the PlusAddressClient and they will have the same lifetime.
+          base::Unretained(this), origin, std::move(on_completed)));
+}
+
 std::u16string PlusAddressService::GetCreateSuggestionLabel() {
   // TODO(crbug.com/1467623): once ready, use standard
   // `l10n_util::GetStringUTF16` instead of using feature params.
