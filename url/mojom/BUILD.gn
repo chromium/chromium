@@ -42,6 +42,10 @@ mojom("url_mojom_gurl") {
   ]
 
   webui_module_path = "chrome://resources/mojo/url/mojom"
+
+  # Used by Closure compiler targets in ash/webui/help_app_ui/, so this needs
+  # to generate WebUI bindings in JavaScript.
+  use_typescript_sources = false
 }
 
 mojom("url_mojom_origin") {

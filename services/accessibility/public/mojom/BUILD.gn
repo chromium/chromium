@@ -16,7 +16,6 @@ mojom("automation") {
 mojom("assistive_technology_type") {
   sources = [ "assistive_technology_type.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
-  webui_module_path = "/"
 }
 
 mojom("mojom") {
