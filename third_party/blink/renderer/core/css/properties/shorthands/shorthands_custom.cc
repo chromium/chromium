@@ -193,6 +193,58 @@ const CSSValue* CSSValueFromComputedAnimation(
   return list;
 }
 
+bool ParseBackgroundOrMaskPosition(
+    const StylePropertyShorthand& shorthand,
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    HeapVector<CSSPropertyValue, 64>& properties) {
+  CSSValue* result_x = nullptr;
+  CSSValue* result_y = nullptr;
+  if (!css_parsing_utils::ConsumeBackgroundPosition(
+          range, context, css_parsing_utils::UnitlessQuirk::kAllow, result_x,
+          result_y) ||
+      !range.AtEnd()) {
+    return false;
+  }
+  const CSSProperty** longhands = shorthand.properties();
+  DCHECK_EQ(2u, shorthand.length());
+  css_parsing_utils::AddProperty(
+      longhands[0]->PropertyID(), shorthand.id(), *result_x, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      longhands[1]->PropertyID(), shorthand.id(), *result_y, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  return true;
+}
+
+bool ParseBackgroundOrMaskRepeat(const StylePropertyShorthand& shorthand,
+                                 bool important,
+                                 CSSParserTokenRange& range,
+                                 HeapVector<CSSPropertyValue, 64>& properties) {
+  CSSValue* result_x = nullptr;
+  CSSValue* result_y = nullptr;
+  bool implicit = false;
+  if (!css_parsing_utils::ConsumeRepeatStyle(range, result_x, result_y,
+                                             implicit) ||
+      !range.AtEnd()) {
+    return false;
+  }
+  const CSSProperty** longhands = shorthand.properties();
+  DCHECK_EQ(2u, shorthand.length());
+  css_parsing_utils::AddProperty(
+      longhands[0]->PropertyID(), shorthand.id(), *result_x, important,
+      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
+               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+  css_parsing_utils::AddProperty(
+      longhands[1]->PropertyID(), shorthand.id(), *result_y, important,
+      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
+               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+  return true;
+}
+
 }  // namespace
 
 bool Animation::ParseShorthand(
@@ -519,26 +571,8 @@ bool BackgroundPosition::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* result_x = nullptr;
-  CSSValue* result_y = nullptr;
-
-  if (!css_parsing_utils::ConsumeBackgroundPosition(
-          range, context, css_parsing_utils::UnitlessQuirk::kAllow, result_x,
-          result_y) ||
-      !range.AtEnd()) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kBackgroundPositionX, CSSPropertyID::kBackgroundPosition,
-      *result_x, important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kBackgroundPositionY, CSSPropertyID::kBackgroundPosition,
-      *result_y, important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  return true;
+  return ParseBackgroundOrMaskPosition(backgroundPositionShorthand(), important,
+                                       range, context, properties);
 }
 
 const CSSValue* BackgroundPosition::CSSValueFromComputedStyleInternal(
@@ -555,29 +589,8 @@ bool BackgroundRepeat::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* result_x = nullptr;
-  CSSValue* result_y = nullptr;
-  bool implicit = false;
-  if (!css_parsing_utils::ConsumeRepeatStyle(range, result_x, result_y,
-                                             implicit) ||
-      !range.AtEnd()) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kBackgroundRepeatX, CSSPropertyID::kBackgroundRepeat,
-      *result_x, important,
-      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
-               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kBackgroundRepeatY, CSSPropertyID::kBackgroundRepeat,
-      *result_y, important,
-      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
-               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-
-  return true;
+  return ParseBackgroundOrMaskRepeat(backgroundRepeatShorthand(), important,
+                                     range, properties);
 }
 
 const CSSValue* BackgroundRepeat::CSSValueFromComputedStyleInternal(
@@ -3830,26 +3843,8 @@ bool WebkitMaskPosition::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* result_x = nullptr;
-  CSSValue* result_y = nullptr;
-
-  if (!css_parsing_utils::ConsumeBackgroundPosition(
-          range, context, css_parsing_utils::UnitlessQuirk::kAllow, result_x,
-          result_y) ||
-      !range.AtEnd()) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kWebkitMaskPositionX, CSSPropertyID::kWebkitMaskPosition,
-      *result_x, important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kWebkitMaskPositionY, CSSPropertyID::kWebkitMaskPosition,
-      *result_y, important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  return true;
+  return ParseBackgroundOrMaskPosition(webkitMaskPositionShorthand(), important,
+                                       range, context, properties);
 }
 
 const CSSValue* WebkitMaskPosition::CSSValueFromComputedStyleInternal(
@@ -3866,29 +3861,8 @@ bool WebkitMaskRepeat::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* result_x = nullptr;
-  CSSValue* result_y = nullptr;
-  bool implicit = false;
-  if (!css_parsing_utils::ConsumeRepeatStyle(range, result_x, result_y,
-                                             implicit) ||
-      !range.AtEnd()) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kWebkitMaskRepeatX, CSSPropertyID::kWebkitMaskRepeat,
-      *result_x, important,
-      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
-               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kWebkitMaskRepeatY, CSSPropertyID::kWebkitMaskRepeat,
-      *result_y, important,
-      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
-               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-
-  return true;
+  return ParseBackgroundOrMaskRepeat(webkitMaskRepeatShorthand(), important,
+                                     range, properties);
 }
 
 const CSSValue* WebkitMaskRepeat::CSSValueFromComputedStyleInternal(
