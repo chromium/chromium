@@ -12,6 +12,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
@@ -813,10 +814,11 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
   // unittest that overwrites the animator for the root window just before
   // running the animation.
   if (display::DisplayObserver::DISPLAY_METRIC_ROTATION & metrics) {
-    if (auto* const root_window = Shell::GetRootWindowForDisplayId(display.id())) {
-      auto* const animator =
-          ScreenRotationAnimator::GetForRootWindow(root_window);
-      if (!screen_rotation_observations_.IsObservingSource(animator)) {
+    if (auto* root_controller =
+            Shell::GetRootWindowControllerWithDisplayId(display.id())) {
+      if (auto* animator = root_controller->GetScreenRotationAnimator();
+          animator &&
+          !screen_rotation_observations_.IsObservingSource(animator)) {
         screen_rotation_observations_.AddObservation(animator);
       }
     }
@@ -832,8 +834,9 @@ void FloatController::OnRootWindowAdded(aura::Window* root_window) {
 }
 
 void FloatController::OnRootWindowWillShutdown(aura::Window* root_window) {
-  auto* const animator = ScreenRotationAnimator::GetForRootWindow(root_window);
-  if (screen_rotation_observations_.IsObservingSource(animator)) {
+  if (auto* const animator = RootWindowController::ForWindow(root_window)
+                                 ->GetScreenRotationAnimator();
+      animator && screen_rotation_observations_.IsObservingSource(animator)) {
     screen_rotation_observations_.RemoveObservation(animator);
   }
 }

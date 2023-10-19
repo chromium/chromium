@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/root_window_controller.h"
-#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 #include <memory>
@@ -36,6 +35,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_settings.h"
+#include "ash/rotator/screen_rotation_animator.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
@@ -83,6 +83,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -674,8 +675,28 @@ const aura::Window* RootWindowController::GetContainer(int container_id) const {
   return window_tree_host_->window()->GetChildById(container_id);
 }
 
+ScreenRotationAnimator* RootWindowController::GetScreenRotationAnimator() {
+  if (is_shutting_down_) {
+    return nullptr;
+  }
+
+  if (!screen_rotation_animator_) {
+    screen_rotation_animator_ =
+        std::make_unique<ScreenRotationAnimator>(GetRootWindow());
+  }
+
+  return screen_rotation_animator_.get();
+}
+
 void RootWindowController::Shutdown() {
-  auto targeter = GetRootWindow()->SetEventTargeter(
+  is_shutting_down_ = true;
+
+  // Destroy the `screen_rotation_animator_` now to avoid any potential crashes
+  // if there's any ongoing animation. See http://b/293667233.
+  screen_rotation_animator_.reset();
+
+  aura::Window* root_window = GetRootWindow();
+  auto targeter = root_window->SetEventTargeter(
       std::make_unique<aura::NullWindowTargeter>());
 
   touch_exploration_manager_.reset();
@@ -684,7 +705,6 @@ void RootWindowController::Shutdown() {
   CloseAmbientWidget(/*immediately=*/true);
 
   CloseChildWindows();
-  aura::Window* root_window = GetRootWindow();
   GetRootWindowSettings(root_window)->controller = nullptr;
   // Forget with the display ID so that display lookup
   // ends up with invalid display.
@@ -991,6 +1011,11 @@ void RootWindowController::StartSplitViewOverviewSession(
 
 void RootWindowController::EndSplitViewOverviewSession() {
   split_view_overview_session_.reset();
+}
+
+void RootWindowController::SetScreenRotationAnimatorForTest(
+    std::unique_ptr<ScreenRotationAnimator> animator) {
+  screen_rotation_animator_ = std::move(animator);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

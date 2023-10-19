@@ -4438,13 +4438,14 @@ void AutotestPrivateWaitForDisplayRotationFunction::
 
 absl::optional<ExtensionFunction::ResponseValue>
 AutotestPrivateWaitForDisplayRotationFunction::CheckScreenRotationAnimation() {
-  auto* root_window = ash::Shell::GetRootWindowForDisplayId(display_id_);
-  if (!root_window) {
+  auto* root_controller =
+      ash::Shell::GetRootWindowControllerWithDisplayId(display_id_);
+  if (!root_controller || !root_controller->GetScreenRotationAnimator()) {
     return Error(base::StringPrintf(
         "Invalid display_id; no root window found for the display id %" PRId64,
         display_id_));
   }
-  auto* animator = ash::ScreenRotationAnimator::GetForRootWindow(root_window);
+  auto* animator = root_controller->GetScreenRotationAnimator();
   if (!animator->IsRotating()) {
     display::Display display;
     display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_,

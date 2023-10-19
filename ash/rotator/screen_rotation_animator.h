@@ -72,10 +72,6 @@ class ASH_EXPORT ScreenRotationAnimator {
   // orientation if |IsRotating()| is false.
   display::Display::Rotation GetTargetRotation() const;
 
-  static void SetScreenRotationAnimatorForTest(
-      aura::Window* root_window,
-      std::unique_ptr<ScreenRotationAnimator> animator);
-
  protected:
   using CopyCallback =
       base::OnceCallback<void(std::unique_ptr<viz::CopyOutputResult> result)>;

@@ -44,13 +44,14 @@ class ScopedCaptureClient;
 }
 
 namespace ash {
+
 class AccessibilityPanelLayoutManager;
 class AlwaysOnTopController;
 class AppMenuModelAdapter;
 class AshWindowTreeHost;
 class LockScreenActionBackgroundController;
-enum class LoginStatus;
 class RootWindowLayoutManager;
+class ScreenRotationAnimator;
 class Shelf;
 class ShelfLayoutManager;
 class SplitViewController;
@@ -64,6 +65,7 @@ class TouchHudProjection;
 class WallpaperWidgetController;
 class WindowParentingController;
 class WorkAreaInsets;
+enum class LoginStatus;
 
 namespace curtain {
 class SecurityCurtainWidgetController;
@@ -200,6 +202,11 @@ class ASH_EXPORT RootWindowController {
     return color_provider_source_.get();
   }
 
+  // Returns the rotation animator associated with the root window of this
+  // controller. It creates it lazily if it had never been created, unless
+  // `Shutdown()` had been called, and in this case, it returns nullptr.
+  ScreenRotationAnimator* GetScreenRotationAnimator();
+
   // Deletes associated objects and clears the state, but doesn't delete
   // the root window yet. This is used to delete a secondary displays'
   // root window safely when the display disconnect signal is received,
@@ -269,6 +276,9 @@ class ASH_EXPORT RootWindowController {
       absl::optional<OverviewEnterExitType> type);
   void EndSplitViewOverviewSession();
 
+  void SetScreenRotationAnimatorForTest(
+      std::unique_ptr<ScreenRotationAnimator> animator);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(RootWindowControllerTest,
                            ContextMenuDisappearsInTabletMode);
@@ -323,6 +333,11 @@ class ASH_EXPORT RootWindowController {
 
   std::unique_ptr<WindowParentingController> window_parenting_controller_;
 
+  // The rotation animator of the root window controlled by `this`. It's created
+  // lazily when `GetScreenRotationAnimator()` is called, unless it was called
+  // after `Shutdown()` had begun.
+  std::unique_ptr<ScreenRotationAnimator> screen_rotation_animator_;
+
   std::unique_ptr<SplitViewController> split_view_controller_;
   std::unique_ptr<SplitViewOverviewSession> split_view_overview_session_;
 
@@ -355,6 +370,9 @@ class ASH_EXPORT RootWindowController {
       security_curtain_widget_controller_;
 
   std::unique_ptr<AshColorProviderSource> color_provider_source_;
+
+  // True if we are in the process of shutting down this controller.
+  bool is_shutting_down_ = false;
 
   // Whether child windows have been closed during shutdown. Exists to avoid
   // calling related cleanup code more than once.

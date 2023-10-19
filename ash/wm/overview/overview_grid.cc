@@ -536,9 +536,12 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
 
   EndNudge();
 
-  RootWindowController::ForWindow(root_window_)->EndSplitViewOverviewSession();
+  auto* root_controller = RootWindowController::ForWindow(root_window_);
+  root_controller->EndSplitViewOverviewSession();
   SplitViewController::Get(root_window_)->RemoveObserver(this);
-  ScreenRotationAnimator::GetForRootWindow(root_window_)->RemoveObserver(this);
+  if (auto* animator = root_controller->GetScreenRotationAnimator()) {
+    animator->RemoveObserver(this);
+  }
   Shell::Get()->wallpaper_controller()->RemoveObserver(this);
   grid_event_handler_.reset();
 
@@ -608,8 +611,12 @@ void OverviewGrid::PrepareForOverview() {
   for (const auto& window : window_list_)
     window->PrepareForOverview();
   SplitViewController::Get(root_window_)->AddObserver(this);
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode())
-    ScreenRotationAnimator::GetForRootWindow(root_window_)->AddObserver(this);
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    if (auto* animator = RootWindowController::ForWindow(root_window_)
+                             ->GetScreenRotationAnimator()) {
+      animator->AddObserver(this);
+    }
+  }
 
   grid_event_handler_ = std::make_unique<OverviewGridEventHandler>(this);
   Shell::Get()->wallpaper_controller()->AddObserver(this);
