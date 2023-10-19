@@ -44,6 +44,12 @@ class TestingApplicationContext : public ApplicationContext {
   // Sets the VariationsService.
   void SetVariationsService(variations::VariationsService* variations_service);
 
+  // Sets the SystemIdentityManager.
+  // Must be set before `GetSystemIdentityManager`is called (i.e. before
+  // creating a TestChromeBrowserState).
+  void SetSystemIdentityManager(
+      std::unique_ptr<SystemIdentityManager> system_identity_manager);
+
   // ApplicationContext implementation.
   void OnAppEnterForeground() override;
   void OnAppEnterBackground() override;
