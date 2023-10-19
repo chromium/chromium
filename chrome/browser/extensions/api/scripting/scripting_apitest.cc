@@ -542,13 +542,8 @@ class ScriptingAPIPrerenderingTest : public ScriptingAPITest {
   content::test::ScopedPrerenderFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1351648): disabled on Mac due to flakiness.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Basic DISABLED_Basic
-#else  // BUILDFLAG(IS_MAC)
-#define MAYBE_Basic Basic
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(ScriptingAPIPrerenderingTest, MAYBE_Basic) {
+// TODO(crbug.com/1351648): disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(ScriptingAPIPrerenderingTest, DISABLED_Basic) {
   ASSERT_TRUE(RunExtensionTest("scripting/prerendering")) << message_;
 }
 
