@@ -25,18 +25,18 @@ Need tests for (likely not a complete list):
     currently guaranteed to work, due to potential time skew between processes).
 * Multiple buyers.
 * Multiple interest groups with same owner.
-* Multiple frame tests (including join IG policy, run auction policy,
-    loading URNs in fencedframes in other frames, loading component
+* Multiple frame tests (including loading component
     ad URNs in fenced frames of other frames, etc)
 * adAuctionConfig passed to reportResult().
 * Component auctions.
   * Including cross-origin sellers.
 * browserSignals fields in scoring/bidding methods.
-* In reporting methods, browserSignals fields: dataVersion, topLevelSeller,
+* In reporting methods, browserSignals fields: topLevelSeller,
     componentSeller, modifiedBid, adCost, madeHighestScoringOtherBid
     (with interest group from another origin).
 * Loading ads in iframes.
 * In fencedframes window.fence.setReportEventDataForAutomaticBeacons()
+* Automatic beacons (e.g., reserved.top_navigation)
 * Network timeouts.
 * Validate specific escaping behavior logic (still under discussion). There
     are a number of different rules for which characters are escaped, and
@@ -62,6 +62,7 @@ Need tests for (likely not a complete list):
   * Across scoreAd() / generateBid() calls, and with report calls.
   * In "group-by-origin" execution mode across IGs joined from different
       origins, and between generateBid() and reportWin().
+* Use AbortSignal to abort an auction.
 
 If possible:
 * Aggregate reporting.
