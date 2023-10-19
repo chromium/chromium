@@ -388,12 +388,11 @@ template <typename ElementIDLType, typename ContainerType>
 [[nodiscard]] inline v8::MaybeLocal<v8::Value> ToV8HelperSequence(
     ScriptState* script_state,
     const ContainerType& sequence) {
-  Vector<v8::Local<v8::Value>> converted_vector;
-  converted_vector.ReserveInitialCapacity(sequence.size());
+  v8::LocalVector<v8::Value> converted_vector(script_state->GetIsolate());
+  converted_vector.reserve(sequence.size());
   typename ContainerType::const_iterator end = sequence.end();
-  wtf_size_t i = 0;
   for (typename ContainerType::const_iterator iter = sequence.begin();
-       iter != end; ++iter, ++i) {
+       iter != end; ++iter) {
     v8::Local<v8::Value> v8_value;
     if (!ToV8Traits<ElementIDLType>::ToV8(script_state, *iter)
              .ToLocal(&v8_value)) {
@@ -489,7 +488,7 @@ struct ToV8Traits<
   // TODO(crbug.com/1185046): Remove this overload.
   [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
-      const Vector<v8::Local<v8::Value>>& value) {
+      const v8::LocalVector<v8::Value>& value) {
     return bindings::ToV8HelperSequence<IDLAny>(script_state, value);
   }
 };
@@ -573,7 +572,7 @@ struct ToV8Traits<IDLArray<T>> {
   // TODO(crbug.com/1185046): Remove this overload.
   [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
-      const Vector<v8::Local<v8::Value>>& value) {
+      const v8::LocalVector<v8::Value>& value) {
     v8::Local<v8::Value> v8_value;
     if (!ToV8Traits<IDLSequence<IDLAny>>::ToV8(script_state, value)
              .ToLocal(&v8_value)) {

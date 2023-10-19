@@ -39,7 +39,7 @@ class MODULES_EXPORT MediaMetadata final : public ScriptWrappable {
   String title() const;
   String artist() const;
   String album() const;
-  Vector<v8::Local<v8::Value>> artwork(ScriptState*) const;
+  v8::LocalVector<v8::Value> artwork(ScriptState*) const;
 
   // Internal use only, returns a reference to m_artwork instead of a Frozen
   // copy of a MediaImage array.

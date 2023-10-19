@@ -47,7 +47,7 @@ const WrapperTypeInfo& DOMArrayBuffer::wrapper_type_info_ =
 static void AccumulateArrayBuffersForAllWorlds(
     v8::Isolate* isolate,
     DOMArrayBuffer* object,
-    Vector<v8::Local<v8::ArrayBuffer>, 4>& buffers) {
+    v8::LocalVector<v8::ArrayBuffer>& buffers) {
   Vector<scoped_refptr<DOMWrapperWorld>> worlds;
   DOMWrapperWorld::AllWorldsInCurrentThread(worlds);
   for (const auto& world : worlds) {
@@ -58,8 +58,8 @@ static void AccumulateArrayBuffersForAllWorlds(
 }
 
 bool DOMArrayBuffer::IsDetachable(v8::Isolate* isolate) {
-  Vector<v8::Local<v8::ArrayBuffer>, 4> buffer_handles;
   v8::HandleScope handle_scope(isolate);
+  v8::LocalVector<v8::ArrayBuffer> buffer_handles(isolate);
   AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
 
   bool is_detachable = true;
@@ -75,8 +75,8 @@ void DOMArrayBuffer::SetDetachKey(v8::Isolate* isolate,
   // likely to be a program error to set a detach key multiple times.
   DCHECK(detach_key_.IsEmpty());
 
-  Vector<v8::Local<v8::ArrayBuffer>, 4> buffer_handles;
   v8::HandleScope handle_scope(isolate);
+  v8::LocalVector<v8::ArrayBuffer> buffer_handles(isolate);
   AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
 
   v8::Local<v8::String> v8_detach_key = V8AtomicString(isolate, detach_key);
@@ -143,8 +143,8 @@ v8::Maybe<bool> DOMArrayBuffer::TransferDetachable(
     Content()->Transfer(result);
   }
 
-  Vector<v8::Local<v8::ArrayBuffer>, 4> buffer_handles;
   v8::HandleScope handle_scope(isolate);
+  v8::LocalVector<v8::ArrayBuffer> buffer_handles(isolate);
   AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
 
   for (wtf_size_t i = 0; i < buffer_handles.size(); ++i) {

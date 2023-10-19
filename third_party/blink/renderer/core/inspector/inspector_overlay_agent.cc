@@ -1425,7 +1425,7 @@ void InspectorOverlayAgent::EvaluateInOverlay(const String& method,
   v8::Local<v8::Context> context = script_state->GetContext();
   v8::Context::Scope context_scope(context);
 
-  WTF::Vector<v8::Local<v8::Value>> args;
+  v8::LocalVector<v8::Value> args(context->GetIsolate());
   int args_length = 2;
   v8::Local<v8::Array> params(
       v8::Array::New(context->GetIsolate(), args_length));

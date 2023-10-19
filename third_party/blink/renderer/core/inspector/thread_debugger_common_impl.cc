@@ -197,8 +197,8 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
   static const char kShadowRootOpen[] = "open";
   static const char kShadowRootClosed[] = "closed";
 
-  Vector<v8::Local<v8::Name>> serialized_value_keys;
-  Vector<v8::Local<v8::Value>> serialized_value_values;
+  v8::LocalVector<v8::Name> serialized_value_keys(isolate);
+  v8::LocalVector<v8::Value> serialized_value_values(isolate);
   serialized_value_keys.push_back(V8String(isolate, kNodeType));
   serialized_value_values.push_back(
       v8::Number::New(isolate, node->getNodeType()));
@@ -256,8 +256,8 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
     serialized_value_values.push_back(
         V8String(isolate, element->namespaceURI()));
 
-    Vector<v8::Local<v8::Name>> node_attributes_keys;
-    Vector<v8::Local<v8::Value>> node_attributes_values;
+    v8::LocalVector<v8::Name> node_attributes_keys(isolate);
+    v8::LocalVector<v8::Value> node_attributes_values(isolate);
 
     for (const Attribute& attribute : element->Attributes()) {
       node_attributes_keys.push_back(
@@ -322,8 +322,8 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
       isolate, v8::Null(isolate), serialized_value_keys.data(),
       serialized_value_values.data(), serialized_value_keys.size());
 
-  Vector<v8::Local<v8::Name>> result_keys;
-  Vector<v8::Local<v8::Value>> result_values;
+  v8::LocalVector<v8::Name> result_keys(isolate);
+  v8::LocalVector<v8::Value> result_values(isolate);
 
   result_keys.push_back(TypeStringKey(isolate));
   result_values.push_back(V8String(isolate, kNode));
@@ -425,8 +425,8 @@ std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeWindow(
     v8::Isolate* isolate) {
   static const char kContextParameterName[] = "context";
 
-  Vector<v8::Local<v8::Name>> keys;
-  Vector<v8::Local<v8::Value>> values;
+  v8::LocalVector<v8::Name> keys(isolate);
+  v8::LocalVector<v8::Value> values(isolate);
 
   keys.push_back(V8String(isolate, kContextParameterName));
   values.push_back(

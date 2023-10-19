@@ -265,7 +265,7 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
   Vector<std::unique_ptr<Record>> stack;
 
   // Tracks seen arrays, to detect circular references and abort (per spec).
-  Vector<v8::Local<v8::Array>> seen;
+  v8::LocalVector<v8::Array> seen(isolate);
 
   // Initial state.
   {
@@ -329,7 +329,8 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
     } else {
       // A sub-array; push onto the stack and start processing it.
       v8::Local<v8::Array> array = item.As<v8::Array>();
-      if (seen.Contains(array) || stack.size() >= IndexedDBKey::kMaximumDepth ||
+      if (std::find(seen.begin(), seen.end(), array) != seen.end() ||
+          stack.size() >= IndexedDBKey::kMaximumDepth ||
           array->Length() > IndexedDBKey::kMaximumArraySize) {
         return IDBKey::CreateInvalid();
       }

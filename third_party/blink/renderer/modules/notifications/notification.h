@@ -116,7 +116,7 @@ class MODULES_EXPORT Notification final
   bool silent() const;
   bool requireInteraction() const;
   ScriptValue data(ScriptState* script_state);
-  Vector<v8::Local<v8::Value>> actions(ScriptState* script_state) const;
+  v8::LocalVector<v8::Value> actions(ScriptState* script_state) const;
   TimestampTrigger* showTrigger() const { return show_trigger_.Get(); }
   String scenario() const;
 

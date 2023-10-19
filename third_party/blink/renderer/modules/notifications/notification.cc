@@ -357,15 +357,15 @@ ScriptValue Notification::data(ScriptState* script_state) {
                      serialized_value->Deserialize(script_state->GetIsolate()));
 }
 
-Vector<v8::Local<v8::Value>> Notification::actions(
+v8::LocalVector<v8::Value> Notification::actions(
     ScriptState* script_state) const {
-  Vector<v8::Local<v8::Value>> result;
+  v8::LocalVector<v8::Value> result(script_state->GetIsolate());
   if (!data_->actions.has_value())
     return result;
 
   const Vector<mojom::blink::NotificationActionPtr>& actions =
       data_->actions.value();
-  result.Grow(actions.size());
+  result.resize(actions.size());
   for (wtf_size_t i = 0; i < actions.size(); ++i) {
     NotificationAction* action = NotificationAction::Create();
 
