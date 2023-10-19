@@ -57,6 +57,7 @@ include_rules = [
   "+components/spellcheck/browser",
   "+components/strictmode/android",
   "+components/subresource_filter/android",
+  "+components/supervised_user/android",
   "+components/translate/content/android",
   "+components/user_prefs/android",
   "+components/version_info/android",

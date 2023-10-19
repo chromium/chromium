@@ -3636,6 +3636,7 @@ static_library("browser") {
       deps += [
         "//chrome/browser/supervised_user:jni_headers",
         "//components/supervised_user/core/browser",
+        "//components/supervised_user/core/browser:supervised_user_preferences",
       ]
     }
 

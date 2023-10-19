@@ -12,6 +12,12 @@
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/prefs/android/pref_service_android.h"
+#include "components/supervised_user/android/supervised_user_preferences_jni_headers/SupervisedUserPreferences_jni.h"
+#endif
 
 namespace supervised_user {
 
@@ -147,4 +153,14 @@ void DisableParentalControls(PrefService& pref_service) {
 bool IsChildAccountStatusKnown(PrefService& pref_service) {
   return pref_service.GetBoolean(prefs::kChildAccountStatusKnown);
 }
+
 }  // namespace supervised_user
+
+#if BUILDFLAG(IS_ANDROID)
+static jboolean JNI_SupervisedUserPreferences_IsSubjectToParentalControls(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jprefs) {
+  PrefService* prefs = PrefServiceAndroid::FromPrefServiceAndroid(jprefs);
+  return supervised_user::IsSubjectToParentalControls(prefs);
+}
+#endif

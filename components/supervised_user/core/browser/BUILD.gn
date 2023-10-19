@@ -19,6 +19,10 @@ static_library("supervised_user_preferences") {
     "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/common",
   ]
+
+  if (is_android) {
+    deps += [ "//components/supervised_user/android:supervised_user_preferences_jni_headers" ]
+  }
 }
 
 static_library("list_family_members_service") {
