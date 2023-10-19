@@ -4,6 +4,9 @@
 
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
+#include <utility>
+
+#include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ui {

@@ -5,11 +5,11 @@
 #ifndef UI_WEB_DIALOGS_WEB_DIALOG_DELEGATE_H_
 #define UI_WEB_DIALOGS_WEB_DIALOG_DELEGATE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/web_dialogs/web_dialogs_export.h"
@@ -20,6 +20,7 @@ namespace content {
 class RenderFrameHost;
 class WebContents;
 class WebUI;
+class WebUIMessageHandler;
 struct ContextMenuParams;
 struct OpenURLParams;
 }
