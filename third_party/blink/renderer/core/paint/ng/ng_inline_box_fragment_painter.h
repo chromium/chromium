@@ -184,7 +184,15 @@ class NGInlineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
 
   void Paint(const PaintInfo&, const PhysicalOffset& paint_offset);
 
+  // Paint all fragments generated for the inline within the given block
+  // container, specified as a fragment data index. The index is relative to the
+  // first block fragment where the inline occurs.
+  //
+  // TODO(crbug.com/1478119): If looking up a FragmentData were O(1) instead of
+  // O(n), there should be no need to pass both FragmentData and the index.
   static void PaintAllFragments(const LayoutInline& layout_inline,
+                                const FragmentData& fragment_data,
+                                wtf_size_t fragment_data_idx,
                                 const PaintInfo&);
 
  private:

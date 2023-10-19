@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
@@ -406,8 +405,7 @@ LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(
 
 void LayoutInline::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
-  DCHECK(IsInLayoutNGInlineFormattingContext());
-  NGInlineBoxFragmentPainter::PaintAllFragments(*this, paint_info);
+  NOTREACHED();
 }
 
 template <typename PhysicalRectCollector>

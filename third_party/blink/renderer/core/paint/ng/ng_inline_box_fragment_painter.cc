@@ -485,6 +485,8 @@ void NGInlineBoxFragmentPainterBase::PaintFillLayer(
 // self-painting |LayoutInline|.
 void NGInlineBoxFragmentPainter::PaintAllFragments(
     const LayoutInline& layout_inline,
+    const FragmentData& fragment_data,
+    wtf_size_t fragment_data_idx,
     const PaintInfo& paint_info) {
   // TODO(kojii): If the block flow is dirty, children of these fragments
   // maybe already deleted. crbug.com/963103
@@ -492,7 +494,7 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   if (UNLIKELY(block_flow->NeedsLayout()))
     return;
 
-  ScopedPaintState paint_state(layout_inline, paint_info);
+  ScopedPaintState paint_state(layout_inline, paint_info, &fragment_data);
   PhysicalOffset paint_offset = paint_state.PaintOffset();
   const PaintInfo& local_paint_info = paint_state.GetPaintInfo();
 
@@ -520,19 +522,17 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   }
 
   NGInlinePaintContext inline_context;
-  InlineCursor cursor(*block_flow);
+  InlineCursor first_container_cursor(*block_flow);
+  first_container_cursor.MoveTo(layout_inline);
+
+  wtf_size_t container_fragment_idx =
+      first_container_cursor.ContainerFragmentIndex() + fragment_data_idx;
+  const NGPhysicalBoxFragment* container_fragment =
+      block_flow->GetPhysicalFragment(container_fragment_idx);
+
+  InlineCursor cursor(*container_fragment);
   cursor.MoveTo(layout_inline);
-  if (!cursor)
-    return;
-  // Convert from inline fragment index to container fragment index, as the
-  // inline may not start in the first fragment generated for the inline
-  // formatting context.
-  wtf_size_t target_fragment_idx =
-      cursor.ContainerFragmentIndex() +
-      paint_info.context.GetPaintController().CurrentFragment();
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-    if (target_fragment_idx != cursor.ContainerFragmentIndex())
-      continue;
     NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(
         cursor, &inline_context);
     const NGFragmentItem* item = cursor.CurrentItem();
