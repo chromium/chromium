@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Link: </can_make_payment_event_fields/app/pay>; rel="payment-method-manifest"
