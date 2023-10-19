@@ -286,7 +286,7 @@ crbug.com/1353952 [ chromeos cros-chrome chromeos-board-amd64-generic ] Pixel_We
 crbug.com/1353952 [ chromeos cros-chrome chromeos-board-kevin ] Pixel_WebGLContextRestored [ Skip ]
 
 # Flakily causes subsequent tests to fail.
-crbug.com/1488026 [ android android-chromium android-nexus-5x ] Pixel_Video_HEVC [ Skip ]
+crbug.com/1488026 [ android android-nexus-5x ] Pixel_Video_HEVC [ Skip ]
 
 ###################
 # Failures/Flakes #
