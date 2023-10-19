@@ -750,6 +750,10 @@ extern const char kPolicyLogsPageIOSDescription[];
 extern const char kPostRestoreDefaultBrowserPromoName[];
 extern const char kPostRestoreDefaultBrowserPromoDescription[];
 
+// Title and description for the flag to enable the Privacy Guide.
+extern const char kPrivacyGuideIosName[];
+extern const char kPrivacyGuideIosDescription[];
+
 // Title and description for the flag to have the Promos Manager use the FET as
 // its impression tracking system.
 extern const char kPromosManagerUsesFETName[];

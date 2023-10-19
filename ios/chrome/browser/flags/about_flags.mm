@@ -98,6 +98,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/web/features.h"
@@ -1578,6 +1579,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kSkipUndecryptablePasswords)},
+    {"privacy-guide-ios", flag_descriptions::kPrivacyGuideIosName,
+     flag_descriptions::kPrivacyGuideIosDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kPrivacyGuideIos)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

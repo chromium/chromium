@@ -856,6 +856,11 @@ const char kPostRestoreDefaultBrowserPromoDescription[] =
     "Chrome as default browser after losing their default browser status from "
     "an iOS restore.";
 
+const char kPrivacyGuideIosName[] = "Privacy Guide on iOS";
+const char kPrivacyGuideIosDescription[] =
+    "Shows a new subpage in Settings that helps the user to review various "
+    "privacy settings.";
+
 const char kPromosManagerUsesFETName[] = "Promos Manager using FET";
 const char kPromosManagerUsesFETDescription[] =
     "Migrates the Promos Manager to use the Feature Engagement Tracker as its "

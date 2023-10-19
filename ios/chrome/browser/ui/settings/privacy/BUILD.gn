@@ -108,6 +108,7 @@ source_set("privacy") {
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
     "//ios/chrome/browser/ui/settings/privacy/lockdown_mode",
+    "//ios/chrome/browser/ui/settings/privacy/privacy_guide",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",

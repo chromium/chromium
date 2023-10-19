@@ -6394,6 +6394,14 @@
     "expiry_milestone": 123
   },
   {
+    "name": "privacy-guide-ios",
+    "owners": [
+      "rubindl",
+      "chrome-privacy-controls@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "privacy-guide-preload",
     "owners": [
       "rainhard",
