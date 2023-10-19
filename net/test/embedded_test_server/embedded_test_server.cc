@@ -820,7 +820,7 @@ void EmbeddedTestServer::ServeFilesFromDirectory(
 void EmbeddedTestServer::ServeFilesFromSourceDirectory(
     base::StringPiece relative) {
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   ServeFilesFromDirectory(test_data_dir.AppendASCII(relative));
 }
 
@@ -841,7 +841,7 @@ void EmbeddedTestServer::AddDefaultHandlers() {
 base::FilePath EmbeddedTestServer::GetFullPathFromSourceDirectory(
     const base::FilePath& relative) {
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   return test_data_dir.Append(relative);
 }
 

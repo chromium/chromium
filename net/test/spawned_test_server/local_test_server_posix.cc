@@ -132,9 +132,9 @@ bool LocalTestServer::LaunchPython(
              << options.environment["PYTHONPATH"];
 
   // Set CWD to source root.
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT,
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
                               &options.current_directory)) {
-    LOG(ERROR) << "Failed to get DIR_SOURCE_ROOT";
+    LOG(ERROR) << "Failed to get DIR_SRC_TEST_DATA_ROOT";
     return false;
   }
 

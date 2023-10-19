@@ -14,7 +14,7 @@ namespace {
 
 base::FilePath GetRoot() {
   base::FilePath root;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &root);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root);
   return root.AppendASCII("net")
       .AppendASCII("data")
       .AppendASCII("cache_tests")

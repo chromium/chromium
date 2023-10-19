@@ -455,12 +455,12 @@ class EmbeddedTestServer {
   // ServeFilesFromSourceDirectory.
   void ServeFilesFromDirectory(const base::FilePath& directory);
 
-  // Serves files relative to DIR_SOURCE_ROOT.
+  // Serves files relative to DIR_SRC_TEST_DATA_ROOT.
   void ServeFilesFromSourceDirectory(base::StringPiece relative);
   void ServeFilesFromSourceDirectory(const base::FilePath& relative);
 
   // Registers the default handlers and serve additional files from the
-  // |directory| directory, relative to DIR_SOURCE_ROOT.
+  // |directory| directory, relative to DIR_SRC_TEST_DATA_ROOT.
   void AddDefaultHandlers(const base::FilePath& directory);
 
   // Returns the directory that files will be served from if |relative| is

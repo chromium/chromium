@@ -4815,7 +4815,7 @@ std::unique_ptr<test_server::HttpResponse> HandleZippedRequest(
 
 TEST_F(URLRequestTestHTTP, GetZippedTest) {
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
   file_path = file_path.Append(kTestFilePath);
   std::string expected_content, compressed_content;
   ASSERT_TRUE(base::ReadFileToString(
@@ -5867,7 +5867,7 @@ TEST_F(URLRequestTestHTTP, PostFileTest) {
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
 
     base::FilePath path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
     path = path.Append(kTestFilePath);
     path = path.Append(FILE_PATH_LITERAL("with-headers.html"));
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
@@ -7085,7 +7085,7 @@ TEST_F(URLRequestTestHTTP, DeferredRedirect) {
     EXPECT_EQ(OK, d.request_status());
 
     base::FilePath path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
     path = path.Append(kTestFilePath);
     path = path.Append(FILE_PATH_LITERAL("with-headers.html"));
 
