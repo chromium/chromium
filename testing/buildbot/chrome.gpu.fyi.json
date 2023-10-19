@@ -296,6 +296,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "shards": 20,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -322,6 +323,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "shards": 6,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,

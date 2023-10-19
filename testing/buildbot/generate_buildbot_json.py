@@ -46,10 +46,15 @@ class BaseGenerator(object):  # pylint: disable=useless-object-inheritance
 
 
 class GPUTelemetryTestGenerator(BaseGenerator):
-  def __init__(self, bb_gen, is_android_webview=False, is_cast_streaming=False):
+  def __init__(self,
+               bb_gen,
+               is_android_webview=False,
+               is_cast_streaming=False,
+               is_skylab=False):
     super(GPUTelemetryTestGenerator, self).__init__(bb_gen)
     self._is_android_webview = is_android_webview
     self._is_cast_streaming = is_cast_streaming
+    self._is_skylab = is_skylab
 
   def generate(self, waterfall, tester_name, tester_config, input_tests):
     isolated_scripts = []
@@ -60,11 +65,9 @@ class GPUTelemetryTestGenerator(BaseGenerator):
         test_config = [test_config]
 
       for config in test_config:
-        test = self.bb_gen.generate_gpu_telemetry_test(waterfall, tester_name,
-                                                       tester_config, test_name,
-                                                       config,
-                                                       self._is_android_webview,
-                                                       self._is_cast_streaming)
+        test = self.bb_gen.generate_gpu_telemetry_test(
+            waterfall, tester_name, tester_config, test_name, config,
+            self._is_android_webview, self._is_cast_streaming, self._is_skylab)
         if test:
           isolated_scripts.append(test)
 
@@ -72,6 +75,10 @@ class GPUTelemetryTestGenerator(BaseGenerator):
 
 
 class SkylabGPUTelemetryTestGenerator(GPUTelemetryTestGenerator):
+  def __init__(self, bb_gen):
+    super(SkylabGPUTelemetryTestGenerator, self).__init__(bb_gen,
+                                                          is_skylab=True)
+
   def generate(self, *args, **kwargs):
     # This should be identical to a regular GPU Telemetry test, but with any
     # swarming arguments removed.
@@ -878,7 +885,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
   def generate_gpu_telemetry_test(self, waterfall, tester_name, tester_config,
                                   test_name, test_config, is_android_webview,
-                                  is_cast_streaming):
+                                  is_cast_streaming, is_skylab):
     # These are all just specializations of isolated script tests with
     # a bunch of boilerplate command line arguments added.
 
@@ -938,6 +945,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # --expose-gc allows the WebGL conformance tests to more reliably
     # reproduce GC-related bugs in the V8 bindings.
     extra_browser_args.append('--js-flags=--expose-gc')
+
+    # Skylab supports sharding, so reuse swarming's shard config.
+    if is_skylab and 'shards' not in result and test_config.get(
+        'swarming', {}).get('shards'):
+      result['shards'] = test_config['swarming']['shards']
 
     args = [
         test_to_run,

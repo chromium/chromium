@@ -1119,6 +1119,7 @@ COMPOSITION_SUITE_WITH_TELEMETRY_TEST = """\
           'dimensions': {
             'os': 'Linux',
           },
+          'shards': 2,
         },
       },
     },
