@@ -434,16 +434,24 @@ const std::vector<SearchConcept>& GetCellularMeteredSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetInstantTetheringSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS,
-       mojom::kMobileDataNetworksSubpagePath,
-       mojom::SearchResultIcon::kInstantTethering,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kMobileDataNetworks},
-       {IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS_ALT1,
-        SearchConcept::kAltTagEnd}},
-  });
+  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
+    SearchConcept instant_tethering_concept{
+        IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS,
+        mojom::kMobileDataNetworksSubpagePath,
+        mojom::SearchResultIcon::kInstantTethering,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSubpage,
+        {.subpage = mojom::Subpage::kMobileDataNetworks},
+    };
+
+    if (ash::features::IsInstantHotspotRebrandEnabled()) {
+      instant_tethering_concept.alt_tag_ids[0] =
+          IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS_ALT1;
+      instant_tethering_concept.alt_tag_ids[1] = SearchConcept::kAltTagEnd;
+    }
+
+    return std::vector<SearchConcept>{instant_tethering_concept};
+  }());
   return *tags;
 }
 
