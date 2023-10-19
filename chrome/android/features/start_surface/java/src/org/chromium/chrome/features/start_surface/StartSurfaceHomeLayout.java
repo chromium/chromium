@@ -85,6 +85,7 @@ public class StartSurfaceHomeLayout extends Layout {
     @Override
     public void startHiding(int nextTabId, boolean hintAtTabSelection) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_START_SURFACE)) {
+            StartSurfaceUserData.getInstance().setUnusedTabRestoredAtStartup(false);
             super.startHiding(nextTabId, hintAtTabSelection);
             mIsShown = false;
             mStartSurface.hide(false);
