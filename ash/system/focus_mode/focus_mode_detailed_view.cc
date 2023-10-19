@@ -37,6 +37,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
@@ -393,6 +394,7 @@ void FocusModeDetailedView::CreateToggleView() {
           .release());
 
   toggle_view_->SetExpandable(true);
+  toggle_view_->SetFocusBehavior(View::FocusBehavior::NEVER);
   toggle_view_->tri_view()->SetInsets(kToggleViewInsets);
   views::BoxLayout* toggle_view_tri_view_layout =
       toggle_view_->tri_view()->box_layout();
@@ -477,6 +479,9 @@ void FocusModeDetailedView::CreateTimerView() {
               /*decrement=*/true),
           kChevronDownIcon, cros_tokens::kCrosSysBaseElevated,
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_DECREMENT_BUTTON));
+  views::InstallRoundRectHighlightPathGenerator(
+      timer_decrement_button_, gfx::Insets(),
+      kTimerAdjustmentButtonSize.height() / 2);
 
   timer_increment_button_ =
       timer_setting_view_->AddChildView(CreateTimerAdjustmentButton(
@@ -486,6 +491,9 @@ void FocusModeDetailedView::CreateTimerView() {
               /*decrement=*/false),
           kChevronUpIcon, cros_tokens::kCrosSysHighlightShape,
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_INCREMENT_BUTTON));
+  views::InstallRoundRectHighlightPathGenerator(
+      timer_increment_button_, gfx::Insets(),
+      kTimerAdjustmentButtonSize.height() / 2);
 
   UpdateTimerView(FocusModeController::Get()->in_focus_session());
 }
