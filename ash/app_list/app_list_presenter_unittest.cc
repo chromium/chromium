@@ -1680,7 +1680,8 @@ TEST_P(AppListBubbleAndTabletTest, ClearSearchButtonClearsSearch) {
 
   SearchBoxView* search_box_view = GetSearchBoxView();
   search_box_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  EXPECT_TRUE(
+      search_box_view->filter_and_close_button_container()->GetVisible());
   LeftClickOn(search_box_view->close_button());
 
   EXPECT_EQ(std::vector<std::u16string>({u""}),

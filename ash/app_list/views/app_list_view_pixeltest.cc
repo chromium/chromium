@@ -426,8 +426,7 @@ INSTANTIATE_TEST_SUITE_P(RTL,
 // Verifies the default layout for tablet mode launcher.
 TEST_P(AppListViewTabletPixelTest, Basic) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_basics",
-      /*revision_number=*/IsJellyEnabled() ? 7 : 6,
+      "tablet_launcher_basics", 9,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -448,8 +447,7 @@ TEST_P(AppListViewTabletPixelTest, TopGradientZone) {
   generator->MoveTouchBy(0, -40);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_top_gradient_zone",
-      /*revision_number=*/IsJellyEnabled() ? 6 : 5,
+      "tablet_launcher_top_gradient_zone", 7,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -470,8 +468,7 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
   generator->MoveTouchBy(0, -90);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_bottom_gradient_zone",
-      /*revision_number=*/IsJellyEnabled() ? 7 : 6,
+      "tablet_launcher_bottom_gradient_zone", 9,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
