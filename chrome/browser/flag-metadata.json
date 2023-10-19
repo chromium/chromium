@@ -6394,7 +6394,7 @@
   {
     "name": "privacy-guide-ios",
     "owners": [
-      "rubindl",
+      "rubindl@chromium.org",
       "chrome-privacy-controls@google.com"
     ],
     "expiry_milestone": 130
