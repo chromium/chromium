@@ -104,7 +104,7 @@ BASE_FEATURE(kAlwaysConfirmComposition,
 // "Customize keyboard keys" page.
 BASE_FEATURE(kSupportF11AndF12KeyShortcuts,
              "SupportF11AndF12KeyShortcuts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool AreF11AndF12ShortcutsEnabled() {
   // TODO(crbug/1264581): Remove this once kDeviceI18nShortcutsEnabled policy is

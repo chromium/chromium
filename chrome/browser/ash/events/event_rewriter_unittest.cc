@@ -221,6 +221,9 @@ class EventRewriterTest : public ChromeAshTestBase {
     input_device_settings_controller_mock_ =
         std::make_unique<MockInputDeviceSettingsController>();
     keyboard_settings = mojom::KeyboardSettings::New();
+    // Disable F11/F12 settings by default.
+    keyboard_settings->f11 = ui::mojom::ExtendedFkeysModifier::kDisabled;
+    keyboard_settings->f12 = ui::mojom::ExtendedFkeysModifier::kDisabled;
     EXPECT_CALL(*input_device_settings_controller_mock_,
                 GetKeyboardSettings(testing::_))
         .WillRepeatedly(testing::Return(keyboard_settings.get()));
@@ -2578,7 +2581,6 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysNonCustomLayouts) {
 
 TEST_F(EventRewriterTest, TestRewriteFunctionKeysCustomLayoutsFKeyUnchanged) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
-
   // On devices with custom layouts, the F-Keys are never remapped.
   TestChromeCustomLayoutKeyboardVariants({
       // F1-> F1
