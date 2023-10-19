@@ -310,10 +310,17 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMovPcmS24be) {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 IN_PROC_BROWSER_TEST_P(MediaTest, HLSSingleFileBear) {
   REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("bear-1280x720-hls-clear-mpl.m3u8");
 }
+
+IN_PROC_BROWSER_TEST_P(MediaTest, HLSMultivariantBitrateBear) {
+  REQUIRE_ACCELERATION_ON_ANDROID();
+  PlayVideo("hls/multi-bitrate-multivariant-bear/playlist.m3u8");
+}
+
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4) {

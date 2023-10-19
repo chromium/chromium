@@ -869,6 +869,10 @@ manually and prepended to convey the encryption metadata, notably key id and IV)
 mediafilesegmenter -S -P -k 'key_iv.bin' -t 10 -start-segments-with-iframe -f 'output/' bear-1280x720.ts
 ```
 
+#### HLS - directory
+Samples of assorted playlist types and a README file explaining how each sample
+is generated.
+
 #### bear-1280x720-hls-with-CAT.ts
 Same as bear-1280x720-hls.ts but with an extra TS packet prepended. This is the
 same as the first of the metadata packets in bear-1280x720-hls-sample-aes.ts.

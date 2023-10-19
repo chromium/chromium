@@ -360,6 +360,12 @@ data/h264-320x180-frame-0
 data/h264-320x180-frame-1
 data/h264-320x180-frame-2
 data/h264-320x180-frame-3
+data/hls/README
+data/hls/multi-bitrate-multivariant-bear/out_0.m3u8
+data/hls/multi-bitrate-multivariant-bear/out_00.ts
+data/hls/multi-bitrate-multivariant-bear/out_1.m3u8
+data/hls/multi-bitrate-multivariant-bear/out_10.ts
+data/hls/multi-bitrate-multivariant-bear/playlist.m3u8
 data/icy_sfx.mp3
 data/id3_png_test.mp3
 data/id3_test.mp3
