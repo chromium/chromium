@@ -633,7 +633,8 @@ PrintBackendServiceManager::RemoteId
 PrintBackendServiceManager::GetRemoteIdForPrinterName(
     const std::string& printer_name) {
 #if BUILDFLAG(IS_WIN)
-  if (!sandboxed_service_remote_for_test_) {
+  if (!sandboxed_service_remote_for_test_ &&
+      !features::kEnableOopPrintDriversSingleProcess.Get()) {
     // Windows drivers are not thread safe.  Use a process per driver to prevent
     // bad interactions when interfacing to multiple drivers in parallel.
     // https://crbug.com/957242
@@ -649,8 +650,7 @@ PrintBackendServiceManager::GetRemoteIdForPrinterName(
   }
 #endif
 
-  // Non-Windows platforms and the testing environment always just use one
-  // instance for all printers.
+  // Just a single process that services all printers.
   return RemoteId(1);
 }
 

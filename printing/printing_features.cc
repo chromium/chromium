@@ -90,6 +90,11 @@ const base::FeatureParam<bool> kEnableOopPrintDriversJobPrint{
 
 const base::FeatureParam<bool> kEnableOopPrintDriversSandbox{
     &kEnableOopPrintDrivers, "Sandbox", false};
+
+#if BUILDFLAG(IS_WIN)
+const base::FeatureParam<bool> kEnableOopPrintDriversSingleProcess{
+    &kEnableOopPrintDrivers, "SingleProcess", true};
+#endif
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)

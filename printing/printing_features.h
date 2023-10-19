@@ -51,6 +51,10 @@ COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::FeatureParam<bool> kEnableOopPrintDriversJobPrint;
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::FeatureParam<bool> kEnableOopPrintDriversSandbox;
+#if BUILDFLAG(IS_WIN)
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const base::FeatureParam<bool> kEnableOopPrintDriversSingleProcess;
+#endif
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
