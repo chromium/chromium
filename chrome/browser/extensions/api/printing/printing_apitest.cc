@@ -135,6 +135,7 @@ class PrintingApiTest : public ExtensionApiTest,
 
   void TearDownOnMainThread() override {
     print_backend_service_.reset();
+    test_remote_.reset_on_disconnect();
     printing::PrintBackendServiceManager::GetInstance().ResetForTesting();
     ExtensionApiTest::TearDownOnMainThread();
   }
