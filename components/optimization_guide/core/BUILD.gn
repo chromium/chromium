@@ -22,6 +22,7 @@ static_library("bloomfilter") {
     "//base",
     "//third_party/smhasher:murmurhash3",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("entities") {
@@ -37,6 +38,7 @@ static_library("entities") {
     "//third_party/abseil-cpp:absl",
   ]
   deps = [ ":features" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("model_executor") {
@@ -88,6 +90,8 @@ static_library("model_executor") {
     "//url",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   if (build_with_tflite_lib) {
     public_deps += [
       "//components/optimization_guide/core:machine_learning",
@@ -129,6 +133,7 @@ if (build_with_tflite_lib) {
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
     ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 }
 
@@ -156,6 +161,7 @@ static_library("features") {
     "//net",
     "//ui/base",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("core") {
@@ -285,6 +291,9 @@ static_library("core") {
     "//services/network/public/cpp",
     "//url:url",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   if (!is_android && build_with_tflite_lib &&
       build_with_internal_optimization_guide) {
     data_deps = [
@@ -321,6 +330,7 @@ static_library("prediction") {
     "//net/traffic_annotation",
     "//services/network/public/cpp",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   if (is_ios) {
     deps += [ "//components/services/unzip:in_process" ]
   } else {

@@ -25,6 +25,7 @@ static_library("webui") {
     ":url_constants",
     "//components/optimization_guide/optimization_guide_internals/resources:resources",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("url_constants") {
@@ -32,6 +33,7 @@ static_library("url_constants") {
     "url_constants.cc",
     "url_constants.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 mojom("mojo_bindings") {

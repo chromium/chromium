@@ -15,6 +15,8 @@ static_library("renderer") {
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common:common",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

@@ -64,6 +64,7 @@ static_library("browser") {
       "//third_party/tflite_support:tflite_support_proto",
     ]
   }
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {
