@@ -18,8 +18,6 @@ char kASanDefaultSuppressions[] =
     // https://crbug.com/1471542 false positive odr violations from Rust code.
     "odr_violation:^core::\n"
     "odr_violation:^object::\n"
-    "odr_violation:^serde::\n"
-    "odr_violation:^serde_json_lenient::\n"
     "odr_violation:^std::panicking::\n"
 
     // End of suppressions.
