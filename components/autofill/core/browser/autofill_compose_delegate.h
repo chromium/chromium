@@ -37,10 +37,8 @@ class AutofillComposeDelegate {
     kAutofillPopup,
     kContextMenu,
   };
-  // Returns whether compose is available for this `ui_entry_point` and
-  // `trigger_field`.
-  virtual bool ShouldOfferCompose(UiEntryPoint ui_entry_point,
-                                  const FormFieldData& trigger_field) = 0;
+  // Returns whether the compose popup is available for this `trigger_field`.
+  virtual bool ShouldOfferComposePopup(const FormFieldData& trigger_field) = 0;
 
   // Opens the Compose UI. `ui_entry_point` and `trigger_field` describe the
   // field on which Compose was triggered. `popup_screen_location` contains the

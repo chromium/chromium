@@ -608,7 +608,6 @@ specific_include_rules = {
     "+components/services/storage/shared_storage/shared_storage_manager.h",
   ],
   "render_view_context_menu_browsertest.cc" : [
-    "+components/compose/buildflags.h",
     "+third_party/libwebp/src/src/webp/decode.h",
   ],
   "webauth_interactive_uitest.cc": [

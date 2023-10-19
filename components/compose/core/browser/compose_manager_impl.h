@@ -21,8 +21,10 @@ class ComposeManagerImpl : public ComposeManager {
   ~ComposeManagerImpl() override;
 
   // ComposeManager:
-  bool ShouldOfferCompose(
-      UiEntryPoint ui_entry_point,
+  bool ShouldOfferComposeContextMenu() override;
+
+  // AutofillComposeDelegate
+  bool ShouldOfferComposePopup(
       const autofill::FormFieldData& trigger_field) override;
   void OpenCompose(UiEntryPoint ui_entry_point,
                    const autofill::FormFieldData& trigger_field,

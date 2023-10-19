@@ -137,3 +137,14 @@ void TestRenderViewContextMenu::set_dlp_rules_manager(
   dlp_rules_manager_ = dlp_rules_manager;
 }
 #endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+compose::ComposeManager* TestRenderViewContextMenu::GetComposeManager() const {
+  return compose_manager_;
+}
+
+void TestRenderViewContextMenu::SetComposeManager(
+    compose::ComposeManager* compose_manager) {
+  compose_manager_ = compose_manager;
+}
+#endif  // BUILDFLAG(ENABLE_COMPOSE)

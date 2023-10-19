@@ -113,6 +113,9 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   void set_dlp_rules_manager(policy::DlpRulesManager* dlp_rules_manager);
 #endif
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+  void SetComposeManager(compose::ComposeManager* compose_manager_);
+#endif
   // If `browser` is not null, sets it as the return value of GetBrowser(),
   // overriding the base class behavior. If the Browser object is destroyed
   // before this class is, then SetBrowser(nullptr) should be called. If
@@ -123,12 +126,20 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   // RenderViewContextMenu:
   Browser* GetBrowser() const override;
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+  compose::ComposeManager* GetComposeManager() const override;
+#endif
+
  private:
   raw_ptr<Browser> browser_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS)
   raw_ptr<policy::DlpRulesManager, ExperimentalAsh> dlp_rules_manager_ =
       nullptr;
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+  raw_ptr<compose::ComposeManager> compose_manager_ = nullptr;
 #endif
 };
 

@@ -1660,7 +1660,7 @@ if (!is_android) {
       "//components/commerce/core:shopping_service_test_support",
       "//components/component_updater/installer_policies:installer_policies_no_content_deps",
       "//components/compose:buildflags",
-      "//components/compose/core/browser:features",
+      "//components/compose/core/browser:test_support",
       "//components/constrained_window",
       "//components/content_settings/browser",
       "//components/content_settings/common:mojom",

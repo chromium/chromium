@@ -10082,7 +10082,7 @@ TEST_F(BrowserAutofillManagerTest, NoComposeSuggestionsByDefault) {
   // The third field is meant to correspond to address line 1. For that (unlike
   // for first and last name), parsing also derives that type if it is a
   // textarea.
-  EXPECT_CALL(compose_delegate, ShouldOfferCompose).Times(0);
+  EXPECT_CALL(compose_delegate, ShouldOfferComposePopup).Times(0);
   GetAutofillSuggestions(form, form.fields[3]);
   CheckSuggestions(form.fields[3].global_id(),
                    Suggestion("123 Apple St., unit 6", "123 Apple St.",
@@ -10106,11 +10106,9 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
   form.action = GURL("https://myform.com/submit.html");
   FormsSeen({form});
 
-  EXPECT_CALL(
-      compose_delegate,
-      ShouldOfferCompose(
-          AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-          Property(&FormFieldData::global_id, Eq(form.fields[0].global_id()))));
+  EXPECT_CALL(compose_delegate,
+              ShouldOfferComposePopup(Property(
+                  &FormFieldData::global_id, Eq(form.fields[0].global_id()))));
   GetAutofillSuggestions(form, form.fields[0]);
 }
 

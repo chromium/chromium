@@ -3856,9 +3856,7 @@ BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
 absl::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
     const FormFieldData& field) {
   AutofillComposeDelegate* compose_delegate = client().GetComposeDelegate();
-  if (!compose_delegate ||
-      !compose_delegate->ShouldOfferCompose(
-          AutofillComposeDelegate::UiEntryPoint::kAutofillPopup, field)) {
+  if (!compose_delegate || !compose_delegate->ShouldOfferComposePopup(field)) {
     return absl::nullopt;
   }
   Suggestion suggestion(

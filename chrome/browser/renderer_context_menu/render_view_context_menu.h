@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
+#include "components/compose/buildflags.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/lens/buildflags.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
@@ -36,6 +37,10 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/vector2d.h"
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "components/compose/core/browser/compose_manager.h"
+#endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
@@ -194,6 +199,10 @@ class RenderViewContextMenu
 
 #if BUILDFLAG(IS_CHROMEOS)
   virtual const policy::DlpRulesManager* GetDlpRulesManager() const;
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+  virtual compose::ComposeManager* GetComposeManager() const;
 #endif
 
   // RenderViewContextMenuBase:

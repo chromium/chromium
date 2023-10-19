@@ -134,7 +134,7 @@
 #include "ui/gfx/codec/png_codec.h"
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-#include "components/compose/core/browser/compose_features.h"
+#include "components/compose/core/browser/mock_compose_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -172,6 +172,10 @@ using extensions::MimeHandlerViewGuest;
 using extensions::TestMimeHandlerViewGuest;
 using web_app::WebAppProvider;
 using webapps::AppId;
+
+using ::testing::_;
+using ::testing::Return;
+using ::testing::TestWithParam;
 
 namespace {
 
@@ -1152,38 +1156,72 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-class ContextMenuForComposeBrowserTest : public ContextMenuBrowserTest {
- public:
-  ContextMenuForComposeBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{compose::features::kEnableCompose},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+struct ContextMenuForComposeTestCase {
+  std::string test_name;
+  bool is_editable;
+  absl::optional<uint64_t> form_renderer_id;
+  absl::optional<uint64_t> field_renderer_id;
+  bool should_offer_compose_context_menu;
+  bool expected;
 };
 
-IN_PROC_BROWSER_TEST_F(ContextMenuForComposeBrowserTest,
-                       ContextMenuForCompose_Editable) {
+class ContextMenuForComposeBrowserTest
+    : public ContextMenuBrowserTest,
+      public ::testing::WithParamInterface<ContextMenuForComposeTestCase> {};
+
+IN_PROC_BROWSER_TEST_P(ContextMenuForComposeBrowserTest,
+                       TestComposeItemPresent) {
+  const ContextMenuForComposeTestCase& test_case = GetParam();
+
   content::ContextMenuParams params;
-  params.is_editable = true;
+  params.is_editable = test_case.is_editable;
+  params.form_renderer_id = test_case.form_renderer_id;
+  params.field_renderer_id = test_case.field_renderer_id;
+  compose::MockComposeManager compose_manager;
+  ON_CALL(compose_manager, ShouldOfferComposeContextMenu())
+      .WillByDefault(Return(test_case.should_offer_compose_context_menu));
 
-  auto menu = CreateContextMenuFromParams(params);
+  auto menu =
+      std::make_unique<TestRenderViewContextMenu>(*browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                  params);
+  menu->SetComposeManager(&compose_manager);
+  menu->Init();
 
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTEXT_COMPOSE));
+  ASSERT_EQ(menu->IsItemPresent(IDC_CONTEXT_COMPOSE), test_case.expected);
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuForComposeBrowserTest,
-                       ContextMenuForCompose_NonEditable) {
-  content::ContextMenuParams params;
-  params.is_editable = false;
-
-  auto menu = CreateContextMenuFromParams(params);
-
-  // Compose context menu item should never be present on a non-editable field.
-  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTEXT_COMPOSE));
-}
+INSTANTIATE_TEST_SUITE_P(
+    ContextMenuBrowserTests,
+    ContextMenuForComposeBrowserTest,
+    ::testing::ValuesIn<ContextMenuForComposeTestCase>({
+        {"Enabled", /*is_editable=*/true,
+         /*form_renderer_id=*/absl::make_optional(123),
+         /*field_renderer_id=*/absl::make_optional(456),
+         /*should_offer_compose_context_menu=*/true, /*expected=*/true},
+        {"NotEditable", /*is_editable=*/false,
+         /*form_renderer_id=*/absl::make_optional(123),
+         /*field_renderer_id=*/absl::make_optional(456),
+         /*should_offer_compose_context_menu=*/true, /*expected=*/false},
+        {"NoFormRendererId", /*is_editable=*/true,
+         /*form_renderer_id=*/absl::nullopt,
+         /*field_renderer_id=*/absl::make_optional(456),
+         /*should_offer_compose_context_menu=*/true, /*expected=*/false},
+        {"NoFieldRendererId", /*is_editable=*/true,
+         /*form_renderer_id=*/absl::make_optional(123),
+         /*field_renderer_id=*/absl::nullopt,
+         /*should_offer_compose_context_menu=*/true, /*expected=*/false},
+        {"ShouldNotOffer", /*is_editable=*/true,
+         /*form_renderer_id=*/absl::make_optional(123),
+         /*field_renderer_id=*/absl::make_optional(456),
+         /*should_offer_compose_context_menu=*/false, /*expected=*/false},
+    }),
+    [](const testing::TestParamInfo<
+        ContextMenuForComposeBrowserTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, CopyLinkTextMouse) {

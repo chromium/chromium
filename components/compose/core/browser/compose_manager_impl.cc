@@ -19,10 +19,15 @@ ComposeManagerImpl::ComposeManagerImpl(ComposeClient* client)
 
 ComposeManagerImpl::~ComposeManagerImpl() = default;
 
-bool ComposeManagerImpl::ShouldOfferCompose(
-    UiEntryPoint ui_entry_point,
+bool ComposeManagerImpl::ShouldOfferComposePopup(
     const autofill::FormFieldData& trigger_field) {
   // TODO(b/300941076): Improve should-offer logic.
+  return IsEnabled();
+}
+
+bool ComposeManagerImpl::ShouldOfferComposeContextMenu() {
+  // TODO(b/300941076): Improve should-offer logic.
+  // TODO(b/301371110): Pass in the field type here when it is ready.
   return IsEnabled();
 }
 

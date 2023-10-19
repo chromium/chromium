@@ -129,8 +129,8 @@
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
-#include "components/compose/core/browser/compose_features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/feed/feed_feature_list.h"
@@ -224,13 +224,13 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
+#include "chrome/browser/renderer_context_menu/spelling_options_submenu_observer.h"
+#endif
+
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
-#endif
-
-#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
-#include "chrome/browser/renderer_context_menu/spelling_options_submenu_observer.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1518,6 +1518,13 @@ std::u16string RenderViewContextMenu::GetTargetLanguageDisplayName(
   return l10n_util::GetDisplayNameForLocale(target, target, true);
 }
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+compose::ComposeManager* RenderViewContextMenu::GetComposeManager() const {
+  auto* client = ChromeComposeClient::FromWebContents(source_web_contents_);
+  return client ? &client->GetManager() : nullptr;
+}
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
+
 void RenderViewContextMenu::AppendDeveloperItems() {
   // Do not Show Inspect Element for DevTools unless DevTools runs with the
   // debugFrontend query param.
@@ -2250,17 +2257,24 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
                                       IDS_CONTENT_CONTEXT_EMOJI);
     }
   }
-  // TODO(b/301371110): Update enabling constraints.
-  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
-    menu_model_.AddItemWithStringId(IDC_CONTEXT_COMPOSE,
-                                    IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
-    // TODO(b/303646344): Remove new feature tag when no longer new.
-    menu_model_.SetIsNewFeatureAt(
-        menu_model_.GetItemCount() - 1,
-        !content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_LINK));
+#if BUILDFLAG(ENABLE_COMPOSE)
+  RenderFrameHost* render_frame_host = GetRenderFrameHost();
+  if (render_frame_host && params_.form_renderer_id &&
+      params_.field_renderer_id) {
+    compose::ComposeManager* compose_manager = GetComposeManager();
+    if (compose_manager && compose_manager->ShouldOfferComposeContextMenu()) {
+      menu_model_.AddItemWithStringId(IDC_CONTEXT_COMPOSE,
+                                      IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
+      // TODO(b/303646344): Remove new feature tag when no longer new.
+      menu_model_.SetIsNewFeatureAt(
+          menu_model_.GetItemCount() - 1,
+          !content_type_->SupportsGroup(
+              ContextMenuContentType::ITEM_GROUP_LINK));
 
-    render_separator = true;
+      render_separator = true;
+    }
   }
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
   if (render_separator) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
