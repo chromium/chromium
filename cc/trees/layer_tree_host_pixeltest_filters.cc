@@ -154,8 +154,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterInvalid) {
 #else
 #define MAYBE_BackdropFilterBlurRadius BackdropFilterBlurRadius
 #endif  // BUILDFLAG(IS_IOS)
-// TODO(jamesgk): Re-enable after Skia roll and update expected images.
-TEST_P(LayerTreeHostFiltersPixelTest, DISABLED_BackdropFilterBlurRadius) {
+TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_BackdropFilterBlurRadius) {
 #if defined(MEMORY_SANITIZER)
   if (renderer_type() == viz::RendererType::kSkiaVk) {
     GTEST_SKIP() << "TODO(crbug.com/1324336): Uninitialized data error";
