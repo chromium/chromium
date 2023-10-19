@@ -25,7 +25,10 @@ source_set("common") {
     "utils.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+  ]
 }
 
 executable("client") {
