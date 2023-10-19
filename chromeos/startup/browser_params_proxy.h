@@ -152,6 +152,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsAppInstallServiceUriEnabled() const;
 
+  bool IsDeskProfilesEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

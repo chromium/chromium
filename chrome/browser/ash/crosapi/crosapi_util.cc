@@ -677,6 +677,9 @@ void InjectBrowserInitParams(
 
   params->is_app_install_service_uri_enabled =
       chromeos::features::IsAppInstallServiceUriEnabled();
+
+  params->is_desk_profiles_enabled =
+      chromeos::features::IsDeskProfilesEnabled();
 }
 
 template <typename BrowserParams>

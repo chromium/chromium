@@ -1039,8 +1039,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 71
-// Next id: 71
+// Next version: 72
+// Next id: 72
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1469,6 +1469,10 @@ struct BrowserInitParams {
   // Tells lacros whether the app install service URI is enabled.
   [MinVersion=70]
   bool is_app_install_service_uri_enabled@70;
+
+  // Tells if the desk profiles feature is enabled.
+  [MinVersion=71]
+  bool is_desk_profiles_enabled@71;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

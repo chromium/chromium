@@ -59,6 +59,9 @@ BASE_FEATURE(kCrosWebAppInstallDialog,
              "CrosWebAppInstallDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the desk profiles feature.
+BASE_FEATURE(kDeskProfiles, "DeskProfiles", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Disable idle sockets closing on memory pressure for NetworkContexts that
 // belong to Profiles. It only applies to Profiles because the goal is to
 // improve perceived performance of web browsing within the ChromeOS user
@@ -171,6 +174,14 @@ bool IsBlinkExtensionDiagnosticsEnabled() {
 
 bool IsCrosComponentsEnabled() {
   return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
+}
+
+bool IsDeskProfilesEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsDeskProfilesEnabled();
+#else
+  return base::FeatureList::IsEnabled(kDeskProfiles);
+#endif
 }
 
 bool IsIWAForTelemetryExtensionAPIEnabled() {
