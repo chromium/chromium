@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/webui/dlp_internals/dlp_internals_ui.h"
 
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/dlp_internals_resources.h"
+#include "chrome/grit/dlp_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace policy {
@@ -13,12 +17,34 @@ namespace policy {
 DlpInternalsUI::DlpInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::CreateAndAdd(profile,
-                                         chrome::kChromeUIDlpInternalsHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIDlpInternalsHost);
+
+  source->AddBoolean("isOtr", profile->IsOffTheRecord());
+  DlpRulesManager* rules_manager =
+      DlpRulesManagerFactory::GetForPrimaryProfile();
+  source->AddBoolean("doRulesManagerExist", rules_manager != nullptr);
+
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kDlpInternalsResources, kDlpInternalsResourcesSize),
+      IDR_DLP_INTERNALS_INDEX_HTML);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::RequireTrustedTypesFor,
+      "require-trusted-types-for 'script';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DlpInternalsUI)
 
 DlpInternalsUI::~DlpInternalsUI() = default;
+
+void DlpInternalsUI::BindInterface(
+    mojo::PendingReceiver<dlp_internals::mojom::PageHandler> receiver) {
+  page_handler_ = std::make_unique<DlpInternalsPageHandler>(
+      std::move(receiver), Profile::FromWebUI(web_ui()));
+}
 
 }  // namespace policy

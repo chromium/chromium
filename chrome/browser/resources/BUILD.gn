@@ -91,6 +91,10 @@ group("resources") {
     public_deps += [ "connectors_internals:resources" ]
   }
 
+  if (is_chromeos) {
+    public_deps += [ "dlp_internals:resources" ]
+  }
+
   if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
     public_deps += [ "browser_switch:resources" ]
   }

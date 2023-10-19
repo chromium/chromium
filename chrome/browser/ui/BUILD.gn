@@ -745,12 +745,15 @@ static_library("ui") {
 
   if (is_chromeos) {
     sources += [
+      "webui/dlp_internals/dlp_internals_page_handler.cc",
+      "webui/dlp_internals/dlp_internals_page_handler.h",
       "webui/dlp_internals/dlp_internals_ui.cc",
       "webui/dlp_internals/dlp_internals_ui.h",
       "webui/trusted_vault/trusted_vault_dialog_delegate.cc",
       "webui/trusted_vault/trusted_vault_dialog_delegate.h",
     ]
     deps += [
+      "//chrome/browser/ui/webui/dlp_internals:mojo_bindings",
       "//chromeos/components/kiosk",
       "//chromeos/constants",
       "//chromeos/crosapi/cpp",

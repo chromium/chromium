@@ -412,6 +412,11 @@ template("chrome_extra_paks") {
       deps += [ "//chrome/browser/resources/connectors_internals:resources" ]
     }
 
+    if (is_chromeos) {
+      sources += [ "$root_gen_dir/chrome/dlp_internals_resources.pak" ]
+      deps += [ "//chrome/browser/resources/dlp_internals:resources" ]
+    }
+
     if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
       sources += [ "$root_gen_dir/chrome/browser_switch_resources.pak" ]
       deps += [ "//chrome/browser/resources/browser_switch:resources" ]

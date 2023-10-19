@@ -467,6 +467,11 @@ void ash::SystemExtensionsInternalsUI::BindInterface(
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/dlp_internals/dlp_internals.mojom.h"
+#include "chrome/browser/ui/webui/dlp_internals/dlp_internals_ui.h"
+#endif
+
 namespace chrome {
 namespace internal {
 
@@ -1092,6 +1097,11 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       connectors_internals::mojom::PageHandler,
       enterprise_connectors::ConnectorsInternalsUI>(map);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  RegisterWebUIControllerInterfaceBinder<dlp_internals::mojom::PageHandler,
+                                         policy::DlpInternalsUI>(map);
 #endif
 
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)

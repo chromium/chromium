@@ -5810,6 +5810,7 @@ static_library("browser") {
       "//chrome/browser/chromeos/extensions/telemetry",
       "//chrome/browser/policy:onc",
       "//chrome/browser/ui/quick_answers",
+      "//chrome/browser/ui/webui/dlp_internals:mojo_bindings",
       "//chrome/browser/webshare:storage",
       "//chrome/common/chromeos/extensions",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
