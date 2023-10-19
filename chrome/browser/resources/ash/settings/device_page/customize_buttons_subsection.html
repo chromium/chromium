@@ -17,6 +17,22 @@
   #renamingDialog {
     --cr-dialog-width: 320px;
   }
+
+  :host([button-name-invalid_]) #inputCount {
+    color: var(--cros-text-color-alert);
+  }
+
+  #inputCount {
+    display: var(--cr-input-error-display, block);
+    font-size: var(--cr-form-field-label-font-size);
+    height: var(--cr-form-field-label-height);
+    line-height: var(--cr-form-field-label-line-height);
+    margin: 8px 0;
+    position: absolute;
+    right: 32px;
+    top: 130px;
+    white-space: var(--cr-input-error-white-space);
+  }
 </style>
 <div class="subsection">
   <template is="dom-repeat"
@@ -37,10 +53,16 @@
     <div slot="body">
       <div id="inputContainer">
         <cr-input id="renamingDialogInput"
+          autofocus
           label="$i18n{buttonRemappingDialogInputLabel}"
+          on-keydown="onKeyDownInRenamingDialog_"
+          invalid="[[buttonNameInvalid_]]"
           value="{{selectedButtonName_}}"
           aria-label="$i18n{buttonRenamingDialogTitle}">
         </cr-input>
+        <div id="inputCount" aria-hidden="true">
+          [[getInputCountString_(selectedButtonName_)]]
+        </div>
       </div>
     </div>
     <div slot="button-container">
@@ -52,7 +74,9 @@
       </div>
       <div>
         <cr-button id="saveButton" class="action-button"
-            on-click="saveRenamingDialogClicked_">
+            on-click="saveRenamingDialogClicked_"
+            disabled$="[[isSaveDisabled_(buttonRemappingList,
+                actionList, selectedButtonName_)]]">
           $i18n{buttonRemappingDialogSaveLabel}
         </cr-button>
       </div>

@@ -68,10 +68,23 @@ suite('<customize-buttons-subsection>', () => {
             '#renamingDialogInput');
     assertTrue(!!buttonLabelInput);
     assertEquals(buttonRemappingChangedEventCount, 0);
-    buttonLabelInput.value = 'New Button Name';
+
+    // Verify that if the new button is too long, it will cause invalid and be
+    // truncated.
+    buttonLabelInput.value =
+        'Button name which exceeds 64 character is too long and is invalid.';
     const saveButton: CrButtonElement|null =
         customizeButtonsSubsection.shadowRoot!.querySelector('#saveButton');
+    assertTrue(customizeButtonsSubsection.get('buttonNameInvalid_'));
+    assertEquals(buttonLabelInput.value.length, 64);
+    const inputCountText: HTMLDivElement|null =
+        customizeButtonsSubsection.shadowRoot!.querySelector('#inputCount');
+    assertEquals(inputCountText!.textContent!.trim(), '64/64');
     assertTrue(!!saveButton);
+
+    buttonLabelInput.value = 'New Button Name';
+    assertEquals(inputCountText!.textContent!.trim(), '15/64');
+    assertFalse(customizeButtonsSubsection.get('buttonNameInvalid_'));
     saveButton.click();
     await flushTasks();
     assertEquals(buttonRemappingChangedEventCount, 1);

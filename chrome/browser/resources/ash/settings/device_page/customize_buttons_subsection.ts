@@ -38,6 +38,8 @@ declare global {
   }
 }
 
+const MAX_BUTTON_NAME_INPUT_LENGTH = 64;
+
 const CustomizeButtonsSubsectionElementBase = I18nMixin(PolymerElement);
 
 export class CustomizeButtonsSubsectionElement extends
@@ -72,10 +74,17 @@ export class CustomizeButtonsSubsectionElement extends
       selectedButtonName_: {
         type: String,
         value: '',
+        observer: 'onNameInputChanged_',
       },
 
       selectedButtonIndex_: {
         type: Number,
+      },
+
+      buttonNameInvalid_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
       },
     };
   }
@@ -87,6 +96,7 @@ export class CustomizeButtonsSubsectionElement extends
   private shouldShowRenamingDialog_: boolean;
   private selectedButtonName_: string;
   private dragAndDropManager: DragAndDropManager = new DragAndDropManager();
+  private buttonNameInvalid_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -104,7 +114,22 @@ export class CustomizeButtonsSubsectionElement extends
     this.selectedButtonIndex_ = e.detail.buttonIndex;
     this.selectedButton_ = this.buttonRemappingList[this.selectedButtonIndex_];
     this.selectedButtonName_ = this.selectedButton_.name;
+    this.buttonNameInvalid_ = false;
     this.shouldShowRenamingDialog_ = true;
+  }
+
+  /**
+   * Returns a formatted string containing the current number of characters
+   * entered in the input compared to the maximum number of characters allowed.
+   */
+  private getInputCountString_(buttonName: string): string {
+    // minimumIntegerDigits is 2 because we want to show a leading zero if
+    // length is less than 10.
+    return this.i18n(
+        'buttonRenamingDialogInputCharCount',
+        buttonName.length.toLocaleString(
+            /*locales=*/ undefined, {minimumIntegerDigits: 2}),
+        MAX_BUTTON_NAME_INPUT_LENGTH.toLocaleString());
   }
 
   private showKeyCombinationDialog_(e: ShowKeyCustomizationDialogEvent): void {
@@ -117,8 +142,29 @@ export class CustomizeButtonsSubsectionElement extends
   }
 
   private saveRenamingDialogClicked_(): void {
-    this.updateButtonName_();
-    this.shouldShowRenamingDialog_ = false;
+    if (!this.isSaveDisabled_()) {
+      this.updateButtonName_();
+      this.shouldShowRenamingDialog_ = false;
+    }
+  }
+
+  private onKeyDownInRenamingDialog_(event: KeyboardEvent): void {
+    this.buttonNameInvalid_ = false;
+    if (event.key === 'Enter') {
+      this.saveRenamingDialogClicked_();
+    }
+  }
+
+  private onNameInputChanged_(_newValue: string, oldValue: string): void {
+    // If oldValue.length > MAX_BUTTON_NAME_INPUT_LENGTH, the user attempted
+    // to enter more than the max limit, this method was called and it was
+    // truncated, and then this method was called one more time.
+    this.buttonNameInvalid_ =
+        !!oldValue && oldValue.length > MAX_BUTTON_NAME_INPUT_LENGTH;
+
+    // Truncate the name to maxInputLength.
+    this.selectedButtonName_ =
+        this.selectedButtonName_.substring(0, MAX_BUTTON_NAME_INPUT_LENGTH);
   }
 
   private updateButtonName_(): void {
@@ -156,6 +202,18 @@ export class CustomizeButtonsSubsectionElement extends
           composed: true,
         }));
       };
+
+  private isSaveDisabled_(): boolean {
+    if (this.selectedButtonName_ === this.selectedButton_.name) {
+      return true;
+    }
+
+    if (!this.selectedButtonName_.length) {
+      return true;
+    }
+
+    return false;
+  }
 }
 
 declare global {
