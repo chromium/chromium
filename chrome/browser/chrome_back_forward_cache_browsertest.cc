@@ -680,8 +680,23 @@ INSTANTIATE_TEST_SUITE_P(
     ChromeBackForwardCacheBrowserWithEmbedTest,
     testing::ValuesIn<std::vector<std::string>>({"embed", "object"}));
 
-IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
-                       DoesNotCachePageWithEmbeddedPlugin) {
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class ChromeBackForwardCacheBrowserWithEmbedTestNoTestingConfig
+    : public ChromeBackForwardCacheBrowserWithEmbedTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeBackForwardCacheBrowserWithEmbedTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeBackForwardCacheBrowserWithEmbedTestNoTestingConfig,
+    testing::ValuesIn<std::vector<std::string>>({"embed", "object"}));
+
+IN_PROC_BROWSER_TEST_P(
+    ChromeBackForwardCacheBrowserWithEmbedTestNoTestingConfig,
+    DoesNotCachePageWithEmbeddedPlugin) {
   const auto tag = GetParam();
   const auto page_with_plugin = base::StringPrintf(
       "/back_forward_cache/page_with_%s_plugin.html", tag.c_str());
@@ -709,8 +724,9 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
-                       DoesNotCachePageWithEmbeddedPdf) {
+IN_PROC_BROWSER_TEST_P(
+    ChromeBackForwardCacheBrowserWithEmbedTestNoTestingConfig,
+    DoesNotCachePageWithEmbeddedPdf) {
   const auto tag = GetParam();
   const auto page_with_pdf = base::StringPrintf(
       "/back_forward_cache/page_with_%s_pdf.html", tag.c_str());
