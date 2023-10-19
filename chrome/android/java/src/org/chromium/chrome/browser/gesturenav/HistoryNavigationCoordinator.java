@@ -12,12 +12,14 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.content_public.browser.WebContents;
@@ -57,6 +59,7 @@ public class HistoryNavigationCoordinator
      * @param tabSupplier Activity tab supplier.
      * @param insetObserverView View that provides information about the inset and inset
      *        capabilities of the device.
+     * @param startSurfaceSupplier StartSurface supplier.
      * @param backActionDelegate Delegate handling actions for back gesture.
      * @param initRunnable Runnable to run when Navigation Handler is initialized.
      * @param destroyRunnable Runnable to run when Navigation Handler is destroyed.
@@ -66,13 +69,13 @@ public class HistoryNavigationCoordinator
     public static HistoryNavigationCoordinator create(WindowAndroid window,
             ActivityLifecycleDispatcher lifecycleDispatcher, ViewGroup parentView,
             Runnable requestRunnable, ObservableSupplier<Tab> tabSupplier,
-            InsetObserverView insetObserverView, BackActionDelegate backActionDelegate,
-            Callback<TouchEventObserver> initCallback, Callback<TouchEventObserver> destroyCallback,
-            LayoutManager layoutManager) {
+            InsetObserverView insetObserverView, OneshotSupplier<StartSurface> startSurfaceSupplier,
+            BackActionDelegate backActionDelegate, Callback<TouchEventObserver> initCallback,
+            Callback<TouchEventObserver> destroyCallback, LayoutManager layoutManager) {
         HistoryNavigationCoordinator coordinator = new HistoryNavigationCoordinator();
         coordinator.init(window, lifecycleDispatcher, parentView, requestRunnable, tabSupplier,
-                insetObserverView, backActionDelegate, initCallback, destroyCallback,
-                layoutManager);
+                insetObserverView, startSurfaceSupplier, backActionDelegate, initCallback,
+                destroyCallback, layoutManager);
         return coordinator;
     }
 
@@ -86,9 +89,9 @@ public class HistoryNavigationCoordinator
      */
     private void init(WindowAndroid window, ActivityLifecycleDispatcher lifecycleDispatcher,
             ViewGroup parentView, Runnable requestRunnable, ObservableSupplier<Tab> tabSupplier,
-            InsetObserverView insetObserverView, BackActionDelegate backActionDelegate,
-            Callback<TouchEventObserver> initCallback, Callback<TouchEventObserver> destroyCallback,
-            LayoutManager layoutManager) {
+            InsetObserverView insetObserverView, OneshotSupplier<StartSurface> startSurfaceSupplier,
+            BackActionDelegate backActionDelegate, Callback<TouchEventObserver> initCallback,
+            Callback<TouchEventObserver> destroyCallback, LayoutManager layoutManager) {
         mOverscrollGlowOverlay = new OverscrollGlowOverlay(window, parentView, requestRunnable);
         mNavigationLayout = new HistoryNavigationLayout(parentView.getContext(), this::isNativePage,
                 mOverscrollGlowOverlay, (direction) -> mNavigationHandler.navigate(direction));
@@ -118,6 +121,10 @@ public class HistoryNavigationCoordinator
                     mTab = tab;
                     updateNavigationHandler();
                 });
+
+        // TODO(jinsukkim): Update NavigationHandler when its homepage is shown rather than
+        //     StartSurface becomes available. The former is the better signal for the update.
+        startSurfaceSupplier.onAvailable(s -> updateNavigationHandler());
 
         mInitCallback = initCallback;
         mDestroyCallback = destroyCallback;
@@ -192,7 +199,8 @@ public class HistoryNavigationCoordinator
         if (mEnabled) {
             WebContents webContents = mTab != null ? mTab.getWebContents() : null;
 
-            // Also updates NavigationHandler when tab == null (going into TabSwitcher).
+            // Also updates NavigationHandler when tab == null (going into TabSwitcher,
+            // or StartSurface homepage is shown).
             if (mTab == null || webContents != null) {
                 if (mNavigationHandler == null) initNavigationHandler();
                 mNavigationHandler.setTab(isDetached(mTab) ? null : mTab);
