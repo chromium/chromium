@@ -229,6 +229,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                          float zoom,
                                          gfx::SizeF box_size = gfx::SizeF(0,
                                                                           0));
+  static CSSValue* ValueForTransformFunction(const TransformOperations&);
   static gfx::RectF ReferenceBoxForTransform(
       const LayoutObject&,
       UsePixelSnappedBox = kUsePixelSnappedBox);

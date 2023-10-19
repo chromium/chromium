@@ -2940,6 +2940,13 @@ CSSValue* ComputedStyleUtils::ValueForTransformList(
   return components;
 }
 
+CSSValue* ComputedStyleUtils::ValueForTransformFunction(
+    const TransformOperations& transform_list) {
+  CHECK_EQ(transform_list.Operations().size(), 1u);
+  return ValueForTransformOperation(*transform_list.Operations()[0], 1,
+                                    gfx::SizeF());
+}
+
 gfx::RectF ComputedStyleUtils::ReferenceBoxForTransform(
     const LayoutObject& layout_object,
     UsePixelSnappedBox pixel_snap_box) {
