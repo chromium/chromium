@@ -7,24 +7,15 @@
 namespace extensions {
 namespace alarms_api_constants {
 
-const char kWarningMinimumDevDelay[] =
-    "Alarm delay is less than minimum of 1 minutes. In released .crx, alarm "
-    "\"*\" will fire in approximately 1 minutes.";
-
-const char kWarningMinimumReleaseDelay[] =
-    "Alarm delay is less than minimum of 1 minutes. Alarm \"*\" will fire in "
-    "approximately 1 minutes.";
-
-const char kWarningMinimumDevPeriod[] =
-    "Alarm period is less than minimum of 1 minutes. In released .crx, alarm "
-    "\"*\" will fire approximately every 1 minutes.";
-
-const char kWarningMinimumReleasePeriod[] =
-    "Alarm period is less than minimum of 1 minutes. Alarm \"*\" will fire "
-    "approximately every 1 minutes.";
-
-static_assert(kReleaseDelayMinimum == base::Minutes(1),
-              "warning message must be updated");
+base::TimeDelta GetMinimumDelay(bool is_unpacked, int manifest_version) {
+  if (is_unpacked) {
+    return alarms_api_constants::kDevDelayMinimum;
+  }
+  if (manifest_version >= 3) {
+    return alarms_api_constants::kMV3ReleaseDelayMinimum;
+  }
+  return alarms_api_constants::kMV2ReleaseDelayMinimum;
+}
 
 }  // namespace alarms_api_constants
 }  // namespace extensions

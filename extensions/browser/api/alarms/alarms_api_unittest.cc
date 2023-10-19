@@ -340,7 +340,8 @@ TEST_F(ExtensionAlarmsTest, CreateDelayBelowMinimum) {
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kWarning,
             local_frame.last_level());
   EXPECT_THAT(local_frame.last_message(),
-              testing::HasSubstr("delay is less than minimum of 1"));
+              testing::HasSubstr(
+                  "delay is less than the minimum duration of 60 seconds"));
 }
 
 TEST_F(ExtensionAlarmsTest, Get) {
@@ -695,10 +696,14 @@ void FrequencyTestGetAlarmsCallback(ExtensionAlarmsTest* test, Alarm* alarm) {
 TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
   struct {
     bool is_unpacked;
+    int manifest_version;
     base::TimeDelta delay_minimum;
   } test_data[] = {
-      {true, alarms_api_constants::kDevDelayMinimum},
-      {false, alarms_api_constants::kReleaseDelayMinimum},
+      {true, 2, alarms_api_constants::kDevDelayMinimum},
+      {true, 3, alarms_api_constants::kDevDelayMinimum},
+      {false, 2, alarms_api_constants::kMV2ReleaseDelayMinimum},
+      {false, 3, alarms_api_constants::kMV3ReleaseDelayMinimum},
+      {false, 4, alarms_api_constants::kMV3ReleaseDelayMinimum},
   };
 
   // Test once for unpacked and once for crx extension.
@@ -709,7 +714,10 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
     std::string alarm_args =
         "[{\"name\": \"hello\", \"scheduledTime\": 10000, "
         "\"periodInMinutes\": 0.0001}]";
-    alarm_manager_->ReadFromStorage(extension()->id(), test_data[i].is_unpacked,
+    base::TimeDelta min_delay = alarms_api_constants::GetMinimumDelay(
+        test_data[i].is_unpacked, test_data[i].manifest_version);
+
+    alarm_manager_->ReadFromStorage(extension()->id(), min_delay,
                                     base::test::ParseJson(alarm_args));
 
     // Let the alarm fire once, we will verify the next polling time afterwards.
@@ -722,11 +730,17 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
     // alarms_api_constants::kReleaseDelayMinimum). Make sure
     // our next poll time corresponds to our allowed minimum and not to the
     // StateStore specified "periodInMinutes".
-    EXPECT_GE(alarm_manager_->next_poll_time_,
-              // 10s initial clock.
-              base::Time::FromJsTime(10000) +
-                  // 10ms in FrequencyTestGetAlarmsCallback.
-                  base::Milliseconds(10) + test_data[i].delay_minimum);
+    base::Time expected_poll_time =
+        // 10s initial clock.
+        base::Time::FromJsTime(10000) +
+        // 10ms in FrequencyTestGetAlarmsCallback.
+        base::Milliseconds(10) + test_data[i].delay_minimum;
+    // The alarm should not trigger before our expected poll time...
+    EXPECT_GE(alarm_manager_->next_poll_time_, expected_poll_time);
+    // And should trigger within a few seconds of it (to account for test
+    // differences).
+    EXPECT_LT(alarm_manager_->next_poll_time_,
+              expected_poll_time + base::Seconds(10));
     RemoveAlarm("hello");
   }
 }
