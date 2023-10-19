@@ -131,7 +131,7 @@ class DataSource {
   // This can be a dangling pointer with AutoclickBrowserTest.ClickAndDrag
   // when run in browser_tests_require_lacros.
   const raw_ptr<DataSourceDelegate, DanglingUntriaged> delegate_;
-  base::ObserverList<DataSourceObserver>::Unchecked observers_;
+  base::ObserverList<DataSourceObserver> observers_;
 
   // Mime types which has been offered.
   std::set<std::string> mime_types_;
