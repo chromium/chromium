@@ -76,7 +76,7 @@ source_set("model") {
     "//ui/base",
     "//url",
   ]
-  public_deps = [ "//ios/chrome/browser/dom_distiller" ]
+  public_deps = [ "//ios/chrome/browser/dom_distiller/model" ]
   allow_circular_includes_from = [ ":reading_list_remover" ]
 }
 
@@ -96,7 +96,7 @@ source_set("reading_list_remover") {
     # a protobuf header from dom_distiller.
     # the inclusion of reading_list_download_service.h is allowed using
     # allow_circular_includes_from.
-    "//ios/chrome/browser/dom_distiller",
+    "//ios/chrome/browser/dom_distiller/model",
   ]
 }
 
@@ -146,7 +146,7 @@ source_set("unit_tests") {
     "//components/reading_list/core:test_support",
     "//components/sync/base",
     "//components/sync/model",
-    "//ios/chrome/browser/dom_distiller",
+    "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/web",

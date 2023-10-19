@@ -84,7 +84,7 @@ source_set("model") {
     "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/device_sharing",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
-    "//ios/chrome/browser/dom_distiller",
+    "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/download/background_service",
     "//ios/chrome/browser/favicon",

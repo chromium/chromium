@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DOM_DISTILLER_DISTILLER_VIEWER_H_
-#define IOS_CHROME_BROWSER_DOM_DISTILLER_DISTILLER_VIEWER_H_
+#ifndef IOS_CHROME_BROWSER_DOM_DISTILLER_MODEL_DISTILLER_VIEWER_H_
+#define IOS_CHROME_BROWSER_DOM_DISTILLER_MODEL_DISTILLER_VIEWER_H_
 
 #include <memory>
 #include <string>
@@ -109,4 +109,4 @@ class DistillerViewer : public DistillerViewerInterface {
 
 }  // namespace dom_distiller
 
-#endif  // IOS_CHROME_BROWSER_DOM_DISTILLER_DISTILLER_VIEWER_H_
+#endif  // IOS_CHROME_BROWSER_DOM_DISTILLER_MODEL_DISTILLER_VIEWER_H_

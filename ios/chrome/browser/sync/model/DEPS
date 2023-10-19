@@ -19,7 +19,7 @@ include_rules = [
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/settings/model/sync",
   "+ios/chrome/browser/trusted_vault/model",
-  "+ios/chrome/browser/dom_distiller",
+  "+ios/chrome/browser/dom_distiller/model",
   "+ios/chrome/browser/complex_tasks/model",
   "+ios/chrome/browser/supervised_user/model",
 ]

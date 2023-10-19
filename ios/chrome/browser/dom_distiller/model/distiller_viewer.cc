@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/dom_distiller/distiller_viewer.h"
+#include "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
 
 #include <string>
 #include <utility>

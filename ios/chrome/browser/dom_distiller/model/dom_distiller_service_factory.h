@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DOM_DISTILLER_DOM_DISTILLER_SERVICE_FACTORY_H_
-#define IOS_CHROME_BROWSER_DOM_DISTILLER_DOM_DISTILLER_SERVICE_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_DOM_DISTILLER_MODEL_DOM_DISTILLER_SERVICE_FACTORY_H_
+#define IOS_CHROME_BROWSER_DOM_DISTILLER_MODEL_DOM_DISTILLER_SERVICE_FACTORY_H_
 
 #include <memory>
 
@@ -41,4 +41,4 @@ class DomDistillerServiceFactory : public BrowserStateKeyedServiceFactory {
 
 }  // namespace dom_distiller
 
-#endif  // IOS_CHROME_BROWSER_DOM_DISTILLER_DOM_DISTILLER_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_DOM_DISTILLER_MODEL_DOM_DISTILLER_SERVICE_FACTORY_H_

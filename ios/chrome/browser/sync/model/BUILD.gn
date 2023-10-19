@@ -65,7 +65,7 @@ source_set("model") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/complex_tasks/model",
     "//ios/chrome/browser/consent_auditor/model",
-    "//ios/chrome/browser/dom_distiller",
+    "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/gcm",
     "//ios/chrome/browser/gcm/instance_id",
