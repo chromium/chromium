@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   // contexts inherit extension's cross-origin privileges.
   {
     auto execute_fetch = [](content::RenderFrameHost* host, const GURL& url) {
-      const char* kScript = R"(
+      static constexpr char kScript[] = R"(
         fetch('%s')
           .then(response => response.text())
           .catch(err => "Fetch error: " + err);

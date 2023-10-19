@@ -47,7 +47,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleEchoOrigin(
 // JavaScript snippet which performs a fetch given a URL expression to be
 // substituted as %s, then sends back the fetched content using
 // chrome.test.sendScriptResult.
-const char* kFetchScript = R"(
+constexpr char kFetchScript[] = R"(
   fetch(%s).then(function(result) {
     return result.text();
   }).then(function(text) {
@@ -59,7 +59,7 @@ const char* kFetchScript = R"(
 
 // JavaScript snippet which performs a fetch given a URL expression to be
 // substituted as %s.
-const char* kDOMFetchScript = R"(
+constexpr char kDOMFetchScript[] = R"(
   fetch(%s).then(function(result) {
     return result.text();
   }).catch(function(err) {

@@ -71,14 +71,14 @@ const char kSanitizedTestManagementPolicy[] =
     "  },"
     "}";
 
-const char kTestManagementPolicy3[] =
+constexpr char kTestManagementPolicy3[] =
     "{"
     "  \"*\": {"
     "    \"runtime_blocked_hosts\": [\"%s\"]"
     "  }"
     "}";
 
-const char kTestManagementPolicy4[] =
+constexpr char kTestManagementPolicy4[] =
     "{"
     "  \"*\": {"
     "    \"runtime_allowed_hosts\": [\"%s\"]"

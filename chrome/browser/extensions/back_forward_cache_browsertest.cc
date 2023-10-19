@@ -502,14 +502,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
 
-  std::string action =
+  static constexpr char kAction[] =
       R"HTML(
         chrome.runtime.sendMessage('%s', 'some message',
           () => { document.title = 'sent'});
       )HTML";
-  EXPECT_TRUE(
-      ExecJs(render_frame_host_a.get(),
-             base::StringPrintf(action.c_str(), extension->id().c_str())));
+  EXPECT_TRUE(ExecJs(render_frame_host_a.get(),
+                     base::StringPrintf(kAction, extension->id().c_str())));
 
   // 2) Wait until the sendMessage has completed.
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
