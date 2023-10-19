@@ -3130,9 +3130,6 @@ bool ChromeContentBrowserClient::GetCanResize(content::Page* page) {
   return false;
 #else
   BrowserView* browser_view = GetBrowserView(page);
-  if (!browser_view) {
-    return false;
-  }
   return browser_view && browser_view->CanResize();
 #endif  // !defined(TOOLKIT_VIEWS)
 }

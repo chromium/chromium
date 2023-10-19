@@ -1,0 +1,12 @@
+{
+  "name": "Multi-page Additional Windowing Controls Test App",
+  "icons": [
+    {
+      "src": "256x256-green.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "standalone"
+}

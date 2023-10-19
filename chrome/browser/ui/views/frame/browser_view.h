@@ -46,8 +46,10 @@
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -114,6 +116,7 @@ class BrowserView : public BrowserWindow,
                     public ui::AcceleratorProvider,
                     public views::WidgetDelegate,
                     public views::WidgetObserver,
+                    public content::WebContentsObserver,
                     public views::ClientView,
                     public infobars::InfoBarContainer::Delegate,
                     public ExclusiveAccessContext,
@@ -715,6 +718,9 @@ class BrowserView : public BrowserWindow,
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetSizeConstraintsChanged(views::Widget* widget) override;
 
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+
   // views::ClientView:
   views::CloseRequestResult OnWindowCloseRequested() override;
   int NonClientHitTest(const gfx::Point& point) override;
@@ -828,6 +834,26 @@ class BrowserView : public BrowserWindow,
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, BrowserView);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
   class AccessibilityModeObserver;
+
+  // Data scoped to a single page. PageData has the same lifetime as the page's
+  // main document.
+  class PageData : public content::PageUserData<PageData> {
+   public:
+    explicit PageData(content::Page& page);
+    PageData(const PageData&) = delete;
+    PageData& operator=(const PageData&) = delete;
+
+    absl::optional<bool> can_resize() const { return can_resize_; }
+    void set_can_resize(absl::optional<bool> can_resize) {
+      can_resize_ = can_resize;
+    }
+
+    PAGE_USER_DATA_KEY_DECL();
+
+   private:
+    // Keeps track of the resizability set by `window.setResizable(bool)` API.
+    absl::optional<bool> can_resize_ = absl::nullopt;
+  };
 
   // If the browser is in immersive full screen mode, it will reveal the
   // tabstrip for a short duration. This is useful for shortcuts that perform
@@ -1272,8 +1298,9 @@ class BrowserView : public BrowserWindow,
   absl::optional<content::PermissionController::SubscriptionId>
       window_management_subscription_id_;
 
-  // Keeps track of the resizability set by `window.setResizable(bool)` API.
-  absl::optional<bool> can_resize_from_web_api_;
+  // Caching the last value of `PageData::can_resize_` that has been notified to
+  // the WidgetObservers to avoid notifying them when nothing has changed.
+  absl::optional<bool> cached_can_resize_from_web_api_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 

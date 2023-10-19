@@ -1641,8 +1641,11 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     old_contents->StoreFocus();
   }
 
+  WebContentsObserver::Observe(new_contents);
+
+  // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
   // window.setResizable API should never be called from multi-tab browser.
-  CHECK(!can_resize_from_web_api_);
+  CHECK(!GetCanResizeFromWebAPI());
 
   // If |contents_container_| already has the correct WebContents, we can save
   // some work.  This also prevents extra events from being reported by the
@@ -2531,26 +2534,59 @@ void BrowserView::OnWidgetVisibilityChanged(views::Widget* widget,
   }
 }
 
+BrowserView::PageData::PageData(content::Page& page) : PageUserData(page) {}
+
+PAGE_USER_DATA_KEY_IMPL(BrowserView::PageData);
+
 absl::optional<bool> BrowserView::GetCanResizeFromWebAPI() const {
-  // TODO(laurila, crbug.com/1466855): Use PageUserData instead.
-  return can_resize_from_web_api_;
+  // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
+  if (!GetIsWebAppType() || browser()->tab_strip_model()->count() > 1) {
+    return absl::nullopt;
+  }
+
+  // The value can only be set in web apps, where there currently can only be 1
+  // WebContents, the return value can be determined only by looking at the
+  // value set by the active WebContents' primary page.
+  content::WebContents* web_contents = GetActiveWebContents();
+  if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
+    return absl::nullopt;
+  }
+
+  if (auto* data = PageData::GetForPage(
+          web_contents->GetPrimaryMainFrame()->GetPage())) {
+    return data->can_resize();
+  }
+  return absl::nullopt;
 }
 
 void BrowserView::SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {
+  // The value can only be set in web apps, where there currently can only be 1
+  // WebContents, the return value can be determined only by looking at the
+  // value set by the active WebContents' primary page.
   content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
+  if (!web_contents || !web_contents->GetPrimaryMainFrame() || !GetWidget()) {
     return;
   }
 
-  // TODO(laurila, crbug.com/1466855): Use PageUserData instead.
-  if (can_resize == can_resize_from_web_api_) {
+  if (cached_can_resize_from_web_api_ == can_resize) {
     return;
   }
 
-  can_resize_from_web_api_ = can_resize;
-  if (GetWidget()) {
-    GetWidget()->OnSizeConstraintsChanged();
+  // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
+  // Setting it absl::nullopt should never be blocked.
+  if (can_resize.has_value() && browser()->tab_strip_model()->count() > 1) {
+    web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf("window.setResizable blocked due to being called "
+                           "from a multi-tab browser."));
+    return;
   }
+
+  cached_can_resize_from_web_api_ = can_resize;
+  PageData::GetOrCreateForPage(web_contents->GetPrimaryMainFrame()->GetPage())
+      ->set_can_resize(can_resize);
+
+  GetWidget()->OnSizeConstraintsChanged();
 }
 
 void BrowserView::OnWidgetSizeConstraintsChanged(views::Widget* widget) {
@@ -2563,6 +2599,21 @@ void BrowserView::OnWidgetSizeConstraintsChanged(views::Widget* widget) {
   if (content::RenderWidgetHost* render_widget_host =
           web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost()) {
     render_widget_host->SynchronizeVisualProperties();
+  }
+}
+
+void BrowserView::PrimaryPageChanged(content::Page& page) {
+  auto can_resize = GetCanResizeFromWebAPI();
+  if (cached_can_resize_from_web_api_ == can_resize) {
+    return;
+  }
+  cached_can_resize_from_web_api_ = can_resize;
+
+  // Observers must be notified when there's new `Page` with a differing
+  // `can_resize` value to make sure that they know that `Widget`'s
+  // resizability has changed.
+  if (GetWidget()) {
+    GetWidget()->OnSizeConstraintsChanged();
   }
 }
 
