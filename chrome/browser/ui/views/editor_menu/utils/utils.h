@@ -14,8 +14,6 @@ namespace chromeos::editor_menu {
 
 enum class CardType { kQuickAnswers = 0, kEditorMenu };
 
-int GetEditorMenuWidth(int anchor_view_width);
-
 // Helper to compute editor menu bounds that for the provided anchor view
 // bounds. This tries to position the editor menu somewhere above/below/around
 // the anchor view while keeping the editor menu on-screen. Provided anchor view

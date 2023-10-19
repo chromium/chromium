@@ -144,11 +144,10 @@ bool EditorMenuPromoCardView::AcceleratorPressed(
 
 void EditorMenuPromoCardView::UpdateBounds(
     const gfx::Rect& anchor_view_bounds) {
-  const int promo_card_width = GetEditorMenuWidth(anchor_view_bounds.width());
-
   // Multiline labels aren't resized properly in flex or box layouts. According
   // to https://crbug.com/678337#c7 this isn't easy to fix. As a workaround, we
   // explicitly set the labels' maximum width.
+  const int promo_card_width = anchor_view_bounds.width();
   const int label_width = GetPromoCardLabelWidth(promo_card_width);
   title_->SetMaximumWidth(label_width);
   description_->SetMaximumWidth(label_width);

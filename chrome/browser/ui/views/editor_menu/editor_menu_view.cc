@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 
+#include <algorithm>
 #include <array>
 #include <string_view>
 #include <utility>
@@ -52,6 +53,9 @@ namespace {
 constexpr char kWidgetName[] = "EditorMenuViewWidget";
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 14);
+
+// Min width in rewrite mode to ensure there is space for the chips.
+constexpr int kEditorMenuRewriteModeMinWidth = 288;
 
 // Spacing to apply between and around chips.
 constexpr int kChipsHorizontalPadding = 8;
@@ -153,7 +157,10 @@ void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
-  const int editor_menu_width = GetEditorMenuWidth(anchor_view_bounds.width());
+  const int editor_menu_width = editor_menu_mode_ == EditorMenuMode::kWrite
+                                    ? anchor_view_bounds.width()
+                                    : std::max(anchor_view_bounds.width(),
+                                               kEditorMenuRewriteModeMinWidth);
   UpdateChipsContainer(editor_menu_width);
 
   GetWidget()->SetBounds(GetEditorMenuBounds(
