@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 
@@ -41,27 +40,29 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
   // *num_bytes.
   //
   // On failure or MOJO_RESULT_SHOULD_WAIT, there will be no change to the
-  // handle, and *pending and *num_bytes will be unused.
+  // handle, and *pending will be nulled out.
   static MojoResult BeginWrite(mojo::ScopedDataPipeProducerHandle* handle,
-                               scoped_refptr<NetToMojoPendingBuffer>* pending,
-                               uint32_t* num_bytes);
+                               scoped_refptr<NetToMojoPendingBuffer>* pending);
+
   // Called to indicate the buffer is done being written to. Passes ownership
   // of the pipe back to the caller.
   mojo::ScopedDataPipeProducerHandle Complete(uint32_t num_bytes);
-  char* buffer() { return static_cast<char*>(buffer_); }
+
+  char* buffer() { return buffer_.data(); }
+  uint32_t size() const { return static_cast<uint32_t>(buffer_.size()); }
 
  private:
   friend class base::RefCountedThreadSafe<NetToMojoPendingBuffer>;
   // Takes ownership of the handle.
   NetToMojoPendingBuffer(mojo::ScopedDataPipeProducerHandle handle,
-                         void* buffer);
+                         base::span<char> buffer);
   ~NetToMojoPendingBuffer();
-  mojo::ScopedDataPipeProducerHandle handle_;
 
-  // `buffer_` is not a raw_ptr<...> for performance reasons: pointee is never
-  // protected by BackupRefPtr, because the pointer comes either from using
-  // `mmap`, MapViewOfFile or base::AllocPages directly.
-  RAW_PTR_EXCLUSION void* buffer_;
+  mojo::ScopedDataPipeProducerHandle handle_;
+  // `buffer_` is not a raw_span<...> for performance reasons (also, pointee
+  // would never be protected under BackupRefPtr, because the pointer comes
+  // either from using `mmap`, MapViewOfFile or base::AllocPages directly).
+  base::span<char> buffer_;
 };
 
 // Net side of a Net -> Mojo copy. The data will be read from the network and

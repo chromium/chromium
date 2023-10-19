@@ -1765,23 +1765,25 @@ void URLLoader::ReadMore() {
     // TODO: we should use the abstractions in MojoAsyncResourceHandler.
     DCHECK_EQ(0u, pending_write_buffer_offset_);
     MojoResult result = NetToMojoPendingBuffer::BeginWrite(
-        &response_body_stream_, &pending_write_, &pending_write_buffer_size_);
-    if (result != MOJO_RESULT_OK && result != MOJO_RESULT_SHOULD_WAIT) {
-      // The response body stream is in a bad state. Bail.
-      NotifyCompleted(net::ERR_FAILED);
-      return;
+        &response_body_stream_, &pending_write_);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_SHOULD_WAIT:
+        // The pipe is full. We need to wait for it to have more space.
+        writable_handle_watcher_.ArmOrNotify();
+        return;
+      default:
+        // The response body stream is in a bad state. Bail.
+        NotifyCompleted(net::ERR_FAILED);
+        return;
     }
-
+    pending_write_buffer_size_ = pending_write_->size();
     DCHECK_GT(static_cast<uint32_t>(std::numeric_limits<int>::max()),
               pending_write_buffer_size_);
     if (consumer_handle_.is_valid()) {
       DCHECK_GE(pending_write_buffer_size_,
                 static_cast<uint32_t>(net::kMaxBytesToSniff));
-    }
-    if (result == MOJO_RESULT_SHOULD_WAIT) {
-      // The pipe is full. We need to wait for it to have more space.
-      writable_handle_watcher_.ArmOrNotify();
-      return;
     }
   }
 

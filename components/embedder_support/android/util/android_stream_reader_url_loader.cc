@@ -350,22 +350,25 @@ void AndroidStreamReaderURLLoader::ReadMore() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!pending_buffer_.get());
 
-  uint32_t num_bytes;
   MojoResult mojo_result = network::NetToMojoPendingBuffer::BeginWrite(
-      &producer_handle_, &pending_buffer_, &num_bytes);
-  if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
-    // The pipe is full. We need to wait for it to have more space.
-    writable_handle_watcher_.ArmOrNotify();
-    return;
-  } else if (mojo_result == MOJO_RESULT_FAILED_PRECONDITION) {
-    // The data pipe consumer handle has been closed.
-    RequestComplete(net::ERR_ABORTED);
-    return;
-  } else if (mojo_result != MOJO_RESULT_OK) {
-    // The body stream is in a bad state. Bail out.
-    RequestComplete(net::ERR_UNEXPECTED);
-    return;
+      &producer_handle_, &pending_buffer_);
+  switch (mojo_result) {
+    case MOJO_RESULT_OK:
+      break;
+    case MOJO_RESULT_SHOULD_WAIT:
+      // The pipe is full. We need to wait for it to have more space.
+      writable_handle_watcher_.ArmOrNotify();
+      return;
+    case MOJO_RESULT_FAILED_PRECONDITION:
+      // The data pipe consumer handle has been closed.
+      RequestComplete(net::ERR_ABORTED);
+      return;
+    default:
+      // The body stream is in a bad state. Bail out.
+      RequestComplete(net::ERR_UNEXPECTED);
+      return;
   }
+  uint32_t num_bytes = pending_buffer_->size();
   scoped_refptr<net::IOBuffer> buffer(
       new network::NetToMojoIOBuffer(pending_buffer_.get()));
 

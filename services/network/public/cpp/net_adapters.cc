@@ -14,8 +14,10 @@ namespace network {
 
 NetToMojoPendingBuffer::NetToMojoPendingBuffer(
     mojo::ScopedDataPipeProducerHandle handle,
-    void* buffer)
-    : handle_(std::move(handle)), buffer_(buffer) {}
+    base::span<char> buffer)
+    : handle_(std::move(handle)), buffer_(buffer) {
+  CHECK_LE(buffer_.size(), std::numeric_limits<uint32_t>::max());
+}
 
 NetToMojoPendingBuffer::~NetToMojoPendingBuffer() {
   if (handle_.is_valid())
@@ -24,27 +26,29 @@ NetToMojoPendingBuffer::~NetToMojoPendingBuffer() {
 
 MojoResult NetToMojoPendingBuffer::BeginWrite(
     mojo::ScopedDataPipeProducerHandle* handle,
-    scoped_refptr<NetToMojoPendingBuffer>* pending,
-    uint32_t* num_bytes) {
+    scoped_refptr<NetToMojoPendingBuffer>* pending) {
   void* buf = nullptr;
   const uint32_t kMaxBufSize = features::GetNetAdapterMaxBufSize();
-  *num_bytes = kMaxBufSize;
+  uint32_t num_bytes = kMaxBufSize;
   MojoResult result =
-      (*handle)->BeginWriteData(&buf, num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
-  if (result == MOJO_RESULT_OK) {
-    if (*num_bytes > kMaxBufSize) {
-      *num_bytes = kMaxBufSize;
-    }
-
-    *pending = new NetToMojoPendingBuffer(std::move(*handle), buf);
+      (*handle)->BeginWriteData(&buf, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+  if (result != MOJO_RESULT_OK) {
+    *pending = nullptr;
+    return result;
   }
-  return result;
+  if (num_bytes > kMaxBufSize) {
+    num_bytes = kMaxBufSize;
+  }
+  *pending = new NetToMojoPendingBuffer(
+      std::move(*handle),
+      {static_cast<char*>(buf), static_cast<size_t>(num_bytes)});
+  return MOJO_RESULT_OK;
 }
 
 mojo::ScopedDataPipeProducerHandle NetToMojoPendingBuffer::Complete(
     uint32_t num_bytes) {
   handle_->EndWriteData(num_bytes);
-  buffer_ = nullptr;
+  buffer_ = base::span<char>();
   return std::move(handle_);
 }
 

@@ -317,9 +317,8 @@ class ServiceWorkerResourceReaderImpl::DataReader {
       return;
     }
 
-    uint32_t num_bytes = 0;
     MojoResult rv = network::NetToMojoPendingBuffer::BeginWrite(
-        &producer_handle_, &pending_buffer_, &num_bytes);
+        &producer_handle_, &pending_buffer_);
     switch (rv) {
       case MOJO_RESULT_INVALID_ARGUMENT:
       case MOJO_RESULT_BUSY:
@@ -338,6 +337,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
         break;
     }
 
+    uint32_t num_bytes = pending_buffer_->size();
     num_bytes = std::min(num_bytes, blink::BlobUtils::GetDataPipeChunkSize());
     scoped_refptr<network::NetToMojoIOBuffer> buffer =
         base::MakeRefCounted<network::NetToMojoIOBuffer>(pending_buffer_.get());
