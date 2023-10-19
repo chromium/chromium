@@ -1242,10 +1242,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .WithBrowser()
             .InGuestMode()
             .FeatureIds({"screenplay-17a056b4-ed53-415f-a186-99204a7c2a21"}),
-        // TODO(b/194255793): Fix this.
-        // TestCase("saveFileDialogDownloads")
-        //     .WithBrowser()
-        //     .InIncognito()
+        TestCase("saveFileDialogDownloads").WithBrowser().InIncognito(),
         // TODO(crbug.com/1236842): Remove flakiness and enable this test.
         // TestCase("saveFileDialogDownloadsNewFolderButton").WithBrowser(),
         TestCase("saveFileDialogDownloadsNewFolderButton").WithBrowser(),
@@ -1255,15 +1252,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openFileDialogDrive")
             .WithBrowser()
             .FeatureIds({"screenplay-a63f2d5c-2cf8-4b5d-97fa-cd1f34004556"}),
-        // TODO(b/194255793): Fix this.
-        // TestCase("openFileDialogDrive").WithBrowser().InIncognito(),
+        TestCase("openFileDialogDrive").WithBrowser().InIncognito(),
         TestCase("saveFileDialogDrive")
             .WithBrowser()
             .FeatureIds({"screenplay-17a056b4-ed53-415f-a186-99204a7c2a21"}),
-        // TODO(b/194255793): Fix this.
-        // TestCase("saveFileDialogDrive").WithBrowser().InIncognito(),
-        // TODO(b/194255793): Fix this.
-        // TestCase("openFileDialogDriveFromBrowser").WithBrowser(),
+        TestCase("saveFileDialogDrive").WithBrowser().InIncognito(),
+        TestCase("openFileDialogDriveFromBrowser").WithBrowser(),
         TestCase("openFileDialogDriveHostedDoc").WithBrowser(),
         TestCase("openFileDialogDriveEncryptedFile").WithBrowser(),
         TestCase("openFileDialogDriveHostedNeedsFile").WithBrowser(),
