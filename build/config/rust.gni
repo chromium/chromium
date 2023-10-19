@@ -26,6 +26,11 @@ declare_args() {
   # code with C/C++ to get a functional product.
   enable_rust = build_with_chromium
 
+  # The CXX tool is in //third_party/rust which is not shared with downstream
+  # projects yet. So they need to copy the required dependencies and GN files
+  # into their project to enable CXX there.
+  enable_cxx = build_with_chromium
+
   # As we incrementally enable Rust on mainstream builders, we want to enable
   # the toolchain (by switching 'enable_rust' to true) while still disabling
   # almost all Rust features). Yet we still want to have some builders with
