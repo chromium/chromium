@@ -27,6 +27,8 @@ using ::privacy_sandbox::tracking_protection::
 using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingAckAction;
 
+using NoticeType = ::privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
+
 class MockTrackingProtectionObserver
     : public TrackingProtectionOnboarding::Observer {
  public:
@@ -527,6 +529,201 @@ TEST_F(TrackingProtectionOnboardingWithFeatureOverrideTest,
        StartsUpAsEligible) {
   EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingStatus(),
             TrackingProtectionOnboarding::OnboardingStatus::kEligible);
+}
+
+class TrackingProtectionOffboardingTest
+    : public TrackingProtectionOnboardingTest {
+ public:
+  void RestartServiceWithRollbackFlag() {
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kTrackingProtectionOnboardingRollback);
+    tracking_protection_onboarding_service_ =
+        std::make_unique<TrackingProtectionOnboarding>(
+            prefs(), version_info::Channel::UNKNOWN);
+  }
+
+  void RestartServiceWithoutRollbackFlag() {
+    feature_list_.Reset();
+    tracking_protection_onboarding_service_ =
+        std::make_unique<TrackingProtectionOnboarding>(
+            prefs(), version_info::Channel::UNKNOWN);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(TrackingProtectionOffboardingTest, IneligibleProfileDoesntNeedNotice) {
+  // Setup
+  // We start with an ineligible profile (default)
+
+  // Action
+  RestartServiceWithRollbackFlag();
+
+  // Verification
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+            NoticeType::kNone);
+}
+
+TEST_F(TrackingProtectionOffboardingTest, NonOnboardedProfileDoesntNeedNoice) {
+  // Setup
+  // We start with an eligible profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+
+  // Action
+  RestartServiceWithRollbackFlag();
+
+  // Verification
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+            NoticeType::kNone);
+}
+
+TEST_F(TrackingProtectionOffboardingTest, OnboardedProfileNeedsNotice) {
+  // Setup
+  // We start with an eligible profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOnboarding);
+
+  // Action
+  RestartServiceWithRollbackFlag();
+
+  // Verification
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+            NoticeType::kOffboarding);
+}
+
+TEST_F(TrackingProtectionOffboardingTest, AckedProfileNeedsNotice) {
+  // Setup
+  // We start with an eligible profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOnboarding);
+  tracking_protection_onboarding()->NoticeActionTaken(
+      NoticeType::kOnboarding,
+      TrackingProtectionOnboarding::NoticeAction::kGotIt);
+
+  // Action
+  RestartServiceWithRollbackFlag();
+
+  // Verification
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+            NoticeType::kOffboarding);
+}
+
+TEST_F(TrackingProtectionOffboardingTest, NoticeNotRequiredIfShownOnce) {
+  // Setup
+  // We start with an onboarded profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOnboarding);
+  RestartServiceWithRollbackFlag();
+
+  // Action
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOffboarding);
+
+  // Verification
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+            NoticeType::kNone);
+}
+
+TEST_F(TrackingProtectionOffboardingTest, OffboardedNotifies) {
+  // Setup
+  // We start with an onboarded profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOnboarding);
+  RestartServiceWithRollbackFlag();
+
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(observer,
+              OnTrackingProtectionOnboardingUpdated(
+                  TrackingProtectionOnboarding::OnboardingStatus::kOffboarded));
+  // Action
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOffboarding);
+
+  // Verification
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionOffboardingTest, NoticeShownDoesntNotify) {
+  // Setup
+  // We start with an onboarded profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOnboarding);
+  RestartServiceWithRollbackFlag();
+
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(0);
+  // Offborading notice is required before the action.
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+            NoticeType::kOffboarding);
+  // Action
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOffboarding);
+
+  // Verification
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
+            NoticeType::kNone);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionOffboardingTest, NoticeShownPersists) {
+  // Setup
+  // We start with an onboarded profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOnboarding);
+  RestartServiceWithRollbackFlag();
+
+  // Action
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOffboarding);
+
+  // Verification
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kTrackingProtectionOffboarded));
+  EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionOffboardedSince),
+            base::Time::Now());
+}
+
+TEST_F(TrackingProtectionOffboardingTest, NoticeActionTakenPersists) {
+  // Setup
+  // We start with an onboarded profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOnboarding);
+  RestartServiceWithRollbackFlag();
+
+  // Action
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOffboarding);
+  tracking_protection_onboarding()->NoticeActionTaken(
+      NoticeType::kOffboarding,
+      TrackingProtectionOnboarding::NoticeAction::kGotIt);
+
+  // Verification
+  EXPECT_EQ(
+      static_cast<TrackingProtectionOnboardingAckAction>(
+          prefs()->GetInteger(prefs::kTrackingProtectionOffboardingAckAction)),
+      TrackingProtectionOnboardingAckAction::kGotIt);
+}
+
+TEST_F(TrackingProtectionOffboardingTest,
+       GoesBackToPreviousStatusWhenOffboardingDisabled) {
+  // Setup
+  // We start with an onboarded profile
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOnboarding);
+  RestartServiceWithRollbackFlag();
+
+  // Action
+  // Before showing the offboarding notice, the user is considered onboarded:
+  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingStatus(),
+            TrackingProtectionOnboarding::OnboardingStatus::kOnboarded);
+  tracking_protection_onboarding()->NoticeShown(NoticeType::kOffboarding);
+
+  // Verification
+  // User was offboarded successfully.
+  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingStatus(),
+            TrackingProtectionOnboarding::OnboardingStatus::kOffboarded);
+  // Restarting without the flag is equivalent to "disabling" offboarding.
+  // User's status should go back to its value before the offboarding.
+  RestartServiceWithoutRollbackFlag();
+  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingStatus(),
+            TrackingProtectionOnboarding::OnboardingStatus::kOnboarded);
 }
 
 class TrackingProtectionOnboardingStartupStateTest

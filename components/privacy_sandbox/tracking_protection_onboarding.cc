@@ -166,6 +166,27 @@ void RecordHistogramsOnStartup(PrefService* pref_service) {
   }
 }
 
+bool IsRollbackEnabled() {
+  return base::FeatureList::IsEnabled(
+      privacy_sandbox::kTrackingProtectionOnboardingRollback);
+}
+
+void OffboardingNoticeShown(PrefService* pref_service) {
+  if (pref_service->GetBoolean(prefs::kTrackingProtectionOffboarded)) {
+    return;
+  }
+  pref_service->SetBoolean(prefs::kTrackingProtectionOffboarded, true);
+  pref_service->SetTime(prefs::kTrackingProtectionOffboardedSince,
+                        base::Time::Now());
+}
+
+void OffboardingNoticeActionTaken(
+    TrackingProtectionOnboarding::NoticeAction action,
+    PrefService* pref_service) {
+  pref_service->SetInteger(prefs::kTrackingProtectionOffboardingAckAction,
+                           static_cast<int>(ToInternalAckAction(action)));
+}
+
 }  // namespace
 
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
@@ -185,6 +206,12 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
       base::BindRepeating(
           &TrackingProtectionOnboarding::OnOnboardingAckedChanged,
           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kTrackingProtectionOffboarded,
+      base::BindRepeating(
+          &TrackingProtectionOnboarding::OnOffboardingPrefChanged,
+          base::Unretained(this)));
+
   // If we're forcing eligibility, then let' set it now.
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kTrackingProtectionOnboardingForceEligibility) &&
@@ -219,6 +246,12 @@ void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
 void TrackingProtectionOnboarding::OnOnboardingAckedChanged() const {
   for (auto& observer : observers_) {
     observer.OnShouldShowNoticeUpdated();
+  }
+}
+
+void TrackingProtectionOnboarding::OnOffboardingPrefChanged() const {
+  for (auto& observer : observers_) {
+    observer.OnTrackingProtectionOnboardingUpdated(GetOnboardingStatus());
   }
 }
 
@@ -268,13 +301,6 @@ void TrackingProtectionOnboarding::MaybeResetOnboardingPrefs() {
 }
 
 void TrackingProtectionOnboarding::OnboardingNoticeShown() {
-  NoticeShown(NoticeType::kOnboarding);
-}
-
-void TrackingProtectionOnboarding::NoticeShown(NoticeType notice_type) {
-  if (notice_type != NoticeType::kOnboarding) {
-    return;
-  }
   base::RecordAction(
       base::UserMetricsAction("TrackingProtection.Notice.Shown"));
 
@@ -300,16 +326,21 @@ void TrackingProtectionOnboarding::NoticeShown(NoticeType notice_type) {
       eligible_to_onboarded_duration);
 }
 
-void TrackingProtectionOnboarding::OnboardingNoticeActionTaken(
-    NoticeAction action) {
-  NoticeActionTaken(NoticeType::kOnboarding, action);
+void TrackingProtectionOnboarding::NoticeShown(NoticeType notice_type) {
+  switch (notice_type) {
+    case NoticeType::kNone:
+      return;
+    case NoticeType::kOnboarding:
+      OnboardingNoticeShown();
+      return;
+    case NoticeType::kOffboarding:
+      OffboardingNoticeShown(pref_service_);
+      return;
+  }
 }
 
-void TrackingProtectionOnboarding::NoticeActionTaken(NoticeType notice_type,
-                                                     NoticeAction action) {
-  if (notice_type != NoticeType::kOnboarding) {
-    return;
-  }
+void TrackingProtectionOnboarding::OnboardingNoticeActionTaken(
+    NoticeAction action) {
   RecordActionMetrics(action);
 
   if (pref_service_->GetBoolean(prefs::kTrackingProtectionOnboardingAcked)) {
@@ -333,6 +364,20 @@ void TrackingProtectionOnboarding::NoticeActionTaken(NoticeType notice_type,
       last_shown_to_acked_duration);
 }
 
+void TrackingProtectionOnboarding::NoticeActionTaken(NoticeType notice_type,
+                                                     NoticeAction action) {
+  switch (notice_type) {
+    case NoticeType::kNone:
+      return;
+    case NoticeType::kOnboarding:
+      OnboardingNoticeActionTaken(action);
+      return;
+    case NoticeType::kOffboarding:
+      OffboardingNoticeActionTaken(action, pref_service_);
+      return;
+  }
+}
+
 bool TrackingProtectionOnboarding::ShouldShowOnboardingNotice() {
   return GetRequiredNotice() == NoticeType::kOnboarding;
 }
@@ -343,8 +388,18 @@ NoticeType TrackingProtectionOnboarding::GetRequiredNotice() {
     case TrackingProtectionOnboardingStatus::kIneligible:
       return NoticeType::kNone;
     case TrackingProtectionOnboardingStatus::kEligible:
-      return NoticeType::kOnboarding;
+      // We haven't showed the user any notice yet. only shown them the
+      // onboarding notice if we're not planning on offboarding them.
+      return IsRollbackEnabled() ? NoticeType::kNone : NoticeType::kOnboarding;
     case TrackingProtectionOnboardingStatus::kOnboarded:
+      // We've already showed the user the onboarding notice. We
+      // offboard them if applicable. Otherwise, we keep showing the
+      // Onboarding Notice until they Ack.
+      if (IsRollbackEnabled()) {
+        return pref_service_->GetBoolean(prefs::kTrackingProtectionOffboarded)
+                   ? NoticeType::kNone
+                   : NoticeType::kOffboarding;
+      }
       return pref_service_->GetBoolean(
                  prefs::kTrackingProtectionOnboardingAcked)
                  ? NoticeType::kNone
@@ -358,6 +413,10 @@ bool TrackingProtectionOnboarding::IsOffboarded() const {
 
 TrackingProtectionOnboarding::OnboardingStatus
 TrackingProtectionOnboarding::GetOnboardingStatus() const {
+  if (IsRollbackEnabled() &&
+      pref_service_->GetBoolean(prefs::kTrackingProtectionOffboarded)) {
+    return OnboardingStatus::kOffboarded;
+  }
   auto onboarding_status = GetInternalOnboardingStatus(pref_service_);
   switch (onboarding_status) {
     case TrackingProtectionOnboardingStatus::kIneligible:

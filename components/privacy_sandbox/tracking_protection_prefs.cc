@@ -32,6 +32,16 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kTrackingProtectionOnboardingAckAction,
       static_cast<int>(TrackingProtectionOnboardingAckAction::kNotSet));
 
+  // Offboarding
+  registry->RegisterBooleanPref(prefs::kTrackingProtectionOffboarded, false);
+
+  registry->RegisterTimePref(prefs::kTrackingProtectionOffboardedSince,
+                             base::Time());
+
+  registry->RegisterIntegerPref(
+      prefs::kTrackingProtectionOffboardingAckAction,
+      static_cast<int>(TrackingProtectionOnboardingAckAction::kNotSet));
+
   // Tracking Protection Settings Prefs
   registry->RegisterBooleanPref(
       prefs::kBlockAll3pcToggleEnabled, false,

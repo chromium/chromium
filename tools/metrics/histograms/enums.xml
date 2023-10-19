@@ -65591,6 +65591,7 @@ from previous Chrome versions.
   <int value="109577361" label="ForbidSyncXHRInPageDismissal:enabled"/>
   <int value="110888614" label="ReduceDisplayNotifications:enabled"/>
   <int value="112140177" label="DesktopPWAsUnifiedInstall:disabled"/>
+  <int value="113142558" label="TrackingProtectionOnboardingRollback:enabled"/>
   <int value="114480372" label="DeprecateAltClick:enabled"/>
   <int value="114541256" label="HomepagePromoCard:disabled"/>
   <int value="114657517" label="SecurePaymentConfirmationDebug:disabled"/>
@@ -66843,6 +66844,7 @@ from previous Chrome versions.
   <int value="719922283" label="MessagesForAndroidSaveCard:enabled"/>
   <int value="720931007" label="WebAuthenticationBle:enabled"/>
   <int value="722334179" label="NoncedPartitionedCookies:disabled"/>
+  <int value="722614233" label="TrackingProtectionOnboardingRollback:disabled"/>
   <int value="723318188" label="EnableUniveralLinks:disabled"/>
   <int value="723384042" label="RenderDocument:disabled"/>
   <int value="723385329" label="SystemEmojiPickerClipboard:enabled"/>

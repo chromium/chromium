@@ -138,6 +138,8 @@ class TrackingProtectionOnboarding : public KeyedService {
   virtual void OnOnboardingPrefChanged() const;
   // Called when the notice has been acked.
   virtual void OnOnboardingAckedChanged() const;
+  // Called when the underlying offboarding pref is changed.
+  virtual void OnOffboardingPrefChanged() const;
   base::ObserverList<Observer>::Unchecked observers_;
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
