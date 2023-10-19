@@ -148,7 +148,7 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   class ScopedModeEnabler;
 
   // The maximum number of run loop modes that can be monitored.
-  static constexpr int kNumModes = 4;
+  static constexpr int kNumModes = 3;
 
   // Timer callback scheduled by ScheduleDelayedWork.  This does not do any
   // work, but it signals |work_source_| so that delayed work can be performed
@@ -431,10 +431,6 @@ BASE_EXPORT bool IsHandlingSendEvent();
 #endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace message_pump_apple
-
-// Tasks posted to the message loop are posted under this mode, as well
-// as kCFRunLoopCommonModes.
-extern const CFStringRef BASE_EXPORT kMessageLoopExclusiveRunLoopMode;
 
 }  // namespace base
 

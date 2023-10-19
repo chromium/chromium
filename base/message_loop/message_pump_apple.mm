@@ -34,21 +34,18 @@
 
 namespace base {
 
-const CFStringRef kMessageLoopExclusiveRunLoopMode =
-    CFSTR("kMessageLoopExclusiveRunLoopMode");
-
 namespace {
 
 // Caches the state of the "TimerSlackMac" feature for efficiency.
 std::atomic_bool g_timer_slack = false;
 
 // Mask that determines which modes to use.
-enum { kCommonModeMask = 0x1, kAllModesMask = 0xf };
+enum { kCommonModeMask = 0b0000'0001, kAllModesMask = 0b0000'0111 };
 
 // Modes to use for MessagePumpNSApplication that are considered "safe".
-// Currently just common and exclusive modes. Ideally, messages would be pumped
-// in all modes, but that interacts badly with app modal dialogs (e.g. NSAlert).
-enum { kNSApplicationModalSafeModeMask = 0x3 };
+// Currently just the common mode. Ideally, messages would be pumped in all
+// modes, but that interacts badly with app modal dialogs (e.g. NSAlert).
+enum { kNSApplicationModalSafeModeMask = 0b0000'0001 };
 
 void NoOp(void* info) {}
 
@@ -123,9 +120,6 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
         // The standard Core Foundation "common modes" constant. Must always be
         // first in this list to match the value of kCommonModeMask.
         kCFRunLoopCommonModes,
-
-        // Mode that only sees Chrome work sources.
-        kMessageLoopExclusiveRunLoopMode,
 
         // Process work when NSMenus are fading out.
         CFSTR("com.apple.hitoolbox.windows.windowfadingmode"),

@@ -20,8 +20,8 @@
 namespace {
 
 // Internal constants from message_pump_apple.mm.
-constexpr int kAllModesMask = 0xf;
-constexpr int kNSApplicationModalSafeModeMask = 0x3;
+constexpr int kAllModesMask = 0b0000'0111;
+constexpr int kNSApplicationModalSafeModeMask = 0b0000'0001;
 
 }  // namespace
 
