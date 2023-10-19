@@ -149,11 +149,15 @@ void AutofillContextMenuManager::AppendItems() {
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
-  if (params_.field_renderer_id &&
-      personal_data_manager_->IsAutofillProfileEnabled() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillFallbackForAutocompleteUnrecognized)) {
-    MaybeAddFallbackForAutocompleteUnrecognizedToMenu(*driver);
+  if (ShouldAddAutofillManualFallbackItem(*driver)) {
+    menu_model_->AddTitle(l10n_util::GetStringUTF16(
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE));
+    menu_model_->AddItemWithStringId(
+        kAutofillFallbackForAutocompleteUnrecognized,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
+    menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+
+    LogManualFallbackContextMenuEntryShown(*driver);
   }
 }
 
@@ -226,40 +230,53 @@ void AutofillContextMenuManager::
               ->ShouldSuppressSuggestionsAndFillingByDefault());
 }
 
-void AutofillContextMenuManager::
-    MaybeAddFallbackForAutocompleteUnrecognizedToMenu(
-        ContentAutofillDriver& driver) {
-  AutofillManager& manager = driver.GetAutofillManager();
-  // Only show the context menu entry for address fields, which can be filled
-  // with at least one of the user's profiles.
-  AutofillField* field = GetAutofillField(manager, driver.GetFrameToken());
+bool AutofillContextMenuManager::ShouldAddAutofillManualFallbackItem(
+    ContentAutofillDriver& driver) {
+  if (!params_.field_renderer_id) {
+    // Autofill entries are only available in input or text area fields
+    return false;
+  }
+  if (!personal_data_manager_->IsAutofillProfileEnabled()) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillFallbackForAutocompleteUnrecognized)) {
+    return false;
+  }
+
+  AutofillField* field =
+      GetAutofillField(driver.GetAutofillManager(), driver.GetFrameToken());
+
   if (!field || FieldTypeGroupToFormType(field->Type().group()) !=
                     FormType::kAddressForm) {
-    return;
+    return false;
   }
+
+  // Only show the context menu entry for address fields, which can be filled
+  // with at least one of the user's profiles.
   CHECK(personal_data_manager_);
-  if (base::ranges::none_of(
-          personal_data_manager_->GetProfiles(), [&](AutofillProfile* profile) {
-            return profile->HasInfo(field->Type().GetStorableType());
-          })) {
-    return;
+  if (base::ranges::none_of(personal_data_manager_->GetProfiles(),
+                            [field](AutofillProfile* profile) {
+                              return profile->HasInfo(
+                                  field->Type().GetStorableType());
+                            })) {
+    return false;
   }
 
   // Depending on the Finch parameter, only show the context menu entry for
   // ac=unrecognized fields.
-  if (!field->ShouldSuppressSuggestionsAndFillingByDefault() &&
-      !features::kAutofillFallForAutocompleteUnrecognizedOnAllAddressField
-           .Get()) {
-    return;
-  }
+  return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
+         features::kAutofillFallForAutocompleteUnrecognizedOnAllAddressField
+             .Get();
+}
 
-  menu_model_->AddTitle(l10n_util::GetStringUTF16(
-      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE));
-  menu_model_->AddItemWithStringId(
-      kAutofillFallbackForAutocompleteUnrecognized,
-      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
-  menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  static_cast<BrowserAutofillManager&>(manager)
+void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(
+    ContentAutofillDriver& driver) {
+  AutofillField* field =
+      GetAutofillField(driver.GetAutofillManager(), driver.GetFrameToken());
+  CHECK(field);
+
+  static_cast<BrowserAutofillManager&>(driver.GetAutofillManager())
       .GetAutocompleteUnrecognizedFallbackEventLogger()
       .ContextMenuEntryShown(
           /*address_field_has_ac_unrecognized=*/field

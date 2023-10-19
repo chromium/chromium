@@ -63,14 +63,17 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   }
 
  private:
-  // If an address field was clicked, depending on its autocomplete attribute,
-  // adds an option to the context menu to trigger Autofill suggestions.
-  void MaybeAddFallbackForAutocompleteUnrecognizedToMenu(
-      ContentAutofillDriver& driver);
-
   // Triggers the feedback flow for Autofill command.
   void ExecuteAutofillFeedbackCommand(const LocalFrameToken& frame_token,
                                       AutofillManager& manager);
+
+  // Checks if the manual fallback context menu entry can be shown for the
+  // currently focused field.
+  bool ShouldAddAutofillManualFallbackItem(ContentAutofillDriver& driver);
+
+  // Emits metrics about showing the manual fallback context menu entry to the
+  // user.
+  void LogManualFallbackContextMenuEntryShown(ContentAutofillDriver& driver);
 
   // Triggers Autofill suggestions on the field that the context menu was
   // opened on.
