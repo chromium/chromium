@@ -140,7 +140,7 @@ one would expect it to be 3/4 full, so per-item overhead will be 0.25 *
 sizeof(T).
 
 `flat_set` and `flat_map` support a notion of transparent comparisons.
-Therefore you can, for example, lookup `base::StringPiece` in a set of
+Therefore you can, for example, lookup `std::string_view` in a set of
 `std::strings` without constructing a temporary `std::string`. This
 functionality is based on C++14 extensions to the `std::set`/`std::map`
 interface.
@@ -209,7 +209,7 @@ Example:
 ```cpp
 constexpr auto kSet = base::MakeFixedFlatSet<int>({1, 2, 3});
 
-constexpr auto kMap = base::MakeFixedFlatMap<base::StringPiece, int>(
+constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, int>(
     {{"foo", 1}, {"bar", 2}, {"baz", 3}});
 ```
 

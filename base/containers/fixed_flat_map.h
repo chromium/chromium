@@ -94,7 +94,7 @@ using fixed_flat_map = base::
 // input automatically.
 //
 // Example usage:
-//   constexpr auto kMap = base::MakeFixedFlatMapSorted<base::StringPiece, int>(
+//   constexpr auto kMap = base::MakeFixedFlatMapSorted<std::string_view, int>(
 //       {{"bar", 2}, {"baz", 3}, {"foo", 1}});
 template <class Key, class Mapped, size_t N, class Compare = std::less<>>
 constexpr fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMapSorted(
@@ -116,7 +116,7 @@ constexpr fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMapSorted(
 // is large, prefer `MakeFixedFlatMapSorted`.
 //
 // Example usage:
-//   constexpr auto kMap = base::MakeFixedFlatMap<base::StringPiece, int>(
+//   constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, int>(
 //       {{"foo", 1}, {"bar", 2}, {"baz", 3}});
 template <class Key, class Mapped, size_t N, class Compare = std::less<>>
 constexpr fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
