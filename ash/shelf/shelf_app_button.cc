@@ -1145,13 +1145,22 @@ void ShelfAppButton::UpdateProgressRingBounds() {
             },
             base::Unretained(this)));
     progress_indicator_->SetInnerIconVisible(false);
+    progress_indicator_->SetInnerRingVisible(false);
+    progress_indicator_->SetOuterRingStrokeWidth(2.0);
     SetPaintToLayer();
     layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
         [](ShelfAppButton* view, ui::ColorId color_id) {
           return view->GetColorProvider()->GetColor(color_id);
         },
         base::Unretained(this))));
-    progress_indicator_->SetColorId(cros_tokens::kCrosRefPrimary70);
+  }
+
+  if (app_status() == AppStatus::kPending) {
+    progress_indicator_->SetColorId(cros_tokens::kCrosSysHighlightShape);
+    progress_indicator_->SetOuterRingTrackVisible(true);
+  } else {
+    progress_indicator_->SetColorId(cros_tokens::kCrosSysPrimary);
+    progress_indicator_->SetOuterRingTrackVisible(false);
   }
 
   const gfx::Rect button_bounds(GetContentsBounds());
