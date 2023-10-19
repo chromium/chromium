@@ -254,17 +254,20 @@ void ContentAutofillDriver::ApplyFieldAction(
 }
 
 void ContentAutofillDriver::ExtractForm(
-    FormGlobalId form,
-    base::OnceCallback<void(const std::optional<FormData>&)>
-        response_callback) {
-  router().ExtractForm(
-      this, form, std::move(response_callback),
-      [](autofill::AutofillDriver* target, const FormRendererId& form,
-         base::OnceCallback<void(const std::optional<FormData>&)>
-             response_callback) {
-        cast(target)->GetAutofillAgent()->ExtractForm(
-            form, std::move(response_callback));
-      });
+    FormGlobalId form_id,
+    BrowserFormHandler browser_form_handler) {
+  using RendererFormHandler =
+      base::OnceCallback<void(const absl::optional<::autofill::FormData>&)>;
+  // Called on the autofill driver that hosts the form.
+  auto make_request = [](autofill::AutofillDriver* request_target,
+                         const FormRendererId& form_id,
+                         RendererFormHandler renderer_form_handler) {
+    cast(request_target)
+        ->GetAutofillAgent()
+        ->ExtractForm(form_id, std::move(renderer_form_handler));
+  };
+  router().ExtractForm(this, form_id, std::move(browser_form_handler),
+                       make_request);
 }
 
 void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(

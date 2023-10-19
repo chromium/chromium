@@ -117,14 +117,16 @@ namespace autofill {
 //                           +--------+
 //
 // If the event name is `f`, the control flow is as follows:
-//   Driver-3's AutofillDriver::f(args...) calls
-//   Router's   AutofillDriverRouter::f(this, args..., callback) calls
-//   Driver-0's AutofillDriver::callback(args...).
+//   Driver-3's AutofillDriver::f(args1...) calls
+//   Router's   AutofillDriverRouter::f(this, args1..., callback) calls
+//   Driver-0's AutofillDriver::callback(args2...),
+// where `args2` are obtained by mapping renderer forms to browser forms and
+// vice versa.
 //
 // Every function in AutofillDriverRouter takes a |source| parameter, which
 // points to the AutofillDriver that triggered the event. In events triggered by
-// the renderer, the source driver is the driver the associated renderer form
-// originates from.
+// the renderer, the source driver is the driver of the frame whose DOM contains
+// the renderer form.
 //
 // See ContentAutofillDriver for details on the naming pattern and an example.
 //
@@ -202,6 +204,7 @@ class AutofillDriverRouter {
                        const FormFieldData& field,
                        const gfx::RectF& bounding_box,
                        AutofillSuggestionTriggerSource trigger_source));
+  // This event is broadcast to all drivers.
   void DidEndTextFieldEditing(AutofillDriver* source,
                               void (*callback)(AutofillDriver* target));
   void DidFillAutofillFormData(AutofillDriver* source,
@@ -220,10 +223,12 @@ class AutofillDriverRouter {
                        const FormFieldData& field,
                        const gfx::RectF& bounding_box),
       void (*focus_no_longer_on_form)(AutofillDriver* target));
+  // This event is broadcast to all drivers.
   void FocusNoLongerOnForm(AutofillDriver* source,
                            bool had_interacted_form,
                            void (*callback)(AutofillDriver* target,
                                             bool had_interacted_form));
+  // This event is broadcast to all drivers.
   void HidePopup(AutofillDriver* source,
                  void (*callback)(AutofillDriver* target));
   void JavaScriptChangedAutofilledValue(
@@ -239,6 +244,7 @@ class AutofillDriverRouter {
       AutofillDriver* source,
       FormData form,
       void (*callback)(AutofillDriver* target, const FormData& form));
+  // If `!form`, this event is just returned to `source`.
   void SetFormToBeProbablySubmitted(
       AutofillDriver* source,
       std::optional<FormData> form,
@@ -266,15 +272,37 @@ class AutofillDriverRouter {
                        mojom::ActionPersistence action_persistence,
                        const FieldRendererId& field,
                        const std::u16string& value));
-  void ExtractForm(
-      AutofillDriver* source,
-      FormGlobalId form,
-      base::OnceCallback<void(const std::optional<FormData>&)>
-          response_callback,
-      void (*callback)(AutofillDriver* target,
-                       const FormRendererId& form,
-                       base::OnceCallback<void(const std::optional<FormData>&)>
-                           response_callback));
+  using BrowserFormHandler = AutofillDriver::BrowserFormHandler;
+  using RendererFormHandler =
+      base::OnceCallback<void(const absl::optional<::autofill::FormData>&)>;
+  // Routes both the request *and* the response: it calls `callback` with
+  // - the `target` driver that shall extract the form,
+  // - the `form_id` to be extracted, and
+  // - the `renderer_form_handler` that processes the extracted form.
+  //
+  // Processing the extracted form means to call the callback
+  // `browser_form_handler`. For that to happen, the extracted renderer form
+  // must be mapped to a browser form. The `renderer_form_handler` performs this
+  // conversion and then passes the result to `browser_form_handler` together
+  // with the driver that manages the browser form (i.e., the driver whose
+  // AutofillDriver::GetFrameToken() is equal to the browser form's
+  // FormData::host_frame`).
+  //
+  // It is the responsibility of `callback` to call `renderer_form_handler`
+  // with the extracted renderer form so that the mapping and callback can
+  // happen.
+  //
+  // So intuitively, `callback` should do something like
+  // `target->autofill_agent()->ExtractForm(form_id, renderer_form_handler)`.
+  //
+  // If routing the request fails, ExtractForm() calls `browser_form_handler`
+  // right away with nullptr and std::nullopt.
+  void ExtractForm(AutofillDriver* source,
+                   FormGlobalId form_id,
+                   BrowserFormHandler browser_form_handler,
+                   void (*callback)(AutofillDriver* target,
+                                    const FormRendererId& form_id,
+                                    RendererFormHandler renderer_form_handler));
   void RendererShouldAcceptDataListSuggestion(
       AutofillDriver* source,
       const FieldGlobalId& field,

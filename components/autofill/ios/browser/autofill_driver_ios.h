@@ -64,9 +64,10 @@ class AutofillDriverIOS : public AutofillDriver,
   void ApplyFieldAction(mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field,
                         const std::u16string& value) override;
-  void ExtractForm(FormGlobalId form,
-                   base::OnceCallback<void(const std::optional<FormData>&)>
-                       response_callback) override;
+  void ExtractForm(
+      FormGlobalId form,
+      base::OnceCallback<void(AutofillDriver*, const std::optional<FormData>&)>
+          response_callback) override;
   void HandleParsedForms(const std::vector<FormData>& forms) override;
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<FormStructure*>& forms) override;

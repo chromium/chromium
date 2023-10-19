@@ -453,32 +453,36 @@ void AutofillDriverRouter::ApplyFieldAction(
 
 void AutofillDriverRouter::ExtractForm(
     AutofillDriver* source,
-    FormGlobalId form,
-    base::OnceCallback<void(const std::optional<FormData>&)> response_callback,
+    FormGlobalId form_id,
+    BrowserFormHandler browser_form_handler,
     void (*callback)(AutofillDriver* target,
-                     const FormRendererId& form,
-                     base::OnceCallback<void(const std::optional<FormData>&)>
-                         response_callback)) {
-  if (auto* target = DriverOfFrame(form.frame_token)) {
-    callback(
-        target, form.renderer_id,
-        base::BindOnce(
-            [](raw_ref<AutofillDriverRouter> self,
-               raw_ref<AutofillDriver> target,
-               base::OnceCallback<void(const std::optional<FormData>&)>
-                   response_callback,
-               const std::optional<FormData>& form) {
-              if (!form) {
-                std::move(response_callback).Run(std::nullopt);
-                return;
-              }
-              self->form_forest_.UpdateTreeOfRendererForm(*form, &*target);
-              std::move(response_callback)
-                  .Run(self->form_forest_.GetBrowserForm(form->global_id()));
-            },
-            raw_ref(*this), raw_ref(*target), std::move(response_callback)));
+                     const FormRendererId& form_id,
+                     RendererFormHandler browser_form_handler)) {
+  if (auto* target = DriverOfFrame(form_id.frame_token)) {
+    // `renderer_form_handler` converts a received renderer `form` into a
+    // browser form and passes that to `browser_form_handler`.
+    // Binding `*this` and `*target` is safe because
+    // - `*this` outlives `*target`, and
+    // - `*target` outlives all pending callbacks of `*target`'s AutofillAgent.
+    auto renderer_form_handler = base::BindOnce(
+        [](raw_ref<AutofillDriverRouter> self,
+           raw_ref<AutofillDriver> response_source,
+           BrowserFormHandler browser_form_handler,
+           const std::optional<FormData>& form) {
+          if (!form) {
+            std::move(browser_form_handler).Run(nullptr, std::nullopt);
+            return;
+          }
+          self->form_forest_.UpdateTreeOfRendererForm(*form, &*response_source);
+          const FormData& browser_form =
+              self->form_forest_.GetBrowserForm(form->global_id());
+          auto* response_target = self->DriverOfFrame(browser_form.host_frame);
+          std::move(browser_form_handler).Run(response_target, browser_form);
+        },
+        raw_ref(*this), raw_ref(*target), std::move(browser_form_handler));
+    callback(target, form_id.renderer_id, std::move(renderer_form_handler));
   } else {
-    std::move(response_callback).Run(std::nullopt);
+    std::move(browser_form_handler).Run(nullptr, std::nullopt);
   }
 }
 

@@ -115,7 +115,7 @@ void AutofillDriverIOS::ApplyFieldAction(
 
 void AutofillDriverIOS::ExtractForm(
     FormGlobalId form,
-    base::OnceCallback<void(const std::optional<FormData>&)>
+    base::OnceCallback<void(AutofillDriver*, const std::optional<FormData>&)>
         response_callback) {
   // TODO(crbug.com/1490670): Implement ExtractForm().
   NOTIMPLEMENTED();

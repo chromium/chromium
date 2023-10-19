@@ -239,8 +239,7 @@ class ContentAutofillDriver : public AutofillDriver,
                         const FieldGlobalId& field_id,
                         const std::u16string& value) override;
   void ExtractForm(FormGlobalId form,
-                   base::OnceCallback<void(const std::optional<FormData>&)>
-                       response_callback) override;
+                   BrowserFormHandler final_handler) override;
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field_id,
       const std::u16string& value) override;
