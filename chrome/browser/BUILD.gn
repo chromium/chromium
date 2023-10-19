@@ -844,8 +844,6 @@ static_library("browser") {
     "metrics/metrics_services_web_contents_observer.h",
     "metrics/network_quality_estimator_provider_impl.cc",
     "metrics/network_quality_estimator_provider_impl.h",
-    "metrics/oom/out_of_memory_reporter.cc",
-    "metrics/oom/out_of_memory_reporter.h",
     "metrics/process_memory_metrics_emitter.cc",
     "metrics/process_memory_metrics_emitter.h",
     "metrics/shutdown_watcher_helper.cc",

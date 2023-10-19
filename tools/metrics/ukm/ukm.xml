@@ -23909,6 +23909,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Tab.RendererOOM">
+  <obsolete>
+    Deprecated as of Oct 2023.
+  </obsolete>
   <owner>ssid@chromium.org</owner>
   <summary>
     Metrics about renderer OOM, recorded for each detected OOM of renderer

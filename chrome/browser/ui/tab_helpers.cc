@@ -43,7 +43,6 @@
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_observer.h"
 #include "chrome/browser/metrics/metrics_services_web_contents_observer.h"
-#include "chrome/browser/metrics/oom/out_of_memory_reporter.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -443,7 +442,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     }
 #endif  // BUILDFLAG(IS_ANDROID)
   }
-  OutOfMemoryReporter::CreateForWebContents(web_contents);
   chrome::InitializePageLoadMetricsForWebContents(web_contents);
   if (auto* pm_registry =
           performance_manager::PerformanceManagerRegistry::GetInstance()) {
