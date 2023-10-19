@@ -115,6 +115,16 @@ class TrackingProtectionNoticeService
     const base::Feature& GetIPHFeature() override;
   };
 
+  class OffboardingNotice : public BaseIPHNotice {
+   public:
+    OffboardingNotice(Profile* profile,
+                      TrackingProtectionOnboarding* onboarding_service);
+
+   private:
+    TrackingProtectionOnboarding::NoticeType GetNoticeType() override;
+    const base::Feature& GetIPHFeature() override;
+  };
+
   // Indicates if the notice is needed to be displayed.
   bool IsNoticeNeeded();
 
@@ -142,6 +152,7 @@ class TrackingProtectionNoticeService
   raw_ptr<Profile> profile_;
   raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
   std::unique_ptr<BaseIPHNotice> onboarding_notice_;
+  std::unique_ptr<BaseIPHNotice> offboarding_notice_;
   std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
   base::ScopedObservation<TrackingProtectionOnboarding,
                           TrackingProtectionOnboarding::Observer>

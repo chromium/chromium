@@ -144,15 +144,6 @@ void TrackingProtectionNoticeService::BaseIPHNotice::
   }
 }
 
-TrackingProtectionNoticeService::OnboardingNotice::OnboardingNotice(
-    Profile* profile,
-    TrackingProtectionOnboarding* onboarding_service)
-    : BaseIPHNotice(profile, onboarding_service) {}
-
-NoticeType TrackingProtectionNoticeService::OnboardingNotice::GetNoticeType() {
-  return NoticeType::kOnboarding;
-}
-
 bool TrackingProtectionNoticeService::BaseIPHNotice::MaybeShowPromo(
     Browser* browser) {
   base::Time shown_when = base::Time::Now();
@@ -175,9 +166,32 @@ bool TrackingProtectionNoticeService::BaseIPHNotice::IsPromoShowing(
   return browser->window()->IsFeaturePromoActive(GetIPHFeature());
 }
 
+TrackingProtectionNoticeService::OnboardingNotice::OnboardingNotice(
+    Profile* profile,
+    TrackingProtectionOnboarding* onboarding_service)
+    : BaseIPHNotice(profile, onboarding_service) {}
+
+NoticeType TrackingProtectionNoticeService::OnboardingNotice::GetNoticeType() {
+  return NoticeType::kOnboarding;
+}
+
 const base::Feature&
 TrackingProtectionNoticeService::OnboardingNotice::GetIPHFeature() {
   return feature_engagement::kIPHTrackingProtectionOnboardingFeature;
+}
+
+TrackingProtectionNoticeService::OffboardingNotice::OffboardingNotice(
+    Profile* profile,
+    TrackingProtectionOnboarding* onboarding_service)
+    : BaseIPHNotice(profile, onboarding_service) {}
+
+const base::Feature&
+TrackingProtectionNoticeService::OffboardingNotice::GetIPHFeature() {
+  return feature_engagement::kIPHTrackingProtectionOffboardingFeature;
+}
+
+NoticeType TrackingProtectionNoticeService::OffboardingNotice::GetNoticeType() {
+  return NoticeType::kOffboarding;
 }
 
 void TrackingProtectionNoticeService::BaseIPHNotice::OnNoticeClosed(
@@ -211,8 +225,10 @@ void TrackingProtectionNoticeService::OnShouldShowNoticeUpdated() {
           std::make_unique<OnboardingNotice>(profile_, onboarding_service_);
       InitializeTabStripTracker();
       return;
-    case NoticeType::kOffboarding:
-      // TODO(b:304202326) Create the offboarding notice here.
+    case TrackingProtectionOnboarding::NoticeType::kOffboarding:
+      offboarding_notice_ =
+          std::make_unique<OffboardingNotice>(profile_, onboarding_service_);
+      InitializeTabStripTracker();
       return;
   };
 }
@@ -233,7 +249,9 @@ void TrackingProtectionNoticeService::OnTabStripModelChanged(
   if (!selection.active_tab_changed()) {
     return;
   }
-  if (onboarding_notice_) {
+  if (offboarding_notice_) {
+    offboarding_notice_->MaybeUpdateNoticeVisibility(selection.new_contents);
+  } else if (onboarding_notice_) {
     onboarding_notice_->MaybeUpdateNoticeVisibility(selection.new_contents);
   }
 }
@@ -265,7 +283,10 @@ void TrackingProtectionNoticeService::TabHelper::DidFinishNavigation(
 
   auto* notice_service =
       TrackingProtectionNoticeFactory::GetForProfile(profile);
-  if (notice_service->onboarding_notice_) {
+  if (notice_service->offboarding_notice_) {
+    notice_service->offboarding_notice_->MaybeUpdateNoticeVisibility(
+        web_contents());
+  } else if (notice_service->onboarding_notice_) {
     notice_service->onboarding_notice_->MaybeUpdateNoticeVisibility(
         web_contents());
   }
