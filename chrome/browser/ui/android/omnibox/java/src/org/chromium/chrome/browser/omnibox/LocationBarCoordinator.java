@@ -840,4 +840,17 @@ public class LocationBarCoordinator
     public void setUrlBarTypeface(Typeface typeface) {
         mLocationBarMediator.setUrlBarTypeface(typeface);
     }
+
+    /**
+     * Updates the value for the end margin of the url action container in the search box.
+     *
+     * @param endMargin The end margin for the url action container in the search box.
+     */
+    public void updateUrlActionContainerEndMargin(int endMargin) {
+        mLocationBarMediator.updateUrlActionContainerEndMargin(endMargin);
+    }
+
+    public int getUrlActionContainerEndMarginForTesting() {
+        return mLocationBarLayout.getUrlActionContainerEndMarginForTesting(); // IN-TEST
+    }
 }

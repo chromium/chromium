@@ -61,6 +61,7 @@ public class LocationBarLayout extends FrameLayout {
     protected SearchEngineLogoUtils mSearchEngineLogoUtils;
     private float mUrlFocusPercentage;
     private boolean mUrlBarLaidOutAtFocusedWidth;
+    private int mUrlActionContainerEndMargin;
 
     public LocationBarLayout(Context context, AttributeSet attrs) {
         this(context, attrs, R.layout.location_bar);
@@ -83,6 +84,8 @@ public class LocationBarLayout extends FrameLayout {
         mStatusViewRightSpace = findViewById(R.id.location_bar_status_view_right_space);
         mMinimumUrlBarWidthPx =
                 context.getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
+        mUrlActionContainerEndMargin =
+                getResources().getDimensionPixelOffset(R.dimen.location_bar_url_action_offset);
     }
 
     /** Called when activity is being destroyed. */
@@ -212,7 +215,10 @@ public class LocationBarLayout extends FrameLayout {
         return urlContainerMarginEnd;
     }
 
-    /** Updates the layout params for the location bar start aligned views. */
+    /**
+     * Updates the layout params for the location bar start aligned views and the url action
+     * container.
+     */
     void updateLayoutParams(int parentWidthMeasureSpec) {
         int startMargin = 0;
         for (int i = 0; i < getChildCount(); i++) {
@@ -268,6 +274,10 @@ public class LocationBarLayout extends FrameLayout {
                 startMargin += childView.getMeasuredWidth();
             }
         }
+
+        ViewGroup.MarginLayoutParams urlActionContainerParams =
+                (ViewGroup.MarginLayoutParams) mUrlActionContainer.getLayoutParams();
+        urlActionContainerParams.setMarginEnd(mUrlActionContainerEndMargin);
 
         int urlActionContainerWidth = getUrlActionContainerWidth();
         int allocatedWidth = MeasureSpec.getSize(parentWidthMeasureSpec);
@@ -463,4 +473,17 @@ public class LocationBarLayout extends FrameLayout {
     }
 
     public void notifyVoiceRecognitionCanceled() {}
+
+    /**
+     * Updates the value for the end margin of the url action container in the search box.
+     *
+     * @param endMargin The end margin for the url action container in the search box.
+     */
+    public void updateUrlActionContainerEndMargin(int endMargin) {
+        mUrlActionContainerEndMargin = endMargin;
+    }
+
+    int getUrlActionContainerEndMarginForTesting() {
+        return mUrlActionContainerEndMargin;
+    }
 }

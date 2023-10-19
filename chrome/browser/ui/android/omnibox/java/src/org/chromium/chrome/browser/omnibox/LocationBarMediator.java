@@ -1602,4 +1602,11 @@ class LocationBarMediator
     public void setUrlBarTypeface(Typeface typeface) {
         mUrlCoordinator.setUrlBarTypeface(typeface);
     }
+
+    /**
+     * @see LocationBarCoordinator#updateUrlActionContainerEndMargin(int)
+     */
+    public void updateUrlActionContainerEndMargin(int endMargin) {
+        mLocationBarLayout.updateUrlActionContainerEndMargin(endMargin);
+    }
 }

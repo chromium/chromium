@@ -568,6 +568,15 @@ public class OmniboxResourceProvider {
                                 : R.dimen.toolbar_edge_padding);
     }
 
+    /**
+     * Returns the amount of pixels for the toolbar's side padding when the omnibox is pinned on the
+     * top of the screen in both the start surface and NTP.
+     */
+    public static @Px int getToolbarSidePaddingForStartSurfaceOrNtp(Context context) {
+        return context.getResources()
+                .getDimensionPixelSize(R.dimen.toolbar_edge_padding_modern_polish);
+    }
+
     /** Return the width of the Omnibox Suggestion decoration icon. */
     public static @Px int getSuggestionDecorationIconSizeWidth(Context context) {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
