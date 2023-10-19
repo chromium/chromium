@@ -783,11 +783,11 @@ void DualReadingListModel::UpdateEntryStateCountersOnEntryInsertion(
   }
 }
 
-ReadingListModel* DualReadingListModel::GetLocalOrSyncableModel() {
+const ReadingListModel* DualReadingListModel::GetLocalOrSyncableModel() const {
   return local_or_syncable_model_.get();
 }
 
-ReadingListModel* DualReadingListModel::GetAccountModel() {
+const ReadingListModel* DualReadingListModel::GetAccountModel() const {
   return account_model_.get();
 }
 

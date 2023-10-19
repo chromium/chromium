@@ -130,8 +130,8 @@ class DualReadingListModel : public ReadingListModel,
     std::unique_ptr<ScopedReadingListBatchUpdate> account_model_batch_;
   };
 
-  ReadingListModel* GetLocalOrSyncableModel();
-  ReadingListModel* GetAccountModel();
+  const ReadingListModel* GetLocalOrSyncableModel() const;
+  const ReadingListModel* GetAccountModel() const;
 
   StorageStateForTesting GetStorageStateForURLForTesting(const GURL& url);
 
