@@ -483,6 +483,10 @@ test("gl_tests") {
   if (is_android && enable_chrome_android_internal) {
     data_deps += [ "//clank/build/bot/filters:gl_tests_filters" ]
   }
+
+  if (is_chromeos) {
+    deps += [ "//ui/gfx/linux:gbm" ]
+  }
 }
 
 test("gpu_unittests") {
