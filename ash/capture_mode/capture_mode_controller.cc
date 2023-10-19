@@ -19,6 +19,7 @@
 #include "ash/capture_mode/null_capture_mode_session.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"

@@ -941,7 +941,7 @@ TEST_P(GameTypeGameDashboardContextTest,
 TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
   if (IsArcGame()) {
     game_window_->SetProperty(
-        ash::kArcGameControlsFlagsKey,
+        kArcGameControlsFlagsKey,
         static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
                                          ArcGameControlsFlag::kAvailable));
   }

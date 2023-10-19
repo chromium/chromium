@@ -12,7 +12,6 @@
 #include "ash/accessibility/accessibility_event_handler_manager.h"
 #include "ash/ash_export.h"
 #include "ash/constants/ash_features.h"
-#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -155,6 +154,7 @@ class FocusCycler;
 class FocusModeController;
 class FrameThrottlingController;
 class FullscreenMagnifierController;
+class GameDashboardController;
 class GeolocationController;
 class GlanceablesController;
 class ColorEnhancementController;
@@ -266,10 +266,6 @@ class DiagnosticsLogController;
 namespace federated {
 class FederatedServiceControllerImpl;
 }  // namespace federated
-
-namespace game_dashboard {
-class GameDashboardController;
-}  // namespace game_dashboard
 
 namespace quick_pair {
 class Mediator;

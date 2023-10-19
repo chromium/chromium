@@ -67,8 +67,8 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // Called by `GameDashboardController` when the game window bounds change.
   void OnWindowBoundsChanged();
 
-  // Sets whether the Game Dashboard button is enabled/clickable.
-  void SetGameDashboardButtonEnabled(bool enable);
+  // Updates for Game Controls flags.
+  void UpdateForGameControlsFlags();
 
   // Toggles the creation/deletion of the main menu within the game window.
   void ToggleMainMenu();

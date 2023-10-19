@@ -122,7 +122,7 @@ void GameDashboardController::OnWindowPropertyChanged(aura::Window* window,
   }
 
   if (key == kArcGameControlsFlagsKey) {
-    RefreshGameDashboardButton(window);
+    RefreshForGameControlsFlags(window);
   }
 }
 
@@ -234,7 +234,7 @@ void GameDashboardController::RefreshWindowTracking(aura::Window* window,
       auto& context = game_window_contexts_[window];
       if (!context) {
         context = std::make_unique<GameDashboardContext>(window);
-        RefreshGameDashboardButton(window);
+        RefreshForGameControlsFlags(window);
       }
     }
   }
@@ -250,18 +250,14 @@ void GameDashboardController::RefreshWindowTracking(aura::Window* window,
   }
 }
 
-void GameDashboardController::RefreshGameDashboardButton(aura::Window* window) {
+void GameDashboardController::RefreshForGameControlsFlags(
+    aura::Window* window) {
   if (!IsArcWindow(window)) {
     return;
   }
 
-  auto it = game_window_contexts_.find(window);
-  if (it != game_window_contexts_.end()) {
-    const ArcGameControlsFlag flags =
-        window->GetProperty(kArcGameControlsFlagsKey);
-    it->second->SetGameDashboardButtonEnabled(
-        game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kKnown) &&
-        !game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEdit));
+  if (auto* context = GetGameDashboardContext(window)) {
+    context->UpdateForGameControlsFlags();
   }
 }
 

@@ -15,6 +15,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
