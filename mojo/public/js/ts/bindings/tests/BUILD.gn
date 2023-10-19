@@ -8,7 +8,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("other_test_interfaces1") {
   testonly = true
   sources = [ "export_other1.test-mojom" ]
-  use_typescript_sources = true
 }
 
 # Targets that test when a target depends on a target that depends on a third
@@ -17,14 +16,12 @@ mojom("other_test_interfaces1") {
 mojom("other_test_interfaces2") {
   testonly = true
   sources = [ "export_other2.test-mojom" ]
-  use_typescript_sources = true
 }
 
 mojom("other_test_interfaces3") {
   testonly = true
   sources = [ "export_other3.test-mojom" ]
   public_deps = [ ":other_test_interfaces2" ]
-  use_typescript_sources = true
 }
 
 # Partial copy of //mojo/public/interfaces/bindings/tests:test_interfaces. Used
@@ -47,7 +44,6 @@ mojom("test_interfaces") {
     ":other_test_interfaces1",
     ":other_test_interfaces3",
   ]
-  use_typescript_sources = true
 }
 
 source_set("tests") {
