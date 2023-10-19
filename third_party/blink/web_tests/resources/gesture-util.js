@@ -923,11 +923,9 @@ function pointerDrag(x, y, deltaX, deltaY, options = {}) {
     // Expect a pointerup or pointercancel event depending on whether scrolling
     // actually took place.
     const pointerListener = (event) => {
-      if (event.type == 'pointerup' || event.type == 'pointercancel') {
-        eventTarget.removeEventListener('pointerup', pointerListener);
-        eventTarget.removeEventListener('pointercancel', pointerListener);
-        resolve(event.type);
-      }
+      eventTarget.removeEventListener('pointerup', pointerListener);
+      eventTarget.removeEventListener('pointercancel', pointerListener);
+      resolve(event.type);
     };
     eventTarget.addEventListener('pointerup', pointerListener);
     eventTarget.addEventListener('pointercancel', pointerListener);
@@ -942,6 +940,8 @@ function pointerDrag(x, y, deltaX, deltaY, options = {}) {
   });
 }
 
+// Performs a touch drag gesture. The prevent_fling_pause_ms options is used
+// to prevent the drag from having fling momentum.
 function touchDrag(x, y, deltaX, deltaY, options = {}) {
   options.pointerType = 'touch';
   if (!options.prevent_fling_pause_ms) {
@@ -992,7 +992,7 @@ function wheelScroll(x, y, deltaX, deltaY, origin =-"viewport",
   return Promise.all([gesturePromise, wheelPromise]);
 }
 
-function mouseClick(x, y, options) {
+function mouseClick(x, y, options = {}) {
   const origin = options.origin || "viewport";
   verifyTestDriverLoaded();
   assert_point_within_viewport(x, y, origin);

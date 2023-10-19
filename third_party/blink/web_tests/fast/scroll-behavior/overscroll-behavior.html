@@ -3,19 +3,26 @@
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/gesture-util.js"></script>
 <script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
 <style>
+body {
+  margin: 0;
+}
 .outer {
-  height: 400px;
-  width: 1000px;
+  height: 250px;
+  width: 500px;
 }
 .content {
-  height: 1000px;
-  width: 1200px;
+  height: calc(100vh + 100px);
+  width: calc(100vw + 100px);
 }
 #container {
   overflow: scroll;
 }
 #non_scrollable {
+  background-color: #eee;
   overflow: hidden;
 }
 </style>
@@ -26,140 +33,165 @@
 <div id='container' class='outer'>
   <div class='content'></div>
 </div>
-
+<div class="content"></div>
 <script>
 const container = document.getElementById('container');
 const non_scrollable = document.getElementById('non_scrollable');
+const scrollAmount = 120;
+const scrollLeft = { dx: -scrollAmount, dy: 0 };
+const scrollUp = { dx: 0, dy: -scrollAmount };
+const scrollRight = { dx: scrollAmount, dy: 0 };
+const scrollDown = { dx: 0, dy: scrollAmount };
+const scrollUpAndLeft = { dx: -scrollAmount, dy: -scrollAmount };
+const startPositionCenter = { x: 0.5, y: 0.5 };
+const startPositionBottom = { x: 0.5, y: 0.9 };
 
-function setUpForWindow() {
-  window.scrollTo(100, 100);
-  container.scrollTo(0, 0);
+async function setUpForWindow() {
+  await waitForCompositorCommit();
+  await waitForScrollReset(document.scrollingElement, 100, 100);
+  await waitForScrollReset(container, 0, 0);
   assert_equals(window.scrollY, 100);
   assert_equals(window.scrollX, 100);
+  assert_equals(container.scrollTop, 0);
+  assert_equals(container.scrollLeft, 0);
 }
 
-function setUpForContainer() {
-  window.scrollTo(0, 0);
-  container.scrollTo(100, 100);
+async function setUpForContainer() {
+  await waitForCompositorCommit();
+  await waitForScrollReset(document.scrollingElement, 0, 0);
+  await waitForScrollReset(container, 100, 100);
+  assert_equals(window.scrollY, 0);
+  assert_equals(window.scrollX, 0);
   assert_equals(container.scrollTop, 100);
   assert_equals(container.scrollLeft, 100);
 }
 
-async function test_boundary_prevents_y(source_type) {
+// Performs a wheel scroll or touch drag gesture that may result in scrolling.
+// If scrollEventTarget is not null, it indicates the target for the scrollend
+// event.
+function performGestureScroll(element, startPosition, deltaX, deltaY, gesture,
+                              scrollEventTarget) {
+  // Pick a starting point within the element with room to accommodate the
+  // scroll gesture.
+  const position = elementPosition(element, startPosition.x, startPosition.y);
+  assert_point_within_viewport(position.x, position.y);
+  const promises = [];
+  if (scrollEventTarget) {
+    promises.push(waitForScrollendEvent(scrollEventTarget));
+  }
+  promises.push(gesture(position.x, position.y,  deltaX, deltaY));
+  return Promise.all(promises);
+};
+
+function performWheelScroll(element, startPosition, scrollAmount,
+                            scrollEventTarget = null) {
+  return performGestureScroll(element, startPosition, scrollAmount.dx,
+                              scrollAmount.dy, wheelScroll, scrollEventTarget);
+}
+
+function performTouchDrag(element, startPosition, scrollAmount,
+                          scrollEventTarget = null) {
+  // Touch scrolling is in the opposite direction to the drag.
+  return performGestureScroll(element, startPosition, -scrollAmount.dx,
+                              -scrollAmount.dy, touchDrag, scrollEventTarget);
+}
+
+async function test_boundary_prevents_y(scrollGesture) {
   container.style.overscrollBehaviorX = 'auto';
   container.style.overscrollBehaviorY = 'none';
-  setUpForWindow();
-  await waitForCompositorCommit();
+  await setUpForWindow();
 
-  const x = 200;
-  const y = 500;
-  const distanceUp = calculatePixelsToScroll(container, 0, 200).y;
-
-  await smoothScroll(distanceUp, x, y, source_type, 'up', SPEED_INSTANT);
-  await waitForAnimationEnd(() => { return window.scrollY; }, 500, 5);
+  // Scroll-chaining blocked by overscroll-behavior-y.
+  await scrollGesture(container, startPositionCenter, scrollUp);
   assert_equals(window.scrollY, 100);
   assert_equals(container.scrollTop, 0);
 
-  const distanceLeft = calculatePixelsToScroll(container, 200, 0).x;
-  await smoothScroll(distanceLeft, x, y, source_type, 'left', SPEED_INSTANT);
-  // TODO(bokan): Wait for 10 frames without change. This is a bit long but
-  // otherwise we affect the next test because window.scrollX goes to 0 while
-  // the animation is still ticking. SPEED_INSTANT isn't as instant as it
-  // should be.
-  await waitForAnimationEnd(() => { return window.scrollX; }, 500, 10);
+  await raf();
+
+  // Scroll-chaining permitted by overscroll-behavior-x.
+  await scrollGesture(container, startPositionCenter, scrollLeft, document);
   assert_equals(window.scrollX, 0);
   assert_equals(container.scrollLeft, 0);
 }
 
-async function test_boundary_prevents_x(source_type) {
+async function test_boundary_prevents_x(scrollGesture) {
   container.style.overscrollBehaviorX = 'none';
   container.style.overscrollBehaviorY = 'auto';
-  setUpForWindow();
-  await waitForCompositorCommit();
+  await setUpForWindow();
 
-  const x = 200;
-  const y = 500;
-  const distanceLeft = calculatePixelsToScroll(container, 200, 0).x;
-
-  await smoothScroll(distanceLeft, x, y, source_type, 'left', SPEED_INSTANT);
-  await waitForAnimationEnd(() => { return window.scrollX; }, 500, 5);
+  // Scroll-chaining blocked by overscroll-behavior-x.
+  await scrollGesture(container, startPositionCenter, scrollLeft);
   assert_equals(window.scrollX, 100);
-  assert_equals(container.scrollTop, 0);
-
-  const distanceUp = calculatePixelsToScroll(container, 0, 200).y;
-  await smoothScroll(distanceUp, x, y, source_type, 'up', SPEED_INSTANT);
-  await waitForAnimationEnd(() => { return window.scrollY; }, 500, 10);
-  assert_equals(window.scrollY, 0);
   assert_equals(container.scrollLeft, 0);
+
+  await raf();
+
+  // Scroll-chaining permitted by overscroll-behavior-y.
+  await scrollGesture(container, startPositionCenter, scrollUp, document);
+  assert_equals(window.scrollY, 0);
+  assert_equals(container.scrollTop, 0);
 }
 
-async function test_boundary_allows_inner(source_type) {
+async function test_boundary_allows_inner(scrollGesture) {
   container.style.overscrollBehaviorX = 'none';
   container.style.overscrollBehaviorY = 'none';
-  setUpForContainer();
-  await waitForCompositorCommit();
+  await setUpForContainer();
 
-  const x = 200;
-  const y = 500;
-  const pixelsToScroll = 200;
-  const {x: pixelsToScrollX, y: pixelsToScrollY} = calculatePixelsToScroll(
-    container, pixelsToScroll, pixelsToScroll
-  );
-  const distance = Math.max(pixelsToScrollX, pixelsToScrollY);
-
-  await smoothScroll(distance, x, y, source_type, "upleft", SPEED_INSTANT);
-  await waitForAnimationEnd(() => { return container.scrollLeft; }, 500, 5);
-  await waitForAnimationEnd(() => { return container.scrollTop; }, 500, 10);
+  await scrollGesture(container, startPositionCenter, scrollUpAndLeft,
+                      container);
   assert_equals(container.scrollTop, 0);
   assert_equals(container.scrollLeft, 0);
 }
 
-async function test_boundary_on_nonscrollable_allows_propagation(source_type) {
+async function test_boundary_on_nonscrollable_allows_propagation(scrollGesture)
+{
   non_scrollable.style.overscrollBehaviorX = 'none';
   non_scrollable.style.overscrollBehaviorY = 'none';
-  window.scrollTo(0, 0);
-  await waitForCompositorCommit();
+  await waitForCompositorCommit;
+  await waitForScrollReset(document.scrollingElement);
 
-  const x = 200;
-  const y = 300;
-
-  const distanceRight = calculatePixelsToScroll(container, 200, 0).x;
-  await smoothScroll(distanceRight, x, y, source_type, "right", SPEED_INSTANT);
-  await waitForAnimationEnd(() => { return window.scrollX; }, 500, 5);
+  await scrollGesture(non_scrollable, startPositionBottom, scrollRight,
+                      document);
   assert_greater_than(window.scrollX, 100);
 
-  const distanceDown = calculatePixelsToScroll(container, 0, 200).y;
-  await smoothScroll(distanceDown, x, y, source_type, "down", SPEED_INSTANT);
-  await waitForAnimationEnd(() => { return window.scrollY; }, 500, 10);
-  assert_greater_than(window.scrollY, 100);
+  await raf();
 
-  assert_equals(non_scrollable.scrollTop, 0);
-  assert_equals(non_scrollable.scrollLeft, 0);
+  await scrollGesture(non_scrollable, startPositionBottom, scrollDown,
+                      document);
+  assert_greater_than(window.scrollY, 100);
 }
 
 promise_test(t => {
-    return test_boundary_prevents_y(GestureSourceType.MOUSE_INPUT);
-  }, 'overscroll-behavior-y: none should only prevent scroll propagation on y axis with: wheel.');
+  return test_boundary_prevents_y(performWheelScroll);
+}, 'overscroll-behavior-y: none should only prevent scroll propagation on y ' +
+   'axis with: wheel.');
 promise_test(t => {
-    return test_boundary_prevents_x(GestureSourceType.MOUSE_INPUT);
-  }, 'overscroll-behavior-x: none should only prevent scroll propagation on x axis with: wheel.');
+  return test_boundary_prevents_x(performWheelScroll);
+}, 'overscroll-behavior-x: none should only prevent scroll propagation on x ' +
+   'axis with: wheel.');
 promise_test(t => {
-    return test_boundary_allows_inner(GestureSourceType.MOUSE_INPUT);
-  }, 'overscroll-behavior should not affect scrolling inside the applied container with: wheel.');
+  return test_boundary_allows_inner(performWheelScroll);
+}, 'overscroll-behavior should not affect scrolling inside the applied ' +
+   'container with: wheel.');
 promise_test(t => {
-    return test_boundary_on_nonscrollable_allows_propagation(GestureSourceType.MOUSE_INPUT);
-  }, 'overscroll-behavior on non-scrollable area should not affect scroll propagation with: wheel.');
+  return test_boundary_on_nonscrollable_allows_propagation(performWheelScroll);
+}, 'overscroll-behavior on non-scrollable area should not affect scroll ' +
+   'propagation with: wheel.');
 
 const IS_MAC = navigator.platform.indexOf('Mac') == 0;
 if (!IS_MAC) {
   promise_test(t => {
-      return test_boundary_prevents_y(GestureSourceType.TOUCH_INPUT);
-    }, 'overscroll-behavior-y: none should only prevent scroll propagation on y axis with: touch.');
+    return test_boundary_prevents_y(performTouchDrag);
+  }, 'overscroll-behavior-y: none should only prevent scroll propagation on ' +
+     'y axis with: touch.');
   promise_test(t => {
-      return test_boundary_prevents_x(GestureSourceType.TOUCH_INPUT);
-    }, 'overscroll-behavior-x: none should only prevent scroll propagation on x axis with: touch.');
+    return test_boundary_prevents_x(performTouchDrag);
+  }, 'overscroll-behavior-x: none should only prevent scroll propagation on ' +
+     'x axis with: touch.');
   promise_test(t => {
-      return test_boundary_on_nonscrollable_allows_propagation(GestureSourceType.TOUCH_INPUT);
-    }, 'overscroll-behavior on non-scrollable area should not affect scroll propagation with: touch.');
+      return test_boundary_on_nonscrollable_allows_propagation(
+                 performTouchDrag);
+    }, 'overscroll-behavior on non-scrollable area should not affect scroll ' +
+       'propagation with: touch.');
 }
 </script>

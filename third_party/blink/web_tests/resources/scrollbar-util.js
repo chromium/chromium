@@ -41,7 +41,7 @@ function calculateScrollbarThickness() {
 // Returns the width of a acrollbar button. On platforms where there are no
 // scrollbar buttons (i.e. there are overlay scrollbars) returns 0.
 function calculateScrollbarButtonWidth() {
- if (fluentOverlayScrollbarsEnabled()) {
+  if (fluentOverlayScrollbarsEnabled()) {
     // Fluent overlay scrollbars have a little margin over the scrollbar's
     // button that causes the button to be separated from the edges of the
     // screen.
