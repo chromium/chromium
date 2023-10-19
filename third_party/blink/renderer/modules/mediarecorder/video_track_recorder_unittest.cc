@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 
+#include <sstream>
+
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -32,6 +34,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -263,7 +266,7 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
     video_track_recorder_ = std::make_unique<VideoTrackRecorderImpl>(
         scheduler::GetSingleThreadTaskRunnerForTesting(), codec_profile,
         WebMediaStreamTrack(component_.Get()), mock_callback_interface_,
-        0u /* bits_per_second */, keyframe_config);
+        /*bits_per_second=*/1000000, keyframe_config);
   }
 
   void Encode(scoped_refptr<media::VideoFrame> frame,
@@ -372,10 +375,14 @@ class VideoTrackRecorderTestParam
     : public TestWithParam<testing::tuple<VideoTrackRecorder::CodecId,
                                           gfx::Size,
                                           bool,
-                                          TestFrameType>>,
-      public VideoTrackRecorderTest {
+                                          TestFrameType,
+                                          bool>>,
+      public VideoTrackRecorderTest,
+      public ScopedMediaRecorderUseMediaVideoEncoderForTest {
  public:
-  VideoTrackRecorderTestParam() = default;
+  VideoTrackRecorderTestParam()
+      : ScopedMediaRecorderUseMediaVideoEncoderForTest(
+            testing::get<4>(GetParam())) {}
   ~VideoTrackRecorderTestParam() override = default;
 };
 
@@ -498,7 +505,8 @@ TEST_P(VideoTrackRecorderTestParam, CheckMetricsProviderInVideoEncoding) {
   int initialize_time = 1;
   if (encode_alpha_channel &&
       (video_codec_profile == media::VideoCodecProfile::VP8PROFILE_ANY ||
-       video_codec_profile == media::VideoCodecProfile::VP9PROFILE_PROFILE0)) {
+       video_codec_profile == media::VideoCodecProfile::VP9PROFILE_PROFILE0) &&
+      !testing::get<4>(GetParam())) {
     initialize_time = 2;
   }
 
@@ -846,12 +854,66 @@ TEST_F(VideoTrackRecorderTestNoParam, RequiredRefreshRate) {
   test::RunDelayedTasks(base::Seconds(1));
 }
 
+std::string PrintTestParams(
+    const testing::TestParamInfo<testing::tuple<VideoTrackRecorder::CodecId,
+                                                gfx::Size,
+                                                bool,
+                                                TestFrameType,
+                                                bool>>& info) {
+  std::stringstream ss;
+  ss << "codec ";
+  switch (testing::get<0>(info.param)) {
+    case VideoTrackRecorder::CodecId::kVp8:
+      ss << "vp8";
+      break;
+    case VideoTrackRecorder::CodecId::kVp9:
+      ss << "vp9";
+      break;
+#if BUILDFLAG(RTC_USE_H264)
+    case VideoTrackRecorder::CodecId::kH264:
+      ss << "h264";
+      break;
+#endif
+#if BUILDFLAG(ENABLE_LIBAOM)
+    case VideoTrackRecorder::CodecId::kAv1:
+      ss << "av1";
+      break;
+#endif
+    case VideoTrackRecorder::CodecId::kLast:
+    default:
+      ss << "invalid";
+      break;
+  }
+
+  ss << " size " + testing::get<1>(info.param).ToString() << " encode alpha "
+     << (testing::get<2>(info.param) ? "true" : "false") << " frame type ";
+  switch (testing::get<3>(info.param)) {
+    case TestFrameType::kNv12GpuMemoryBuffer:
+      ss << "NV12 GMB";
+      break;
+    case TestFrameType::kNv12Software:
+      ss << "I420 SW";
+      break;
+    case TestFrameType::kI420:
+      ss << "I420";
+      break;
+  }
+  ss << " mediaVideoEncoder "
+     << (testing::get<4>(info.param) ? "true" : "false");
+
+  std::string out;
+  base::ReplaceChars(ss.str(), " ", "_", &out);
+  return out;
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          VideoTrackRecorderTestParam,
                          ::testing::Combine(ValuesIn(kTrackRecorderTestCodec),
                                             ValuesIn(kTrackRecorderTestSize),
                                             ::testing::Bool(),
-                                            ValuesIn(kTestFrameTypes)));
+                                            ValuesIn(kTestFrameTypes),
+                                            ::testing::Bool()),
+                         PrintTestParams);
 
 class VideoTrackRecorderPassthroughTest
     : public TestWithParam<VideoTrackRecorder::CodecId>,

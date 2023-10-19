@@ -387,6 +387,12 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       const OnEncodedVideoCB& on_encoded_video_cb,
       bool use_import_mode,
       bool create_vea_encoder);
+  std::unique_ptr<Encoder> CreateMediaVideoEncoder(
+      scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
+      CodecProfile codec_profile,
+      uint32_t bits_per_second,
+      const OnEncodedVideoCB& on_encoded_video_cb,
+      bool create_vea_encoder);
   void OnHardwareEncoderError();
 
   void ConnectToTrack(const VideoCaptureDeliverFrameCB& callback);
