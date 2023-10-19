@@ -3298,7 +3298,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         // Extraction API is available.
         compose_manager->OpenComposeFromContextMenu(
             frame_token, autofill::FieldRendererId(*params_.field_renderer_id),
-            gfx::RectF(params_.x, params_.y, 50, 50));
+            gfx::Point(params_.x, params_.y));
       }
       break;
     }

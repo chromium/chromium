@@ -59,6 +59,12 @@ namespace views {
 class Widget;
 }  // namespace views
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+namespace compose {
+class ComposeDialogController;
+}  // namespace compose
+#endif
+
 namespace chrome {
 
 // Shows or hides the Task Manager. |browser| can be NULL when called from Ash.
@@ -132,8 +138,9 @@ std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModelForTesting(
     Browser* browser);
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-void ShowComposeDialog(content::WebContents& web_contents,
-                       const gfx::RectF& element_bounds);
+std::unique_ptr<compose::ComposeDialogController> ShowComposeDialog(
+    content::WebContents& web_contents,
+    const gfx::RectF& element_bounds_in_screen);
 #endif
 
 }  // namespace chrome

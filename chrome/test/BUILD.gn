@@ -9626,7 +9626,6 @@ test("unit_tests") {
       "../browser/ui/views/commerce/price_tracking_email_dialog_view_unittest.cc",
       "../browser/ui/views/commerce/price_tracking_icon_view_integration_test.cc",
       "../browser/ui/views/commerce/price_tracking_view_unittest.cc",
-      "../browser/ui/views/compose/compose_dialog_controller_unittest.cc",
       "../browser/ui/views/confirm_bubble_views_unittest.cc",
       "../browser/ui/views/content_setting_bubble_contents_unittest.cc",
       "../browser/ui/views/content_setting_site_row_view_unittest.cc",

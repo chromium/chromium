@@ -33,7 +33,7 @@ class ComposeManagerImpl : public ComposeManager {
   void OpenComposeFromContextMenu(
       const autofill::LocalFrameToken frame_token,
       const autofill::FieldRendererId field_renderer_id,
-      const gfx::RectF bounds) override;
+      const gfx::Point anchor) override;
 
  private:
   bool IsEnabled() const;
@@ -45,7 +45,7 @@ class ComposeManagerImpl : public ComposeManager {
   void RequestFormFieldData(
       const autofill::LocalFrameToken frame_token,
       const autofill::FieldRendererId field_renderer_id,
-      const gfx::RectF bounds,
+      const gfx::Point anchor,
       base::OnceCallback<void(autofill::FormFieldData)> callback);
 
   // A raw reference to the client, which owns `this` and therefore outlives it.

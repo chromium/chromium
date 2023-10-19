@@ -15,6 +15,7 @@
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
+#include "components/compose/core/browser/compose_dialog_controller.h"
 #include "components/compose/core/browser/compose_manager.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -77,6 +78,7 @@ class ChromeComposeClient
 
   compose::ComposeManagerImpl manager_;
 
+  std::unique_ptr<compose::ComposeDialogController> compose_dialog_controller_;
   // A handle to optimization guide for information about URLs that have
   // recently been navigated to.
   raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;

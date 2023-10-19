@@ -35,7 +35,7 @@ class MockComposeManager : public ComposeManager {
               OpenComposeFromContextMenu,
               (const autofill::LocalFrameToken,
                const autofill::FieldRendererId,
-               const gfx::RectF),
+               const gfx::Point anchor),
               (override));
 };
 

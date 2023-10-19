@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <!-- TODO(b/301510467): Mark strings as translateable once all strings are aligned. -->
+  <message name="IDS_COMPOSE_TITLE" desc="The description of the Autofill Suggestion window in e.g. the task manager." translateable="false">
+  Autofill dialog title
+  </message>
   <message name="IDS_COMPOSE_SUGGESTION_MAIN_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element." translateable="false">
   Autofill text
   </message>

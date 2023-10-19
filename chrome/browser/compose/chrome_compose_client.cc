@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -27,10 +28,18 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+
+namespace {
+
+const char kComposeURL[] = "chrome://compose/";
+
+}  // namespace
 
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
     : content::WebContentsUserData<ChromeComposeClient>(*web_contents),
@@ -57,7 +66,7 @@ void ChromeComposeClient::BindComposeDialog(
     mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) {
   url::Origin origin =
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  if (origin == url::Origin::Create(GURL("chrome://compose"))) {
+  if (origin == url::Origin::Create(GURL(kComposeURL))) {
     debug_session_ =
         std::make_unique<ComposeSession>(&GetWebContents(), GetModelExecutor());
     debug_session_->Bind(std::move(handler), std::move(dialog));
@@ -76,8 +85,13 @@ void ChromeComposeClient::ShowComposeDialog(
     ComposeDialogCallback callback) {
   SaveFieldAndCreateComposeStateIfEmpty(trigger_field.global_id());
   if (!skip_show_dialog_for_test_) {
-    const gfx::RectF element_bounds = trigger_field.bounds;
-    chrome::ShowComposeDialog(GetWebContents(), element_bounds);
+    // The bounds given by autofill are relative to the top level frame. Here we
+    // offset by the WebContents container to make up for that.
+    gfx::RectF bounds_in_screen = trigger_field.bounds;
+    bounds_in_screen.Offset(
+        GetWebContents().GetContainerBounds().OffsetFromOrigin());
+    compose_dialog_controller_ =
+        chrome::ShowComposeDialog(GetWebContents(), bounds_in_screen);
   }
 }
 

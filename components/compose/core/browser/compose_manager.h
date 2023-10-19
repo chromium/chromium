@@ -17,11 +17,11 @@ class ComposeManager : public autofill::AutofillComposeDelegate {
   // TODO(b/301371110): Gate on the field type here too when it is ready.
   virtual bool ShouldOfferComposeContextMenu() = 0;
   // Opens compose from the context menu given the 'frame_token',
-  // 'field_renderer_id', and 'bounds'.
+  // 'field_renderer_id', and 'anchor'.
   virtual void OpenComposeFromContextMenu(
       const autofill::LocalFrameToken frame_token,
       const autofill::FieldRendererId field_renderer_id,
-      const gfx::RectF bounds) = 0;
+      const gfx::Point anchor) = 0;
 };
 
 }  // namespace compose

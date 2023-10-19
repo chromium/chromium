@@ -38,12 +38,12 @@ bool ComposeManagerImpl::IsEnabled() const {
 void ComposeManagerImpl::OpenComposeFromContextMenu(
     const autofill::LocalFrameToken frame_token,
     const autofill::FieldRendererId field_renderer_id,
-    const gfx::RectF bounds) {
+    const gfx::Point anchor) {
   // TODO(b/301609035): Either pass a weak pointer or make sure that
   // the dialog never outlives the tab. (Should be a given once the
   // bubble destroys itself prior to WebContents destruction.)
   RequestFormFieldData(
-      frame_token, field_renderer_id, bounds,
+      frame_token, field_renderer_id, anchor,
       base::BindOnce(&ComposeManagerImpl::OpenComposeFromContextMenuCallback,
                      base::Unretained(this)));
 }
@@ -78,12 +78,12 @@ void ComposeManagerImpl::OpenComposeFromContextMenuCallback(
 void ComposeManagerImpl::RequestFormFieldData(
     const autofill::LocalFrameToken frame_token,
     const autofill::FieldRendererId field_renderer_id,
-    const gfx::RectF bounds,
+    const gfx::Point anchor,
     base::OnceCallback<void(autofill::FormFieldData)> callback) {
-  autofill::FormFieldData form_field_data = autofill::FormFieldData();
+  autofill::FormFieldData form_field_data;
   form_field_data.host_frame = frame_token;
   form_field_data.unique_renderer_id = field_renderer_id;
-  form_field_data.bounds = bounds;
+  form_field_data.bounds = gfx::RectF(anchor.x(), anchor.y(), 50, 50);
   std::move(callback).Run(form_field_data);
 }
 
