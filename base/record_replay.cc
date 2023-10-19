@@ -121,6 +121,7 @@ namespace recordreplay {
   Macro(V8RecordReplayFinishRecording, (), ())                          \
   Macro(V8RecordReplayGetCurrentJSStack,                                \
         (std::string* stackTrace), (stackTrace))                        \
+  Macro(V8RecordReplayPrintCurrentJSStack, (), ())                      \
   Macro(V8RecordReplayEnterReplayCode, (), ())                          \
   Macro(V8RecordReplayExitReplayCode, (), ())
 
@@ -407,6 +408,10 @@ bool HasDisabledFeatures() {
 
 void GetCurrentJSStack(std::string* stackTrace) {
   return V8RecordReplayGetCurrentJSStack(stackTrace);
+}
+
+void PrintCurrentJSStack() {
+  return V8RecordReplayPrintCurrentJSStack();
 }
 
 void BrowserEvent(const char* name, const base::DictionaryValue& info) {

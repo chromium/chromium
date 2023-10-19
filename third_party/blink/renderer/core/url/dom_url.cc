@@ -100,6 +100,7 @@ URLSearchParams* DOMURL::searchParams() {
       recordreplay::GetCurrentJSStack(&stack);
       recordreplay::Assert("[RUN-2324-2325] DOMURL::searchParams %s stack=%s",
                            Url().GetString().Utf8().c_str(), stack.c_str());
+      recordreplay::PrintCurrentJSStack();
     }
     search_params_ = URLSearchParams::Create(Url().Query(), this);
   }
