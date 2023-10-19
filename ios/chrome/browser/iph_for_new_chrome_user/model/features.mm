@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/iph_for_new_chrome_user/features.h"
+#import "ios/chrome/browser/iph_for_new_chrome_user/model/features.h"
 
 BASE_FEATURE(kIPHForSafariSwitcher,
              "IPHForSafariSwitcher",
