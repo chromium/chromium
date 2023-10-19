@@ -28,8 +28,10 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
     kStopped,
   };
 
+  // |window| used by Windows OS for web app (dPWA) connections.
   static std::unique_ptr<SystemMediaControls> Create(
-      const std::string& product_name);
+      const std::string& product_name,
+      int window = -1);
 
   virtual ~SystemMediaControls() = default;
 

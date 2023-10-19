@@ -38,7 +38,8 @@ namespace system_media_controls {
 
 // static
 std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
-    const std::string& product_name) {
+    const std::string& product_name,
+    int window) {
   auto service =
       std::make_unique<internal::SystemMediaControlsLinux>(product_name);
   service->StartService();
@@ -390,7 +391,7 @@ void SystemMediaControlsLinux::Next(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   for (SystemMediaControlsObserver& obs : observers_) {
-    obs.OnNext();
+    obs.OnNext(this);
   }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -399,7 +400,7 @@ void SystemMediaControlsLinux::Previous(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   for (SystemMediaControlsObserver& obs : observers_) {
-    obs.OnPrevious();
+    obs.OnPrevious(this);
   }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -408,7 +409,7 @@ void SystemMediaControlsLinux::Pause(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   for (SystemMediaControlsObserver& obs : observers_) {
-    obs.OnPause();
+    obs.OnPause(this);
   }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -417,7 +418,7 @@ void SystemMediaControlsLinux::PlayPause(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   for (SystemMediaControlsObserver& obs : observers_) {
-    obs.OnPlayPause();
+    obs.OnPlayPause(this);
   }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -426,7 +427,7 @@ void SystemMediaControlsLinux::Stop(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   for (SystemMediaControlsObserver& obs : observers_) {
-    obs.OnStop();
+    obs.OnStop(this);
   }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -435,7 +436,7 @@ void SystemMediaControlsLinux::Play(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   for (SystemMediaControlsObserver& obs : observers_) {
-    obs.OnPlay();
+    obs.OnPlay(this);
   }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -451,7 +452,7 @@ void SystemMediaControlsLinux::Seek(
   }
 
   for (SystemMediaControlsObserver& obs : observers_) {
-    obs.OnSeek(base::Microseconds(offset));
+    obs.OnSeek(this, base::Microseconds(offset));
   }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
@@ -475,7 +476,7 @@ void SystemMediaControlsLinux::SetPositionMpris(
   }
 
   for (SystemMediaControlsObserver& obs : observers_) {
-    obs.OnSeekTo(base::Microseconds(position));
+    obs.OnSeekTo(this, base::Microseconds(position));
   }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));

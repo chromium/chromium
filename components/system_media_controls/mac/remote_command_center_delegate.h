@@ -16,6 +16,7 @@ class TimeDelta;
 
 namespace system_media_controls {
 
+class SystemMediaControls;
 class SystemMediaControlsObserver;
 
 namespace internal {
@@ -23,7 +24,8 @@ namespace internal {
 // Wraps an NSObject which interfaces with the MPRemoteCommandCenter.
 class RemoteCommandCenterDelegate {
  public:
-  RemoteCommandCenterDelegate();
+  explicit RemoteCommandCenterDelegate(
+      SystemMediaControls* system_media_controls);
 
   RemoteCommandCenterDelegate(const RemoteCommandCenterDelegate&) = delete;
   RemoteCommandCenterDelegate& operator=(const RemoteCommandCenterDelegate&) =
@@ -65,6 +67,7 @@ class RemoteCommandCenterDelegate {
       remote_command_center_delegate_cocoa_;
   base::ObserverList<SystemMediaControlsObserver> observers_;
   base::flat_set<Command> enabled_commands_;
+  const raw_ptr<SystemMediaControls> system_media_controls_;
 };
 
 }  // namespace internal
