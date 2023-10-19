@@ -38,6 +38,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -91,6 +92,10 @@ public class CustomTabMinimizationManagerUnitTest {
 
     @Test
     public void testMinimize() {
+        var minimizationEventsWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.MinimizedEvents",
+                        CustomTabMinimizationManager.MinimizationEvents.MINIMIZE);
         mManager.minimize();
         verify(mActivity).enterPictureInPictureMode(any(PictureInPictureParams.class));
 
@@ -102,6 +107,9 @@ public class CustomTabMinimizationManagerUnitTest {
         verify(mWebContents).suspendAllMediaPlayers();
         verify(mWebContents).setAudioMuted(eq(true));
 
+        minimizationEventsWatcher.assertExpected(
+                "CustomTabs.MinimizedEvents.MINIMIZE should be recorded once");
+
         assertEquals(TITLE, ((TextView) mActivity.findViewById(R.id.title)).getText());
         assertEquals(HOST, ((TextView) mActivity.findViewById(R.id.url)).getText());
     }
@@ -112,10 +120,21 @@ public class CustomTabMinimizationManagerUnitTest {
         // Simulate Activity entering PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(true));
         // Now, simulate Activity exiting PiP.
+        var minimizationEventsWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.MinimizedEvents",
+                        CustomTabMinimizationManager.MinimizationEvents.MAXIMIZE);
+        var timeElapsedWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.TimeElapsedSinceMinimized.Maximized");
         mManager.accept(new PictureInPictureModeChangedInfo(false));
 
         verify(mTab).show(eq(FROM_USER), eq(ON_ACTIVITY_SHOWN_THEN_SHOW));
         verify(mWebContents).setAudioMuted(false);
+        minimizationEventsWatcher.assertExpected(
+                "CustomTabs.MinimizedEvents.MAXIMIZE should be recorded once");
+        timeElapsedWatcher.assertExpected(
+                "CustomTabs.TimeElapsedSinceMinimized.Maximized should be recorded once");
     }
 
     @Test
@@ -124,9 +143,21 @@ public class CustomTabMinimizationManagerUnitTest {
         // Simulate Activity entering PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(true));
         // Now, simulate PiP being dismissed.
+        var minimizationEventsWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.MinimizedEvents",
+                        CustomTabMinimizationManager.MinimizationEvents.DESTROY);
+        var timeElapsedWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.TimeElapsedSinceMinimized.Destroyed");
         mActivityScenarioRule.getScenario().moveToState(State.CREATED);
         mManager.accept(new PictureInPictureModeChangedInfo(false));
 
         verify(mTab, never()).show(anyInt(), anyInt());
+
+        minimizationEventsWatcher.assertExpected(
+                "CustomTabs.MinimizedEvents.DESTROY should be recorded once");
+        timeElapsedWatcher.assertExpected(
+                "CustomTabs.TimeElapsedSinceMinimized.Destroyed should be recorded once");
     }
 }

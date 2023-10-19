@@ -25726,6 +25726,12 @@ metrics consent we also won't be able to send UMA metrics. -->
              EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION"/>
 </enum>
 
+<enum name="CustomTabsMinimizedEvents">
+  <int value="0" label="Minimized into PiP"/>
+  <int value="1" label="Maximized from PiP"/>
+  <int value="2" label="PiP dismissed or destroyed"/>
+</enum>
+
 <enum name="CustomTabsMinimizedFeatureAvailability">
   <int value="0" label="Available"/>
   <int value="1" label="Unavailable: API level is too low"/>

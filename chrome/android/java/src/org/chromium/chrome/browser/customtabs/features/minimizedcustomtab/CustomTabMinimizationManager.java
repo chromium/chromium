@@ -14,8 +14,10 @@ import static org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller.ON_ACT
 import android.app.PictureInPictureParams;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.os.SystemClock;
 import android.util.Rational;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,11 +27,16 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle.State;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.TimeUnit;
 
 /** Class that manages minimizing a Custom Tab into picture-in-picture. */
 @RequiresApi(VERSION_CODES.O)
@@ -39,6 +46,26 @@ public class CustomTabMinimizationManager
     static final Rational ASPECT_RATIO = new Rational(16, 9);
     private final AppCompatActivity mActivity;
     private final ActivityTabProvider mTabProvider;
+    private long mMinimizationSystemTime;
+
+    // List of possible minimization events - maximize is effectively an 'un-PiP', whereas destroy
+    // refers to the activity being finished either by user action or otherwise.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        MinimizationEvents.MINIMIZE,
+        MinimizationEvents.MAXIMIZE,
+        MinimizationEvents.DESTROY,
+        MinimizationEvents.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface MinimizationEvents {
+        int MINIMIZE = 0;
+        int MAXIMIZE = 1;
+        int DESTROY = 2;
+
+        int COUNT = 3;
+    }
 
     /**
      * @param activity The {@link AppCompatActivity} to minimize.
@@ -61,6 +88,7 @@ public class CustomTabMinimizationManager
             builder.setSeamlessResizeEnabled(false);
         }
         mActivity.enterPictureInPictureMode(builder.build());
+        mMinimizationSystemTime = SystemClock.elapsedRealtime();
     }
 
     @Override
@@ -69,13 +97,39 @@ public class CustomTabMinimizationManager
         assert tab != null;
         if (pictureInPictureModeChangedInfo.isInPictureInPictureMode()) {
             updateTabForMinimization(tab);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTabs.MinimizedEvents",
+                    MinimizationEvents.MINIMIZE,
+                    MinimizationEvents.COUNT);
         } else {
             // We receive an update here when PiP is dismissed and the Activity is being stopped
             // before destruction. In that case, the state will be CREATED.
             var state = mActivity.getLifecycle().getCurrentState();
-            if (state == State.CREATED || state == State.DESTROYED) return;
+            if (state == State.CREATED || state == State.DESTROYED) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "CustomTabs.MinimizedEvents",
+                        MinimizationEvents.DESTROY,
+                        MinimizationEvents.COUNT);
+                if (mMinimizationSystemTime != 0) {
+                    RecordHistogram.recordTimesHistogram(
+                            "CustomTabs.TimeElapsedSinceMinimized.Destroyed",
+                            TimeUnit.MILLISECONDS.toSeconds(
+                                    SystemClock.elapsedRealtime() - mMinimizationSystemTime));
+                }
+                return;
+            }
 
             updateTabForMaximization(tab);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTabs.MinimizedEvents",
+                    MinimizationEvents.MAXIMIZE,
+                    MinimizationEvents.COUNT);
+            if (mMinimizationSystemTime != 0) {
+                RecordHistogram.recordTimesHistogram(
+                        "CustomTabs.TimeElapsedSinceMinimized.Maximized",
+                        TimeUnit.MILLISECONDS.toSeconds(
+                                SystemClock.elapsedRealtime() - mMinimizationSystemTime));
+            }
         }
     }
 

@@ -394,6 +394,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.MinimizedEvents" enum="CustomTabsMinimizedEvents"
+    expires_after="2024-04-01">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Enum histogram to track the different events related to
+    Minimized Custom Tabs. This includes: minimizing(enter PiP), maximizing
+    (restore from PiP), destroy (PiP closed + CT session ends). Emitted on each
+    event.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.MinimizedFeatureAvailability"
     enum="CustomTabsMinimizedFeatureAvailability" expires_after="2024-04-01">
   <owner>sinansahin@google.com</owner>
@@ -736,6 +748,29 @@ chromium-metrics-reviews@google.com.
 
     Do not record nor increase the count when switching into the previous tab
     (e.g. create new tab, close, and land onto an existing tab).
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.TimeElapsedSinceMinimized.Destroyed" units="s"
+    expires_after="2024-04-01">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Starts tracking system time when minimization begins and
+    records the difference if the PiP window is removed through any event EXCEPT
+    maximizing (un-PiP). This means the Custom Tab activity would also be
+    destroyed. Emitted when CCT PiP windows are destroyed.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.TimeElapsedSinceMinimized.Maximized" units="s"
+    expires_after="2024-04-01">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Starts tracking system time when minimization begins and
+    records the difference if the PiP window is maximized (the tab goes back to
+    its original state). Emitted when tab is maximized.
   </summary>
 </histogram>
 
