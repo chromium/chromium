@@ -605,8 +605,8 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   new_install_dot_->SetVisible(item_weak_->is_new_install());
 
   UpdateIconView(/*update_item_icon=*/true);
-  SetItemName(base::UTF8ToUTF16(item->GetDisplayName()),
-              base::UTF8ToUTF16(item->name()));
+  SetItemName(base::UTF8ToUTF16(item->name()),
+              base::UTF8ToUTF16(item->GetAccessibleName()));
   item->AddObserver(this);
 
   if (is_folder_) {
@@ -1018,6 +1018,10 @@ void AppListItemView::SetItemName(const std::u16string& display_name,
                        full_name.empty() ? folder_name_placeholder : full_name)
                  : full_name);
   Layout();
+}
+
+void AppListItemView::SetItemAccessibleName(const std::u16string& name) {
+  SetAccessibleName(name);
 }
 
 void AppListItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -1797,8 +1801,8 @@ void AppListItemView::ItemIconChanged(AppListConfigType config_type) {
 }
 
 void AppListItemView::ItemNameChanged() {
-  SetItemName(base::UTF8ToUTF16(item_weak_->GetDisplayName()),
-              base::UTF8ToUTF16(item_weak_->name()));
+  SetItemName(base::UTF8ToUTF16(item_weak_->name()),
+              base::UTF8ToUTF16(item_weak_->GetAccessibleName()));
 }
 
 void AppListItemView::ItemBadgeVisibilityChanged() {

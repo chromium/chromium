@@ -87,6 +87,8 @@ class AppListModelUpdater {
                                const std::string& folder_id) = 0;
   virtual void SetNotificationBadgeColor(const std::string& id,
                                          const SkColor color) {}
+  virtual void SetAccessibleName(const std::string& id,
+                                 const std::string& name) {}
 
   virtual void SetSearchResultMetadata(
       const std::string& id,

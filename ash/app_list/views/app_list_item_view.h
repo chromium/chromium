@@ -172,6 +172,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void SetItemName(const std::u16string& display_name,
                    const std::u16string& full_name);
 
+  void SetItemAccessibleName(const std::u16string& name);
+
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   void CancelContextMenu();

@@ -394,6 +394,18 @@ void ChromeAppListModelUpdater::UpdateProgress(const std::string& id,
   model_.SetItemMetadata(id, std::move(data));
 }
 
+void ChromeAppListModelUpdater::SetAccessibleName(const std::string& id,
+                                                  const std::string& name) {
+  TRACE_EVENT0("ui", "ChromeAppListModelUpdater::UpdateAccessibleName");
+  ChromeAppListItem* item = FindItem(id);
+  if (!item) {
+    return;
+  }
+  std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
+  data->accessible_name = name;
+  model_.SetItemMetadata(id, std::move(data));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Methods only used by ChromeAppListItem that talk to ash directly.
 

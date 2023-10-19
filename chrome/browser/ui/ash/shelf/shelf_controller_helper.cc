@@ -84,6 +84,29 @@ std::u16string ShelfControllerHelper::GetLabelForPromiseStatus(
   }
 }
 
+std::u16string ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+    absl::optional<std::string> name,
+    apps::PromiseStatus status) {
+  // If there is no valid app name, set the accessibility label to be the same
+  // value as the main label.
+  if (!name.has_value()) {
+    return GetLabelForPromiseStatus(status);
+  }
+  switch (status) {
+    case apps::PromiseStatus::kUnknown:
+    case apps::PromiseStatus::kPending:
+      return l10n_util::GetStringFUTF16(
+          IDS_PROMISE_APP_ACCESSIBLE_LABEL_WAITING,
+          {base::UTF8ToUTF16(name.value())});
+    case apps::PromiseStatus::kInstalling:
+    case apps::PromiseStatus::kSuccess:
+    case apps::PromiseStatus::kCancelled:
+      return l10n_util::GetStringFUTF16(
+          IDS_PROMISE_APP_ACCESSIBLE_LABEL_INSTALLING,
+          {base::UTF8ToUTF16(name.value())});
+  }
+}
+
 // static
 std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
                                                   const std::string& app_id) {

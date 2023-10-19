@@ -74,6 +74,12 @@ void AppServicePromiseAppItem::OnPromiseAppUpdate(
   if (update.ProgressChanged() && update.Progress().has_value()) {
     SetProgress(update.Progress().value());
   }
+  if (update.Name().has_value() &&
+      (update.StatusChanged() || update.NameChanged())) {
+    SetAccessibleName(base::UTF16ToUTF8(
+        ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+            update.Name(), update.Status())));
+  }
 }
 
 void AppServicePromiseAppItem::LoadIcon() {
@@ -100,6 +106,9 @@ void AppServicePromiseAppItem::InitializeItem(
   SetPromisePackageId(update.PackageId().ToString());
   SetName(base::UTF16ToUTF8(
       ShelfControllerHelper::GetLabelForPromiseStatus(update.Status())));
+  SetAccessibleName(base::UTF16ToUTF8(
+      ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+          update.Name(), update.Status())));
   SetProgress(update.Progress().value_or(0));
   SetAppStatus(
       ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status()));

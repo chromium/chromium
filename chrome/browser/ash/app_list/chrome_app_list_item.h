@@ -73,6 +73,9 @@ class ChromeAppListItem {
   bool is_new_install() const { return metadata_->is_new_install; }
   bool is_ephemeral() const { return metadata_->is_ephemeral; }
   float progress() const { return metadata_->progress; }
+  const std::string accessible_name() const {
+    return metadata_->accessible_name;
+  }
 
   void SetMetadata(std::unique_ptr<ash::AppListItemMetadata> metadata);
   std::unique_ptr<ash::AppListItemMetadata> CloneMetadata() const;
@@ -149,6 +152,7 @@ class ChromeAppListItem {
 
   AppListControllerDelegate* GetController();
 
+  void SetAccessibleName(const std::string& label);
   void SetName(const std::string& name);
   void SetPromisePackageId(const std::string& promise_package_id);
   void SetProgress(float progress);

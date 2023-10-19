@@ -792,4 +792,45 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   EXPECT_EQ(promise_app_ordinal, installed_item->position());
 }
 
+IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
+                       MainLabelAndAccessibleLabelAreCorrect) {
+  std::string app_name = "Long Name";
+
+  // Register a promise app in the promise app registry cache.
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app->status = PromiseStatus::kPending;
+  promise_app->name = app_name;
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Promise app item should exist in the model.
+  ChromeAppListItem* item = GetChromeAppListItem(kTestPackageId);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->app_status(), ash::AppStatus::kPending);
+  ASSERT_EQ(item->name(),
+            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
+                apps::PromiseStatus::kPending)));
+  ASSERT_EQ(item->accessible_name(),
+            base::UTF16ToUTF8(
+                ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+                    app_name, apps::PromiseStatus::kPending)));
+
+  // Update the promise app in the promise app registry cache.
+  apps::PromiseAppPtr update = std::make_unique<PromiseApp>(kTestPackageId);
+  update->progress = 0.3;
+  update->status = PromiseStatus::kInstalling;
+  cache()->OnPromiseApp(std::move(update));
+
+  // Promise app item should have updated fields.
+  EXPECT_EQ(item->app_status(), ash::AppStatus::kInstalling);
+  EXPECT_EQ(item->name(),
+            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
+                apps::PromiseStatus::kInstalling)));
+  ASSERT_EQ(item->accessible_name(),
+            base::UTF16ToUTF8(
+                ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+                    app_name, apps::PromiseStatus::kInstalling)));
+}
+
 }  // namespace apps

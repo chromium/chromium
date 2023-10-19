@@ -198,6 +198,14 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
   }
 }
 
+void ChromeAppListItem::SetAccessibleName(const std::string& label) {
+  metadata_->accessible_name = label;
+  AppListModelUpdater* updater = model_updater();
+  if (updater) {
+    updater->SetAccessibleName(id(), label);
+  }
+}
+
 void ChromeAppListItem::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
   TRACE_EVENT0("ui", "ChromeAppListItem::SetBadgeIcon");
   metadata_->badge_icon = badge_icon;

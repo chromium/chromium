@@ -39,6 +39,12 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   // status.
   static std::u16string GetLabelForPromiseStatus(apps::PromiseStatus status);
 
+  // Get the accessible item label that should be shown for the specified
+  // promise app name and status.
+  static std::u16string GetAccessibleLabelForPromiseStatus(
+      absl::optional<std::string> app_name,
+      apps::PromiseStatus status);
+
   // Helper function to return the title associated with |app_id|.
   // Returns an empty title if no matching extension can be found.
   static std::u16string GetAppTitle(Profile* profile,

@@ -157,10 +157,20 @@ std::string AppListItem::ToDebugString() const {
 // Protected methods
 
 void AppListItem::SetName(const std::string& name) {
-  if (metadata_->name == name && (short_name_.empty() || short_name_ == name))
+  if (metadata_->name == name) {
     return;
+  }
   metadata_->name = name;
-  short_name_.clear();
+  for (auto& observer : observers_) {
+    observer.ItemNameChanged();
+  }
+}
+
+void AppListItem::SetAccessibleName(const std::string& accessible_name) {
+  if (metadata_->accessible_name == accessible_name) {
+    return;
+  }
+  metadata_->accessible_name = accessible_name;
   for (auto& observer : observers_)
     observer.ItemNameChanged();
 }

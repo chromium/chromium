@@ -61,6 +61,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
       const std::vector<ash::AppListSearchResultCategory>& categories) override;
   void ClearSearchResults() override;
   std::vector<ChromeSearchResult*> GetPublishedSearchResultsForTest() override;
+  void SetAccessibleName(const std::string& id,
+                         const std::string& name) override;
 
   // Methods only used by ChromeAppListItem that talk to ash directly.
   void SetItemIconVersion(const std::string& id, int icon_version) override;

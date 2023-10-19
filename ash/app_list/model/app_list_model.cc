@@ -103,6 +103,10 @@ void AppListModel::SetItemMetadata(const std::string& id,
     SetItemName(item, data->name);
   }
 
+  if (data->accessible_name != item->accessible_name()) {
+    SetItemAccessibleName(item, data->accessible_name);
+  }
+
   if (data->progress > item->progress() ||
       data->app_status != item->app_status()) {
     item->SetProgress(data->progress);
@@ -239,6 +243,14 @@ void AppListModel::SetItemName(AppListItem* item, const std::string& name) {
   DVLOG(2) << "AppListModel::SetItemName: " << item->ToDebugString();
   for (auto& observer : observers_)
     observer.OnAppListItemUpdated(item);
+}
+
+void AppListModel::SetItemAccessibleName(AppListItem* item,
+                                         const std::string& name) {
+  item->SetAccessibleName(name);
+  for (auto& observer : observers_) {
+    observer.OnAppListItemUpdated(item);
+  }
 }
 
 void AppListModel::DeleteItem(const std::string& id) {

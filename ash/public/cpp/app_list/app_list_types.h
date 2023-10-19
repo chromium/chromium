@@ -123,6 +123,8 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   std::string id;    // Id of the app list item.
   std::string name;  // Corresponding app/folder's name of the item.
 
+  std::string accessible_name;  // Text announced by the screen reader.
+
   // Package Id for the item's app package, used to match an installed app item
   // with its promise app item. In promise app items, this value is the same as
   // the primary `id` field.
