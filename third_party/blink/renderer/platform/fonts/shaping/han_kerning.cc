@@ -33,42 +33,52 @@ bool IsExclusiveFeature(uint32_t tag) {
   return tags.Contains(tag);
 }
 
-// Get `CharType` from the glyph bounding box.
-HanKerning::CharType GetType(const SkRect& bound,
-                             float em,
-                             bool is_horizontal) {
-  const float half_em = em / 2;
-  if (is_horizontal) {
-    if (bound.right() <= half_em) {
-      return HanKerning::CharType::kClose;
-    }
-    if (bound.width() <= half_em && bound.left() >= em / 4) {
-      return HanKerning::CharType::kMiddle;
-    }
-  } else {
-    if (bound.bottom() <= half_em) {
-      return HanKerning::CharType::kClose;
-    }
-    if (bound.height() <= half_em && bound.top() >= em / 4) {
-      return HanKerning::CharType::kMiddle;
-    }
-  }
-  return HanKerning::CharType::kOther;
-}
+// Detects `CharType` from glyph bounding box.
+class GlyphBoundsDetector {
+  STACK_ALLOCATED();
 
-HanKerning::CharType GetType(base::span<SkRect> bounds,
-                             float em,
-                             bool is_horizontal) {
-  const HanKerning::CharType type0 = GetType(bounds.front(), em, is_horizontal);
-  // To simplify the logic, all types must be the same, or don't apply kerning.
-  for (const SkRect bound : bounds.subspan(1)) {
-    const HanKerning::CharType type = GetType(bound, em, is_horizontal);
-    if (type != type0) {
-      return HanKerning::CharType::kOther;
+ public:
+  GlyphBoundsDetector(float em, bool is_horizontal)
+      : half_em_(em / 2), quarter_em_(em / 4), is_horizontal_(is_horizontal) {}
+
+  // Get `CharType` from the glyph bounding box.
+  HanKerning::CharType GetCharType(const SkRect& bound) const {
+    if (is_horizontal_) {
+      if (bound.right() <= half_em_) {
+        return HanKerning::CharType::kClose;
+      }
+      if (bound.left() >= quarter_em_ && bound.width() <= half_em_) {
+        return HanKerning::CharType::kMiddle;
+      }
+    } else {
+      if (bound.bottom() <= half_em_) {
+        return HanKerning::CharType::kClose;
+      }
+      if (bound.top() >= quarter_em_ && bound.height() <= half_em_) {
+        return HanKerning::CharType::kMiddle;
+      }
     }
+    return HanKerning::CharType::kOther;
   }
-  return type0;
-}
+
+  // Get `CharType` from the glyph bounding box if all glyphs have the same
+  // `CharType`, otherwise `CharType::kOther`.
+  HanKerning::CharType GetCharType(base::span<SkRect> bounds) const {
+    const HanKerning::CharType type0 = GetCharType(bounds.front());
+    for (const SkRect bound : bounds.subspan(1)) {
+      const HanKerning::CharType type = GetCharType(bound);
+      if (type != type0) {
+        return HanKerning::CharType::kOther;
+      }
+    }
+    return type0;
+  }
+
+ private:
+  const float half_em_;
+  const float quarter_em_;
+  const bool is_horizontal_;
+};
 
 }  // namespace
 
@@ -253,11 +263,10 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
       // Colon characters.
       // https://drafts.csswg.org/css-text-4/#fullwidth-colon-punctuation
       kFullwidthColon, kFullwidthSemicolon};
-  constexpr unsigned kDotStartIndex = 0;
   constexpr unsigned kDotSize = 4;
   constexpr unsigned kColonIndex = 4;
   constexpr unsigned kSemicolonIndex = 5;
-  static_assert(kDotStartIndex + kDotSize <= std::size(kChars));
+  static_assert(kDotSize <= std::size(kChars));
   static_assert(kColonIndex < std::size(kChars));
   static_assert(kSemicolonIndex < std::size(kChars));
 
@@ -308,12 +317,11 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   }
 
   // Compute types from glyph bounds.
-  DCHECK_EQ(bounds.size(), std::size(kChars));
-  type_for_dot =
-      GetType(base::make_span(bounds.begin() + kDotStartIndex, kDotSize), em,
-              is_horizontal);
-  type_for_colon = GetType(bounds[kColonIndex], em, is_horizontal);
-  type_for_semicolon = GetType(bounds[kSemicolonIndex], em, is_horizontal);
+  const base::span<SkRect> bounds_span(bounds);
+  const GlyphBoundsDetector detector(em, is_horizontal);
+  type_for_dot = detector.GetCharType(bounds_span.first(kDotSize));
+  type_for_colon = detector.GetCharType(bounds[kColonIndex]);
+  type_for_semicolon = detector.GetCharType(bounds[kSemicolonIndex]);
 }
 
 }  // namespace blink
