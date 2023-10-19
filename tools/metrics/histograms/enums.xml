@@ -27237,8 +27237,15 @@ Called by update_debug_scenarios.py.-->
 </enum>
 
 <enum name="DeviceSettingsStaticShortcutAction">
-  <int value="0" label="Copy"/>
-  <int value="1" label="Paste"/>
+  <int value="0" label="Disable"/>
+  <int value="1" label="Copy"/>
+  <int value="2" label="Paste"/>
+  <int value="3" label="Undo"/>
+  <int value="4" label="Redo"/>
+  <int value="5" label="Zoom In"/>
+  <int value="6" label="Zoom Out"/>
+  <int value="7" label="Previous page"/>
+  <int value="8" label="Next Page"/>
 </enum>
 
 <enum name="DeviceSettingsStatus">

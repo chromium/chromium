@@ -55,12 +55,18 @@ constexpr ActionChoice kGraphicsTabletOptions[] = {
     {"Play/Pause media", AcceleratorAction::kMediaPlayPause},
     {"Overview", AcceleratorAction::kToggleOverview},
     {"Screenshot", AcceleratorAction::kTakeScreenshot},
+    {"Previous page", ::ash::mojom::StaticShortcutAction::kPreviousPage},
+    {"Next page", ::ash::mojom::StaticShortcutAction::kNextPage},
     {"Emoji Picker", AcceleratorAction::kShowEmojiPicker},
     {"Turn on high contrast", AcceleratorAction::kToggleHighContrast},
     {"Turn on magnifier", AcceleratorAction::kToggleFullscreenMagnifier},
     {"Turn on dictation", AcceleratorAction::kEnableOrToggleDictation},
     {"Copy", ::ash::mojom::StaticShortcutAction::kCopy},
     {"Paste", ::ash::mojom::StaticShortcutAction::kPaste},
+    {"Undo", ::ash::mojom::StaticShortcutAction::kUndo},
+    {"Redo", ::ash::mojom::StaticShortcutAction::kRedo},
+    {"Zoom In", ::ash::mojom::StaticShortcutAction::kZoomIn},
+    {"Zoom Out", ::ash::mojom::StaticShortcutAction::kZoomOut},
 };
 
 mojom::ActionTypePtr GetActionType(AcceleratorAction accelerator_action) {

@@ -339,6 +339,12 @@ enum StaticShortcutAction {
   kDisable = 0,
   kCopy = 1,
   kPaste = 2,
+  kUndo = 3,
+  kRedo = 4,
+  kZoomIn = 5,
+  kZoomOut = 6,
+  kPreviousPage = 7,
+  kNextPage = 8,
 };
 
 // Contains the customization restrictions of the devices.
