@@ -36,12 +36,11 @@ class OnDeviceModel : public mojom::OnDeviceModel {
 // static
 std::unique_ptr<mojom::OnDeviceModel> OnDeviceModelService::CreateModel(
     mojom::LoadModelParamsPtr params) {
-  auto chrome_ml = ml::ChromeML::Create();
+  auto chrome_ml = ml::ChromeML::Create(params->path);
   if (!chrome_ml) {
     return nullptr;
   }
-  auto executor =
-      ml::OnDeviceModelExecutor::Create(*chrome_ml, std::move(params));
+  auto executor = chrome_ml->CreateOnDeviceModelExecutor();
   if (!executor) {
     return nullptr;
   }
