@@ -30,6 +30,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
@@ -82,6 +83,13 @@ AshMessagePopupCollection::NotifierCollisionHandler::
 void AshMessagePopupCollection::NotifierCollisionHandler::
     OnPopupCollectionHeightChanged() {
   if (!features::IsNotifierCollisionEnabled()) {
+    return;
+  }
+
+  // Ignore changes happen to the popup collection height when bubble changes is
+  // being handled. This is to avoid crashes (b/305781721) when we handle both
+  // the bubble and the collection height changes at the same time.
+  if (is_handling_bubble_change_) {
     return;
   }
 
@@ -168,6 +176,10 @@ void AshMessagePopupCollection::NotifierCollisionHandler::
   if (!features::IsNotifierCollisionEnabled()) {
     return;
   }
+
+  // This is to make sure that we don't close the bubble through
+  // `OnPopupCollectionHeightChanged()` to avoid crashes (b/305781721).
+  base::AutoReset<bool> reset(&is_handling_bubble_change_, true);
 
   int previous_baseline_offset = baseline_offset_;
 

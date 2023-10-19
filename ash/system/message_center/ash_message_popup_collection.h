@@ -182,6 +182,10 @@ class ASH_EXPORT AshMessagePopupCollection
     int baseline_offset_ = 0;
     NotifierCollisionSurfaceType surface_type_ =
         NotifierCollisionSurfaceType::kNone;
+
+    // True if bubble changes are being handled in
+    // `HandleBubbleVisibilityOrBoundsChanged()`.
+    bool is_handling_bubble_change_ = false;
   };
 
   // message_center::MessageView::Observer:
