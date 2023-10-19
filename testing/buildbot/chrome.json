@@ -1646,6 +1646,55 @@
     ],
     "skylab_tests": [
       {
+        "autotest_name": "chromium",
+        "cros_board": "brya",
+        "dut_pool": "chrome",
+        "name": "chromeos_integration_tests BRYA_RELEASE_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "use_lkgm": true,
+        "variant_id": "BRYA_RELEASE_LKGM"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "dedede",
+        "name": "chromeos_integration_tests DEDEDE_RELEASE_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "use_lkgm": true,
+        "variant_id": "DEDEDE_RELEASE_LKGM"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "fizz",
+        "dut_pool": "chrome",
+        "name": "chromeos_integration_tests FIZZ_RELEASE_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "use_lkgm": true,
+        "variant_id": "FIZZ_RELEASE_LKGM"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "guybrush",
+        "dut_pool": "chrome",
+        "name": "chromeos_integration_tests GUYBRUSH_RELEASE_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "use_lkgm": true,
+        "variant_id": "GUYBRUSH_RELEASE_LKGM"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "puff",
+        "dut_pool": "chrome",
+        "name": "chromeos_integration_tests PUFF_RELEASE_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "use_lkgm": true,
+        "variant_id": "PUFF_RELEASE_LKGM"
+      },
+      {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "brya",
         "cros_img": "brya-release/R118-15604.42.0",

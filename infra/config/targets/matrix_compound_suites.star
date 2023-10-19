@@ -1095,6 +1095,15 @@ targets.legacy_matrix_compound_suite(
                 "CROS_PUFF_RELEASE_STABLE",
             ],
         ),
+        "lacros_skylab_tests_with_gtests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_BRYA_RELEASE_LKGM",
+                "CROS_DEDEDE_RELEASE_LKGM",
+                "CROS_FIZZ_RELEASE_LKGM",
+                "CROS_GUYBRUSH_RELEASE_LKGM",
+                "CROS_PUFF_RELEASE_LKGM",
+            ],
+        ),
     },
 )
 
