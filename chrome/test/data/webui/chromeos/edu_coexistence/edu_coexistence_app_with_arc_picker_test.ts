@@ -4,24 +4,23 @@
 
 import 'chrome://chrome-signin/edu_coexistence/edu_coexistence_app.js';
 
-import {Screens} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_app.js';
+import {EduCoexistenceApp, Screens} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_app.js';
 import {EduCoexistenceBrowserProxyImpl} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_browser_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-
-import {getFakeAccountsNotAvailableInArcList, setTestArcAccountPickerBrowserProxy, TestArcAccountPickerBrowserProxy} from '../arc_account_picker/test_util.js';
+import {getFakeAccountsNotAvailableInArcList, setTestArcAccountPickerBrowserProxy, TestArcAccountPickerBrowserProxy} from 'chrome://webui-test/chromeos/arc_account_picker/test_util.js';
 
 import {TestEduCoexistenceBrowserProxy} from './edu_coexistence_test_browser_proxy.js';
 
 suite('EduCoexistenceAppWithArcPickerTest', function() {
-  let appComponent;
-  let testBrowserProxy;
-  let testArcBrowserProxy;
+  let appComponent: EduCoexistenceApp;
+  let testBrowserProxy: TestEduCoexistenceBrowserProxy;
+  let testArcBrowserProxy: TestArcAccountPickerBrowserProxy;
 
   async function waitForSwitchViewPromise() {
     return new Promise(
-        resolve => appComponent.addEventListener(
-            'switch-view-notify-for-testing', () => resolve()));
+        (resolve) => appComponent.addEventListener(
+            'switch-view-notify-for-testing', () => resolve(true)));
   }
 
   setup(function() {
@@ -29,27 +28,14 @@ suite('EduCoexistenceAppWithArcPickerTest', function() {
     EduCoexistenceBrowserProxyImpl.setInstance(testBrowserProxy);
     testBrowserProxy.setDialogArguments(
         {isAvailableInArc: true, showArcAvailabilityPicker: true});
-    testBrowserProxy.setInitializeEduArgsResponse(async function() {
-      return {
-        url: 'https://foo.example.com/supervision/coexistence/intro',
-        hl: 'en-US',
-        sourceUi: 'oobe',
-        clientId: 'test-client-id',
-        clientVersion: ' test-client-version',
-        eduCoexistenceId: ' test-edu-coexistence-id',
-        platformVersion: ' test-platform-version',
-        releaseChannel: 'test-release-channel',
-        deviceId: 'test-device-id',
-      };
-    });
 
     testArcBrowserProxy = new TestArcAccountPickerBrowserProxy();
     testArcBrowserProxy.setAccountsNotAvailableInArc(
         getFakeAccountsNotAvailableInArcList());
     setTestArcAccountPickerBrowserProxy(testArcBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
-    appComponent = document.createElement('edu-coexistence-app');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    appComponent = new EduCoexistenceApp();
     document.body.appendChild(appComponent);
     flush();
   });
@@ -81,10 +67,9 @@ suite('EduCoexistenceAppWithArcPickerTest', function() {
         appComponent.getCurrentScreenForTest(), Screens.ARC_ACCOUNT_PICKER);
 
     const arcAccountPickerComponent =
-        /** @type {ArcAccountPickerAppElement} */ (
-            appComponent.shadowRoot.querySelector('arc-account-picker-app'));
-    arcAccountPickerComponent.shadowRoot.querySelector('#addAccountButton')
-        .click();
+        appComponent.shadowRoot!.querySelector('arc-account-picker-app')!;
+    arcAccountPickerComponent.shadowRoot!
+        .querySelector<HTMLElement>('#addAccountButton')!.click();
     assertEquals(appComponent.getCurrentScreenForTest(), Screens.ONLINE_FLOW);
   });
 });

@@ -19,7 +19,7 @@ import {EduCoexistenceController, EduCoexistenceParams} from './edu_coexistence_
 import {EduCoexistenceTemplate} from './edu_coexistence_template.js';
 import {getTemplate} from './edu_coexistence_ui.html.js';
 
-interface EduCoexistenceUi {
+export interface EduCoexistenceUi {
   $: {
     signinFrame: chrome.webviewTag.WebView,
   };
@@ -27,7 +27,7 @@ interface EduCoexistenceUi {
 
 const EduCoexistenceUiBase = WebUiListenerMixin(PolymerElement);
 
-class EduCoexistenceUi extends EduCoexistenceUiBase {
+export class EduCoexistenceUi extends EduCoexistenceUiBase {
   static get is() {
     return 'edu-coexistence-ui';
   }

@@ -15,27 +15,14 @@ const FAKE_SIGNIN_TIME_MILLISECONDS = 50000;
 suite('EduCoexistenceControllerTest', function() {
   let appComponent;
   let testBrowserProxy;
-  let eduCoexistenceController;
+  let eduCoexistenceController: EduCoexistenceController;
 
   setup(function() {
     testBrowserProxy = new TestEduCoexistenceBrowserProxy();
     EduCoexistenceBrowserProxyImpl.setInstance(testBrowserProxy);
-    testBrowserProxy.setInitializeEduArgsResponse(async function() {
-      return {
-        url: 'https://foo.example.com/supervision/coexistence/intro',
-        hl: 'en-US',
-        sourceUi: 'oobe',
-        clientId: 'test-client-id',
-        clientVersion: ' test-client-version',
-        eduCoexistenceId: ' test-edu-coexistence-id',
-        platformVersion: ' test-platform-version',
-        releaseChannel: 'test-release-channel',
-        deviceId: 'test-device-id',
-        signinTime: FAKE_SIGNIN_TIME_MILLISECONDS,
-      };
-    });
+    testBrowserProxy.setCoexistenceParams(getEduCoexistenceParams());
 
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // The controller wants an edu-coexistence-ui Polymer component
     // as a parameter.
     appComponent = document.createElement('edu-coexistence-ui');
@@ -47,22 +34,21 @@ suite('EduCoexistenceControllerTest', function() {
         getEduCoexistenceParams());
   });
 
-  test(
-      'GetSigninTimeDelta', function() {
-        // Fake Date.now()
-        const realDateNow = Date.now;
-        Date.now = () => {
-          return FAKE_NOW_MILLISECONDS;
-        };
-        const expectedDeltaSeconds =
-            (FAKE_NOW_MILLISECONDS - FAKE_SIGNIN_TIME_MILLISECONDS) / 1000;
-        assertEquals(
-            eduCoexistenceController.getTimeDeltaSinceSigninSeconds(),
-            expectedDeltaSeconds);
+  test('GetSigninTimeDelta', function() {
+    // Fake Date.now()
+    const realDateNow = Date.now;
+    Date.now = () => {
+      return FAKE_NOW_MILLISECONDS;
+    };
+    const expectedDeltaSeconds =
+        (FAKE_NOW_MILLISECONDS - FAKE_SIGNIN_TIME_MILLISECONDS) / 1000;
+    assertEquals(
+        eduCoexistenceController.getTimeDeltaSinceSigninSeconds(),
+        expectedDeltaSeconds);
 
-        // Restore original Date.now()
-        Date.now = realDateNow;
-      });
+    // Restore original Date.now()
+    Date.now = realDateNow;
+  });
 });
 
 
@@ -78,5 +64,6 @@ function getEduCoexistenceParams() {
     releaseChannel: 'test-release-channel',
     deviceId: 'test-device-id',
     signinTime: FAKE_SIGNIN_TIME_MILLISECONDS,
+    eduCoexistenceAccessToken: 'token',
   };
 }

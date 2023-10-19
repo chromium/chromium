@@ -28,7 +28,7 @@ export enum Screens {
   ARC_ACCOUNT_PICKER = 'arc-account-picker',
 }
 
-interface EduCoexistenceApp {
+export interface EduCoexistenceApp {
   $: {
     viewManager: CrViewManagerElement,
   };
@@ -36,7 +36,7 @@ interface EduCoexistenceApp {
 
 const EduCoexistenceAppBase = WebUiListenerMixin(PolymerElement);
 
-class EduCoexistenceApp extends EduCoexistenceAppBase {
+export class EduCoexistenceApp extends EduCoexistenceAppBase {
   static get is() {
     return 'edu-coexistence-app';
   }

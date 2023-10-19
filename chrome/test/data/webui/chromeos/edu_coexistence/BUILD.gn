@@ -1,0 +1,51 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  files = [
+    "edu_coexistence_app_test.ts",
+    "edu_coexistence_app_with_arc_picker_test.ts",
+    "edu_coexistence_controller_test.ts",
+    "edu_coexistence_test_browser_proxy.ts",
+    "edu_coexistence_ui_test.ts",
+  ]
+
+  ts_path_mappings = [
+    "chrome://chrome-signin/edu_coexistence/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/chromeos/edu_coexistence/tsc/*",
+            target_gen_dir),
+    "chrome://chrome-signin/gaia_auth_host/*|" +
+        rebase_path("//chrome/browser/resources/gaia_auth_host/*",
+                    target_gen_dir),
+    "chrome://chrome-signin/arc_account_picker/*|" +
+        rebase_path("//chrome/browser/resources/chromeos/arc_account_picker/*",
+                    target_gen_dir),
+    "chrome://webui-test/chromeos/arc_account_picker/*|" +
+        rebase_path("//chrome/test/data/webui/chromeos/arc_account_picker/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//chrome/browser/resources/chromeos/edu_coexistence:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  ts_definitions = [
+    "//tools/typescript/definitions/webview_tag.d.ts",
+    "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/chrome_test.d.ts",
+  ]
+}

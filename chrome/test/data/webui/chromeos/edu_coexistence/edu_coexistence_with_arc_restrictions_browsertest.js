@@ -38,7 +38,7 @@ function registerTest(testName, module, caseName) {
     /** @override */
     get browsePreload() {
       return `chrome://chrome-signin/test_loader.html` +
-          `?module=chromeos/edu_coexistence/${module}&host=test`;
+          `?module=chromeos/edu_coexistence/${module}`;
     }
   };
   TEST_F(className, caseName || 'All', () => mocha.run());

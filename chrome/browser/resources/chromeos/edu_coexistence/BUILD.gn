@@ -20,6 +20,7 @@ build_webui("build") {
     "edu_coexistence_browser_proxy.ts",
   ]
   css_files = [ "common.css" ]
+  ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
