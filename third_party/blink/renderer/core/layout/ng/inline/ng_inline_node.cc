@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_initial_letter_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
@@ -53,6 +52,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
@@ -477,6 +477,15 @@ void TruncateOrPadText(String* text, unsigned length) {
       builder.Append(kSpaceCharacter);
     *text = builder.ToString();
   }
+}
+
+bool SetParagraphTo(const String& text,
+                    const ComputedStyle& block_style,
+                    BidiParagraph& bidi) {
+  if (UNLIKELY(block_style.GetUnicodeBidi() == UnicodeBidi::kPlaintext)) {
+    return bidi.SetParagraph(text, absl::nullopt);
+  }
+  return bidi.SetParagraph(text, block_style.Direction());
 }
 
 }  // namespace
@@ -1203,9 +1212,9 @@ void NGInlineNode::SegmentBidiRuns(NGInlineNodeData* data) const {
     return;
   }
 
-  NGBidiParagraph bidi;
+  BidiParagraph bidi;
   data->text_content.Ensure16Bit();
-  if (!bidi.SetParagraph(data->text_content, Style())) {
+  if (!SetParagraphTo(data->text_content, Style(), bidi)) {
     // On failure, give up bidi resolving and reordering.
     data->is_bidi_enabled_ = false;
     data->SetBaseDirection(TextDirection::kLtr);

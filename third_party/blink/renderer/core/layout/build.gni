@@ -321,8 +321,6 @@ blink_core_sources_layout = [
   "ng/inline/inline_containing_block_utils.h",
   "ng/inline/ng_abstract_inline_text_box.cc",
   "ng/inline/ng_abstract_inline_text_box.h",
-  "ng/inline/ng_bidi_paragraph.cc",
-  "ng/inline/ng_bidi_paragraph.h",
   "ng/inline/ng_caret_position.cc",
   "ng/inline/ng_caret_position.h",
   "ng/inline/ng_caret_rect.cc",

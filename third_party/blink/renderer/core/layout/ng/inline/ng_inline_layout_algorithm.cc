@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/list/layout_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/list/unpositioned_list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_initial_letter_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
@@ -46,6 +45,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -1854,7 +1854,7 @@ void NGInlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
 
   // Compute visual indices from resolved levels.
   Vector<int32_t, 32> indices_in_visual_order(levels.size());
-  NGBidiParagraph::IndicesInVisualOrder(levels, &indices_in_visual_order);
+  BidiParagraph::IndicesInVisualOrder(levels, &indices_in_visual_order);
 
   // Reorder to the visual order.
   NGLogicalLineItems& visual_items = context_->AcquireTempLogicalLineItems();

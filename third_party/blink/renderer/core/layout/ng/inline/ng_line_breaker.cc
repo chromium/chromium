@@ -8,7 +8,6 @@
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_segment.h"
@@ -32,6 +31,7 @@
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
+#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 
 namespace blink {
@@ -548,7 +548,7 @@ void NGLineBreaker::ComputeBaseDirection() {
   // https://w3c.github.io/csswg-drafts/css-writing-modes-3/#valdef-unicode-bidi-plaintext
   // which sets to LTR if no strong characters.
   // https://unicode.org/reports/tr9/#P3
-  base_direction_ = NGBidiParagraph::BaseDirectionForStringOrLtr(
+  base_direction_ = BidiParagraph::BaseDirectionForStringOrLtr(
       StringView(text, start_offset),
       // For CSS processing, line feed (U+000A) is treated as a segment break.
       // https://w3c.github.io/csswg-drafts/css-text-3/#segment-break

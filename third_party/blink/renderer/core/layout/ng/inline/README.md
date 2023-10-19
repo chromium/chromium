@@ -338,7 +338,7 @@ To mitigate multiple layouts by like hover highlighting,
 [UAX#9 Unicode Bidirectional Algorithm] defines
 processing algorithm for bidirectional text.
 
-The core logic is implemented in [NGBidiParagraph],
+The core logic is implemented in [BidiParagraph],
 which is a thin wrapper for [ICU BiDi].
 
 In a bird's‐eye view, it consists of two parts:
@@ -369,10 +369,10 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [UAX#9 Resolving Embedding Levels]: http://www.unicode.org/reports/tr9/#Resolving_Embedding_Levels
 [UAX#9 Reordering Resolved Levels]: http://www.unicode.org/reports/tr9/#Reordering_Resolved_Levels
 
+[BidiParagraph]: ../../../../platform/text/bidi_paragraph.h
 [FontBaseline]: ../../../../platform/fonts/font_baseline.h
 [NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
-[NGBidiParagraph]: ng_bidi_paragraph.h
 [NGBlockNode]: ../ng_block_node.h
 [NGBoxFragment]: ../ng_box_fragment.h
 [NGBoxFragmentBuilder]: ../ng_box_fragment_builder.h
