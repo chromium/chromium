@@ -48,10 +48,7 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   MockQuotaManagerProxy()
       : QuotaManagerProxy(/*quota_manager_impl=*/nullptr,
                           base::SingleThreadTaskRunner::GetCurrentDefault(),
-                          /*profile_path=*/base::FilePath()),
-        storage_modified_count_(0),
-        usage_(0),
-        quota_(0) {}
+                          /*profile_path=*/base::FilePath()) {}
 
   MockQuotaManagerProxy(const MockQuotaManagerProxy&) = delete;
   MockQuotaManagerProxy& operator=(const MockQuotaManagerProxy&) = delete;
@@ -65,12 +62,16 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   void NotifyBucketModified(
       QuotaClientType client_id,
       const BucketLocator& bucket,
-      int64_t delta,
+      absl::optional<int64_t> delta,
       base::Time modification_time,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback) override {
     ++storage_modified_count_;
-    usage_ += delta;
+    if (delta) {
+      usage_ += *delta;
+    } else {
+      usage_ = 0;
+    }
     ASSERT_LE(usage_, quota_);
     if (callback)
       callback_task_runner->PostTask(FROM_HERE, std::move(callback));
@@ -95,9 +96,9 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   ~MockQuotaManagerProxy() override = default;
 
  private:
-  int storage_modified_count_;
-  int64_t usage_;
-  int64_t quota_;
+  int storage_modified_count_ = 0;
+  int64_t usage_ = 0;
+  int64_t quota_ = 0;
 };
 
 }  // namespace

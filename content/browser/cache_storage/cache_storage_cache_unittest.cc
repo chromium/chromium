@@ -2048,24 +2048,25 @@ TEST_P(CacheStorageCacheTestP, QuotaManagerModified) {
   // event loop.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, quota_manager_proxy_->notify_bucket_modified_count());
-  EXPECT_LT(0, quota_manager_proxy_->last_notified_bucket_delta());
-  int64_t sum_delta = quota_manager_proxy_->last_notified_bucket_delta();
+  int64_t sum_delta =
+      quota_manager_proxy_->last_notified_bucket_delta().value_or(0);
+  EXPECT_LT(0, sum_delta);
 
   EXPECT_TRUE(Put(body_request_, CreateBlobBodyResponse()));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, quota_manager_proxy_->notify_bucket_modified_count());
-  EXPECT_LT(sum_delta, quota_manager_proxy_->last_notified_bucket_delta());
-  sum_delta += quota_manager_proxy_->last_notified_bucket_delta();
+  EXPECT_LT(sum_delta, *quota_manager_proxy_->last_notified_bucket_delta());
+  sum_delta += *quota_manager_proxy_->last_notified_bucket_delta();
 
   EXPECT_TRUE(Delete(body_request_));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, quota_manager_proxy_->notify_bucket_modified_count());
-  sum_delta += quota_manager_proxy_->last_notified_bucket_delta();
+  sum_delta += *quota_manager_proxy_->last_notified_bucket_delta();
 
   EXPECT_TRUE(Delete(no_body_request_));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(4, quota_manager_proxy_->notify_bucket_modified_count());
-  sum_delta += quota_manager_proxy_->last_notified_bucket_delta();
+  sum_delta += *quota_manager_proxy_->last_notified_bucket_delta();
 
   EXPECT_EQ(0, sum_delta);
 }

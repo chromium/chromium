@@ -73,8 +73,10 @@ void IndexedDBDatabaseCallbacks::OnComplete(
   if (complete_)
     return;
 
-  indexed_db_context_->TransactionComplete(
-      transaction.database()->bucket_locator());
+  if (transaction.mode() != blink::mojom::IDBTransactionMode::ReadOnly) {
+    indexed_db_context_->WritingTransactionComplete(
+        transaction.database()->bucket_locator());
+  }
   if (callbacks_)
     callbacks_->Complete(transaction.id());
 }

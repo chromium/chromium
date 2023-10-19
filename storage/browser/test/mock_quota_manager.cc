@@ -390,8 +390,13 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindAndUpdateBucket(
   return base::unexpected(QuotaError::kNotFound);
 }
 
-void MockQuotaManager::UpdateUsage(const BucketLocator& bucket, int64_t delta) {
-  usage_map_[bucket].usage += delta;
+void MockQuotaManager::UpdateUsage(const BucketLocator& bucket,
+                                   absl::optional<int64_t> delta) {
+  if (delta) {
+    usage_map_[bucket].usage += *delta;
+  } else {
+    usage_map_[bucket].usage = 0;
+  }
 }
 
 void MockQuotaManager::DidGetBucket(

@@ -307,7 +307,6 @@ void IndexedDBContextImpl::DoDeleteBucketData(
   }
 
   base::FilePath idb_file_path = GetLevelDBPath(bucket_locator);
-  EnsureDiskUsageCacheInitialized(bucket_locator);
 
   leveldb::Status s =
       IndexedDBClassFactory::Get()->leveldb_factory().DestroyLevelDB(
@@ -318,7 +317,7 @@ void IndexedDBContextImpl::DoDeleteBucketData(
         GetBlobStorePath(bucket_locator));
   }
 
-  QueryDiskAndUpdateQuotaUsage(bucket_locator);
+  NotifyOfBucketModification(bucket_locator);
   if (success) {
     bucket_set_.erase(bucket_locator);
     bucket_size_map_.erase(bucket_locator);
@@ -851,7 +850,11 @@ int64_t IndexedDBContextImpl::GetBucketDiskUsage(
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   if (!LookUpBucket(bucket_locator.id))
     return 0;
-  EnsureDiskUsageCacheInitialized(bucket_locator);
+
+  if (bucket_size_map_.find(bucket_locator) == bucket_size_map_.end()) {
+    bucket_size_map_[bucket_locator] = ReadUsageFromDisk(bucket_locator);
+  }
+
   return bucket_size_map_[bucket_locator];
 }
 
@@ -917,28 +920,26 @@ void IndexedDBContextImpl::FactoryOpened(
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   if (bucket_set_.insert(bucket_locator).second) {
     // A newly created db, notify the quota system.
-    QueryDiskAndUpdateQuotaUsage(bucket_locator);
-  } else {
-    EnsureDiskUsageCacheInitialized(bucket_locator);
+    NotifyOfBucketModification(bucket_locator);
   }
 }
 
-void IndexedDBContextImpl::TransactionComplete(
+void IndexedDBContextImpl::WritingTransactionComplete(
     const storage::BucketLocator& bucket_locator) {
   DCHECK(!indexeddb_factory_.get() ||
          indexeddb_factory_->GetConnectionCount(bucket_locator.id) > 0);
-  QueryDiskAndUpdateQuotaUsage(bucket_locator);
+  NotifyOfBucketModification(bucket_locator);
 }
 
 void IndexedDBContextImpl::DatabaseDeleted(
     const storage::BucketLocator& bucket_locator) {
   bucket_set_.insert(bucket_locator);
-  QueryDiskAndUpdateQuotaUsage(bucket_locator);
+  NotifyOfBucketModification(bucket_locator);
 }
 
 void IndexedDBContextImpl::BlobFilesCleaned(
     const storage::BucketLocator& bucket_locator) {
-  QueryDiskAndUpdateQuotaUsage(bucket_locator);
+  NotifyOfBucketModification(bucket_locator);
 }
 
 void IndexedDBContextImpl::NotifyIndexedDBListChanged(
@@ -1047,25 +1048,19 @@ int64_t IndexedDBContextImpl::ReadUsageFromDisk(
   return total_size;
 }
 
-void IndexedDBContextImpl::EnsureDiskUsageCacheInitialized(
+void IndexedDBContextImpl::NotifyOfBucketModification(
     const storage::BucketLocator& bucket_locator) {
-  if (bucket_size_map_.find(bucket_locator) == bucket_size_map_.end())
-    bucket_size_map_[bucket_locator] = ReadUsageFromDisk(bucket_locator);
-}
-
-void IndexedDBContextImpl::QueryDiskAndUpdateQuotaUsage(
-    const storage::BucketLocator& bucket_locator) {
-  int64_t former_disk_usage = bucket_size_map_[bucket_locator];
-  int64_t current_disk_usage = ReadUsageFromDisk(bucket_locator);
-  int64_t difference = current_disk_usage - former_disk_usage;
-  if (difference) {
-    bucket_size_map_[bucket_locator] = current_disk_usage;
-    quota_manager_proxy()->NotifyBucketModified(
-        storage::QuotaClientType::kIndexedDatabase, bucket_locator, difference,
-        base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
-        base::DoNothing());
-    NotifyIndexedDBListChanged(bucket_locator);
-  }
+  // This method is called very frequently, for example after every transaction
+  // commits. Recalculating disk usage is expensive and often unnecessary (e.g.
+  // when many transactions commit in a row). Therefore, use a null delta to
+  // notify the quota system to invalidate its cache but defer updates to
+  // `bucket_size_map_`.
+  bucket_size_map_.erase(bucket_locator);
+  quota_manager_proxy()->NotifyBucketModified(
+      storage::QuotaClientType::kIndexedDatabase, bucket_locator,
+      /*delta=*/absl::nullopt, base::Time::Now(),
+      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+  NotifyIndexedDBListChanged(bucket_locator);
 }
 
 void IndexedDBContextImpl::InitializeFromFilesIfNeeded(

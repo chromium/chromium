@@ -195,7 +195,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   virtual void NotifyBucketModified(
       QuotaClientType client_id,
       const BucketLocator& bucket,
-      int64_t delta,
+      absl::optional<int64_t> delta,
       base::Time modification_time,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback);

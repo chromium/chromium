@@ -242,7 +242,7 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
   transaction_->SetNumErrorsHandled(num_errors_handled);
 
   // Always allow empty or delete-only transactions.
-  if (size_ == 0) {
+  if (size_ <= 0) {
     transaction_->SetCommitFlag();
     return;
   }

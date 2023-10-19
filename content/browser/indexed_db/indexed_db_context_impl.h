@@ -166,7 +166,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // Methods called by IndexedDBFactory or IndexedDBDispatcherHost for
   // quota support.
   void FactoryOpened(const storage::BucketLocator& bucket_locator);
-  void TransactionComplete(const storage::BucketLocator& bucket_locator);
+  void WritingTransactionComplete(const storage::BucketLocator& bucket_locator);
   void DatabaseDeleted(const storage::BucketLocator& bucket_locator);
 
   // Called when blob files have been cleaned (an aggregated delayed task).
@@ -262,13 +262,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const storage::BucketLocator& bucket_locator) const;
 
   int64_t ReadUsageFromDisk(const storage::BucketLocator& bucket_locator) const;
-  void EnsureDiskUsageCacheInitialized(
-      const storage::BucketLocator& bucket_locator);
-  // Compares the disk usage stored in `bucket_size_map_` with disk. If
-  // there is a difference, it updates `bucket_size_map_` and notifies the
-  // quota system.
-  void QueryDiskAndUpdateQuotaUsage(
-      const storage::BucketLocator& bucket_locator);
+  void NotifyOfBucketModification(const storage::BucketLocator& bucket_locator);
   base::Time GetBucketLastModified(
       const storage::BucketLocator& bucket_locator);
 

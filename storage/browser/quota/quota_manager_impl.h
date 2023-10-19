@@ -315,9 +315,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   //
   // Quota-managed storage backends must call this method when they have made
   // any modifications that change the amount of data stored in a bucket.
+  // If `delta` is non-null, the cached usage for the bucket and the give client
+  // type will be updated by that amount. A null `delta` value will cause the
+  // cache to instead be discarded, after which it will be lazily recalculated.
   void NotifyBucketModified(QuotaClientType client_id,
                             const BucketLocator& bucket,
-                            int64_t delta,
+                            absl::optional<int64_t> delta,
                             base::Time modification_time,
                             base::OnceClosure callback);
 
@@ -721,11 +724,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       QuotaErrorOr<BucketInfo> result);
   void DidGetBucketForDeletion(StatusCallback callback,
                                QuotaErrorOr<BucketInfo> result);
-  void DidGetBucketForUsage(QuotaClientType client_type,
-                            int64_t delta,
-                            base::Time modification_time,
-                            base::OnceClosure callback,
-                            QuotaErrorOr<BucketInfo> result);
   void DidGetBucketForUsageAndQuota(UsageAndQuotaCallback callback,
                                     QuotaErrorOr<BucketInfo> result);
   void DidGetStorageKeys(GetStorageKeysCallback callback,

@@ -66,6 +66,7 @@ base::Time MockQuotaClient::IncrementMockTime() {
 
 void MockQuotaClient::GetBucketUsage(const BucketLocator& bucket,
                                      GetBucketUsageCallback callback) {
+  ++get_bucket_usage_call_count_;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockQuotaClient::RunGetBucketUsage,

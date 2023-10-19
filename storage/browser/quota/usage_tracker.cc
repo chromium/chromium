@@ -110,12 +110,14 @@ void UsageTracker::GetBucketUsageWithBreakdown(
 
 void UsageTracker::UpdateBucketUsageCache(QuotaClientType client_type,
                                           const BucketLocator& bucket,
-                                          int64_t delta) {
+                                          absl::optional<int64_t> delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client_tracker_map_.count(client_type));
 
-  for (const auto& client_tracker : client_tracker_map_[client_type])
+  for (std::unique_ptr<ClientUsageTracker>& client_tracker :
+       client_tracker_map_[client_type]) {
     client_tracker->UpdateBucketUsageCache(bucket, delta);
+  }
 }
 
 void UsageTracker::DeleteBucketCache(QuotaClientType client_type,
@@ -143,7 +145,7 @@ std::map<std::string, int64_t> UsageTracker::GetCachedHostsUsage() const {
   std::map<std::string, int64_t> host_usage;
   for (const auto& client_type_and_trackers : client_tracker_map_) {
     for (const auto& client_tracker : client_type_and_trackers.second) {
-      const std::map<BucketLocator, int64_t>& usage_map =
+      const ClientUsageTracker::BucketUsageMap& usage_map =
           client_tracker->GetCachedBucketsUsage();
       for (const auto& [bucket, usage] : usage_map) {
         host_usage[bucket.storage_key.origin().host()] += usage;
@@ -159,7 +161,7 @@ std::map<blink::StorageKey, int64_t> UsageTracker::GetCachedStorageKeysUsage()
   std::map<blink::StorageKey, int64_t> storage_key_usage;
   for (const auto& client_type_and_trackers : client_tracker_map_) {
     for (const auto& client_tracker : client_type_and_trackers.second) {
-      const std::map<BucketLocator, int64_t>& usage_map =
+      const ClientUsageTracker::BucketUsageMap& usage_map =
           client_tracker->GetCachedBucketsUsage();
       for (const auto& [bucket, usage] : usage_map) {
         storage_key_usage[bucket.storage_key] += usage;
@@ -174,7 +176,7 @@ std::map<BucketLocator, int64_t> UsageTracker::GetCachedBucketsUsage() const {
   std::map<BucketLocator, int64_t> aggregated_usage;
   for (const auto& client_type_and_trackers : client_tracker_map_) {
     for (const auto& client_tracker : client_type_and_trackers.second) {
-      const std::map<BucketLocator, int64_t>& usage_map =
+      const ClientUsageTracker::BucketUsageMap& usage_map =
           client_tracker->GetCachedBucketsUsage();
       for (const auto& [bucket, usage] : usage_map) {
         aggregated_usage[bucket] += usage;

@@ -60,7 +60,23 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
   base::WeakPtr<IndexedDBTransaction> transaction_;
 
   // In bytes, the estimated additional space used on disk after this
-  // transaction is committed.
+  // transaction is committed. Note that this is a very approximate view of the
+  // changes associated with this transaction:
+  //
+  //   * It ignores the additional overhead needed for meta records such as
+  //     object stores.
+  //   * It ignores compression which may be applied before rows are flushed to
+  //     disk.
+  //   * It ignores space freed up by deletions, which currently flow through
+  //     DatabaseImpl::DeleteRange(), and which can't easily be calculated a
+  //     priori.
+  //
+  // As such, it's only useful as a rough upper bound for the amount of
+  // additional space required by this transaction, used to abandon transactions
+  // that would likely exceed quota caps, but not used to calculate ultimate
+  // quota usage.
+  //
+  // See crbug.com/1493696 for discussion of how this should be improved.
   int64_t size_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -60,6 +60,10 @@ class MockQuotaClient : public mojom::QuotaClient {
 
   base::Time IncrementMockTime();
 
+  size_t get_bucket_usage_call_count() const {
+    return get_bucket_usage_call_count_;
+  }
+
   // QuotaClient.
   void GetBucketUsage(const BucketLocator& bucket,
                       GetBucketUsageCallback callback) override;
@@ -87,6 +91,8 @@ class MockQuotaClient : public mojom::QuotaClient {
   std::set<BucketLocator> error_buckets_;
 
   int mock_time_counter_ = 0;
+
+  size_t get_bucket_usage_call_count_ = 0u;
 
   base::WeakPtrFactory<MockQuotaClient> weak_factory_{this};
 };
