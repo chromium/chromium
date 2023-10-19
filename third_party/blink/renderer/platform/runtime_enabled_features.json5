@@ -1617,11 +1617,6 @@
       // Not enabled due to a RTL issue. crbug.com/1421016.
     },
     {
-      name: "FeaturePolicyReporting",
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       name: "FedCm",
       public: true,
       status: "stable",
@@ -2960,6 +2955,10 @@
       public: true,
       status: "stable",
       base_feature: "none",
+    },
+    {
+      name: "PermissionsPolicyReporting",
+      status: "experimental",
     },
     {
       name: "PermissionsRequestRevoke",

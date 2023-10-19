@@ -46,7 +46,7 @@ class PopupFullscreenTestBase : public PopupTestBase {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Required for permission policy violations to be logged.
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "FeaturePolicyReporting");
+                                    "PermissionsPolicyReporting");
     PopupTestBase::SetUpCommandLine(command_line);
   }
 

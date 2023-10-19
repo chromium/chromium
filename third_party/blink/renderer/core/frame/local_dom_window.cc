@@ -577,10 +577,12 @@ void LocalDOMWindow::ReportPermissionsPolicyViolation(
         feature, UseCounterImpl::PermissionsPolicyUsageType::kViolation);
   }
 
-  if (!RuntimeEnabledFeatures::FeaturePolicyReportingEnabled(this))
+  if (!RuntimeEnabledFeatures::PermissionsPolicyReportingEnabled(this)) {
     return;
-  if (!GetFrame())
+  }
+  if (!GetFrame()) {
     return;
+  }
 
   // Construct the permissions policy violation report.
   const String& feature_name = GetNameForFeature(feature);
