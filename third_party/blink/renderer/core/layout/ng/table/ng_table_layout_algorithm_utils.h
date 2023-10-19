@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_UTILS_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
@@ -16,6 +17,7 @@ class NGBoxFragment;
 class NGBoxFragmentBuilder;
 class NGConstraintSpaceBuilder;
 class NGTableBorders;
+class NGTableNode;
 enum class NGCacheSlot;
 struct NGTableColumnLocation;
 
@@ -145,6 +147,57 @@ class NGRowBaselineTabulator {
   absl::optional<LayoutUnit> fallback_cell_descent_;
   bool fallback_cell_depends_on_percentage_block_descendant_ = false;
 };
+
+// Compute maximum number of table columns that can deduced from single cell
+// and its colspan.
+constexpr wtf_size_t ComputeMaxColumn(wtf_size_t current_column,
+                                      wtf_size_t colspan,
+                                      bool is_fixed_table_layout) {
+  // In fixed mode, every column is preserved.
+  if (is_fixed_table_layout) {
+    return current_column + colspan;
+  }
+  return current_column + 1;
+}
+
+// |undistributable_space| is size of space not occupied by cells
+// (borders, border spacing).
+CORE_EXPORT MinMaxSizes
+ComputeGridInlineMinMax(const NGTableNode& node,
+                        const NGTableTypes::Columns& column_constraints,
+                        LayoutUnit undistributable_space,
+                        bool is_fixed_layout,
+                        bool is_layout_pass);
+
+CORE_EXPORT void DistributeColspanCellsToColumns(
+    const NGTableTypes::ColspanCells& colspan_cells,
+    LayoutUnit inline_border_spacing,
+    bool is_fixed_layout,
+    NGTableTypes::Columns* column_constraints);
+
+CORE_EXPORT Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
+    LayoutUnit assignable_table_inline_size,
+    bool is_fixed_layout,
+    const NGTableTypes::Columns& column_constraints);
+
+CORE_EXPORT void DistributeRowspanCellToRows(
+    const NGTableTypes::RowspanCell& rowspan_cell,
+    LayoutUnit border_block_spacing,
+    NGTableTypes::Rows* rows);
+
+CORE_EXPORT void DistributeSectionFixedBlockSizeToRows(
+    const wtf_size_t start_row,
+    const wtf_size_t end_row,
+    LayoutUnit section_fixed_block_size,
+    LayoutUnit border_block_spacing,
+    LayoutUnit percentage_resolution_block_size,
+    NGTableTypes::Rows* rows);
+
+CORE_EXPORT void DistributeTableBlockSizeToSections(
+    LayoutUnit border_block_spacing,
+    LayoutUnit table_block_size,
+    NGTableTypes::Sections* sections,
+    NGTableTypes::Rows* rows);
 
 }  // namespace blink
 

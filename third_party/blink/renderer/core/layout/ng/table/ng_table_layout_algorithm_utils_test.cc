@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_helpers.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_node.h"
@@ -10,7 +10,7 @@
 
 namespace blink {
 
-class NGTableAlgorithmHelpersTest : public RenderingTest {
+class TableLayoutUtilsTest : public RenderingTest {
  public:
   NGTableTypes::Column MakeColumn(int min_width,
                                   int max_width,
@@ -51,7 +51,7 @@ class NGTableAlgorithmHelpersTest : public RenderingTest {
   }
 };
 
-TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoPercent) {
+TEST_F(TableLayoutUtilsTest, DistributeColspanAutoPercent) {
   NGTableTypes::ColspanCell colspan_cell(NGTableTypes::CellInlineConstraint(),
                                          0, 3);
   colspan_cell.start_column = 0;
@@ -89,7 +89,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoPercent) {
   EXPECT_EQ(column_constraints->data[1].percent, 25);
 }
 
-TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoSizeUnconstrained) {
+TEST_F(TableLayoutUtilsTest, DistributeColspanAutoSizeUnconstrained) {
   NGTableTypes::ColspanCell colspan_cell(NGTableTypes::CellInlineConstraint(),
                                          0, 3);
   colspan_cell.start_column = 0;
@@ -117,7 +117,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoSizeUnconstrained) {
   EXPECT_EQ(column_constraints->data[2].min_inline_size, 50);
 }
 
-TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoSizeConstrained) {
+TEST_F(TableLayoutUtilsTest, DistributeColspanAutoSizeConstrained) {
   NGTableTypes::ColspanCell colspan_cell(NGTableTypes::CellInlineConstraint(),
                                          0, 3);
   colspan_cell.start_column = 0;
@@ -145,7 +145,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoSizeConstrained) {
   EXPECT_EQ(column_constraints->data[2].min_inline_size, 50);
 }
 
-TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoExactMaxSize) {
+TEST_F(TableLayoutUtilsTest, DistributeColspanAutoExactMaxSize) {
   // If column widths sum match table widths exactly, column widths
   // should not be redistributed at all.
   // The error occurs if widths are redistributed, and column widths
@@ -179,7 +179,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoExactMaxSize) {
   EXPECT_EQ(column_sizes[3], column_widths[3]);
 }
 
-TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
+TEST_F(TableLayoutUtilsTest, ComputeGridInlineMinMax) {
   SetBodyInnerHTML(R"HTML(
     <div style="display: flex;">
       <table id=target></table>
@@ -238,7 +238,7 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
   EXPECT_EQ(minmax.max_size, LayoutUnit(1000));
 }
 
-TEST_F(NGTableAlgorithmHelpersTest, DistributeRowspanCellToRows) {
+TEST_F(TableLayoutUtilsTest, DistributeRowspanCellToRows) {
   NGTableTypes::RowspanCell rowspan_cell = {0, 3, LayoutUnit(300)};
   NGTableTypes::Rows rows;
 
@@ -272,7 +272,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeRowspanCellToRows) {
   EXPECT_EQ(rows[2].block_size, LayoutUnit(300));
 }
 
-TEST_F(NGTableAlgorithmHelpersTest, DistributeSectionFixedBlockSizeToRows) {
+TEST_F(TableLayoutUtilsTest, DistributeSectionFixedBlockSizeToRows) {
   NGTableTypes::Rows rows;
 
   // Percentage rows get percentage, rest is distributed evenly.
@@ -286,7 +286,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeSectionFixedBlockSizeToRows) {
   EXPECT_EQ(rows[2].block_size, LayoutUnit(250));
 }
 
-TEST_F(NGTableAlgorithmHelpersTest, DistributeTableBlockSizeToSections) {
+TEST_F(TableLayoutUtilsTest, DistributeTableBlockSizeToSections) {
   NGTableTypes::Sections sections;
   NGTableTypes::Rows rows;
 

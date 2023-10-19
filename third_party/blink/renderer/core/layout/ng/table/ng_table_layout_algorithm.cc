@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_constraint_space_data.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_helpers.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_node.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"

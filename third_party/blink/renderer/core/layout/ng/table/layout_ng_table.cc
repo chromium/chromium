@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_helpers.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_table_painters.h"

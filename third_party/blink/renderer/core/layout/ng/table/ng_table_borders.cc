@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column_visitor.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_helpers.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_types.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
