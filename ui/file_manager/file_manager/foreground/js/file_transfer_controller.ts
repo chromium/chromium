@@ -14,6 +14,7 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {getDisallowedTransfers, grantAccess, startIOTask} from '../../common/js/api.js';
 import {getFocusedTreeItem, htmlEscape, isDirectoryTree, queryRequiredElement} from '../../common/js/dom_utils.js';
+import {getRootType} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
@@ -22,7 +23,6 @@ import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileKey} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
@@ -116,14 +116,6 @@ const getClipboardData = (event: Event): DataTransfer|null => {
   const isClipboardEvent = (event: Event): event is ClipboardEvent =>
       'clipboardData' in event;
   return isClipboardEvent(event) ? event.clipboardData : null;
-};
-
-/**
- * Take an entry and extract the rootType.
- */
-const getRootType = (entry: DirectoryEntry|FilesAppDirEntry|FakeEntry|
-                     EntryLocation): VolumeManagerCommon.RootType|null => {
-  return 'rootType' in entry ? entry.rootType : null;
 };
 
 export class FileTransferController {

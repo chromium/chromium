@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {EntryType, FileData} from '../../externs/ts/state.js';
 import {driveRootEntryListKey, myFilesEntryListKey, trashRootKey} from '../../state/ducks/volumes.js';
 
@@ -181,4 +182,12 @@ export function sortEntries(
   }
   return entries.filter(entry => fileFilter.filter(entry))
       .sort(util.compareName);
+}
+
+/**
+ * Take an entry and extract the rootType.
+ */
+export function getRootType(entry: DirectoryEntry|FilesAppDirEntry|FakeEntry|
+                            EntryLocation): VolumeManagerCommon.RootType|null {
+  return 'rootType' in entry ? entry.rootType : null;
 }
