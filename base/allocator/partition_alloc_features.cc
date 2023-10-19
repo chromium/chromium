@@ -372,32 +372,37 @@ BASE_FEATURE(kEnableConfigurableThreadCachePurgeInterval,
              "EnableConfigurableThreadCachePurgeInterval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<base::TimeDelta> kThreadCacheMinPurgeInterval{
-    &kEnableConfigurableThreadCachePurgeInterval, "ThreadCacheMinPurgeInterval",
-    FromPartitionAllocTimeDelta(partition_alloc::kMinPurgeInterval)};
+MIRACLE_PARAMETER_FOR_TIME_DELTA(
+    GetThreadCacheMinPurgeIntervalValue,
+    kEnableConfigurableThreadCachePurgeInterval,
+    "ThreadCacheMinPurgeInterval",
+    FromPartitionAllocTimeDelta(partition_alloc::kMinPurgeInterval))
 
-const base::FeatureParam<base::TimeDelta> kThreadCacheMaxPurgeInterval{
-    &kEnableConfigurableThreadCachePurgeInterval, "ThreadCacheMaxPurgeInterval",
-    FromPartitionAllocTimeDelta(partition_alloc::kMaxPurgeInterval)};
+MIRACLE_PARAMETER_FOR_TIME_DELTA(
+    GetThreadCacheMaxPurgeIntervalValue,
+    kEnableConfigurableThreadCachePurgeInterval,
+    "ThreadCacheMaxPurgeInterval",
+    FromPartitionAllocTimeDelta(partition_alloc::kMaxPurgeInterval))
 
-const base::FeatureParam<base::TimeDelta> kThreadCacheDefaultPurgeInterval{
-    &kEnableConfigurableThreadCachePurgeInterval,
+MIRACLE_PARAMETER_FOR_TIME_DELTA(
+    GetThreadCacheDefaultPurgeIntervalValue,
+    kEnableConfigurableThreadCachePurgeInterval,
     "ThreadCacheDefaultPurgeInterval",
-    FromPartitionAllocTimeDelta(partition_alloc::kDefaultPurgeInterval)};
+    FromPartitionAllocTimeDelta(partition_alloc::kDefaultPurgeInterval))
 
 const partition_alloc::internal::base::TimeDelta
 GetThreadCacheMinPurgeInterval() {
-  return ToPartitionAllocTimeDelta(kThreadCacheMinPurgeInterval.Get());
+  return ToPartitionAllocTimeDelta(GetThreadCacheMinPurgeIntervalValue());
 }
 
 const partition_alloc::internal::base::TimeDelta
 GetThreadCacheMaxPurgeInterval() {
-  return ToPartitionAllocTimeDelta(kThreadCacheMaxPurgeInterval.Get());
+  return ToPartitionAllocTimeDelta(GetThreadCacheMaxPurgeIntervalValue());
 }
 
 const partition_alloc::internal::base::TimeDelta
 GetThreadCacheDefaultPurgeInterval() {
-  return ToPartitionAllocTimeDelta(kThreadCacheDefaultPurgeInterval.Get());
+  return ToPartitionAllocTimeDelta(GetThreadCacheDefaultPurgeIntervalValue());
 }
 
 BASE_FEATURE(kEnableConfigurableThreadCacheMinCachedMemoryForPurging,
