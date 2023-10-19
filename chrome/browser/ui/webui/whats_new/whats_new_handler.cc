@@ -35,18 +35,18 @@ void WhatsNewHandler::RegisterMessages() {
 }
 
 void WhatsNewHandler::HandleInitialize(const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
+  CHECK_EQ(2U, args.size());
   const std::string& callback_id = args[0].GetString();
+  const bool is_refresh = args[1].GetBool();
 
   AllowJavascript();
 
   auto response = base::Value();
   if (!whats_new::IsRemoteContentDisabled()) {
-    if (whats_new::IsRefreshVersion()) {
-      // If this is a refresh version, both m117 and m118 will use the
-      // m117 What's New version. This essentially does a client-side
-      // redirect when WN is auto-opened, which does not occur with the
-      // original implementation.
+    if (is_refresh) {
+      // Show the refresh WNP. This logic essentially does a client-side
+      // redirect when WN is auto-opened and the refresh page has not
+      // been seen yet.
       response = base::Value(whats_new::GetServerURLForRefresh().spec());
     } else {
       response = base::Value(whats_new::GetServerURL(true).spec());
