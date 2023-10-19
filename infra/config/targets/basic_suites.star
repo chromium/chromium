@@ -2593,11 +2593,7 @@ targets.legacy_basic_suite(
         "courgette_unittests": None,
         "crypto_unittests": None,
         "filesystem_service_unittests": None,
-        "web_engine_integration_tests": targets.legacy_test_config(
-            args = [
-                "--test-arg=--vmodule=test_navigation_listener=1",
-            ],
-        ),
+        "web_engine_integration_tests": None,
         "web_engine_unittests": None,
     },
 )
@@ -6172,11 +6168,7 @@ targets.legacy_basic_suite(
         "cast_runner_integration_tests": None,
         "cast_runner_unittests": None,
         "web_engine_browsertests": None,
-        "web_engine_integration_tests": targets.legacy_test_config(
-            args = [
-                "--test-arg=--vmodule=test_navigation_listener=1",
-            ],
-        ),
+        "web_engine_integration_tests": None,
         "web_engine_unittests": None,
     },
 )

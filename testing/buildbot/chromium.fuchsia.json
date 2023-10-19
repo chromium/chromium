@@ -834,9 +834,6 @@
         "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_browsertests/"
       },
       {
-        "args": [
-          "--test-arg=--vmodule=test_navigation_listener=1"
-        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1793,9 +1790,6 @@
         "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_browsertests/"
       },
       {
-        "args": [
-          "--test-arg=--vmodule=test_navigation_listener=1"
-        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -2924,9 +2918,6 @@
         "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_browsertests/"
       },
       {
-        "args": [
-          "--test-arg=--vmodule=test_navigation_listener=1"
-        ],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4172,9 +4163,6 @@
         "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_browsertests/"
       },
       {
-        "args": [
-          "--test-arg=--vmodule=test_navigation_listener=1"
-        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
