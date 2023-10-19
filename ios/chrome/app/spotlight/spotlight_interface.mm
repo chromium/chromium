@@ -32,17 +32,20 @@
     completionHandler:(BlockWithError)completionHandler {
   DCHECK(completionHandler);
 
-  blockToRetry(^(NSError* error) {
-    if (error && retryCount > 0) {
-      [SpotlightInterface doWithRetry:blockToRetry
-                           retryCount:retryCount - 1
-                    completionHandler:completionHandler];
-    } else {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        completionHandler(error);
-      });
-    }
-  });
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                 ^{
+                   blockToRetry(^(NSError* error) {
+                     if (error && retryCount > 0) {
+                       [SpotlightInterface doWithRetry:blockToRetry
+                                            retryCount:retryCount - 1
+                                     completionHandler:completionHandler];
+                     } else {
+                       dispatch_async(dispatch_get_main_queue(), ^{
+                         completionHandler(error);
+                       });
+                     }
+                   });
+                 });
 }
 
 - (instancetype)initWithSearchableIndex:(CSSearchableIndex*)searchableIndex
