@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {HIDDEN_CLASS} from './interstitial_common.js';
+// TODO(crbug.com/1347008): Non-module version nof interstitial_mobile_nav.js.
+// Remove this file as part of migrating components/neterror/resources/ to JS
+// modules and use interstitial_mobile_nav.js instead.
 
-export let mobileNav = false;
+let mobileNav = false;
 
 /**
  * For small screen mobile the navigation buttons are moved
