@@ -184,10 +184,9 @@ public class StripTabHoverCardView extends FrameLayout {
         // Hover card width should be a maximum of 90% of the window width.
         hoverCardWidthPx = Math.min(hoverCardWidthPx, HOVER_CARD_MAX_WIDTH_PERCENT * windowWidthPx);
         float hoverCardWidthDp = hoverCardWidthPx / displayDensity;
-        // Update the card LayoutParams if an adjustment on the original width is required.
-        if (hoverCardWidthPx
-                != getContext().getResources().getDimension(R.dimen.tab_hover_card_width)) {
-            var layoutParams = getLayoutParams();
+        // Update the card LayoutParams if an adjustment on the current width is required.
+        var layoutParams = getLayoutParams();
+        if (hoverCardWidthPx != layoutParams.width) {
             setLayoutParams(new CoordinatorLayout.LayoutParams(
                     Math.round(hoverCardWidthPx), layoutParams.height));
         }

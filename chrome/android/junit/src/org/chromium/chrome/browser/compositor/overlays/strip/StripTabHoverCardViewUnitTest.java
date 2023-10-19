@@ -103,6 +103,7 @@ public class StripTabHoverCardViewUnitTest {
     private static final float STRIP_STACK_HEIGHT = 500.f;
     private static final float TAB_WIDTH = 100f;
 
+    // Used as a @Spy.
     private StripTabHoverCardView mTabHoverCardView;
     private ViewGroup mContentView;
     private TabThumbnailView mThumbnailView;
@@ -116,9 +117,10 @@ public class StripTabHoverCardViewUnitTest {
     public void setUp() {
         Activity activity = buildActivity(Activity.class).setup().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mTabHoverCardView =
+        var tabHoverCardView =
                 (StripTabHoverCardView)
                         activity.getLayoutInflater().inflate(R.layout.tab_hover_card_holder, null);
+        mTabHoverCardView = spy(tabHoverCardView);
         mContentView = mTabHoverCardView.findViewById(R.id.content_view);
         mThumbnailView = mTabHoverCardView.findViewById(R.id.thumbnail);
         mTitleView = mTabHoverCardView.findViewById(R.id.title);
@@ -139,6 +141,9 @@ public class StripTabHoverCardViewUnitTest {
         mThumbnailView.measure(mHoverCardWidth, thumbnailHeight);
         mThumbnailView.layout(0, 0, mHoverCardWidth, thumbnailHeight);
 
+        var originalLayoutParams = new LayoutParams((int) mHoverCardWidth, 200);
+        when(mTabHoverCardView.getLayoutParams()).thenReturn(originalLayoutParams);
+
         ShadowSysUtils.sIsLowEndDevice = false;
     }
 
@@ -150,8 +155,7 @@ public class StripTabHoverCardViewUnitTest {
         when(mHoveredTab.getUrl()).thenReturn(url);
         when(mHoveredTab.getId()).thenReturn(1);
 
-        StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-        cardViewSpy.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
+        mTabHoverCardView.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
 
         assertEquals("Card title text is incorrect.", mHoveredTab.getTitle(), mTitleView.getText());
         assertEquals(
@@ -159,11 +163,11 @@ public class StripTabHoverCardViewUnitTest {
         assertEquals(
                 "|mLastHoveredTabId| is incorrect.",
                 1,
-                cardViewSpy.getLastHoveredTabIdForTesting());
-        assertTrue("|mIsShowing| should be true.", cardViewSpy.isShowingForTesting());
-        verify(cardViewSpy).setX(anyFloat());
-        verify(cardViewSpy).setY(anyFloat());
-        verify(cardViewSpy).setVisibility(eq(View.VISIBLE));
+                mTabHoverCardView.getLastHoveredTabIdForTesting());
+        assertTrue("|mIsShowing| should be true.", mTabHoverCardView.isShowingForTesting());
+        verify(mTabHoverCardView).setX(anyFloat());
+        verify(mTabHoverCardView).setY(anyFloat());
+        verify(mTabHoverCardView).setVisibility(eq(View.VISIBLE));
 
         verify(mTabContentManager)
                 .getTabThumbnailWithCallback(
@@ -192,8 +196,7 @@ public class StripTabHoverCardViewUnitTest {
         when(mHoveredTab.getTitle()).thenReturn(title);
         when(mHoveredTab.getUrl()).thenReturn(url);
 
-        StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-        cardViewSpy.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
+        mTabHoverCardView.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
 
         assertEquals("Card title text is incorrect.", mHoveredTab.getTitle(), mTitleView.getText());
         // Verify chrome:// tab hover card display text.
@@ -201,9 +204,9 @@ public class StripTabHoverCardViewUnitTest {
                 "Card URL text is incorrect.",
                 mHoveredTab.getUrl().getSpec().replaceFirst("/$", ""),
                 mUrlView.getText());
-        verify(cardViewSpy).setX(anyFloat());
-        verify(cardViewSpy).setY(anyFloat());
-        verify(cardViewSpy).setVisibility(eq(View.VISIBLE));
+        verify(mTabHoverCardView).setX(anyFloat());
+        verify(mTabHoverCardView).setY(anyFloat());
+        verify(mTabHoverCardView).setVisibility(eq(View.VISIBLE));
     }
 
     @Test
@@ -215,8 +218,7 @@ public class StripTabHoverCardViewUnitTest {
         when(mHoveredTab.getUrl()).thenReturn(url);
         when(mHoveredTab.isIncognito()).thenReturn(false);
 
-        StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-        cardViewSpy.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
+        mTabHoverCardView.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
         verify(mTabContentManager)
                 .getTabThumbnailWithCallback(
                         anyInt(),
@@ -238,8 +240,7 @@ public class StripTabHoverCardViewUnitTest {
         when(mHoveredTab.getUrl()).thenReturn(url);
         when(mHoveredTab.getId()).thenReturn(1);
 
-        StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-        cardViewSpy.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
+        mTabHoverCardView.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
         // Assume that the hovered tab has changed before the thumbnail is fetched.
         when(mHoveredTab.getId()).thenReturn(2);
 
@@ -263,10 +264,9 @@ public class StripTabHoverCardViewUnitTest {
         when(mHoveredTab.getTitle()).thenReturn(title);
         when(mHoveredTab.getUrl()).thenReturn(url);
 
-        StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-        cardViewSpy.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
+        mTabHoverCardView.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
         // Assume that the hover card is hidden before the thumbnail is fetched.
-        cardViewSpy.hide();
+        mTabHoverCardView.hide();
         // Verify state is reset on hide.
         assertFalse("|mIsShowing| should be false.", mTabHoverCardView.isShowingForTesting());
         assertEquals(
@@ -293,6 +293,7 @@ public class StripTabHoverCardViewUnitTest {
     public void getHoverCardPosition() {
         // Use TSR detached treatment for additional coverage that includes position adjustments.
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
+
         // Set simulated hovered tab drawX for expected hover card position.
         float[] position = mTabHoverCardView.getHoverCardPosition(false, 10, 0, STRIP_STACK_HEIGHT);
         float detachedCardOffset =
@@ -309,21 +310,44 @@ public class StripTabHoverCardViewUnitTest {
     public void getHoverCardPosition_CardWidthExceedsWindowWidth() {
         // Set window width to be slightly smaller than the default card width.
         mContext.getResources().getDisplayMetrics().widthPixels = (int) (mHoverCardWidth - 1);
-        var originalLayoutParams = new LayoutParams((int) mHoverCardWidth, 200);
-        StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-        when(cardViewSpy.getLayoutParams()).thenReturn(originalLayoutParams);
 
         // Set simulated hovered tab drawX for expected hover card position.
         float[] position =
-                cardViewSpy.getHoverCardPosition(false, 10f, TAB_WIDTH, STRIP_STACK_HEIGHT);
+                mTabHoverCardView.getHoverCardPosition(false, 10f, TAB_WIDTH, STRIP_STACK_HEIGHT);
         ArgumentCaptor<LayoutParams> captor = ArgumentCaptor.forClass(LayoutParams.class);
-        verify(cardViewSpy).setLayoutParams(captor.capture());
+        verify(mTabHoverCardView).setLayoutParams(captor.capture());
         assertEquals(
                 "Card width is incorrect.",
                 Math.round(0.9f * (mHoverCardWidth - 1)),
                 captor.getValue().width);
         assertEquals("Card x position is incorrect.", 10f, position[0], 0f);
         assertEquals("Card y position is incorrect.", STRIP_STACK_HEIGHT, position[1], 0f);
+    }
+
+    @Test
+    public void cardWidthAcrossWindowResizes() {
+        // Set window width to be slightly smaller than the default card width.
+        mContext.getResources().getDisplayMetrics().widthPixels = (int) (mHoverCardWidth - 1);
+        mTabHoverCardView.getHoverCardPosition(false, 10f, TAB_WIDTH, STRIP_STACK_HEIGHT);
+
+        // Set window width to be big enough to accommodate the default card width.
+        mContext.getResources().getDisplayMetrics().widthPixels = (int) (mHoverCardWidth * 2);
+        // Last LayoutParams should reflect updated width.
+        when(mTabHoverCardView.getLayoutParams())
+                .thenReturn(new LayoutParams(Math.round(0.9f * (mHoverCardWidth - 1)), 200));
+        mTabHoverCardView.getHoverCardPosition(false, 10f, TAB_WIDTH, STRIP_STACK_HEIGHT);
+
+        ArgumentCaptor<LayoutParams> captor = ArgumentCaptor.forClass(LayoutParams.class);
+        verify(mTabHoverCardView, times(2)).setLayoutParams(captor.capture());
+        var paramsList = captor.getAllValues();
+        assertEquals(
+                "Card width within small window is incorrect.",
+                Math.round(0.9f * (mHoverCardWidth - 1)),
+                paramsList.get(0).width);
+        assertEquals(
+                "Card width within big window is incorrect.",
+                mHoverCardWidth,
+                paramsList.get(1).width);
     }
 
     @Test
@@ -396,11 +420,9 @@ public class StripTabHoverCardViewUnitTest {
 
     @Test
     public void updateHoverCardColors() {
-        StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-
         // Test incognito colors.
-        cardViewSpy.updateHoverCardColors(true);
-        verify(cardViewSpy)
+        mTabHoverCardView.updateHoverCardColors(true);
+        verify(mTabHoverCardView)
                 .setBackgroundTintList(
                         eq(
                                 ColorStateList.valueOf(
@@ -417,8 +439,9 @@ public class StripTabHoverCardViewUnitTest {
                 mUrlView.getCurrentTextColor());
 
         // Test standard colors.
-        cardViewSpy.updateHoverCardColors(false);
-        verify(cardViewSpy)
+        mTabHoverCardView.updateHoverCardColors(false);
+        // Invoked in #updateHoverCardColors() in #initialize() in setup and in test.
+        verify(mTabHoverCardView, times(2))
                 .setBackgroundTintList(
                         eq(
                                 ColorStateList.valueOf(
@@ -436,17 +459,16 @@ public class StripTabHoverCardViewUnitTest {
 
     @Test
     public void initialize() {
-        StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-
         // View is inflated in standard tab model.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
-        cardViewSpy.initialize(mTabModelSelector, mTabContentManagerSupplier);
-        verify(cardViewSpy).updateHoverCardColors(false);
+        mTabHoverCardView.initialize(mTabModelSelector, mTabContentManagerSupplier);
+        // Invoked in #initialize() in setup and in test.
+        verify(mTabHoverCardView, times(2)).updateHoverCardColors(false);
 
         // View is inflated in incognito tab model.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
-        cardViewSpy.initialize(mTabModelSelector, mTabContentManagerSupplier);
-        verify(cardViewSpy).updateHoverCardColors(true);
+        mTabHoverCardView.initialize(mTabModelSelector, mTabContentManagerSupplier);
+        verify(mTabHoverCardView).updateHoverCardColors(true);
     }
 
     @Test
@@ -456,23 +478,21 @@ public class StripTabHoverCardViewUnitTest {
         when(standardTabModel.isIncognito()).thenReturn(false);
         when(incognitoTabModel.isIncognito()).thenReturn(true);
 
-        StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-
         // Assume standard tab model.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
         // TabModelSelectorObserver should be added after the view is inflated.
-        cardViewSpy.initialize(mTabModelSelector, mTabContentManagerSupplier);
-        var tabModelSelectorObserver = cardViewSpy.getTabModelSelectorObserverForTesting();
+        mTabHoverCardView.initialize(mTabModelSelector, mTabContentManagerSupplier);
+        var tabModelSelectorObserver = mTabHoverCardView.getTabModelSelectorObserverForTesting();
         assertNotNull("TabModelSelectorObserver should be set.", tabModelSelectorObserver);
 
         // Switch to the incognito tab model.
         tabModelSelectorObserver.onTabModelSelected(incognitoTabModel, standardTabModel);
-        verify(cardViewSpy).updateHoverCardColors(true);
+        verify(mTabHoverCardView).updateHoverCardColors(true);
 
         // Switch to the standard tab model.
         tabModelSelectorObserver.onTabModelSelected(standardTabModel, incognitoTabModel);
-        // Invoked once in #onInflate(), subsequently in #onTabModelSelected().
-        verify(cardViewSpy, times(2)).updateHoverCardColors(false);
+        // Invoked in #initialize() in setup and in test, and in #onTabModelSelected().
+        verify(mTabHoverCardView, times(3)).updateHoverCardColors(false);
     }
 
     @Test
