@@ -138,7 +138,7 @@ export class WebSocketServer {
       );
 
       // Forward messages from BiDi Mapper to the client unconditionally.
-      browserInstance.on('message', (message) => {
+      browserInstance.bidiSession().on('message', (message) => {
         void this.#sendClientMessageString(message, connection);
       });
 
@@ -188,7 +188,7 @@ export class WebSocketServer {
         }
 
         // Forward all other commands to BiDi Mapper.
-        await browserInstance.sendCommand(plainCommandData);
+        await browserInstance.bidiSession().sendCommand(plainCommandData);
       });
 
       connection.on('close', async () => {

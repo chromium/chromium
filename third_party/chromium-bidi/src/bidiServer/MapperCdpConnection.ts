@@ -20,8 +20,8 @@ import debug, {type Debugger} from 'debug';
 
 import type {CdpConnection} from '../cdp/CdpConnection.js';
 import type {CdpClient} from '../cdp/CdpClient.js';
-import type {LogType, LogPrefix} from '../utils/log.js';
-import {EventEmitter} from '../utils/EventEmitter.js';
+import type {LogPrefix, LogType} from '../utils/log.js';
+import {SimpleTransport} from './SimpleTransport.js';
 
 const debugInternal = debug('bidi:mapper:internal');
 const debugInfo = debug('bidi:mapper:info');
@@ -38,11 +38,10 @@ const getLogger = (type: LogPrefix) => {
   return logger;
 };
 
-export class MapperCdpConnection extends EventEmitter<
-  Record<'message', string>
-> {
+export class MapperCdpConnection {
   #cdpConnection: CdpConnection;
   #mapperCdpClient: CdpClient;
+  #bidiSession: SimpleTransport;
 
   static async create(
     cdpConnection: CdpConnection,
@@ -66,9 +65,11 @@ export class MapperCdpConnection extends EventEmitter<
     cdpConnection: CdpConnection,
     mapperCdpClient: CdpClient
   ) {
-    super();
     this.#cdpConnection = cdpConnection;
     this.#mapperCdpClient = mapperCdpClient;
+    this.#bidiSession = new SimpleTransport(async (message) =>
+      this.#sendMessage(message)
+    );
 
     this.#mapperCdpClient.on('Runtime.bindingCalled', this.#onBindingCalled);
     this.#mapperCdpClient.on(
@@ -82,7 +83,7 @@ export class MapperCdpConnection extends EventEmitter<
     );
   }
 
-  async sendMessage(message: string): Promise<void> {
+  async #sendMessage(message: string): Promise<void> {
     try {
       await this.#mapperCdpClient.sendCommand('Runtime.evaluate', {
         expression: `onBidiMessage(${JSON.stringify(message)})`,
@@ -96,13 +97,13 @@ export class MapperCdpConnection extends EventEmitter<
     this.#cdpConnection.close();
   }
 
-  #onBidiMessage(message: string): void {
-    this.emit('message', message);
+  bidiSession(): SimpleTransport {
+    return this.#bidiSession;
   }
 
   #onBindingCalled = (params: Protocol.Runtime.BindingCalledEvent) => {
     if (params.name === 'sendBidiResponse') {
-      this.#onBidiMessage(params.payload);
+      this.#bidiSession.emit('message', params.payload);
     } else if (params.name === 'sendDebugMessage') {
       this.#onDebugMessage(params.payload);
     }

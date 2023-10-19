@@ -33,10 +33,10 @@ import WebSocket from 'ws';
 
 import {CdpConnection} from '../cdp/CdpConnection.js';
 import {WebSocketTransport} from '../utils/WebsocketTransport.js';
-import {EventEmitter} from '../utils/EventEmitter.js';
 
 import {MapperCdpConnection} from './MapperCdpConnection.js';
 import {getMapperTabSource} from './reader.js';
+import {SimpleTransport} from './SimpleTransport.js';
 
 const debugInternal = debug('bidi:mapper:internal');
 
@@ -49,7 +49,7 @@ const debugInternal = debug('bidi:mapper:internal');
  * 4. Bind `BiDi-CDP` mapper to the `BiDi server` to forward messages from BiDi
  * Mapper to the client.
  */
-export class BrowserInstance extends EventEmitter<Record<'message', string>> {
+export class BrowserInstance {
   #mapperCdpConnection: MapperCdpConnection;
   #browserProcess: Process;
 
@@ -122,32 +122,15 @@ export class BrowserInstance extends EventEmitter<Record<'message', string>> {
       verbose
     );
 
-    const browserInstance = new BrowserInstance(
-      mapperCdpConnection,
-      browserProcess
-    );
-
-    // 4. Bind `BiDi-CDP` mapper to the `BiDi server` to forward messages from
-    // BiDi Mapper to the client.
-    mapperCdpConnection.on('message', (message) => {
-      browserInstance.emit('message', message);
-    });
-
-    return browserInstance;
+    return new BrowserInstance(mapperCdpConnection, browserProcess);
   }
 
   constructor(
     mapperCdpConnection: MapperCdpConnection,
     browserProcess: Process
   ) {
-    super();
     this.#mapperCdpConnection = mapperCdpConnection;
     this.#browserProcess = browserProcess;
-  }
-
-  // Forward messages from the client to BiDi Mapper.
-  async sendCommand(plainCommand: string) {
-    await this.#mapperCdpConnection.sendMessage(plainCommand);
   }
 
   async close() {
@@ -156,6 +139,10 @@ export class BrowserInstance extends EventEmitter<Record<'message', string>> {
 
     // Close browser.
     await this.#browserProcess.close();
+  }
+
+  bidiSession(): SimpleTransport {
+    return this.#mapperCdpConnection.bidiSession();
   }
 
   static #establishCdpConnection(cdpUrl: string): Promise<CdpConnection> {
