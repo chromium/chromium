@@ -10,6 +10,8 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
+
 namespace internal {
 
 #define HISTOGRAM_PREFIX "PageLoad.Clients.LCPP."
@@ -19,6 +21,16 @@ const char kHistogramLCPPLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToLargestContentfulPaint";
 
 }  // namespace internal
+
+namespace {
+
+size_t GetLCPPFontURLPredictorMaxUrlCountPerOrigin() {
+  static size_t max_allowed_url_count = base::checked_cast<size_t>(
+      blink::features::kLCPPFontURLPredictorMaxUrlCountPerOrigin.Get());
+  return max_allowed_url_count;
+}
+
+}  // namespace
 
 PAGE_USER_DATA_KEY_IMPL(
     LcpCriticalPathPredictorPageLoadMetricsObserver::PageData);
@@ -169,6 +181,10 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
     const GURL& font_url) {
   if (!lcpp_data_inputs_) {
     lcpp_data_inputs_.emplace();
+  }
+  if (lcpp_data_inputs_->font_urls.size() >=
+      GetLCPPFontURLPredictorMaxUrlCountPerOrigin()) {
+    return;
   }
   lcpp_data_inputs_->font_urls.push_back(font_url);
 }

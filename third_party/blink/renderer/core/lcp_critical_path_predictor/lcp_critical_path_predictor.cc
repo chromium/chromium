@@ -13,6 +13,16 @@
 
 namespace blink {
 
+namespace {
+
+size_t GetLCPPFontURLPredictorMaxUrlLength() {
+  static size_t max_length = base::checked_cast<size_t>(
+      features::kLCPPFontURLPredictorMaxUrlLength.Get());
+  return max_length;
+}
+
+}  // namespace
+
 LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame)
     : frame_(&frame),
       host_(frame.DomWindow()),
@@ -118,6 +128,9 @@ void LCPCriticalPathPredictor::OnFontFetched(const KURL& url) {
     return;
   }
   if (!url.ProtocolIsInHTTPFamily()) {
+    return;
+  }
+  if (url.GetString().length() > GetLCPPFontURLPredictorMaxUrlLength()) {
     return;
   }
   GetHost().NotifyFetchedFont(url);
