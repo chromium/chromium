@@ -403,6 +403,50 @@ export async function testAddDisabledDriveVolume(done: () => void) {
   done();
 }
 
+/** Tests that archive volume can be added correctly. */
+export async function testAddArchiveVolume(done: () => void) {
+  const initialState = getEmptyState();
+  const store = setupStore(initialState);
+
+  const {volumeManager} = window.fileManager;
+  const volumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.ARCHIVE, 'test', 'test.zip');
+  // Archive's source should be File.
+  // @ts-ignore: access private variable to customize the source.
+  volumeInfo.source_ = VolumeManagerCommon.Source.FILE;
+  volumeManager.volumeInfoList.add(volumeInfo);
+  const volumeEntry = new VolumeEntry(volumeInfo);
+  const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
+
+  // Dispatch an action to add the archive volume.
+  store.dispatch(addVolume({volumeInfo, volumeMetadata}));
+
+  // Expect the volume will be added from the store.
+  const myFilesFileData = createMyFilesDataWithEntryList();
+  const want: Partial<State> = {
+    allEntries: {
+      // My Files entry list.
+      [myFilesFileData.entry.toURL()]: myFilesFileData,
+      // Archive.
+      [volumeEntry.toURL()]: {
+        ...convertEntryToFileData(volumeEntry),
+        isEjectable: true,
+      },
+    },
+    volumes: {
+      [volumeInfo.volumeId]: {
+        ...convertVolumeInfoAndMetadataToVolume(volumeInfo, volumeMetadata),
+      },
+    },
+  };
+  await waitDeepEquals(store, want, (state) => ({
+                                      allEntries: state.allEntries,
+                                      volumes: state.volumes,
+                                    }));
+
+  done();
+}
+
 /** Tests that volume can be removed correctly. */
 export async function testRemoveVolume(done: () => void) {
   const initialState = getEmptyState();

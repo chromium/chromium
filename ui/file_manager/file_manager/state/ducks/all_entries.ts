@@ -613,6 +613,11 @@ export function volumeNestingEntries(
     }
   }
 
+  state.allEntries[volumeRootKey].isEjectable =
+      (volumeInfo.source === VolumeManagerCommon.Source.DEVICE &&
+       volumeInfo.volumeType !== VolumeManagerCommon.VolumeType.MTP) ||
+      volumeInfo.source === VolumeManagerCommon.Source.FILE;
+
   if (volumeInfo.volumeType === VolumeType.REMOVABLE) {
     // It should be nested/grouped when there is more than 1 partition in the
     // same device.
@@ -666,12 +671,6 @@ export function volumeNestingEntries(
         icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
         isEjectable: false,
       };
-    } else {
-      // Update the isEjectable only if the removable device is not grouped.
-      state.allEntries[volumeRootKey].isEjectable =
-          (volumeInfo.source === VolumeManagerCommon.Source.DEVICE &&
-           volumeInfo.volumeType !== VolumeManagerCommon.VolumeType.MTP) ||
-          volumeInfo.source === VolumeManagerCommon.Source.FILE;
     }
   }
 

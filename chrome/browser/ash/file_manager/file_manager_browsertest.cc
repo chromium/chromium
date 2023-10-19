@@ -792,8 +792,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirCreateWithKeyboard").NewDirectoryTree(),
         TestCase("dirCreateWithoutChangingCurrent").NewDirectoryTree(),
         TestCase("dirContextMenuZip").NewDirectoryTree(),
-        // TODO(b/305121828): support eject button for zip archive mount.
-        // TestCase("dirContextMenuZipEject").NewDirectoryTree(),
+        TestCase("dirContextMenuZipEject").NewDirectoryTree(),
         TestCase("dirContextMenuRecent").NewDirectoryTree(),
         TestCase("dirContextMenuMyFiles").NewDirectoryTree(),
         TestCase("dirContextMenuMyFilesWithPaste").NewDirectoryTree(),
