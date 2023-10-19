@@ -41,11 +41,13 @@ class PrivateNetworkDevicePermissionContext
 
   // Grants `origin` access to the device.
   void GrantDevicePermission(const url::Origin& origin,
-                             const blink::mojom::PrivateNetworkDevice& device);
+                             const blink::mojom::PrivateNetworkDevice& device,
+                             bool is_device_valid);
 
   // Checks if `origin` has access to `device`.
   bool HasDevicePermission(const url::Origin& origin,
-                           const blink::mojom::PrivateNetworkDevice& device);
+                           const blink::mojom::PrivateNetworkDevice& device,
+                           bool is_device_valid);
 
   // Tracks the set of devices to which an origin has temporary access to.
   std::map<url::Origin, std::set<net::IPAddress>> ephemeral_devices_;
