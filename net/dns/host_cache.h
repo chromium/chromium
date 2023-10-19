@@ -264,6 +264,11 @@ class NET_EXPORT HostCache {
     // set to |port| if the current port is 0. Preserves any non-zero ports.
     HostCache::Entry CopyWithDefaultPort(uint16_t port) const;
 
+    static absl::optional<base::TimeDelta> TtlFromInternalResults(
+        const std::set<std::unique_ptr<HostResolverInternalResult>>& results,
+        base::Time now,
+        base::TimeTicks now_ticks);
+
    private:
     using HttpsRecordPriority = uint16_t;
 
