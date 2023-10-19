@@ -12,9 +12,12 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ui/actions/action_id.h"
@@ -22,6 +25,8 @@
 
 PinnedToolbarActionsModel::PinnedToolbarActionsModel(Profile* profile)
     : profile_(profile), pref_service_(profile_->GetPrefs()) {
+  MaybeMigrateSearchCompanionPinnedState();
+
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
       prefs::kPinnedActions,
@@ -216,4 +221,31 @@ void PinnedToolbarActionsModel::UpdatePinnedActionIds() {
   for (Observer& observer : observers_) {
     observer.OnActionsChanged();
   }
+}
+
+void PinnedToolbarActionsModel::MaybeMigrateSearchCompanionPinnedState() {
+  if (pref_service_->GetBoolean(
+          prefs::kPinnedSearchCompanionMigrationComplete) ||
+      !CanUpdate()) {
+    return;
+  }
+
+  pref_service_->SetBoolean(prefs::kPinnedSearchCompanionMigrationComplete,
+                            true);
+
+  if (!companion::IsCompanionFeatureEnabled()) {
+    // prefs::kSidePanelCompanionEntryPinnedToToolbar is not registered when
+    // companion is disabled.
+    return;
+  }
+
+  if (pref_service_->GetBoolean(
+          prefs::kSidePanelCompanionEntryPinnedToToolbar)) {
+    PinAction(kActionSidePanelShowSearchCompanion);
+  }
+}
+
+void PinnedToolbarActionsModel::
+    MaybeMigrateSearchCompanionPinnedStateForTesting() {
+  MaybeMigrateSearchCompanionPinnedState();
 }

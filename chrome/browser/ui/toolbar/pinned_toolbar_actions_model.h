@@ -77,6 +77,8 @@ class PinnedToolbarActionsModel : public KeyedService {
   void UpdatePinnedState(const actions::ActionId& action_id,
                          const bool should_pin);
 
+  void MaybeMigrateSearchCompanionPinnedStateForTesting();
+
   // Returns the ordered list of pinned ActionIds.
   const std::vector<actions::ActionId>& pinned_action_ids() const {
     return pinned_action_ids_;
@@ -94,6 +96,10 @@ class PinnedToolbarActionsModel : public KeyedService {
   // maintain insertion order. Notify observers the model has been updated with
   // the latest data from the pref.
   void UpdatePinnedActionIds();
+
+  // Migrate the search companion pin state
+  // (kSidePanelCompanionEntryPinnedToToolbar) into kPinnedActions.
+  void MaybeMigrateSearchCompanionPinnedState();
 
   // Our observers.
   base::ObserverList<Observer>::Unchecked observers_;
