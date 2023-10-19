@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/shared/ui/elements/windowed_container_view.h"
 #import "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
 #import "ios/chrome/browser/web/browser_about_rewriter.h"
+#import "ios/chrome/browser/web/choose_file/choose_file_java_script_feature.h"
 #import "ios/chrome/browser/web/chrome_main_parts.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #import "ios/chrome/browser/web/features.h"
@@ -370,6 +371,8 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(translate::TranslateJavaScriptFeature::GetInstance());
   features.push_back(WebPerformanceMetricsJavaScriptFeature::GetInstance());
   features.push_back(FollowJavaScriptFeature::GetInstance());
+  features.push_back(ChooseFileJavaScriptFeature::GetInstance());
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   features.push_back(
       SupervisedUserInterstitialJavaScriptFeature::GetInstance());

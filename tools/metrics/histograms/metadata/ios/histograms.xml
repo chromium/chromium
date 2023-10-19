@@ -3548,6 +3548,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Web.FileInput.Clicked" enum="IOSWebFileInputAttributes"
+    expires_after="2024-10-13">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>qpubert@chromium.org</owner>
+  <summary>
+    An enum describing the accept and the multiple attributes of an input file
+    element. Logged when the element is clicked.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Web.URLDidChangeToEmptyURL" enum="BooleanHit"
     expires_after="2024-11-19">
   <owner>gambard@chromium.org</owner>
