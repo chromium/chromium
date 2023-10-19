@@ -640,7 +640,7 @@ void EnrollmentScreen::OnIdentifierEntered(const std::string& email) {
   status_checker_.reset();
   status_checker_ = std::make_unique<AccountStatusCheckFetcher>(email);
   status_checker_->Fetch(std::move(callback),
-                         /*fetch_entollment_nudge_policy=*/false);
+                         /*fetch_enrollment_nudge_policy=*/false);
 }
 
 void EnrollmentScreen::OnFirstShow() {

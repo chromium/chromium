@@ -292,7 +292,7 @@ void GaiaScreen::HandleIdentifierEntered(const std::string& user_email) {
     account_status_fetcher_->Fetch(
         base::BindOnce(&GaiaScreen::OnAccountStatusFetched,
                        base::Unretained(this), user_email),
-        /*fetch_entollment_nudge_policy=*/true);
+        /*fetch_enrollment_nudge_policy=*/true);
     // Note: we don't check if user is allowlisted since
     // `ShouldFetchEnrollmentNudgePolicy` would return true only for unowned
     // devices in which case there are no device policies yet.
