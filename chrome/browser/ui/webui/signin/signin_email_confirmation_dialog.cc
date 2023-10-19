@@ -160,9 +160,6 @@ GURL SigninEmailConfirmationDialog::GetDialogContentURL() const {
   return GURL(chrome::kChromeUISigninEmailConfirmationURL);
 }
 
-void SigninEmailConfirmationDialog::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
 void SigninEmailConfirmationDialog::GetDialogSize(gfx::Size* size) const {
   DCHECK(size);
 

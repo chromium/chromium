@@ -47,8 +47,6 @@ class ChildWebDialog : public ui::WebDialogDelegate {
   void GetDialogSize(gfx::Size* size) const override;
   std::u16string GetDialogTitle() const override;
   void GetMinimumDialogSize(gfx::Size* size) const override;
-  void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
   // NOTE: This function deletes this object at the end.
   void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(content::WebContents* source,

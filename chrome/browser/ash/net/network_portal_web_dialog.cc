@@ -61,9 +61,6 @@ GURL NetworkPortalWebDialog::GetDialogContentURL() const {
   return url_;
 }
 
-void NetworkPortalWebDialog::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
 void NetworkPortalWebDialog::GetDialogSize(gfx::Size* size) const {
   *size = GetPortalDialogSize();
 }

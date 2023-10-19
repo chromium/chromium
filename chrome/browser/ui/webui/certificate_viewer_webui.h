@@ -67,7 +67,7 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
   std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
+      std::vector<content::WebUIMessageHandler*>* handlers) override;
   void GetDialogSize(gfx::Size* size) const override;
   std::string GetDialogArgs() const override;
   void OnDialogShown(content::WebUI* webui) override;

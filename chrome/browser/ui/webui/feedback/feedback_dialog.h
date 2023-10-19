@@ -50,7 +50,7 @@ class FeedbackDialog : public ui::WebDialogDelegate {
   void GetDialogSize(gfx::Size* size) const override;
   std::string GetDialogArgs() const override;
   void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
+      std::vector<content::WebUIMessageHandler*>* handlers) override;
   void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;

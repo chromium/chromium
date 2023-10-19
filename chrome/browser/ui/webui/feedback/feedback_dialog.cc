@@ -144,7 +144,7 @@ void FeedbackDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 void FeedbackDialog::GetWebUIMessageHandlers(
-    std::vector<WebUIMessageHandler*>* handlers) const {
+    std::vector<WebUIMessageHandler*>* handlers) {
   handlers->push_back(new FeedbackHandler(this));
 }
 

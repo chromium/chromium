@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/web_dialogs/web_dialogs_export.h"
@@ -19,7 +20,6 @@ namespace content {
 class RenderFrameHost;
 class WebContents;
 class WebUI;
-class WebUIMessageHandler;
 struct ContextMenuParams;
 struct OpenURLParams;
 }
@@ -75,7 +75,9 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // is still open.  Ownership of each handler is taken over by the WebUI
   // hosting the page. By default this method adds no handlers.
   virtual void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const;
+      std::vector<content::WebUIMessageHandler*>* handlers);
+  void AddWebUIMessageHandler(
+      std::unique_ptr<content::WebUIMessageHandler> handler);
 
   // Get the size of the dialog. Implementations can safely assume |size| is a
   // valid pointer. Callers should be able to handle the case where
@@ -258,6 +260,9 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   bool show_title_ = true;
   gfx::Size size_;
   std::u16string title_;
+
+  std::vector<std::unique_ptr<content::WebUIMessageHandler>>
+      added_message_handlers_;
 };
 
 }  // namespace ui

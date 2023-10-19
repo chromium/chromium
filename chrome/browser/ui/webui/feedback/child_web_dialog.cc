@@ -69,9 +69,6 @@ GURL ChildWebDialog::GetDialogContentURL() const {
   return url_;
 }
 
-void ChildWebDialog::GetWebUIMessageHandlers(
-    std::vector<WebUIMessageHandler*>* handlers) const {}
-
 void ChildWebDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(dialog_width_, dialog_height_);
 }

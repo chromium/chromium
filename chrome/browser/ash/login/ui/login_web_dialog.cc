@@ -84,9 +84,6 @@ GURL LoginWebDialog::GetDialogContentURL() const {
   return url_;
 }
 
-void LoginWebDialog::GetWebUIMessageHandlers(
-    std::vector<WebUIMessageHandler*>* handlers) const {}
-
 void LoginWebDialog::GetDialogSize(gfx::Size* size) const {
   // TODO(https://crbug.com/1022774): Fix for the lock screen.
   if (!parent_window_) {
