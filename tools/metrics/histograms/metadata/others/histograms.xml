@@ -13870,27 +13870,6 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
-<histogram name="URL.Path.UnescapeEscapedChar" enum="Boolean"
-    expires_after="2024-02-01">
-  <owner>hayato@chromium.org</owner>
-  <owner>src/url/OWNERS</owner>
-  <summary>
-    Measures whether DoPartialPathInternal() in url_canon_path unescaped any
-    percent-encoded characters. The measurement is not specific to any
-    particular use case.
-
-    For example, this is recored to parse the following URL:
-
-    new URL(&quot;https://example.com/%61&quot;)
-
-    This can potentially be recorded every time a URL path is parsed, but only
-    if unescaping at least one percent-encoded character.
-
-    Eventually, we will add other metrics for each use case to better understand
-    the usage.
-  </summary>
-</histogram>
-
 <histogram name="URL.Scheme.SetNonSpecialSchemeOnSpecialScheme" enum="Boolean"
     expires_after="2024-02-01">
   <owner>hayato@chromium.org</owner>

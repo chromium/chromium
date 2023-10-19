@@ -10,7 +10,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -2845,56 +2844,6 @@ TEST(URLCanonTest, IDNToASCII) {
   str = u"xn--1⁄4";
   EXPECT_FALSE(IDNToASCII(str, &output));
   output.set_length(0);
-}
-
-class URLCanonAsciiPercentEncodePathTest
-    : public ::testing::Test,
-      public ::testing::WithParamInterface<bool> {
- public:
-  URLCanonAsciiPercentEncodePathTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          url::kDontDecodeAsciiPercentEncodedURLPath);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          url::kDontDecodeAsciiPercentEncodedURLPath);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         URLCanonAsciiPercentEncodePathTest,
-                         ::testing::Bool());
-
-TEST_P(URLCanonAsciiPercentEncodePathTest, UnescapePathCharHistogram) {
-  struct TestCase {
-    std::string_view path;
-    base::HistogramBase::Count cnt;
-  } cases[] = {
-      {"/a", 0},
-      {"/%61", 1},
-      {"/%61%61", 1},
-  };
-
-  for (const auto& c : cases) {
-    base::HistogramTester histogram_tester;
-    Component in_comp(0, c.path.size());
-    Component out_comp;
-    std::string out_str;
-    StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizePath(c.path.data(), in_comp, &output, &out_comp);
-    ASSERT_TRUE(success);
-    if (base::FeatureList::IsEnabled(
-            url::kDontDecodeAsciiPercentEncodedURLPath)) {
-      histogram_tester.ExpectBucketCount("URL.Path.UnescapeEscapedChar", 1, 0);
-    } else {
-      histogram_tester.ExpectBucketCount("URL.Path.UnescapeEscapedChar", 1,
-                                         c.cnt);
-    }
-  }
 }
 
 }  // namespace url
