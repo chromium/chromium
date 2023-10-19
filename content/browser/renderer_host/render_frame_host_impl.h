@@ -4091,6 +4091,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::vector<RenderFrameHostImpl*> GetAncestorChainForStorageKeyCalculation(
       const url::Origin& new_rfh_origin);
 
+  // Returns whether the `RenderFrameHost` can use Additional Windowing Controls
+  // APIs.
+  // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
   bool CanUseWindowingControls(base::StringPiece js_api_name);
 
   // The RenderViewHost that this RenderFrameHost is associated with.

@@ -6676,14 +6676,20 @@ bool RenderFrameHostImpl::CanUseWindowingControls(
         base::StrCat({"API called from a non-active frame: ", js_api_name}));
     return false;
   }
+
+  // These checks don't kill RFH, instead they log to the developer console.
   if (!IsWindowManagementGranted(this)) {
-    mojo::ReportBadMessage(
+    AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
         base::StrCat({"API called without `window-management` permission "
                       "being granted: ",
                       js_api_name}));
     return false;
   }
-  return true;
+  if (WebContents* web_contents = WebContents::FromRenderFrameHost(this)) {
+    return web_contents->GetDelegate()->CanUseWindowingControls(this);
+  }
+  return false;
 #endif
 }
 

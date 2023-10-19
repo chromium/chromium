@@ -453,6 +453,10 @@ class CONTENT_EXPORT WebContentsDelegate {
                                base::OnceCallback<void()> on_confirm,
                                base::OnceCallback<void()> on_cancel);
 
+  // Returns whether the RFH can use Additional Windowing Controls APIs.
+  // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
+  virtual bool CanUseWindowingControls(RenderFrameHost* requesting_frame);
+
   // Returns whether entering fullscreen with |EnterFullscreenModeForTab()| is
   // allowed.
   virtual bool CanEnterFullscreenModeForTab(

@@ -2028,6 +2028,17 @@ void Browser::EnumerateDirectory(
   FileSelectHelper::EnumerateDirectory(web_contents, std::move(listener), path);
 }
 
+bool Browser::CanUseWindowingControls(
+    content::RenderFrameHost* requesting_frame) {
+  if (!web_app::AppBrowserController::IsWebApp(this)) {
+    requesting_frame->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "API called from something else than a web_app.");
+    return false;
+  }
+  return true;
+}
+
 bool Browser::CanEnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {

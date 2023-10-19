@@ -2534,15 +2534,6 @@ void BrowserView::SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {
     return;
   }
 
-  // Setting it absl::nullopt should never be blocked.
-  if (can_resize.has_value() && !GetIsWebAppType()) {
-    web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf("window.setResizable blocked due to being called "
-                           "from something else than a web app."));
-    return;
-  }
-
   // TODO(laurila, crbug.com/1466855): Use PageUserData instead.
   if (can_resize == can_resize_from_web_api_) {
     return;

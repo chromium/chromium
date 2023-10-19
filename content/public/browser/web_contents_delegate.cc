@@ -155,6 +155,11 @@ void WebContentsDelegate::CreateSmsPrompt(
     base::OnceCallback<void()> on_confirm,
     base::OnceCallback<void()> on_cancel) {}
 
+bool WebContentsDelegate::CanUseWindowingControls(
+    RenderFrameHost* requesting_frame) {
+  return false;
+}
+
 bool WebContentsDelegate::IsFullscreenForTabOrPending(
     const WebContents* web_contents) {
   return false;
