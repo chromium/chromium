@@ -74,7 +74,7 @@ video.addEventListener("canplaythrough",
                            return runTests(t_video, video);
                         }), false);
 video.preload = "auto";
-video.src = "resources/pattern.ogv";
+video.src = "resources/pattern.webm";
 
 
 function runTests(t, element) {
@@ -104,7 +104,7 @@ function runTests(t, element) {
         var acanvas = document.createElement("canvas");
         acanvas.setAttribute("width", "50");
         acanvas.setAttribute("height", "50");
-        var actx = acanvas.getContext("2d");
+        var actx = acanvas.getContext("2d", {willReadFrequently: true});
 
         var tolerance = 0;
         // Strictly the same under software rendering, but significantly
