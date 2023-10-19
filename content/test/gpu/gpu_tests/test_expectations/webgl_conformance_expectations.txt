@@ -547,6 +547,8 @@ crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop
 
 ## Mac / M1 / OpenGL ##
 
+crbug.com/1493524 [ mac apple passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
+
 
 ####################
 # Linux failures   #

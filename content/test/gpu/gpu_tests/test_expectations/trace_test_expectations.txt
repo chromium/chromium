@@ -248,6 +248,12 @@ crbug.com/1446057 [ win10 amd-0x7340 angle-d3d11 ] VideoPathTraceTest_DirectComp
 crbug.com/1487723 [ android android-shield-android-tv ] TraceTest_CSS3DBlueBox [ RetryOnFailure ]
 crbug.com/1487723 [ android android-shield-android-tv ] TraceTest_SolidColorBackground [ RetryOnFailure ]
 
+# Canvas capture trace tests on M1 Mac
+crbug.com/1493530 [ mac apple angle-metal ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ RetryOnFailure ]
+crbug.com/1493530 [ mac apple angle-metal ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture_Accelerated [ RetryOnFailure ]
+crbug.com/1493530 [ mac apple angle-metal ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture_Hidden [ RetryOnFailure ]
+crbug.com/1493530 [ mac apple angle-metal no-asan ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
