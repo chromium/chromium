@@ -28,7 +28,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
+#import "ios/web/common/user_agent.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -63,6 +65,10 @@ constexpr std::string_view kURLs[] = {
     "chrome://flags",
     "chrome://credits",
 };
+
+// URL and title used to create an unrealized WebState.
+const char kURL[] = "https://example.com";
+const char16_t kTitle[] = u"Example Domain";
 
 // Scoped observer template.
 template <typename Source, typename Observer>
@@ -160,23 +166,32 @@ class FileModificationTracker {
   PathToTimeMap snapshot_;
 };
 
-// Returns the storage file for `web_states` in `session_dir`.
+// Structure storing a WebState and whether the native session is supposed
+// to be available. Used by ExpectedStorageFilesForWebStates.
+struct WebStateReference {
+  const web::WebState* web_state = nullptr;
+  bool is_native_session_available = false;
+};
+
+// Returns the storage file for `references` in `session_dir`.
 FilePathSet ExpectedStorageFilesForWebStates(
     const base::FilePath& session_dir,
     bool expect_session_metadata_storage,
-    const std::vector<const web::WebState*>& web_states) {
+    const std::vector<WebStateReference>& references) {
   FilePathSet result;
   if (expect_session_metadata_storage) {
     result.insert(session_dir.Append(kSessionMetadataFilename));
   }
 
-  for (const web::WebState* web_state : web_states) {
+  for (const WebStateReference& reference : references) {
     const base::FilePath web_state_dir = ios::sessions::WebStateDirectory(
-        session_dir, web_state->GetUniqueIdentifier());
+        session_dir, reference.web_state->GetUniqueIdentifier());
 
-    result.insert(web_state_dir.Append(kWebStateSessionFilename));
     result.insert(web_state_dir.Append(kWebStateStorageFilename));
     result.insert(web_state_dir.Append(kWebStateMetadataStorageFilename));
+    if (reference.is_native_session_available) {
+      result.insert(web_state_dir.Append(kWebStateSessionFilename));
+    }
   }
   return result;
 }
@@ -184,12 +199,15 @@ FilePathSet ExpectedStorageFilesForWebStates(
 // Returns the path of storage file to `browser` in `session_dir`.
 FilePathSet ExpectedStorageFilesForBrowser(const base::FilePath& session_dir,
                                            Browser* browser) {
-  std::vector<const web::WebState*> web_states;
+  std::vector<WebStateReference> references;
   WebStateList* web_state_list = browser->GetWebStateList();
   for (int index = 0; index < web_state_list->count(); ++index) {
-    web_states.push_back(web_state_list->GetWebStateAt(index));
+    references.push_back(WebStateReference{
+        .web_state = web_state_list->GetWebStateAt(index),
+        .is_native_session_available = true,
+    });
   }
-  return ExpectedStorageFilesForWebStates(session_dir, true, web_states);
+  return ExpectedStorageFilesForWebStates(session_dir, true, references);
 }
 
 // Set union.
@@ -536,7 +554,10 @@ TEST_F(SessionRestorationServiceImplTest, SaveSessionChangesOnlyRequiredFiles) {
             ExpectedStorageFilesForWebStates(
                 SessionPathFromIdentifier(kIdentifier0),
                 /* expect_session_metadata_storage */ true,
-                {browser.GetWebStateList()->GetActiveWebState()}));
+                {WebStateReference{
+                    .web_state = browser.GetWebStateList()->GetActiveWebState(),
+                    .is_native_session_available = true,
+                }}));
 
   // Disconnect the Browser before destroying it.
   service()->Disconnect(&browser);
@@ -737,7 +758,8 @@ TEST_F(SessionRestorationServiceImplTest, DeleteObsoleteFilesOnLoadSession) {
     expected_deleted_files = ExpectedStorageFilesForWebStates(
         SessionPathFromIdentifier(kIdentifier0),
         /* expect_session_metadata_storage */ false,
-        {detached_web_state.get()});
+        {WebStateReference{.web_state = detached_web_state.get(),
+                           .is_native_session_available = true}});
 
     // Disconnect the Browser before destroying it.
     service()->Disconnect(&browser);
@@ -805,6 +827,46 @@ TEST_F(SessionRestorationServiceImplTest, RecordHistograms) {
             static_cast<int>(std::size(kURLs)));
   histogram_tester.ExpectTotalCount("Session.WebStates.LoadingTimeOnMainThread",
                                     1);
+
+  // Disconnect the Browser before destroying it.
+  service()->Disconnect(&browser);
+}
+
+// Tests that creating an unrealized WebState succeed and that the data
+// is correctly saved to the disk.
+TEST_F(SessionRestorationServiceImplTest, CreateUnrealizedWebState) {
+  // Create a Browser.
+  TestBrowser browser = TestBrowser(browser_state());
+  service()->SetSessionID(&browser, kIdentifier0);
+
+  // Create an unrealized WebState.
+  std::unique_ptr<web::WebState> web_state =
+      service()->CreateUnrealizedWebState(
+          &browser,
+          web::CreateWebStateStorage(
+              web::NavigationManager::WebLoadParams(GURL(kURL)), kTitle, false,
+              web::UserAgentType::MOBILE, base::Time::Now()));
+  ASSERT_TRUE(web_state);
+
+  // Record the list of expected files while the pointer to the newly created
+  // WebState is still valid.
+  const FilePathSet expected_files = ExpectedStorageFilesForWebStates(
+      SessionPathFromIdentifier(kIdentifier0),
+      /* expect_session_metadata_storage */ true,
+      {WebStateReference{
+          .web_state = web_state.get(),
+          .is_native_session_available = false,
+      }});
+
+  // Insert the WebState into the Browser's WebStateList and then wait for
+  // the session to be saved to storage.
+  browser.GetWebStateList()->InsertWebState(
+      WebStateList::kInvalidIndex, std::move(web_state),
+      WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
+  WaitForBackgroundTaskComplete();
+
+  // Check that the data for the WebState has been saved to disk.
+  EXPECT_EQ(ModifiedFiles(), expected_files);
 
   // Disconnect the Browser before destroying it.
   service()->Disconnect(&browser);

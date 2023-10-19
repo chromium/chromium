@@ -341,6 +341,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/test:test_support",
     "//ios/web/common:features",
+    "//ios/web/common:user_agent",
     "//ios/web/public/navigation",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",

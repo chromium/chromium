@@ -88,6 +88,12 @@ std::unique_ptr<web::WebState> CreateWebState(
   return web_state;
 }
 
+// Returns a callback that return `value` when invoked.
+template <typename T>
+base::OnceCallback<T()> ReturnValueOnce(T&& value) {
+  return base::BindOnce([](T value) { return value; }, std::forward<T>(value));
+}
+
 }  // anonymous namespace
 
 // Class storing information about a WebStateList tracked by the
@@ -113,12 +119,31 @@ class SessionRestorationServiceImpl::WebStateListInfo {
   // Returns the `identifier` used to derive the path to the storage.
   const std::string& identifier() const { return identifier_; }
 
+  // Adds `web_state_id` to the list of expected unrealized WebState. This
+  // correspond to a WebState created via `CreateUnrealizedWebState()`.
+  void add_expected_id(web::WebStateID web_state_id) {
+    expected_ids_.insert(web_state_id);
+  }
+
+  // Removes `web_state_id` from the list of expected unrealized WebState.
+  void remove_expected_id(web::WebStateID web_state_id) {
+    expected_ids_.erase(web_state_id);
+  }
+
+  // Returns whether `web_state_id` is in the list of expected unrealized
+  // WebState or not. This is used to determine whether the WebState should
+  // be adopted (i.e. its storage copied from another Browser) or not.
+  bool is_id_expected(web::WebStateID web_state_id) const {
+    return base::Contains(expected_ids_, web_state_id);
+  }
+
   // Returns the `observer`.
   SessionRestorationWebStateListObserver& observer() { return observer_; }
 
  private:
   const std::string identifier_;
   SessionRestorationWebStateListObserver observer_;
+  std::set<web::WebStateID> expected_ids_;
   bool can_load_synchronously_ = true;
 };
 
@@ -293,6 +318,52 @@ void SessionRestorationServiceImpl::Disconnect(Browser* browser) {
   infos_.erase(iterator);
 }
 
+std::unique_ptr<web::WebState>
+SessionRestorationServiceImpl::CreateUnrealizedWebState(
+    Browser* browser,
+    web::proto::WebStateStorage storage) {
+  auto iterator = infos_.find(browser->GetWebStateList());
+  DCHECK(iterator != infos_.end());
+
+  // Create the unique identifier for the new WebState and mark it as
+  // expected with the WebStateListInfo (since it cannot be adopted).
+  const web::WebStateID web_state_id = web::WebStateID::NewUnique();
+
+  WebStateListInfo& info = *iterator->second;
+  info.add_expected_id(web_state_id);
+
+  // Schedule saving the storage and metadata for the created WebState
+  // to disk before creating it, to ensure the data is available after
+  // the next application restart even if the WebState never transition
+  // to the realised state.
+  const base::FilePath web_state_dir = ios::sessions::WebStateDirectory(
+      storage_path_.Append(info.identifier()), web_state_id);
+
+  // Create requests to serialize WebState storage and metadata storage,
+  // and then post them to the background sequence.
+  web::proto::WebStateMetadataStorage metadata;
+  metadata.Swap(storage.mutable_metadata());
+
+  ios::sessions::IORequestList requests;
+  requests.push_back(std::make_unique<ios::sessions::WriteProtoIORequest>(
+      web_state_dir.Append(kWebStateMetadataStorageFilename),
+      std::make_unique<web::proto::WebStateMetadataStorage>(metadata)));
+  requests.push_back(std::make_unique<ios::sessions::WriteProtoIORequest>(
+      web_state_dir.Append(kWebStateStorageFilename),
+      std::make_unique<web::proto::WebStateStorage>(storage)));
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ios::sessions::ExecuteIORequests, std::move(requests)));
+
+  // Create the WebState with callback that return the data from memory. This
+  // ensure there is no race condition while trying to read the data from the
+  // main thread while it is being written to disk on a background thread.
+  return web::WebState::CreateWithStorage(
+      browser->GetBrowserState(), web_state_id, std::move(metadata),
+      ReturnValueOnce(std::move(storage)), ReturnValueOnce<NSData*>(nil));
+}
+
 #pragma mark - Private
 
 void SessionRestorationServiceImpl::MarkWebStateListDirty(
@@ -345,8 +416,17 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
       const base::FilePath dest_dir = storage_path_.Append(info.identifier());
 
       for (const auto web_state_id : inserted_web_states) {
-        DCHECK(base::Contains(orphaned_map, web_state_id));
+        // Check whether the `web_state_id` is expected. If this is the case,
+        // then `CreateUnrealizedWebState()` took care of scheduling tasks to
+        // save its state to disk and there is nothing to do here.
+        if (info.is_id_expected(web_state_id)) {
+          info.remove_expected_id(web_state_id);
+          continue;
+        }
 
+        // If the `web_state_id` is not expected, then it must be adopted
+        // from another Browser, thus needs to be in the `orphaned_map`.
+        DCHECK(base::Contains(orphaned_map, web_state_id));
         const base::FilePath from_dir =
             storage_path_.Append(orphaned_map[web_state_id]);
 

@@ -44,6 +44,9 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
   void SetSessionID(Browser* browser, const std::string& identifier) final;
   void LoadSession(Browser* browser) final;
   void Disconnect(Browser* browser) final;
+  std::unique_ptr<web::WebState> CreateUnrealizedWebState(
+      Browser* browser,
+      web::proto::WebStateStorage storage) final;
 
  private:
   // Helper type used to record information about a single WebStateList.
