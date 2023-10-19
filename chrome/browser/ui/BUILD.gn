@@ -1360,6 +1360,8 @@ static_library("ui") {
       "safety_hub/notification_permission_review_service.h",
       "safety_hub/notification_permission_review_service_factory.cc",
       "safety_hub/notification_permission_review_service_factory.h",
+      "safety_hub/password_status_check_result.cc",
+      "safety_hub/password_status_check_result.h",
       "safety_hub/password_status_check_service.cc",
       "safety_hub/password_status_check_service.h",
       "safety_hub/password_status_check_service_factory.cc",

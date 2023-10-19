@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/common/chrome_features.h"
@@ -812,6 +813,20 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCardCheckTime) {
   EXPECT_EQ(*service()->GetPasswordCardData(true).FindString(
                 safety_hub::kCardSubheaderKey),
             std::string("Checked 300 days ago"));
+}
+
+TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
+       ResultWhenChangingLeakedPassword) {
+  const PasswordStatusCheckResult& old_result = service()->GetCachedResult();
+  EXPECT_THAT(old_result.GetCompromisedOrigins(), testing::IsEmpty());
+
+  // When a leaked password is found, the result should be updated.
+  password_store().AddLogin(MakeForm(kUsername2, kPassword, kOrigin1, true));
+  RunUntilIdle();
+
+  const PasswordStatusCheckResult& new_result = service()->GetCachedResult();
+  EXPECT_THAT(new_result.GetCompromisedOrigins(),
+              testing::ElementsAre(kOrigin1));
 }
 
 INSTANTIATE_TEST_SUITE_P(

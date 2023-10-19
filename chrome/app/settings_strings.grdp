@@ -4428,6 +4428,11 @@
       =1 {Review 1 website with lots of notifications}
       other {Review {NUM_SITES} websites with lots of notifications}}
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" desc="The password check module of Safety Hub warns users if there is any insecure credential. This label is for the notification in Chrome's three-dot menu indicating how many passwords are compromised.">
+    {NUM_SITES, plural,
+      =1 {Found 1 compromised password}
+      other {Found {NUM_SITES} compromised passwords}}
+  </message>
 
   <!-- Experimental enterprise plus_addresses settings strings -->
   <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">

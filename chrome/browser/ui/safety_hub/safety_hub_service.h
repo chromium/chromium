@@ -33,6 +33,7 @@ class SafetyHubService : public KeyedService,
   // the specific information that is retrieved. Any intermediate data that is
   // required for the background task, or that needs to passed through to the UI
   // thread task should be included as well.
+  // TODO(crbug.com/1443466): Move result class to outside of SafetyHubService.
   class Result {
    public:
     virtual ~Result() = default;

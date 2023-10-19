@@ -11,6 +11,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/common/chrome_features.h"
@@ -383,12 +384,14 @@ void PasswordStatusCheckService::UpdateInsecureCredentialCount() {
   weak_credential_count_ = 0;
   reused_credential_count_ = 0;
 
+  latest_result_ = std::make_unique<PasswordStatusCheckResult>();
   for (const auto& entry : insecure_credentials) {
     if (entry.IsMuted()) {
       continue;
     }
     if (password_manager::IsCompromised(entry)) {
       compromised_credential_count_++;
+      latest_result_->AddToCompromisedOrigins(entry.GetURL().spec());
     }
     if (entry.IsWeak()) {
       weak_credential_count_++;
@@ -500,4 +503,9 @@ base::Value::Dict PasswordStatusCheckService::GetPasswordCardData(
   }
 
   return GetNoWeakOrReusedPasswordCardData(signed_in);
+}
+
+const PasswordStatusCheckResult& PasswordStatusCheckService::GetCachedResult()
+    const {
+  return *latest_result_;
 }

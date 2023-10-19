@@ -9,10 +9,16 @@
 #include "chrome/browser/extensions/api/passwords_private/password_check_delegate.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
+class PasswordStatusCheckResult;
+
+// The service that runs password checks periodically to get unsecure credential
+// information. The service also observes the changes in password store to get
+// notified about the newly discovered password issues.
 class PasswordStatusCheckService
     : public KeyedService,
       public password_manager::SavedPasswordsPresenter::Observer,
@@ -60,6 +66,10 @@ class PasswordStatusCheckService
 
   // Helper function for displaying the current status in the UI.
   base::Value::Dict GetPasswordCardData(bool signed_in);
+
+  // Returns the latest PasswordStatusCheckResult that is available in memory.
+  // TODO(crbug.com/1443466): This will be a SafetyHubService implementation.
+  const PasswordStatusCheckResult& GetCachedResult() const;
 
   // Testing functions.
   bool IsObservingSavedPasswordsPresenterForTesting() const {
@@ -191,6 +201,10 @@ class PasswordStatusCheckService
 
   // Timer to schedule the run of the password check after some time has passed.
   base::OneShotTimer password_check_timer_;
+
+  // The latest available result, which is initialized when the service is
+  // started and whenever insecure credentials are changed.
+  std::unique_ptr<PasswordStatusCheckResult> latest_result_;
 
   base::WeakPtrFactory<PasswordStatusCheckService> weak_ptr_factory_{this};
 };
