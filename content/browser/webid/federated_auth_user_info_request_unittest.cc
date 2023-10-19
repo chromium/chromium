@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -185,6 +186,10 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
            has_fetched_accounts_endpoint_;
   }
 
+  base::WeakPtr<TestIdpNetworkRequestManager> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  protected:
   bool has_fetched_well_known_{false};
   bool has_fetched_config_{false};
@@ -192,6 +197,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
  private:
   const Config config_;
+  base::WeakPtrFactory<TestIdpNetworkRequestManager> weak_ptr_factory_{this};
 };
 
 class TestApiPermissionDelegate : public MockApiPermissionDelegate {
@@ -276,7 +282,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
 
     auto network_manager =
         std::make_unique<TestIdpNetworkRequestManager>(config);
-    network_manager_ = network_manager.get();
+    network_manager_ = network_manager->AsWeakPtr();
 
     blink::mojom::IdentityProviderConfigPtr idp_ptr =
         blink::mojom::IdentityProviderConfig::New();
@@ -335,7 +341,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
 
  protected:
   raw_ptr<TestRenderFrameHost, DanglingUntriaged> iframe_render_frame_host_;
-  raw_ptr<TestIdpNetworkRequestManager, DanglingUntriaged> network_manager_;
+  base::WeakPtr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
   std::unique_ptr<NiceMock<FedCmMetrics>> metrics_;
