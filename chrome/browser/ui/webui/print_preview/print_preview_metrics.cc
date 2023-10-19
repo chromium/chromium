@@ -8,6 +8,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -175,6 +177,30 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
 void ReportUserActionHistogram(UserActionBuckets event) {
   // Use macro because this histogram is called multiple times in succession.
   UMA_HISTOGRAM_ENUMERATION("PrintPreview.UserAction", event);
+}
+
+void RecordGetPrintersTimeHistogram(mojom::PrinterType printer_type,
+                                    const base::TimeTicks& start_time) {
+  std::string printer_type_metric;
+  switch (printer_type) {
+    case mojom::PrinterType::kExtension:
+      printer_type_metric = "Extension";
+      break;
+    case mojom::PrinterType::kPdf:
+      printer_type_metric = "PDF";
+      break;
+    case mojom::PrinterType::kLocal:
+      printer_type_metric = "Local";
+      break;
+    case mojom::PrinterType::kPrivetDeprecated:
+    case mojom::PrinterType::kCloudDeprecated:
+      NOTREACHED_NORETURN();
+  }
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"PrintPreview.GetPrintersTime.", printer_type_metric}),
+      /*sample=*/base::TimeTicks::Now() - start_time,
+      /*min=*/base::Milliseconds(1),
+      /*max=*/base::Minutes(1), /*buckets=*/50);
 }
 
 }  // namespace printing

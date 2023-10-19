@@ -35,6 +35,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrintPreview.GetPrintersTime.{PrinterType}" units="ms"
+    expires_after="2024-10-16">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    The amount of time it takes to fetch {PrinterType} printers. Recorded
+    whenever Print Preview is opened and {PrinterType} printers are requested.
+  </summary>
+  <token key="PrinterType">
+    <variant name="Extension"/>
+    <variant name="Local"/>
+    <variant name="PDF"/>
+  </token>
+</histogram>
+
 <histogram name="PrintPreview.InitialDisplayTime" units="ms"
     expires_after="2024-03-10">
   <owner>thestig@chromium.org</owner>

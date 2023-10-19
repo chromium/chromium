@@ -8,6 +8,11 @@
 #include <cstddef>
 
 #include "base/values.h"
+#include "printing/mojom/print.mojom-forward.h"
+
+namespace base {
+class TimeTicks;
+}  // namespace base
 
 namespace printing {
 
@@ -83,6 +88,9 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
                               bool is_pdf);
 
 void ReportUserActionHistogram(UserActionBuckets event);
+
+void RecordGetPrintersTimeHistogram(mojom::PrinterType printer_type,
+                                    const base::TimeTicks& start_time);
 
 }  // namespace printing
 
