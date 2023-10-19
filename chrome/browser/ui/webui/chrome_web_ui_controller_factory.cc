@@ -1170,6 +1170,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIBluetoothInternalsURL),
     GURL(chrome::kChromeUIBluetoothPairingURL),
     GURL(chrome::kChromeUIBorealisCreditsURL),
+    GURL(chrome::kChromeUIBorealisInstallerUrl),
     GURL(chrome::kChromeUICloudUploadURL),
     GURL(chrome::kChromeUIConnectivityDiagnosticsAppURL),
     GURL(chrome::kChromeUICrashesUrl),

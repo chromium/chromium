@@ -444,6 +444,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
     kChromeUIAssistantOptInHost,
     kChromeUIBluetoothPairingHost,
     kChromeUIBorealisCreditsHost,
+    kChromeUIBorealisInstallerHost,
     kChromeUICertificateManagerHost,
     kChromeUICloudUploadHost,
     kChromeUICrostiniCreditsHost,
