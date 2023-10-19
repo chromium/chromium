@@ -205,12 +205,11 @@ using feed::FeedUserActionType;
           base::Time::FromNSDate(lastInteractionTimeForDiscoverGoodVisitsDate);
     }
 
-    NSDate* lastInteractionTimeForFollowingGoodVisitsDate =
-        base::apple::ObjCCast<NSDate>(
-            [defaults objectForKey:kLastInteractionTimeForFollowingGoodVisits]);
-    if (lastInteractionTimeForFollowingGoodVisitsDate != nil) {
+    base::Time lastInteractionTimeForFollowingGoodVisitsDate =
+        self.prefService->GetTime(kLastInteractionTimeForFollowingGoodVisits);
+    if (lastInteractionTimeForFollowingGoodVisitsDate != base::Time()) {
       self.lastInteractionTimeForFollowingGoodVisits =
-          base::Time::FromNSDate(lastInteractionTimeForFollowingGoodVisitsDate);
+          lastInteractionTimeForFollowingGoodVisitsDate;
     }
 
     // Total time spent in feed metrics.
@@ -1349,8 +1348,7 @@ using feed::FeedUserActionType;
   if (feedType == FeedTypeFollowing) {
     [defaults setDouble:0 forKey:kLongFollowingFeedVisitTimeAggregateKey];
     self.lastInteractionTimeForFollowingGoodVisits = now;
-    [defaults setObject:now.ToNSDate()
-                 forKey:kLastInteractionTimeForFollowingGoodVisits];
+    self.prefService->SetTime(kLastInteractionTimeForFollowingGoodVisits, now);
     self.followingPreviousTimeInFeedGV = 0;
     self.goodVisitReportedFollowing = NO;
   }
