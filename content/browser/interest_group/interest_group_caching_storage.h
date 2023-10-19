@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -215,8 +216,14 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
 
  private:
   // After the async call to load interest groups from storage, cache the result
-  // in a StorageInterestGroups and return a pointer.
+  // in a StorageInterestGroups. Also make sure to call
+  // any callbacks in outstanding_interest_group_for_owner_callbacks_ with a
+  // pointer to the just-stored result.
   void OnLoadInterestGroupsForOwner(
+      const url::Origin& owner,
+      std::vector<StorageInterestGroup> interest_groups);
+
+  void OnLoadInterestGroupsForOwnerCacheDisabled(
       const url::Origin& owner,
       base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback,
       std::vector<StorageInterestGroup> interest_groups);
@@ -225,6 +232,11 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
 
   std::map<url::Origin, base::WeakPtr<StorageInterestGroups>>
       cached_interest_groups_;
+
+  std::map<const url::Origin,
+           base::queue<
+               base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)>>>
+      outstanding_interest_groups_for_owner_callbacks_;
 
   base::WeakPtrFactory<InterestGroupCachingStorage> weak_factory_{this};
 };

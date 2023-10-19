@@ -73,19 +73,47 @@ InterestGroupCachingStorage::~InterestGroupCachingStorage() = default;
 void InterestGroupCachingStorage::GetInterestGroupsForOwner(
     const url::Origin& owner,
     base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback) {
-  auto it = cached_interest_groups_.find(owner);
-  if (base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache) &&
-      it != cached_interest_groups_.end() && it->second.MaybeValid()) {
-    std::move(callback).Run(
-        scoped_refptr<StorageInterestGroups>(it->second.get()));
+  // If the cache is disabled, simply call
+  // InterestGroupStorage::GetInterestGroupsForOwner on each request.
+  if (!base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache)) {
+    interest_group_storage_
+        .AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
+        .WithArgs(owner)
+        .Then(base::BindOnce(&InterestGroupCachingStorage::
+                                 OnLoadInterestGroupsForOwnerCacheDisabled,
+                             weak_factory_.GetWeakPtr(), owner,
+                             std::move(callback)));
     return;
   }
-  interest_group_storage_
-      .AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
-      .WithArgs(owner)
-      .Then(base::BindOnce(
-          &InterestGroupCachingStorage::OnLoadInterestGroupsForOwner,
-          weak_factory_.GetWeakPtr(), owner, std::move(callback)));
+
+  // If there is a cache hit, use the in-memory object.
+  auto cached_groups_it = cached_interest_groups_.find(owner);
+  if (cached_groups_it != cached_interest_groups_.end() &&
+      cached_groups_it->second.MaybeValid()) {
+    std::move(callback).Run(
+        scoped_refptr<StorageInterestGroups>(cached_groups_it->second.get()));
+    return;
+  }
+
+  // If there is no cache hit, run
+  // InterestGroupStorage::GetInterestGroupsForOwner only if there are no
+  // outstanding calls. Otherwise, allow the callback to use the result of an
+  // outstanding call.
+  auto outstanding_callbacks_it =
+      outstanding_interest_groups_for_owner_callbacks_.find(owner);
+  if (outstanding_callbacks_it ==
+      outstanding_interest_groups_for_owner_callbacks_.end()) {
+    outstanding_interest_groups_for_owner_callbacks_[owner].push(
+        std::move(callback));
+    interest_group_storage_
+        .AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
+        .WithArgs(owner)
+        .Then(base::BindOnce(
+            &InterestGroupCachingStorage::OnLoadInterestGroupsForOwner,
+            weak_factory_.GetWeakPtr(), owner));
+  } else {
+    outstanding_callbacks_it->second.push(std::move(callback));
+  }
 }
 
 void InterestGroupCachingStorage::JoinInterestGroup(
@@ -296,14 +324,34 @@ void InterestGroupCachingStorage::GetLastMaintenanceTimeForTesting(
       .Then(std::move(callback));
 }
 
-void InterestGroupCachingStorage::OnLoadInterestGroupsForOwner(
+void InterestGroupCachingStorage::OnLoadInterestGroupsForOwnerCacheDisabled(
     const url::Origin& owner,
     base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback,
     std::vector<StorageInterestGroup> interest_groups) {
   scoped_refptr<StorageInterestGroups> interest_groups_ptr =
       base::MakeRefCounted<StorageInterestGroups>(std::move(interest_groups));
-  cached_interest_groups_[owner] = interest_groups_ptr->GetWeakPtr();
   std::move(callback).Run(std::move(interest_groups_ptr));
+}
+
+void InterestGroupCachingStorage::OnLoadInterestGroupsForOwner(
+    const url::Origin& owner,
+    std::vector<StorageInterestGroup> interest_groups) {
+  scoped_refptr<StorageInterestGroups> interest_groups_ptr =
+      base::MakeRefCounted<StorageInterestGroups>(std::move(interest_groups));
+  cached_interest_groups_[owner] = interest_groups_ptr->GetWeakPtr();
+
+  auto outstanding_callbacks_it =
+      outstanding_interest_groups_for_owner_callbacks_.find(owner);
+  if (outstanding_callbacks_it ==
+      outstanding_interest_groups_for_owner_callbacks_.end()) {
+    return;
+  }
+  while (!outstanding_callbacks_it->second.empty()) {
+    std::move(outstanding_callbacks_it->second.front())
+        .Run(interest_groups_ptr);
+    outstanding_callbacks_it->second.pop();
+  }
+  outstanding_interest_groups_for_owner_callbacks_.erase(owner);
 }
 
 }  // namespace content

@@ -502,6 +502,40 @@ TEST_F(InterestGroupCachingStorageTest, CacheWorksWhenPointerReleased) {
   ASSERT_EQ(newly_loaded_igs_2->get()->size(), 1u);
 }
 
+TEST_F(InterestGroupCachingStorageTest,
+       CacheCollatesCallsToGetInterestGroupsByOwner) {
+  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
+      CreateCachingStorage();
+  url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
+  auto ig = MakeInterestGroup(owner, "name");
+  JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
+
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
+  base::RunLoop run_loop;
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs1](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs1 = std::move(groups);
+                 }));
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs2](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs2 = std::move(groups);
+                 }));
+  caching_storage->GetInterestGroupsForOwner(
+      owner, base::BindLambdaForTesting(
+                 [&loaded_igs3,
+                  &run_loop](scoped_refptr<StorageInterestGroups> groups) {
+                   loaded_igs3 = std::move(groups);
+                   run_loop.Quit();
+                 }));
+  run_loop.Run();
+  ASSERT_EQ(loaded_igs1->get(), loaded_igs2->get());
+  ASSERT_EQ(loaded_igs1->get(), loaded_igs3->get());
+}
+
 TEST_F(InterestGroupCachingStorageTest, NoCachingWhenFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kFledgeUseInterestGroupCache);
