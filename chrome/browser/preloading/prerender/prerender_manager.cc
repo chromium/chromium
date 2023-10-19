@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/page_load_metrics/observers/bookmark_navigation_handle_user_data.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
@@ -21,15 +20,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/common/pref_names.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/base_search_provider.h"
-#include "components/prefs/pref_service.h"
-#include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading.h"
@@ -52,25 +43,6 @@ const char kHistogramPrerenderPredictionStatusDirectUrlInput[] =
 namespace {
 
 using content::PreloadingTriggeringOutcome;
-
-bool IsJavascriptDisabled(content::WebContents& web_contents, const GURL& url) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents.GetBrowserContext());
-  if (!profile) {
-    return true;
-  }
-
-  if (!profile->GetPrefs() ||
-      !profile->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
-    return true;
-  }
-
-  HostContentSettingsMap* content_settings =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  return (!content_settings || content_settings->GetContentSetting(
-                                   url, url, ContentSettingsType::JAVASCRIPT) ==
-                                   CONTENT_SETTING_BLOCK);
-}
 
 // Prerendered pages are considered stale after a fixed duration.
 // TODO(https://crbug.com/1295170): Use the search prefetch setting for now. The
@@ -446,83 +418,6 @@ PrerenderManager::StartPrerenderDirectUrlInput(
   return nullptr;
 }
 
-void PrerenderManager::StartPrerenderSearchSuggestion(
-    const AutocompleteMatch& match,
-    const GURL& canonical_search_url) {
-  CHECK(AutocompleteMatch::IsSearchType(match.type));
-  TemplateURLRef::SearchTermsArgs& search_terms_args =
-      *(match.search_terms_args);
-
-  content::PreloadingURLMatchCallback same_url_matcher =
-      base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
-                          web_contents()->GetBrowserContext());
-  auto* preloading_data =
-      content::PreloadingData::GetOrCreateForWebContents(web_contents());
-
-  // Create new PreloadingAttempt and pass all the values corresponding to
-  // this prerendering attempt.
-  content::PreloadingAttempt* preloading_attempt =
-      preloading_data->AddPreloadingAttempt(
-          chrome_preloading_predictor::kDefaultSearchEngine,
-          content::PreloadingType::kPrerender, same_url_matcher,
-          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
-
-  // If the caller does not want to prerender a new result, this does not need
-  // to do anything.
-  if (!ResetSearchPrerenderTaskIfNecessary(canonical_search_url,
-                                           preloading_attempt->GetWeakPtr())) {
-    return;
-  }
-
-  // Since search pages require Javascript to perform the basic prerender
-  // loading logic, do not prerender a search result if Javascript is disabled.
-  if (IsJavascriptDisabled(*web_contents(), match.destination_url)) {
-    preloading_attempt->SetEligibility(
-        content::PreloadingEligibility::kJavascriptDisabled);
-    return;
-  }
-
-  GURL prerender_url = match.destination_url;
-  // Skip changing the prerender URL in tests as they may not have Profile or
-  // TemplateURLServiceFactory. In that case, the callers of
-  // StartPrerenderSearchSuggestion() should ensure the prerender URL is valid
-  // instead.
-  if (!skip_template_url_service_for_testing_) {
-    TemplateURLService* template_url_service =
-        GetTemplateURLServiceFromBrowserContext(
-            web_contents()->GetBrowserContext());
-    if (!template_url_service) {
-      return;
-    }
-
-    // TODO(https://crbug.com/1329011): Metric for investigation. Remove this
-    // one after we get more than 30k records.
-    base::UmaHistogramBoolean(
-        "Prerender.Experimental.DefaultSearchEngine."
-        "SearchTermExtractorCorrectness",
-        IsSearchDestinationMatch(canonical_search_url,
-                                 web_contents()->GetBrowserContext(),
-                                 match.destination_url));
-
-    {
-      // Undo the change. This information might be used during activation so
-      // we should not change it.
-      base::AutoReset<std::string> resetter(&search_terms_args.prefetch_param,
-                                            kSuggestPrefetchParam.Get());
-      const TemplateURL* default_provider =
-          template_url_service->GetDefaultSearchProvider();
-      CHECK(default_provider);
-      prerender_url = GURL(default_provider->url_ref().ReplaceSearchTerms(
-          search_terms_args, template_url_service->search_terms_data(),
-          /*post_content=*/nullptr));
-    }
-    CHECK(search_terms_args.prefetch_param.empty());
-  }
-
-  StartPrerenderSearchResultInternal(canonical_search_url, prerender_url,
-                                     preloading_attempt->GetWeakPtr());
-}
-
 void PrerenderManager::StartPrerenderSearchResult(
     const GURL& canonical_search_url,
     const GURL& prerendering_url,
@@ -643,6 +538,8 @@ bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(
   return true;
 }
 
+// TODO(https://crbug.com/1485775): Merge this function into
+// StartPrerenderSearchResult().
 void PrerenderManager::StartPrerenderSearchResultInternal(
     const GURL& canonical_search_url,
     const GURL& prerendering_url,

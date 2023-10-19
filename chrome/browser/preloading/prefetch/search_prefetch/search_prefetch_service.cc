@@ -738,14 +738,6 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
                                  kSuggestPrefetchParam.Get()),
           web_contents);
     }
-    if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
-        BaseSearchProvider::ShouldPrerender(match)) {
-      PrerenderManager::CreateForWebContents(web_contents);
-      auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
-      DCHECK(prerender_manager);
-      prerender_manager->StartPrerenderSearchSuggestion(match,
-                                                        canonical_search_url);
-    }
   }
 }
 

@@ -1163,13 +1163,15 @@ std::vector<FrameTree*> PrerenderHostRegistry::GetPrerenderFrameTrees() {
 PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
     const GURL& prerendering_url) {
   for (auto& iter : prerender_host_by_frame_tree_node_id_) {
-    if (iter.second->GetInitialUrl() == prerendering_url)
+    if (iter.second->IsUrlMatch(prerendering_url)) {
       return iter.second.get();
+    }
   }
   for (auto& iter : prerender_new_tab_handle_by_frame_tree_node_id_) {
     PrerenderHost* host = iter.second->GetPrerenderHostForTesting();  // IN-TEST
-    if (host && host->GetInitialUrl() == prerendering_url)
+    if (host && host->IsUrlMatch(prerendering_url)) {
       return host;
+    }
   }
   return nullptr;
 }

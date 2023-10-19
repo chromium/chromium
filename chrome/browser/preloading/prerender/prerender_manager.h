@@ -55,14 +55,6 @@ class PrerenderManager : public content::WebContentsObserver,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // The entry of Default Search Engine prerender. Calling this method will lead
-  // to the cancellation of the previous prerender if the given `match`'s search
-  // suggestion canonical URL differs from the ongoing one's.
-  // TODO(https://crbug.com/1295170): Remove this method after Search prerender
-  // work properly with Search prefetch.
-  void StartPrerenderSearchSuggestion(const AutocompleteMatch& match,
-                                      const GURL& canonical_search_url);
-
   // Calling this method will lead to the cancellation of the previous prerender
   // if the given `canonical_search_url` differs from the ongoing one's.
   void StartPrerenderSearchResult(
