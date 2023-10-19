@@ -207,6 +207,9 @@
       <message name="IDS_READALOUD_OPTIONS_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' options menu button.">
         More options
       </message>
+      <message name="IDS_READALOUD_MENU_BACK" desc="Accessibility string for the 'navigate back' button on the bottom sheet menus.">
+        Navigate back
+      </message>
       <message name="IDS_READALOUD_PLAYBACK_ERROR" desc="Message displayed when an error occured during 'Listen to this page' playback.">
         Playback is unavailable for this page.
       </message>

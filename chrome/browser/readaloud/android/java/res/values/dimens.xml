@@ -49,4 +49,10 @@ found in the LICENSE file.
     <dimen name="readaloud_control_button_diameter">72dp</dimen>
     <dimen name="readaloud_play_button_width">104dp</dimen>
     <dimen name="readaloud_control_button_spacing">12dp</dimen>
+
+    <!-- Menus -->
+    <!-- Shared -->
+    <dimen name="readaloud_menu_margin_horizontal">24dp</dimen>
+    <!-- Top bar -->
+    <dimen name="readaloud_menu_title_margin_start">16dp</dimen>
 </resources>
