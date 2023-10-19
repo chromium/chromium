@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] testing width: calc(5px * 10lh / 1px)
+  assert_equals: expected "1000px" but got "520px"
+[FAIL] testing width: calc(20% * 0.5em / 1px)
+  assert_equals: expected "832px" but got "520px"
+[FAIL] testing width: calc(4px * 4em / 1px)
+  assert_equals: expected "256px" but got "520px"
+[FAIL] testing width: calc(400px / 4lh * 1px)
+  assert_equals: expected "5px" but got "520px"
+[FAIL] testing width: calc(20% / 0.5em * 1px)
+  assert_equals: expected "13px" but got "520px"
+Harness: the test ran to completion.
+

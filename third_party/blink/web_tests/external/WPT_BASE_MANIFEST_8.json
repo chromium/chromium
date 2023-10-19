@@ -4626,6 +4626,13 @@
     },
     "printing": {
      "crashtests": {
+      "root-element-remove-print.html": [
+       "8497e8c4fd7694ad2fb48f4338b570dea5e26463",
+       [
+        null,
+        {}
+       ]
+      ],
       "tall-inline-block-in-float-in-table-cell-print.html": [
        "c70dce2160a9c206c850df7dcd518c97a7ec0443",
        [
@@ -19833,6 +19840,32 @@
        {}
       ]
      ],
+     "monolithic-overflow-024-print.html": [
+      "6153bc98ae0534573817663c232fb4dbadf10116",
+      [
+       null,
+       [
+        [
+         "/css/printing/monolithic-overflow-024-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "monolithic-overflow-025-print.html": [
+      "3fefbc37e2ecd38e2a88847c9132c49398d322fe",
+      [
+       null,
+       [
+        [
+         "/css/printing/monolithic-overflow-025-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "negative-overflow-print.html": [
       "158fecc5f69d6fb25b355993c55885d3ee3f82de",
       [
@@ -20093,6 +20126,45 @@
        {}
       ]
      ],
+     "page-size-010-print.html": [
+      "21205e06a0333d494f38b5e6d0f4eda59df46a20",
+      [
+       null,
+       [
+        [
+         "/css/printing/page-size-010-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-size-011-print.html": [
+      "2747605806685fe631ed2e6166f71b7523f40ad1",
+      [
+       null,
+       [
+        [
+         "/css/printing/page-size-011-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-visibility-hidden-001-print.html": [
+      "0de5c5ae825f4e84de4f7f82da02c55d4deddcb8",
+      [
+       null,
+       [
+        [
+         "/css/printing/page-visibility-hidden-001-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "paused-animations-print.html": [
       "03ef1bab3c3430891ed9f37ca913c1339d36e682",
       [
@@ -20126,6 +20198,19 @@
        [
         [
          "/css/printing/remote-origin-iframe-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "root-element-display-none-print.html": [
+      "d6802f62251a3457858933b4a71b12b7032c4282",
+      [
+       null,
+       [
+        [
+         "/css/printing/reference/blank-print-ref.html",
          "=="
         ]
        ],
@@ -98220,6 +98305,19 @@
      ],
      "tall-float-pushed-to-next-fragmentainer-003.html": [
       "3e28c5c347e6aa85d0f4a1e4b3d7508e0616e32e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "tall-float-pushed-to-next-fragmentainer-004.html": [
+      "3f4d39fc1c7ac6be999d011e9f257002552c3e13",
       [
        null,
        [
@@ -284476,6 +284574,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "c8543ae26ae75281036a1bc1c128b9b886df646f",
+     []
+    ],
+    "mtime.json": [
+     "b33295864b59c087e3d5166a1181c75417671ba9",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -326652,10 +326760,6 @@
       "8038f369cde2b496106223551ab9441a79d2621e",
       []
      ],
-     "nesting-type-selector.html.ini": [
-      "013b754f2b59a392cbc63e6f7b81f5d168a1e69c",
-      []
-     ],
      "parsing-expected.txt": [
       "9a5f89d9c3e0d397a3b21d6f0fb1b2b150909ab8",
       []
@@ -344780,6 +344884,10 @@
       "5614ec09b2641a580f8c965c339568701e46b612",
       []
      ],
+     "calc-in-media-queries-with-mixed-units-expected.txt": [
+      "7cb63a51a2ad45cce9ac7ec85f7303860e5041fa",
+      []
+     ],
      "calc-in-media-queries-with-mixed-units.html.ini": [
       "9df17437a7d56199775071c3293dcb6efe0a3997",
       []
@@ -344801,7 +344909,7 @@
       []
      ],
      "calc-linear-radial-conic-gradient-001-expected.txt": [
-      "190fa5fec5ad93abdd6904f5c6e4f7f44821b441",
+      "faed530112822a605af26c6b73ec2b8068b7be11",
       []
      ],
      "calc-linear-radial-conic-gradient-001.html.ini": [
@@ -344922,6 +345030,10 @@
      ],
      "ex-calc-expression-001-ref.html": [
       "888a51ea9b6ac04fb065ee5d84a18be8fe765aca",
+      []
+     ],
+     "getComputedStyle-calc-mixed-units-003-expected.txt": [
+      "53dde2026fafee87f268f6b7d9207829d52f3f61",
       []
      ],
      "ic-unit-002.html.ini": [
@@ -345186,27 +345298,51 @@
        []
       ],
       "mixed-units-01.html": [
-       "6401cd9b4bda27871ac29f097e0e75962d6f7121",
+       "1969d10b46c267e9f2d4f32cc919a78d953dd58c",
        []
       ],
       "mixed-units-02.html": [
-       "67088c64c59328d73bcb360a6152482ea8df22ac",
+       "cbef463398147bee2949e5f2f914d875c9125065",
        []
       ],
       "mixed-units-03.html": [
-       "3d614d395ac3e3a0a134475c1da66e2779918b10",
+       "0a22fcb5e71c188e037c5be6fb511681128d1860",
        []
       ],
       "mixed-units-04.html": [
-       "b23c0e6a7fa3271d4a0eb61e486ccc40fe2e207d",
+       "5c3560aaf94848f096786408ede3d769c20486c2",
        []
       ],
       "mixed-units-05.html": [
-       "e6196d3e31f5e986b28c98ddfe54978c3940b7e4",
+       "d1a71b73e4e0c276c519362aa89d22b5e9f40022",
        []
       ],
       "mixed-units-06.html": [
-       "a4a614f8d2e0a7b2dcfc7152287013d8d15906ab",
+       "787de9746b9695c0a526045c78550a99fedd87fd",
+       []
+      ],
+      "mixed-units-07.html": [
+       "bd4bd4aecf4b7db6d718f67f4aad269c47c0cca6",
+       []
+      ],
+      "mixed-units-08.html": [
+       "1ae1d0c30c6848b17c5aea79bc16f2b7670d4d38",
+       []
+      ],
+      "mixed-units-09.html": [
+       "ee078c95dfe0912f797c2684bd54493ee58e195f",
+       []
+      ],
+      "mixed-units-10.html": [
+       "43a4fd02f4b098fda131bd59d8bf73fe997091ab",
+       []
+      ],
+      "mixed-units-11.html": [
+       "1d63c899d847bd2150ce94f884887cd2cf035261",
+       []
+      ],
+      "mixed-units-12.html": [
+       "bb623ff3ec54c19b14cb9e917ff4f03eaf892f68",
        []
       ],
       "pattern-grg-rgr-grg.png": [
@@ -351390,6 +351526,14 @@
       "bdc4eb1ab0e14cfe65cce3eaf080d0b46029bd9d",
       []
      ],
+     "monolithic-overflow-024-print-ref.html": [
+      "fc964fde32d70e035633c519bb4fad0377f498e1",
+      []
+     ],
+     "monolithic-overflow-025-print-ref.html": [
+      "edbb9ac011aa85d161e88f4beace4955cb1d23d2",
+      []
+     ],
      "negative-overflow-print-ref.html": [
       "64786375f7e316b045c73c3d6e4b72e691a5fdc8",
       []
@@ -351494,6 +351638,18 @@
       "86ffa278c9306e5a8ddcb8eeb02147dc01c7a266",
       []
      ],
+     "page-size-010-print-ref.html": [
+      "27cbe4435c21119102f33aa7fb0fc010600c5b04",
+      []
+     ],
+     "page-size-011-print-ref.html": [
+      "945f105ef470b0e78a92828dc54b651bce7abf7b",
+      []
+     ],
+     "page-visibility-hidden-001-print-ref.html": [
+      "fd519c85525f1e65ea766e8e728843ade9ec062a",
+      []
+     ],
      "paused-animations-print-ref.html": [
       "c22ecd174585100fd5faae8402f5a6e141b8264e",
       []
@@ -351503,6 +351659,10 @@
       []
      ],
      "reference": {
+      "blank-print-ref.html": [
+       "ad73420cdb97b50d1b7613a20e5f9d37885c619a",
+       []
+      ],
       "filled-green-100px-square-print-ref.html": [
        "d4834d1358a6434664996c635e7b8ee1e51f7628",
        []
@@ -353351,7 +353511,7 @@
       ]
      },
      "reftest-tutorial.md": [
-      "a51430942ce8853f788715eb2f548435406f520a",
+      "a8e6aeeca1b4cb330331f5986296c70a7b84f03f",
       []
      ],
      "reftests.md": [
@@ -483790,7 +483950,7 @@
      },
      "tab-size": {
       "tab-size-computed-value-001.html": [
-       "885a8c7a8676293922975e433254ce8be40c9178",
+       "e0946135ac72ebc4327be38d533b306b177f0fdd",
        [
         null,
         {}
@@ -484115,7 +484275,7 @@
      },
      "word-spacing": {
       "word-spacing-computed-001.html": [
-       "a641fc23533ab58f5a698c9ac76ce586eb500d06",
+       "84d1fcf1e5a8031844de2d7f0027b0aa50b28c86",
        [
         null,
         {}
@@ -489083,7 +489243,7 @@
       ]
      ],
      "calc-background-position-002.html": [
-      "249cdc3d5e3f3a8c91cb6c1eff73a64339aedabb",
+      "2196bf281e53f7e0180556a575f764efe92c9df7",
       [
        null,
        {}
@@ -489118,7 +489278,7 @@
       ]
      ],
      "calc-in-media-queries-with-mixed-units.html": [
-      "f94df62f284382ba694c81871f533e127e5b8fa4",
+      "c007fd053f6e7ca26702e426ae7f24e71a97a756",
       [
        null,
        {}
@@ -489188,7 +489348,7 @@
       ]
      ],
      "calc-linear-radial-conic-gradient-001.html": [
-      "ded5f0c37e2860b28e7b876e7f098b4de00129eb",
+      "3a4dd3cd7f9bf79ff06a4f33fc728c162a13912d",
       [
        null,
        {}
@@ -489265,7 +489425,7 @@
       ]
      ],
      "calc-z-index-fractions-001.html": [
-      "caa75ea7842a81a8363d3958d81a5a8c64b98ecf",
+      "d5b97821d90c9e347d34ec877742ad7f99e4a74c",
       [
        null,
        {}
@@ -489349,7 +489509,7 @@
       ]
      ],
      "getComputedStyle-border-radius-001.html": [
-      "6f3ba3ac4776045c94603b647d0a1ba134f5caf6",
+      "a0693e852b48d655d743e7e8f1a55fffa7f226a8",
       [
        null,
        {}
@@ -489363,21 +489523,28 @@
       ]
      ],
      "getComputedStyle-border-radius-003.html": [
-      "98d320bca287b869a752c97de1a1be0f706642a9",
+      "cc60eb6d82867632b1ab236f6acc6995039f9634",
       [
        null,
        {}
       ]
      ],
      "getComputedStyle-calc-mixed-units-001.html": [
-      "4b8ec04188d13f6129222dfd0cf09453df16165e",
+      "a44b70ab472e52c464a8a624c811841480c73fe3",
       [
        null,
        {}
       ]
      ],
      "getComputedStyle-calc-mixed-units-002.html": [
-      "4be8c292b18b7c1289e9e94b11937d58d98804de",
+      "cf98b1c59ecdd608e44152a46c93eff2a04a167e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "getComputedStyle-calc-mixed-units-003.html": [
+      "fae9682b2c0088fa2de10254bf352450a5fe0b68",
       [
        null,
        {}

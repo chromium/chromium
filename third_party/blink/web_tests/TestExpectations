@@ -2681,6 +2681,8 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Failure Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/generic/only-valid-whitespaces-are-allowed.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/css/css-grid/animation/grid-template-rows-interpolation.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/css/css-images/parsing/gradient-interpolation-method-valid.html [ Timeout ]
