@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
-FAIL Do not expose in stats remote addresses that are not known to be already exposed to JS assert_equals: address should be null expected (object) null but got (string) ""
-PASS Expose in stats remote addresses that are already exposed to JS
+[FAIL] Do not expose in stats remote addresses that are not known to be already exposed to JS
+  assert_equals: address should be null expected (object) null but got (string) ""
+[PASS] Expose in stats remote addresses that are already exposed to JS
 Harness: the test ran to completion.
 

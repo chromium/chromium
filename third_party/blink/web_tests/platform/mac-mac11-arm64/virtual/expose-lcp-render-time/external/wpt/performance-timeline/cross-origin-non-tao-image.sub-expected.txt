@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL lcp and fcp assert_approx_equals: expected 70.79999999981374 +/- 0.001 but got 72.399
-Harness: the test ran to completion.
-

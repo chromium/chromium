@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL MediaStreamTrack transfer to Worker promise_test: Unhandled rejection with value: "Failed: ReferenceError: MediaStreamTrack is not defined"
-Harness: the test ran to completion.
-

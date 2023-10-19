@@ -1,15 +1,15 @@
 This is a testharness.js-based test.
-PASS createAdRequest() should be supported on the navigator interface.
-PASS createAdRequest() should reject with NotSupported initially.
-PASS createAdRequest() should reject missing parameters.
-PASS createAdRequest() should reject a missing adRequestUrl.
-PASS createAdRequest() should reject a HTTP adRequestUrl.
-PASS createAdRequest() should reject missing adProperties.
-PASS createAdRequest() should reject empty adProperties.
-PASS createAdRequest() should reject a HTTP fallbackSource.
-PASS createAdRequest() should have optional params.
-PASS createAdRequest() should accept a single adProperties.
-PASS createAdRequest() should accept valid anonymizedProxiedSignals.
-PASS createAdRequest() should reject unknown anonymizedPRoxiedSignals.
+[PASS] createAdRequest() should be supported on the navigator interface.
+[PASS] createAdRequest() should reject with NotSupported initially.
+[PASS] createAdRequest() should reject missing parameters.
+[PASS] createAdRequest() should reject a missing adRequestUrl.
+[PASS] createAdRequest() should reject a HTTP adRequestUrl.
+[PASS] createAdRequest() should reject missing adProperties.
+[PASS] createAdRequest() should reject empty adProperties.
+[PASS] createAdRequest() should reject a HTTP fallbackSource.
+[PASS] createAdRequest() should have optional params.
+[PASS] createAdRequest() should accept a single adProperties.
+[PASS] createAdRequest() should accept valid anonymizedProxiedSignals.
+[PASS] createAdRequest() should reject unknown anonymizedPRoxiedSignals.
 Harness: the test ran to completion.
 

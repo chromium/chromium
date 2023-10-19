@@ -1,114 +1,119 @@
 This is a testharness.js-based test.
 Found 110 tests; 105 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS idl_test setup
-PASS idl_test validation
-PASS Partial interface Document: original interface defined
-PASS Partial interface Document: member names are unique
-PASS Partial interface Window: original interface defined
-PASS Partial interface Window: member names are unique
-PASS Partial interface mixin GlobalEventHandlers: original interface mixin defined
-PASS Partial interface mixin GlobalEventHandlers: member names are unique
-PASS Partial interface Document[2]: member names are unique
-PASS Partial interface Document[3]: member names are unique
-PASS Partial interface Window[2]: member names are unique
-PASS Document includes GlobalEventHandlers: member names are unique
-PASS HTMLElement includes GlobalEventHandlers: member names are unique
-PASS HTMLElement includes ElementContentEditable: member names are unique
-PASS HTMLElement includes HTMLOrSVGElement: member names are unique
-PASS Window includes GlobalEventHandlers: member names are unique
-PASS Window includes WindowEventHandlers: member names are unique
-PASS Window includes WindowOrWorkerGlobalScope: member names are unique
-PASS Window includes AnimationFrameProvider: member names are unique
-PASS Window includes WindowSessionStorage: member names are unique
-PASS Window includes WindowLocalStorage: member names are unique
-PASS Document includes NonElementParentNode: member names are unique
-PASS Document includes ParentNode: member names are unique
-PASS Element includes ParentNode: member names are unique
-PASS Element includes NonDocumentTypeChildNode: member names are unique
-PASS Element includes ChildNode: member names are unique
-PASS Element includes Slottable: member names are unique
-PASS Document includes XPathEvaluatorBase: member names are unique
-PASS Selection interface: existence and properties of interface object
-PASS Selection interface object length
-PASS Selection interface object name
-PASS Selection interface: existence and properties of interface prototype object
-PASS Selection interface: existence and properties of interface prototype object's "constructor" property
-PASS Selection interface: existence and properties of interface prototype object's @@unscopables property
-PASS Selection interface: attribute anchorNode
-PASS Selection interface: attribute anchorOffset
-PASS Selection interface: attribute focusNode
-PASS Selection interface: attribute focusOffset
-PASS Selection interface: attribute isCollapsed
-PASS Selection interface: attribute rangeCount
-PASS Selection interface: attribute type
-FAIL Selection interface: attribute direction assert_true: The prototype object must have a property "direction" expected true got false
-PASS Selection interface: operation getRangeAt(unsigned long)
-PASS Selection interface: operation addRange(Range)
-PASS Selection interface: operation removeRange(Range)
-PASS Selection interface: operation removeAllRanges()
-PASS Selection interface: operation empty()
-FAIL Selection interface: operation getComposedRanges(ShadowRoot...) assert_own_property: interface prototype object missing non-static operation expected property "getComposedRanges" missing
-PASS Selection interface: operation collapse(Node?, optional unsigned long)
-PASS Selection interface: operation setPosition(Node?, optional unsigned long)
-PASS Selection interface: operation collapseToStart()
-PASS Selection interface: operation collapseToEnd()
-PASS Selection interface: operation extend(Node, optional unsigned long)
-PASS Selection interface: operation setBaseAndExtent(Node, unsigned long, Node, unsigned long)
-PASS Selection interface: operation selectAllChildren(Node)
-PASS Selection interface: operation modify(optional DOMString, optional DOMString, optional DOMString)
-PASS Selection interface: operation deleteFromDocument()
-PASS Selection interface: operation containsNode(Node, optional boolean)
-PASS Selection interface: stringifier
-PASS Selection must be primary interface of getSelection()
-PASS Stringification of getSelection()
-PASS Selection interface: getSelection() must inherit property "anchorNode" with the proper type
-PASS Selection interface: getSelection() must inherit property "anchorOffset" with the proper type
-PASS Selection interface: getSelection() must inherit property "focusNode" with the proper type
-PASS Selection interface: getSelection() must inherit property "focusOffset" with the proper type
-PASS Selection interface: getSelection() must inherit property "isCollapsed" with the proper type
-PASS Selection interface: getSelection() must inherit property "rangeCount" with the proper type
-PASS Selection interface: getSelection() must inherit property "type" with the proper type
-FAIL Selection interface: getSelection() must inherit property "direction" with the proper type assert_inherits: property "direction" not found in prototype chain
-PASS Selection interface: getSelection() must inherit property "getRangeAt(unsigned long)" with the proper type
-PASS Selection interface: calling getRangeAt(unsigned long) on getSelection() with too few arguments must throw TypeError
-PASS Selection interface: getSelection() must inherit property "addRange(Range)" with the proper type
-PASS Selection interface: calling addRange(Range) on getSelection() with too few arguments must throw TypeError
-PASS Selection interface: getSelection() must inherit property "removeRange(Range)" with the proper type
-PASS Selection interface: calling removeRange(Range) on getSelection() with too few arguments must throw TypeError
-PASS Selection interface: getSelection() must inherit property "removeAllRanges()" with the proper type
-PASS Selection interface: getSelection() must inherit property "empty()" with the proper type
-FAIL Selection interface: getSelection() must inherit property "getComposedRanges(ShadowRoot...)" with the proper type assert_inherits: property "getComposedRanges" not found in prototype chain
-FAIL Selection interface: calling getComposedRanges(ShadowRoot...) on getSelection() with too few arguments must throw TypeError assert_inherits: property "getComposedRanges" not found in prototype chain
-PASS Selection interface: getSelection() must inherit property "collapse(Node?, optional unsigned long)" with the proper type
-PASS Selection interface: calling collapse(Node?, optional unsigned long) on getSelection() with too few arguments must throw TypeError
-PASS Selection interface: getSelection() must inherit property "setPosition(Node?, optional unsigned long)" with the proper type
-PASS Selection interface: calling setPosition(Node?, optional unsigned long) on getSelection() with too few arguments must throw TypeError
-PASS Selection interface: getSelection() must inherit property "collapseToStart()" with the proper type
-PASS Selection interface: getSelection() must inherit property "collapseToEnd()" with the proper type
-PASS Selection interface: getSelection() must inherit property "extend(Node, optional unsigned long)" with the proper type
-PASS Selection interface: calling extend(Node, optional unsigned long) on getSelection() with too few arguments must throw TypeError
-PASS Selection interface: getSelection() must inherit property "setBaseAndExtent(Node, unsigned long, Node, unsigned long)" with the proper type
-PASS Selection interface: calling setBaseAndExtent(Node, unsigned long, Node, unsigned long) on getSelection() with too few arguments must throw TypeError
-PASS Selection interface: getSelection() must inherit property "selectAllChildren(Node)" with the proper type
-PASS Selection interface: calling selectAllChildren(Node) on getSelection() with too few arguments must throw TypeError
-PASS Selection interface: getSelection() must inherit property "modify(optional DOMString, optional DOMString, optional DOMString)" with the proper type
-PASS Selection interface: calling modify(optional DOMString, optional DOMString, optional DOMString) on getSelection() with too few arguments must throw TypeError
-PASS Selection interface: getSelection() must inherit property "deleteFromDocument()" with the proper type
-PASS Selection interface: getSelection() must inherit property "containsNode(Node, optional boolean)" with the proper type
-PASS Selection interface: calling containsNode(Node, optional boolean) on getSelection() with too few arguments must throw TypeError
-PASS HTMLElement interface: attribute onselectstart
-PASS HTMLElement interface: attribute onselectionchange
-PASS Window interface: operation getSelection()
-PASS Window interface: attribute onselectstart
-PASS Window interface: attribute onselectionchange
-PASS Window interface: window must inherit property "getSelection()" with the proper type
-PASS Window interface: window must inherit property "onselectstart" with the proper type
-PASS Window interface: window must inherit property "onselectionchange" with the proper type
-PASS Document interface: operation getSelection()
-PASS Document interface: attribute onselectstart
-PASS Document interface: attribute onselectionchange
-PASS Document interface: document must inherit property "getSelection()" with the proper type
-PASS Document interface: document must inherit property "onselectstart" with the proper type
-PASS Document interface: document must inherit property "onselectionchange" with the proper type
+[PASS] idl_test setup
+[PASS] idl_test validation
+[PASS] Partial interface Document: original interface defined
+[PASS] Partial interface Document: member names are unique
+[PASS] Partial interface Window: original interface defined
+[PASS] Partial interface Window: member names are unique
+[PASS] Partial interface mixin GlobalEventHandlers: original interface mixin defined
+[PASS] Partial interface mixin GlobalEventHandlers: member names are unique
+[PASS] Partial interface Document[2]: member names are unique
+[PASS] Partial interface Document[3]: member names are unique
+[PASS] Partial interface Window[2]: member names are unique
+[PASS] Document includes GlobalEventHandlers: member names are unique
+[PASS] HTMLElement includes GlobalEventHandlers: member names are unique
+[PASS] HTMLElement includes ElementContentEditable: member names are unique
+[PASS] HTMLElement includes HTMLOrSVGElement: member names are unique
+[PASS] Window includes GlobalEventHandlers: member names are unique
+[PASS] Window includes WindowEventHandlers: member names are unique
+[PASS] Window includes WindowOrWorkerGlobalScope: member names are unique
+[PASS] Window includes AnimationFrameProvider: member names are unique
+[PASS] Window includes WindowSessionStorage: member names are unique
+[PASS] Window includes WindowLocalStorage: member names are unique
+[PASS] Document includes NonElementParentNode: member names are unique
+[PASS] Document includes ParentNode: member names are unique
+[PASS] Element includes ParentNode: member names are unique
+[PASS] Element includes NonDocumentTypeChildNode: member names are unique
+[PASS] Element includes ChildNode: member names are unique
+[PASS] Element includes Slottable: member names are unique
+[PASS] Document includes XPathEvaluatorBase: member names are unique
+[PASS] Selection interface: existence and properties of interface object
+[PASS] Selection interface object length
+[PASS] Selection interface object name
+[PASS] Selection interface: existence and properties of interface prototype object
+[PASS] Selection interface: existence and properties of interface prototype object's "constructor" property
+[PASS] Selection interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] Selection interface: attribute anchorNode
+[PASS] Selection interface: attribute anchorOffset
+[PASS] Selection interface: attribute focusNode
+[PASS] Selection interface: attribute focusOffset
+[PASS] Selection interface: attribute isCollapsed
+[PASS] Selection interface: attribute rangeCount
+[PASS] Selection interface: attribute type
+[FAIL] Selection interface: attribute direction
+  assert_true: The prototype object must have a property "direction" expected true got false
+[PASS] Selection interface: operation getRangeAt(unsigned long)
+[PASS] Selection interface: operation addRange(Range)
+[PASS] Selection interface: operation removeRange(Range)
+[PASS] Selection interface: operation removeAllRanges()
+[PASS] Selection interface: operation empty()
+[FAIL] Selection interface: operation getComposedRanges(ShadowRoot...)
+  assert_own_property: interface prototype object missing non-static operation expected property "getComposedRanges" missing
+[PASS] Selection interface: operation collapse(Node?, optional unsigned long)
+[PASS] Selection interface: operation setPosition(Node?, optional unsigned long)
+[PASS] Selection interface: operation collapseToStart()
+[PASS] Selection interface: operation collapseToEnd()
+[PASS] Selection interface: operation extend(Node, optional unsigned long)
+[PASS] Selection interface: operation setBaseAndExtent(Node, unsigned long, Node, unsigned long)
+[PASS] Selection interface: operation selectAllChildren(Node)
+[PASS] Selection interface: operation modify(optional DOMString, optional DOMString, optional DOMString)
+[PASS] Selection interface: operation deleteFromDocument()
+[PASS] Selection interface: operation containsNode(Node, optional boolean)
+[PASS] Selection interface: stringifier
+[PASS] Selection must be primary interface of getSelection()
+[PASS] Stringification of getSelection()
+[PASS] Selection interface: getSelection() must inherit property "anchorNode" with the proper type
+[PASS] Selection interface: getSelection() must inherit property "anchorOffset" with the proper type
+[PASS] Selection interface: getSelection() must inherit property "focusNode" with the proper type
+[PASS] Selection interface: getSelection() must inherit property "focusOffset" with the proper type
+[PASS] Selection interface: getSelection() must inherit property "isCollapsed" with the proper type
+[PASS] Selection interface: getSelection() must inherit property "rangeCount" with the proper type
+[PASS] Selection interface: getSelection() must inherit property "type" with the proper type
+[FAIL] Selection interface: getSelection() must inherit property "direction" with the proper type
+  assert_inherits: property "direction" not found in prototype chain
+[PASS] Selection interface: getSelection() must inherit property "getRangeAt(unsigned long)" with the proper type
+[PASS] Selection interface: calling getRangeAt(unsigned long) on getSelection() with too few arguments must throw TypeError
+[PASS] Selection interface: getSelection() must inherit property "addRange(Range)" with the proper type
+[PASS] Selection interface: calling addRange(Range) on getSelection() with too few arguments must throw TypeError
+[PASS] Selection interface: getSelection() must inherit property "removeRange(Range)" with the proper type
+[PASS] Selection interface: calling removeRange(Range) on getSelection() with too few arguments must throw TypeError
+[PASS] Selection interface: getSelection() must inherit property "removeAllRanges()" with the proper type
+[PASS] Selection interface: getSelection() must inherit property "empty()" with the proper type
+[FAIL] Selection interface: getSelection() must inherit property "getComposedRanges(ShadowRoot...)" with the proper type
+  assert_inherits: property "getComposedRanges" not found in prototype chain
+[FAIL] Selection interface: calling getComposedRanges(ShadowRoot...) on getSelection() with too few arguments must throw TypeError
+  assert_inherits: property "getComposedRanges" not found in prototype chain
+[PASS] Selection interface: getSelection() must inherit property "collapse(Node?, optional unsigned long)" with the proper type
+[PASS] Selection interface: calling collapse(Node?, optional unsigned long) on getSelection() with too few arguments must throw TypeError
+[PASS] Selection interface: getSelection() must inherit property "setPosition(Node?, optional unsigned long)" with the proper type
+[PASS] Selection interface: calling setPosition(Node?, optional unsigned long) on getSelection() with too few arguments must throw TypeError
+[PASS] Selection interface: getSelection() must inherit property "collapseToStart()" with the proper type
+[PASS] Selection interface: getSelection() must inherit property "collapseToEnd()" with the proper type
+[PASS] Selection interface: getSelection() must inherit property "extend(Node, optional unsigned long)" with the proper type
+[PASS] Selection interface: calling extend(Node, optional unsigned long) on getSelection() with too few arguments must throw TypeError
+[PASS] Selection interface: getSelection() must inherit property "setBaseAndExtent(Node, unsigned long, Node, unsigned long)" with the proper type
+[PASS] Selection interface: calling setBaseAndExtent(Node, unsigned long, Node, unsigned long) on getSelection() with too few arguments must throw TypeError
+[PASS] Selection interface: getSelection() must inherit property "selectAllChildren(Node)" with the proper type
+[PASS] Selection interface: calling selectAllChildren(Node) on getSelection() with too few arguments must throw TypeError
+[PASS] Selection interface: getSelection() must inherit property "modify(optional DOMString, optional DOMString, optional DOMString)" with the proper type
+[PASS] Selection interface: calling modify(optional DOMString, optional DOMString, optional DOMString) on getSelection() with too few arguments must throw TypeError
+[PASS] Selection interface: getSelection() must inherit property "deleteFromDocument()" with the proper type
+[PASS] Selection interface: getSelection() must inherit property "containsNode(Node, optional boolean)" with the proper type
+[PASS] Selection interface: calling containsNode(Node, optional boolean) on getSelection() with too few arguments must throw TypeError
+[PASS] HTMLElement interface: attribute onselectstart
+[PASS] HTMLElement interface: attribute onselectionchange
+[PASS] Window interface: operation getSelection()
+[PASS] Window interface: attribute onselectstart
+[PASS] Window interface: attribute onselectionchange
+[PASS] Window interface: window must inherit property "getSelection()" with the proper type
+[PASS] Window interface: window must inherit property "onselectstart" with the proper type
+[PASS] Window interface: window must inherit property "onselectionchange" with the proper type
+[PASS] Document interface: operation getSelection()
+[PASS] Document interface: attribute onselectstart
+[PASS] Document interface: attribute onselectionchange
+[PASS] Document interface: document must inherit property "getSelection()" with the proper type
+[PASS] Document interface: document must inherit property "onselectstart" with the proper type
+[PASS] Document interface: document must inherit property "onselectionchange" with the proper type
 Harness: the test ran to completion.
 

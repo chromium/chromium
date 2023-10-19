@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Gamepad API is not exposed in non-secure contexts Failed to execute 'getGamepads' on 'Navigator': Access to the feature "gamepad" requires a secure context
+[FAIL] Gamepad API is not exposed in non-secure contexts
+  Failed to execute 'getGamepads' on 'Navigator': Access to the feature "gamepad" requires a secure context
 Harness: the test ran to completion.
 

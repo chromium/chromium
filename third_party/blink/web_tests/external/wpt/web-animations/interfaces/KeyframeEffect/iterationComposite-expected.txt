@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL iterationComposite can be updated while an animation is in progress assert_equals: Animated style at 50s of the third iteration expected "25px" but got "5px"
+[FAIL] iterationComposite can be updated while an animation is in progress
+  assert_equals: Animated style at 50s of the third iteration expected "25px" but got "5px"
 Harness: the test ran to completion.
 

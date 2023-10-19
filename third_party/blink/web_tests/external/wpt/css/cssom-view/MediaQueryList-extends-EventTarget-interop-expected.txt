@@ -1,11 +1,12 @@
 This is a testharness.js-based test.
-PASS dispatchEvent triggers listener added with addListener
-PASS listener added with addListener and addEventListener is called once
-PASS listener added with addListener and addEventListener (capture) is called twice
-PASS removeEventListener removes listener added with addListener
-PASS removeEventListener (capture) doesn't remove listener added with addListener
-PASS removeListener removes listener added with addEventListener
-PASS removeListener doesn't remove listener added with addEventListener (capture)
-FAIL capturing event listener fires before non-capturing listener at target assert_array_equals: triggerMQLEvent expected property 0 to be "addEventListener" but got "addListener" (expected array ["addEventListener", "addListener"] got ["addListener", "addEventListener"])
+[PASS] dispatchEvent triggers listener added with addListener
+[PASS] listener added with addListener and addEventListener is called once
+[PASS] listener added with addListener and addEventListener (capture) is called twice
+[PASS] removeEventListener removes listener added with addListener
+[PASS] removeEventListener (capture) doesn't remove listener added with addListener
+[PASS] removeListener removes listener added with addEventListener
+[PASS] removeListener doesn't remove listener added with addEventListener (capture)
+[FAIL] capturing event listener fires before non-capturing listener at target
+  assert_array_equals: triggerMQLEvent expected property 0 to be "addEventListener" but got "addListener" (expected array ["addEventListener", "addListener"] got ["addListener", "addEventListener"])
 Harness: the test ran to completion.
 

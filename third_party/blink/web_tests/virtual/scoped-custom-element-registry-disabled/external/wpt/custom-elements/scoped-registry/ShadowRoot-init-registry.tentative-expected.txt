@@ -1,8 +1,13 @@
 This is a testharness.js-based test.
-FAIL ShadowRoot.registry is null if not explicitly specified assert_equals: expected (object) null but got (undefined) undefined
-FAIL Attach the global registry to a shadow root assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
-FAIL Attach a non-global registry to a shadow root Illegal constructor
-FAIL Attach the same registry to multiple shadow roots Illegal constructor
-FAIL Attaching registry to shadow root can only be done during initialization Illegal constructor
+[FAIL] ShadowRoot.registry is null if not explicitly specified
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Attach the global registry to a shadow root
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] Attach a non-global registry to a shadow root
+  Illegal constructor
+[FAIL] Attach the same registry to multiple shadow roots
+  Illegal constructor
+[FAIL] Attaching registry to shadow root can only be done during initialization
+  Illegal constructor
 Harness: the test ran to completion.
 

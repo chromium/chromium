@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL disconnect() called before getPrimaryService. Reject with NetworkError. assert_equals: Unexpected Error Message: expected "GATT Server is disconnected. Cannot retrieve services. (Re)connect first with `device.gatt.connect`." but got "Failed to execute 'getPrimaryService' on 'BluetoothRemoteGATTServer': GATT Server is disconnected. Cannot retrieve services. (Re)connect first with `device.gatt.connect`."
+[FAIL] disconnect() called before getPrimaryService. Reject with NetworkError.
+  assert_equals: Unexpected Error Message: expected "GATT Server is disconnected. Cannot retrieve services. (Re)connect first with `device.gatt.connect`." but got "Failed to execute 'getPrimaryService' on 'BluetoothRemoteGATTServer': GATT Server is disconnected. Cannot retrieve services. (Re)connect first with `device.gatt.connect`."
 Harness: the test ran to completion.
 

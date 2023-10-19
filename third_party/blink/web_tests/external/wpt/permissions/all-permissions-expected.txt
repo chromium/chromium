@@ -1,22 +1,26 @@
 This is a testharness.js-based test.
-PASS Query "geolocation" permission
-PASS Query "notifications" permission
-PASS Query "persistent-storage" permission
-FAIL Query "push" permission promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'query' on 'Permissions': Push Permission without userVisibleOnly:true isn't supported yet."
-PASS Query "accelerometer" permission
-PASS Query "ambient-light-sensor" permission
-PASS Query "background-fetch" permission
-PASS Query "background-sync" permission
-FAIL Query "bluetooth" permission promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'query' on 'Permissions': Failed to read the 'name' property from 'PermissionDescriptor': The provided value 'bluetooth' is not a valid enum value of type PermissionName."
-PASS Query "gyroscope" permission
-PASS Query "magnetometer" permission
-PASS Query "midi" permission
-PASS Query "nfc" permission
-PASS Query "screen-wake-lock" permission
-PASS Query "camera" permission
-PASS Query "display-capture" permission
-PASS Query "microphone" permission
-FAIL Query "speaker-selection" permission promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'query' on 'Permissions': Failed to read the 'name' property from 'PermissionDescriptor': The provided value 'speaker-selection' is not a valid enum value of type PermissionName."
-FAIL Query "xr-spatial-tracking" permission promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'query' on 'Permissions': Failed to read the 'name' property from 'PermissionDescriptor': The provided value 'xr-spatial-tracking' is not a valid enum value of type PermissionName."
+[PASS] Query "geolocation" permission
+[PASS] Query "notifications" permission
+[PASS] Query "persistent-storage" permission
+[FAIL] Query "push" permission
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'query' on 'Permissions': Push Permission without userVisibleOnly:true isn't supported yet."
+[PASS] Query "accelerometer" permission
+[PASS] Query "ambient-light-sensor" permission
+[PASS] Query "background-fetch" permission
+[PASS] Query "background-sync" permission
+[FAIL] Query "bluetooth" permission
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'query' on 'Permissions': Failed to read the 'name' property from 'PermissionDescriptor': The provided value 'bluetooth' is not a valid enum value of type PermissionName."
+[PASS] Query "gyroscope" permission
+[PASS] Query "magnetometer" permission
+[PASS] Query "midi" permission
+[PASS] Query "nfc" permission
+[PASS] Query "screen-wake-lock" permission
+[PASS] Query "camera" permission
+[PASS] Query "display-capture" permission
+[PASS] Query "microphone" permission
+[FAIL] Query "speaker-selection" permission
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'query' on 'Permissions': Failed to read the 'name' property from 'PermissionDescriptor': The provided value 'speaker-selection' is not a valid enum value of type PermissionName."
+[FAIL] Query "xr-spatial-tracking" permission
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'query' on 'Permissions': Failed to read the 'name' property from 'PermissionDescriptor': The provided value 'xr-spatial-tracking' is not a valid enum value of type PermissionName."
 Harness: the test ran to completion.
 

@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
-FAIL MediaRecorder records from PeerConnection without sinks, {"audio":{}} assert_not_equals: ondataavailable should have fired got disallowed value undefined
-PASS MediaRecorder records from PeerConnection without sinks, {"video":{}}
-FAIL MediaRecorder records from PeerConnection without sinks, {"audio":{},"video":{}} assert_not_equals: ondataavailable should have fired got disallowed value undefined
+[FAIL] MediaRecorder records from PeerConnection without sinks, {"audio":{}}
+  assert_not_equals: ondataavailable should have fired got disallowed value undefined
+[PASS] MediaRecorder records from PeerConnection without sinks, {"video":{}}
+[FAIL] MediaRecorder records from PeerConnection without sinks, {"audio":{},"video":{}}
+  assert_not_equals: ondataavailable should have fired got disallowed value undefined
 Harness: the test ran to completion.
 

@@ -1,25 +1,26 @@
 This is a testharness.js-based test.
-PASS setRemoteDescription(rollback) in have-remote-offer state should revert to stable state
-PASS setRemoteDescription(rollback) from stable state should reject with InvalidStateError
-FAIL setRemoteDescription(rollback) after setting a local offer should reject with InvalidStateError assert_unreached: Should have rejected: undefined Reached unreachable code
-PASS setRemoteDescription(rollback) should ignore invalid sdp content and succeed
-PASS local offer created before setRemoteDescription(remote offer) then rollback should still be usable
-PASS local offer created before setRemoteDescription(remote offer) with different transceiver level assignments then rollback should still be usable
-PASS rollback of a remote offer should remove a transceiver
-PASS rollback of a remote offer should remove touched transceiver
-PASS rollback of a remote offer should keep a transceiver
-PASS rollback of a remote offer should keep a transceiver created by addtrack
-PASS rollback of a remote offer should keep a transceiver without tracks
-PASS explicit rollback of local offer should remove transceivers and transport
-PASS when using addTransceiver, implicit rollback of a local offer should visit stable state, but not fire negotiationneeded until we settle in stable
-PASS when using addTrack, implicit rollback of a local offer should visit stable state, but not fire negotiationneeded
-PASS rollback of a remote offer to negotiated stable state should enable applying of a local offer
-PASS rollback of a local offer to negotiated stable state should enable applying of a remote offer
-PASS rollback a local offer with audio direction change to negotiated stable state and then add video receiver
-PASS two transceivers with same mids
-PASS onremovetrack fires during remote rollback
-PASS rollback of a remote offer with stream changes
-PASS removeTrack() with a sender being rolled back does not crash or throw
-PASS Implicit rollback with only a datachannel works
+[PASS] setRemoteDescription(rollback) in have-remote-offer state should revert to stable state
+[PASS] setRemoteDescription(rollback) from stable state should reject with InvalidStateError
+[FAIL] setRemoteDescription(rollback) after setting a local offer should reject with InvalidStateError
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[PASS] setRemoteDescription(rollback) should ignore invalid sdp content and succeed
+[PASS] local offer created before setRemoteDescription(remote offer) then rollback should still be usable
+[PASS] local offer created before setRemoteDescription(remote offer) with different transceiver level assignments then rollback should still be usable
+[PASS] rollback of a remote offer should remove a transceiver
+[PASS] rollback of a remote offer should remove touched transceiver
+[PASS] rollback of a remote offer should keep a transceiver
+[PASS] rollback of a remote offer should keep a transceiver created by addtrack
+[PASS] rollback of a remote offer should keep a transceiver without tracks
+[PASS] explicit rollback of local offer should remove transceivers and transport
+[PASS] when using addTransceiver, implicit rollback of a local offer should visit stable state, but not fire negotiationneeded until we settle in stable
+[PASS] when using addTrack, implicit rollback of a local offer should visit stable state, but not fire negotiationneeded
+[PASS] rollback of a remote offer to negotiated stable state should enable applying of a local offer
+[PASS] rollback of a local offer to negotiated stable state should enable applying of a remote offer
+[PASS] rollback a local offer with audio direction change to negotiated stable state and then add video receiver
+[PASS] two transceivers with same mids
+[PASS] onremovetrack fires during remote rollback
+[PASS] rollback of a remote offer with stream changes
+[PASS] removeTrack() with a sender being rolled back does not crash or throw
+[PASS] Implicit rollback with only a datachannel works
 Harness: the test ran to completion.
 

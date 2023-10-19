@@ -1,8 +1,11 @@
 This is a testharness.js-based test.
-FAIL javascript: URL that fails to parse due to invalid host assert_equals: Property is undefined once the navigation happened expected (undefined) undefined but got (number) 1
-FAIL javascript: URL that fails to parse due to invalid host and has a U+0009 in scheme assert_equals: Property is undefined once the navigation happened expected (undefined) undefined but got (number) 1
-FAIL javascript: URL without an opaque path assert_equals: Property is 1 once the navigation happened expected 1 but got 2
-PASS javascript: URL containing a JavaScript string split over path and query
-PASS javascript: URL containing a JavaScript string split over path and query and has a U+000A in scheme
+[FAIL] javascript: URL that fails to parse due to invalid host
+  assert_equals: Property is undefined once the navigation happened expected (undefined) undefined but got (number) 1
+[FAIL] javascript: URL that fails to parse due to invalid host and has a U+0009 in scheme
+  assert_equals: Property is undefined once the navigation happened expected (undefined) undefined but got (number) 1
+[FAIL] javascript: URL without an opaque path
+  assert_equals: Property is 1 once the navigation happened expected 1 but got 2
+[PASS] javascript: URL containing a JavaScript string split over path and query
+[PASS] javascript: URL containing a JavaScript string split over path and query and has a U+000A in scheme
 Harness: the test ran to completion.
 

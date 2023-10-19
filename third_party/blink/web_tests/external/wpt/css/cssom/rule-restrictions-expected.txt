@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
-FAIL @page assert_equals: Transform doesn't quite apply to pages expected 1 but got 2
-PASS @keyframe
+[FAIL] @page
+  assert_equals: Transform doesn't quite apply to pages expected 1 but got 2
+[PASS] @keyframe
 Harness: the test ran to completion.
 

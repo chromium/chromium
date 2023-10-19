@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL XMLHttpRequest: send() with a stream on which getReader() is called assert_throws_js: function "() => client.send(stream)" did not throw
-FAIL XMLHttpRequest: send() with a stream on which read() is called assert_throws_js: function "() => client.send(stream)" did not throw
-FAIL XMLHttpRequest: send() with a stream on which read() and releaseLock() are called assert_throws_js: function "() => client.send(stream)" did not throw
-Harness: the test ran to completion.
-

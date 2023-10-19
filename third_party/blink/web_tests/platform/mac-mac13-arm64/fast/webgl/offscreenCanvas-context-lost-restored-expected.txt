@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test WebGL context restoration with OffscreenCanvas Cannot read properties of null (reading 'getExtension')
-Harness: the test ran to completion.
-

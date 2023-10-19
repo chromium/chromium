@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Accept-CH with wildcard policy and iframe subresource assert_equals: expected "HadPlatformVersion" but got "MissingPlatformVersion"
+[FAIL] Accept-CH with wildcard policy and iframe subresource
+  assert_equals: expected "HadPlatformVersion" but got "MissingPlatformVersion"
 Harness: the test ran to completion.
 

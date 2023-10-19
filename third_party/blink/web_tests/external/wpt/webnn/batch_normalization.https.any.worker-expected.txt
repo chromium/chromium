@@ -1,27 +1,51 @@
 This is a testharness.js-based test.
-FAIL batchNormalization float32 2D tensor (mean and variance are non-constant) default options / sync builder[operationName] is not a function
-FAIL batchNormalization float32 2D tensor default options / sync builder[operationName] is not a function
-FAIL batchNormalization float32 3D tensor default options / sync builder[operationName] is not a function
-FAIL batchNormalization float32 4D tensor default options / sync builder[operationName] is not a function
-FAIL batchNormalization float32 5D tensor default options / sync builder[operationName] is not a function
-FAIL batchNormalization float32 4D NCHW tensor options.axis=1 / sync builder[operationName] is not a function
-FAIL batchNormalization float32 4D NHWC tensor options.axis=3 / sync builder[operationName] is not a function
-FAIL batchNormalization float32 4D NCHW tensor options.scale / sync builder[operationName] is not a function
-FAIL batchNormalization float32 4D NCHW tensor options.bias / sync builder[operationName] is not a function
-FAIL batchNormalization float32 4D NCHW tensor options.epsilon / sync builder[operationName] is not a function
-FAIL batchNormalization float32 4D NCHW tensor options.activation relu / sync builder[operationName] is not a function
-FAIL batchNormalization float32 4D NHWC tensor all options / sync builder[operationName] is not a function
-FAIL batchNormalization float32 2D tensor (mean and variance are non-constant) default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 2D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 3D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 4D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 5D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 4D NCHW tensor options.axis=1 / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 4D NHWC tensor options.axis=3 / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 4D NCHW tensor options.scale / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 4D NCHW tensor options.bias / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 4D NCHW tensor options.epsilon / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 4D NCHW tensor options.activation relu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 4D NHWC tensor all options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 2D tensor (mean and variance are non-constant) default options / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 2D tensor default options / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 3D tensor default options / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 4D tensor default options / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 5D tensor default options / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 4D NCHW tensor options.axis=1 / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 4D NHWC tensor options.axis=3 / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 4D NCHW tensor options.scale / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 4D NCHW tensor options.bias / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 4D NCHW tensor options.epsilon / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 4D NCHW tensor options.activation relu / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 4D NHWC tensor all options / sync
+  builder[operationName] is not a function
+[FAIL] batchNormalization float32 2D tensor (mean and variance are non-constant) default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 2D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 3D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 4D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 5D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 4D NCHW tensor options.axis=1 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 4D NHWC tensor options.axis=3 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 4D NCHW tensor options.scale / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 4D NCHW tensor options.bias / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 4D NCHW tensor options.epsilon / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 4D NCHW tensor options.activation relu / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] batchNormalization float32 4D NHWC tensor all options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 Harness: the test ran to completion.
 

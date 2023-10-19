@@ -1,102 +1,115 @@
 This is a testharness.js-based test.
 Found 98 tests; 85 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS script.setHTML should fail.
-PASS iframe.setHTML should fail.
-PASS object.setHTML should fail.
-PASS div.setHTML should pass.
-PASS Sanitizer: <div>.setHTML("<em>Hello</em>", ...) obeys parse context.
-PASS Sanitizer: <div>.setHTML("<td>data</td>", ...) obeys parse context.
-PASS Sanitizer: <template>.setHTML("<em>Hello</em>", ...) obeys parse context.
-PASS Sanitizer: <template>.setHTML("<td>data</td>", ...) obeys parse context.
-PASS Sanitizer: <table>.setHTML("<em>Hello</em>", ...) obeys parse context.
-PASS Sanitizer: <table>.setHTML("<td>data</td>", ...) obeys parse context.
-PASS Sanitizer: Element.setHTML with config: string
-PASS Sanitizer: Element.setHTML with config: html fragment
-PASS Sanitizer: Element.setHTML with config: broken html
-PASS Sanitizer: Element.setHTML with config: empty object
-PASS Sanitizer: Element.setHTML with config: number
-PASS Sanitizer: Element.setHTML with config: zeros
-PASS Sanitizer: Element.setHTML with config: arithmetic
-PASS Sanitizer: Element.setHTML with config: empty string
-PASS Sanitizer: Element.setHTML with config: undefined
-PASS Sanitizer: Element.setHTML with config: document
-PASS Sanitizer: Element.setHTML with config: html without close tag
-PASS Sanitizer: Element.setHTML with config: scripts for default configs
-PASS Sanitizer: Element.setHTML with config: script not as root
-PASS Sanitizer: Element.setHTML with config: script deeper in the tree
-PASS Sanitizer: Element.setHTML with config: onclick scripts
-PASS Sanitizer: Element.setHTML with config: plaintext
-PASS Sanitizer: Element.setHTML with config: xmp
-PASS Sanitizer: Element.setHTML with config: invalid config_input
-PASS Sanitizer: Element.setHTML with config: empty dropElements list
-PASS Sanitizer: Element.setHTML with config: test html without close tag with dropElements list ['div']
-PASS Sanitizer: Element.setHTML with config: default behavior for custom elements
-PASS Sanitizer: Element.setHTML with config: allow custom elements
-PASS Sanitizer: Element.setHTML with config: allow custom elements with allow elements
-PASS Sanitizer: Element.setHTML with config: disallow custom elements
-PASS Sanitizer: Element.setHTML with config: allow custom elements with drop list contains ["custom-element"]
-PASS Sanitizer: Element.setHTML with config: test script with ["script"] as dropElements list
-PASS Sanitizer: Element.setHTML with config: dropElements list ["test-element", "i"]}
-PASS Sanitizer: Element.setHTML with config: dropElements list ["dl", "p"]}
-PASS Sanitizer: Element.setHTML with config: allowElements list ["p"]
-PASS Sanitizer: Element.setHTML with config: allowElements list has no influence to dropElements
-FAIL Sanitizer: Element.setHTML with config: dropAttributes list {"style": ["p"]} with style attribute Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-PASS Sanitizer: Element.setHTML with config: empty dropAttributes list with id attribute
-FAIL Sanitizer: Element.setHTML with config: dropAttributes list {"id": ["*"]} with id attribute Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer: Element.setHTML with config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer: Element.setHTML with config: allowAttributes list {"id": ["div"]} with id attribute Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer: Element.setHTML with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer: Element.setHTML with config: allowAttributes list has no influence to dropAttributes Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-PASS Sanitizer: Element.setHTML with config: Template element
-PASS Sanitizer: Element.setHTML with config: HTMLAnchorElement with javascript protocal
-PASS Sanitizer: Element.setHTML with config: HTMLAnchorElement with javascript protocal start with space
-PASS Sanitizer: Element.setHTML with config: HTMLAnchorElement
-PASS Sanitizer: Element.setHTML with config: HTMLAreaElement with javascript protocal
-PASS Sanitizer: Element.setHTML with config: HTMLAreaElement with javascript protocal start with space
-PASS Sanitizer: Element.setHTML with config: HTMLAreaElement
-PASS Sanitizer: Element.setHTML with config: HTMLFormElement with javascript action
-PASS Sanitizer: Element.setHTML with config: HTMLFormElement with javascript action start with space
-PASS Sanitizer: Element.setHTML with config: HTMLFormElement
-PASS Sanitizer: Element.setHTML with config: HTMLInputElement with javascript formaction
-PASS Sanitizer: Element.setHTML with config: HTMLInputElement with javascript formaction start with space
-PASS Sanitizer: Element.setHTML with config: HTMLInputElement
-PASS Sanitizer: Element.setHTML with config: HTMLButtonElement with javascript formaction
-PASS Sanitizer: Element.setHTML with config: HTMLButtonElement with javascript formaction start with space
-PASS Sanitizer: Element.setHTML with config: HTMLButtonElement
-PASS Sanitizer: Element.setHTML with config: malformed HTML
-PASS Sanitizer: Element.setHTML with config: HTML with comments; comments not allowed
-PASS Sanitizer: Element.setHTML with config: HTML with comments; allowComments
-PASS Sanitizer: Element.setHTML with config: HTML with comments; !allowComments
-PASS Sanitizer: Element.setHTML with config: HTML with comments deeper in the tree
-PASS Sanitizer: Element.setHTML with config: HTML with comments deeper in the tree, allowComments
-PASS Sanitizer: Element.setHTML with config: HTML with comments deeper in the tree, !allowComments
-PASS Sanitizer: Element.setHTML with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces.
-PASS Sanitizer: Element.setHTML with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces when nested.
-PASS Sanitizer: Element.setHTML with config: dropElements list ["I", "DL"]}
-PASS Sanitizer: Element.setHTML with config: dropElements list ["i", "dl"]}
-PASS Sanitizer: Element.setHTML with config: dropElements list ["i", "dl"]} with uppercase HTML
-FAIL Sanitizer: Element.setHTML with config: dropAttributes list {"ID": ["*"]} with id attribute Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer: Element.setHTML with config: dropAttributes list {"ID": ["*"]} with ID attribute Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer: Element.setHTML with config: dropAttributes list {"id": ["*"]} with ID attribute Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-PASS Sanitizer: Element.setHTML with config: dropElements with unknown elements and without allowUnknownMarkup
-PASS Sanitizer: Element.setHTML with config: blockElements with unknown elements and without allowUnknownMarkup
-PASS Sanitizer: Element.setHTML with config: allowElements with unknown elements and without allowUnknownMarkup
-PASS Sanitizer: Element.setHTML with config: dropElements with unknown elements and with allowUnknownMarkup
-PASS Sanitizer: Element.setHTML with config: blockElements with unknown elements and with allowUnknownMarkup
-PASS Sanitizer: Element.setHTML with config: allowElements with unknown elements and with allowUnknownMarkup
-FAIL Sanitizer: Element.setHTML with config: allowAttributes unknown attributes and without allowUnknownMarkup Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer: Element.setHTML with config: allowAttributes unknown attributes and with allowUnknownMarkup Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer: Element.setHTML with config: dropAttributes unknown attributes and without allowUnknownMarkup Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer: Element.setHTML with config: dropAttributes unknown attributes and with allowUnknownMarkup Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-PASS Sanitizer: Element.setHTML options dictionary #0 uses default.
-PASS Sanitizer: Element.setHTML options dictionary #1 uses default.
-PASS Sanitizer: Element.setHTML options dictionary #2 uses default.
-PASS Sanitizer: Element.setHTML options dictionary #3 uses default.
-PASS Sanitizer: Element.setHTML options dictionary #4 uses default.
-PASS Sanitizer: Element.setHTML invalid options dictionary #0
-PASS Sanitizer: Element.setHTML invalid options dictionary #1
-PASS Sanitizer: Element.setHTML invalid options dictionary #2
-PASS Sanitizer: Element.setHTML invalid options dictionary #3
-PASS Sanitizer: Element.setHTML with sanitizer instance.
+[PASS] script.setHTML should fail.
+[PASS] iframe.setHTML should fail.
+[PASS] object.setHTML should fail.
+[PASS] div.setHTML should pass.
+[PASS] Sanitizer: <div>.setHTML("<em>Hello</em>", ...) obeys parse context.
+[PASS] Sanitizer: <div>.setHTML("<td>data</td>", ...) obeys parse context.
+[PASS] Sanitizer: <template>.setHTML("<em>Hello</em>", ...) obeys parse context.
+[PASS] Sanitizer: <template>.setHTML("<td>data</td>", ...) obeys parse context.
+[PASS] Sanitizer: <table>.setHTML("<em>Hello</em>", ...) obeys parse context.
+[PASS] Sanitizer: <table>.setHTML("<td>data</td>", ...) obeys parse context.
+[PASS] Sanitizer: Element.setHTML with config: string
+[PASS] Sanitizer: Element.setHTML with config: html fragment
+[PASS] Sanitizer: Element.setHTML with config: broken html
+[PASS] Sanitizer: Element.setHTML with config: empty object
+[PASS] Sanitizer: Element.setHTML with config: number
+[PASS] Sanitizer: Element.setHTML with config: zeros
+[PASS] Sanitizer: Element.setHTML with config: arithmetic
+[PASS] Sanitizer: Element.setHTML with config: empty string
+[PASS] Sanitizer: Element.setHTML with config: undefined
+[PASS] Sanitizer: Element.setHTML with config: document
+[PASS] Sanitizer: Element.setHTML with config: html without close tag
+[PASS] Sanitizer: Element.setHTML with config: scripts for default configs
+[PASS] Sanitizer: Element.setHTML with config: script not as root
+[PASS] Sanitizer: Element.setHTML with config: script deeper in the tree
+[PASS] Sanitizer: Element.setHTML with config: onclick scripts
+[PASS] Sanitizer: Element.setHTML with config: plaintext
+[PASS] Sanitizer: Element.setHTML with config: xmp
+[PASS] Sanitizer: Element.setHTML with config: invalid config_input
+[PASS] Sanitizer: Element.setHTML with config: empty dropElements list
+[PASS] Sanitizer: Element.setHTML with config: test html without close tag with dropElements list ['div']
+[PASS] Sanitizer: Element.setHTML with config: default behavior for custom elements
+[PASS] Sanitizer: Element.setHTML with config: allow custom elements
+[PASS] Sanitizer: Element.setHTML with config: allow custom elements with allow elements
+[PASS] Sanitizer: Element.setHTML with config: disallow custom elements
+[PASS] Sanitizer: Element.setHTML with config: allow custom elements with drop list contains ["custom-element"]
+[PASS] Sanitizer: Element.setHTML with config: test script with ["script"] as dropElements list
+[PASS] Sanitizer: Element.setHTML with config: dropElements list ["test-element", "i"]}
+[PASS] Sanitizer: Element.setHTML with config: dropElements list ["dl", "p"]}
+[PASS] Sanitizer: Element.setHTML with config: allowElements list ["p"]
+[PASS] Sanitizer: Element.setHTML with config: allowElements list has no influence to dropElements
+[FAIL] Sanitizer: Element.setHTML with config: dropAttributes list {"style": ["p"]} with style attribute
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[PASS] Sanitizer: Element.setHTML with config: empty dropAttributes list with id attribute
+[FAIL] Sanitizer: Element.setHTML with config: dropAttributes list {"id": ["*"]} with id attribute
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer: Element.setHTML with config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer: Element.setHTML with config: allowAttributes list {"id": ["div"]} with id attribute
+  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer: Element.setHTML with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts
+  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer: Element.setHTML with config: allowAttributes list has no influence to dropAttributes
+  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[PASS] Sanitizer: Element.setHTML with config: Template element
+[PASS] Sanitizer: Element.setHTML with config: HTMLAnchorElement with javascript protocal
+[PASS] Sanitizer: Element.setHTML with config: HTMLAnchorElement with javascript protocal start with space
+[PASS] Sanitizer: Element.setHTML with config: HTMLAnchorElement
+[PASS] Sanitizer: Element.setHTML with config: HTMLAreaElement with javascript protocal
+[PASS] Sanitizer: Element.setHTML with config: HTMLAreaElement with javascript protocal start with space
+[PASS] Sanitizer: Element.setHTML with config: HTMLAreaElement
+[PASS] Sanitizer: Element.setHTML with config: HTMLFormElement with javascript action
+[PASS] Sanitizer: Element.setHTML with config: HTMLFormElement with javascript action start with space
+[PASS] Sanitizer: Element.setHTML with config: HTMLFormElement
+[PASS] Sanitizer: Element.setHTML with config: HTMLInputElement with javascript formaction
+[PASS] Sanitizer: Element.setHTML with config: HTMLInputElement with javascript formaction start with space
+[PASS] Sanitizer: Element.setHTML with config: HTMLInputElement
+[PASS] Sanitizer: Element.setHTML with config: HTMLButtonElement with javascript formaction
+[PASS] Sanitizer: Element.setHTML with config: HTMLButtonElement with javascript formaction start with space
+[PASS] Sanitizer: Element.setHTML with config: HTMLButtonElement
+[PASS] Sanitizer: Element.setHTML with config: malformed HTML
+[PASS] Sanitizer: Element.setHTML with config: HTML with comments; comments not allowed
+[PASS] Sanitizer: Element.setHTML with config: HTML with comments; allowComments
+[PASS] Sanitizer: Element.setHTML with config: HTML with comments; !allowComments
+[PASS] Sanitizer: Element.setHTML with config: HTML with comments deeper in the tree
+[PASS] Sanitizer: Element.setHTML with config: HTML with comments deeper in the tree, allowComments
+[PASS] Sanitizer: Element.setHTML with config: HTML with comments deeper in the tree, !allowComments
+[PASS] Sanitizer: Element.setHTML with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces.
+[PASS] Sanitizer: Element.setHTML with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces when nested.
+[PASS] Sanitizer: Element.setHTML with config: dropElements list ["I", "DL"]}
+[PASS] Sanitizer: Element.setHTML with config: dropElements list ["i", "dl"]}
+[PASS] Sanitizer: Element.setHTML with config: dropElements list ["i", "dl"]} with uppercase HTML
+[FAIL] Sanitizer: Element.setHTML with config: dropAttributes list {"ID": ["*"]} with id attribute
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer: Element.setHTML with config: dropAttributes list {"ID": ["*"]} with ID attribute
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer: Element.setHTML with config: dropAttributes list {"id": ["*"]} with ID attribute
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[PASS] Sanitizer: Element.setHTML with config: dropElements with unknown elements and without allowUnknownMarkup
+[PASS] Sanitizer: Element.setHTML with config: blockElements with unknown elements and without allowUnknownMarkup
+[PASS] Sanitizer: Element.setHTML with config: allowElements with unknown elements and without allowUnknownMarkup
+[PASS] Sanitizer: Element.setHTML with config: dropElements with unknown elements and with allowUnknownMarkup
+[PASS] Sanitizer: Element.setHTML with config: blockElements with unknown elements and with allowUnknownMarkup
+[PASS] Sanitizer: Element.setHTML with config: allowElements with unknown elements and with allowUnknownMarkup
+[FAIL] Sanitizer: Element.setHTML with config: allowAttributes unknown attributes and without allowUnknownMarkup
+  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer: Element.setHTML with config: allowAttributes unknown attributes and with allowUnknownMarkup
+  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer: Element.setHTML with config: dropAttributes unknown attributes and without allowUnknownMarkup
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer: Element.setHTML with config: dropAttributes unknown attributes and with allowUnknownMarkup
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[PASS] Sanitizer: Element.setHTML options dictionary #0 uses default.
+[PASS] Sanitizer: Element.setHTML options dictionary #1 uses default.
+[PASS] Sanitizer: Element.setHTML options dictionary #2 uses default.
+[PASS] Sanitizer: Element.setHTML options dictionary #3 uses default.
+[PASS] Sanitizer: Element.setHTML options dictionary #4 uses default.
+[PASS] Sanitizer: Element.setHTML invalid options dictionary #0
+[PASS] Sanitizer: Element.setHTML invalid options dictionary #1
+[PASS] Sanitizer: Element.setHTML invalid options dictionary #2
+[PASS] Sanitizer: Element.setHTML invalid options dictionary #3
+[PASS] Sanitizer: Element.setHTML with sanitizer instance.
 Harness: the test ran to completion.
 

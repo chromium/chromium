@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Ensure that ongoing fetch upon entering bfcache blocks bfcache and recorded. assert_equals: document unexpectedly BFCached expected (undefined) undefined but got (boolean) true
-Harness: the test ran to completion.
-

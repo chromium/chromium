@@ -1,20 +1,22 @@
 This is a testharness.js-based test.
-PASS idl_test setup
-PASS idl_test validation
-PASS Partial interface Keyboard: original interface defined
-PASS Partial interface Keyboard: member names are unique
-PASS KeyboardLayoutMap interface: existence and properties of interface object
-PASS KeyboardLayoutMap interface object length
-PASS KeyboardLayoutMap interface object name
-PASS KeyboardLayoutMap interface: existence and properties of interface prototype object
-PASS KeyboardLayoutMap interface: existence and properties of interface prototype object's "constructor" property
-PASS KeyboardLayoutMap interface: existence and properties of interface prototype object's @@unscopables property
-PASS KeyboardLayoutMap interface: maplike<DOMString, DOMString>
-PASS KeyboardLayoutMap must be primary interface of layout_map
-PASS Stringification of layout_map
-PASS Keyboard interface: operation getLayoutMap()
-FAIL Keyboard interface: attribute onlayoutchange assert_true: The prototype object must have a property "onlayoutchange" expected true got false
-PASS Keyboard interface: navigator.keyboard must inherit property "getLayoutMap()" with the proper type
-FAIL Keyboard interface: navigator.keyboard must inherit property "onlayoutchange" with the proper type assert_inherits: property "onlayoutchange" not found in prototype chain
+[PASS] idl_test setup
+[PASS] idl_test validation
+[PASS] Partial interface Keyboard: original interface defined
+[PASS] Partial interface Keyboard: member names are unique
+[PASS] KeyboardLayoutMap interface: existence and properties of interface object
+[PASS] KeyboardLayoutMap interface object length
+[PASS] KeyboardLayoutMap interface object name
+[PASS] KeyboardLayoutMap interface: existence and properties of interface prototype object
+[PASS] KeyboardLayoutMap interface: existence and properties of interface prototype object's "constructor" property
+[PASS] KeyboardLayoutMap interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] KeyboardLayoutMap interface: maplike<DOMString, DOMString>
+[PASS] KeyboardLayoutMap must be primary interface of layout_map
+[PASS] Stringification of layout_map
+[PASS] Keyboard interface: operation getLayoutMap()
+[FAIL] Keyboard interface: attribute onlayoutchange
+  assert_true: The prototype object must have a property "onlayoutchange" expected true got false
+[PASS] Keyboard interface: navigator.keyboard must inherit property "getLayoutMap()" with the proper type
+[FAIL] Keyboard interface: navigator.keyboard must inherit property "onlayoutchange" with the proper type
+  assert_inherits: property "onlayoutchange" not found in prototype chain
 Harness: the test ran to completion.
 

@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-PASS setParameters() when transceiver is stopped should reject with InvalidStateError
-FAIL setParameters() with already used parameters should work if the event loop has not been relinquished promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'setParameters' on 'RTCRtpSender': Failed to set parameters since getParameters() has never been called on this sender"
-PASS setParameters() with already used parameters should reject with InvalidStateError if the event loop has been relinquished
+[PASS] setParameters() when transceiver is stopped should reject with InvalidStateError
+[FAIL] setParameters() with already used parameters should work if the event loop has not been relinquished
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'setParameters' on 'RTCRtpSender': Failed to set parameters since getParameters() has never been called on this sender"
+[PASS] setParameters() with already used parameters should reject with InvalidStateError if the event loop has been relinquished
 Harness: the test ran to completion.
 

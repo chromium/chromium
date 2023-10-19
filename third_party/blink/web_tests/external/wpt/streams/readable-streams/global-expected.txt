@@ -1,12 +1,14 @@
 This is a testharness.js-based test.
-PASS Stream objects created in expected globals
-FAIL Cancel promise is created in same global as stream assert_equals: Cancel promise comes from the same global as the stream expected true but got false
-PASS Closed Promise in correct global
-FAIL Reader objects in correct global assert_equals: Object comes from other realm expected true but got false
-PASS Desired size can be grafted from one prototype to another
-PASS Closing errored stream throws object in appropriate global
-PASS Can enqueue chunks from multiple globals
-PASS Correct errors and globals for closed streams
-PASS Tee Branches in correct global
+[PASS] Stream objects created in expected globals
+[FAIL] Cancel promise is created in same global as stream
+  assert_equals: Cancel promise comes from the same global as the stream expected true but got false
+[PASS] Closed Promise in correct global
+[FAIL] Reader objects in correct global
+  assert_equals: Object comes from other realm expected true but got false
+[PASS] Desired size can be grafted from one prototype to another
+[PASS] Closing errored stream throws object in appropriate global
+[PASS] Can enqueue chunks from multiple globals
+[PASS] Correct errors and globals for closed streams
+[PASS] Tee Branches in correct global
 Harness: the test ran to completion.
 

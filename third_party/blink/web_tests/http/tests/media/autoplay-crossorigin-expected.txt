@@ -1,9 +1,0 @@
-CONSOLE MESSAGE: line 31: video canplay
-CONSOLE MESSAGE: line 41: videoMuted play
-CONSOLE MESSAGE: line 42: video-muted
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "test that muted video in cross-origin iframe should autoplay"
-PASS test that muted video in cross-origin iframe should autoplay
-PASS test that muted video in cross-origin iframe should autoplay
-Harness: the test ran to completion.
-

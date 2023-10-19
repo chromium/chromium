@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-PASS setLocalDescription(rollback) from have-local-offer state should reset back to stable state
-PASS setLocalDescription(rollback) from stable state should reject with InvalidStateError
-PASS setLocalDescription(rollback) after setting answer description should reject with InvalidStateError
-FAIL setLocalDescription(rollback) after setting a remote offer should reject with InvalidStateError assert_unreached: Should have rejected: undefined Reached unreachable code
-PASS setLocalDescription(rollback) should ignore invalid sdp content and succeed
-PASS setLocalDescription(rollback) should update internal state with a queued tassk, in the right order
+[PASS] setLocalDescription(rollback) from have-local-offer state should reset back to stable state
+[PASS] setLocalDescription(rollback) from stable state should reject with InvalidStateError
+[PASS] setLocalDescription(rollback) after setting answer description should reject with InvalidStateError
+[FAIL] setLocalDescription(rollback) after setting a remote offer should reject with InvalidStateError
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[PASS] setLocalDescription(rollback) should ignore invalid sdp content and succeed
+[PASS] setLocalDescription(rollback) should update internal state with a queued tassk, in the right order
 Harness: the test ran to completion.
 

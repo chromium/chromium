@@ -1,5 +1,0 @@
-CONSOLE ERROR: Blocked call to navigator.vibrate because user hasn't tapped on the frame or any embedded frame yet: https://www.chromestatus.com/feature/5644273861001216.
-This is a testharness.js-based test.
-PASS Testing vibrate 3 times on the top page
-Harness: the test ran to completion.
-

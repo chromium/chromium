@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL CSS Selectors: :has() error recovery assert_not_equals: Should've parsed got disallowed value "random-selector"
-Harness: the test ran to completion.
-

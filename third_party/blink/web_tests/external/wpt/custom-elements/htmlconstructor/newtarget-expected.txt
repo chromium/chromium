@@ -1,13 +1,17 @@
 This is a testharness.js-based test.
-PASS Use NewTarget's prototype, not the one stored at definition time
-PASS Rethrow any exceptions thrown while getting the prototype
-PASS If prototype is not object (null), derives the fallback from NewTarget's realm (autonomous custom elements)
-FAIL If prototype is not object (null), derives the fallback from NewTarget's GetFunctionRealm (autonomous custom elements) assert_equals: Must use the HTMLElement from the realm of NewTarget expected object "[object HTMLElement]" but got object "[object HTMLElement]"
-PASS If prototype is not object (undefined), derives the fallback from NewTarget's realm (autonomous custom elements)
-FAIL If prototype is not object (undefined), derives the fallback from NewTarget's GetFunctionRealm (autonomous custom elements) assert_equals: Must use the HTMLElement from the realm of NewTarget expected object "[object HTMLElement]" but got object "[object HTMLElement]"
-PASS If prototype is not object (5), derives the fallback from NewTarget's realm (autonomous custom elements)
-FAIL If prototype is not object (5), derives the fallback from NewTarget's GetFunctionRealm (autonomous custom elements) assert_equals: Must use the HTMLElement from the realm of NewTarget expected object "[object HTMLElement]" but got object "[object HTMLElement]"
-PASS If prototype is not object (string), derives the fallback from NewTarget's realm (autonomous custom elements)
-FAIL If prototype is not object (string), derives the fallback from NewTarget's GetFunctionRealm (autonomous custom elements) assert_equals: Must use the HTMLElement from the realm of NewTarget expected object "[object HTMLElement]" but got object "[object HTMLElement]"
+[PASS] Use NewTarget's prototype, not the one stored at definition time
+[PASS] Rethrow any exceptions thrown while getting the prototype
+[PASS] If prototype is not object (null), derives the fallback from NewTarget's realm (autonomous custom elements)
+[FAIL] If prototype is not object (null), derives the fallback from NewTarget's GetFunctionRealm (autonomous custom elements)
+  assert_equals: Must use the HTMLElement from the realm of NewTarget expected object "[object HTMLElement]" but got object "[object HTMLElement]"
+[PASS] If prototype is not object (undefined), derives the fallback from NewTarget's realm (autonomous custom elements)
+[FAIL] If prototype is not object (undefined), derives the fallback from NewTarget's GetFunctionRealm (autonomous custom elements)
+  assert_equals: Must use the HTMLElement from the realm of NewTarget expected object "[object HTMLElement]" but got object "[object HTMLElement]"
+[PASS] If prototype is not object (5), derives the fallback from NewTarget's realm (autonomous custom elements)
+[FAIL] If prototype is not object (5), derives the fallback from NewTarget's GetFunctionRealm (autonomous custom elements)
+  assert_equals: Must use the HTMLElement from the realm of NewTarget expected object "[object HTMLElement]" but got object "[object HTMLElement]"
+[PASS] If prototype is not object (string), derives the fallback from NewTarget's realm (autonomous custom elements)
+[FAIL] If prototype is not object (string), derives the fallback from NewTarget's GetFunctionRealm (autonomous custom elements)
+  assert_equals: Must use the HTMLElement from the realm of NewTarget expected object "[object HTMLElement]" but got object "[object HTMLElement]"
 Harness: the test ran to completion.
 

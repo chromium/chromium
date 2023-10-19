@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL Check autoplay policy when playing audible media element promise_test: Unhandled rejection with value: object "TypeError: window.navigator.getAutoplayPolicy is not a function"
-FAIL Check autoplay policy when playing inaudible media element promise_test: Unhandled rejection with value: object "TypeError: window.navigator.getAutoplayPolicy is not a function"
+[FAIL] Check autoplay policy when playing audible media element
+  promise_test: Unhandled rejection with value: object "TypeError: window.navigator.getAutoplayPolicy is not a function"
+[FAIL] Check autoplay policy when playing inaudible media element
+  promise_test: Unhandled rejection with value: object "TypeError: window.navigator.getAutoplayPolicy is not a function"
 Harness: the test ran to completion.
 

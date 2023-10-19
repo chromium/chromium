@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-FAIL e.style['cx'] = "10" should not set the property value assert_equals: expected "" but got "10"
-PASS e.style['cx'] = "auto" should not set the property value
-PASS e.style['cx'] = "10px 20px" should not set the property value
+[FAIL] e.style['cx'] = "10" should not set the property value
+  assert_equals: expected "" but got "10"
+[PASS] e.style['cx'] = "auto" should not set the property value
+[PASS] e.style['cx'] = "10px 20px" should not set the property value
 Harness: the test ran to completion.
 

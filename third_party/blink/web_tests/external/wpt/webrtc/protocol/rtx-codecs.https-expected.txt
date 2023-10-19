@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-PASS Initial offer should have sensible RTX mappings
-PASS Self-negotiated answer should have sensible RTX parameters
-PASS A remote offer generates sensible RTX references in answer
-FAIL A remote offer with duplicate codecs generates sensible RTX references in answer assert_true: Found referenced codec expected true got false
+[PASS] Initial offer should have sensible RTX mappings
+[PASS] Self-negotiated answer should have sensible RTX parameters
+[PASS] A remote offer generates sensible RTX references in answer
+[FAIL] A remote offer with duplicate codecs generates sensible RTX references in answer
+  assert_true: Found referenced codec expected true got false
 Harness: the test ran to completion.
 

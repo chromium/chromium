@@ -1,35 +1,36 @@
 This is a testharness.js-based test.
-PASS Test we can construct a VideoFrame.
-PASS Test closed VideoFrame.
-PASS Test we can construct a VideoFrame with a negative timestamp.
-PASS Test that timestamp is required when constructing VideoFrame from ImageBitmap
-PASS Test that timestamp is required when constructing VideoFrame from OffscreenCanvas
-PASS Test that timestamp is NOT required when constructing VideoFrame from another VideoFrame
-PASS Test we can construct an odd-sized VideoFrame.
-PASS Test constructing w/ unusable image argument throws: HAVE_NOTHING <video>.
-FAIL Test we can construct a VideoFrame from a <video>. assert_equals: codedWidth expected 320 but got 384
-PASS Test constructing w/ unusable image argument throws: emtpy Canvas.
-PASS Test constructing w/ unusable image argument throws: closed ImageBitmap.
-PASS Test constructing w/ unusable image argument throws: closed VideoFrame.
-PASS Test invalid CanvasImageSource constructed VideoFrames
-PASS Test visibleRect metadata override where source display size = visible size
-PASS Test visibleRect metadata override where source display width = 2 * visible width (anamorphic)
-PASS Test visibleRect metadata override where source display size = 2 * visible size for both width and height
-PASS Test visibleRect + display size metadata override
-PASS Test display size metadata override
-PASS Test invalid buffer constructed VideoFrames
-PASS Test Uint8Array(ArrayBuffer) constructed I420 VideoFrame
-PASS Test ArrayBuffer constructed I420 VideoFrame
-PASS Test planar constructed I420 VideoFrame with colorSpace
-PASS Test planar can construct I420 VideoFrame with null colorSpace values
-PASS Test buffer constructed I420+Alpha VideoFrame
-PASS Test buffer constructed NV12 VideoFrame
-PASS Test buffer constructed RGB VideoFrames
-PASS Test VideoFrame constructed VideoFrame
-PASS Test we can construct a VideoFrame from an offscreen canvas.
-PASS Test I420 VideoFrame with odd visible size
-PASS Test I420A VideoFrame and alpha={keep,discard}
-PASS Test RGBA, BGRA VideoFrames with alpha={keep,discard}
-PASS Test a VideoFrame constructed from canvas can drop the alpha channel.
+[PASS] Test we can construct a VideoFrame.
+[PASS] Test closed VideoFrame.
+[PASS] Test we can construct a VideoFrame with a negative timestamp.
+[PASS] Test that timestamp is required when constructing VideoFrame from ImageBitmap
+[PASS] Test that timestamp is required when constructing VideoFrame from OffscreenCanvas
+[PASS] Test that timestamp is NOT required when constructing VideoFrame from another VideoFrame
+[PASS] Test we can construct an odd-sized VideoFrame.
+[PASS] Test constructing w/ unusable image argument throws: HAVE_NOTHING <video>.
+[FAIL] Test we can construct a VideoFrame from a <video>.
+  assert_equals: codedWidth expected 320 but got 384
+[PASS] Test constructing w/ unusable image argument throws: emtpy Canvas.
+[PASS] Test constructing w/ unusable image argument throws: closed ImageBitmap.
+[PASS] Test constructing w/ unusable image argument throws: closed VideoFrame.
+[PASS] Test invalid CanvasImageSource constructed VideoFrames
+[PASS] Test visibleRect metadata override where source display size = visible size
+[PASS] Test visibleRect metadata override where source display width = 2 * visible width (anamorphic)
+[PASS] Test visibleRect metadata override where source display size = 2 * visible size for both width and height
+[PASS] Test visibleRect + display size metadata override
+[PASS] Test display size metadata override
+[PASS] Test invalid buffer constructed VideoFrames
+[PASS] Test Uint8Array(ArrayBuffer) constructed I420 VideoFrame
+[PASS] Test ArrayBuffer constructed I420 VideoFrame
+[PASS] Test planar constructed I420 VideoFrame with colorSpace
+[PASS] Test planar can construct I420 VideoFrame with null colorSpace values
+[PASS] Test buffer constructed I420+Alpha VideoFrame
+[PASS] Test buffer constructed NV12 VideoFrame
+[PASS] Test buffer constructed RGB VideoFrames
+[PASS] Test VideoFrame constructed VideoFrame
+[PASS] Test we can construct a VideoFrame from an offscreen canvas.
+[PASS] Test I420 VideoFrame with odd visible size
+[PASS] Test I420A VideoFrame and alpha={keep,discard}
+[PASS] Test RGBA, BGRA VideoFrames with alpha={keep,discard}
+[PASS] Test a VideoFrame constructed from canvas can drop the alpha channel.
 Harness: the test ran to completion.
 

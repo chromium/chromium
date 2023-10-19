@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL Prefetch should include Sec-Purpose=prefetch and Sec-Fetch-Dest=empty headers assert_equals: expected (string) "empty" but got (undefined) undefined
-FAIL Prefetch should not include proprietary headers (X-moz/Purpose) assert_false: expected false got true
-FAIL Prefetch should respect CORS mode assert_equals: expected (undefined) undefined but got (string) "http://web-platform.test:8001"
-Harness: the test ran to completion.
-

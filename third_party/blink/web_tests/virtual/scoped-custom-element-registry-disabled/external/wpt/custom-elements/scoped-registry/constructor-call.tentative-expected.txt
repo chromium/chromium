@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL Calling custom element constructor directly without global registration should fail Illegal constructor
-FAIL Calling custom element constructor directly uses global registration only Illegal constructor
+[FAIL] Calling custom element constructor directly without global registration should fail
+  Illegal constructor
+[FAIL] Calling custom element constructor directly uses global registration only
+  Illegal constructor
 Harness: the test ran to completion.
 

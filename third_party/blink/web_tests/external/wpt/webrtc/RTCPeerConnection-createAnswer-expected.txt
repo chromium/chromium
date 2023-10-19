@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-PASS createAnswer() with null remoteDescription should reject with InvalidStateError
-FAIL createAnswer() after setting remote description should succeed assert_false: Expect answer to not be instance of RTCSessionDescription expected false got true
-PASS createAnswer() when connection is closed should reject with InvalidStateError
+[PASS] createAnswer() with null remoteDescription should reject with InvalidStateError
+[FAIL] createAnswer() after setting remote description should succeed
+  assert_false: Expect answer to not be instance of RTCSessionDescription expected false got true
+[PASS] createAnswer() when connection is closed should reject with InvalidStateError
 Harness: the test ran to completion.
 

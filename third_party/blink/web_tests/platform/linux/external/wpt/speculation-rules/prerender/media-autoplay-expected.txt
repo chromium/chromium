@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] media autoplay should defer playaback
+  assert_equals: expected false but got true
+Harness: the test ran to completion.
+

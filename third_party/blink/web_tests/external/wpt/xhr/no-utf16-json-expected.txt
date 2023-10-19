@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL JSON asa UTF-16 with BOM should decode as UTF-8 (and, therefore, fail) assert_equals: expected null but got object "[object Object]"
-Harness: the test ran to completion.
-

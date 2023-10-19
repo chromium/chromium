@@ -1,15 +1,27 @@
 This is a testharness.js-based test.
-FAIL reshape float32 tensor to a new shape (reorder all dimensions) / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL reshape float32 tensor to a new shape (reduce dimensions) / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL reshape float32 tensor to a new shape (extend dimensions) / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL reshape float32 tensor to a new shape (one dimension being the special value of null) / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL reshape float32 tensor to 1D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL reshape float32 tensor to 1D tensor newShape=[null] / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL reshape float32 tensor to a new shape (reorder all dimensions) / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL reshape float32 tensor to a new shape (reduce dimensions) / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL reshape float32 tensor to a new shape (extend dimensions) / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL reshape float32 tensor to a new shape (one dimension being the special value of null) / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL reshape float32 tensor to 1D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL reshape float32 tensor to 1D tensor newShape=[null] / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reshape float32 tensor to a new shape (reorder all dimensions) / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] reshape float32 tensor to a new shape (reduce dimensions) / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] reshape float32 tensor to a new shape (extend dimensions) / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] reshape float32 tensor to a new shape (one dimension being the special value of null) / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] reshape float32 tensor to 1D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] reshape float32 tensor to 1D tensor newShape=[null] / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] reshape float32 tensor to a new shape (reorder all dimensions) / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reshape float32 tensor to a new shape (reduce dimensions) / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reshape float32 tensor to a new shape (extend dimensions) / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reshape float32 tensor to a new shape (one dimension being the special value of null) / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reshape float32 tensor to 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reshape float32 tensor to 1D tensor newShape=[null] / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 Harness: the test ran to completion.
 

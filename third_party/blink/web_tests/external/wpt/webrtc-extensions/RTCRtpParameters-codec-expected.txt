@@ -1,25 +1,26 @@
 This is a testharness.js-based test.
-PASS Codec should be undefined by default on audio encodings
-PASS Codec should be undefined by default on video encodings
-PASS Creating an audio sender with addTransceiver and codec should work
-PASS Creating a video sender with addTransceiver and codec should work
-PASS Setting codec on an audio sender with setParameters should work
-PASS Setting codec on a video sender with setParameters should work
-PASS Creating an audio sender with addTransceiver and non-existing codec should throw OperationError
-PASS Creating an audio sender with addTransceiver and non-existing codec type should throw OperationError
-PASS Creating a video sender with addTransceiver and non-existing codec should throw OperationError
-PASS Creating a video sender with addTransceiver and non-existing codec type should throw OperationError
-PASS Setting a non-existing codec on an audio sender with setParameters should throw InvalidModificationError
-PASS Setting a non-existing codec on a video sender with setParameters should throw InvalidModificationError
-PASS Setting a non-preferred codec on an audio sender with setParameters should throw InvalidModificationError
-PASS Setting a non-preferred codec on a video sender with setParameters should throw InvalidModificationError
-PASS Setting a non-negotiated codec on an audio sender with setParameters should throw InvalidModificationError
-PASS Setting a non-negotiated codec on a video sender with setParameters should throw InvalidModificationError
-PASS Codec should be undefined after negotiating away the currently set codec on an audio sender
-PASS Codec should be undefined after negotiating away the currently set codec on a video sender
-PASS Stats output-rtp should match the selected codec in non-simulcast usecase on an audio sender
-PASS Stats output-rtp should match the selected codec in non-simulcast usecase on a video sender
-PASS Stats output-rtp should match the selected codec in simulcast usecase on a video sender
-FAIL Stats output-rtp should match the selected mixed codecs in simulcast usecase on a video sender promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setParameters' on 'RTCRtpSender': Attempted to use different codec values for different encodings."
+[PASS] Codec should be undefined by default on audio encodings
+[PASS] Codec should be undefined by default on video encodings
+[PASS] Creating an audio sender with addTransceiver and codec should work
+[PASS] Creating a video sender with addTransceiver and codec should work
+[PASS] Setting codec on an audio sender with setParameters should work
+[PASS] Setting codec on a video sender with setParameters should work
+[PASS] Creating an audio sender with addTransceiver and non-existing codec should throw OperationError
+[PASS] Creating an audio sender with addTransceiver and non-existing codec type should throw OperationError
+[PASS] Creating a video sender with addTransceiver and non-existing codec should throw OperationError
+[PASS] Creating a video sender with addTransceiver and non-existing codec type should throw OperationError
+[PASS] Setting a non-existing codec on an audio sender with setParameters should throw InvalidModificationError
+[PASS] Setting a non-existing codec on a video sender with setParameters should throw InvalidModificationError
+[PASS] Setting a non-preferred codec on an audio sender with setParameters should throw InvalidModificationError
+[PASS] Setting a non-preferred codec on a video sender with setParameters should throw InvalidModificationError
+[PASS] Setting a non-negotiated codec on an audio sender with setParameters should throw InvalidModificationError
+[PASS] Setting a non-negotiated codec on a video sender with setParameters should throw InvalidModificationError
+[PASS] Codec should be undefined after negotiating away the currently set codec on an audio sender
+[PASS] Codec should be undefined after negotiating away the currently set codec on a video sender
+[PASS] Stats output-rtp should match the selected codec in non-simulcast usecase on an audio sender
+[PASS] Stats output-rtp should match the selected codec in non-simulcast usecase on a video sender
+[PASS] Stats output-rtp should match the selected codec in simulcast usecase on a video sender
+[FAIL] Stats output-rtp should match the selected mixed codecs in simulcast usecase on a video sender
+  promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setParameters' on 'RTCRtpSender': Attempted to use different codec values for different encodings."
 Harness: the test ran to completion.
 

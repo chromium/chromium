@@ -1,26 +1,31 @@
 This is a testharness.js-based test.
-PASS check XMLSerializer.serializeToString method could parsing xmldoc to string
-PASS check XMLSerializer.serializeToString method could parsing document to string
-PASS Check if the default namespace is correctly reset.
-PASS Check if there is no redundant empty namespace declaration.
-FAIL Check if redundant xmlns="..." is dropped. assert_equals: expected "<root><child/></root>" but got "<root><child xmlns=\"\"/></root>"
-PASS Check if inconsistent xmlns="..." is dropped.
-PASS Check if an attribute with namespace and no prefix is serialized with the nearest-declared prefix
-FAIL Check if an attribute with namespace and no prefix is serialized with the nearest-declared prefix even if the prefix is assigned to another namespace. assert_equals: expected "<el1 xmlns:p=\"u1\" xmlns:q=\"u1\"><el2 xmlns:q=\"u2\" q:name=\"v\"/></el1>" but got "<el1 xmlns:p=\"u1\" xmlns:q=\"u1\"><el2 xmlns:q=\"u2\" p:name=\"v\"/></el1>"
-PASS Check if the prefix of an attribute is replaced with another existing prefix mapped to the same namespace URI.
-FAIL Check if the prefix of an attribute is NOT preserved in a case where neither its prefix nor its namespace URI is not already used. assert_equals: expected "<r xmlns:xx=\"uri\" xmlns:ns1=\"uri2\" ns1:name=\"value\"/>" but got "<r xmlns:xx=\"uri\" xmlns:p=\"uri2\" p:name=\"value\"/>"
-PASS Check if the prefix of an attribute is replaced with a generated one in a case where the prefix is already mapped to a different namespace URI.
-PASS check XMLSerializer.serializeToString escapes attribute values for roundtripping
-PASS Check if attribute serialization takes into account of following xmlns:* attributes
-PASS Check if attribute serialization takes into account of the same prefix declared in an ancestor element
-PASS Check if start tag serialization drops element prefix if the namespace is same as inherited default namespace.
-PASS Check if start tag serialization finds an appropriate prefix.
-PASS Check if start tag serialization takes into account of its xmlns:* attributes
-PASS Check if start tag serialization applied the original prefix even if it is declared in an ancestor element.
-FAIL Check if start tag serialization does NOT apply the default namespace if its namespace is declared in an ancestor. assert_equals: expected "<root xmlns:x=\"uri1\"><x:table xmlns=\"uri1\"/></root>" but got "<root xmlns:x=\"uri1\"><table xmlns=\"uri1\"/></root>"
-PASS Check if generated prefixes match to "ns${index}".
-FAIL Check if "ns1" is generated even if the element already has xmlns:ns1. assert_equals: expected "<root xmlns:ns2=\"uri2\"><child xmlns:ns1=\"uri1\" xmlns:ns1=\"uri3\" ns1:attr1=\"value1\"/></root>" but got "<root xmlns:ns2=\"uri2\"><child xmlns:ns1=\"uri1\" xmlns:ns3=\"uri3\" ns3:attr1=\"value1\"/></root>"
-PASS Check if no special handling for XLink namespace unlike HTML serializer.
-PASS Check if document fragment serializes.
+[PASS] check XMLSerializer.serializeToString method could parsing xmldoc to string
+[PASS] check XMLSerializer.serializeToString method could parsing document to string
+[PASS] Check if the default namespace is correctly reset.
+[PASS] Check if there is no redundant empty namespace declaration.
+[FAIL] Check if redundant xmlns="..." is dropped.
+  assert_equals: expected "<root><child/></root>" but got "<root><child xmlns=\"\"/></root>"
+[PASS] Check if inconsistent xmlns="..." is dropped.
+[PASS] Check if an attribute with namespace and no prefix is serialized with the nearest-declared prefix
+[FAIL] Check if an attribute with namespace and no prefix is serialized with the nearest-declared prefix even if the prefix is assigned to another namespace.
+  assert_equals: expected "<el1 xmlns:p=\"u1\" xmlns:q=\"u1\"><el2 xmlns:q=\"u2\" q:name=\"v\"/></el1>" but got "<el1 xmlns:p=\"u1\" xmlns:q=\"u1\"><el2 xmlns:q=\"u2\" p:name=\"v\"/></el1>"
+[PASS] Check if the prefix of an attribute is replaced with another existing prefix mapped to the same namespace URI.
+[FAIL] Check if the prefix of an attribute is NOT preserved in a case where neither its prefix nor its namespace URI is not already used.
+  assert_equals: expected "<r xmlns:xx=\"uri\" xmlns:ns1=\"uri2\" ns1:name=\"value\"/>" but got "<r xmlns:xx=\"uri\" xmlns:p=\"uri2\" p:name=\"value\"/>"
+[PASS] Check if the prefix of an attribute is replaced with a generated one in a case where the prefix is already mapped to a different namespace URI.
+[PASS] check XMLSerializer.serializeToString escapes attribute values for roundtripping
+[PASS] Check if attribute serialization takes into account of following xmlns:* attributes
+[PASS] Check if attribute serialization takes into account of the same prefix declared in an ancestor element
+[PASS] Check if start tag serialization drops element prefix if the namespace is same as inherited default namespace.
+[PASS] Check if start tag serialization finds an appropriate prefix.
+[PASS] Check if start tag serialization takes into account of its xmlns:* attributes
+[PASS] Check if start tag serialization applied the original prefix even if it is declared in an ancestor element.
+[FAIL] Check if start tag serialization does NOT apply the default namespace if its namespace is declared in an ancestor.
+  assert_equals: expected "<root xmlns:x=\"uri1\"><x:table xmlns=\"uri1\"/></root>" but got "<root xmlns:x=\"uri1\"><table xmlns=\"uri1\"/></root>"
+[PASS] Check if generated prefixes match to "ns${index}".
+[FAIL] Check if "ns1" is generated even if the element already has xmlns:ns1.
+  assert_equals: expected "<root xmlns:ns2=\"uri2\"><child xmlns:ns1=\"uri1\" xmlns:ns1=\"uri3\" ns1:attr1=\"value1\"/></root>" but got "<root xmlns:ns2=\"uri2\"><child xmlns:ns1=\"uri1\" xmlns:ns3=\"uri3\" ns3:attr1=\"value1\"/></root>"
+[PASS] Check if no special handling for XLink namespace unlike HTML serializer.
+[PASS] Check if document fragment serializes.
 Harness: the test ran to completion.
 

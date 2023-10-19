@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS onicecandidate does not cache results
-FAIL addIceCandidate does not cache results assert_equals: expected 0 but got 1
-Harness: the test ran to completion.
-

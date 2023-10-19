@@ -1,41 +1,42 @@
 This is a testharness.js-based test.
-PASS Property fill has initial value rgb(0, 0, 0)
-PASS Property fill inherits
-PASS Property fill-rule has initial value nonzero
-PASS Property fill-rule inherits
-PASS Property fill-opacity has initial value 1
-PASS Property fill-opacity inherits
-PASS Property stroke has initial value none
-PASS Property stroke inherits
-PASS Property stroke-opacity has initial value 1
-PASS Property stroke-opacity inherits
-PASS Property stroke-width has initial value 1px
-PASS Property stroke-width inherits
-PASS Property stroke-linecap has initial value butt
-PASS Property stroke-linecap inherits
-PASS Property stroke-linejoin has initial value miter
-PASS Property stroke-linejoin inherits
-PASS Property stroke-miterlimit has initial value 4
-PASS Property stroke-miterlimit inherits
-PASS Property stroke-dasharray has initial value none
-PASS Property stroke-dasharray inherits
-PASS Property stroke-dashoffset has initial value 0px
-PASS Property stroke-dashoffset inherits
-PASS Property marker-start has initial value none
-PASS Property marker-start inherits
-PASS Property marker-mid has initial value none
-PASS Property marker-mid inherits
-PASS Property marker-end has initial value none
-PASS Property marker-end inherits
-PASS Property paint-order has initial value normal
-PASS Property paint-order inherits
-PASS Property color-interpolation has initial value srgb
-PASS Property color-interpolation inherits
-PASS Property shape-rendering has initial value auto
-PASS Property shape-rendering inherits
-PASS Property text-rendering has initial value auto
-PASS Property text-rendering inherits
-PASS Property image-rendering has initial value auto
-FAIL Property image-rendering inherits assert_equals: expected "optimizequality" but got "auto"
+[PASS] Property fill has initial value rgb(0, 0, 0)
+[PASS] Property fill inherits
+[PASS] Property fill-rule has initial value nonzero
+[PASS] Property fill-rule inherits
+[PASS] Property fill-opacity has initial value 1
+[PASS] Property fill-opacity inherits
+[PASS] Property stroke has initial value none
+[PASS] Property stroke inherits
+[PASS] Property stroke-opacity has initial value 1
+[PASS] Property stroke-opacity inherits
+[PASS] Property stroke-width has initial value 1px
+[PASS] Property stroke-width inherits
+[PASS] Property stroke-linecap has initial value butt
+[PASS] Property stroke-linecap inherits
+[PASS] Property stroke-linejoin has initial value miter
+[PASS] Property stroke-linejoin inherits
+[PASS] Property stroke-miterlimit has initial value 4
+[PASS] Property stroke-miterlimit inherits
+[PASS] Property stroke-dasharray has initial value none
+[PASS] Property stroke-dasharray inherits
+[PASS] Property stroke-dashoffset has initial value 0px
+[PASS] Property stroke-dashoffset inherits
+[PASS] Property marker-start has initial value none
+[PASS] Property marker-start inherits
+[PASS] Property marker-mid has initial value none
+[PASS] Property marker-mid inherits
+[PASS] Property marker-end has initial value none
+[PASS] Property marker-end inherits
+[PASS] Property paint-order has initial value normal
+[PASS] Property paint-order inherits
+[PASS] Property color-interpolation has initial value srgb
+[PASS] Property color-interpolation inherits
+[PASS] Property shape-rendering has initial value auto
+[PASS] Property shape-rendering inherits
+[PASS] Property text-rendering has initial value auto
+[PASS] Property text-rendering inherits
+[PASS] Property image-rendering has initial value auto
+[FAIL] Property image-rendering inherits
+  assert_equals: expected "optimizequality" but got "auto"
 Harness: the test ran to completion.
 

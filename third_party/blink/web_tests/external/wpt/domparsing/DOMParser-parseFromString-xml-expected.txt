@@ -1,23 +1,35 @@
 This is a testharness.js-based test.
-PASS Should parse correctly in type text/xml
-FAIL XMLDocument interface for correctly parsed document with type text/xml assert_false: Should not be XMLDocument expected false got true
-FAIL Should return an error document for XML wellformedness errors in type text/xml assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
-FAIL XMLDocument interface for incorrectly parsed document with type text/xml assert_false: Should not be XMLDocument expected false got true
-PASS scripting must be disabled with type text/xml
-PASS Should parse correctly in type application/xml
-FAIL XMLDocument interface for correctly parsed document with type application/xml assert_false: Should not be XMLDocument expected false got true
-FAIL Should return an error document for XML wellformedness errors in type application/xml assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
-FAIL XMLDocument interface for incorrectly parsed document with type application/xml assert_false: Should not be XMLDocument expected false got true
-PASS scripting must be disabled with type application/xml
-PASS Should parse correctly in type application/xhtml+xml
-FAIL XMLDocument interface for correctly parsed document with type application/xhtml+xml assert_false: Should not be XMLDocument expected false got true
-FAIL Should return an error document for XML wellformedness errors in type application/xhtml+xml assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
-FAIL XMLDocument interface for incorrectly parsed document with type application/xhtml+xml assert_false: Should not be XMLDocument expected false got true
-PASS scripting must be disabled with type application/xhtml+xml
-PASS Should parse correctly in type image/svg+xml
-FAIL XMLDocument interface for correctly parsed document with type image/svg+xml assert_false: Should not be XMLDocument expected false got true
-FAIL Should return an error document for XML wellformedness errors in type image/svg+xml assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
-FAIL XMLDocument interface for incorrectly parsed document with type image/svg+xml assert_false: Should not be XMLDocument expected false got true
-PASS scripting must be disabled with type image/svg+xml
+[PASS] Should parse correctly in type text/xml
+[FAIL] XMLDocument interface for correctly parsed document with type text/xml
+  assert_false: Should not be XMLDocument expected false got true
+[FAIL] Should return an error document for XML wellformedness errors in type text/xml
+  assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
+[FAIL] XMLDocument interface for incorrectly parsed document with type text/xml
+  assert_false: Should not be XMLDocument expected false got true
+[PASS] scripting must be disabled with type text/xml
+[PASS] Should parse correctly in type application/xml
+[FAIL] XMLDocument interface for correctly parsed document with type application/xml
+  assert_false: Should not be XMLDocument expected false got true
+[FAIL] Should return an error document for XML wellformedness errors in type application/xml
+  assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
+[FAIL] XMLDocument interface for incorrectly parsed document with type application/xml
+  assert_false: Should not be XMLDocument expected false got true
+[PASS] scripting must be disabled with type application/xml
+[PASS] Should parse correctly in type application/xhtml+xml
+[FAIL] XMLDocument interface for correctly parsed document with type application/xhtml+xml
+  assert_false: Should not be XMLDocument expected false got true
+[FAIL] Should return an error document for XML wellformedness errors in type application/xhtml+xml
+  assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
+[FAIL] XMLDocument interface for incorrectly parsed document with type application/xhtml+xml
+  assert_false: Should not be XMLDocument expected false got true
+[PASS] scripting must be disabled with type application/xhtml+xml
+[PASS] Should parse correctly in type image/svg+xml
+[FAIL] XMLDocument interface for correctly parsed document with type image/svg+xml
+  assert_false: Should not be XMLDocument expected false got true
+[FAIL] Should return an error document for XML wellformedness errors in type image/svg+xml
+  assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
+[FAIL] XMLDocument interface for incorrectly parsed document with type image/svg+xml
+  assert_false: Should not be XMLDocument expected false got true
+[PASS] scripting must be disabled with type image/svg+xml
 Harness: the test ran to completion.
 

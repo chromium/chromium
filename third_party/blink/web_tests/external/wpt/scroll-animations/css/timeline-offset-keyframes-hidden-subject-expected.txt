@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Keyframes with timeline-offsets ignored when timeline is inactive assert_equals: properties on ComputedKeyframe #0: Keyframes with invalid view timeline should match expected "composite,computedOffset,easing,offset,opacity" but got "composite,computedOffset,easing,marginRight,offset,opacity"
+[FAIL] Keyframes with timeline-offsets ignored when timeline is inactive
+  assert_equals: properties on ComputedKeyframe #0: Keyframes with invalid view timeline should match expected "composite,computedOffset,easing,offset,opacity" but got "composite,computedOffset,easing,marginRight,offset,opacity"
 Harness: the test ran to completion.
 

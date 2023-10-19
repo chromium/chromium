@@ -1,12 +1,16 @@
 This is a testharness.js-based test.
-PASS Prefetch should fire the load event
-PASS Cross-origin prefetch should fire the load event
-FAIL Prefetch should fire the load event for 404 assert_equals: expected "load" but got "error"
-FAIL Prefetch should fire the load event for 404 (cross-origin) assert_equals: expected "load" but got "error"
-FAIL Prefetch should fire the load event for 500 assert_equals: expected "load" but got "error"
-FAIL Cross-origin prefetch should fire the load event for 500 assert_equals: expected "load" but got "error"
-PASS Prefetch should fire the error event for network errors
-PASS Prefetch should do nothing with an empty href
-PASS Prefetch should do nothing with an invalid href
+[PASS] Prefetch should fire the load event
+[PASS] Cross-origin prefetch should fire the load event
+[FAIL] Prefetch should fire the load event for 404
+  assert_equals: expected "load" but got "error"
+[FAIL] Prefetch should fire the load event for 404 (cross-origin)
+  assert_equals: expected "load" but got "error"
+[FAIL] Prefetch should fire the load event for 500
+  assert_equals: expected "load" but got "error"
+[FAIL] Cross-origin prefetch should fire the load event for 500
+  assert_equals: expected "load" but got "error"
+[PASS] Prefetch should fire the error event for network errors
+[PASS] Prefetch should do nothing with an empty href
+[PASS] Prefetch should do nothing with an invalid href
 Harness: the test ran to completion.
 

@@ -1,22 +1,24 @@
 This is a testharness.js-based test.
-PASS existence of postMessage
-PASS existence of onmessage
-PASS existence of self
-PASS existence of location
-PASS existence of close
-PASS existence of onerror
-FAIL existence of onoffline assert_true: expected true got false
-FAIL existence of ononline assert_true: expected true got false
-PASS existence of addEventListener
-PASS existence of removeEventListener
-PASS existence of dispatchEvent
-PASS existence of importScripts
-PASS existence of navigator
-PASS existence of setTimeout
-PASS existence of clearTimeout
-PASS existence of setInterval
-PASS existence of clearInterval
-PASS existence of btoa
-PASS existence of atob
+[PASS] existence of postMessage
+[PASS] existence of onmessage
+[PASS] existence of self
+[PASS] existence of location
+[PASS] existence of close
+[PASS] existence of onerror
+[FAIL] existence of onoffline
+  assert_true: expected true got false
+[FAIL] existence of ononline
+  assert_true: expected true got false
+[PASS] existence of addEventListener
+[PASS] existence of removeEventListener
+[PASS] existence of dispatchEvent
+[PASS] existence of importScripts
+[PASS] existence of navigator
+[PASS] existence of setTimeout
+[PASS] existence of clearTimeout
+[PASS] existence of setInterval
+[PASS] existence of clearInterval
+[PASS] existence of btoa
+[PASS] existence of atob
 Harness: the test ran to completion.
 

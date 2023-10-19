@@ -1,69 +1,99 @@
 This is a testharness.js-based test.
 Found 65 tests; 35 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS idl_test setup
-PASS idl_test validation
-PASS Partial interface RTCRtpSender: original interface defined
-PASS Partial interface RTCRtpSender: member names are unique
-PASS Partial interface RTCRtpReceiver: original interface defined
-PASS Partial interface RTCRtpReceiver: member names are unique
-PASS Partial interface DedicatedWorkerGlobalScope: original interface defined
-PASS Partial interface DedicatedWorkerGlobalScope: member names are unique
-PASS Partial interface RTCRtpSender[2]: original interface defined
-PASS Partial interface RTCRtpSender[2]: member names are unique
-PASS Partial interface RTCRtpSender[3]: member names are unique
-PASS SFrameTransform includes GenericTransformStream: member names are unique
-PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
-PASS DedicatedWorkerGlobalScope includes AnimationFrameProvider: member names are unique
-FAIL SFrameTransform interface: existence and properties of interface object assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
-FAIL SFrameTransform interface object length assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
-FAIL SFrameTransform interface object name assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
-FAIL SFrameTransform interface: existence and properties of interface prototype object assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
-FAIL SFrameTransform interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
-FAIL SFrameTransform interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
-FAIL SFrameTransform interface: operation setEncryptionKey(CryptoKey, optional CryptoKeyID) assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
-FAIL SFrameTransform interface: attribute onerror assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
-FAIL SFrameTransformErrorEvent interface: existence and properties of interface object assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
-FAIL SFrameTransformErrorEvent interface object length assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
-FAIL SFrameTransformErrorEvent interface object name assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
-FAIL SFrameTransformErrorEvent interface: existence and properties of interface prototype object assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
-FAIL SFrameTransformErrorEvent interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
-FAIL SFrameTransformErrorEvent interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
-FAIL SFrameTransformErrorEvent interface: attribute errorType assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
-FAIL SFrameTransformErrorEvent interface: attribute keyID assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
-FAIL SFrameTransformErrorEvent interface: attribute frame assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
-PASS RTCEncodedVideoFrame interface: existence and properties of interface object
-PASS RTCEncodedVideoFrame interface object length
-PASS RTCEncodedVideoFrame interface object name
-PASS RTCEncodedVideoFrame interface: existence and properties of interface prototype object
-PASS RTCEncodedVideoFrame interface: existence and properties of interface prototype object's "constructor" property
-PASS RTCEncodedVideoFrame interface: existence and properties of interface prototype object's @@unscopables property
-PASS RTCEncodedVideoFrame interface: attribute type
-PASS RTCEncodedVideoFrame interface: attribute timestamp
-PASS RTCEncodedVideoFrame interface: attribute data
-PASS RTCEncodedVideoFrame interface: operation getMetadata()
-PASS RTCEncodedAudioFrame interface: existence and properties of interface object
-PASS RTCEncodedAudioFrame interface object length
-PASS RTCEncodedAudioFrame interface object name
-PASS RTCEncodedAudioFrame interface: existence and properties of interface prototype object
-PASS RTCEncodedAudioFrame interface: existence and properties of interface prototype object's "constructor" property
-PASS RTCEncodedAudioFrame interface: existence and properties of interface prototype object's @@unscopables property
-PASS RTCEncodedAudioFrame interface: attribute timestamp
-PASS RTCEncodedAudioFrame interface: attribute data
-PASS RTCEncodedAudioFrame interface: operation getMetadata()
-PASS RTCTransformEvent interface: existence and properties of interface object
-PASS RTCRtpScriptTransformer interface: existence and properties of interface object
-FAIL RTCRtpScriptTransform interface: existence and properties of interface object assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
-FAIL RTCRtpScriptTransform interface object length assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
-FAIL RTCRtpScriptTransform interface object name assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
-FAIL RTCRtpScriptTransform interface: existence and properties of interface prototype object assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
-FAIL RTCRtpScriptTransform interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
-FAIL RTCRtpScriptTransform interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
-FAIL RTCRtpSender interface: attribute transform assert_true: The prototype object must have a property "transform" expected true got false
-FAIL RTCRtpSender interface: operation generateKeyFrame(optional sequence<DOMString>) assert_own_property: interface prototype object missing non-static operation expected property "generateKeyFrame" missing
-FAIL RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "transform" with the proper type assert_inherits: property "transform" not found in prototype chain
-FAIL RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "generateKeyFrame(optional sequence<DOMString>)" with the proper type assert_inherits: property "generateKeyFrame" not found in prototype chain
-FAIL RTCRtpSender interface: calling generateKeyFrame(optional sequence<DOMString>) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError assert_inherits: property "generateKeyFrame" not found in prototype chain
-FAIL RTCRtpReceiver interface: attribute transform assert_true: The prototype object must have a property "transform" expected true got false
-FAIL RTCRtpReceiver interface: new RTCPeerConnection().addTransceiver('audio').receiver must inherit property "transform" with the proper type assert_inherits: property "transform" not found in prototype chain
+[PASS] idl_test setup
+[PASS] idl_test validation
+[PASS] Partial interface RTCRtpSender: original interface defined
+[PASS] Partial interface RTCRtpSender: member names are unique
+[PASS] Partial interface RTCRtpReceiver: original interface defined
+[PASS] Partial interface RTCRtpReceiver: member names are unique
+[PASS] Partial interface DedicatedWorkerGlobalScope: original interface defined
+[PASS] Partial interface DedicatedWorkerGlobalScope: member names are unique
+[PASS] Partial interface RTCRtpSender[2]: original interface defined
+[PASS] Partial interface RTCRtpSender[2]: member names are unique
+[PASS] Partial interface RTCRtpSender[3]: member names are unique
+[PASS] SFrameTransform includes GenericTransformStream: member names are unique
+[PASS] WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
+[PASS] DedicatedWorkerGlobalScope includes AnimationFrameProvider: member names are unique
+[FAIL] SFrameTransform interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface object length
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface object name
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface: operation setEncryptionKey(CryptoKey, optional CryptoKeyID)
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransform interface: attribute onerror
+  assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
+[FAIL] SFrameTransformErrorEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface object length
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface object name
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: attribute errorType
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: attribute keyID
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[FAIL] SFrameTransformErrorEvent interface: attribute frame
+  assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
+[PASS] RTCEncodedVideoFrame interface: existence and properties of interface object
+[PASS] RTCEncodedVideoFrame interface object length
+[PASS] RTCEncodedVideoFrame interface object name
+[PASS] RTCEncodedVideoFrame interface: existence and properties of interface prototype object
+[PASS] RTCEncodedVideoFrame interface: existence and properties of interface prototype object's "constructor" property
+[PASS] RTCEncodedVideoFrame interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] RTCEncodedVideoFrame interface: attribute type
+[PASS] RTCEncodedVideoFrame interface: attribute timestamp
+[PASS] RTCEncodedVideoFrame interface: attribute data
+[PASS] RTCEncodedVideoFrame interface: operation getMetadata()
+[PASS] RTCEncodedAudioFrame interface: existence and properties of interface object
+[PASS] RTCEncodedAudioFrame interface object length
+[PASS] RTCEncodedAudioFrame interface object name
+[PASS] RTCEncodedAudioFrame interface: existence and properties of interface prototype object
+[PASS] RTCEncodedAudioFrame interface: existence and properties of interface prototype object's "constructor" property
+[PASS] RTCEncodedAudioFrame interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] RTCEncodedAudioFrame interface: attribute timestamp
+[PASS] RTCEncodedAudioFrame interface: attribute data
+[PASS] RTCEncodedAudioFrame interface: operation getMetadata()
+[PASS] RTCTransformEvent interface: existence and properties of interface object
+[PASS] RTCRtpScriptTransformer interface: existence and properties of interface object
+[FAIL] RTCRtpScriptTransform interface: existence and properties of interface object
+  assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
+[FAIL] RTCRtpScriptTransform interface object length
+  assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
+[FAIL] RTCRtpScriptTransform interface object name
+  assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
+[FAIL] RTCRtpScriptTransform interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
+[FAIL] RTCRtpScriptTransform interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
+[FAIL] RTCRtpScriptTransform interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
+[FAIL] RTCRtpSender interface: attribute transform
+  assert_true: The prototype object must have a property "transform" expected true got false
+[FAIL] RTCRtpSender interface: operation generateKeyFrame(optional sequence<DOMString>)
+  assert_own_property: interface prototype object missing non-static operation expected property "generateKeyFrame" missing
+[FAIL] RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "transform" with the proper type
+  assert_inherits: property "transform" not found in prototype chain
+[FAIL] RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "generateKeyFrame(optional sequence<DOMString>)" with the proper type
+  assert_inherits: property "generateKeyFrame" not found in prototype chain
+[FAIL] RTCRtpSender interface: calling generateKeyFrame(optional sequence<DOMString>) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError
+  assert_inherits: property "generateKeyFrame" not found in prototype chain
+[FAIL] RTCRtpReceiver interface: attribute transform
+  assert_true: The prototype object must have a property "transform" expected true got false
+[FAIL] RTCRtpReceiver interface: new RTCPeerConnection().addTransceiver('audio').receiver must inherit property "transform" with the proper type
+  assert_inherits: property "transform" not found in prototype chain
 Harness: the test ran to completion.
 

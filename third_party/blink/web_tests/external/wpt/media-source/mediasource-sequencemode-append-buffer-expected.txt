@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test sequence AppendMode appendBuffer(first media segment) assert_equals: sourceBuffer.buffered range begins where expected before EOS expected 0.095 but got 0
-FAIL Test sequence AppendMode appendBuffer(second media segment) assert_equals: Event types match. expected "update" but got "updateend"
-FAIL Test sequence AppendMode appendBuffer(second media segment, then first media segment) assert_equals: Event types match. expected "update" but got "updateend"
-Harness: the test ran to completion.
-

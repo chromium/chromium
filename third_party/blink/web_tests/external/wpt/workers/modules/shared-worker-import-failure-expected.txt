@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-PASS importScripts() on module worker should throw an exception.
-PASS Worker construction for non-existent script should dispatch an ErrorEvent.
-PASS Static import for non-existent script should dispatch an ErrorEvent.
-PASS Dynamic import for non-existent script should throw an exception.
-PASS SharedWorker construction for an invalid URL should throw an exception.
-FAIL SharedWorker construction for a file URL should throw an exception. Failed to construct 'SharedWorker': Script at 'file:///static-import-worker.js' cannot be accessed from origin 'http://web-platform.test:8001'.
+[PASS] importScripts() on module worker should throw an exception.
+[PASS] Worker construction for non-existent script should dispatch an ErrorEvent.
+[PASS] Static import for non-existent script should dispatch an ErrorEvent.
+[PASS] Dynamic import for non-existent script should throw an exception.
+[PASS] SharedWorker construction for an invalid URL should throw an exception.
+[FAIL] SharedWorker construction for a file URL should throw an exception.
+  Failed to construct 'SharedWorker': Script at 'file:///static-import-worker.js' cannot be accessed from origin 'http://web-platform.test:8001'.
 Harness: the test ran to completion.
 

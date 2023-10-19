@@ -1,9 +1,11 @@
 This is a testharness.js-based test.
-PASS calls `handleEvent` method of `EventListener`
-PASS performs `Get` every time event is dispatched
-PASS doesn't call `handleEvent` method on callable `EventListener`
-PASS rethrows errors when getting `handleEvent`
-FAIL throws if `handleEvent` is falsy and not callable assert_true: Timed out waiting for error expected true got false
-FAIL throws if `handleEvent` is thruthy and not callable assert_true: Timed out waiting for error expected true got false
+[PASS] calls `handleEvent` method of `EventListener`
+[PASS] performs `Get` every time event is dispatched
+[PASS] doesn't call `handleEvent` method on callable `EventListener`
+[PASS] rethrows errors when getting `handleEvent`
+[FAIL] throws if `handleEvent` is falsy and not callable
+  assert_true: Timed out waiting for error expected true got false
+[FAIL] throws if `handleEvent` is thruthy and not callable
+  assert_true: Timed out waiting for error expected true got false
 Harness: the test ran to completion.
 

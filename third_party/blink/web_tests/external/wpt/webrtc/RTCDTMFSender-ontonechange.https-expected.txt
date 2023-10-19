@@ -1,17 +1,18 @@
 This is a testharness.js-based test.
-PASS insertDTMF() with default duration and intertoneGap should fire tonechange events at the expected time
-PASS insertDTMF() with explicit duration and intertoneGap should fire tonechange events at the expected time
-PASS insertDTMF('') should not fire any tonechange event, including for '' tone
-PASS insertDTMF() with duration less than 40 should be clamped to 40
-PASS insertDTMF() with interToneGap less than 30 should be clamped to 30
-PASS insertDTMF with comma should delay next tonechange event for a constant 2000ms
-PASS insertDTMF() with transceiver stopped in the middle should stop future tonechange events from firing
-PASS Calling insertDTMF() in the middle of tonechange events should cause future tonechanges to be updated to new tones
-PASS Calling insertDTMF() multiple times in the middle of tonechange events should cause future tonechanges to be updated the last provided tones
-PASS Calling insertDTMF('') in the middle of tonechange events should stop future tonechange events from firing
-PASS Setting transceiver.currentDirection to recvonly in the middle of tonechange events should stop future tonechange events from firing
-PASS Tone change event constructor works
-PASS Tone change event with unexpected name should not crash
-FAIL Tone change event init optional parameters Failed to construct 'RTCDTMFToneChangeEvent': 2 arguments required, but only 1 present.
+[PASS] insertDTMF() with default duration and intertoneGap should fire tonechange events at the expected time
+[PASS] insertDTMF() with explicit duration and intertoneGap should fire tonechange events at the expected time
+[PASS] insertDTMF('') should not fire any tonechange event, including for '' tone
+[PASS] insertDTMF() with duration less than 40 should be clamped to 40
+[PASS] insertDTMF() with interToneGap less than 30 should be clamped to 30
+[PASS] insertDTMF with comma should delay next tonechange event for a constant 2000ms
+[PASS] insertDTMF() with transceiver stopped in the middle should stop future tonechange events from firing
+[PASS] Calling insertDTMF() in the middle of tonechange events should cause future tonechanges to be updated to new tones
+[PASS] Calling insertDTMF() multiple times in the middle of tonechange events should cause future tonechanges to be updated the last provided tones
+[PASS] Calling insertDTMF('') in the middle of tonechange events should stop future tonechange events from firing
+[PASS] Setting transceiver.currentDirection to recvonly in the middle of tonechange events should stop future tonechange events from firing
+[PASS] Tone change event constructor works
+[PASS] Tone change event with unexpected name should not crash
+[FAIL] Tone change event init optional parameters
+  Failed to construct 'RTCDTMFToneChangeEvent': 2 arguments required, but only 1 present.
 Harness: the test ran to completion.
 

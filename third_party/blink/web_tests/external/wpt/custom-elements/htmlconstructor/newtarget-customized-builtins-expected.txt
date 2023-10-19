@@ -1,13 +1,19 @@
 This is a testharness.js-based test.
-PASS If prototype is not object (null), derives the fallback from NewTarget's realm (customized built-in elements)
-FAIL If prototype is not object (null), derives the fallback from NewTarget's GetFunctionRealm (customized built-in elements) assert_equals: Must use the HTMLParagraphElement from the realm of NewTarget expected object "[object HTMLParagraphElement]" but got object "[object HTMLParagraphElement]"
-PASS If prototype is not object (undefined), derives the fallback from NewTarget's realm (customized built-in elements)
-FAIL If prototype is not object (undefined), derives the fallback from NewTarget's GetFunctionRealm (customized built-in elements) assert_equals: Must use the HTMLParagraphElement from the realm of NewTarget expected object "[object HTMLParagraphElement]" but got object "[object HTMLParagraphElement]"
-PASS If prototype is not object (5), derives the fallback from NewTarget's realm (customized built-in elements)
-FAIL If prototype is not object (5), derives the fallback from NewTarget's GetFunctionRealm (customized built-in elements) assert_equals: Must use the HTMLParagraphElement from the realm of NewTarget expected object "[object HTMLParagraphElement]" but got object "[object HTMLParagraphElement]"
-PASS If prototype is not object (string), derives the fallback from NewTarget's realm (customized built-in elements)
-FAIL If prototype is not object (string), derives the fallback from NewTarget's GetFunctionRealm (customized built-in elements) assert_equals: Must use the HTMLParagraphElement from the realm of NewTarget expected object "[object HTMLParagraphElement]" but got object "[object HTMLParagraphElement]"
-FAIL HTMLParagraphElement constructor must not get .prototype until it finishes its extends sanity checks, calling proxy constructor directly assert_equals: Should never have gotten .prototype expected 0 but got 1
-FAIL HTMLParagraphElement constructor must not get .prototype until it finishes its extends sanity checks, calling via Reflect assert_equals: Should never have gotten .prototype expected 0 but got 1
+[PASS] If prototype is not object (null), derives the fallback from NewTarget's realm (customized built-in elements)
+[FAIL] If prototype is not object (null), derives the fallback from NewTarget's GetFunctionRealm (customized built-in elements)
+  assert_equals: Must use the HTMLParagraphElement from the realm of NewTarget expected object "[object HTMLParagraphElement]" but got object "[object HTMLParagraphElement]"
+[PASS] If prototype is not object (undefined), derives the fallback from NewTarget's realm (customized built-in elements)
+[FAIL] If prototype is not object (undefined), derives the fallback from NewTarget's GetFunctionRealm (customized built-in elements)
+  assert_equals: Must use the HTMLParagraphElement from the realm of NewTarget expected object "[object HTMLParagraphElement]" but got object "[object HTMLParagraphElement]"
+[PASS] If prototype is not object (5), derives the fallback from NewTarget's realm (customized built-in elements)
+[FAIL] If prototype is not object (5), derives the fallback from NewTarget's GetFunctionRealm (customized built-in elements)
+  assert_equals: Must use the HTMLParagraphElement from the realm of NewTarget expected object "[object HTMLParagraphElement]" but got object "[object HTMLParagraphElement]"
+[PASS] If prototype is not object (string), derives the fallback from NewTarget's realm (customized built-in elements)
+[FAIL] If prototype is not object (string), derives the fallback from NewTarget's GetFunctionRealm (customized built-in elements)
+  assert_equals: Must use the HTMLParagraphElement from the realm of NewTarget expected object "[object HTMLParagraphElement]" but got object "[object HTMLParagraphElement]"
+[FAIL] HTMLParagraphElement constructor must not get .prototype until it finishes its extends sanity checks, calling proxy constructor directly
+  assert_equals: Should never have gotten .prototype expected 0 but got 1
+[FAIL] HTMLParagraphElement constructor must not get .prototype until it finishes its extends sanity checks, calling via Reflect
+  assert_equals: Should never have gotten .prototype expected 0 but got 1
 Harness: the test ran to completion.
 

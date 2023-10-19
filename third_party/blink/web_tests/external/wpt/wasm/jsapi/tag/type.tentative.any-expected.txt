@@ -1,6 +1,9 @@
 This is a testharness.js-based test.
-FAIL [] tag.type is not a function
-FAIL [i32 i64] tag.type is not a function
-FAIL [i32 i64 f32 f64] tag.type is not a function
+[FAIL] []
+  tag.type is not a function
+[FAIL] [i32 i64]
+  tag.type is not a function
+[FAIL] [i32 i64 f32 f64]
+  tag.type is not a function
 Harness: the test ran to completion.
 

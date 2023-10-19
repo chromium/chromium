@@ -1,6 +1,9 @@
 This is a testharness.js-based test.
-FAIL Test that the Keyboard generated click does not fire pointer or mouse events for button assert_equals: Click's pointerId has default value expected 0 but got -1
-FAIL Test that the Keyboard generated click does not fire pointer or mouse events for inputbutton assert_equals: Click's pointerId has default value expected 0 but got -1
-FAIL Test that the Keyboard generated click does not fire pointer or mouse events for label assert_equals: Click's pointerId has default value expected 0 but got -1
+[FAIL] Test that the Keyboard generated click does not fire pointer or mouse events for button
+  assert_equals: Click's pointerId has default value expected 0 but got -1
+[FAIL] Test that the Keyboard generated click does not fire pointer or mouse events for inputbutton
+  assert_equals: Click's pointerId has default value expected 0 but got -1
+[FAIL] Test that the Keyboard generated click does not fire pointer or mouse events for label
+  assert_equals: Click's pointerId has default value expected 0 but got -1
 Harness: the test ran to completion.
 

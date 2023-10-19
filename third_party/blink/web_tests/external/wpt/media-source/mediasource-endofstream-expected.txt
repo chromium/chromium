@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL MediaSource.endOfStream(): duration truncated to 0 when there are no buffered coded frames assert_equals: expected 0 but got 2
-PASS MediaSource.endOfStream(): media element notified that it now has all of the media data
-FAIL MediaSource.endOfStream(): duration and buffered range end time before and after endOfStream assert_equals: SegmentInfo duration should still roughly match mediaSource duration expected 6.548 but got 6.549
-Harness: the test ran to completion.
-

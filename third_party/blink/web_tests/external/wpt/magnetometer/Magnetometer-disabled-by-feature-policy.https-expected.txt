@@ -1,9 +1,12 @@
 This is a testharness.js-based test.
-PASS Magnetometer: Feature-Policy header magnetometer 'none' disallows the top-level document.
-PASS Magnetometer: Feature-Policy header magnetometer 'none' disallows same-origin iframes.
-PASS Magnetometer: Feature-Policy header magnetometer 'none' disallows cross-origin iframes.
-FAIL UncalibratedMagnetometer: Feature-Policy header magnetometer 'none' disallows the top-level document. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Feature-Policy header magnetometer 'none' disallows same-origin iframes. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Feature-Policy header magnetometer 'none' disallows cross-origin iframes. assert_implements: UncalibratedMagnetometer is not supported. undefined
+[PASS] Magnetometer: Feature-Policy header magnetometer 'none' disallows the top-level document.
+[PASS] Magnetometer: Feature-Policy header magnetometer 'none' disallows same-origin iframes.
+[PASS] Magnetometer: Feature-Policy header magnetometer 'none' disallows cross-origin iframes.
+[FAIL] UncalibratedMagnetometer: Feature-Policy header magnetometer 'none' disallows the top-level document.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Feature-Policy header magnetometer 'none' disallows same-origin iframes.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Feature-Policy header magnetometer 'none' disallows cross-origin iframes.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
 Harness: the test ran to completion.
 

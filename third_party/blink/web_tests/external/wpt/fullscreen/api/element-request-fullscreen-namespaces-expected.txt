@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-PASS requestFullscreen() fails for an element in null namespace
-PASS requestFullscreen() fails for an element in https://unknown.namespace namespace
-PASS requestFullscreen() fails for an element in  namespace
-PASS requestFullscreen() succeed for an element in http://www.w3.org/1999/xhtml namespace
-PASS requestFullscreen() succeed for an element in http://www.w3.org/2000/svg namespace
-FAIL requestFullscreen() succeed for an element in http://www.w3.org/1998/Math/MathML namespace promise_test: Unhandled rejection with value: object "TypeError: Element is not an HTML or SVG element"
+[PASS] requestFullscreen() fails for an element in null namespace
+[PASS] requestFullscreen() fails for an element in https://unknown.namespace namespace
+[PASS] requestFullscreen() fails for an element in  namespace
+[PASS] requestFullscreen() succeed for an element in http://www.w3.org/1999/xhtml namespace
+[PASS] requestFullscreen() succeed for an element in http://www.w3.org/2000/svg namespace
+[FAIL] requestFullscreen() succeed for an element in http://www.w3.org/1998/Math/MathML namespace
+  promise_test: Unhandled rejection with value: object "TypeError: Element is not an HTML or SVG element"
 Harness: the test ran to completion.
 

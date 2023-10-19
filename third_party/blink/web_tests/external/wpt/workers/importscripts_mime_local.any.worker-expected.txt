@@ -1,51 +1,87 @@
 This is a testharness.js-based test.
-PASS importScripts() requires scripty MIME types for data: URLs: text/javascript is allowed.
-PASS importScripts() requires scripty MIME types for data: URLs: application/javascript is allowed.
-PASS importScripts() requires scripty MIME types for data: URLs: text/ecmascript is allowed.
-FAIL importScripts() requires scripty MIME types for data: URLs: image/png is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: text/csv is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: video/mpeg is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: text/html is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: text/plain is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: application/xml is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: application/octet-stream is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: text/potato is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: potato/text is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: aaa/aaa is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: zzz/zzz is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-PASS importScripts() requires scripty MIME types for data: URLs: text/javascript; charset=utf-8 is allowed.
-PASS importScripts() requires scripty MIME types for data: URLs: text/javascript;charset=utf-8 is allowed.
-PASS importScripts() requires scripty MIME types for data: URLs: text/javascript;bla;bla is allowed.
-FAIL importScripts() requires scripty MIME types for data: URLs: text/csv; charset=utf-8 is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: text/csv;charset=utf-8 is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: text/csv;bla;bla is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: Text/html is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: text/Html is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: TeXt/HtMl is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for data: URLs: TEXT/HTML is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-PASS importScripts() requires scripty MIME types for blob: URLs: text/javascript is allowed.
-PASS importScripts() requires scripty MIME types for blob: URLs: application/javascript is allowed.
-PASS importScripts() requires scripty MIME types for blob: URLs: text/ecmascript is allowed.
-FAIL importScripts() requires scripty MIME types for blob: URLs: image/png is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: text/csv is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: video/mpeg is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: text/html is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: text/plain is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: application/xml is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: application/octet-stream is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: text/potato is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: potato/text is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: aaa/aaa is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: zzz/zzz is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-PASS importScripts() requires scripty MIME types for blob: URLs: text/javascript; charset=utf-8 is allowed.
-PASS importScripts() requires scripty MIME types for blob: URLs: text/javascript;charset=utf-8 is allowed.
-PASS importScripts() requires scripty MIME types for blob: URLs: text/javascript;bla;bla is allowed.
-FAIL importScripts() requires scripty MIME types for blob: URLs: text/csv; charset=utf-8 is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: text/csv;charset=utf-8 is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: text/csv;bla;bla is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: Text/html is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: text/Html is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: TeXt/HtMl is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-FAIL importScripts() requires scripty MIME types for blob: URLs: TEXT/HTML is blocked. assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[PASS] importScripts() requires scripty MIME types for data: URLs: text/javascript is allowed.
+[PASS] importScripts() requires scripty MIME types for data: URLs: application/javascript is allowed.
+[PASS] importScripts() requires scripty MIME types for data: URLs: text/ecmascript is allowed.
+[FAIL] importScripts() requires scripty MIME types for data: URLs: image/png is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: text/csv is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: video/mpeg is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: text/html is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: text/plain is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: application/xml is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: application/octet-stream is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: text/potato is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: potato/text is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: aaa/aaa is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: zzz/zzz is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[PASS] importScripts() requires scripty MIME types for data: URLs: text/javascript; charset=utf-8 is allowed.
+[PASS] importScripts() requires scripty MIME types for data: URLs: text/javascript;charset=utf-8 is allowed.
+[PASS] importScripts() requires scripty MIME types for data: URLs: text/javascript;bla;bla is allowed.
+[FAIL] importScripts() requires scripty MIME types for data: URLs: text/csv; charset=utf-8 is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: text/csv;charset=utf-8 is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: text/csv;bla;bla is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: Text/html is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: text/Html is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: TeXt/HtMl is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for data: URLs: TEXT/HTML is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[PASS] importScripts() requires scripty MIME types for blob: URLs: text/javascript is allowed.
+[PASS] importScripts() requires scripty MIME types for blob: URLs: application/javascript is allowed.
+[PASS] importScripts() requires scripty MIME types for blob: URLs: text/ecmascript is allowed.
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: image/png is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: text/csv is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: video/mpeg is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: text/html is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: text/plain is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: application/xml is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: application/octet-stream is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: text/potato is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: potato/text is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: aaa/aaa is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: zzz/zzz is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[PASS] importScripts() requires scripty MIME types for blob: URLs: text/javascript; charset=utf-8 is allowed.
+[PASS] importScripts() requires scripty MIME types for blob: URLs: text/javascript;charset=utf-8 is allowed.
+[PASS] importScripts() requires scripty MIME types for blob: URLs: text/javascript;bla;bla is allowed.
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: text/csv; charset=utf-8 is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: text/csv;charset=utf-8 is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: text/csv;bla;bla is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: Text/html is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: text/Html is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: TeXt/HtMl is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
+[FAIL] importScripts() requires scripty MIME types for blob: URLs: TEXT/HTML is blocked.
+  assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
 Harness: the test ran to completion.
 

@@ -1,37 +1,48 @@
 This is a testharness.js-based test.
-PASS Add ICE candidate before setting remote description should reject with InvalidStateError
-PASS addIceCandidate({"candidate":"","sdpMid":null,"sdpMLineIndex":null}) works
-FAIL addIceCandidate({"candidate":"","sdpMid":null,"sdpMLineIndex":null}) adds a=end-of-candidates to both m-sections assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
-PASS addIceCandidate(undefined) works
-FAIL addIceCandidate(undefined) adds a=end-of-candidates to both m-sections assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
-PASS addIceCandidate(null) works
-FAIL addIceCandidate(null) adds a=end-of-candidates to both m-sections assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
-PASS addIceCandidate({}) works
-FAIL addIceCandidate({}) adds a=end-of-candidates to both m-sections assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
-FAIL addIceCandidate({}) in stable should work, and add a=end-of-candidates to both m-sections assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
-FAIL addIceCandidate({usernameFragment: usernameFragment1, sdpMid: sdpMid1}) should work, and add a=end-of-candidates to the first m-section assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
-FAIL addIceCandidate({usernameFragment: usernameFragment2, sdpMLineIndex: 1}) should work, and add a=end-of-candidates to the first m-section assert_true: expected true got false
-FAIL addIceCandidate({usernameFragment: "no such ufrag"}) should not work assert_unreached: Should have rejected: undefined Reached unreachable code
-PASS Add ICE candidate after setting remote description should succeed
-PASS Add ICE candidate with RTCIceCandidate should succeed
-PASS Add candidate with only valid sdpMid should succeed
-PASS Add candidate with only valid sdpMid and RTCIceCandidate should succeed
-PASS Add candidate with only valid sdpMLineIndex should succeed
-PASS addIceCandidate with first sdpMid and sdpMLineIndex add candidate to first media stream
-PASS addIceCandidate with second sdpMid and sdpMLineIndex should add candidate to second media stream
-PASS Add candidate for first media stream with null usernameFragment should add candidate to first media stream
-PASS Adding multiple candidates should add candidates to their corresponding media stream
-FAIL Add with empty candidate string (end of candidates) should succeed assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
-PASS Add candidate with both sdpMid and sdpMLineIndex manually set to null should reject with TypeError
-PASS addIceCandidate with a candidate and neither sdpMid nor sdpMLineIndex should reject with TypeError
-PASS Add candidate with only valid candidate string should reject with TypeError
-PASS Add candidate with invalid candidate string and both sdpMid and sdpMLineIndex null should reject with TypeError
-PASS Add candidate with invalid sdpMid should reject with OperationError
-PASS Add candidate with invalid sdpMLineIndex should reject with OperationError
-PASS Invalid sdpMLineIndex should be ignored if valid sdpMid is provided
-PASS Add candidate for media stream 2 with null usernameFragment should succeed
-FAIL Add candidate with invalid usernameFragment should reject with OperationError assert_unreached: Should have rejected: undefined Reached unreachable code
-PASS Add candidate with invalid candidate string should reject with OperationError
-FAIL Add candidate with sdpMid belonging to different usernameFragment should reject with OperationError assert_unreached: Should have rejected: undefined Reached unreachable code
+[PASS] Add ICE candidate before setting remote description should reject with InvalidStateError
+[PASS] addIceCandidate({"candidate":"","sdpMid":null,"sdpMLineIndex":null}) works
+[FAIL] addIceCandidate({"candidate":"","sdpMid":null,"sdpMLineIndex":null}) adds a=end-of-candidates to both m-sections
+  assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
+[PASS] addIceCandidate(undefined) works
+[FAIL] addIceCandidate(undefined) adds a=end-of-candidates to both m-sections
+  assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
+[PASS] addIceCandidate(null) works
+[FAIL] addIceCandidate(null) adds a=end-of-candidates to both m-sections
+  assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
+[PASS] addIceCandidate({}) works
+[FAIL] addIceCandidate({}) adds a=end-of-candidates to both m-sections
+  assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
+[FAIL] addIceCandidate({}) in stable should work, and add a=end-of-candidates to both m-sections
+  assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
+[FAIL] addIceCandidate({usernameFragment: usernameFragment1, sdpMid: sdpMid1}) should work, and add a=end-of-candidates to the first m-section
+  assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
+[FAIL] addIceCandidate({usernameFragment: usernameFragment2, sdpMLineIndex: 1}) should work, and add a=end-of-candidates to the first m-section
+  assert_true: expected true got false
+[FAIL] addIceCandidate({usernameFragment: "no such ufrag"}) should not work
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[PASS] Add ICE candidate after setting remote description should succeed
+[PASS] Add ICE candidate with RTCIceCandidate should succeed
+[PASS] Add candidate with only valid sdpMid should succeed
+[PASS] Add candidate with only valid sdpMid and RTCIceCandidate should succeed
+[PASS] Add candidate with only valid sdpMLineIndex should succeed
+[PASS] addIceCandidate with first sdpMid and sdpMLineIndex add candidate to first media stream
+[PASS] addIceCandidate with second sdpMid and sdpMLineIndex should add candidate to second media stream
+[PASS] Add candidate for first media stream with null usernameFragment should add candidate to first media stream
+[PASS] Adding multiple candidates should add candidates to their corresponding media stream
+[FAIL] Add with empty candidate string (end of candidates) should succeed
+  assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
+[PASS] Add candidate with both sdpMid and sdpMLineIndex manually set to null should reject with TypeError
+[PASS] addIceCandidate with a candidate and neither sdpMid nor sdpMLineIndex should reject with TypeError
+[PASS] Add candidate with only valid candidate string should reject with TypeError
+[PASS] Add candidate with invalid candidate string and both sdpMid and sdpMLineIndex null should reject with TypeError
+[PASS] Add candidate with invalid sdpMid should reject with OperationError
+[PASS] Add candidate with invalid sdpMLineIndex should reject with OperationError
+[PASS] Invalid sdpMLineIndex should be ignored if valid sdpMid is provided
+[PASS] Add candidate for media stream 2 with null usernameFragment should succeed
+[FAIL] Add candidate with invalid usernameFragment should reject with OperationError
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[PASS] Add candidate with invalid candidate string should reject with OperationError
+[FAIL] Add candidate with sdpMid belonging to different usernameFragment should reject with OperationError
+  assert_unreached: Should have rejected: undefined Reached unreachable code
 Harness: the test ran to completion.
 

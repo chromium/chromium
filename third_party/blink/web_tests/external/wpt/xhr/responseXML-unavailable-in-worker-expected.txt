@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL XMLHttpRequest's responseXML property should not be exposed in workers. assert_false: responseXML should not be on the prototype. expected false got true
+[FAIL] XMLHttpRequest's responseXML property should not be exposed in workers.
+  assert_false: responseXML should not be on the prototype. expected false got true
 Harness: the test ran to completion.
 

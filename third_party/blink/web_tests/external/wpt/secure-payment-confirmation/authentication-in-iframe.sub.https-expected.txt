@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL SPC authentication ceremony in cross-origin iframe promise_test: Unhandled rejection with value: object "Error: set_spc_transaction_mode() is not implemented by testdriver-vendor.js"
-FAIL SPC authentication ceremony in cross-origin iframe without payment permission promise_test: Unhandled rejection with value: object "Error: set_spc_transaction_mode() is not implemented by testdriver-vendor.js"
+[FAIL] SPC authentication ceremony in cross-origin iframe
+  promise_test: Unhandled rejection with value: object "Error: set_spc_transaction_mode() is not implemented by testdriver-vendor.js"
+[FAIL] SPC authentication ceremony in cross-origin iframe without payment permission
+  promise_test: Unhandled rejection with value: object "Error: set_spc_transaction_mode() is not implemented by testdriver-vendor.js"
 Harness: the test ran to completion.
 

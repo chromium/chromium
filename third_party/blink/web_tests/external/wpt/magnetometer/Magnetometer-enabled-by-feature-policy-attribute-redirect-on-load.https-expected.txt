@@ -1,7 +1,9 @@
 This is a testharness.js-based test.
-PASS Magnetometer: Feature-Policy allow='magnetometer' attribute allows same-origin relocation
-PASS Magnetometer: Feature-Policy allow='magnetometer' attribute disallows cross-origin relocation
-FAIL UncalibratedMagnetometer: Feature-Policy allow='magnetometer' attribute allows same-origin relocation assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Feature-Policy allow='magnetometer' attribute disallows cross-origin relocation assert_implements: UncalibratedMagnetometer is not supported. undefined
+[PASS] Magnetometer: Feature-Policy allow='magnetometer' attribute allows same-origin relocation
+[PASS] Magnetometer: Feature-Policy allow='magnetometer' attribute disallows cross-origin relocation
+[FAIL] UncalibratedMagnetometer: Feature-Policy allow='magnetometer' attribute allows same-origin relocation
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Feature-Policy allow='magnetometer' attribute disallows cross-origin relocation
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
 Harness: the test ran to completion.
 

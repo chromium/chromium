@@ -1,152 +1,153 @@
 This is a testharness.js-based test.
 Found 148 tests; 147 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS idl_test setup
-PASS idl_test validation
-PASS Partial interface Performance: original interface defined
-PASS Partial interface Performance: valid exposure set
-PASS Partial interface Performance: member names are unique
-PASS Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
-PASS Partial interface mixin WindowOrWorkerGlobalScope: member names are unique
-PASS Partial interface Window: member names are unique
-PASS Window includes GlobalEventHandlers: member names are unique
-PASS Window includes WindowEventHandlers: member names are unique
-PASS Window includes WindowOrWorkerGlobalScope: member names are unique
-PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
-PASS Window includes AnimationFrameProvider: member names are unique
-PASS Window includes WindowSessionStorage: member names are unique
-PASS Window includes WindowLocalStorage: member names are unique
-PASS PerformanceNavigationTiming interface: existence and properties of interface object
-PASS PerformanceNavigationTiming interface object length
-PASS PerformanceNavigationTiming interface object name
-PASS PerformanceNavigationTiming interface: existence and properties of interface prototype object
-PASS PerformanceNavigationTiming interface: existence and properties of interface prototype object's "constructor" property
-PASS PerformanceNavigationTiming interface: existence and properties of interface prototype object's @@unscopables property
-PASS PerformanceNavigationTiming interface: attribute unloadEventStart
-PASS PerformanceNavigationTiming interface: attribute unloadEventEnd
-PASS PerformanceNavigationTiming interface: attribute domInteractive
-PASS PerformanceNavigationTiming interface: attribute domContentLoadedEventStart
-PASS PerformanceNavigationTiming interface: attribute domContentLoadedEventEnd
-PASS PerformanceNavigationTiming interface: attribute domComplete
-PASS PerformanceNavigationTiming interface: attribute loadEventStart
-PASS PerformanceNavigationTiming interface: attribute loadEventEnd
-PASS PerformanceNavigationTiming interface: attribute type
-PASS PerformanceNavigationTiming interface: attribute redirectCount
-PASS PerformanceNavigationTiming interface: attribute criticalCHRestart
-PASS PerformanceNavigationTiming interface: operation toJSON()
-PASS PerformanceNavigationTiming must be primary interface of performance.getEntriesByType("navigation")[0]
-PASS Stringification of performance.getEntriesByType("navigation")[0]
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "unloadEventStart" with the proper type
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "unloadEventEnd" with the proper type
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "domInteractive" with the proper type
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "domContentLoadedEventStart" with the proper type
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "domContentLoadedEventEnd" with the proper type
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "domComplete" with the proper type
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "loadEventStart" with the proper type
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "loadEventEnd" with the proper type
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "type" with the proper type
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "redirectCount" with the proper type
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "criticalCHRestart" with the proper type
-PASS PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "toJSON()" with the proper type
-FAIL PerformanceNavigationTiming interface: default toJSON operation on performance.getEntriesByType("navigation")[0] Type RenderBlockingStatusType not found
-PASS PerformanceTiming interface: existence and properties of interface object
-PASS PerformanceTiming interface object length
-PASS PerformanceTiming interface object name
-PASS PerformanceTiming interface: existence and properties of interface prototype object
-PASS PerformanceTiming interface: existence and properties of interface prototype object's "constructor" property
-PASS PerformanceTiming interface: existence and properties of interface prototype object's @@unscopables property
-PASS PerformanceTiming interface: attribute navigationStart
-PASS PerformanceTiming interface: attribute unloadEventStart
-PASS PerformanceTiming interface: attribute unloadEventEnd
-PASS PerformanceTiming interface: attribute redirectStart
-PASS PerformanceTiming interface: attribute redirectEnd
-PASS PerformanceTiming interface: attribute fetchStart
-PASS PerformanceTiming interface: attribute domainLookupStart
-PASS PerformanceTiming interface: attribute domainLookupEnd
-PASS PerformanceTiming interface: attribute connectStart
-PASS PerformanceTiming interface: attribute connectEnd
-PASS PerformanceTiming interface: attribute secureConnectionStart
-PASS PerformanceTiming interface: attribute requestStart
-PASS PerformanceTiming interface: attribute responseStart
-PASS PerformanceTiming interface: attribute responseEnd
-PASS PerformanceTiming interface: attribute domLoading
-PASS PerformanceTiming interface: attribute domInteractive
-PASS PerformanceTiming interface: attribute domContentLoadedEventStart
-PASS PerformanceTiming interface: attribute domContentLoadedEventEnd
-PASS PerformanceTiming interface: attribute domComplete
-PASS PerformanceTiming interface: attribute loadEventStart
-PASS PerformanceTiming interface: attribute loadEventEnd
-PASS PerformanceTiming interface: operation toJSON()
-PASS PerformanceTiming must be primary interface of performance.timing
-PASS Stringification of performance.timing
-PASS PerformanceTiming interface: performance.timing must inherit property "navigationStart" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "unloadEventStart" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "unloadEventEnd" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "redirectStart" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "redirectEnd" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "fetchStart" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "domainLookupStart" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "domainLookupEnd" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "connectStart" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "connectEnd" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "secureConnectionStart" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "requestStart" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "responseStart" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "responseEnd" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "domLoading" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "domInteractive" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "domContentLoadedEventStart" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "domContentLoadedEventEnd" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "domComplete" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "loadEventStart" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "loadEventEnd" with the proper type
-PASS PerformanceTiming interface: performance.timing must inherit property "toJSON()" with the proper type
-PASS PerformanceTiming interface: default toJSON operation on performance.timing
-PASS PerformanceNavigation interface: existence and properties of interface object
-PASS PerformanceNavigation interface object length
-PASS PerformanceNavigation interface object name
-PASS PerformanceNavigation interface: existence and properties of interface prototype object
-PASS PerformanceNavigation interface: existence and properties of interface prototype object's "constructor" property
-PASS PerformanceNavigation interface: existence and properties of interface prototype object's @@unscopables property
-PASS PerformanceNavigation interface: constant TYPE_NAVIGATE on interface object
-PASS PerformanceNavigation interface: constant TYPE_NAVIGATE on interface prototype object
-PASS PerformanceNavigation interface: constant TYPE_RELOAD on interface object
-PASS PerformanceNavigation interface: constant TYPE_RELOAD on interface prototype object
-PASS PerformanceNavigation interface: constant TYPE_BACK_FORWARD on interface object
-PASS PerformanceNavigation interface: constant TYPE_BACK_FORWARD on interface prototype object
-PASS PerformanceNavigation interface: constant TYPE_RESERVED on interface object
-PASS PerformanceNavigation interface: constant TYPE_RESERVED on interface prototype object
-PASS PerformanceNavigation interface: attribute type
-PASS PerformanceNavigation interface: attribute redirectCount
-PASS PerformanceNavigation interface: operation toJSON()
-PASS PerformanceNavigation must be primary interface of performance.navigation
-PASS Stringification of performance.navigation
-PASS PerformanceNavigation interface: performance.navigation must inherit property "TYPE_NAVIGATE" with the proper type
-PASS PerformanceNavigation interface: performance.navigation must inherit property "TYPE_RELOAD" with the proper type
-PASS PerformanceNavigation interface: performance.navigation must inherit property "TYPE_BACK_FORWARD" with the proper type
-PASS PerformanceNavigation interface: performance.navigation must inherit property "TYPE_RESERVED" with the proper type
-PASS PerformanceNavigation interface: performance.navigation must inherit property "type" with the proper type
-PASS PerformanceNavigation interface: performance.navigation must inherit property "redirectCount" with the proper type
-PASS PerformanceNavigation interface: performance.navigation must inherit property "toJSON()" with the proper type
-PASS PerformanceNavigation interface: default toJSON operation on performance.navigation
-PASS Performance interface: existence and properties of interface object
-PASS Performance interface object length
-PASS Performance interface object name
-PASS Performance interface: existence and properties of interface prototype object
-PASS Performance interface: existence and properties of interface prototype object's "constructor" property
-PASS Performance interface: existence and properties of interface prototype object's @@unscopables property
-PASS Performance interface: operation now()
-PASS Performance interface: attribute timeOrigin
-PASS Performance interface: operation toJSON()
-PASS Performance interface: attribute timing
-PASS Performance interface: attribute navigation
-PASS Performance must be primary interface of performance
-PASS Stringification of performance
-PASS Performance interface: performance must inherit property "now()" with the proper type
-PASS Performance interface: performance must inherit property "timeOrigin" with the proper type
-PASS Performance interface: performance must inherit property "toJSON()" with the proper type
-PASS Performance interface: default toJSON operation on performance
-PASS Performance interface: performance must inherit property "timing" with the proper type
-PASS Performance interface: performance must inherit property "navigation" with the proper type
-PASS Window interface: attribute performance
+[PASS] idl_test setup
+[PASS] idl_test validation
+[PASS] Partial interface Performance: original interface defined
+[PASS] Partial interface Performance: valid exposure set
+[PASS] Partial interface Performance: member names are unique
+[PASS] Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
+[PASS] Partial interface mixin WindowOrWorkerGlobalScope: member names are unique
+[PASS] Partial interface Window: member names are unique
+[PASS] Window includes GlobalEventHandlers: member names are unique
+[PASS] Window includes WindowEventHandlers: member names are unique
+[PASS] Window includes WindowOrWorkerGlobalScope: member names are unique
+[PASS] WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
+[PASS] Window includes AnimationFrameProvider: member names are unique
+[PASS] Window includes WindowSessionStorage: member names are unique
+[PASS] Window includes WindowLocalStorage: member names are unique
+[PASS] PerformanceNavigationTiming interface: existence and properties of interface object
+[PASS] PerformanceNavigationTiming interface object length
+[PASS] PerformanceNavigationTiming interface object name
+[PASS] PerformanceNavigationTiming interface: existence and properties of interface prototype object
+[PASS] PerformanceNavigationTiming interface: existence and properties of interface prototype object's "constructor" property
+[PASS] PerformanceNavigationTiming interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] PerformanceNavigationTiming interface: attribute unloadEventStart
+[PASS] PerformanceNavigationTiming interface: attribute unloadEventEnd
+[PASS] PerformanceNavigationTiming interface: attribute domInteractive
+[PASS] PerformanceNavigationTiming interface: attribute domContentLoadedEventStart
+[PASS] PerformanceNavigationTiming interface: attribute domContentLoadedEventEnd
+[PASS] PerformanceNavigationTiming interface: attribute domComplete
+[PASS] PerformanceNavigationTiming interface: attribute loadEventStart
+[PASS] PerformanceNavigationTiming interface: attribute loadEventEnd
+[PASS] PerformanceNavigationTiming interface: attribute type
+[PASS] PerformanceNavigationTiming interface: attribute redirectCount
+[PASS] PerformanceNavigationTiming interface: attribute criticalCHRestart
+[PASS] PerformanceNavigationTiming interface: operation toJSON()
+[PASS] PerformanceNavigationTiming must be primary interface of performance.getEntriesByType("navigation")[0]
+[PASS] Stringification of performance.getEntriesByType("navigation")[0]
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "unloadEventStart" with the proper type
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "unloadEventEnd" with the proper type
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "domInteractive" with the proper type
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "domContentLoadedEventStart" with the proper type
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "domContentLoadedEventEnd" with the proper type
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "domComplete" with the proper type
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "loadEventStart" with the proper type
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "loadEventEnd" with the proper type
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "type" with the proper type
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "redirectCount" with the proper type
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "criticalCHRestart" with the proper type
+[PASS] PerformanceNavigationTiming interface: performance.getEntriesByType("navigation")[0] must inherit property "toJSON()" with the proper type
+[FAIL] PerformanceNavigationTiming interface: default toJSON operation on performance.getEntriesByType("navigation")[0]
+  Type RenderBlockingStatusType not found
+[PASS] PerformanceTiming interface: existence and properties of interface object
+[PASS] PerformanceTiming interface object length
+[PASS] PerformanceTiming interface object name
+[PASS] PerformanceTiming interface: existence and properties of interface prototype object
+[PASS] PerformanceTiming interface: existence and properties of interface prototype object's "constructor" property
+[PASS] PerformanceTiming interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] PerformanceTiming interface: attribute navigationStart
+[PASS] PerformanceTiming interface: attribute unloadEventStart
+[PASS] PerformanceTiming interface: attribute unloadEventEnd
+[PASS] PerformanceTiming interface: attribute redirectStart
+[PASS] PerformanceTiming interface: attribute redirectEnd
+[PASS] PerformanceTiming interface: attribute fetchStart
+[PASS] PerformanceTiming interface: attribute domainLookupStart
+[PASS] PerformanceTiming interface: attribute domainLookupEnd
+[PASS] PerformanceTiming interface: attribute connectStart
+[PASS] PerformanceTiming interface: attribute connectEnd
+[PASS] PerformanceTiming interface: attribute secureConnectionStart
+[PASS] PerformanceTiming interface: attribute requestStart
+[PASS] PerformanceTiming interface: attribute responseStart
+[PASS] PerformanceTiming interface: attribute responseEnd
+[PASS] PerformanceTiming interface: attribute domLoading
+[PASS] PerformanceTiming interface: attribute domInteractive
+[PASS] PerformanceTiming interface: attribute domContentLoadedEventStart
+[PASS] PerformanceTiming interface: attribute domContentLoadedEventEnd
+[PASS] PerformanceTiming interface: attribute domComplete
+[PASS] PerformanceTiming interface: attribute loadEventStart
+[PASS] PerformanceTiming interface: attribute loadEventEnd
+[PASS] PerformanceTiming interface: operation toJSON()
+[PASS] PerformanceTiming must be primary interface of performance.timing
+[PASS] Stringification of performance.timing
+[PASS] PerformanceTiming interface: performance.timing must inherit property "navigationStart" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "unloadEventStart" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "unloadEventEnd" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "redirectStart" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "redirectEnd" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "fetchStart" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "domainLookupStart" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "domainLookupEnd" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "connectStart" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "connectEnd" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "secureConnectionStart" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "requestStart" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "responseStart" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "responseEnd" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "domLoading" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "domInteractive" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "domContentLoadedEventStart" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "domContentLoadedEventEnd" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "domComplete" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "loadEventStart" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "loadEventEnd" with the proper type
+[PASS] PerformanceTiming interface: performance.timing must inherit property "toJSON()" with the proper type
+[PASS] PerformanceTiming interface: default toJSON operation on performance.timing
+[PASS] PerformanceNavigation interface: existence and properties of interface object
+[PASS] PerformanceNavigation interface object length
+[PASS] PerformanceNavigation interface object name
+[PASS] PerformanceNavigation interface: existence and properties of interface prototype object
+[PASS] PerformanceNavigation interface: existence and properties of interface prototype object's "constructor" property
+[PASS] PerformanceNavigation interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] PerformanceNavigation interface: constant TYPE_NAVIGATE on interface object
+[PASS] PerformanceNavigation interface: constant TYPE_NAVIGATE on interface prototype object
+[PASS] PerformanceNavigation interface: constant TYPE_RELOAD on interface object
+[PASS] PerformanceNavigation interface: constant TYPE_RELOAD on interface prototype object
+[PASS] PerformanceNavigation interface: constant TYPE_BACK_FORWARD on interface object
+[PASS] PerformanceNavigation interface: constant TYPE_BACK_FORWARD on interface prototype object
+[PASS] PerformanceNavigation interface: constant TYPE_RESERVED on interface object
+[PASS] PerformanceNavigation interface: constant TYPE_RESERVED on interface prototype object
+[PASS] PerformanceNavigation interface: attribute type
+[PASS] PerformanceNavigation interface: attribute redirectCount
+[PASS] PerformanceNavigation interface: operation toJSON()
+[PASS] PerformanceNavigation must be primary interface of performance.navigation
+[PASS] Stringification of performance.navigation
+[PASS] PerformanceNavigation interface: performance.navigation must inherit property "TYPE_NAVIGATE" with the proper type
+[PASS] PerformanceNavigation interface: performance.navigation must inherit property "TYPE_RELOAD" with the proper type
+[PASS] PerformanceNavigation interface: performance.navigation must inherit property "TYPE_BACK_FORWARD" with the proper type
+[PASS] PerformanceNavigation interface: performance.navigation must inherit property "TYPE_RESERVED" with the proper type
+[PASS] PerformanceNavigation interface: performance.navigation must inherit property "type" with the proper type
+[PASS] PerformanceNavigation interface: performance.navigation must inherit property "redirectCount" with the proper type
+[PASS] PerformanceNavigation interface: performance.navigation must inherit property "toJSON()" with the proper type
+[PASS] PerformanceNavigation interface: default toJSON operation on performance.navigation
+[PASS] Performance interface: existence and properties of interface object
+[PASS] Performance interface object length
+[PASS] Performance interface object name
+[PASS] Performance interface: existence and properties of interface prototype object
+[PASS] Performance interface: existence and properties of interface prototype object's "constructor" property
+[PASS] Performance interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] Performance interface: operation now()
+[PASS] Performance interface: attribute timeOrigin
+[PASS] Performance interface: operation toJSON()
+[PASS] Performance interface: attribute timing
+[PASS] Performance interface: attribute navigation
+[PASS] Performance must be primary interface of performance
+[PASS] Stringification of performance
+[PASS] Performance interface: performance must inherit property "now()" with the proper type
+[PASS] Performance interface: performance must inherit property "timeOrigin" with the proper type
+[PASS] Performance interface: performance must inherit property "toJSON()" with the proper type
+[PASS] Performance interface: default toJSON operation on performance
+[PASS] Performance interface: performance must inherit property "timing" with the proper type
+[PASS] Performance interface: performance must inherit property "navigation" with the proper type
+[PASS] Window interface: attribute performance
 Harness: the test ran to completion.
 

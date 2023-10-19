@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL rtf-mime-type assert_true: mime type for .rtf files should be 'application/rtf' or 'text/rtf'. Got: application/msword expected true got false
-Harness: the test ran to completion.
-

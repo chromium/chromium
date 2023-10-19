@@ -1,7 +1,11 @@
 This is a testharness.js-based test.
-FAIL TextDecoderStream: write in detached realm should succeed promise_test: Unhandled rejection with value: object "TypeError: invalid realm"
-FAIL TextEncoderStream: write in detached realm should succeed promise_test: Unhandled rejection with value: object "TypeError: invalid realm"
-FAIL TextEncoderStream: close in detached realm should succeed promise_test: Unhandled rejection with value: object "TypeError: invalid realm"
-FAIL TextDecoderStream: close in detached realm should succeed promise_test: Unhandled rejection with value: object "TypeError: invalid realm"
+[FAIL] TextDecoderStream: write in detached realm should succeed
+  promise_test: Unhandled rejection with value: object "TypeError: invalid realm"
+[FAIL] TextEncoderStream: write in detached realm should succeed
+  promise_test: Unhandled rejection with value: object "TypeError: invalid realm"
+[FAIL] TextEncoderStream: close in detached realm should succeed
+  promise_test: Unhandled rejection with value: object "TypeError: invalid realm"
+[FAIL] TextDecoderStream: close in detached realm should succeed
+  promise_test: Unhandled rejection with value: object "TypeError: invalid realm"
 Harness: the test ran to completion.
 

@@ -1,19 +1,27 @@
 This is a testharness.js-based test.
-PASS leakyRelu float32 1D tensor default options / sync
-PASS leakyRelu float32 2D tensor default options / sync
-PASS leakyRelu float32 3D tensor default options / sync
-PASS leakyRelu float32 4D tensor default options / sync
-PASS leakyRelu float32 5D tensor default options / sync
-PASS leakyRelu float32 1D tensor negative options.alpha / sync
-PASS leakyRelu float32 2D tensor positive options.alpha / sync
-PASS leakyRelu float32 5D tensor options.alpha=0.0 / sync
-FAIL leakyRelu float32 1D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL leakyRelu float32 2D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL leakyRelu float32 3D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL leakyRelu float32 4D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL leakyRelu float32 5D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL leakyRelu float32 1D tensor negative options.alpha / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL leakyRelu float32 2D tensor positive options.alpha / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL leakyRelu float32 5D tensor options.alpha=0.0 / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[PASS] leakyRelu float32 1D tensor default options / sync
+[PASS] leakyRelu float32 2D tensor default options / sync
+[PASS] leakyRelu float32 3D tensor default options / sync
+[PASS] leakyRelu float32 4D tensor default options / sync
+[PASS] leakyRelu float32 5D tensor default options / sync
+[PASS] leakyRelu float32 1D tensor negative options.alpha / sync
+[PASS] leakyRelu float32 2D tensor positive options.alpha / sync
+[PASS] leakyRelu float32 5D tensor options.alpha=0.0 / sync
+[FAIL] leakyRelu float32 1D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] leakyRelu float32 2D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] leakyRelu float32 3D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] leakyRelu float32 4D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] leakyRelu float32 5D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] leakyRelu float32 1D tensor negative options.alpha / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] leakyRelu float32 2D tensor positive options.alpha / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] leakyRelu float32 5D tensor options.alpha=0.0 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 Harness: the test ran to completion.
 

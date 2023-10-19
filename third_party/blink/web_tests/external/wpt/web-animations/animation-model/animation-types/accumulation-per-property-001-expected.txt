@@ -1,317 +1,319 @@
 This is a testharness.js-based test.
 Found 313 tests; 311 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS Setup
-PASS align-content (type: discrete) has testAccumulation function
-PASS align-content: "flex-end" onto "flex-start"
-PASS align-content: "flex-start" onto "flex-end"
-PASS align-items (type: discrete) has testAccumulation function
-PASS align-items: "flex-end" onto "flex-start"
-PASS align-items: "flex-start" onto "flex-end"
-PASS align-self (type: discrete) has testAccumulation function
-PASS align-self: "flex-end" onto "flex-start"
-PASS align-self: "flex-start" onto "flex-end"
-PASS backface-visibility (type: discrete) has testAccumulation function
-PASS backface-visibility: "hidden" onto "visible"
-PASS backface-visibility: "visible" onto "hidden"
-PASS background-attachment (type: discrete) has testAccumulation function
-PASS background-attachment: "local" onto "fixed"
-PASS background-attachment: "fixed" onto "local"
-PASS background-color (type: color) has testAccumulation function
-PASS background-color supports animating as color of rgb() with overflowed  from and to values
-PASS background-color supports animating as color of #RGB
-PASS background-color supports animating as color of hsl()
-PASS background-color supports animating as color of #RGBa
-PASS background-color supports animating as color of rgba()
-PASS background-color supports animating as color of hsla()
-PASS background-blend-mode (type: discrete) has testAccumulation function
-PASS background-blend-mode: "screen" onto "multiply"
-PASS background-blend-mode: "multiply" onto "screen"
-PASS background-clip (type: discrete) has testAccumulation function
-PASS background-clip: "content-box" onto "padding-box"
-PASS background-clip: "padding-box" onto "content-box"
-PASS background-image (type: discrete) has testAccumulation function
-PASS background-image: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
-PASS background-image: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
-PASS background-origin (type: discrete) has testAccumulation function
-PASS background-origin: "content-box" onto "padding-box"
-PASS background-origin: "padding-box" onto "content-box"
-PASS background-repeat (type: discrete) has testAccumulation function
-PASS background-repeat: "round" onto "space"
-PASS background-repeat: "space" onto "round"
-PASS border-bottom-color (type: color) has testAccumulation function
-PASS border-bottom-color supports animating as color of rgb() with overflowed  from and to values
-PASS border-bottom-color supports animating as color of #RGB
-PASS border-bottom-color supports animating as color of hsl()
-PASS border-bottom-color supports animating as color of #RGBa
-PASS border-bottom-color supports animating as color of rgba()
-PASS border-bottom-color supports animating as color of hsla()
-PASS border-bottom-style (type: discrete) has testAccumulation function
-PASS border-bottom-style: "solid" onto "dotted"
-PASS border-bottom-style: "dotted" onto "solid"
-PASS border-bottom-width (type: length) has testAccumulation function
-PASS border-bottom-width: length
-PASS border-bottom-width: length of rem
-PASS border-collapse (type: discrete) has testAccumulation function
-PASS border-collapse: "separate" onto "collapse"
-PASS border-collapse: "collapse" onto "separate"
-PASS border-image-repeat (type: discrete) has testAccumulation function
-PASS border-image-repeat: "round space" onto "stretch repeat"
-PASS border-image-repeat: "stretch repeat" onto "round space"
-PASS border-image-source (type: discrete) has testAccumulation function
-PASS border-image-source: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
-PASS border-image-source: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
-PASS border-left-color (type: color) has testAccumulation function
-PASS border-left-color supports animating as color of rgb() with overflowed  from and to values
-PASS border-left-color supports animating as color of #RGB
-PASS border-left-color supports animating as color of hsl()
-PASS border-left-color supports animating as color of #RGBa
-PASS border-left-color supports animating as color of rgba()
-PASS border-left-color supports animating as color of hsla()
-PASS border-left-style (type: discrete) has testAccumulation function
-PASS border-left-style: "solid" onto "dotted"
-PASS border-left-style: "dotted" onto "solid"
-PASS border-left-width (type: length) has testAccumulation function
-PASS border-left-width: length
-PASS border-left-width: length of rem
-PASS border-right-color (type: color) has testAccumulation function
-PASS border-right-color supports animating as color of rgb() with overflowed  from and to values
-PASS border-right-color supports animating as color of #RGB
-PASS border-right-color supports animating as color of hsl()
-PASS border-right-color supports animating as color of #RGBa
-PASS border-right-color supports animating as color of rgba()
-PASS border-right-color supports animating as color of hsla()
-PASS border-right-style (type: discrete) has testAccumulation function
-PASS border-right-style: "solid" onto "dotted"
-PASS border-right-style: "dotted" onto "solid"
-PASS border-right-width (type: length) has testAccumulation function
-PASS border-right-width: length
-PASS border-right-width: length of rem
-PASS border-spacing (type: lengthPair) has testAccumulation function
-PASS border-spacing: length pair
-PASS border-spacing: length pair of rem
-PASS border-top-color (type: color) has testAccumulation function
-PASS border-top-color supports animating as color of rgb() with overflowed  from and to values
-PASS border-top-color supports animating as color of #RGB
-PASS border-top-color supports animating as color of hsl()
-PASS border-top-color supports animating as color of #RGBa
-PASS border-top-color supports animating as color of rgba()
-PASS border-top-color supports animating as color of hsla()
-PASS border-top-style (type: discrete) has testAccumulation function
-PASS border-top-style: "solid" onto "dotted"
-PASS border-top-style: "dotted" onto "solid"
-PASS border-top-width (type: length) has testAccumulation function
-PASS border-top-width: length
-PASS border-top-width: length of rem
-PASS box-shadow (type: boxShadowList) has testAccumulation function
-PASS box-shadow: shadow
-PASS box-sizing (type: discrete) has testAccumulation function
-PASS box-sizing: "border-box" onto "content-box"
-PASS box-sizing: "content-box" onto "border-box"
-PASS caption-side (type: discrete) has testAccumulation function
-PASS caption-side: "bottom" onto "top"
-PASS caption-side: "top" onto "bottom"
-PASS caret-color (type: color) has testAccumulation function
-PASS caret-color supports animating as color of rgb() with overflowed  from and to values
-PASS caret-color supports animating as color of #RGB
-PASS caret-color supports animating as color of hsl()
-PASS caret-color supports animating as color of #RGBa
-PASS caret-color supports animating as color of rgba()
-PASS caret-color supports animating as color of hsla()
-PASS clear (type: discrete) has testAccumulation function
-PASS clear: "right" onto "left"
-PASS clear: "left" onto "right"
-PASS clip (type: rect) has testAccumulation function
-PASS clip: rect
-PASS clip (type: discrete) has testAccumulation function
-PASS clip: "auto" onto "rect(10px, 10px, 10px, 10px)"
-PASS clip: "rect(10px, 10px, 10px, 10px)" onto "auto"
-PASS clip: "rect(10px, 10px, 10px, auto)" onto "rect(10px, 10px, 10px, 10px)"
-PASS clip: "rect(10px, 10px, 10px, 10px)" onto "rect(10px, 10px, 10px, auto)"
-PASS clip-rule (type: discrete) has testAccumulation function
-PASS clip-rule: "nonzero" onto "evenodd"
-PASS clip-rule: "evenodd" onto "nonzero"
-PASS color (type: color) has testAccumulation function
-PASS color supports animating as color of rgb() with overflowed  from and to values
-PASS color supports animating as color of #RGB
-PASS color supports animating as color of hsl()
-PASS color supports animating as color of #RGBa
-PASS color supports animating as color of rgba()
-PASS color supports animating as color of hsla()
-PASS color-interpolation (type: discrete) has testAccumulation function
-PASS color-interpolation: "auto" onto "linearrgb"
-PASS color-interpolation: "linearrgb" onto "auto"
-PASS color-interpolation-filters (type: discrete) has testAccumulation function
-PASS color-interpolation-filters: "linearrgb" onto "srgb"
-PASS color-interpolation-filters: "srgb" onto "linearrgb"
-PASS column-count (type: positiveInteger) has testAccumulation function
-PASS column-count: positive integer
-PASS column-count (type: discrete) has testAccumulation function
-PASS column-count: "10" onto "auto"
-PASS column-count: "auto" onto "10"
-PASS column-gap (type: length) has testAccumulation function
-PASS column-gap: length
-PASS column-gap: length of rem
-PASS column-gap (type: discrete) has testAccumulation function
-PASS column-gap: "200px" onto "normal"
-PASS column-gap: "normal" onto "200px"
-PASS column-rule-color (type: color) has testAccumulation function
-PASS column-rule-color supports animating as color of rgb() with overflowed  from and to values
-PASS column-rule-color supports animating as color of #RGB
-PASS column-rule-color supports animating as color of hsl()
-PASS column-rule-color supports animating as color of #RGBa
-PASS column-rule-color supports animating as color of rgba()
-PASS column-rule-color supports animating as color of hsla()
-PASS column-fill (type: discrete) has testAccumulation function
-PASS column-fill: "balance" onto "auto"
-PASS column-fill: "auto" onto "balance"
-PASS column-rule-style (type: discrete) has testAccumulation function
-PASS column-rule-style: "dotted" onto "none"
-PASS column-rule-style: "none" onto "dotted"
-PASS column-rule-width (type: length) has testAccumulation function
-PASS column-rule-width: length
-PASS column-rule-width: length of rem
-PASS column-width (type: length) has testAccumulation function
-PASS column-width: length
-PASS column-width: length of rem
-PASS column-width (type: discrete) has testAccumulation function
-PASS column-width: "1px" onto "auto"
-PASS column-width: "auto" onto "1px"
-PASS counter-increment (type: discrete) has testAccumulation function
-PASS counter-increment: "ident-2 2" onto "ident-1 1"
-PASS counter-increment: "ident-1 1" onto "ident-2 2"
-PASS counter-reset (type: discrete) has testAccumulation function
-PASS counter-reset: "ident-2 2" onto "ident-1 1"
-PASS counter-reset: "ident-1 1" onto "ident-2 2"
-PASS cursor (type: discrete) has testAccumulation function
-PASS cursor: "wait" onto "pointer"
-PASS cursor: "pointer" onto "wait"
-PASS dominant-baseline (type: discrete) has testAccumulation function
-PASS dominant-baseline: "alphabetic" onto "ideographic"
-PASS dominant-baseline: "ideographic" onto "alphabetic"
-PASS empty-cells (type: discrete) has testAccumulation function
-PASS empty-cells: "hide" onto "show"
-PASS empty-cells: "show" onto "hide"
-PASS fill-opacity (type: opacity) has testAccumulation function
-PASS fill-opacity: [0, 1] number
-PASS fill-opacity: [0, 1] number (clamped)
-PASS fill-rule (type: discrete) has testAccumulation function
-PASS fill-rule: "nonzero" onto "evenodd"
-PASS fill-rule: "evenodd" onto "nonzero"
-PASS filter (type: filterList) has testAccumulation function
-PASS filter: same ordered filter functions
-PASS filter: mismatched ordered filter functions
-PASS flex-basis (type: lengthPercentageOrCalc) has testAccumulation function
-PASS flex-basis: length
-PASS flex-basis: length of rem
-PASS flex-basis: percentage
-PASS flex-basis: units "%" onto "px"
-PASS flex-basis: units "px" onto "%"
-PASS flex-basis: units "rem" onto "%"
-PASS flex-basis: units "%" onto "rem"
-PASS flex-basis: units "rem" onto "em"
-PASS flex-basis: units "em" onto "rem"
-PASS flex-basis: units "calc" onto "px"
-PASS flex-basis: calc
-PASS flex-basis (type: discrete) has testAccumulation function
-PASS flex-basis: "10px" onto "auto"
-PASS flex-basis: "auto" onto "10px"
-PASS flex-direction (type: discrete) has testAccumulation function
-PASS flex-direction: "row-reverse" onto "row"
-PASS flex-direction: "row" onto "row-reverse"
-PASS flex-grow (type: positiveNumber) has testAccumulation function
-PASS flex-grow: positive number
-PASS flex-shrink (type: positiveNumber) has testAccumulation function
-PASS flex-shrink: positive number
-PASS flex-wrap (type: discrete) has testAccumulation function
-PASS flex-wrap: "wrap" onto "nowrap"
-PASS flex-wrap: "nowrap" onto "wrap"
-PASS flood-color (type: color) has testAccumulation function
-PASS flood-color supports animating as color of rgb() with overflowed  from and to values
-PASS flood-color supports animating as color of #RGB
-PASS flood-color supports animating as color of hsl()
-PASS flood-color supports animating as color of #RGBa
-PASS flood-color supports animating as color of rgba()
-PASS flood-color supports animating as color of hsla()
-PASS flood-opacity (type: opacity) has testAccumulation function
-PASS flood-opacity: [0, 1] number
-PASS flood-opacity: [0, 1] number (clamped)
-PASS font-stretch (type: percentage) has testAccumulation function
-PASS font-stretch: percentage
-PASS font-style (type: discrete) has testAccumulation function
-FAIL font-style: "oblique" onto "italic" assert_equals: The value should be oblique at 0ms expected "oblique" but got "italic"
-PASS font-style: "italic" onto "oblique"
-PASS float (type: discrete) has testAccumulation function
-PASS float: "right" onto "left"
-PASS float: "left" onto "right"
-PASS font-family (type: discrete) has testAccumulation function
-PASS font-family: "verdana" onto "helvetica"
-PASS font-family: "helvetica" onto "verdana"
-PASS font-feature-settings (type: discrete) has testAccumulation function
-PASS font-feature-settings: "normal" onto ""liga" 5"
-PASS font-feature-settings: ""liga" 5" onto "normal"
-PASS font-kerning (type: discrete) has testAccumulation function
-PASS font-kerning: "normal" onto "auto"
-PASS font-kerning: "auto" onto "normal"
-PASS font-synthesis (type: discrete) has testAccumulation function
-PASS font-synthesis: "weight style" onto "none"
-PASS font-synthesis: "none" onto "weight style"
-PASS font-variant-alternates (type: discrete) has testAccumulation function
-PASS font-variant-alternates: "stylistic(unknown)" onto "swash(unknown)"
-PASS font-variant-alternates: "swash(unknown)" onto "stylistic(unknown)"
-PASS font-variant-caps (type: discrete) has testAccumulation function
-PASS font-variant-caps: "unicase" onto "small-caps"
-PASS font-variant-caps: "small-caps" onto "unicase"
-PASS font-variant-east-asian (type: discrete) has testAccumulation function
-PASS font-variant-east-asian: "proportional-width" onto "full-width"
-PASS font-variant-east-asian: "full-width" onto "proportional-width"
-PASS font-variant-ligatures (type: discrete) has testAccumulation function
-PASS font-variant-ligatures: "no-common-ligatures" onto "common-ligatures"
-PASS font-variant-ligatures: "common-ligatures" onto "no-common-ligatures"
-PASS font-variant-numeric (type: discrete) has testAccumulation function
-PASS font-variant-numeric: "oldstyle-nums" onto "lining-nums"
-PASS font-variant-numeric: "lining-nums" onto "oldstyle-nums"
-PASS font-variant-position (type: discrete) has testAccumulation function
-PASS font-variant-position: "super" onto "sub"
-PASS font-variant-position: "sub" onto "super"
-PASS font-variation-settings (type: fontVariationSettings) has testAccumulation function
-PASS font-variation-settings with composite type accumulate
-PASS font-variation-settings (type: discrete) has testAccumulation function
-PASS font-variation-settings: ""wdth" 5" onto ""wdth" 1, "wght" 1.1"
-PASS font-variation-settings: ""wdth" 1, "wght" 1.1" onto ""wdth" 5"
-PASS font-variation-settings: "normal" onto ""wdth" 5"
-PASS font-variation-settings: ""wdth" 5" onto "normal"
-PASS grid-auto-columns (type: discrete) has testAccumulation function
-PASS grid-auto-columns: "5px" onto "1px"
-PASS grid-auto-columns: "1px" onto "5px"
-PASS grid-auto-flow (type: discrete) has testAccumulation function
-PASS grid-auto-flow: "column" onto "row"
-PASS grid-auto-flow: "row" onto "column"
-PASS grid-auto-rows (type: discrete) has testAccumulation function
-PASS grid-auto-rows: "5px" onto "1px"
-PASS grid-auto-rows: "1px" onto "5px"
-PASS grid-column-end (type: discrete) has testAccumulation function
-PASS grid-column-end: "5" onto "1"
-PASS grid-column-end: "1" onto "5"
-PASS grid-column-start (type: discrete) has testAccumulation function
-PASS grid-column-start: "5" onto "1"
-PASS grid-column-start: "1" onto "5"
-PASS grid-row-end (type: discrete) has testAccumulation function
-PASS grid-row-end: "5" onto "1"
-PASS grid-row-end: "1" onto "5"
-PASS grid-row-start (type: discrete) has testAccumulation function
-PASS grid-row-start: "5" onto "1"
-PASS grid-row-start: "1" onto "5"
-PASS grid-template-areas (type: discrete) has testAccumulation function
-PASS grid-template-areas: "none" onto "". . a b" ". .a b""
-FAIL grid-template-areas: "". . a b" ". .a b"" onto "none" assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\". . a b\" \". .a b\"" but got "\". . a b\" \". . a b\""
-PASS hyphens (type: discrete) has testAccumulation function
-PASS hyphens: "none" onto "manual"
-PASS hyphens: "manual" onto "none"
-PASS image-orientation (type: discrete) has testAccumulation function
-PASS image-orientation: "from-image" onto "none"
-PASS image-orientation: "none" onto "from-image"
-PASS initial-letter (type: discrete) has testAccumulation function
-PASS initial-letter: "3 4" onto "1 2"
-PASS initial-letter: "1 2" onto "3 4"
+[PASS] Setup
+[PASS] align-content (type: discrete) has testAccumulation function
+[PASS] align-content: "flex-end" onto "flex-start"
+[PASS] align-content: "flex-start" onto "flex-end"
+[PASS] align-items (type: discrete) has testAccumulation function
+[PASS] align-items: "flex-end" onto "flex-start"
+[PASS] align-items: "flex-start" onto "flex-end"
+[PASS] align-self (type: discrete) has testAccumulation function
+[PASS] align-self: "flex-end" onto "flex-start"
+[PASS] align-self: "flex-start" onto "flex-end"
+[PASS] backface-visibility (type: discrete) has testAccumulation function
+[PASS] backface-visibility: "hidden" onto "visible"
+[PASS] backface-visibility: "visible" onto "hidden"
+[PASS] background-attachment (type: discrete) has testAccumulation function
+[PASS] background-attachment: "local" onto "fixed"
+[PASS] background-attachment: "fixed" onto "local"
+[PASS] background-color (type: color) has testAccumulation function
+[PASS] background-color supports animating as color of rgb() with overflowed  from and to values
+[PASS] background-color supports animating as color of #RGB
+[PASS] background-color supports animating as color of hsl()
+[PASS] background-color supports animating as color of #RGBa
+[PASS] background-color supports animating as color of rgba()
+[PASS] background-color supports animating as color of hsla()
+[PASS] background-blend-mode (type: discrete) has testAccumulation function
+[PASS] background-blend-mode: "screen" onto "multiply"
+[PASS] background-blend-mode: "multiply" onto "screen"
+[PASS] background-clip (type: discrete) has testAccumulation function
+[PASS] background-clip: "content-box" onto "padding-box"
+[PASS] background-clip: "padding-box" onto "content-box"
+[PASS] background-image (type: discrete) has testAccumulation function
+[PASS] background-image: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
+[PASS] background-image: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
+[PASS] background-origin (type: discrete) has testAccumulation function
+[PASS] background-origin: "content-box" onto "padding-box"
+[PASS] background-origin: "padding-box" onto "content-box"
+[PASS] background-repeat (type: discrete) has testAccumulation function
+[PASS] background-repeat: "round" onto "space"
+[PASS] background-repeat: "space" onto "round"
+[PASS] border-bottom-color (type: color) has testAccumulation function
+[PASS] border-bottom-color supports animating as color of rgb() with overflowed  from and to values
+[PASS] border-bottom-color supports animating as color of #RGB
+[PASS] border-bottom-color supports animating as color of hsl()
+[PASS] border-bottom-color supports animating as color of #RGBa
+[PASS] border-bottom-color supports animating as color of rgba()
+[PASS] border-bottom-color supports animating as color of hsla()
+[PASS] border-bottom-style (type: discrete) has testAccumulation function
+[PASS] border-bottom-style: "solid" onto "dotted"
+[PASS] border-bottom-style: "dotted" onto "solid"
+[PASS] border-bottom-width (type: length) has testAccumulation function
+[PASS] border-bottom-width: length
+[PASS] border-bottom-width: length of rem
+[PASS] border-collapse (type: discrete) has testAccumulation function
+[PASS] border-collapse: "separate" onto "collapse"
+[PASS] border-collapse: "collapse" onto "separate"
+[PASS] border-image-repeat (type: discrete) has testAccumulation function
+[PASS] border-image-repeat: "round space" onto "stretch repeat"
+[PASS] border-image-repeat: "stretch repeat" onto "round space"
+[PASS] border-image-source (type: discrete) has testAccumulation function
+[PASS] border-image-source: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
+[PASS] border-image-source: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
+[PASS] border-left-color (type: color) has testAccumulation function
+[PASS] border-left-color supports animating as color of rgb() with overflowed  from and to values
+[PASS] border-left-color supports animating as color of #RGB
+[PASS] border-left-color supports animating as color of hsl()
+[PASS] border-left-color supports animating as color of #RGBa
+[PASS] border-left-color supports animating as color of rgba()
+[PASS] border-left-color supports animating as color of hsla()
+[PASS] border-left-style (type: discrete) has testAccumulation function
+[PASS] border-left-style: "solid" onto "dotted"
+[PASS] border-left-style: "dotted" onto "solid"
+[PASS] border-left-width (type: length) has testAccumulation function
+[PASS] border-left-width: length
+[PASS] border-left-width: length of rem
+[PASS] border-right-color (type: color) has testAccumulation function
+[PASS] border-right-color supports animating as color of rgb() with overflowed  from and to values
+[PASS] border-right-color supports animating as color of #RGB
+[PASS] border-right-color supports animating as color of hsl()
+[PASS] border-right-color supports animating as color of #RGBa
+[PASS] border-right-color supports animating as color of rgba()
+[PASS] border-right-color supports animating as color of hsla()
+[PASS] border-right-style (type: discrete) has testAccumulation function
+[PASS] border-right-style: "solid" onto "dotted"
+[PASS] border-right-style: "dotted" onto "solid"
+[PASS] border-right-width (type: length) has testAccumulation function
+[PASS] border-right-width: length
+[PASS] border-right-width: length of rem
+[PASS] border-spacing (type: lengthPair) has testAccumulation function
+[PASS] border-spacing: length pair
+[PASS] border-spacing: length pair of rem
+[PASS] border-top-color (type: color) has testAccumulation function
+[PASS] border-top-color supports animating as color of rgb() with overflowed  from and to values
+[PASS] border-top-color supports animating as color of #RGB
+[PASS] border-top-color supports animating as color of hsl()
+[PASS] border-top-color supports animating as color of #RGBa
+[PASS] border-top-color supports animating as color of rgba()
+[PASS] border-top-color supports animating as color of hsla()
+[PASS] border-top-style (type: discrete) has testAccumulation function
+[PASS] border-top-style: "solid" onto "dotted"
+[PASS] border-top-style: "dotted" onto "solid"
+[PASS] border-top-width (type: length) has testAccumulation function
+[PASS] border-top-width: length
+[PASS] border-top-width: length of rem
+[PASS] box-shadow (type: boxShadowList) has testAccumulation function
+[PASS] box-shadow: shadow
+[PASS] box-sizing (type: discrete) has testAccumulation function
+[PASS] box-sizing: "border-box" onto "content-box"
+[PASS] box-sizing: "content-box" onto "border-box"
+[PASS] caption-side (type: discrete) has testAccumulation function
+[PASS] caption-side: "bottom" onto "top"
+[PASS] caption-side: "top" onto "bottom"
+[PASS] caret-color (type: color) has testAccumulation function
+[PASS] caret-color supports animating as color of rgb() with overflowed  from and to values
+[PASS] caret-color supports animating as color of #RGB
+[PASS] caret-color supports animating as color of hsl()
+[PASS] caret-color supports animating as color of #RGBa
+[PASS] caret-color supports animating as color of rgba()
+[PASS] caret-color supports animating as color of hsla()
+[PASS] clear (type: discrete) has testAccumulation function
+[PASS] clear: "right" onto "left"
+[PASS] clear: "left" onto "right"
+[PASS] clip (type: rect) has testAccumulation function
+[PASS] clip: rect
+[PASS] clip (type: discrete) has testAccumulation function
+[PASS] clip: "auto" onto "rect(10px, 10px, 10px, 10px)"
+[PASS] clip: "rect(10px, 10px, 10px, 10px)" onto "auto"
+[PASS] clip: "rect(10px, 10px, 10px, auto)" onto "rect(10px, 10px, 10px, 10px)"
+[PASS] clip: "rect(10px, 10px, 10px, 10px)" onto "rect(10px, 10px, 10px, auto)"
+[PASS] clip-rule (type: discrete) has testAccumulation function
+[PASS] clip-rule: "nonzero" onto "evenodd"
+[PASS] clip-rule: "evenodd" onto "nonzero"
+[PASS] color (type: color) has testAccumulation function
+[PASS] color supports animating as color of rgb() with overflowed  from and to values
+[PASS] color supports animating as color of #RGB
+[PASS] color supports animating as color of hsl()
+[PASS] color supports animating as color of #RGBa
+[PASS] color supports animating as color of rgba()
+[PASS] color supports animating as color of hsla()
+[PASS] color-interpolation (type: discrete) has testAccumulation function
+[PASS] color-interpolation: "auto" onto "linearrgb"
+[PASS] color-interpolation: "linearrgb" onto "auto"
+[PASS] color-interpolation-filters (type: discrete) has testAccumulation function
+[PASS] color-interpolation-filters: "linearrgb" onto "srgb"
+[PASS] color-interpolation-filters: "srgb" onto "linearrgb"
+[PASS] column-count (type: positiveInteger) has testAccumulation function
+[PASS] column-count: positive integer
+[PASS] column-count (type: discrete) has testAccumulation function
+[PASS] column-count: "10" onto "auto"
+[PASS] column-count: "auto" onto "10"
+[PASS] column-gap (type: length) has testAccumulation function
+[PASS] column-gap: length
+[PASS] column-gap: length of rem
+[PASS] column-gap (type: discrete) has testAccumulation function
+[PASS] column-gap: "200px" onto "normal"
+[PASS] column-gap: "normal" onto "200px"
+[PASS] column-rule-color (type: color) has testAccumulation function
+[PASS] column-rule-color supports animating as color of rgb() with overflowed  from and to values
+[PASS] column-rule-color supports animating as color of #RGB
+[PASS] column-rule-color supports animating as color of hsl()
+[PASS] column-rule-color supports animating as color of #RGBa
+[PASS] column-rule-color supports animating as color of rgba()
+[PASS] column-rule-color supports animating as color of hsla()
+[PASS] column-fill (type: discrete) has testAccumulation function
+[PASS] column-fill: "balance" onto "auto"
+[PASS] column-fill: "auto" onto "balance"
+[PASS] column-rule-style (type: discrete) has testAccumulation function
+[PASS] column-rule-style: "dotted" onto "none"
+[PASS] column-rule-style: "none" onto "dotted"
+[PASS] column-rule-width (type: length) has testAccumulation function
+[PASS] column-rule-width: length
+[PASS] column-rule-width: length of rem
+[PASS] column-width (type: length) has testAccumulation function
+[PASS] column-width: length
+[PASS] column-width: length of rem
+[PASS] column-width (type: discrete) has testAccumulation function
+[PASS] column-width: "1px" onto "auto"
+[PASS] column-width: "auto" onto "1px"
+[PASS] counter-increment (type: discrete) has testAccumulation function
+[PASS] counter-increment: "ident-2 2" onto "ident-1 1"
+[PASS] counter-increment: "ident-1 1" onto "ident-2 2"
+[PASS] counter-reset (type: discrete) has testAccumulation function
+[PASS] counter-reset: "ident-2 2" onto "ident-1 1"
+[PASS] counter-reset: "ident-1 1" onto "ident-2 2"
+[PASS] cursor (type: discrete) has testAccumulation function
+[PASS] cursor: "wait" onto "pointer"
+[PASS] cursor: "pointer" onto "wait"
+[PASS] dominant-baseline (type: discrete) has testAccumulation function
+[PASS] dominant-baseline: "alphabetic" onto "ideographic"
+[PASS] dominant-baseline: "ideographic" onto "alphabetic"
+[PASS] empty-cells (type: discrete) has testAccumulation function
+[PASS] empty-cells: "hide" onto "show"
+[PASS] empty-cells: "show" onto "hide"
+[PASS] fill-opacity (type: opacity) has testAccumulation function
+[PASS] fill-opacity: [0, 1] number
+[PASS] fill-opacity: [0, 1] number (clamped)
+[PASS] fill-rule (type: discrete) has testAccumulation function
+[PASS] fill-rule: "nonzero" onto "evenodd"
+[PASS] fill-rule: "evenodd" onto "nonzero"
+[PASS] filter (type: filterList) has testAccumulation function
+[PASS] filter: same ordered filter functions
+[PASS] filter: mismatched ordered filter functions
+[PASS] flex-basis (type: lengthPercentageOrCalc) has testAccumulation function
+[PASS] flex-basis: length
+[PASS] flex-basis: length of rem
+[PASS] flex-basis: percentage
+[PASS] flex-basis: units "%" onto "px"
+[PASS] flex-basis: units "px" onto "%"
+[PASS] flex-basis: units "rem" onto "%"
+[PASS] flex-basis: units "%" onto "rem"
+[PASS] flex-basis: units "rem" onto "em"
+[PASS] flex-basis: units "em" onto "rem"
+[PASS] flex-basis: units "calc" onto "px"
+[PASS] flex-basis: calc
+[PASS] flex-basis (type: discrete) has testAccumulation function
+[PASS] flex-basis: "10px" onto "auto"
+[PASS] flex-basis: "auto" onto "10px"
+[PASS] flex-direction (type: discrete) has testAccumulation function
+[PASS] flex-direction: "row-reverse" onto "row"
+[PASS] flex-direction: "row" onto "row-reverse"
+[PASS] flex-grow (type: positiveNumber) has testAccumulation function
+[PASS] flex-grow: positive number
+[PASS] flex-shrink (type: positiveNumber) has testAccumulation function
+[PASS] flex-shrink: positive number
+[PASS] flex-wrap (type: discrete) has testAccumulation function
+[PASS] flex-wrap: "wrap" onto "nowrap"
+[PASS] flex-wrap: "nowrap" onto "wrap"
+[PASS] flood-color (type: color) has testAccumulation function
+[PASS] flood-color supports animating as color of rgb() with overflowed  from and to values
+[PASS] flood-color supports animating as color of #RGB
+[PASS] flood-color supports animating as color of hsl()
+[PASS] flood-color supports animating as color of #RGBa
+[PASS] flood-color supports animating as color of rgba()
+[PASS] flood-color supports animating as color of hsla()
+[PASS] flood-opacity (type: opacity) has testAccumulation function
+[PASS] flood-opacity: [0, 1] number
+[PASS] flood-opacity: [0, 1] number (clamped)
+[PASS] font-stretch (type: percentage) has testAccumulation function
+[PASS] font-stretch: percentage
+[PASS] font-style (type: discrete) has testAccumulation function
+[FAIL] font-style: "oblique" onto "italic"
+  assert_equals: The value should be oblique at 0ms expected "oblique" but got "italic"
+[PASS] font-style: "italic" onto "oblique"
+[PASS] float (type: discrete) has testAccumulation function
+[PASS] float: "right" onto "left"
+[PASS] float: "left" onto "right"
+[PASS] font-family (type: discrete) has testAccumulation function
+[PASS] font-family: "verdana" onto "helvetica"
+[PASS] font-family: "helvetica" onto "verdana"
+[PASS] font-feature-settings (type: discrete) has testAccumulation function
+[PASS] font-feature-settings: "normal" onto ""liga" 5"
+[PASS] font-feature-settings: ""liga" 5" onto "normal"
+[PASS] font-kerning (type: discrete) has testAccumulation function
+[PASS] font-kerning: "normal" onto "auto"
+[PASS] font-kerning: "auto" onto "normal"
+[PASS] font-synthesis (type: discrete) has testAccumulation function
+[PASS] font-synthesis: "weight style" onto "none"
+[PASS] font-synthesis: "none" onto "weight style"
+[PASS] font-variant-alternates (type: discrete) has testAccumulation function
+[PASS] font-variant-alternates: "stylistic(unknown)" onto "swash(unknown)"
+[PASS] font-variant-alternates: "swash(unknown)" onto "stylistic(unknown)"
+[PASS] font-variant-caps (type: discrete) has testAccumulation function
+[PASS] font-variant-caps: "unicase" onto "small-caps"
+[PASS] font-variant-caps: "small-caps" onto "unicase"
+[PASS] font-variant-east-asian (type: discrete) has testAccumulation function
+[PASS] font-variant-east-asian: "proportional-width" onto "full-width"
+[PASS] font-variant-east-asian: "full-width" onto "proportional-width"
+[PASS] font-variant-ligatures (type: discrete) has testAccumulation function
+[PASS] font-variant-ligatures: "no-common-ligatures" onto "common-ligatures"
+[PASS] font-variant-ligatures: "common-ligatures" onto "no-common-ligatures"
+[PASS] font-variant-numeric (type: discrete) has testAccumulation function
+[PASS] font-variant-numeric: "oldstyle-nums" onto "lining-nums"
+[PASS] font-variant-numeric: "lining-nums" onto "oldstyle-nums"
+[PASS] font-variant-position (type: discrete) has testAccumulation function
+[PASS] font-variant-position: "super" onto "sub"
+[PASS] font-variant-position: "sub" onto "super"
+[PASS] font-variation-settings (type: fontVariationSettings) has testAccumulation function
+[PASS] font-variation-settings with composite type accumulate
+[PASS] font-variation-settings (type: discrete) has testAccumulation function
+[PASS] font-variation-settings: ""wdth" 5" onto ""wdth" 1, "wght" 1.1"
+[PASS] font-variation-settings: ""wdth" 1, "wght" 1.1" onto ""wdth" 5"
+[PASS] font-variation-settings: "normal" onto ""wdth" 5"
+[PASS] font-variation-settings: ""wdth" 5" onto "normal"
+[PASS] grid-auto-columns (type: discrete) has testAccumulation function
+[PASS] grid-auto-columns: "5px" onto "1px"
+[PASS] grid-auto-columns: "1px" onto "5px"
+[PASS] grid-auto-flow (type: discrete) has testAccumulation function
+[PASS] grid-auto-flow: "column" onto "row"
+[PASS] grid-auto-flow: "row" onto "column"
+[PASS] grid-auto-rows (type: discrete) has testAccumulation function
+[PASS] grid-auto-rows: "5px" onto "1px"
+[PASS] grid-auto-rows: "1px" onto "5px"
+[PASS] grid-column-end (type: discrete) has testAccumulation function
+[PASS] grid-column-end: "5" onto "1"
+[PASS] grid-column-end: "1" onto "5"
+[PASS] grid-column-start (type: discrete) has testAccumulation function
+[PASS] grid-column-start: "5" onto "1"
+[PASS] grid-column-start: "1" onto "5"
+[PASS] grid-row-end (type: discrete) has testAccumulation function
+[PASS] grid-row-end: "5" onto "1"
+[PASS] grid-row-end: "1" onto "5"
+[PASS] grid-row-start (type: discrete) has testAccumulation function
+[PASS] grid-row-start: "5" onto "1"
+[PASS] grid-row-start: "1" onto "5"
+[PASS] grid-template-areas (type: discrete) has testAccumulation function
+[PASS] grid-template-areas: "none" onto "". . a b" ". .a b""
+[FAIL] grid-template-areas: "". . a b" ". .a b"" onto "none"
+  assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\". . a b\" \". .a b\"" but got "\". . a b\" \". . a b\""
+[PASS] hyphens (type: discrete) has testAccumulation function
+[PASS] hyphens: "none" onto "manual"
+[PASS] hyphens: "manual" onto "none"
+[PASS] image-orientation (type: discrete) has testAccumulation function
+[PASS] image-orientation: "from-image" onto "none"
+[PASS] image-orientation: "none" onto "from-image"
+[PASS] initial-letter (type: discrete) has testAccumulation function
+[PASS] initial-letter: "3 4" onto "1 2"
+[PASS] initial-letter: "1 2" onto "3 4"
 Harness: the test ran to completion.
 

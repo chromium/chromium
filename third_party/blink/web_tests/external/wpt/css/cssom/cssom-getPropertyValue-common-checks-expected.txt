@@ -1,14 +1,18 @@
 This is a testharness.js-based test.
-PASS All properties can serialize 'initial'
-FAIL All properties (except 'all') can serialize their initial value (computed) assert_array_equals: lengths differ, expected array [] length 0, got [["grid", "none / none / none / row / auto / auto"], ["page-orientation", ""], ["popover-hide-delay", "infinity * 1s"], ["size", ""]] length 4
-FAIL All properties (except 'all') can serialize their initial value (specified) assert_array_equals: lengths differ, expected array [] length 0, got [["grid-column-gap", "normal", ""], ["grid-gap", "normal normal", ""], ["grid-row-gap", "normal", ""]] length 3
-PASS All shorthands can serialize their longhands set to 'initial'
-FAIL All shorthands (except 'all') can serialize their longhands set to their initial value assert_array_equals: lengths differ, expected array [] length 0, got [["border", ""], ["grid-gap", ""]] length 2
-PASS All aliases can serialize target property set to 'initial'
-FAIL All aliases can serialize target property set to its initial value assert_array_equals: lengths differ, expected array [] length 0, got [["grid-column-gap", ""], ["grid-row-gap", ""]] length 2
-PASS Can't serialize shorthand when longhands are set to different css-wide keywords
-PASS Can't serialize shorthand when longhands have different priority
-PASS Can't serialize shorthand set to 'initial' when some longhand is missing
-PASS Can't serialize shorthand set to initial value when some longhand is missing
+[PASS] All properties can serialize 'initial'
+[FAIL] All properties (except 'all') can serialize their initial value (computed)
+  assert_array_equals: lengths differ, expected array [] length 0, got [["grid", "none / none / none / row / auto / auto"], ["page-orientation", ""], ["popover-hide-delay", "infinity * 1s"], ["size", ""]] length 4
+[FAIL] All properties (except 'all') can serialize their initial value (specified)
+  assert_array_equals: lengths differ, expected array [] length 0, got [["grid-column-gap", "normal", ""], ["grid-gap", "normal normal", ""], ["grid-row-gap", "normal", ""]] length 3
+[PASS] All shorthands can serialize their longhands set to 'initial'
+[FAIL] All shorthands (except 'all') can serialize their longhands set to their initial value
+  assert_array_equals: lengths differ, expected array [] length 0, got [["border", ""], ["grid-gap", ""]] length 2
+[PASS] All aliases can serialize target property set to 'initial'
+[FAIL] All aliases can serialize target property set to its initial value
+  assert_array_equals: lengths differ, expected array [] length 0, got [["grid-column-gap", ""], ["grid-row-gap", ""]] length 2
+[PASS] Can't serialize shorthand when longhands are set to different css-wide keywords
+[PASS] Can't serialize shorthand when longhands have different priority
+[PASS] Can't serialize shorthand set to 'initial' when some longhand is missing
+[PASS] Can't serialize shorthand set to initial value when some longhand is missing
 Harness: the test ran to completion.
 

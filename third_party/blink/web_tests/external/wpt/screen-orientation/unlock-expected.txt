@@ -1,8 +1,9 @@
 This is a testharness.js-based test.
-PASS unlock() doesn't throw when there is no lock
-PASS unlock() returns a void value
-PASS unlock() doesn't throw when there is no lock with fullscreen
-PASS unlock() aborts a pending lock request
-FAIL unlock() aborts a pending lock request across documents assert_unreached: Should have rejected: undefined Reached unreachable code
+[PASS] unlock() doesn't throw when there is no lock
+[PASS] unlock() returns a void value
+[PASS] unlock() doesn't throw when there is no lock with fullscreen
+[PASS] unlock() aborts a pending lock request
+[FAIL] unlock() aborts a pending lock request across documents
+  assert_unreached: Should have rejected: undefined Reached unreachable code
 Harness: the test ran to completion.
 

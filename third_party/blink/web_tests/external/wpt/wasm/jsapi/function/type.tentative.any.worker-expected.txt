@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL Check empty results and parameters WebAssembly.Function is not a constructor
-FAIL Check all types WebAssembly.Function is not a constructor
+[FAIL] Check empty results and parameters
+  WebAssembly.Function is not a constructor
+[FAIL] Check all types
+  WebAssembly.Function is not a constructor
 Harness: the test ran to completion.
 

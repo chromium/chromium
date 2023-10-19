@@ -1,26 +1,34 @@
 This is a testharness.js-based test.
-PASS Calling send() when data channel is in connecting state should throw InvalidStateError
-PASS Datachannel should be able to send simple string and receive as string
-PASS Datachannel should be able to send unicode string and receive as unicode string
-PASS Datachannel should ignore binaryType and always receive string message as string
-PASS Datachannel should be able to send an empty string and receive an empty string
-PASS Datachannel should be able to send Uint8Array message and receive as ArrayBuffer
-PASS Datachannel should be able to send ArrayBuffer message and receive as ArrayBuffer
-PASS Datachannel should be able to send an empty ArrayBuffer message and receive as ArrayBuffer
-FAIL Datachannel should be able to send Blob message and receive as ArrayBuffer promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
-FAIL Datachannel should be able to send ArrayBuffer message and receive as Blob promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to set the 'binaryType' property on 'RTCDataChannel': Blob support not implemented yet"
-FAIL Datachannel binaryType should receive message as Blob by default assert_equals: Expect initial binaryType value to be blob expected "blob" but got "arraybuffer"
-FAIL Datachannel sending multiple messages with different types should succeed and be received assert_unreached: Unexpected promise rejection: NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet Reached unreachable code
-PASS Negotiated datachannel should be able to send simple string and receive as string
-PASS Negotiated datachannel should be able to send unicode string and receive as unicode string
-PASS Negotiated datachannel should ignore binaryType and always receive string message as string
-PASS Negotiated datachannel should be able to send an empty string and receive an empty string
-PASS Negotiated datachannel should be able to send Uint8Array message and receive as ArrayBuffer
-PASS Negotiated datachannel should be able to send ArrayBuffer message and receive as ArrayBuffer
-PASS Negotiated datachannel should be able to send an empty ArrayBuffer message and receive as ArrayBuffer
-FAIL Negotiated datachannel should be able to send Blob message and receive as ArrayBuffer promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
-FAIL Negotiated datachannel should be able to send ArrayBuffer message and receive as Blob promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to set the 'binaryType' property on 'RTCDataChannel': Blob support not implemented yet"
-FAIL Negotiated datachannel binaryType should receive message as Blob by default assert_equals: Expect initial binaryType value to be blob expected "blob" but got "arraybuffer"
-FAIL Negotiated datachannel sending multiple messages with different types should succeed and be received assert_unreached: Unexpected promise rejection: NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet Reached unreachable code
+[PASS] Calling send() when data channel is in connecting state should throw InvalidStateError
+[PASS] Datachannel should be able to send simple string and receive as string
+[PASS] Datachannel should be able to send unicode string and receive as unicode string
+[PASS] Datachannel should ignore binaryType and always receive string message as string
+[PASS] Datachannel should be able to send an empty string and receive an empty string
+[PASS] Datachannel should be able to send Uint8Array message and receive as ArrayBuffer
+[PASS] Datachannel should be able to send ArrayBuffer message and receive as ArrayBuffer
+[PASS] Datachannel should be able to send an empty ArrayBuffer message and receive as ArrayBuffer
+[FAIL] Datachannel should be able to send Blob message and receive as ArrayBuffer
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
+[FAIL] Datachannel should be able to send ArrayBuffer message and receive as Blob
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to set the 'binaryType' property on 'RTCDataChannel': Blob support not implemented yet"
+[FAIL] Datachannel binaryType should receive message as Blob by default
+  assert_equals: Expect initial binaryType value to be blob expected "blob" but got "arraybuffer"
+[FAIL] Datachannel sending multiple messages with different types should succeed and be received
+  assert_unreached: Unexpected promise rejection: NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet Reached unreachable code
+[PASS] Negotiated datachannel should be able to send simple string and receive as string
+[PASS] Negotiated datachannel should be able to send unicode string and receive as unicode string
+[PASS] Negotiated datachannel should ignore binaryType and always receive string message as string
+[PASS] Negotiated datachannel should be able to send an empty string and receive an empty string
+[PASS] Negotiated datachannel should be able to send Uint8Array message and receive as ArrayBuffer
+[PASS] Negotiated datachannel should be able to send ArrayBuffer message and receive as ArrayBuffer
+[PASS] Negotiated datachannel should be able to send an empty ArrayBuffer message and receive as ArrayBuffer
+[FAIL] Negotiated datachannel should be able to send Blob message and receive as ArrayBuffer
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
+[FAIL] Negotiated datachannel should be able to send ArrayBuffer message and receive as Blob
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to set the 'binaryType' property on 'RTCDataChannel': Blob support not implemented yet"
+[FAIL] Negotiated datachannel binaryType should receive message as Blob by default
+  assert_equals: Expect initial binaryType value to be blob expected "blob" but got "arraybuffer"
+[FAIL] Negotiated datachannel sending multiple messages with different types should succeed and be received
+  assert_unreached: Unexpected promise rejection: NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet Reached unreachable code
 Harness: the test ran to completion.
 

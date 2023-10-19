@@ -1,31 +1,37 @@
 This is a testharness.js-based test.
-PASS idl_test setup
-PASS idl_test validation
-PASS Partial interface Window: original interface defined
-PASS Partial interface Window: member names are unique
-PASS Partial interface HTMLBodyElement: original interface defined
-PASS Partial interface HTMLBodyElement: member names are unique
-PASS Partial interface HTMLBodyElement[2]: member names are unique
-PASS Partial interface Window[2]: member names are unique
-PASS HTMLElement includes GlobalEventHandlers: member names are unique
-PASS HTMLElement includes ElementContentEditable: member names are unique
-PASS HTMLElement includes HTMLOrSVGElement: member names are unique
-PASS HTMLBodyElement includes WindowEventHandlers: member names are unique
-PASS Window includes GlobalEventHandlers: member names are unique
-PASS Window includes WindowEventHandlers: member names are unique
-PASS Window includes WindowOrWorkerGlobalScope: member names are unique
-PASS Window includes AnimationFrameProvider: member names are unique
-PASS Window includes WindowSessionStorage: member names are unique
-PASS Window includes WindowLocalStorage: member names are unique
-PASS Element includes ParentNode: member names are unique
-PASS Element includes NonDocumentTypeChildNode: member names are unique
-PASS Element includes ChildNode: member names are unique
-PASS Element includes Slottable: member names are unique
-FAIL HTMLBodyElement interface: attribute onorientationchange assert_true: The prototype object must have a property "onorientationchange" expected true got false
-FAIL HTMLBodyElement interface: document.body must inherit property "onorientationchange" with the proper type assert_inherits: property "onorientationchange" not found in prototype chain
-FAIL Window interface: attribute orientation assert_own_property: The global object must have a property "orientation" expected property "orientation" missing
-FAIL Window interface: attribute onorientationchange assert_own_property: The global object must have a property "onorientationchange" expected property "onorientationchange" missing
-FAIL Window interface: window must inherit property "orientation" with the proper type assert_own_property: expected property "orientation" missing
-FAIL Window interface: window must inherit property "onorientationchange" with the proper type assert_own_property: expected property "onorientationchange" missing
+[PASS] idl_test setup
+[PASS] idl_test validation
+[PASS] Partial interface Window: original interface defined
+[PASS] Partial interface Window: member names are unique
+[PASS] Partial interface HTMLBodyElement: original interface defined
+[PASS] Partial interface HTMLBodyElement: member names are unique
+[PASS] Partial interface HTMLBodyElement[2]: member names are unique
+[PASS] Partial interface Window[2]: member names are unique
+[PASS] HTMLElement includes GlobalEventHandlers: member names are unique
+[PASS] HTMLElement includes ElementContentEditable: member names are unique
+[PASS] HTMLElement includes HTMLOrSVGElement: member names are unique
+[PASS] HTMLBodyElement includes WindowEventHandlers: member names are unique
+[PASS] Window includes GlobalEventHandlers: member names are unique
+[PASS] Window includes WindowEventHandlers: member names are unique
+[PASS] Window includes WindowOrWorkerGlobalScope: member names are unique
+[PASS] Window includes AnimationFrameProvider: member names are unique
+[PASS] Window includes WindowSessionStorage: member names are unique
+[PASS] Window includes WindowLocalStorage: member names are unique
+[PASS] Element includes ParentNode: member names are unique
+[PASS] Element includes NonDocumentTypeChildNode: member names are unique
+[PASS] Element includes ChildNode: member names are unique
+[PASS] Element includes Slottable: member names are unique
+[FAIL] HTMLBodyElement interface: attribute onorientationchange
+  assert_true: The prototype object must have a property "onorientationchange" expected true got false
+[FAIL] HTMLBodyElement interface: document.body must inherit property "onorientationchange" with the proper type
+  assert_inherits: property "onorientationchange" not found in prototype chain
+[FAIL] Window interface: attribute orientation
+  assert_own_property: The global object must have a property "orientation" expected property "orientation" missing
+[FAIL] Window interface: attribute onorientationchange
+  assert_own_property: The global object must have a property "onorientationchange" expected property "onorientationchange" missing
+[FAIL] Window interface: window must inherit property "orientation" with the proper type
+  assert_own_property: expected property "orientation" missing
+[FAIL] Window interface: window must inherit property "onorientationchange" with the proper type
+  assert_own_property: expected property "onorientationchange" missing
 Harness: the test ran to completion.
 

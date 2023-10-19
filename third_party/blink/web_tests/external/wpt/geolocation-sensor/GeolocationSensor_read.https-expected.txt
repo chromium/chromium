@@ -1,6 +1,9 @@
 This is a testharness.js-based test.
-FAIL Test that read() method resolves with valid reading when signal is null promise_test: Unhandled rejection with value: object "ReferenceError: GeolocationSensor is not defined"
-FAIL Test that read() method resolves with valid reading promise_test: Unhandled rejection with value: object "ReferenceError: GeolocationSensor is not defined"
-FAIL Test that read() method rejects 'AbortError' if signal's aborted flag is set promise_test: Unhandled rejection with value: object "ReferenceError: GeolocationSensor is not defined"
+[FAIL] Test that read() method resolves with valid reading when signal is null
+  promise_test: Unhandled rejection with value: object "ReferenceError: GeolocationSensor is not defined"
+[FAIL] Test that read() method resolves with valid reading
+  promise_test: Unhandled rejection with value: object "ReferenceError: GeolocationSensor is not defined"
+[FAIL] Test that read() method rejects 'AbortError' if signal's aborted flag is set
+  promise_test: Unhandled rejection with value: object "ReferenceError: GeolocationSensor is not defined"
 Harness: the test ran to completion.
 

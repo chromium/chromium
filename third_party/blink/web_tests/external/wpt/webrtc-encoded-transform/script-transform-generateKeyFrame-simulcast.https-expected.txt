@@ -1,6 +1,9 @@
 This is a testharness.js-based test.
-FAIL generateKeyFrame works with simulcast rids promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL generateKeyFrame for rid that was negotiated away fails promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL generateKeyFrame with rid after simulcast->unicast negotiation fails promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame works with simulcast rids
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame for rid that was negotiated away fails
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame with rid after simulcast->unicast negotiation fails
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
 Harness: the test ran to completion.
 

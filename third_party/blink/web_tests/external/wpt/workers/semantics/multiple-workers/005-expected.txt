@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL dedicated worker in shared worker in dedicated worker assert_unreached: error Reached unreachable code
-Harness: the test ran to completion.
-

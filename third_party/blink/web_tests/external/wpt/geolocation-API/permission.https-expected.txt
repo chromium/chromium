@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Query "geolocation" powerful feature assert_equals: permission's state must be "prompt" by default expected "prompt" but got "denied"
+[FAIL] Query "geolocation" powerful feature
+  assert_equals: permission's state must be "prompt" by default expected "prompt" but got "denied"
 Harness: the test ran to completion.
 

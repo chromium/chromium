@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-PASS existence of XMLHttpRequest
-PASS existence of WebSocket
-PASS existence of EventSource
-PASS existence of MessageChannel
-PASS existence of Worker
-FAIL existence of SharedWorker assert_true: expected true got false
+[PASS] existence of XMLHttpRequest
+[PASS] existence of WebSocket
+[PASS] existence of EventSource
+[PASS] existence of MessageChannel
+[PASS] existence of Worker
+[FAIL] existence of SharedWorker
+  assert_true: expected true got false
 Harness: the test ran to completion.
 

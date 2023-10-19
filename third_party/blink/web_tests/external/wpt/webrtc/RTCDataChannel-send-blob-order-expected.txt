@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL Datachannel should send data following the order of the send call promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
-FAIL Negotiated datachannel should send data following the order of the send call promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
+[FAIL] Datachannel should send data following the order of the send call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
+[FAIL] Negotiated datachannel should send data following the order of the send call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
 Harness: the test ran to completion.
 
