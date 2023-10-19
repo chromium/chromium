@@ -2189,8 +2189,6 @@ source_set("ash") {
     "net/network_portal_detector_impl.h",
     "net/network_portal_detector_test_impl.cc",
     "net/network_portal_detector_test_impl.h",
-    "net/network_portal_web_dialog.cc",
-    "net/network_portal_web_dialog.h",
     "net/network_pref_state_observer.cc",
     "net/network_pref_state_observer.h",
     "net/network_throttling_observer.cc",
