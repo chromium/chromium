@@ -142,7 +142,8 @@ void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
           actions::ActionItem::Builder(
               base::BindRepeating(
                   [](scoped_refptr<const Extension> extension, Browser* browser,
-                     actions::ActionItem* item) {
+                     actions::ActionItem* item,
+                     actions::ActionInvocationContext context) {
                     SidePanelUI::GetSidePanelUIForBrowser(browser)->Show(
                         SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
                                             extension->id()));

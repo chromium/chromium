@@ -115,6 +115,35 @@ ScopedActionUpdate::~ScopedActionUpdate() {
   }
 }
 
+ActionInvocationContext::ContextBuilder::ContextBuilder() = default;
+
+ActionInvocationContext::ContextBuilder::ContextBuilder(ContextBuilder&&) =
+    default;
+
+ActionInvocationContext::ContextBuilder&
+ActionInvocationContext::ContextBuilder::operator=(ContextBuilder&&) = default;
+
+ActionInvocationContext::ContextBuilder::ContextBuilder::~ContextBuilder() =
+    default;
+
+ActionInvocationContext ActionInvocationContext::ContextBuilder::Build() {
+  return std::move(*context_);
+}
+
+ActionInvocationContext::ActionInvocationContext() = default;
+
+ActionInvocationContext::ActionInvocationContext(ActionInvocationContext&&) =
+    default;
+
+ActionInvocationContext& ActionInvocationContext::operator=(
+    ActionInvocationContext&&) = default;
+
+ActionInvocationContext::~ActionInvocationContext() = default;
+
+ActionInvocationContext::ContextBuilder ActionInvocationContext::Builder() {
+  return ContextBuilder();
+}
+
 ActionItem::ActionItemBuilder::ActionItemBuilder() {
   action_item_ = std::make_unique<ActionItem>();
 }
@@ -440,12 +469,12 @@ void ActionItem::AddSynonyms(std::initializer_list<std::u16string> synonyms) {
   synonyms_.insert(synonyms_.end(), synonyms);
 }
 
-void ActionItem::InvokeAction() {
+void ActionItem::InvokeAction(ActionInvocationContext context) {
   if (enabled_) {
     invoke_count_++;
     last_invoke_time_ = base::TimeTicks::Now();
     if (callback_) {
-      callback_.Run(this);
+      callback_.Run(this, std::move(context));
     }
   }
 }

@@ -37,7 +37,8 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
   return actions::ActionItem::Builder(
              base::BindRepeating(
                  [](SidePanelEntryId id, Browser* browser,
-                    actions::ActionItem* item) {
+                    actions::ActionItem* item,
+                    actions::ActionInvocationContext context) {
                    SidePanelUI::GetSidePanelUIForBrowser(browser)->Show(id);
                  },
                  id, browser))

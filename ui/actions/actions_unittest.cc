@@ -15,6 +15,13 @@
 
 namespace actions {
 
+enum class ContextValues {
+  kContextNone,
+  kContextKeyboard,
+  kContextMouse,
+  kContextTouch,
+};
+
 namespace {
 
 const std::u16string kActionText = u"Test Action";
@@ -42,6 +49,10 @@ enum TestActionIds : ActionId {
 // clang-format on
 
 #include "ui/actions/action_id_macros.inc"
+
+DEFINE_UI_CLASS_PROPERTY_KEY(ContextValues,
+                             kContextValueKey,
+                             ContextValues::kContextNone)
 
 class ActionManagerTest : public testing::Test {
  public:
@@ -84,6 +95,13 @@ using ActionItemTest = ActionManagerTest;
 using ActionIdMapTest = ActionManagerTest;
 
 }  // namespace
+}  // namespace actions
+
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(, actions::ContextValues)
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(actions::ContextValues)
+
+namespace actions {
 
 // Verifies that the test harness functions correctly.
 TEST_F(ActionManagerTest, Harness) {
@@ -113,7 +131,8 @@ TEST_F(ActionManagerTest, ActionRegisterAndInvoke) {
       [](int* invoked_count, const std::u16string& text,
          ActionManager* manager) {
         auto action = std::make_unique<ActionItem>(base::BindRepeating(
-            [](int* invoked_count, actions::ActionItem* action) {
+            [](int* invoked_count, actions::ActionItem* action,
+               ActionInvocationContext context) {
               ++*invoked_count;
               EXPECT_EQ(*invoked_count, action->GetInvokeCount());
               EXPECT_GE(base::TimeTicks::Now(), *action->GetLastInvokeTime());
@@ -281,7 +300,8 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
   int action_invoked_count = 0;
   // clang-format off
   auto builder = ActionItem::Builder(
-      base::BindRepeating([](int* invoked_count, actions::ActionItem* action){
+      base::BindRepeating([](int* invoked_count, actions::ActionItem* action,
+          ActionInvocationContext context){
         ++*invoked_count;
       }, &action_invoked_count))
       .CopyAddressTo(&root_action)
@@ -492,6 +512,33 @@ TEST_F(ActionItemTest, TestActionWeakPtr) {
   manager.ResetActions();
   EXPECT_EQ(action_test2.get(), nullptr);
   EXPECT_EQ(action_test3.get(), nullptr);
+}
+
+TEST_F(ActionItemTest, TextActionInvocationContext) {
+  int action_invoked_count = 0;
+  base::WeakPtr<ActionItem> action_test1;
+  // clang-format off
+  auto builder = ActionItem::Builder(
+      base::BindRepeating([](int* invoked_count, actions::ActionItem* action,
+          ActionInvocationContext context){
+        ++*invoked_count;
+        ContextValues context_value = context.GetProperty(kContextValueKey);
+        EXPECT_EQ(context_value, ContextValues::kContextKeyboard);
+      },  &action_invoked_count))
+      .CopyWeakPtrTo(&action_test1)
+      .SetText(kActionText)
+      .SetActionId(kActionTest1)
+      .SetVisible(true)
+      .SetEnabled(true);
+  // clang-format on
+  auto& manager = ActionManager::GetForTesting();
+  manager.AddAction(std::move(builder).Build());
+  ASSERT_TRUE(action_test1);
+  action_test1->InvokeAction(
+      ActionInvocationContext::Builder()
+          .SetProperty(kContextValueKey, ContextValues::kContextKeyboard)
+          .Build());
+  EXPECT_EQ(action_invoked_count, 1);
 }
 
 }  // namespace actions

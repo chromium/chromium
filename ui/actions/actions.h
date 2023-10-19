@@ -96,10 +96,48 @@ class COMPONENT_EXPORT(ACTIONS) ScopedActionUpdate {
   raw_ptr<ActionItem> action_item_;
 };
 
+// Context object designed to allow any class property to be attached to it.
+// This allows invoking the action with any additional contextual information
+// without requiring the action item itself have any knowledge of that
+// information.
+class COMPONENT_EXPORT(ACTIONS) ActionInvocationContext
+    : public ui::PropertyHandler {
+ public:
+  ActionInvocationContext();
+  ActionInvocationContext(ActionInvocationContext&&);
+  ActionInvocationContext& operator=(ActionInvocationContext&&);
+  ~ActionInvocationContext() override;
+
+  class COMPONENT_EXPORT(ACTIONS) ContextBuilder {
+   public:
+    ContextBuilder(ContextBuilder&&);
+    ContextBuilder& operator=(ContextBuilder&&);
+    ~ContextBuilder();
+
+    template <typename T>
+    ContextBuilder&& SetProperty(const ui::ClassProperty<T>* property,
+                                 ui::metadata::ArgType<T> value) && {
+      context_->SetProperty(property, value);
+      return std::move(*this);
+    }
+
+    [[nodiscard]] ActionInvocationContext Build();
+
+   private:
+    friend class ActionInvocationContext;
+    ContextBuilder();
+    std::unique_ptr<ActionInvocationContext> context_ =
+        std::make_unique<ActionInvocationContext>();
+  };
+
+  static ContextBuilder Builder();
+};
+
 class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
  public:
   using ActionChangedCallback = ui::metadata::PropertyChangedCallback;
-  using InvokeActionCallback = base::RepeatingCallback<void(ActionItem*)>;
+  using InvokeActionCallback =
+      base::RepeatingCallback<void(ActionItem*, ActionInvocationContext)>;
 
   class COMPONENT_EXPORT(ACTIONS) ActionItemBuilder {
    public:
@@ -239,7 +277,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   [[nodiscard]] ScopedActionUpdate BeginUpdate();
 
   // Invoke an action.
-  void InvokeAction();
+  void InvokeAction(
+      ActionInvocationContext context = ActionInvocationContext());
 
   // Get action metrics.
   int GetInvokeCount() const;
