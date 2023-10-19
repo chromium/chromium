@@ -26,6 +26,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BaseCarouselSuggestionProcessorUnitTest {
+    private static final int ITEM_VIEW_WIDTH = 12345;
     public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
     // Stores PropertyModel for the suggestion.
@@ -59,8 +60,13 @@ public class BaseCarouselSuggestionProcessorUnitTest {
         }
 
         @Override
-        public int getMinimumCarouselItemViewHeight() {
+        public int getCarouselItemViewHeight() {
             return 0;
+        }
+
+        @Override
+        public int getCarouselItemViewWidth() {
+            return ITEM_VIEW_WIDTH;
         }
     }
 
@@ -84,5 +90,13 @@ public class BaseCarouselSuggestionProcessorUnitTest {
         mProcessor.onNativeInitialized();
         mProcessor.populateModel(null, mModel, 0);
         Assert.assertTrue(mModel.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
+    }
+
+    @Test
+    public void testPopulateItemViewWidth() {
+        mProcessor.onNativeInitialized();
+        mProcessor.populateModel(null, mModel, 0);
+        Assert.assertEquals(
+                ITEM_VIEW_WIDTH, mModel.get(BaseCarouselSuggestionViewProperties.ITEM_WIDTH));
     }
 }

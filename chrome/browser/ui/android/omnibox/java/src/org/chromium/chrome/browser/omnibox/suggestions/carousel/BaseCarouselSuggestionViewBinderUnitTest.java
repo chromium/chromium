@@ -135,7 +135,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                                         / 4));
         Assert.assertEquals(
                 expectedSpacingPx,
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.PHONE, mResources));
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
+                        FormFactor.PHONE, tileViewWidth, mResources));
     }
 
     @Test
@@ -143,7 +144,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     public void formFactor_itemSpacingTabletPortrait() {
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait),
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
+                        FormFactor.TABLET, Integer.MAX_VALUE, mResources));
     }
 
     @Test
@@ -155,7 +157,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
         Assert.assertEquals(
                 spacingPx,
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
+                        FormFactor.TABLET, Integer.MAX_VALUE, mResources));
 
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
         ArgumentCaptor<SpacingRecyclerViewItemDecoration> captor =
@@ -190,7 +193,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     public void formFactor_itemSpacingPhone_landscape() {
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.PHONE, mResources));
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
+                        FormFactor.PHONE, Integer.MAX_VALUE, mResources));
     }
 
     @Test
@@ -198,7 +202,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     public void formFactor_itemSpacingTablet_landscape() {
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
+                        FormFactor.TABLET, Integer.MAX_VALUE, mResources));
     }
 
     @Test

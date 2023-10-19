@@ -502,8 +502,13 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Test
     public void getMinimumCarouselItemViewHeight_forFullTestCoverage() {
+        // TODO(ender): migrate this to measured dimensions when TileViews no longer grow with the
+        // parent.
+        assertEquals(
+                mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_width),
+                mProcessor.getCarouselItemViewWidth());
         assertEquals(
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height),
-                mProcessor.getMinimumCarouselItemViewHeight());
+                mProcessor.getCarouselItemViewHeight());
     }
 }

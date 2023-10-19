@@ -38,7 +38,8 @@ import java.util.List;
 public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final @NonNull SuggestionHost mSuggestionHost;
     private final @Nullable OmniboxImageSupplier mImageSupplier;
-    private final int mMinCarouselItemViewHeight;
+    private final int mCarouselItemViewWidth;
+    private final int mCarouselItemViewHeight;
 
     /**
      * Constructor.
@@ -54,7 +55,9 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
         super(context);
         mSuggestionHost = host;
         mImageSupplier = imageSupplier;
-        mMinCarouselItemViewHeight =
+        mCarouselItemViewWidth =
+                mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_width);
+        mCarouselItemViewHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height);
     }
 
@@ -83,8 +86,13 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public int getMinimumCarouselItemViewHeight() {
-        return mMinCarouselItemViewHeight;
+    public int getCarouselItemViewWidth() {
+        return mCarouselItemViewWidth;
+    }
+
+    @Override
+    public int getCarouselItemViewHeight() {
+        return mCarouselItemViewHeight;
     }
 
     @Override

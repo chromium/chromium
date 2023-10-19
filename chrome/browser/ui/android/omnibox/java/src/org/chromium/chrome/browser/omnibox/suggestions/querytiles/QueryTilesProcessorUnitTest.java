@@ -86,12 +86,14 @@ public class QueryTilesProcessorUnitTest {
     }
 
     @Test
-    public void getMinimumCarouselItemViewHeight() {
+    public void getCarouselItemViewSize() {
         var view = new QueryTileView(mContext);
         view.measure(
                 View.MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE, View.MeasureSpec.AT_MOST),
                 View.MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE, View.MeasureSpec.AT_MOST));
-        assertEquals(view.getMeasuredHeight(), mProcessor.getMinimumCarouselItemViewHeight());
+
+        assertEquals(view.getMeasuredHeight(), mProcessor.getCarouselItemViewHeight());
+        assertEquals(view.getMeasuredWidth(), mProcessor.getCarouselItemViewWidth());
     }
 
     @Test

@@ -29,6 +29,8 @@ import java.util.List;
 public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final @NonNull SuggestionHost mSuggestionHost;
     private final @Nullable OmniboxImageSupplier mImageSupplier;
+    private final int mCarouselItemViewWidth;
+    private final int mCarouselItemViewHeight;
 
     /**
      * Constructor.
@@ -44,6 +46,10 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
         super(context);
         mSuggestionHost = host;
         mImageSupplier = imageSupplier;
+        mCarouselItemViewWidth =
+                mContext.getResources().getDimensionPixelSize(R.dimen.query_tile_view_width);
+        mCarouselItemViewHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.query_tile_view_height);
     }
 
     @Override
@@ -64,8 +70,13 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public int getMinimumCarouselItemViewHeight() {
-        return mContext.getResources().getDimensionPixelSize(R.dimen.query_tile_view_height);
+    public int getCarouselItemViewWidth() {
+        return mCarouselItemViewWidth;
+    }
+
+    @Override
+    public int getCarouselItemViewHeight() {
+        return mCarouselItemViewHeight;
     }
 
     @Override
