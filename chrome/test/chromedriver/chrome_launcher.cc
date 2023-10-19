@@ -65,6 +65,10 @@
 #include "third_party/zlib/google/zip.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/test/chromedriver/buildflags.h"
+#endif
+
 #if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -552,10 +556,12 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(CHROMEDRIVER_DISCLAIM_RESPONSIBILITY)
   // Chrome is a third party process with respect to ChromeDriver. This allows
   // Chrome to get its own permissions attributed on Mac instead of relying on
   // ChromeDriver.
   options.disclaim_responsibility = true;
+#endif  // BUILDFLAG(CHROMEDRIVER_DISCLAIM_RESPONSIBILITY)
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
