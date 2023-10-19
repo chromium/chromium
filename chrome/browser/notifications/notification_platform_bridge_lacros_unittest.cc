@@ -140,6 +140,7 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
   rich_data.accessible_name = u"accessible_name";
   rich_data.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
+  rich_data.image_path = base::FilePath("dummy/path");
 
   // Create badge and icon with both low DPI and high DPI versions.
   gfx::Image badge = gfx::test::CreateImage(1, 2);
@@ -182,6 +183,8 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
   EXPECT_EQ(u"accessible_name", last_notification->accessible_name);
   EXPECT_EQ(crosapi::mojom::FullscreenVisibility::kOverUser,
             last_notification->fullscreen_visibility);
+  EXPECT_EQ(last_notification->image_path,
+            ui_notification.rich_notification_data().image_path);
 
   ASSERT_FALSE(last_notification->badge.isNull());
   EXPECT_TRUE(last_notification->badge_needs_additional_masking_has_value);
@@ -220,6 +223,7 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationImage) {
   ASSERT_TRUE(last_notification);
   ASSERT_FALSE(last_notification->image.isNull());
   EXPECT_TRUE(AreImagesEqual(image, gfx::Image(last_notification->image)));
+  EXPECT_FALSE(last_notification->image_path);
 }
 
 TEST_F(NotificationPlatformBridgeLacrosTest, SerializationList) {

@@ -123,6 +123,12 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->notifier_id->title = notification.notifier_id().title;
   mojo_note->notifier_id->profile_id = notification.notifier_id().profile_id;
 
+  const absl::optional<base::FilePath>& image_path =
+      notification.rich_notification_data().image_path;
+  if (image_path.has_value()) {
+    mojo_note->image_path = image_path;
+  }
+
   return mojo_note;
 }
 

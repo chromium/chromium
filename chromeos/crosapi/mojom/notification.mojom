@@ -5,6 +5,7 @@
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/bitmap.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/skcolor.mojom";
@@ -89,8 +90,8 @@ struct ButtonInfo {
 // https://developer.mozilla.org/en-US/docs/Web/API/notification
 // https://developer.chrome.com/extensions/notifications#type-NotificationOptions
 //
-//  Next MinVersion: 4
-//  Next ID: 27
+//  Next MinVersion: 5
+//  Next ID: 29
 [Stable]
 struct Notification {
   // Type of notification to show.
@@ -196,4 +197,10 @@ struct Notification {
   // (Webpage, Android, System etc..) along with additional info that can
   // identify the sender (url, app name etc..).
   NotifierId? notifier_id@27;
+
+  [MinVersion=5]
+  // The path to the file that backs `image`. NOTE: Not all images are backed
+  // by files. Therefore, the existence of `image` does not necessarily imply
+  // the existence of `image_path`.
+  mojo_base.mojom.FilePath? image_path@28;
 };
