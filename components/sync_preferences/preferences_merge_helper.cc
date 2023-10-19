@@ -79,7 +79,7 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
       }
       // TODO(crbug.com/1485973): Investigate if this is valid or if this should
       // be a CHECK instead.
-      if (local_value.is_none()) {
+      if (!local_value.is_dict()) {
         return server_value.Clone();
       }
       return base::Value(
@@ -93,7 +93,7 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
       }
       // TODO(crbug.com/1485973): Investigate if this is valid or if this should
       // be a CHECK instead.
-      if (local_value.is_none()) {
+      if (!local_value.is_list()) {
         return server_value.Clone();
       }
       return base::Value(
