@@ -323,8 +323,7 @@ static void WriteTextFragment(WTF::TextStream& ts,
   ts << "\n";
 }
 
-static void WriteTextFragment(WTF::TextStream& ts,
-                              const NGInlineCursor& cursor) {
+static void WriteTextFragment(WTF::TextStream& ts, const InlineCursor& cursor) {
   DCHECK(cursor.CurrentItem());
   const NGFragmentItem& item = *cursor.CurrentItem();
   DCHECK(item.Type() == NGFragmentItem::kText ||
@@ -408,7 +407,7 @@ void Write(WTF::TextStream& ts,
   if (o.IsText() && !o.IsBR()) {
     const auto& text = To<LayoutText>(o);
     if (const LayoutBlockFlow* block_flow = text.FragmentItemsContainer()) {
-      NGInlineCursor cursor(*block_flow);
+      InlineCursor cursor(*block_flow);
       cursor.MoveTo(text);
       for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
         WriteIndent(ts, indent + 1);

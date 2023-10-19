@@ -442,7 +442,7 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
   if (layout_replaced.IsInline() &&
       layout_replaced.IsInLayoutNGInlineFormattingContext()) {
     // Step 1: Find the line box containing |layout_replaced|.
-    NGInlineCursor line_box;
+    InlineCursor line_box;
     line_box.MoveTo(layout_replaced);
     if (!line_box)
       return fallback;
@@ -510,7 +510,7 @@ PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
 
   if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
     PhysicalRect rect;
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject())
       rect.Unite(cursor.CurrentLocalSelectionRectForReplaced());

@@ -855,7 +855,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
     const LayoutObject& parent_object,
     const NGPhysicalBoxFragment* parent_fragment,
     const PrePaintTreeWalkContext& context) {
-  absl::optional<NGInlineCursor> inline_cursor;
+  absl::optional<InlineCursor> inline_cursor;
   for (const LayoutObject* child = parent_object.SlowFirstChild(); child;
        // Stay on the |child| while iterating fragments of |child|.
        child = inline_cursor ? child : child->NextSibling()) {

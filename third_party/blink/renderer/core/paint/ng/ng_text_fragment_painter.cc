@@ -47,9 +47,8 @@ namespace blink {
 
 namespace {
 
-inline const DisplayItemClient& AsDisplayItemClient(
-    const NGInlineCursor& cursor,
-    bool for_selection) {
+inline const DisplayItemClient& AsDisplayItemClient(const InlineCursor& cursor,
+                                                    bool for_selection) {
   if (UNLIKELY(for_selection)) {
     if (const auto* selection_client =
             cursor.Current().GetSelectionDisplayItemClient())
@@ -58,7 +57,7 @@ inline const DisplayItemClient& AsDisplayItemClient(
   return *cursor.Current().GetDisplayItemClient();
 }
 
-inline PhysicalRect PhysicalBoxRect(const NGInlineCursor& cursor,
+inline PhysicalRect PhysicalBoxRect(const InlineCursor& cursor,
                                     const PhysicalOffset& paint_offset,
                                     const PhysicalOffset& parent_offset,
                                     const LayoutTextCombine* text_combine) {
@@ -87,9 +86,9 @@ inline PhysicalRect PhysicalBoxRect(const NGInlineCursor& cursor,
   return box_rect;
 }
 
-inline const NGInlineCursor& InlineCursorForBlockFlow(
-    const NGInlineCursor& cursor,
-    absl::optional<NGInlineCursor>* storage) {
+inline const InlineCursor& InlineCursorForBlockFlow(
+    const InlineCursor& cursor,
+    absl::optional<InlineCursor>* storage) {
   if (*storage)
     return **storage;
   *storage = cursor;
@@ -121,8 +120,9 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   const auto* ruby_text = To<LayoutRubyColumn>(parent)->RubyText();
   if (!ruby_text)
     return true;
-  if (!NGInlineCursor(*ruby_text))
+  if (!InlineCursor(*ruby_text)) {
     return true;
+  }
   const LineLogicalSide ruby_logical_side =
       parent->StyleRef().GetRubyPosition() == RubyPosition::kBefore
           ? LineLogicalSide::kOver
@@ -300,7 +300,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   if (UNLIKELY(!is_printing && !is_rendering_resource &&
                paint_info.phase != PaintPhase::kTextClip &&
                layout_object->IsSelected())) {
-    const NGInlineCursor& root_inline_cursor =
+    const InlineCursor& root_inline_cursor =
         InlineCursorForBlockFlow(cursor_, &inline_cursor_for_block_flow_);
 
     // Empty selections might be the boundary of the document selection, and

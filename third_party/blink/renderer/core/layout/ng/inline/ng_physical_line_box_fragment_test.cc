@@ -18,7 +18,7 @@ class NGPhysicalLineBoxFragmentTest : public RenderingTest {
     const LayoutObject* layout_object = container->GetLayoutObject();
     DCHECK(layout_object) << container;
     DCHECK(layout_object->IsLayoutBlockFlow()) << container;
-    NGInlineCursor cursor(*To<LayoutBlockFlow>(layout_object));
+    InlineCursor cursor(*To<LayoutBlockFlow>(layout_object));
     HeapVector<Member<const NGPhysicalLineBoxFragment>> lines;
     for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine())
       lines.push_back(cursor.Current()->LineBoxFragment());

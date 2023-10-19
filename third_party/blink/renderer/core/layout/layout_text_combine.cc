@@ -221,7 +221,7 @@ LineRelativeRect LayoutTextCombine::ComputeTextFrameRect(
 }
 
 PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
-    const NGInlineCursor& cursor) const {
+    const InlineCursor& cursor) const {
   const ComputedStyle& style = Parent()->StyleRef();
   DCHECK(style.GetFont().GetFontDescription().IsVerticalBaseline());
 

@@ -137,7 +137,7 @@ class FragmentTreeDumper {
       bool has_fragment_items = false;
       if (flags_ & NGPhysicalFragment::DumpItems) {
         if (const NGFragmentItems* fragment_items = box->Items()) {
-          NGInlineCursor cursor(*box, *fragment_items);
+          InlineCursor cursor(*box, *fragment_items);
           Append(&cursor, indent + 2);
           has_fragment_items = true;
         }
@@ -221,9 +221,9 @@ class FragmentTreeDumper {
   }
 
  private:
-  void Append(NGInlineCursor* cursor, unsigned indent) {
+  void Append(InlineCursor* cursor, unsigned indent) {
     for (; *cursor; cursor->MoveToNextSkippingChildren()) {
-      const NGInlineCursorPosition& current = cursor->Current();
+      const InlineCursorPosition& current = cursor->Current();
       const NGPhysicalFragment* box = current.BoxFragment();
       if (box && !box->IsInlineBox()) {
         Append(box, current.OffsetInContainerFragment(), indent);
@@ -255,7 +255,7 @@ class FragmentTreeDumper {
       builder_->Append("\n");
 
       if (flags_ & NGPhysicalFragment::DumpSubtree && current.HasChildren()) {
-        NGInlineCursor descendants = cursor->CursorForDescendants();
+        InlineCursor descendants = cursor->CursorForDescendants();
         Append(&descendants, indent + 2);
       }
     }
@@ -783,7 +783,7 @@ void NGPhysicalFragment::AddOutlineRectsForNormalChildren(
   if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(this)) {
     DCHECK_EQ(box->PostLayout(), box);
     if (const NGFragmentItems* items = box->Items()) {
-      NGInlineCursor cursor(*box, *items);
+      InlineCursor cursor(*box, *items);
       AddOutlineRectsForCursor(collector, additional_offset, outline_type,
                                containing_block, &cursor);
       // Don't add |Children()|. If |this| has |NGFragmentItems|, children are
@@ -812,7 +812,7 @@ void NGPhysicalFragment::AddOutlineRectsForCursor(
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type,
     const LayoutBoxModelObject* containing_block,
-    NGInlineCursor* cursor) const {
+    InlineCursor* cursor) const {
   const auto* const text_combine =
       DynamicTo<LayoutTextCombine>(containing_block);
   while (*cursor) {
@@ -875,7 +875,7 @@ void NGPhysicalFragment::AddScrollableOverflowForInlineChild(
     const ComputedStyle& container_style,
     const NGFragmentItem& line,
     bool has_hanging,
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     TextHeightType height_type,
     PhysicalRect* overflow) const {
   DCHECK(IsLineBox() || IsInlineBox());
@@ -883,8 +883,7 @@ void NGPhysicalFragment::AddScrollableOverflowForInlineChild(
          (cursor.Current().Item()->BoxFragment() == this ||
           cursor.Current().Item()->LineBoxFragment() == this));
   const WritingMode container_writing_mode = container_style.GetWritingMode();
-  for (NGInlineCursor descendants = cursor.CursorForDescendants();
-       descendants;) {
+  for (InlineCursor descendants = cursor.CursorForDescendants(); descendants;) {
     const NGFragmentItem* item = descendants.CurrentItem();
     DCHECK(item);
     if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {

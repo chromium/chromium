@@ -563,7 +563,7 @@ static SelectionState GetSelectionStateFor(const LayoutText& layout_text) {
 }
 
 static SelectionState GetSelectionStateFor(
-    const NGInlineCursorPosition& position) {
+    const InlineCursorPosition& position) {
   DCHECK(position.GetLayoutObject());
   return GetSelectionStateFor(To<LayoutText>(*position.GetLayoutObject()));
 }
@@ -649,8 +649,8 @@ LayoutTextSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(
 // These offset can be out of fragment because SelectionState is of each
 // LayoutText and not of each fragment for it.
 LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
-    const NGInlineCursor& cursor) const {
-  const NGInlineCursorPosition& current = cursor.Current();
+    const InlineCursor& cursor) const {
+  const InlineCursorPosition& current = cursor.Current();
   if (!current.IsLayoutGeneratedText())
     return ComputeSelectionStatus(cursor, current.TextOffset());
 
@@ -675,7 +675,7 @@ LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
 }
 
 LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     const NGTextOffsetRange& offset) const {
   const unsigned start_offset = offset.start;
   const unsigned end_offset = offset.end;
@@ -773,7 +773,7 @@ SelectionState LayoutSelection::ComputeSelectionStateFromOffsets(
 }
 
 SelectionState LayoutSelection::ComputePaintingSelectionStateForCursor(
-    const NGInlineCursorPosition& position) const {
+    const InlineCursorPosition& position) const {
   if (!position)
     return SelectionState::kNone;
 

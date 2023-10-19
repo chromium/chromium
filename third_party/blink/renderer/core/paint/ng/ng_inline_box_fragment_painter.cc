@@ -38,7 +38,7 @@ bool HasMultipleItems(const Items items) {
 inline bool MayHaveMultipleFragmentItems(const NGFragmentItem& item,
                                          const LayoutObject& layout_object) {
   return !item.IsFirstForNode() || !item.IsLastForNode() ||
-         // TODO(crbug.com/1061423): NGInlineCursor is currently unable to deal
+         // TODO(crbug.com/1061423): InlineCursor is currently unable to deal
          // with objects split into multiple fragmentainers (e.g. columns). Just
          // return true if it's possible that this object participates in a
          // fragmentation context. This will give false positives, but that
@@ -254,7 +254,7 @@ void NGInlineBoxFragmentPainterBase::ComputeFragmentOffsetOnLine(
     LayoutUnit* total_width) const {
   WritingDirectionMode writing_direction =
       inline_box_fragment_.Style().GetWritingDirection();
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   DCHECK(inline_box_fragment_.GetLayoutObject());
   cursor.MoveTo(*inline_box_fragment_.GetLayoutObject());
 
@@ -520,7 +520,7 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   }
 
   NGInlinePaintContext inline_context;
-  NGInlineCursor cursor(*block_flow);
+  InlineCursor cursor(*block_flow);
   cursor.MoveTo(layout_inline);
   if (!cursor)
     return;

@@ -255,7 +255,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
   LayoutUnit used_block_size;
   wtf_size_t line_count = 0;
 
-  for (NGInlineCursor cursor(container, items); cursor;) {
+  for (InlineCursor cursor(container, items); cursor;) {
     DCHECK(cursor.Current().Item());
     const NGFragmentItem& item = *cursor.Current().Item();
     if (&item == end_item)
@@ -297,7 +297,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
       items_.emplace_back(item_offset, item);
       const PhysicalRect line_box_bounds = item.RectInContainerFragment();
       line_converter.SetOuterSize(line_box_bounds.size);
-      for (NGInlineCursor line = cursor.CursorForDescendants(); line;
+      for (InlineCursor line = cursor.CursorForDescendants(); line;
            line.MoveToNext()) {
         const NGFragmentItem& line_child = *line.Current().Item();
         if (end_item) {

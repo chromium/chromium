@@ -60,7 +60,7 @@ inline LineBreakStrictness StrictnessFromLineBreak(LineBreak line_break) {
 LineBoxStrut ComputeNegativeSideBearings(
     const NGPhysicalBoxFragment& box_fragment) {
   const auto get_shape_result =
-      [](const NGInlineCursor cursor) -> const ShapeResultView* {
+      [](const InlineCursor cursor) -> const ShapeResultView* {
     if (!cursor)
       return nullptr;
     const NGFragmentItem& item = *cursor.CurrentItem();
@@ -74,7 +74,7 @@ LineBoxStrut ComputeNegativeSideBearings(
 
   LineBoxStrut side_bearing;
 
-  for (NGInlineCursor cursor(box_fragment); cursor; cursor.MoveToNextLine()) {
+  for (InlineCursor cursor(box_fragment); cursor; cursor.MoveToNextLine()) {
     // Take left/right bearing from the first/last child in the line if it has
     // `ShapeResult`. The first/last child can be non text item, e.g. image.
     // Note: Items in the line are in visual order. So, first=left, last=right.
@@ -125,7 +125,7 @@ LineBoxStrut ComputeNegativeSideBearings(
     //    * `rect.size.width  = text_ink_bounds.Width()`
     // [1] https://drafts.csswg.org/css-inline/#initial-letter-box-size
     // Sizeing the Initial Letter Box
-    NGInlineCursor child_at_left_edge = cursor;
+    InlineCursor child_at_left_edge = cursor;
     child_at_left_edge.MoveToFirstChild();
     if (auto* shape_result = get_shape_result(child_at_left_edge)) {
       const LayoutUnit left_bearing =
@@ -135,7 +135,7 @@ LineBoxStrut ComputeNegativeSideBearings(
           std::min(side_bearing.inline_start, left_bearing);
     }
 
-    NGInlineCursor child_at_right_edge = cursor;
+    InlineCursor child_at_right_edge = cursor;
     child_at_right_edge.MoveToLastChild();
     if (auto* shape_result = get_shape_result(child_at_right_edge)) {
       const LayoutUnit width = shape_result->SnappedWidth();

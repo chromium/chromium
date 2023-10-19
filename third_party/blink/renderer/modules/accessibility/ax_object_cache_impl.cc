@@ -3970,7 +3970,7 @@ void AXObjectCacheImpl::InlineTextBoxesUpdated(LayoutObject* layout_object) {
   // not already marked as dirty.
   // Do not use Get(): it does extra work to determine whether the object should
   // be invalidated, including calling IsLayoutObjectRelevantForAccessibility(),
-  // which uses the NGInlineCursor. However, the NGInlineCursor cannot be used
+  // which uses the InlineCursor. However, the InlineCursor cannot be used
   // while inline boxes are being updated.
   if (ax_id) {
     AXObject* obj = objects_.at(ax_id);

@@ -31,7 +31,7 @@ TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
 
   // Get |NGPhysicalLineBoxFragment|s to use for testing.
-  NGInlineCursor cursor(*container);
+  InlineCursor cursor(*container);
   cursor.MoveToFirstLine();
   const NGPhysicalLineBoxFragment* line_fragment1 =
       cursor.Current()->LineBoxFragment();

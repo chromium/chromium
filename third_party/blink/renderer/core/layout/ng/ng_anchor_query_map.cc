@@ -253,8 +253,7 @@ struct NGStitchedAnchorQueries {
 
     // Add inline children if any.
     if (const NGFragmentItems* items = fragment.Items()) {
-      for (NGInlineCursor cursor(fragment, *items); cursor;
-           cursor.MoveToNext()) {
+      for (InlineCursor cursor(fragment, *items); cursor; cursor.MoveToNext()) {
         if (cursor.Current().IsInlineBox()) {
           DCHECK(cursor.Current().BoxFragment());
           AddBoxChild(*cursor.Current().BoxFragment(),

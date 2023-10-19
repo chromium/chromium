@@ -785,7 +785,7 @@ TEST_P(StyleChangeTest, NeedsCollectInlinesOnStyle) {
     for (const LayoutObject* child = parent_layout_object->SlowFirstChild();
          child; child = child->NextInPreOrder(parent_layout_object)) {
       if (child->IsText()) {
-        NGInlineCursor cursor;
+        InlineCursor cursor;
         for (cursor.MoveTo(*child); cursor;
              cursor.MoveToNextForSameLayoutObject()) {
           const NGFragmentItem* item = cursor.CurrentItem();
@@ -1193,7 +1193,7 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   // Keep the text fragment to compare later.
   Element* inner_span = GetElementById("inner_span");
   Node* text = inner_span->firstChild();
-  NGInlineCursor before_split;
+  InlineCursor before_split;
   before_split.MoveTo(*text->GetLayoutObject());
   EXPECT_TRUE(before_split);
 
@@ -1216,7 +1216,7 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
 
   // Update layout. There should be a different instance of the text fragment.
   UpdateAllLifecyclePhasesForTest();
-  NGInlineCursor after_layout;
+  InlineCursor after_layout;
   after_layout.MoveTo(*text->GetLayoutObject());
   EXPECT_TRUE(after_layout);
 
@@ -1224,7 +1224,7 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   LayoutBlock* inner_span_cb = inner_span->GetLayoutObject()->ContainingBlock();
   LayoutObject* container = GetLayoutObjectByElementId("container");
   EXPECT_EQ(inner_span_cb, container);
-  NGInlineCursor inner_span_cb_cursor(*To<LayoutBlockFlow>(inner_span_cb));
+  InlineCursor inner_span_cb_cursor(*To<LayoutBlockFlow>(inner_span_cb));
   inner_span_cb_cursor.MoveToFirstLine();
   inner_span_cb_cursor.MoveToFirstChild();
   EXPECT_TRUE(inner_span_cb_cursor);

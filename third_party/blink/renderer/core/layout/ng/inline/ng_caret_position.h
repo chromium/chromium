@@ -38,7 +38,7 @@ struct NGCaretPosition {
   Position ToPositionInDOMTree() const;
   PositionWithAffinity ToPositionInDOMTreeWithAffinity() const;
 
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   NGCaretPositionType position_type;
   absl::optional<unsigned> text_offset;
 };

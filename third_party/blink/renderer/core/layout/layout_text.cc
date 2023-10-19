@@ -323,7 +323,7 @@ void LayoutText::DetachAbstractInlineTextBoxes() {
   has_abstract_inline_text_box_ = false;
   // TODO(yosin): Make sure we call this function within valid containg block
   // of |this|.
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
     NGAbstractInlineTextBox::WillDestroy(cursor);
 }
@@ -374,7 +374,7 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
   Vector<TextBoxInfo> results;
   if (const NGOffsetMapping* mapping = GetNGOffsetMapping()) {
     bool in_hidden_for_paint = false;
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       // TODO(yosin): We should introduce |NGFragmentItem::IsTruncated()| to
@@ -499,7 +499,7 @@ void LayoutText::CollectLineBoxRects(const PhysicalRectCollector& yield,
                                      ClippingOption option) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       if (UNLIKELY(option != ClippingOption::kNoClipping)) {
@@ -601,7 +601,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
 
     // Find fragments that have text for the specified range.
     DCHECK_LE(start, end);
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     bool is_last_end_included = false;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
       const NGFragmentItem& item = *cursor.Current();
@@ -684,7 +684,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
     // attempt to find a fragment containing |point|.
     // See All/LayoutViewHitTestTest.HitTestHorizontal/* and
     // All/LayoutViewHitTestTest.HitTestVerticalRL/*
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     const LayoutBlockFlow* containing_block_flow = cursor.GetLayoutBlockFlow();
     DCHECK(containing_block_flow);
@@ -765,7 +765,7 @@ bool LayoutText::ContainsOnlyWhitespace(unsigned from, unsigned len) const {
 UChar32 LayoutText::FirstCharacterAfterWhitespaceCollapsing() const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     if (cursor) {
       const StringView text = cursor.Current().Text(cursor);
@@ -778,7 +778,7 @@ UChar32 LayoutText::FirstCharacterAfterWhitespaceCollapsing() const {
 UChar32 LayoutText::LastCharacterAfterWhitespaceCollapsing() const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     if (cursor) {
       const StringView text = cursor.Current().Text(cursor);
@@ -795,7 +795,7 @@ PhysicalOffset LayoutText::FirstLineBoxTopLeft() const {
     // are not safe to read for dirty-tree. crbug.com/963103
     if (UNLIKELY(!IsFirstInlineFragmentSafe()))
       return PhysicalOffset();
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     return cursor ? cursor.Current().OffsetInContainerFragment()
                   : PhysicalOffset();
@@ -808,7 +808,7 @@ void LayoutText::LogicalStartingPointAndHeight(
     LayoutUnit& logical_height) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     if (!cursor)
       return;
@@ -1100,7 +1100,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
     float scaling_factor =
         svg_inline_text ? svg_inline_text->ScalingFactor() : 1.0f;
     PhysicalRect rect;
-    NGInlineCursor cursor(*FragmentItemsContainer());
+    InlineCursor cursor(*FragmentItemsContainer());
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
       if (cursor.Current().IsHiddenForPaint())
         continue;
@@ -1139,7 +1139,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
 
 void LayoutText::InvalidateVisualOverflow() {
   DCHECK(IsInLayoutNGInlineFormattingContext());
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
     cursor.Current()->GetMutableForPainting().InvalidateInkOverflow();
 }
@@ -1329,7 +1329,7 @@ void LayoutText::MomentarilyRevealLastTypedCharacter(
 NGAbstractInlineTextBox* LayoutText::FirstAbstractInlineTextBox() {
   NOT_DESTROYED();
   DCHECK(IsInLayoutNGInlineFormattingContext());
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*this);
   return NGAbstractInlineTextBox::GetOrCreate(cursor);
 }
@@ -1352,7 +1352,7 @@ void LayoutText::InvalidateDisplayItemClients(
 
   if (IsInLayoutNGInlineFormattingContext()) {
 #if DCHECK_IS_ON()
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
       DCHECK_EQ(cursor.Current().GetDisplayItemClient(), this);
 #endif

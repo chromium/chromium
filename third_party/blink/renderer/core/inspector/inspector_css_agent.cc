@@ -1593,7 +1593,7 @@ void InspectorCSSAgent::CollectPlatformFontsForLayoutObject(
 
   FontCachePurgePreventer preventer;
   DCHECK(layout_object->IsInLayoutNGInlineFormattingContext());
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*layout_object);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const ShapeResultView* shape_result = cursor.Current().TextShapeResult();

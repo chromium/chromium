@@ -69,7 +69,7 @@ class MutableFragmentDataIterator
 
 // FragmentData iterator, accompanied by "corresponding" NG layout structures.
 // For LayoutBox, this means NGPhysicalBoxFragment. For non-atomic inlines, it
-// means NGInlineCursor. For non-atomic inlines, this also means that Advance()
+// means InlineCursor. For non-atomic inlines, this also means that Advance()
 // will stop for each line on which the LayoutObject is represented. There may
 // be multiple lines per FragmentData (whereas there's just one FragmentData per
 // fragmentainer), meaning that Advance() may stop several times at the same
@@ -80,7 +80,7 @@ class AccompaniedFragmentIterator : public FragmentDataIterator {
  public:
   explicit AccompaniedFragmentIterator(const LayoutObject&);
 
-  const NGInlineCursor* Cursor() { return cursor_ ? &(*cursor_) : nullptr; }
+  const InlineCursor* Cursor() { return cursor_ ? &(*cursor_) : nullptr; }
   const NGPhysicalBoxFragment* GetPhysicalBoxFragment() const;
 
   // Advance the iterator. For LayoutBox fragments this also means that we're
@@ -91,7 +91,7 @@ class AccompaniedFragmentIterator : public FragmentDataIterator {
   bool Advance();
 
  private:
-  absl::optional<NGInlineCursor> cursor_;
+  absl::optional<InlineCursor> cursor_;
   const LayoutBox* ng_layout_box_ = nullptr;
   wtf_size_t box_fragment_index_ = 0u;
 };

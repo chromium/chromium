@@ -52,8 +52,8 @@ class LocalFrame;
 class FrameCaret;
 class GranularityStrategy;
 class GraphicsContext;
-class NGInlineCursor;
-class NGInlineCursorPosition;
+class InlineCursor;
+class InlineCursorPosition;
 class NGPhysicalBoxFragment;
 class Range;
 class SelectionEditor;
@@ -312,9 +312,9 @@ class CORE_EXPORT FrameSelection final
   LayoutTextSelectionStatus ComputeLayoutSelectionStatus(
       const LayoutText& text) const;
   LayoutSelectionStatus ComputeLayoutSelectionStatus(
-      const NGInlineCursor& cursor) const;
+      const InlineCursor& cursor) const;
   SelectionState ComputePaintingSelectionStateForCursor(
-      const NGInlineCursorPosition& position) const;
+      const InlineCursorPosition& position) const;
 
   void Trace(Visitor*) const override;
 

@@ -64,7 +64,7 @@ LayoutSVGInline::LayoutSVGInline(Element* element) : LayoutInline(element) {
 
 bool LayoutSVGInline::IsObjectBoundingBoxValid() const {
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     return cursor.IsNotNull();
   }
@@ -72,13 +72,13 @@ bool LayoutSVGInline::IsObjectBoundingBoxValid() const {
 }
 
 // static
-void LayoutSVGInline::ObjectBoundingBoxForCursor(NGInlineCursor& cursor,
+void LayoutSVGInline::ObjectBoundingBoxForCursor(InlineCursor& cursor,
                                                  gfx::RectF& bounds) {
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const NGFragmentItem& item = *cursor.CurrentItem();
     if (item.Type() == NGFragmentItem::kSvgText) {
       bounds.Union(cursor.Current().ObjectBoundingBox(cursor));
-    } else if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
+    } else if (InlineCursor descendants = cursor.CursorForDescendants()) {
       for (; descendants; descendants.MoveToNext()) {
         const NGFragmentItem& descendant_item = *descendants.CurrentItem();
         if (descendant_item.Type() == NGFragmentItem::kSvgText)
@@ -92,7 +92,7 @@ gfx::RectF LayoutSVGInline::ObjectBoundingBox() const {
   NOT_DESTROYED();
   gfx::RectF bounds;
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     ObjectBoundingBoxForCursor(cursor, bounds);
   }
@@ -130,7 +130,7 @@ void LayoutSVGInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     for (cursor.MoveToIncludingCulledInline(*this); cursor;
          cursor.MoveToNextForSameLayoutObject()) {
       const NGFragmentItem& item = *cursor.CurrentItem();

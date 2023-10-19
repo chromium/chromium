@@ -19,7 +19,7 @@ void BlockFlowPaintInvalidator::InvalidateDisplayItemClients(
   ObjectPaintInvalidator object_paint_invalidator(block_flow_);
   object_paint_invalidator.InvalidateDisplayItemClient(block_flow_, reason);
 
-  NGInlineCursor cursor(block_flow_);
+  InlineCursor cursor(block_flow_);
   if (cursor) {
     // Line boxes record hit test data (see NGBoxFragmentPainter::PaintLineBox)
     // and should be invalidated if they change.

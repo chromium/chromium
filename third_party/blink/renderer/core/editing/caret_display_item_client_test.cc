@@ -651,7 +651,7 @@ TEST_P(CaretDisplayItemClientTest, FullDocumentPaintingWithCaret) {
   auto& div = *To<Element>(GetDocument().body()->firstChild());
   auto& layout_text = *To<Text>(div.firstChild())->GetLayoutObject();
   DCHECK(layout_text.IsInLayoutNGInlineFormattingContext());
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(layout_text);
   const DisplayItemClient* text_inline_box =
       cursor.Current().GetDisplayItemClient();

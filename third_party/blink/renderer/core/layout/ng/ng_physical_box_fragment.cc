@@ -905,7 +905,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
     }
 
     void AddLineBoxChild(const NGFragmentItem& child,
-                         const NGInlineCursor& cursor) {
+                         const InlineCursor& cursor) {
       DCHECK_EQ(&child, cursor.CurrentItem());
       DCHECK_EQ(child.Type(), NGFragmentItem::kLine);
       if (padding_strut)
@@ -947,7 +947,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
 
   // Traverse child items.
   if (items) {
-    for (NGInlineCursor cursor(*this, *items); cursor;
+    for (InlineCursor cursor(*this, *items); cursor;
          cursor.MoveToNextSkippingChildren()) {
       const NGFragmentItem* item = cursor.CurrentItem();
       if (item->Type() == NGFragmentItem::kLine) {
@@ -1011,7 +1011,7 @@ NGPhysicalBoxFragment::InlineContainerFragmentIfOutlineOwner() const {
   const LayoutObject* layout_object = GetLayoutObject();
   DCHECK(layout_object);
   DCHECK(layout_object->IsLayoutInline());
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*layout_object);
   DCHECK(cursor);
   if (cursor.Current().BoxFragment() == this)
@@ -1148,7 +1148,7 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
 
   PhysicalRect contents_rect;
   if (const NGFragmentItems* items = Items()) {
-    NGInlineCursor cursor(*this, *items);
+    InlineCursor cursor(*this, *items);
     NGInlinePaintContext child_inline_context;
     contents_rect = NGFragmentItem::RecalcInkOverflowForCursor(
         &cursor, &child_inline_context);
@@ -1160,7 +1160,7 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
     if (UNLIKELY(text_combine)) {
       // Reset the cursor for text combine to provide a current item for
       // decorations.
-      NGInlineCursor text_combine_cursor(*this, *items);
+      InlineCursor text_combine_cursor(*this, *items);
       contents_rect.Unite(
           text_combine->RecalcContentsInkOverflow(text_combine_cursor));
     }
@@ -1362,7 +1362,7 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
   DCHECK(GetLayoutObject()->IsLayoutInline());
   const auto* layout_object = To<LayoutInline>(GetLayoutObject());
   auto* cursor_collector = collector.ForDescendantCollector();
-  NGInlineCursor cursor(*container);
+  InlineCursor cursor(*container);
   cursor.MoveTo(*layout_object);
   DCHECK(cursor);
   const PhysicalOffset this_offset_in_container =
@@ -1371,7 +1371,7 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
   bool has_this_fragment = false;
 #endif
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-    const NGInlineCursorPosition& current = cursor.Current();
+    const InlineCursorPosition& current = cursor.Current();
 #if DCHECK_IS_ON()
     has_this_fragment = has_this_fragment || current.BoxFragment() == this;
 #endif
@@ -1386,7 +1386,7 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
     // Add descendants if any, in the container-relative coordinate.
     if (!current.HasChildren())
       continue;
-    NGInlineCursor descendants = cursor.CursorForDescendants();
+    InlineCursor descendants = cursor.CursorForDescendants();
     AddOutlineRectsForCursor(*cursor_collector, PhysicalOffset(), outline_type,
                              layout_object, &descendants);
   }
@@ -1445,7 +1445,7 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
 
   if (!layout_object_->ChildPaintBlockedByDisplayLock()) {
     if (const NGFragmentItems* items = Items()) {
-      NGInlineCursor cursor(*this, *items);
+      InlineCursor cursor(*this, *items);
       if (const PositionWithAffinity position =
               cursor.PositionForPointInInlineFormattingContext(
                   point_in_contents, *this))
@@ -1844,7 +1844,7 @@ void NGPhysicalBoxFragment::AssertFragmentTreeSelf() const {
 void NGPhysicalBoxFragment::AssertFragmentTreeChildren(
     bool allow_destroyed_or_moved) const {
   if (const NGFragmentItems* items = Items()) {
-    for (NGInlineCursor cursor(*this, *items); cursor; cursor.MoveToNext()) {
+    for (InlineCursor cursor(*this, *items); cursor; cursor.MoveToNext()) {
       const NGFragmentItem& item = *cursor.Current();
       if (item.IsLayoutObjectDestroyedOrMoved()) {
         DCHECK(allow_destroyed_or_moved);

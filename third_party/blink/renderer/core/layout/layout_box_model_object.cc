@@ -413,7 +413,7 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
   // |NGFragmentItem| in the inline formatting context.
   if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
     DCHECK(HasSelfPaintingLayer());
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     NGInlinePaintContext inline_context;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
       NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(

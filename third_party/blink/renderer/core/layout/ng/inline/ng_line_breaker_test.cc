@@ -160,7 +160,7 @@ TEST_F(NGLineBreakerTest, FitWithEpsilon) {
   EXPECT_EQ(1u, lines.size());
 
   // Make sure ellipsizing code use the same |HasOverflow|.
-  NGInlineCursor cursor(*node.GetLayoutBlockFlow());
+  InlineCursor cursor(*node.GetLayoutBlockFlow());
   for (; cursor; cursor.MoveToNext())
     EXPECT_FALSE(cursor.Current().IsEllipsis());
 }
@@ -895,7 +895,7 @@ TEST_F(NGLineBreakerTest, ForcedBreakFollowedByCloseTag) {
   const LayoutObject* container = GetLayoutObjectByElementId("container");
   for (const LayoutObject* child = container->SlowFirstChild(); child;
        child = child->NextSibling()) {
-    NGInlineCursor cursor(*To<LayoutBlockFlow>(child));
+    InlineCursor cursor(*To<LayoutBlockFlow>(child));
     wtf_size_t line_count = 0;
     for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine())
       ++line_count;

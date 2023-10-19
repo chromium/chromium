@@ -741,7 +741,7 @@ class CORE_EXPORT NGPhysicalFragment
       const ComputedStyle& container_style,
       const NGFragmentItem& line,
       bool has_hanging,
-      const NGInlineCursor& cursor,
+      const InlineCursor& cursor,
       TextHeightType height_type,
       PhysicalRect* overflow) const;
 
@@ -759,7 +759,7 @@ class CORE_EXPORT NGPhysicalFragment
                                 const PhysicalOffset& additional_offset,
                                 NGOutlineType outline_type,
                                 const LayoutBoxModelObject* containing_block,
-                                NGInlineCursor* cursor) const;
+                                InlineCursor* cursor) const;
   void AddOutlineRectsForDescendant(
       const NGLink& descendant,
       OutlineRectCollector& collector,

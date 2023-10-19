@@ -24,7 +24,7 @@ class LayoutTextCombineTest : public RenderingTest {
   std::string AsInkOverflowString(const LayoutBlockFlow& root) {
     std::ostringstream ostream;
     ostream << std::endl;
-    for (NGInlineCursor cursor(root); cursor; cursor.MoveToNext()) {
+    for (InlineCursor cursor(root); cursor; cursor.MoveToNext()) {
       ostream << cursor.CurrentItem() << std::endl;
       ostream << "                 Rect "
               << cursor.CurrentItem()->RectInContainerFragment() << std::endl;
@@ -1504,7 +1504,7 @@ TEST_F(LayoutTextCombineTest, WithTextIndent) {
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XYZ</c>de</div>");
   const auto& text_xyz = *To<Text>(GetElementById("combine")->firstChild());
 
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*text_xyz.GetLayoutObject());
 
   EXPECT_EQ(PhysicalRect(0, 0, 60, 20),

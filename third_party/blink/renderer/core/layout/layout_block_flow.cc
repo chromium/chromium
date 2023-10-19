@@ -705,7 +705,7 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
     return;
   }
   for (const NGPhysicalBoxFragment& fragment : fragments) {
-    NGInlineCursor first_line(fragment);
+    InlineCursor first_line(fragment);
     if (!first_line) {
       continue;
     }
@@ -715,7 +715,7 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
     }
     if (first_line.Current().UsesFirstLineStyle()) {
       // Mark all descendants of the first line if first-line style.
-      for (NGInlineCursor descendants = first_line.CursorForDescendants();
+      for (InlineCursor descendants = first_line.CursorForDescendants();
            descendants; descendants.MoveToNext()) {
         const NGFragmentItem* item = descendants.Current().Item();
         if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {

@@ -178,10 +178,10 @@ TEST_F(LayoutInlineTest, RegionHitTest) {
   ASSERT_TRUE(lots_of_boxes->IsInLayoutNGInlineFormattingContext());
 
   const auto* div = To<LayoutBlockFlow>(lots_of_boxes->Parent());
-  NGInlineCursor cursor(*div);
+  InlineCursor cursor(*div);
   for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine()) {
     DCHECK(cursor.Current().IsLineBox());
-    NGInlineCursor line_cursor = cursor.CursorForDescendants();
+    InlineCursor line_cursor = cursor.CursorForDescendants();
     bool hit_outcome = lots_of_boxes->HitTestCulledInline(
         hit_result, location, hit_offset, line_cursor);
     EXPECT_FALSE(hit_outcome);

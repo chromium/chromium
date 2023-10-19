@@ -19,8 +19,8 @@ class AffineTransform;
 class AppliedTextDecoration;
 class ComputedStyle;
 class Font;
+class InlineCursor;
 class NGFragmentItem;
-class NGInlineCursor;
 class NGInlinePaintContext;
 class Text;
 struct LogicalRect;
@@ -121,7 +121,7 @@ class CORE_EXPORT NGInkOverflow {
 
   // Compute and set ink overflow for text.
   Type SetTextInkOverflow(Type type,
-                          const NGInlineCursor& cursor,
+                          const InlineCursor& cursor,
                           const NGTextFragmentPaintInfo& text_info,
                           const ComputedStyle& style,
                           const PhysicalRect& rect_in_container,
@@ -132,7 +132,7 @@ class CORE_EXPORT NGInkOverflow {
   // |rect| represents scaled rectangle, and |*ink_overflow_out| will store
   // unscaled rectangle.
   Type SetSvgTextInkOverflow(Type type,
-                             const NGInlineCursor& cursor,
+                             const InlineCursor& cursor,
                              const NGTextFragmentPaintInfo& text_info,
                              const ComputedStyle& style,
                              const Font& scaled_font,
@@ -143,7 +143,7 @@ class CORE_EXPORT NGInkOverflow {
                              PhysicalRect* ink_overflow_out);
 
   static absl::optional<PhysicalRect> ComputeTextInkOverflow(
-      const NGInlineCursor& cursor,
+      const InlineCursor& cursor,
       const NGTextFragmentPaintInfo& text_info,
       const ComputedStyle& style,
       const Font& scaled_font,
@@ -165,7 +165,7 @@ class CORE_EXPORT NGInkOverflow {
   // Returns ink-overflow with text decoration, markers and highlights
   // overflow in the logical direction.
   static LogicalRect ComputeDecorationOverflow(
-      const NGInlineCursor& cursor,
+      const InlineCursor& cursor,
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalOffset& container_offset,

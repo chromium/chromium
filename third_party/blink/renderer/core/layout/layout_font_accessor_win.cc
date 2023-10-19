@@ -26,7 +26,7 @@ void GetFontsUsedByLayoutObject(const LayoutObject& layout_object,
 
 void GetFontsUsedByFragment(const NGPhysicalBoxFragment& fragment,
                             FontFamilyNames& result) {
-  for (NGInlineCursor cursor(fragment); cursor; cursor.MoveToNext()) {
+  for (InlineCursor cursor(fragment); cursor; cursor.MoveToNext()) {
     const NGFragmentItem& item = *cursor.Current().Item();
     if (item.IsText()) {
       const ShapeResultView* shape_result_view = item.TextShapeResult();
@@ -64,7 +64,7 @@ void GetFontsUsedByLayoutObject(const LayoutObject& layout_object,
                                 FontFamilyNames& result) {
   const LayoutObject* target = &layout_object;
   while (target) {
-    // Use |NGInlineCursor| to traverse if |target| is an IFC.
+    // Use |InlineCursor| to traverse if |target| is an IFC.
     if (const auto* block_flow = DynamicTo<LayoutBlockFlow>(target)) {
       if (block_flow->HasFragmentItems()) {
         for (const NGPhysicalBoxFragment& fragment :

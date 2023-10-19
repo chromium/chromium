@@ -43,7 +43,7 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
     LayoutObject& body = *GetDocument().body()->GetLayoutObject();
     const auto& block_flow = To<LayoutNGBlockFlow>(body);
     NGInlinePaintContext inline_context{};
-    NGInlineCursor cursor{block_flow};
+    InlineCursor cursor{block_flow};
     cursor.MoveToFirstLine();
     inline_context.SetLineBox(cursor);
     cursor.MoveTo(*block_flow.FirstChild());

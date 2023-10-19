@@ -188,7 +188,7 @@ void NGFragmentItems::ClearAssociatedFragments(LayoutObject* container) {
 }
 
 // static
-bool NGFragmentItems::CanReuseAll(NGInlineCursor* cursor) {
+bool NGFragmentItems::CanReuseAll(InlineCursor* cursor) {
   for (; *cursor; cursor->MoveToNext()) {
     const NGFragmentItem& item = *cursor->Current().Item();
     if (!item.CanReuse())
@@ -200,7 +200,7 @@ bool NGFragmentItems::CanReuseAll(NGInlineCursor* cursor) {
 const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     const NGPhysicalBoxFragment& container) const {
   const NGFragmentItem* last_line_start = &front();
-  for (NGInlineCursor cursor(container, *this); cursor;) {
+  for (InlineCursor cursor(container, *this); cursor;) {
     const NGFragmentItem& item = *cursor.Current();
     if (item.IsDirty())
       return &item;
@@ -213,7 +213,7 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     // If there is a dirty item in the middle of a line, its previous line is
     // not reusable, because the dirty item may affect the previous line to wrap
     // differently.
-    NGInlineCursor line = cursor.CursorForDescendants();
+    InlineCursor line = cursor.CursorForDescendants();
     if (!CanReuseAll(&line))
       return last_line_start;
 
@@ -294,7 +294,7 @@ bool NGFragmentItems::IsContainerForCulledInline(
     if (item_idx < start_idx) {
       // This descendant doesn't start here. But does it occur here?
       *is_first_container = false;
-      NGInlineCursor cursor;
+      InlineCursor cursor;
       for (cursor.MoveTo(*descendant); cursor.Current() && item_idx < end_idx;
            cursor.MoveToNextForSameLayoutObject()) {
         item_idx += cursor.Current()->DeltaToNextForSameLayoutObject();
@@ -342,7 +342,7 @@ bool NGFragmentItems::IsContainerForCulledInline(
 bool NGFragmentItems::TryDirtyFirstLineFor(const LayoutObject& layout_object,
                                            const LayoutBlockFlow& container) {
   DCHECK(layout_object.IsDescendantOf(&container));
-  NGInlineCursor cursor(container);
+  InlineCursor cursor(container);
   cursor.MoveTo(layout_object);
   if (!cursor)
     return false;
@@ -356,7 +356,7 @@ bool NGFragmentItems::TryDirtyFirstLineFor(const LayoutObject& layout_object,
 bool NGFragmentItems::TryDirtyLastLineFor(const LayoutObject& layout_object,
                                           const LayoutBlockFlow& container) {
   DCHECK(layout_object.IsDescendantOf(&container));
-  NGInlineCursor cursor(container);
+  InlineCursor cursor(container);
   cursor.MoveTo(layout_object);
   if (!cursor)
     return false;
@@ -454,8 +454,7 @@ bool NGFragmentItems::ReplaceBoxFragment(
     const NGPhysicalBoxFragment& old_fragment,
     const NGPhysicalBoxFragment& new_fragment,
     const NGPhysicalBoxFragment& containing_fragment) {
-  for (NGInlineCursor cursor(containing_fragment); cursor;
-       cursor.MoveToNext()) {
+  for (InlineCursor cursor(containing_fragment); cursor; cursor.MoveToNext()) {
     const NGFragmentItem* item = cursor.Current().Item();
     if (item->BoxFragment() != &old_fragment)
       continue;
@@ -468,7 +467,7 @@ bool NGFragmentItems::ReplaceBoxFragment(
 // static
 void NGFragmentItems::LayoutObjectWillBeMoved(
     const LayoutObject& layout_object) {
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(layout_object);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const NGFragmentItem* item = cursor.Current().Item();
@@ -479,7 +478,7 @@ void NGFragmentItems::LayoutObjectWillBeMoved(
 // static
 void NGFragmentItems::LayoutObjectWillBeDestroyed(
     const LayoutObject& layout_object) {
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(layout_object);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const NGFragmentItem* item = cursor.Current().Item();

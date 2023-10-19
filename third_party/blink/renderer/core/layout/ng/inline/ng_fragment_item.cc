@@ -552,15 +552,15 @@ NGTextOffsetRange NGFragmentItem::TextOffset() const {
 }
 
 unsigned NGFragmentItem::StartOffsetInContainer(
-    const NGInlineCursor& container) const {
+    const InlineCursor& container) const {
   DCHECK_EQ(Type(), kGeneratedText);
   DCHECK(!IsEllipsis());
   // Hyphens don't have the text offset in the container. Find the closest
   // previous text fragment.
   DCHECK_EQ(container.Current().Item(), this);
-  NGInlineCursor cursor(container);
+  InlineCursor cursor(container);
   for (cursor.MoveToPrevious(); cursor; cursor.MoveToPrevious()) {
-    const NGInlineCursorPosition& current = cursor.Current();
+    const InlineCursorPosition& current = cursor.Current();
     if (current->IsText() && !current->IsLayoutGeneratedText())
       return current->EndOffset();
     // A box doesn't have the offset either.
@@ -793,7 +793,7 @@ PhysicalRect NGFragmentItem::LocalVisualRectFor(
   DCHECK(layout_object.IsInLayoutNGInlineFormattingContext());
 
   PhysicalRect visual_rect;
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   for (cursor.MoveTo(layout_object); cursor;
        cursor.MoveToNextForSameLayoutObject()) {
     DCHECK(cursor.Current().Item());
@@ -813,7 +813,7 @@ void NGFragmentItem::InvalidateInkOverflow() {
 }
 
 PhysicalRect NGFragmentItem::RecalcInkOverflowForCursor(
-    NGInlineCursor* cursor,
+    InlineCursor* cursor,
     NGInlinePaintContext* inline_context) {
   DCHECK(cursor);
   DCHECK(!cursor->Current() || cursor->IsAtFirst());
@@ -841,7 +841,7 @@ PhysicalRect NGFragmentItem::RecalcInkOverflowForCursor(
 }
 
 void NGFragmentItem::RecalcInkOverflow(
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     NGInlinePaintContext* inline_context,
     PhysicalRect* self_and_contents_rect_out) {
   DCHECK_EQ(this, cursor.CurrentItem());
@@ -941,10 +941,10 @@ void NGFragmentItem::RecalcInkOverflow(
 }
 
 PhysicalRect NGFragmentItem::RecalcInkOverflowForDescendantsOf(
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     NGInlinePaintContext* inline_context) const {
   // Re-compute descendants, then compute the contents ink overflow from them.
-  NGInlineCursor descendants_cursor = cursor.CursorForDescendants();
+  InlineCursor descendants_cursor = cursor.CursorForDescendants();
   PhysicalRect contents_rect =
       RecalcInkOverflowForCursor(&descendants_cursor, inline_context);
 
@@ -1076,7 +1076,7 @@ PhysicalRect NGFragmentItem::ComputeTextBoundsRectForHitTest(
 
 PositionWithAffinity NGFragmentItem::PositionForPointInText(
     const PhysicalOffset& point,
-    const NGInlineCursor& cursor) const {
+    const InlineCursor& cursor) const {
   DCHECK(Type() == kText || Type() == kSvgText);
   DCHECK_EQ(cursor.CurrentItem(), this);
   if (IsGeneratedText())
@@ -1087,7 +1087,7 @@ PositionWithAffinity NGFragmentItem::PositionForPointInText(
 
 PositionWithAffinity NGFragmentItem::PositionForPointInText(
     unsigned text_offset,
-    const NGInlineCursor& cursor) const {
+    const InlineCursor& cursor) const {
   DCHECK(Type() == kText || Type() == kSvgText);
   DCHECK_EQ(cursor.CurrentItem(), this);
   DCHECK(!IsGeneratedText());

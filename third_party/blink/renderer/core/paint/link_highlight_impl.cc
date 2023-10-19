@@ -319,7 +319,7 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
     // See gesture-tapHighlight-simple-nested.html
     if (use_rounded_rects && object->IsLayoutInline() &&
         object->IsInLayoutNGInlineFormattingContext()) {
-      NGInlineCursor cursor;
+      InlineCursor cursor;
       cursor.MoveTo(*object);
       // When |LayoutInline| has more than one children, we render square
       // rectangle as |NGPaintFragment|.

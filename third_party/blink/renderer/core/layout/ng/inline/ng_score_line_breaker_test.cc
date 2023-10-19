@@ -156,7 +156,7 @@ TEST_F(NGScoreLineBreakerTest, BalanceMaxLinesExceeded) {
     </div>
   )HTML");
   const LayoutBlockFlow* target = GetLayoutBlockFlowByElementId("target");
-  NGInlineCursor cursor(*target);
+  InlineCursor cursor(*target);
   cursor.MoveToLastLine();
   cursor.MoveToNext();
   // Neitehr `balance` nor `pretty` should be applied.

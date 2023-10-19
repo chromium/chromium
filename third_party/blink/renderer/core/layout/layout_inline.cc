@@ -276,7 +276,7 @@ PhysicalRect LayoutInline::LocalCaretRect(
       LocalCaretRectForEmptyElement(inline_size, LayoutUnit());
 
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     if (cursor) {
       if (RuntimeEnabledFeatures::EmptyCaretInVerticalEnabled()) {
@@ -415,12 +415,12 @@ void LayoutInline::CollectLineBoxRects(
     const PhysicalRectCollector& yield) const {
   NOT_DESTROYED();
   if (!IsInLayoutNGInlineFormattingContext()) {
-    // NGInlineCursor::MoveToIncludingCulledInline() below would fail DCHECKs in
+    // InlineCursor::MoveToIncludingCulledInline() below would fail DCHECKs in
     // this situation, so just bail. This is most likely not a good situation to
     // be in, though. See crbug.com/1448357
     return;
   }
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     yield(cursor.CurrentRectInBlockFlow());
@@ -491,7 +491,7 @@ absl::optional<PhysicalOffset> LayoutInline::FirstLineBoxTopLeftInternal()
     const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     if (!cursor)
       return absl::nullopt;
@@ -604,7 +604,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
     // PaintLayer::HitTestContents() without going through any ancestor, in
     // which case the element must have self painting layer.
     DCHECK(HasSelfPaintingLayer());
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     if (!cursor)
       return false;
@@ -647,7 +647,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
 bool LayoutInline::HitTestCulledInline(HitTestResult& result,
                                        const HitTestLocation& hit_test_location,
                                        const PhysicalOffset& accumulated_offset,
-                                       const NGInlineCursor& parent_cursor) {
+                                       const InlineCursor& parent_cursor) {
   NOT_DESTROYED();
   if (!VisibleToHitTestRequest(result.GetHitTestRequest()))
     return false;
@@ -661,7 +661,7 @@ bool LayoutInline::HitTestCulledInline(HitTestResult& result,
   // Iterate fragments for |this|, including culled inline, but only that are
   // descendants of |parent_cursor|.
   DCHECK(IsDescendantOf(parent_cursor.GetLayoutBlockFlow()));
-  NGInlineCursor cursor(parent_cursor);
+  InlineCursor cursor(parent_cursor);
   cursor.MoveToIncludingCulledInline(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     // Block-in-inline is inline in the box tree, and may appear as a child of
@@ -704,7 +704,7 @@ PhysicalRect LayoutInline::PhysicalLinesBoundingBox() const {
   NOT_DESTROYED();
 
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     PhysicalRect bounding_box;
     for (; cursor; cursor.MoveToNextForSameLayoutObject())
@@ -718,7 +718,7 @@ PhysicalRect LayoutInline::LinesVisualOverflowBoundingBox() const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
     PhysicalRect result;
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       PhysicalRect child_rect = cursor.Current().InkOverflow();
@@ -973,7 +973,7 @@ void LayoutInline::InvalidateDisplayItemClients(
     if (!ShouldCreateBoxFragment())
       return;
 #if DCHECK_IS_ON()
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
       DCHECK_EQ(cursor.Current().GetDisplayItemClient(), this);
 #endif

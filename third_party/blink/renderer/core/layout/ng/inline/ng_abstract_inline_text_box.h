@@ -10,7 +10,7 @@
 
 namespace blink {
 
-class NGInlineCursor;
+class InlineCursor;
 
 // High-level abstraction of a text box fragment, to allow the accessibility
 // module to get information without tight coupling.
@@ -19,13 +19,13 @@ class CORE_EXPORT NGAbstractInlineTextBox final
  private:
   // Returns existing or newly created |NGAbstractInlineTextBox|.
   // * |cursor| should be attached to a text item.
-  static NGAbstractInlineTextBox* GetOrCreate(const NGInlineCursor& cursor);
-  static void WillDestroy(const NGInlineCursor& cursor);
+  static NGAbstractInlineTextBox* GetOrCreate(const InlineCursor& cursor);
+  static void WillDestroy(const InlineCursor& cursor);
 
   friend class LayoutText;
 
  public:
-  explicit NGAbstractInlineTextBox(const NGInlineCursor& cursor);
+  explicit NGAbstractInlineTextBox(const InlineCursor& cursor);
   ~NGAbstractInlineTextBox();
   void Trace(Visitor* visitor) const;
 
@@ -65,8 +65,8 @@ class CORE_EXPORT NGAbstractInlineTextBox final
 
  private:
   LayoutText* GetFirstLetterPseudoLayoutText() const;
-  NGInlineCursor GetCursor() const;
-  NGInlineCursor GetCursorOnLine() const;
+  InlineCursor GetCursor() const;
+  InlineCursor GetCursorOnLine() const;
   String GetTextContent() const;
 
   // NGFragmentItem index in root_box_fragment_'s NGFragmentItems.

@@ -3484,7 +3484,7 @@ RecalcLayoutOverflowResult LayoutBox::RecalcChildLayoutOverflowNG() {
     const auto& fragment =
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
     if (fragment.HasItems()) {
-      for (NGInlineCursor cursor(fragment); cursor; cursor.MoveToNext()) {
+      for (InlineCursor cursor(fragment); cursor; cursor.MoveToNext()) {
         const NGPhysicalBoxFragment* child =
             cursor.Current()->PostLayoutBoxFragment();
         if (!child || !child->GetLayoutObject()->IsBox())
@@ -4067,7 +4067,7 @@ TextDirection LayoutBox::ResolvedDirection() const {
   NOT_DESTROYED();
   if (IsInline() && IsAtomicInlineLevel() &&
       IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     if (cursor) {
       return cursor.Current().ResolvedDirection();
@@ -4361,7 +4361,7 @@ void ForEachAnchorQueryOnContainer(const LayoutBox& box, Function func) {
   if (!inline_container->HasInlineFragments()) {
     return;
   }
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*container);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     if (const NGPhysicalBoxFragment* fragment =

@@ -51,14 +51,14 @@ FragmentItemsInVisualOrder(const LayoutObject& query_root) {
     }
   } else {
     DCHECK(query_root.IsInLayoutNGInlineFormattingContext());
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(query_root);
     items = &cursor.Items();
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       const NGFragmentItem& item = *cursor.CurrentItem();
       if (item.Type() == NGFragmentItem::kSvgText) {
         item_list.push_back(&item);
-      } else if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
+      } else if (InlineCursor descendants = cursor.CursorForDescendants()) {
         for (; descendants; descendants.MoveToNext()) {
           if (descendants.CurrentItem()->Type() == NGFragmentItem::kSvgText) {
             item_list.push_back(descendants.CurrentItem());

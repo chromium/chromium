@@ -31,7 +31,7 @@ class NGInlineBoxFragmentPainterBase {
 
  protected:
   NGInlineBoxFragmentPainterBase(const NGPhysicalFragment& inline_box_fragment,
-                                 const NGInlineCursor* inline_box_cursor,
+                                 const InlineCursor* inline_box_cursor,
                                  const NGFragmentItem& inline_box_item,
                                  const LayoutObject& layout_object,
                                  const ComputedStyle& style,
@@ -58,7 +58,7 @@ class NGInlineBoxFragmentPainterBase {
 
   // Constructor for |NGFragmentItem|.
   NGInlineBoxFragmentPainterBase(
-      const NGInlineCursor& inline_box_cursor,
+      const InlineCursor& inline_box_cursor,
       const NGFragmentItem& inline_box_item,
       const NGPhysicalBoxFragment& inline_box_fragment,
       const LayoutObject& layout_object,
@@ -148,7 +148,7 @@ class NGInlineBoxFragmentPainterBase {
 
   const NGPhysicalFragment& inline_box_fragment_;
   const NGFragmentItem& inline_box_item_;
-  const NGInlineCursor* inline_box_cursor_ = nullptr;
+  const InlineCursor* inline_box_cursor_ = nullptr;
   NGInlinePaintContext* inline_context_ = nullptr;
 };
 
@@ -159,7 +159,7 @@ class NGInlineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
 
  public:
   // Constructor for |NGFragmentItem|.
-  NGInlineBoxFragmentPainter(const NGInlineCursor& inline_box_cursor,
+  NGInlineBoxFragmentPainter(const InlineCursor& inline_box_cursor,
                              const NGFragmentItem& inline_box_item,
                              const NGPhysicalBoxFragment& inline_box_fragment,
                              NGInlinePaintContext* inline_context)
@@ -172,7 +172,7 @@ class NGInlineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
                                        inline_context) {
     CheckValid();
   }
-  NGInlineBoxFragmentPainter(const NGInlineCursor& inline_box_cursor,
+  NGInlineBoxFragmentPainter(const InlineCursor& inline_box_cursor,
                              const NGFragmentItem& inline_box_item,
                              NGInlinePaintContext* inline_context)
       : NGInlineBoxFragmentPainter(inline_box_cursor,

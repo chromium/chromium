@@ -64,7 +64,7 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
   auto& scroller = *GetLayoutBoxByElementId("scroller");
   const DisplayItemClient& root_fragment = scroller;
 
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*scroller.SlowFirstChild());
   const DisplayItemClient& text_fragment =
       *cursor.Current().GetDisplayItemClient();

@@ -13,7 +13,7 @@ namespace blink {
 
 namespace {
 
-String StringFromTextItem(const NGInlineCursor& cursor) {
+String StringFromTextItem(const InlineCursor& cursor) {
   return cursor.Current().Text(cursor).ToString().StripWhiteSpace();
 }
 
@@ -60,7 +60,7 @@ TEST_F(NGInlinePaintContextTest, MultiLine) {
   )HTML");
   // Test the `#span` fragment in the first line.
   const LayoutObject* span = GetLayoutObjectByElementId("span");
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*span);
   ASSERT_TRUE(cursor.Current());
   EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kBox);
@@ -125,7 +125,7 @@ TEST_F(NGInlinePaintContextTest, VerticalAlign) {
     </div>
   )HTML");
 
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   const LayoutObject* span1 = GetLayoutObjectByElementId("span1");
   cursor.MoveToIncludingCulledInline(*span1);
   EXPECT_EQ(cursor.Current().GetLayoutObject(), span1);
@@ -172,7 +172,7 @@ TEST_F(NGInlinePaintContextTest, NestedBlocks) {
 
   NGInlinePaintContext context;
   const auto* ifc = To<LayoutBlockFlow>(GetLayoutObjectByElementId("ifc"));
-  NGInlineCursor cursor(*ifc);
+  InlineCursor cursor(*ifc);
   cursor.MoveToFirstLine();
   context.SetLineBox(cursor);
   // Two text decorations are propagated to the `ifc`. The outer one does not

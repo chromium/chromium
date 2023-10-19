@@ -90,7 +90,7 @@ inline bool IsVisibleToPaint(const NGPhysicalFragment& fragment,
   if (UNLIKELY(fragment.IsAtomicInline() && fragment.HasSelfPaintingLayer())) {
     const LayoutObject* layout_object = fragment.GetLayoutObject();
     if (layout_object->IsInLayoutNGInlineFormattingContext()) {
-      NGInlineCursor cursor;
+      InlineCursor cursor;
       cursor.MoveTo(*layout_object);
       if (cursor && cursor.Current().IsHiddenForPaint())
         return false;
@@ -144,10 +144,10 @@ inline bool IsVisibleToHitTest(const NGPhysicalFragment& fragment,
 // @param physical_offset Physical offset of |fragment| in the paint layer.
 bool HitTestCulledInlineAncestors(
     HitTestResult& result,
-    const NGInlineCursor& parent_cursor,
+    const InlineCursor& parent_cursor,
     const LayoutObject* current,
     const LayoutObject* limit,
-    const NGInlineCursorPosition& previous_sibling,
+    const InlineCursorPosition& previous_sibling,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset fallback_accumulated_offset) {
   DCHECK(current != limit && current->IsDescendantOf(limit));
@@ -188,14 +188,13 @@ bool HitTestCulledInlineAncestors(
   return false;
 }
 
-bool HitTestCulledInlineAncestors(
-    HitTestResult& result,
-    const NGPhysicalBoxFragment& container,
-    const NGInlineCursor& parent_cursor,
-    const NGFragmentItem& item,
-    const NGInlineCursorPosition& previous_sibling,
-    const HitTestLocation& hit_test_location,
-    const PhysicalOffset& physical_offset) {
+bool HitTestCulledInlineAncestors(HitTestResult& result,
+                                  const NGPhysicalBoxFragment& container,
+                                  const InlineCursor& parent_cursor,
+                                  const NGFragmentItem& item,
+                                  const InlineCursorPosition& previous_sibling,
+                                  const HitTestLocation& hit_test_location,
+                                  const PhysicalOffset& physical_offset) {
   // Ellipsis can appear under a different parent from the ellipsized object
   // that it can confuse culled inline logic.
   if (UNLIKELY(item.IsEllipsis()))
@@ -218,7 +217,7 @@ bool HitTestCulledInlineAncestors(
 // This function traverses descendants of an inline formatting context in
 // pre-order DFS and build up backplates behind inline text boxes, each split at
 // the paragraph level. Store the results in paragraph_backplates.
-Vector<PhysicalRect> BuildBackplate(NGInlineCursor* descendants,
+Vector<PhysicalRect> BuildBackplate(InlineCursor* descendants,
                                     const PhysicalOffset& paint_offset) {
   // The number of consecutive forced breaks that split the backplate by
   // paragraph.
@@ -633,7 +632,7 @@ void NGBoxFragmentPainter::PaintObject(
         // Adjust |paint_offset| because it is the offset of the inline box, but
         // |descendants_| has offsets to the contaiing block.
         DCHECK(box_item_);
-        NGInlineCursor descendants = inline_box_cursor_->CursorForDescendants();
+        InlineCursor descendants = inline_box_cursor_->CursorForDescendants();
         const PhysicalOffset paint_offset_to_inline_formatting_context =
             paint_offset - box_item_->OffsetInContainerFragment();
         PaintInlineItems(paint_info.ForDescendants(),
@@ -748,7 +747,7 @@ void NGBoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
 
   DCHECK(items_);
   EnsureInlineContext();
-  NGInlineCursor children(box_fragment_, *items_);
+  InlineCursor children(box_fragment_, *items_);
   absl::optional<ScopedSVGPaintState> paint_state;
   if (box_fragment_.IsSvgText())
     paint_state.emplace(*box_fragment_.GetLayoutObject(), paint_info);
@@ -858,7 +857,7 @@ void NGBoxFragmentPainter::PaintBlockChild(
 }
 
 void NGBoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
-                                              NGInlineCursor* cursor) {
+                                              InlineCursor* cursor) {
   while (*cursor) {
     const NGFragmentItem* item = cursor->Current().Item();
     DCHECK(item);
@@ -954,13 +953,13 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
   if (const NGPhysicalBoxFragment* box =
           DynamicTo<NGPhysicalBoxFragment>(&container)) {
     if (const NGFragmentItems* items = box->Items()) {
-      NGInlineCursor cursor(*box, *items);
+      InlineCursor cursor(*box, *items);
       PaintFloatingItems(*local_paint_info, &cursor);
       return;
     }
     if (inline_box_cursor_) {
       DCHECK(box->IsInlineBox());
-      NGInlineCursor descendants = inline_box_cursor_->CursorForDescendants();
+      InlineCursor descendants = inline_box_cursor_->CursorForDescendants();
       PaintFloatingItems(*local_paint_info, &descendants);
       return;
     }
@@ -1283,7 +1282,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
 }
 
 void NGBoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
-    NGInlineCursor* children,
+    InlineCursor* children,
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   while (*children) {
@@ -1510,7 +1509,7 @@ void NGBoxFragmentPainter::PaintAllPhasesAtomically(
 void NGBoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
                                             const PhysicalOffset& paint_offset,
                                             const PhysicalOffset& parent_offset,
-                                            NGInlineCursor* cursor) {
+                                            InlineCursor* cursor) {
   while (*cursor) {
     const NGFragmentItem* item = cursor->CurrentItem();
     DCHECK(item);
@@ -1586,7 +1585,7 @@ inline void NGBoxFragmentPainter::PaintLineBox(
 }
 
 void NGBoxFragmentPainter::PaintLineBoxChildItems(
-    NGInlineCursor* children,
+    InlineCursor* children,
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   const bool is_horizontal = box_fragment_.Style().IsHorizontalWritingMode();
@@ -1622,7 +1621,7 @@ void NGBoxFragmentPainter::PaintLineBoxChildItems(
                    *child_item, paint_info, child_offset);
       NGInlinePaintContext::ScopedLineBox scoped_line_box(*children,
                                                           inline_context_);
-      NGInlineCursor line_box_cursor = children->CursorForDescendants();
+      InlineCursor line_box_cursor = children->CursorForDescendants();
       PaintInlineItems(paint_info, paint_offset,
                        child_item->OffsetInContainerFragment(),
                        &line_box_cursor);
@@ -1643,7 +1642,7 @@ void NGBoxFragmentPainter::PaintLineBoxChildItems(
   }
 }
 
-void NGBoxFragmentPainter::PaintBackplate(NGInlineCursor* line_boxes,
+void NGBoxFragmentPainter::PaintBackplate(InlineCursor* line_boxes,
                                           const PaintInfo& paint_info,
                                           const PhysicalOffset& paint_offset) {
   if (paint_info.phase != PaintPhase::kForcedColorsModeBackplate)
@@ -1677,7 +1676,7 @@ void NGBoxFragmentPainter::PaintBackplate(NGInlineCursor* line_boxes,
   }
 }
 
-void NGBoxFragmentPainter::PaintTextItem(const NGInlineCursor& cursor,
+void NGBoxFragmentPainter::PaintTextItem(const InlineCursor& cursor,
                                          const PaintInfo& paint_info,
                                          const PhysicalOffset& paint_offset,
                                          const PhysicalOffset& parent_offset) {
@@ -1712,7 +1711,7 @@ void NGBoxFragmentPainter::PaintTextItem(const NGInlineCursor& cursor,
 void NGBoxFragmentPainter::PaintBoxItem(
     const NGFragmentItem& item,
     const NGPhysicalBoxFragment& child_fragment,
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   DCHECK_EQ(item.Type(), NGFragmentItem::kBox);
@@ -1749,7 +1748,7 @@ void NGBoxFragmentPainter::PaintBoxItem(
 }
 
 void NGBoxFragmentPainter::PaintBoxItem(const NGFragmentItem& item,
-                                        const NGInlineCursor& cursor,
+                                        const InlineCursor& cursor,
                                         const PaintInfo& paint_info,
                                         const PhysicalOffset& paint_offset,
                                         const PhysicalOffset& parent_offset) {
@@ -1770,7 +1769,7 @@ void NGBoxFragmentPainter::PaintBoxItem(const NGFragmentItem& item,
 
   // This |item| is a culled inline box.
   DCHECK(item.GetLayoutObject()->IsLayoutInline());
-  NGInlineCursor children = cursor.CursorForDescendants();
+  InlineCursor children = cursor.CursorForDescendants();
   // Pass the given |parent_offset| because culled inline boxes do not affect
   // the sub-pixel snapping behavior. TODO(kojii): This is for the
   // compatibility, we may want to revisit in future.
@@ -2108,10 +2107,9 @@ bool NGBoxFragmentPainter::HitTestAllPhases(
   return false;
 }
 
-bool NGBoxFragmentPainter::HitTestTextItem(
-    const HitTestContext& hit_test,
-    const NGFragmentItem& text_item,
-    const NGInlineBackwardCursor& cursor) {
+bool NGBoxFragmentPainter::HitTestTextItem(const HitTestContext& hit_test,
+                                           const NGFragmentItem& text_item,
+                                           const InlineBackwardCursor& cursor) {
   DCHECK(text_item.IsText());
 
   if (hit_test.phase != HitTestPhase::kForeground)
@@ -2151,7 +2149,7 @@ bool NGBoxFragmentPainter::HitTestTextItem(
 bool NGBoxFragmentPainter::HitTestLineBoxFragment(
     const HitTestContext& hit_test,
     const NGPhysicalLineBoxFragment& fragment,
-    const NGInlineBackwardCursor& cursor,
+    const InlineBackwardCursor& cursor,
     const PhysicalOffset& physical_offset) {
   DCHECK_EQ(cursor.Current()->LineBoxFragment(), &fragment);
   PhysicalRect overflow_rect = cursor.Current().InkOverflow();
@@ -2221,7 +2219,7 @@ bool NGBoxFragmentPainter::HitTestLineBoxFragment(
 bool NGBoxFragmentPainter::HitTestInlineChildBoxFragment(
     const HitTestContext& hit_test,
     const NGPhysicalBoxFragment& fragment,
-    const NGInlineBackwardCursor& backward_cursor,
+    const InlineBackwardCursor& backward_cursor,
     const PhysicalOffset& physical_offset) {
   bool is_in_atomic_painting_pass;
 
@@ -2245,7 +2243,7 @@ bool NGBoxFragmentPainter::HitTestInlineChildBoxFragment(
     return HitTestAllPhasesInFragment(fragment, hit_test.location,
                                       physical_offset, hit_test.result);
   }
-  NGInlineCursor cursor(backward_cursor);
+  InlineCursor cursor(backward_cursor);
   const NGFragmentItem* item = cursor.Current().Item();
   DCHECK(item);
   DCHECK_EQ(item->BoxFragment(), &fragment);
@@ -2267,7 +2265,7 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
     const HitTestContext& hit_test,
     const NGPhysicalBoxFragment& container,
     const NGFragmentItem& item,
-    const NGInlineBackwardCursor& cursor) {
+    const InlineBackwardCursor& cursor) {
   DCHECK_EQ(&item, cursor.Current().Item());
 
   // Box fragments for SVG's inline boxes don't have correct geometries.
@@ -2281,7 +2279,7 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
   }
 
   DCHECK(item.GetLayoutObject()->IsLayoutInline());
-  if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
+  if (InlineCursor descendants = cursor.CursorForDescendants()) {
     if (HitTestItemsChildren(hit_test, container, descendants))
       return true;
   }
@@ -2307,7 +2305,7 @@ bool NGBoxFragmentPainter::HitTestChildren(
     const HitTestContext& hit_test,
     const PhysicalOffset& accumulated_offset) {
   if (UNLIKELY(inline_box_cursor_)) {
-    NGInlineCursor descendants = inline_box_cursor_->CursorForDescendants();
+    InlineCursor descendants = inline_box_cursor_->CursorForDescendants();
     if (descendants) {
       return HitTestChildren(hit_test, PhysicalFragment(), descendants,
                              accumulated_offset);
@@ -2316,7 +2314,7 @@ bool NGBoxFragmentPainter::HitTestChildren(
   }
   if (items_) {
     const NGPhysicalBoxFragment& fragment = PhysicalFragment();
-    NGInlineCursor cursor(fragment, *items_);
+    InlineCursor cursor(fragment, *items_);
     return HitTestChildren(hit_test, fragment, cursor, accumulated_offset);
   }
   // Check descendants of this fragment because floats may be in the
@@ -2332,7 +2330,7 @@ bool NGBoxFragmentPainter::HitTestChildren(
 bool NGBoxFragmentPainter::HitTestChildren(
     const HitTestContext& hit_test,
     const NGPhysicalBoxFragment& container,
-    const NGInlineCursor& children,
+    const InlineCursor& children,
     const PhysicalOffset& accumulated_offset) {
   if (children.HasRoot())
     return HitTestItemsChildren(hit_test, container, children);
@@ -2426,9 +2424,9 @@ bool NGBoxFragmentPainter::ShouldHitTestCulledInlineAncestors(
 bool NGBoxFragmentPainter::HitTestItemsChildren(
     const HitTestContext& hit_test,
     const NGPhysicalBoxFragment& container,
-    const NGInlineCursor& children) {
+    const InlineCursor& children) {
   DCHECK(children.HasRoot());
-  for (NGInlineBackwardCursor cursor(children); cursor;) {
+  for (InlineBackwardCursor cursor(children); cursor;) {
     const NGFragmentItem* item = cursor.Current().Item();
     DCHECK(item);
     if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
@@ -2488,7 +2486,7 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
 
   if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(&container)) {
     if (const NGFragmentItems* items = box->Items()) {
-      NGInlineCursor children(*box, *items);
+      InlineCursor children(*box, *items);
       if (HitTestFloatingChildItems(hit_test, children, accumulated_offset))
         return true;
       // Even if this turned out to be an inline formatting context, we need to
@@ -2541,9 +2539,9 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
 
 bool NGBoxFragmentPainter::HitTestFloatingChildItems(
     const HitTestContext& hit_test,
-    const NGInlineCursor& children,
+    const InlineCursor& children,
     const PhysicalOffset& accumulated_offset) {
-  for (NGInlineBackwardCursor cursor(children); cursor;
+  for (InlineBackwardCursor cursor(children); cursor;
        cursor.MoveToPreviousSibling()) {
     const NGFragmentItem* item = cursor.Current().Item();
     DCHECK(item);
@@ -2589,7 +2587,7 @@ bool NGBoxFragmentPainter::HitTestFloatingChildItems(
       continue;
     }
 
-    NGInlineCursor descendants = cursor.CursorForDescendants();
+    InlineCursor descendants = cursor.CursorForDescendants();
     if (HitTestFloatingChildItems(hit_test, descendants, accumulated_offset))
       return true;
   }

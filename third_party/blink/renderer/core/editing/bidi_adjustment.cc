@@ -19,7 +19,7 @@ namespace {
 
 // Gets the resolved direction for any inline, including non-atomic inline
 // boxes.
-TextDirection ResolvedDirection(const NGInlineCursor& cursor) {
+TextDirection ResolvedDirection(const InlineCursor& cursor) {
   if (cursor.Current().IsText() || cursor.Current().IsAtomicInline())
     return cursor.Current().ResolvedDirection();
 
@@ -28,14 +28,14 @@ TextDirection ResolvedDirection(const NGInlineCursor& cursor) {
   // text editing caret. We currently use the line's base direction, but this is
   // wrong:
   //   <div dir=ltr>abc A<span>B</span>C abc</div>
-  NGInlineCursor line_box;
+  InlineCursor line_box;
   line_box.MoveTo(cursor);
   line_box.MoveToContainingLine();
   return line_box.Current().BaseDirection();
 }
 
 // Gets the bidi level for any inline, including non-atomic inline boxes.
-UBiDiLevel BidiLevel(const NGInlineCursor& cursor) {
+UBiDiLevel BidiLevel(const InlineCursor& cursor) {
   if (cursor.Current().IsText() || cursor.Current().IsAtomicInline())
     return cursor.Current().BidiLevel();
 
@@ -43,7 +43,7 @@ UBiDiLevel BidiLevel(const NGInlineCursor& cursor) {
   // level of an inline box should also be defined. Since |ResolvedDirection|
   // defaults to the line's base direction, though, we use the corresponding
   // base level here.
-  NGInlineCursor line_box;
+  InlineCursor line_box;
   line_box.MoveTo(cursor);
   line_box.MoveToContainingLine();
   return IsLtr(line_box.Current().BaseDirection()) ? 0 : 1;
@@ -60,7 +60,7 @@ class AbstractInlineBox {
  public:
   AbstractInlineBox() : type_(InstanceType::kNull) {}
 
-  explicit AbstractInlineBox(const NGInlineCursor& cursor)
+  explicit AbstractInlineBox(const InlineCursor& cursor)
       : type_(InstanceType::kNG),
         line_cursor_(CreateLineRootedCursor(cursor)) {}
 
@@ -82,7 +82,7 @@ class AbstractInlineBox {
 
   // Returns containing block rooted cursor instead of line rooted cursor for
   // ease of handling, e.g. equiality check, move to next/previous line, etc.
-  NGInlineCursor GetCursor() const {
+  InlineCursor GetCursor() const {
     return line_cursor_.CursorForMovingAcrossFragmentainer();
   }
 
@@ -98,28 +98,28 @@ class AbstractInlineBox {
 
   AbstractInlineBox PrevLeafChild() const {
     DCHECK(IsNotNull());
-    NGInlineCursor cursor(line_cursor_);
+    InlineCursor cursor(line_cursor_);
     cursor.MoveToPreviousInlineLeaf();
     return cursor ? AbstractInlineBox(cursor) : AbstractInlineBox();
   }
 
   AbstractInlineBox PrevLeafChildIgnoringLineBreak() const {
     DCHECK(IsNotNull());
-    NGInlineCursor cursor(line_cursor_);
+    InlineCursor cursor(line_cursor_);
     cursor.MoveToPreviousInlineLeafIgnoringLineBreak();
     return cursor ? AbstractInlineBox(cursor) : AbstractInlineBox();
   }
 
   AbstractInlineBox NextLeafChild() const {
     DCHECK(IsNotNull());
-    NGInlineCursor cursor(line_cursor_);
+    InlineCursor cursor(line_cursor_);
     cursor.MoveToNextInlineLeaf();
     return cursor ? AbstractInlineBox(cursor) : AbstractInlineBox();
   }
 
   AbstractInlineBox NextLeafChildIgnoringLineBreak() const {
     DCHECK(IsNotNull());
-    NGInlineCursor cursor(line_cursor_);
+    InlineCursor cursor(line_cursor_);
     cursor.MoveToNextInlineLeafIgnoringLineBreak();
     return cursor ? AbstractInlineBox(cursor) : AbstractInlineBox();
   }
@@ -130,16 +130,16 @@ class AbstractInlineBox {
   }
 
  private:
-  static NGInlineCursor CreateLineRootedCursor(const NGInlineCursor& cursor) {
-    NGInlineCursor line_cursor = GetLineBox(cursor).CursorForDescendants();
+  static InlineCursor CreateLineRootedCursor(const InlineCursor& cursor) {
+    InlineCursor line_cursor = GetLineBox(cursor).CursorForDescendants();
     line_cursor.MoveTo(cursor);
     return line_cursor;
   }
 
   // Returns containing line box of |cursor| even if |cursor| is scoped inside
   // line.
-  static NGInlineCursor GetLineBox(const NGInlineCursor& cursor) {
-    NGInlineCursor line_box;
+  static InlineCursor GetLineBox(const InlineCursor& cursor) {
+    InlineCursor line_box;
     line_box.MoveTo(cursor);
     line_box.MoveToContainingLine();
     return line_box;
@@ -151,7 +151,7 @@ class AbstractInlineBox {
   // Because of |MoveToContainingLine()| isn't cheap and we avoid to call each
   // |MoveTo{Next,Previous}InlineLeaf()|, we hold containing line rooted cursor
   // instead of containing block rooted cursor.
-  NGInlineCursor line_cursor_;
+  InlineCursor line_cursor_;
 };
 
 // |SideAffinity| represents the left or right side of a leaf inline
@@ -223,7 +223,7 @@ class AbstractInlineBoxAndSideAffinity {
   NGCaretPosition ToNGCaretPosition() const {
     DCHECK(box_.IsNotNull());
     const bool is_at_start = IsLtr(box_.Direction()) == AtLeftSide();
-    NGInlineCursor cursor(box_.GetCursor());
+    InlineCursor cursor(box_.GetCursor());
 
     if (!cursor.Current().IsText()) {
       return {cursor,

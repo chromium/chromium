@@ -111,7 +111,7 @@ gfx::RectF LayoutSVGInlineText::ObjectBoundingBox() const {
   DCHECK(IsInLayoutNGInlineFormattingContext());
 
   gfx::RectF bounds;
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const NGFragmentItem& item = *cursor.CurrentItem();
@@ -128,9 +128,9 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
             DocumentLifecycle::kPrePaintClean);
 
   DCHECK(IsInLayoutNGInlineFormattingContext());
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*this);
-  NGInlineCursor last_hit_cursor;
+  InlineCursor last_hit_cursor;
   PhysicalOffset last_hit_transformed_point;
   LayoutUnit closest_distance = LayoutUnit::Max();
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {

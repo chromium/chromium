@@ -21,7 +21,7 @@ namespace {
 
 using ::testing::ElementsAre;
 
-String ToDebugString(const NGInlineCursor& cursor) {
+String ToDebugString(const InlineCursor& cursor) {
   if (cursor.Current().IsLineBox())
     return "#linebox";
 
@@ -48,57 +48,61 @@ String ToDebugString(const NGInlineCursor& cursor) {
   return "#null";
 }
 
-Vector<String> LayoutObjectToDebugStringList(NGInlineCursor cursor) {
+Vector<String> LayoutObjectToDebugStringList(InlineCursor cursor) {
   Vector<String> list;
   for (; cursor; cursor.MoveToNextForSameLayoutObject())
     list.push_back(ToDebugString(cursor));
   return list;
 }
 
-class NGInlineCursorTest : public RenderingTest,
-                           public testing::WithParamInterface<bool> {
+class InlineCursorTest : public RenderingTest,
+                         public testing::WithParamInterface<bool> {
  protected:
-  NGInlineCursor SetupCursor(const String& html) {
+  InlineCursor SetupCursor(const String& html) {
     SetBodyInnerHTML(html);
     const LayoutBlockFlow& block_flow =
         *To<LayoutBlockFlow>(GetLayoutObjectByElementId("root"));
-    return NGInlineCursor(block_flow);
+    return InlineCursor(block_flow);
   }
 
-  Vector<String> ToDebugStringList(const NGInlineCursor& start) {
+  Vector<String> ToDebugStringList(const InlineCursor& start) {
     Vector<String> list;
-    for (NGInlineCursor cursor(start); cursor; cursor.MoveToNext())
+    for (InlineCursor cursor(start); cursor; cursor.MoveToNext()) {
       list.push_back(ToDebugString(cursor));
+    }
     return list;
   }
 
-  Vector<String> SiblingsToDebugStringList(const NGInlineCursor& start) {
+  Vector<String> SiblingsToDebugStringList(const InlineCursor& start) {
     Vector<String> list;
-    for (NGInlineCursor cursor(start); cursor;
-         cursor.MoveToNextSkippingChildren())
+    for (InlineCursor cursor(start); cursor;
+         cursor.MoveToNextSkippingChildren()) {
       list.push_back(ToDebugString(cursor));
+    }
     return list;
   }
 
-  // Test |MoveToNextSibling| and |NGInlineBackwardCursor| return the same
+  // Test |MoveToNextSibling| and |InlineBackwardCursor| return the same
   // instances, except that the order is reversed.
-  void TestPrevoiusSibling(const NGInlineCursor& start) {
+  void TestPrevoiusSibling(const InlineCursor& start) {
     DCHECK(start.HasRoot());
     Vector<const NGFragmentItem*> forwards;
-    for (NGInlineCursor cursor(start); cursor;
-         cursor.MoveToNextSkippingChildren())
+    for (InlineCursor cursor(start); cursor;
+         cursor.MoveToNextSkippingChildren()) {
       forwards.push_back(cursor.CurrentItem());
+    }
     Vector<const NGFragmentItem*> backwards;
-    for (NGInlineBackwardCursor cursor(start); cursor;
-         cursor.MoveToPreviousSibling())
+    for (InlineBackwardCursor cursor(start); cursor;
+         cursor.MoveToPreviousSibling()) {
       backwards.push_back(cursor.Current().Item());
+    }
     backwards.Reverse();
     EXPECT_THAT(backwards, forwards);
   }
 
-  Vector<String> ToDebugStringListWithBidiLevel(const NGInlineCursor& start) {
+  Vector<String> ToDebugStringListWithBidiLevel(const InlineCursor& start) {
     Vector<String> list;
-    for (NGInlineCursor cursor(start); cursor; cursor.MoveToNext()) {
+    for (InlineCursor cursor(start); cursor; cursor.MoveToNext()) {
       // Inline boxes do not have bidi level.
       if (cursor.Current().IsInlineBox())
         continue;
@@ -107,7 +111,7 @@ class NGInlineCursorTest : public RenderingTest,
     return list;
   }
 
-  String ToDebugStringWithBidiLevel(const NGInlineCursor& cursor) {
+  String ToDebugStringWithBidiLevel(const InlineCursor& cursor) {
     if (!cursor.Current().IsText() && !cursor.Current().IsAtomicInline())
       return ToDebugString(cursor);
     StringBuilder result;
@@ -118,13 +122,11 @@ class NGInlineCursorTest : public RenderingTest,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(NGInlineCursorTest,
-                         NGInlineCursorTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(InlineCursorTest, InlineCursorTest, testing::Bool());
 
-TEST_P(NGInlineCursorTest, BidiLevelInlineBoxLTR) {
+TEST_P(InlineCursorTest, BidiLevelInlineBoxLTR) {
   InsertStyleElement("b { display: inline-block; }");
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root dir=ltr>"
       "abc<b id=def>def</b><bdo dir=rtl><b id=ghi>GHI</b></bdo>jkl</div>");
   Vector<String> list = ToDebugStringListWithBidiLevel(cursor);
@@ -132,9 +134,9 @@ TEST_P(NGInlineCursorTest, BidiLevelInlineBoxLTR) {
               ElementsAre("#linebox", "abc:0", "#def:0", "#ghi:1", "jkl:0"));
 }
 
-TEST_P(NGInlineCursorTest, BidiLevelInlineBoxRTL) {
+TEST_P(InlineCursorTest, BidiLevelInlineBoxRTL) {
   InsertStyleElement("b { display: inline-block; }");
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root dir=rtl>"
       "abc<b id=def>def</b><bdo dir=rtl><b id=ghi>GHI</b></bdo>jkl</div>");
   Vector<String> list = ToDebugStringListWithBidiLevel(cursor);
@@ -142,8 +144,8 @@ TEST_P(NGInlineCursorTest, BidiLevelInlineBoxRTL) {
               ElementsAre("#linebox", "#ghi:3", "jkl:2", "#def:1", "abc:2"));
 }
 
-TEST_P(NGInlineCursorTest, BidiLevelSimpleLTR) {
-  NGInlineCursor cursor = SetupCursor(
+TEST_P(InlineCursorTest, BidiLevelSimpleLTR) {
+  InlineCursor cursor = SetupCursor(
       "<div id=root dir=ltr>"
       "<bdo dir=rtl>GHI<bdo dir=ltr>abc</bdo>DEF</bdo><br>"
       "123, jkl <bdo dir=rtl>MNO</bdo></div>");
@@ -152,8 +154,8 @@ TEST_P(NGInlineCursorTest, BidiLevelSimpleLTR) {
                                 "#linebox", "123, jkl:0", "MNO:1"));
 }
 
-TEST_P(NGInlineCursorTest, BidiLevelSimpleRTL) {
-  NGInlineCursor cursor = SetupCursor(
+TEST_P(InlineCursorTest, BidiLevelSimpleRTL) {
+  InlineCursor cursor = SetupCursor(
       "<div id=root dir=rtl>"
       "<bdo dir=rtl>GHI<bdo dir=ltr>abc</bdo>DEF</bdo><br>"
       "123, jkl <bdo dir=rtl>MNO</bdo></div>");
@@ -163,15 +165,15 @@ TEST_P(NGInlineCursorTest, BidiLevelSimpleRTL) {
                         "MNO:3", ":1", "jkl:2", ",:1", "123:2"));
 }
 
-TEST_P(NGInlineCursorTest, GetLayoutBlockFlowWithScopedCursor) {
-  NGInlineCursor line = SetupCursor("<div id=root>line1<br>line2</div>");
+TEST_P(InlineCursorTest, GetLayoutBlockFlowWithScopedCursor) {
+  InlineCursor line = SetupCursor("<div id=root>line1<br>line2</div>");
   ASSERT_TRUE(line.Current().IsLineBox()) << line;
-  NGInlineCursor cursor = line.CursorForDescendants();
+  InlineCursor cursor = line.CursorForDescendants();
   EXPECT_EQ(line.GetLayoutBlockFlow(), cursor.GetLayoutBlockFlow());
 }
 
-TEST_P(NGInlineCursorTest, Parent) {
-  NGInlineCursor cursor = SetupCursor(R"HTML(
+TEST_P(InlineCursorTest, Parent) {
+  InlineCursor cursor = SetupCursor(R"HTML(
     <style>
     span { background: yellow; } /* Ensure not culled. */
     </style>
@@ -205,16 +207,16 @@ TEST_P(NGInlineCursorTest, Parent) {
   EXPECT_THAT(ids, testing::ElementsAre("span2", "span1", "root"));
 }
 
-TEST_P(NGInlineCursorTest, ContainingLine) {
+TEST_P(InlineCursorTest, ContainingLine) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
-  NGInlineCursor cursor =
+  InlineCursor cursor =
       SetupCursor("<div id=root>abc<a id=target>def</a>ghi<br>xyz</div>");
   const LayoutBlockFlow& block_flow = *cursor.GetLayoutBlockFlow();
-  NGInlineCursor line1(cursor);
+  InlineCursor line1(cursor);
   ASSERT_TRUE(line1.Current().IsLineBox());
 
-  NGInlineCursor line2(line1);
+  InlineCursor line2(line1);
   line2.MoveToNextSkippingChildren();
   ASSERT_TRUE(line2.Current().IsLineBox());
 
@@ -236,12 +238,12 @@ TEST_P(NGInlineCursorTest, ContainingLine) {
   EXPECT_EQ(line2, cursor);
 }
 
-TEST_P(NGInlineCursorTest, CulledInlineWithAtomicInline) {
+TEST_P(InlineCursorTest, CulledInlineWithAtomicInline) {
   SetBodyInnerHTML(
       "<div id=root>"
       "<b id=culled>abc<div style=display:inline>ABC<br>XYZ</div>xyz</b>"
       "</div>");
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("culled"));
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
               ElementsAre("abc", "ABC", "", "XYZ", "xyz"));
@@ -250,39 +252,39 @@ TEST_P(NGInlineCursorTest, CulledInlineWithAtomicInline) {
 // We should not have float:right fragment, because it isn't in-flow in
 // an inline formatting context.
 // For https://crbug.com/1026022
-TEST_P(NGInlineCursorTest, CulledInlineWithFloat) {
+TEST_P(InlineCursorTest, CulledInlineWithFloat) {
   SetBodyInnerHTML(
       "<div id=root>"
       "<b id=culled>abc<div style=float:right></div>xyz</b>"
       "</div>");
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("culled"));
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor), ElementsAre("abc", "xyz"));
 }
 
-TEST_P(NGInlineCursorTest, CulledInlineWithOOF) {
+TEST_P(InlineCursorTest, CulledInlineWithOOF) {
   SetBodyInnerHTML(R"HTML(
     <div id=root>
       <b id=culled>abc<span style="position:absolute"></span>xyz</b>
     </div>
   )HTML");
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("culled"));
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor), ElementsAre("abc", "xyz"));
 }
 
-TEST_P(NGInlineCursorTest, CulledInlineNested) {
+TEST_P(InlineCursorTest, CulledInlineNested) {
   SetBodyInnerHTML(R"HTML(
     <div id=root>
       <b id=culled><span>abc</span> xyz</b>
     </div>
   )HTML");
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("culled"));
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor), ElementsAre("abc", "xyz"));
 }
 
-TEST_P(NGInlineCursorTest, CulledInlineBlockChild) {
+TEST_P(InlineCursorTest, CulledInlineBlockChild) {
   SetBodyInnerHTML(R"HTML(
     <div id=root>
       <b id=culled>
@@ -291,14 +293,14 @@ TEST_P(NGInlineCursorTest, CulledInlineBlockChild) {
       </b>
     </div>
   )HTML");
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("culled"));
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
               ElementsAre("#culled", "#culled", "#culled"));
 }
 
-TEST_P(NGInlineCursorTest, CulledInlineWithRoot) {
-  NGInlineCursor cursor = SetupCursor(R"HTML(
+TEST_P(InlineCursorTest, CulledInlineWithRoot) {
+  InlineCursor cursor = SetupCursor(R"HTML(
     <div id="root"><a id="a"><b>abc</b><br><i>xyz</i></a></div>
   )HTML");
   const LayoutObject* layout_inline_a = GetLayoutObjectByElementId("a");
@@ -307,18 +309,18 @@ TEST_P(NGInlineCursorTest, CulledInlineWithRoot) {
               ElementsAre("abc", "", "xyz"));
 }
 
-TEST_P(NGInlineCursorTest, CulledInlineWithoutRoot) {
+TEST_P(InlineCursorTest, CulledInlineWithoutRoot) {
   SetBodyInnerHTML(R"HTML(
     <div id="root"><a id="a"><b>abc</b><br><i>xyz</i></a></div>
   )HTML");
   const LayoutObject* layout_inline_a = GetLayoutObjectByElementId("a");
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*layout_inline_a);
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
               ElementsAre("abc", "", "xyz"));
 }
 
-TEST_P(NGInlineCursorTest, CursorForMovingAcrossFragmentainer) {
+TEST_P(InlineCursorTest, CursorForMovingAcrossFragmentainer) {
   LoadAhem();
   InsertStyleElement(
       "div { font: 10px/15px Ahem; column-count: 2; width: 20ch; }");
@@ -327,37 +329,37 @@ TEST_P(NGInlineCursorTest, CursorForMovingAcrossFragmentainer) {
   //    abc ghi
   //    def jkl
 
-  // MoveTo(LayoutObject) makes |NGInlineCursor| to be able to move across
+  // MoveTo(LayoutObject) makes |InlineCursor| to be able to move across
   // fragmentainer.
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*GetElementById("t")->firstChild()->GetLayoutObject());
   ASSERT_TRUE(cursor.IsBlockFragmented()) << cursor;
 
-  NGInlineCursor cursor2(cursor.ContainerFragment());
+  InlineCursor cursor2(cursor.ContainerFragment());
   ASSERT_FALSE(cursor2.IsBlockFragmented()) << cursor2;
   cursor2.MoveTo(*cursor.CurrentItem());
   ASSERT_FALSE(cursor2.IsBlockFragmented());
 
-  NGInlineCursor cursor3 = cursor2.CursorForMovingAcrossFragmentainer();
+  InlineCursor cursor3 = cursor2.CursorForMovingAcrossFragmentainer();
   EXPECT_TRUE(cursor3.IsBlockFragmented()) << cursor3;
   EXPECT_EQ(&cursor2.ContainerFragment(), &cursor3.ContainerFragment());
   EXPECT_EQ(cursor2.CurrentItem(), cursor3.CurrentItem());
 }
 
-TEST_P(NGInlineCursorTest, FirstChild) {
+TEST_P(InlineCursorTest, FirstChild) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
-  NGInlineCursor cursor =
+  InlineCursor cursor =
       SetupCursor("<div id=root>abc<a>DEF<b>GHI</b></a>xyz</div>");
   cursor.MoveToFirstChild();
   EXPECT_EQ("abc", ToDebugString(cursor));
   EXPECT_FALSE(cursor.TryMoveToFirstChild());
 }
 
-TEST_P(NGInlineCursorTest, FirstChild2) {
+TEST_P(InlineCursorTest, FirstChild2) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root><b id=first>abc</b><a>DEF<b>GHI</b></a><a "
       "id=last>xyz</a></div>");
   cursor.MoveToFirstChild();
@@ -367,92 +369,92 @@ TEST_P(NGInlineCursorTest, FirstChild2) {
   EXPECT_FALSE(cursor.TryMoveToFirstChild());
 }
 
-TEST_P(NGInlineCursorTest, FirstLastLogicalLeafInSimpleText) {
+TEST_P(InlineCursorTest, FirstLastLogicalLeafInSimpleText) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor =
+  InlineCursor cursor =
       SetupCursor("<div id=root><b>first</b><b>middle</b><b>last</b></div>");
 
-  NGInlineCursor first_logical_leaf(cursor);
+  InlineCursor first_logical_leaf(cursor);
   first_logical_leaf.MoveToFirstLogicalLeaf();
   EXPECT_EQ("first", ToDebugString(first_logical_leaf));
 
-  NGInlineCursor last_logical_leaf(cursor);
+  InlineCursor last_logical_leaf(cursor);
   last_logical_leaf.MoveToLastLogicalLeaf();
   EXPECT_EQ("last", ToDebugString(last_logical_leaf));
 }
 
-TEST_P(NGInlineCursorTest, FirstLastLogicalLeafInRtlText) {
+TEST_P(InlineCursorTest, FirstLastLogicalLeafInRtlText) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<bdo id=root dir=rtl style=display:block>"
       "<b>first</b><b>middle</b><b>last</b>"
       "</bdo>");
 
-  NGInlineCursor first_logical_leaf(cursor);
+  InlineCursor first_logical_leaf(cursor);
   first_logical_leaf.MoveToFirstLogicalLeaf();
   EXPECT_EQ("first", ToDebugString(first_logical_leaf));
 
-  NGInlineCursor last_logical_leaf(cursor);
+  InlineCursor last_logical_leaf(cursor);
   last_logical_leaf.MoveToLastLogicalLeaf();
   EXPECT_EQ("last", ToDebugString(last_logical_leaf));
 }
 
-TEST_P(NGInlineCursorTest, FirstLastLogicalLeafInTextAsDeepDescendants) {
+TEST_P(InlineCursorTest, FirstLastLogicalLeafInTextAsDeepDescendants) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root>"
       "<b><b>first</b>ABC</b>"
       "<b>middle</b>"
       "<b>DEF<b>last</b></b>"
       "</div>");
 
-  NGInlineCursor first_logical_leaf(cursor);
+  InlineCursor first_logical_leaf(cursor);
   first_logical_leaf.MoveToFirstLogicalLeaf();
   EXPECT_EQ("first", ToDebugString(first_logical_leaf));
 
-  NGInlineCursor last_logical_leaf(cursor);
+  InlineCursor last_logical_leaf(cursor);
   last_logical_leaf.MoveToLastLogicalLeaf();
   EXPECT_EQ("last", ToDebugString(last_logical_leaf));
 }
 
-TEST_P(NGInlineCursorTest, FirstLastLogicalLeafWithInlineBlock) {
+TEST_P(InlineCursorTest, FirstLastLogicalLeafWithInlineBlock) {
   InsertStyleElement("b { display: inline-block; }");
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root>"
       "<b id=first>first</b>middle<b id=last>last</b>"
       "</div>");
 
-  NGInlineCursor first_logical_leaf(cursor);
+  InlineCursor first_logical_leaf(cursor);
   first_logical_leaf.MoveToFirstLogicalLeaf();
   EXPECT_EQ("#first", ToDebugString(first_logical_leaf))
       << "stop at inline-block";
 
-  NGInlineCursor last_logical_leaf(cursor);
+  InlineCursor last_logical_leaf(cursor);
   last_logical_leaf.MoveToLastLogicalLeaf();
   EXPECT_EQ("#last", ToDebugString(last_logical_leaf))
       << "stop at inline-block";
 }
 
-TEST_P(NGInlineCursorTest, FirstLastLogicalLeafWithImages) {
-  NGInlineCursor cursor =
+TEST_P(InlineCursorTest, FirstLastLogicalLeafWithImages) {
+  InlineCursor cursor =
       SetupCursor("<div id=root><img id=first>middle<img id=last></div>");
 
-  NGInlineCursor first_logical_leaf(cursor);
+  InlineCursor first_logical_leaf(cursor);
   first_logical_leaf.MoveToFirstLogicalLeaf();
   EXPECT_EQ("#first", ToDebugString(first_logical_leaf));
 
-  NGInlineCursor last_logical_leaf(cursor);
+  InlineCursor last_logical_leaf(cursor);
   last_logical_leaf.MoveToLastLogicalLeaf();
   EXPECT_EQ("#last", ToDebugString(last_logical_leaf));
 }
 
 // http://crbug.com/1295087
-TEST_P(NGInlineCursorTest, FirstNonPseudoLeafWithBlockImage) {
+TEST_P(InlineCursorTest, FirstNonPseudoLeafWithBlockImage) {
   InsertStyleElement("img { display: block; }");
-  NGInlineCursor cursor = SetupCursor("<p id=root><b><img id=target></b></p>");
+  InlineCursor cursor = SetupCursor("<p id=root><b><img id=target></b></p>");
 
   // Note: The first child of block-in-inline can be |LayoutImage|.
   // LayoutNGBlockFlow P id="root"
@@ -470,9 +472,9 @@ TEST_P(NGInlineCursorTest, FirstNonPseudoLeafWithBlockImage) {
   EXPECT_EQ(&target, cursor.Current()->BlockInInline());
 }
 
-TEST_P(NGInlineCursorTest, IsEmptyLineBox) {
+TEST_P(InlineCursorTest, IsEmptyLineBox) {
   InsertStyleElement("b { margin-bottom: 1px; }");
-  NGInlineCursor cursor = SetupCursor("<div id=root>abc<br><b></b></div>");
+  InlineCursor cursor = SetupCursor("<div id=root>abc<br><b></b></div>");
 
   EXPECT_FALSE(cursor.Current().IsEmptyLineBox())
       << "'abc\\n' is in non-empty line box.";
@@ -481,20 +483,20 @@ TEST_P(NGInlineCursorTest, IsEmptyLineBox) {
       << "<b></b> with margin produces empty line box.";
 }
 
-TEST_P(NGInlineCursorTest, LastChild) {
+TEST_P(InlineCursorTest, LastChild) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
-  NGInlineCursor cursor =
+  InlineCursor cursor =
       SetupCursor("<div id=root>abc<a>DEF<b>GHI</b></a>xyz</div>");
   cursor.MoveToLastChild();
   EXPECT_EQ("xyz", ToDebugString(cursor));
   EXPECT_FALSE(cursor.TryMoveToLastChild());
 }
 
-TEST_P(NGInlineCursorTest, LastChild2) {
+TEST_P(InlineCursorTest, LastChild2) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root><b id=first>abc</b><a>DEF<b>GHI</b></a>"
       "<a id=last>xyz</a></div>");
   cursor.MoveToLastChild();
@@ -504,7 +506,7 @@ TEST_P(NGInlineCursorTest, LastChild2) {
   EXPECT_FALSE(cursor.TryMoveToLastChild());
 }
 
-TEST_P(NGInlineCursorTest, Next) {
+TEST_P(InlineCursorTest, Next) {
   SetBodyInnerHTML(R"HTML(
     <style>
     span { background: gray; }
@@ -524,13 +526,13 @@ TEST_P(NGInlineCursorTest, Next) {
 
   LayoutBlockFlow* block_flow =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("root"));
-  NGInlineCursor cursor(*block_flow);
+  InlineCursor cursor(*block_flow);
   Vector<String> list = ToDebugStringList(cursor);
   EXPECT_THAT(list, ElementsAre("#linebox", "text1", "#span1", "text2",
                                 "#span2", "text3", "text4", "text5"));
 }
 
-TEST_P(NGInlineCursorTest, NextIncludingFragmentainer) {
+TEST_P(InlineCursorTest, NextIncludingFragmentainer) {
   // TDOO(yosin): Remove style for <b> once NGFragmentItem don't do culled
   // inline.
   LoadAhem();
@@ -538,7 +540,7 @@ TEST_P(NGInlineCursorTest, NextIncludingFragmentainer) {
       "b { background: gray; }"
       "div { font: 10px/15px Ahem; column-count: 2; width: 20ch; }");
   SetBodyInnerHTML("<div id=m>abc<br>def<br><b>ghi</b><br>jkl</div>");
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*GetElementById("m")->firstChild()->GetLayoutObject());
   ASSERT_TRUE(cursor.IsBlockFragmented()) << cursor;
   Vector<String> list;
@@ -551,7 +553,7 @@ TEST_P(NGInlineCursorTest, NextIncludingFragmentainer) {
                           "LayoutInline B", "ghi", "", "#linebox", "jkl"));
 }
 
-TEST_P(NGInlineCursorTest, NextWithEllipsis) {
+TEST_P(InlineCursorTest, NextWithEllipsis) {
   LoadAhem();
   InsertStyleElement(
       "#root {"
@@ -560,13 +562,13 @@ TEST_P(NGInlineCursorTest, NextWithEllipsis) {
       "overflow-x: hidden;"
       "text-overflow: ellipsis;"
       "}");
-  NGInlineCursor cursor = SetupCursor("<div id=root>abcdefghi</div>");
+  InlineCursor cursor = SetupCursor("<div id=root>abcdefghi</div>");
   Vector<String> list = ToDebugStringList(cursor);
   // Note: "abcdefghi" is hidden for paint.
   EXPECT_THAT(list, ElementsAre("#linebox", "abcdefghi", "abcd", u"#'\u2026'"));
 }
 
-TEST_P(NGInlineCursorTest, NextWithEllipsisInlineBoxOnly) {
+TEST_P(InlineCursorTest, NextWithEllipsisInlineBoxOnly) {
   LoadAhem();
   InsertStyleElement(
       "#root {"
@@ -576,34 +578,33 @@ TEST_P(NGInlineCursorTest, NextWithEllipsisInlineBoxOnly) {
       "text-overflow: ellipsis;"
       "}"
       "span { border: solid 10ch blue; }");
-  NGInlineCursor cursor = SetupCursor("<div id=root><span></span></div>");
+  InlineCursor cursor = SetupCursor("<div id=root><span></span></div>");
   Vector<String> list = ToDebugStringList(cursor);
   EXPECT_THAT(list, ElementsAre("#linebox", "LayoutInline SPAN"));
 }
 
-TEST_P(NGInlineCursorTest, NextWithListItem) {
-  NGInlineCursor cursor = SetupCursor("<ul><li id=root>abc</li></ul>");
+TEST_P(InlineCursorTest, NextWithListItem) {
+  InlineCursor cursor = SetupCursor("<ul><li id=root>abc</li></ul>");
   Vector<String> list = ToDebugStringList(cursor);
   EXPECT_THAT(
       list, ElementsAre("LayoutOutsideListMarker ::marker", "#linebox", "abc"));
   EXPECT_EQ(GetLayoutObjectByElementId("root"), cursor.GetLayoutBlockFlow());
 }
 
-TEST_P(NGInlineCursorTest, NextWithSoftHyphens) {
+TEST_P(InlineCursorTest, NextWithSoftHyphens) {
   // Use "Ahem" font to get U+2010 as soft hyphen instead of U+002D
   LoadAhem();
   InsertStyleElement("#root {width: 3ch; font: 10px/10px Ahem;}");
-  NGInlineCursor cursor = SetupCursor("<div id=root>abc&shy;def</div>");
+  InlineCursor cursor = SetupCursor("<div id=root>abc&shy;def</div>");
   Vector<String> list = ToDebugStringList(cursor);
   EXPECT_THAT(list, ElementsAre("#linebox", u"abc\u00AD", u"#'\u2010'",
                                 "#linebox", "def"));
 }
 
-TEST_P(NGInlineCursorTest, NextInlineLeaf) {
+TEST_P(InlineCursorTest, NextInlineLeaf) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor =
-      SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
+  InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
   Vector<String> list;
   while (cursor) {
     list.push_back(ToDebugString(cursor));
@@ -613,10 +614,10 @@ TEST_P(NGInlineCursorTest, NextInlineLeaf) {
 }
 
 // Note: This is for AccessibilityLayoutTest.NextOnLine.
-TEST_P(NGInlineCursorTest, NextInlineLeafOnLineFromLayoutInline) {
+TEST_P(InlineCursorTest, NextInlineLeafOnLineFromLayoutInline) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root>"
       "<b id=start>abc</b> def<br>"
       "<b>ABC</b> DEF<br>"
@@ -631,11 +632,11 @@ TEST_P(NGInlineCursorTest, NextInlineLeafOnLineFromLayoutInline) {
       << "we don't have 'abc' and items in second line.";
 }
 
-TEST_P(NGInlineCursorTest, NextInlineLeafOnLineFromNestedLayoutInline) {
+TEST_P(InlineCursorTest, NextInlineLeafOnLineFromNestedLayoutInline) {
   // Never return a descendant for AXLayoutObject::NextOnLine().
   // Instead, if NextOnLine() is called on a container, return the first
   // content from a sibling subtree.
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root>"
       "<span id=start>"
       "Test<span style=font-size:13px>descendant</span>"
@@ -653,10 +654,10 @@ TEST_P(NGInlineCursorTest, NextInlineLeafOnLineFromNestedLayoutInline) {
       << "next on line doesn't return descendant.";
 }
 
-TEST_P(NGInlineCursorTest, NextInlineLeafOnLineFromLayoutText) {
+TEST_P(InlineCursorTest, NextInlineLeafOnLineFromLayoutText) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root>"
       "<b id=start>abc</b> def<br>"
       "<b>ABC</b> DEF<br>"
@@ -671,7 +672,7 @@ TEST_P(NGInlineCursorTest, NextInlineLeafOnLineFromLayoutText) {
       << "We don't have items from second line.";
 }
 
-TEST_P(NGInlineCursorTest, NextInlineLeafWithEllipsis) {
+TEST_P(InlineCursorTest, NextInlineLeafWithEllipsis) {
   LoadAhem();
   InsertStyleElement(
       "#root {"
@@ -680,7 +681,7 @@ TEST_P(NGInlineCursorTest, NextInlineLeafWithEllipsis) {
       "overflow-x: hidden;"
       "text-overflow: ellipsis;"
       "}");
-  NGInlineCursor cursor = SetupCursor("<div id=root>abcdefghi</div>");
+  InlineCursor cursor = SetupCursor("<div id=root>abcdefghi</div>");
   Vector<String> list;
   while (cursor) {
     list.push_back(ToDebugString(cursor));
@@ -691,8 +692,8 @@ TEST_P(NGInlineCursorTest, NextInlineLeafWithEllipsis) {
   EXPECT_THAT(list, ElementsAre("#linebox", "abcd"));
 }
 
-TEST_P(NGInlineCursorTest, NextInlineLeafWithSoftHyphens) {
-  NGInlineCursor cursor =
+TEST_P(InlineCursorTest, NextInlineLeafWithSoftHyphens) {
+  InlineCursor cursor =
       SetupCursor("<div id=root style='width:3ch'>abc&shy;def</div>");
   Vector<String> list;
   while (cursor) {
@@ -703,11 +704,10 @@ TEST_P(NGInlineCursorTest, NextInlineLeafWithSoftHyphens) {
   EXPECT_THAT(list, ElementsAre("#linebox", u"abc\u00AD", "def"));
 }
 
-TEST_P(NGInlineCursorTest, NextInlineLeafIgnoringLineBreak) {
+TEST_P(InlineCursorTest, NextInlineLeafIgnoringLineBreak) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor =
-      SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
+  InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
   Vector<String> list;
   while (cursor) {
     list.push_back(ToDebugString(cursor));
@@ -716,54 +716,54 @@ TEST_P(NGInlineCursorTest, NextInlineLeafIgnoringLineBreak) {
   EXPECT_THAT(list, ElementsAre("#linebox", "abc", "DEF", "xyz"));
 }
 
-TEST_P(NGInlineCursorTest, NextLine) {
-  NGInlineCursor cursor = SetupCursor("<div id=root>abc<br>xyz</div>");
-  NGInlineCursor line1(cursor);
+TEST_P(InlineCursorTest, NextLine) {
+  InlineCursor cursor = SetupCursor("<div id=root>abc<br>xyz</div>");
+  InlineCursor line1(cursor);
   while (line1 && !line1.Current().IsLineBox())
     line1.MoveToNext();
   ASSERT_TRUE(line1.IsNotNull());
-  NGInlineCursor line2(line1);
+  InlineCursor line2(line1);
   line2.MoveToNext();
   while (line2 && !line2.Current().IsLineBox())
     line2.MoveToNext();
   ASSERT_NE(line1, line2);
 
-  NGInlineCursor should_be_line2(line1);
+  InlineCursor should_be_line2(line1);
   should_be_line2.MoveToNextLine();
   EXPECT_EQ(line2, should_be_line2);
 
-  NGInlineCursor should_be_null(line2);
+  InlineCursor should_be_null(line2);
   should_be_null.MoveToNextLine();
   EXPECT_TRUE(should_be_null.IsNull());
 }
 
-TEST_P(NGInlineCursorTest, NextWithImage) {
-  NGInlineCursor cursor = SetupCursor("<div id=root>abc<img id=img>xyz</div>");
+TEST_P(InlineCursorTest, NextWithImage) {
+  InlineCursor cursor = SetupCursor("<div id=root>abc<img id=img>xyz</div>");
   Vector<String> list = ToDebugStringList(cursor);
   EXPECT_THAT(list, ElementsAre("#linebox", "abc", "#img", "xyz"));
 }
 
-TEST_P(NGInlineCursorTest, NextWithInlineBox) {
+TEST_P(InlineCursorTest, NextWithInlineBox) {
   InsertStyleElement("b { display: inline-block; }");
-  NGInlineCursor cursor =
+  InlineCursor cursor =
       SetupCursor("<div id=root>abc<b id=ib>def</b>xyz</div>");
   Vector<String> list = ToDebugStringList(cursor);
   EXPECT_THAT(list, ElementsAre("#linebox", "abc", "#ib", "xyz"));
 
-  NGInlineCursor cursor2;
+  InlineCursor cursor2;
   cursor2.MoveTo(*GetElementById("ib")->firstChild()->GetLayoutObject());
   EXPECT_EQ(GetLayoutObjectByElementId("ib"), cursor2.GetLayoutBlockFlow());
 }
 
-TEST_P(NGInlineCursorTest, NextForSameLayoutObject) {
-  NGInlineCursor cursor = SetupCursor("<pre id=root>abc\ndef\nghi</pre>");
+TEST_P(InlineCursorTest, NextForSameLayoutObject) {
+  InlineCursor cursor = SetupCursor("<pre id=root>abc\ndef\nghi</pre>");
   cursor.MoveTo(*GetLayoutObjectByElementId("root")->SlowFirstChild());
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
               ElementsAre("abc", "", "def", "", "ghi"));
 }
 
 // Test |NextForSameLayoutObject| with limit range set.
-TEST_P(NGInlineCursorTest, NextForSameLayoutObjectWithRange) {
+TEST_P(InlineCursorTest, NextForSameLayoutObjectWithRange) {
   // In this snippet, `<span>` wraps to 3 lines, and that there are 3 fragments
   // for `<span>`.
   SetBodyInnerHTML(R"HTML(
@@ -786,10 +786,10 @@ TEST_P(NGInlineCursorTest, NextForSameLayoutObjectWithRange) {
   )HTML");
   LayoutBlockFlow* root =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("root"));
-  NGInlineCursor cursor(*root);
+  InlineCursor cursor(*root);
   cursor.MoveToFirstLine();
   cursor.MoveToNextLine();
-  NGInlineCursor line2 = cursor.CursorForDescendants();
+  InlineCursor line2 = cursor.CursorForDescendants();
 
   // Now |line2| is limited to the 2nd line. There should be only one framgnet
   // for `<span>` if we search using `line2`.
@@ -798,10 +798,10 @@ TEST_P(NGInlineCursorTest, NextForSameLayoutObjectWithRange) {
   EXPECT_THAT(LayoutObjectToDebugStringList(line2), ElementsAre("#span1"));
 }
 
-TEST_P(NGInlineCursorTest, Sibling) {
+TEST_P(InlineCursorTest, Sibling) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
-  NGInlineCursor cursor =
+  InlineCursor cursor =
       SetupCursor("<div id=root>abc<a>DEF<b>GHI</b></a>xyz</div>");
   TestPrevoiusSibling(cursor.CursorForDescendants());
   cursor.MoveToFirstChild();  // go to "abc"
@@ -809,10 +809,10 @@ TEST_P(NGInlineCursorTest, Sibling) {
   EXPECT_THAT(list, ElementsAre("abc", "LayoutInline A", "xyz"));
 }
 
-TEST_P(NGInlineCursorTest, Sibling2) {
+TEST_P(InlineCursorTest, Sibling2) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
-  NGInlineCursor cursor =
+  InlineCursor cursor =
       SetupCursor("<div id=root><a>abc<b>def</b>xyz</a></div>");
   cursor.MoveToFirstChild();  // go to <a>abc</a>
   TestPrevoiusSibling(cursor.CursorForDescendants());
@@ -821,7 +821,7 @@ TEST_P(NGInlineCursorTest, Sibling2) {
   EXPECT_THAT(list, ElementsAre("abc", "LayoutInline B", "xyz"));
 }
 
-TEST_P(NGInlineCursorTest, NextSkippingChildren) {
+TEST_P(InlineCursorTest, NextSkippingChildren) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("span { background: gray; }");
   SetBodyInnerHTML(R"HTML(
@@ -840,7 +840,7 @@ TEST_P(NGInlineCursorTest, NextSkippingChildren) {
 
   LayoutBlockFlow* block_flow =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("root"));
-  NGInlineCursor cursor(*block_flow);
+  InlineCursor cursor(*block_flow);
   for (unsigned i = 0; i < 3; ++i)
     cursor.MoveToNext();
   EXPECT_EQ("text2", ToDebugString(cursor));
@@ -854,7 +854,7 @@ TEST_P(NGInlineCursorTest, NextSkippingChildren) {
   EXPECT_THAT(list, ElementsAre("#span2", "text4", "text5"));
 }
 
-TEST_P(NGInlineCursorTest, EmptyOutOfFlow) {
+TEST_P(InlineCursorTest, EmptyOutOfFlow) {
   SetBodyInnerHTML(R"HTML(
     <div id=root>
       <span style="position: absolute"></span>
@@ -863,12 +863,12 @@ TEST_P(NGInlineCursorTest, EmptyOutOfFlow) {
 
   LayoutBlockFlow* block_flow =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("root"));
-  NGInlineCursor cursor(*block_flow);
+  InlineCursor cursor(*block_flow);
   Vector<String> list = ToDebugStringList(cursor);
   EXPECT_THAT(list, ElementsAre());
 }
 
-TEST_P(NGInlineCursorTest, PositionForPointInChildHorizontalLTR) {
+TEST_P(InlineCursorTest, PositionForPointInChildHorizontalLTR) {
   LoadAhem();
   InsertStyleElement(
       "p {"
@@ -877,7 +877,7 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildHorizontalLTR) {
       "padding: 10px;"
       "writing-mode: horizontal-tb;"
       "}");
-  NGInlineCursor cursor = SetupCursor("<p id=root>ab</p>");
+  InlineCursor cursor = SetupCursor("<p id=root>ab</p>");
   const auto& text = *To<Text>(GetElementById("root")->firstChild());
   ASSERT_TRUE(cursor.Current().IsLineBox());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(10, 10), PhysicalSize(20, 20)),
@@ -904,7 +904,7 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildHorizontalLTR) {
             cursor.PositionForPointInChild(left_top + PhysicalOffset(25, 0)));
 }
 
-TEST_P(NGInlineCursorTest, PositionForPointInChildHorizontalRTL) {
+TEST_P(InlineCursorTest, PositionForPointInChildHorizontalRTL) {
   LoadAhem();
   InsertStyleElement(
       "p {"
@@ -913,7 +913,7 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildHorizontalRTL) {
       "padding: 10px;"
       "writing-mode: horizontal-tb;"
       "}");
-  NGInlineCursor cursor = SetupCursor("<p id=root><bdo dir=rtl>AB</bdo></p>");
+  InlineCursor cursor = SetupCursor("<p id=root><bdo dir=rtl>AB</bdo></p>");
   const auto& text =
       *To<Text>(GetElementById("root")->firstChild()->firstChild());
   ASSERT_TRUE(cursor.Current().IsLineBox());
@@ -941,7 +941,7 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildHorizontalRTL) {
             cursor.PositionForPointInChild(left_top + PhysicalOffset(25, 0)));
 }
 
-TEST_P(NGInlineCursorTest, PositionForPointInChildVerticalLTR) {
+TEST_P(InlineCursorTest, PositionForPointInChildVerticalLTR) {
   LoadAhem();
   InsertStyleElement(
       "p {"
@@ -950,7 +950,7 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildVerticalLTR) {
       "padding: 10px;"
       "writing-mode: vertical-lr;"
       "}");
-  NGInlineCursor cursor = SetupCursor("<p id=root>ab</p>");
+  InlineCursor cursor = SetupCursor("<p id=root>ab</p>");
   const auto& text = *To<Text>(GetElementById("root")->firstChild());
   ASSERT_TRUE(cursor.Current().IsLineBox());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(10, 10), PhysicalSize(20, 20)),
@@ -977,7 +977,7 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildVerticalLTR) {
             cursor.PositionForPointInChild(left_top + PhysicalOffset(0, 25)));
 }
 
-TEST_P(NGInlineCursorTest, PositionForPointInChildVerticalRTL) {
+TEST_P(InlineCursorTest, PositionForPointInChildVerticalRTL) {
   LoadAhem();
   InsertStyleElement(
       "p {"
@@ -986,7 +986,7 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildVerticalRTL) {
       "padding: 10px;"
       "writing-mode: vertical-rl;"
       "}");
-  NGInlineCursor cursor = SetupCursor("<p id=root><bdo dir=rtl>AB</bdo></p>");
+  InlineCursor cursor = SetupCursor("<p id=root><bdo dir=rtl>AB</bdo></p>");
   const auto& text =
       *To<Text>(GetElementById("root")->firstChild()->firstChild());
   ASSERT_TRUE(cursor.Current().IsLineBox());
@@ -1015,10 +1015,10 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildVerticalRTL) {
 }
 
 // For http://crbug.com/1096110
-TEST_P(NGInlineCursorTest, PositionForPointInChildBlockChildren) {
+TEST_P(InlineCursorTest, PositionForPointInChildBlockChildren) {
   InsertStyleElement("b { display: inline-block; }");
   // Note: <b>.ChildrenInline() == false
-  NGInlineCursor cursor =
+  InlineCursor cursor =
       SetupCursor("<div id=root>a<b id=target><div>x</div></b></div>");
   const Element& target = *GetElementById("target");
   cursor.MoveTo(*target.GetLayoutObject());
@@ -1026,11 +1026,10 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildBlockChildren) {
             cursor.PositionForPointInChild(PhysicalOffset()));
 }
 
-TEST_P(NGInlineCursorTest, Previous) {
+TEST_P(InlineCursorTest, Previous) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor =
-      SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
+  InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
   cursor.MoveTo(*cursor.GetLayoutBlockFlow()->LastChild());
   Vector<String> list;
   while (cursor) {
@@ -1041,7 +1040,7 @@ TEST_P(NGInlineCursorTest, Previous) {
                                 "abc", "#linebox"));
 }
 
-TEST_P(NGInlineCursorTest, PreviousIncludingFragmentainer) {
+TEST_P(InlineCursorTest, PreviousIncludingFragmentainer) {
   // TDOO(yosin): Remove style for <b> once NGFragmentItem don't do culled
   // inline.
   LoadAhem();
@@ -1049,7 +1048,7 @@ TEST_P(NGInlineCursorTest, PreviousIncludingFragmentainer) {
       "b { background: gray; }"
       "div { font: 10px/15px Ahem; column-count: 2; width: 20ch; }");
   SetBodyInnerHTML("<div id=m>abc<br>def<br><b>ghi</b><br>jkl</div>");
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*GetElementById("m")->lastChild()->GetLayoutObject());
   ASSERT_TRUE(cursor.IsBlockFragmented()) << cursor;
   Vector<String> list;
@@ -1062,11 +1061,10 @@ TEST_P(NGInlineCursorTest, PreviousIncludingFragmentainer) {
                                 "#linebox"));
 }
 
-TEST_P(NGInlineCursorTest, PreviousInlineLeaf) {
+TEST_P(InlineCursorTest, PreviousInlineLeaf) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor =
-      SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
+  InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
   cursor.MoveTo(*cursor.GetLayoutBlockFlow()->LastChild());
   Vector<String> list;
   while (cursor) {
@@ -1076,11 +1074,10 @@ TEST_P(NGInlineCursorTest, PreviousInlineLeaf) {
   EXPECT_THAT(list, ElementsAre("xyz", "", "DEF", "abc"));
 }
 
-TEST_P(NGInlineCursorTest, PreviousInlineLeafIgnoringLineBreak) {
+TEST_P(InlineCursorTest, PreviousInlineLeafIgnoringLineBreak) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor =
-      SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
+  InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
   cursor.MoveTo(*cursor.GetLayoutBlockFlow()->LastChild());
   Vector<String> list;
   while (cursor) {
@@ -1090,10 +1087,10 @@ TEST_P(NGInlineCursorTest, PreviousInlineLeafIgnoringLineBreak) {
   EXPECT_THAT(list, ElementsAre("xyz", "DEF", "abc"));
 }
 
-TEST_P(NGInlineCursorTest, PreviousInlineLeafOnLineFromLayoutInline) {
+TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromLayoutInline) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root>"
       "<b>abc</b> def<br>"
       "<b>ABC</b> <b id=start>DEF</b><br>"
@@ -1108,11 +1105,11 @@ TEST_P(NGInlineCursorTest, PreviousInlineLeafOnLineFromLayoutInline) {
       << "We don't have 'DEF' and items in first line.";
 }
 
-TEST_P(NGInlineCursorTest, PreviousInlineLeafOnLineFromNestedLayoutInline) {
+TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromNestedLayoutInline) {
   // Never return a descendant for AXLayoutObject::PreviousOnLine().
   // Instead, if PreviousOnLine() is called on a container, return a previpus
   // item from the previous siblings subtree.
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root>"
       "<span>previous</span>"
       "<span id=start>"
@@ -1130,10 +1127,10 @@ TEST_P(NGInlineCursorTest, PreviousInlineLeafOnLineFromNestedLayoutInline) {
       << "previous on line doesn't return descendant.";
 }
 
-TEST_P(NGInlineCursorTest, PreviousInlineLeafOnLineFromLayoutText) {
+TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromLayoutText) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
-  NGInlineCursor cursor = SetupCursor(
+  InlineCursor cursor = SetupCursor(
       "<div id=root>"
       "<b>abc</b> def<br>"
       "<b>ABC</b> <b id=start>DEF</b><br>"
@@ -1148,28 +1145,28 @@ TEST_P(NGInlineCursorTest, PreviousInlineLeafOnLineFromLayoutText) {
       << "We don't have items in first line.";
 }
 
-TEST_P(NGInlineCursorTest, PreviousLine) {
-  NGInlineCursor cursor = SetupCursor("<div id=root>abc<br>xyz</div>");
-  NGInlineCursor line1(cursor);
+TEST_P(InlineCursorTest, PreviousLine) {
+  InlineCursor cursor = SetupCursor("<div id=root>abc<br>xyz</div>");
+  InlineCursor line1(cursor);
   while (line1 && !line1.Current().IsLineBox())
     line1.MoveToNext();
   ASSERT_TRUE(line1.IsNotNull());
-  NGInlineCursor line2(line1);
+  InlineCursor line2(line1);
   line2.MoveToNext();
   while (line2 && !line2.Current().IsLineBox())
     line2.MoveToNext();
   ASSERT_NE(line1, line2);
 
-  NGInlineCursor should_be_null(line1);
+  InlineCursor should_be_null(line1);
   should_be_null.MoveToPreviousLine();
   EXPECT_TRUE(should_be_null.IsNull());
 
-  NGInlineCursor should_be_line1(line2);
+  InlineCursor should_be_line1(line2);
   should_be_line1.MoveToPreviousLine();
   EXPECT_EQ(line1, should_be_line1);
 }
 
-TEST_P(NGInlineCursorTest, CursorForDescendants) {
+TEST_P(InlineCursorTest, CursorForDescendants) {
   SetBodyInnerHTML(R"HTML(
     <style>
     span { background: yellow; }
@@ -1193,7 +1190,7 @@ TEST_P(NGInlineCursorTest, CursorForDescendants) {
 
   LayoutBlockFlow* block_flow =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("root"));
-  NGInlineCursor cursor(*block_flow);
+  InlineCursor cursor(*block_flow);
   EXPECT_TRUE(cursor.Current().IsLineBox());
   cursor.MoveToNext();
   EXPECT_TRUE(cursor.Current().IsText());
@@ -1211,7 +1208,7 @@ TEST_P(NGInlineCursorTest, CursorForDescendants) {
               ElementsAre("text3"));
 }
 
-TEST_P(NGInlineCursorTest, MoveToVisualFirstOrLast) {
+TEST_P(InlineCursorTest, MoveToVisualFirstOrLast) {
   SetBodyInnerHTML(R"HTML(
     <div id=root dir="rtl">
       here is
@@ -1224,20 +1221,20 @@ TEST_P(NGInlineCursorTest, MoveToVisualFirstOrLast) {
   // visual:  _TXET_DEXIM_here_is_some_
   // in span:       ______        ____
 
-  NGInlineCursor cursor1;
+  InlineCursor cursor1;
   cursor1.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("span1"));
   cursor1.MoveToVisualFirstForSameLayoutObject();
   EXPECT_EQ("NGFragmentItem Text \"MIXED\"", cursor1.Current()->ToString());
 
-  NGInlineCursor cursor2;
+  InlineCursor cursor2;
   cursor2.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("span1"));
   cursor2.MoveToVisualLastForSameLayoutObject();
   EXPECT_EQ("NGFragmentItem Text \"some\"", cursor2.Current()->ToString());
 }
 
-class NGInlineCursorBlockFragmentationTest : public RenderingTest {};
+class InlineCursorBlockFragmentationTest : public RenderingTest {};
 
-TEST_F(NGInlineCursorBlockFragmentationTest, MoveToLayoutObject) {
+TEST_F(InlineCursorBlockFragmentationTest, MoveToLayoutObject) {
   // This creates 3 columns, 1 line in each column.
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1259,37 +1256,37 @@ TEST_F(NGInlineCursorBlockFragmentationTest, MoveToLayoutObject) {
 
   // Enumerate all fragments for |LayoutText|.
   {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*text1);
     EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
                 ElementsAre("1111", "22"));
   }
   {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*text2);
     EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
                 ElementsAre("33", "4444"));
   }
   // |MoveTo| can find no fragments for culled inline.
   {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*span1);
     EXPECT_FALSE(cursor);
   }
   {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*span2);
     EXPECT_FALSE(cursor);
   }
   // But |MoveToIncludingCulledInline| should find its descendants.
   {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*span1);
     EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
                 ElementsAre("1111", "22"));
   }
   {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*span2);
     EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
                 ElementsAre("33", "4444"));
@@ -1298,11 +1295,11 @@ TEST_F(NGInlineCursorBlockFragmentationTest, MoveToLayoutObject) {
   // Line-ranged cursors can find fragments only in the line.
   // The 1st line has "1111", from "text1".
   const LayoutBlockFlow* block_flow = span1->FragmentItemsContainer();
-  NGInlineCursor cursor(*block_flow);
+  InlineCursor cursor(*block_flow);
   EXPECT_TRUE(cursor.Current().IsLineBox());
-  NGInlineCursor line1 = cursor.CursorForDescendants();
-  const auto TestFragment1 = [&](const NGInlineCursor& initial_cursor) {
-    NGInlineCursor cursor = initial_cursor;
+  InlineCursor line1 = cursor.CursorForDescendants();
+  const auto TestFragment1 = [&](const InlineCursor& initial_cursor) {
+    InlineCursor cursor = initial_cursor;
     cursor.MoveTo(*text1);
     EXPECT_THAT(LayoutObjectToDebugStringList(cursor), ElementsAre("1111"));
     cursor = initial_cursor;
@@ -1321,9 +1318,9 @@ TEST_F(NGInlineCursorBlockFragmentationTest, MoveToLayoutObject) {
   cursor.MoveToNextFragmentainer();
   EXPECT_TRUE(cursor);
   EXPECT_TRUE(cursor.Current().IsLineBox());
-  NGInlineCursor line2 = cursor.CursorForDescendants();
-  const auto TestFragment2 = [&](const NGInlineCursor& initial_cursor) {
-    NGInlineCursor cursor = initial_cursor;
+  InlineCursor line2 = cursor.CursorForDescendants();
+  const auto TestFragment2 = [&](const InlineCursor& initial_cursor) {
+    InlineCursor cursor = initial_cursor;
     cursor.MoveTo(*text1);
     EXPECT_THAT(LayoutObjectToDebugStringList(cursor), ElementsAre("22"));
     cursor = initial_cursor;
@@ -1342,9 +1339,9 @@ TEST_F(NGInlineCursorBlockFragmentationTest, MoveToLayoutObject) {
   cursor.MoveToNextFragmentainer();
   EXPECT_TRUE(cursor);
   EXPECT_TRUE(cursor.Current().IsLineBox());
-  NGInlineCursor line3 = cursor.CursorForDescendants();
-  const auto TestFragment3 = [&](const NGInlineCursor& initial_cursor) {
-    NGInlineCursor cursor = initial_cursor;
+  InlineCursor line3 = cursor.CursorForDescendants();
+  const auto TestFragment3 = [&](const InlineCursor& initial_cursor) {
+    InlineCursor cursor = initial_cursor;
     cursor.MoveTo(*text1);
     EXPECT_THAT(LayoutObjectToDebugStringList(cursor), ElementsAre());
     cursor = initial_cursor;
@@ -1368,9 +1365,9 @@ TEST_F(NGInlineCursorBlockFragmentationTest, MoveToLayoutObject) {
     fragments.push_back(&fragment);
   }
   EXPECT_EQ(fragments.size(), 3u);
-  TestFragment1(NGInlineCursor(*fragments[0], *fragments[0]->Items()));
-  TestFragment2(NGInlineCursor(*fragments[1], *fragments[1]->Items()));
-  TestFragment3(NGInlineCursor(*fragments[2], *fragments[2]->Items()));
+  TestFragment1(InlineCursor(*fragments[0], *fragments[0]->Items()));
+  TestFragment2(InlineCursor(*fragments[1], *fragments[1]->Items()));
+  TestFragment3(InlineCursor(*fragments[2], *fragments[2]->Items()));
 }
 
 }  // namespace

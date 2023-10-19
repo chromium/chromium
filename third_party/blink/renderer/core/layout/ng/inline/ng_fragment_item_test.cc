@@ -26,14 +26,14 @@ class NGFragmentItemTest : public RenderingTest {
     return To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
   }
 
-  Vector<NGInlineCursorPosition> GetLines(NGInlineCursor* cursor) {
-    Vector<NGInlineCursorPosition> lines;
+  Vector<InlineCursorPosition> GetLines(InlineCursor* cursor) {
+    Vector<InlineCursorPosition> lines;
     for (cursor->MoveToFirstLine(); *cursor; cursor->MoveToNextLine())
       lines.push_back(cursor->Current());
     return lines;
   }
 
-  wtf_size_t IndexOf(const Vector<NGInlineCursorPosition>& items,
+  wtf_size_t IndexOf(const Vector<InlineCursorPosition>& items,
                      const NGFragmentItem* target) {
     wtf_size_t index = 0;
     for (const auto& item : items) {
@@ -52,7 +52,7 @@ class NGFragmentItemTest : public RenderingTest {
     const NGFragmentItem* end_reusable_item =
         items->EndOfReusableItems(*fragment);
 
-    NGInlineCursor cursor(*fragment, *items);
+    InlineCursor cursor(*fragment, *items);
     const auto lines = GetLines(&cursor);
     EXPECT_EQ(IndexOf(lines, end_reusable_item), expected_index);
   }
@@ -60,7 +60,7 @@ class NGFragmentItemTest : public RenderingTest {
   Vector<const NGFragmentItem*> ItemsForAsVector(
       const LayoutObject& layout_object) {
     Vector<const NGFragmentItem*> list;
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     for (cursor.MoveTo(layout_object); cursor;
          cursor.MoveToNextForSameLayoutObject()) {
       DCHECK(cursor.Current().Item());
@@ -86,7 +86,7 @@ TEST_F(NGFragmentItemTest, CopyMove) {
   )HTML");
   LayoutBlockFlow* container =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
-  NGInlineCursor cursor(*container);
+  InlineCursor cursor(*container);
 
   // Test copying a line item.
   cursor.MoveToFirstLine();
@@ -357,7 +357,7 @@ TEST_F(NGFragmentItemTest, SelfPaintingInlineBox) {
   RunDocumentLifecycle();
 
   // Test if it recalculated the ink overflow.
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   for (cursor.MoveTo(*text); cursor; cursor.MoveToNextForSameLayoutObject())
     EXPECT_TRUE(cursor.Current()->IsInkOverflowComputed());
 }
@@ -376,7 +376,7 @@ TEST_F(NGFragmentItemTest, StartOffsetInContainer) {
   )HTML");
   auto* container =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
-  NGInlineCursor cursor(*container);
+  InlineCursor cursor(*container);
   while (!cursor.Current()->IsLayoutGeneratedText())
     cursor.MoveToNext();
   EXPECT_EQ(4u, cursor.Current()->StartOffsetInContainer(cursor));
@@ -407,7 +407,7 @@ TEST_F(NGFragmentItemTest, EllipsizedAtomicInline) {
   auto* container =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
   auto* atomic = GetLayoutObjectByElementId("atomic");
-  NGInlineCursor cursor(*container);
+  InlineCursor cursor(*container);
   cursor.MoveToNext();
   EXPECT_EQ(cursor.Current().GetLayoutObject(), atomic);
   EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kBox);
@@ -446,7 +446,7 @@ TEST_F(NGFragmentItemTest, LineFragmentId) {
     </body>
   )HTML");
   auto* target = To<LayoutBlockFlow>(GetLayoutObjectByElementId("target"));
-  NGInlineCursor cursor(*target);
+  InlineCursor cursor(*target);
   wtf_size_t line_index = 0;
   for (cursor.MoveToFirstLine(); cursor;
        cursor.MoveToNextLineIncludingFragmentainer(), ++line_index) {
@@ -924,7 +924,7 @@ TEST_F(NGFragmentItemTest, Disabled_DebugVisualizers) {
   )HTML");
   auto* container =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
-  NGInlineCursor cursor(*container);
+  InlineCursor cursor(*container);
   cursor.MoveToFirstLine();
   const NGFragmentItem* line = cursor.Current().Item();
   EXPECT_NE(line, nullptr);

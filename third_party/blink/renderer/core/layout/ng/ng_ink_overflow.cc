@@ -357,7 +357,7 @@ NGInkOverflow::Type NGInkOverflow::Set(Type type,
 
 NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
     Type type,
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const PhysicalRect& rect_in_container,
@@ -379,7 +379,7 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
 
 NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
     Type type,
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const Font& scaled_font,
@@ -447,7 +447,7 @@ NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
 
 // static
 absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const Font& scaled_font,
@@ -531,7 +531,7 @@ LogicalRect NGInkOverflow::ComputeEmphasisMarkOverflow(
 
 // static
 LogicalRect NGInkOverflow::ComputeDecorationOverflow(
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     const ComputedStyle& style,
     const Font& scaled_font,
     const PhysicalOffset& container_offset,

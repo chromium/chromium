@@ -310,7 +310,7 @@ class CORE_EXPORT NGFragmentItem final {
 
   // Re-compute the ink overflow for the |cursor| until its end.
   static PhysicalRect RecalcInkOverflowForCursor(
-      NGInlineCursor* cursor,
+      InlineCursor* cursor,
       NGInlinePaintContext* inline_context);
 
   // Painters can use const methods only, except for these explicitly declared
@@ -320,7 +320,7 @@ class CORE_EXPORT NGFragmentItem final {
 
    public:
     void InvalidateInkOverflow() { return item_.InvalidateInkOverflow(); }
-    void RecalcInkOverflow(const NGInlineCursor& cursor,
+    void RecalcInkOverflow(const InlineCursor& cursor,
                            NGInlinePaintContext* inline_context,
                            PhysicalRect* self_and_contents_rect_out) {
       return item_.RecalcInkOverflow(cursor, inline_context,
@@ -420,7 +420,7 @@ class CORE_EXPORT NGFragmentItem final {
   // Layout-generated text has two offsets; one for its own generated string,
   // and the other for the container. |TextOffset| returns the former, while
   // this function returns the latter.
-  unsigned StartOffsetInContainer(const NGInlineCursor& container) const;
+  unsigned StartOffsetInContainer(const InlineCursor& container) const;
 
   StringView Text(const NGFragmentItems& items) const;
   String GeneratedText() const {
@@ -468,12 +468,10 @@ class CORE_EXPORT NGFragmentItem final {
 
   // Converts the given point, relative to the fragment itself, into a position
   // in DOM tree.
-  PositionWithAffinity PositionForPointInText(
-      const PhysicalOffset& point,
-      const NGInlineCursor& cursor) const;
-  PositionWithAffinity PositionForPointInText(
-      unsigned text_offset,
-      const NGInlineCursor& cursor) const;
+  PositionWithAffinity PositionForPointInText(const PhysicalOffset& point,
+                                              const InlineCursor& cursor) const;
+  PositionWithAffinity PositionForPointInText(unsigned text_offset,
+                                              const InlineCursor& cursor) const;
   unsigned TextOffsetForPoint(const PhysicalOffset& point,
                               const NGFragmentItems& items) const;
 
@@ -564,11 +562,11 @@ class CORE_EXPORT NGFragmentItem final {
   void InvalidateInkOverflow();
 
   // Re-compute the ink overflow for this item. |cursor| should be at |this|.
-  void RecalcInkOverflow(const NGInlineCursor& cursor,
+  void RecalcInkOverflow(const InlineCursor& cursor,
                          NGInlinePaintContext* inline_context,
                          PhysicalRect* self_and_contents_rect_out);
   PhysicalRect RecalcInkOverflowForDescendantsOf(
-      const NGInlineCursor& cursor,
+      const InlineCursor& cursor,
       NGInlinePaintContext* inline_context) const;
 
   // Compute the inline position from text offset, in logical coordinate

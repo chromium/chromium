@@ -553,7 +553,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     // Require the ability to contain a caret -- this requirement is not
     // strictly necessary, and could be removed, but caused about 20 test
     // changes on each platform.
-    NGInlineCursor cursor(*block_flow);
+    InlineCursor cursor(*block_flow);
     if (cursor.HasRoot()) {
       return false;
     }
@@ -737,7 +737,7 @@ AXObject* AXLayoutObject::NextOnLine() const {
     return nullptr;
   }
 
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   while (true) {
     // Try to get cursor for layout_object.
     cursor.MoveToIncludingCulledInline(*layout_object);
@@ -821,7 +821,7 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
     return nullptr;
   }
 
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   while (true) {
     // Try to get cursor for layout_object.
     cursor.MoveToIncludingCulledInline(*layout_object);

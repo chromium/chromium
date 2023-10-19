@@ -21,15 +21,15 @@ namespace blink {
 
 class ComputedStyle;
 class DisplayItemClient;
+class InlineBackwardCursor;
+class InlineCursor;
 class LayoutBlockFlow;
 class LayoutInline;
 class LayoutObject;
 class LayoutUnit;
 class NGFragmentItem;
 class NGFragmentItems;
-class NGInlineBackwardCursor;
 class NGInlineBreakToken;
-class NGInlineCursor;
 class NGInlinePaintContext;
 class NGPhysicalBoxFragment;
 class Node;
@@ -40,11 +40,11 @@ struct PhysicalOffset;
 struct PhysicalRect;
 struct PhysicalSize;
 
-// Represents a position of |NGInlineCursor|. This class:
+// Represents a position of |InlineCursor|. This class:
 // 1. Provides properties for the current position.
 // 2. Allows to save |Current()|, and can move back later. Moving to |Position|
 // is faster than moving to |NGFragmentItem|.
-class CORE_EXPORT NGInlineCursorPosition {
+class CORE_EXPORT InlineCursorPosition {
  public:
   using ItemsSpan = NGFragmentItems::Span;
 
@@ -54,10 +54,10 @@ class CORE_EXPORT NGInlineCursorPosition {
 
   explicit operator bool() const { return item_; }
 
-  bool operator==(const NGInlineCursorPosition& other) const {
+  bool operator==(const InlineCursorPosition& other) const {
     return item_ == other.item_;
   }
-  bool operator!=(const NGInlineCursorPosition& other) const {
+  bool operator!=(const InlineCursorPosition& other) const {
     return !operator==(other);
   }
 
@@ -144,7 +144,7 @@ class CORE_EXPORT NGInlineCursorPosition {
   const PhysicalRect RectInContainerFragment() const {
     return item_->RectInContainerFragment();
   }
-  gfx::RectF ObjectBoundingBox(const NGInlineCursor& cursor) const;
+  gfx::RectF ObjectBoundingBox(const InlineCursor& cursor) const;
   const PhysicalOffset OffsetInContainerFragment() const {
     return item_->OffsetInContainerFragment();
   }
@@ -157,7 +157,7 @@ class CORE_EXPORT NGInlineCursorPosition {
     return item_->SelfInkOverflow();
   }
 
-  void RecalcInkOverflow(const NGInlineCursor& cursor,
+  void RecalcInkOverflow(const InlineCursor& cursor,
                          NGInlinePaintContext* inline_context) const;
 
   // Returns start/end of offset in text content of current text fragment.
@@ -168,7 +168,7 @@ class CORE_EXPORT NGInlineCursorPosition {
 
   // Returns text of the current position. It is error to call other than
   // text.
-  StringView Text(const NGInlineCursor& cursor) const;
+  StringView Text(const InlineCursor& cursor) const;
 
   // Returns |ShapeResultView| of the current position. It is error to call
   // other than text.
@@ -223,35 +223,35 @@ class CORE_EXPORT NGInlineCursorPosition {
   const NGFragmentItem* item_ = nullptr;
   ItemsSpan::iterator item_iter_;
 
-  friend class NGInlineBackwardCursor;
-  friend class NGInlineCursor;
+  friend class InlineBackwardCursor;
+  friend class InlineCursor;
 };
 
 // This class traverses fragments in an inline formatting context.
 //
 // When constructed, the initial position is empty. Call |MoveToNext()| to move
 // to the first fragment.
-class CORE_EXPORT NGInlineCursor {
+class CORE_EXPORT InlineCursor {
   STACK_ALLOCATED();
 
  public:
   using ItemsSpan = NGFragmentItems::Span;
 
-  explicit NGInlineCursor(const LayoutBlockFlow& block_flow);
-  explicit NGInlineCursor(const NGPhysicalBoxFragment& box_fragment);
-  NGInlineCursor(const NGPhysicalBoxFragment& box_fragment,
-                 const NGFragmentItems& items);
-  explicit NGInlineCursor(const NGInlineBackwardCursor& backward_cursor);
-  NGInlineCursor(const NGInlineCursor& other) = default;
-  NGInlineCursor& operator=(const NGInlineCursor& other) = default;
+  explicit InlineCursor(const LayoutBlockFlow& block_flow);
+  explicit InlineCursor(const NGPhysicalBoxFragment& box_fragment);
+  InlineCursor(const NGPhysicalBoxFragment& box_fragment,
+               const NGFragmentItems& items);
+  explicit InlineCursor(const InlineBackwardCursor& backward_cursor);
+  InlineCursor(const InlineCursor& other) = default;
+  InlineCursor& operator=(const InlineCursor& other) = default;
 
-  // Creates an |NGInlineCursor| without the root. Even when callers don't know
+  // Creates an |InlineCursor| without the root. Even when callers don't know
   // the root of the inline formatting context, this cursor can |MoveTo()|
   // specific |LayoutObject|.
-  NGInlineCursor() = default;
+  InlineCursor() = default;
 
-  bool operator==(const NGInlineCursor& other) const;
-  bool operator!=(const NGInlineCursor& other) const {
+  bool operator==(const InlineCursor& other) const;
+  bool operator!=(const InlineCursor& other) const {
     return !operator==(other);
   }
 
@@ -281,7 +281,7 @@ class CORE_EXPORT NGInlineCursor {
   //
   // Functions to query the current position.
   //
-  const NGInlineCursorPosition& Current() const { return current_; }
+  const InlineCursorPosition& Current() const { return current_; }
 
   // Returns true if cursor is out of fragment tree, e.g. before first fragment
   // or after last fragment in tree.
@@ -292,14 +292,14 @@ class CORE_EXPORT NGInlineCursor {
   // True if |Current()| is at the first fragment. See |MoveToFirst()|.
   bool IsAtFirst() const;
 
-  // Returns a new |NGInlineCursor| whose root is the current item. The returned
+  // Returns a new |InlineCursor| whose root is the current item. The returned
   // cursor can traverse descendants of the current item. If the current item
   // has no children, returns an empty cursor.
-  NGInlineCursor CursorForDescendants() const;
+  InlineCursor CursorForDescendants() const;
 
-  // Returns a new |NGInlineCursor| whose root is containing block or multicol
+  // Returns a new |InlineCursor| whose root is containing block or multicol
   // container for traversing fragmentainers in root.
-  NGInlineCursor CursorForMovingAcrossFragmentainer() const;
+  InlineCursor CursorForMovingAcrossFragmentainer() const;
 
   // If |this| is created by |CursorForDescendants()| to traverse parts of an
   // inline formatting context, expand the traversable range to the containing
@@ -398,7 +398,7 @@ class CORE_EXPORT NGInlineCursor {
   //
   // Functions to move the current position.
   //
-  void MoveTo(const NGInlineCursorPosition& position);
+  void MoveTo(const InlineCursorPosition& position);
 
   // Move the current position at |fragment_item|. |this| cursor must have
   // root.
@@ -407,7 +407,7 @@ class CORE_EXPORT NGInlineCursor {
   // Move the current position at |cursor|. Unlinke copy constrcutr, this
   // function doesn't copy root. Note: The current position in |cursor|
   // should be part of |this| cursor.
-  void MoveTo(const NGInlineCursor& cursor);
+  void MoveTo(const InlineCursor& cursor);
 
   // Move to the parent box or line box.
   void MoveToParent();
@@ -563,15 +563,15 @@ class CORE_EXPORT NGInlineCursor {
   void MoveToVisualFirstForSameLayoutObject();
 
 #if DCHECK_IS_ON()
-  void CheckValid(const NGInlineCursorPosition& position) const;
+  void CheckValid(const InlineCursorPosition& position) const;
 #else
-  void CheckValid(const NGInlineCursorPosition&) const {}
+  void CheckValid(const InlineCursorPosition&) const {}
 #endif
 
  private:
-  NGInlineCursor(const NGPhysicalBoxFragment& box_fragment,
-                 const NGFragmentItems& fragment_items,
-                 ItemsSpan items);
+  InlineCursor(const NGPhysicalBoxFragment& box_fragment,
+               const NGFragmentItems& fragment_items,
+               ItemsSpan items);
 
   // Returns true if |this| is only for a part of an inline formatting context;
   // in other words, if |this| is created by |CursorForDescendants|.
@@ -662,7 +662,7 @@ class CORE_EXPORT NGInlineCursor {
   void DecrementFragmentIndex();
   void IncrementFragmentIndex();
 
-  NGInlineCursorPosition current_;
+  InlineCursorPosition current_;
 
   ItemsSpan items_;
   const NGFragmentItems* fragment_items_ = nullptr;
@@ -680,23 +680,23 @@ class CORE_EXPORT NGInlineCursor {
   wtf_size_t fragment_index_ = 0;
   wtf_size_t max_fragment_index_ = 0;
 
-  friend class NGInlineBackwardCursor;
+  friend class InlineBackwardCursor;
 };
 
 // This class provides the |MoveToPreviousSibling| functionality, but as a
 // separate class because it consumes memory, and only rarely used.
-class CORE_EXPORT NGInlineBackwardCursor {
+class CORE_EXPORT InlineBackwardCursor {
   STACK_ALLOCATED();
 
  public:
   // |cursor| should be the first child of root or descendants, e.g. the first
-  // item in |NGInlineCursor::items_|.
-  explicit NGInlineBackwardCursor(const NGInlineCursor& cursor);
+  // item in |InlineCursor::items_|.
+  explicit InlineBackwardCursor(const InlineCursor& cursor);
 
-  const NGInlineCursorPosition& Current() const { return current_; }
+  const InlineCursorPosition& Current() const { return current_; }
   explicit operator bool() const { return !!Current(); }
 
-  NGInlineCursor CursorForDescendants() const;
+  InlineCursor CursorForDescendants() const;
 
   void MoveToPreviousSibling();
 
@@ -705,16 +705,16 @@ class CORE_EXPORT NGInlineBackwardCursor {
   }
 
  private:
-  NGInlineCursorPosition current_;
-  const NGInlineCursor& cursor_;
-  Vector<NGInlineCursor::ItemsSpan::iterator, 16> sibling_item_iterators_;
+  InlineCursorPosition current_;
+  const InlineCursor& cursor_;
+  Vector<InlineCursor::ItemsSpan::iterator, 16> sibling_item_iterators_;
   wtf_size_t current_index_;
 
-  friend class NGInlineCursor;
+  friend class InlineCursor;
 };
 
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGInlineCursor&);
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGInlineCursor*);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const InlineCursor&);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const InlineCursor*);
 
 }  // namespace blink
 

@@ -317,7 +317,7 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
 }  // namespace
 
 NGHighlightPainter::SelectionPaintState::SelectionPaintState(
-    const NGInlineCursor& containing_block,
+    const InlineCursor& containing_block,
     const PhysicalOffset& box_offset,
     const absl::optional<AffineTransform> writing_mode_rotation)
     : SelectionPaintState(containing_block,
@@ -329,7 +329,7 @@ NGHighlightPainter::SelectionPaintState::SelectionPaintState(
                               .GetFrame()
                               ->Selection()) {}
 NGHighlightPainter::SelectionPaintState::SelectionPaintState(
-    const NGInlineCursor& containing_block,
+    const InlineCursor& containing_block,
     const PhysicalOffset& box_offset,
     const absl::optional<AffineTransform> writing_mode_rotation,
     const FrameSelection& frame_selection)
@@ -438,7 +438,7 @@ NGHighlightPainter::NGHighlightPainter(
     NGTextPainter& text_painter,
     NGTextDecorationPainter& decoration_painter,
     const PaintInfo& paint_info,
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     const NGFragmentItem& fragment_item,
     const absl::optional<AffineTransform> writing_mode_rotation,
     const PhysicalOffset& box_origin,

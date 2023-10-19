@@ -15,8 +15,8 @@ namespace blink {
 
 class ComputedStyle;
 class DisplayItemClient;
+class InlineCursor;
 class LayoutObject;
-class NGInlineCursor;
 class NGInlinePaintContext;
 struct NGTextFragmentPaintInfo;
 struct PaintInfo;
@@ -31,9 +31,9 @@ class NGTextFragmentPainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTextFragmentPainter(const NGInlineCursor& cursor)
+  explicit NGTextFragmentPainter(const InlineCursor& cursor)
       : cursor_(cursor) {}
-  NGTextFragmentPainter(const NGInlineCursor& cursor,
+  NGTextFragmentPainter(const InlineCursor& cursor,
                         const PhysicalOffset& parent_offset,
                         NGInlinePaintContext* inline_context)
       : cursor_(cursor),
@@ -60,9 +60,9 @@ class NGTextFragmentPainter {
                           const PaintInfo& paint_info,
                           const PhysicalOffset& paint_offset);
 
-  const NGInlineCursor& cursor_;
+  const InlineCursor& cursor_;
   PhysicalOffset parent_offset_;
-  absl::optional<NGInlineCursor> inline_cursor_for_block_flow_;
+  absl::optional<InlineCursor> inline_cursor_for_block_flow_;
   NGInlinePaintContext* inline_context_ = nullptr;
 };
 

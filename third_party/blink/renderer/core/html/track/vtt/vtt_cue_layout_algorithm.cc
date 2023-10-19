@@ -85,7 +85,7 @@ void VttCueLayoutAlgorithm::Layout() {
 PhysicalSize VttCueLayoutAlgorithm::FirstInlineBoxSize(
     const LayoutBox& cue_box) {
   DCHECK(cue_box.IsLayoutNGObject());
-  NGInlineCursor cursor(To<LayoutBlockFlow>(cue_box));
+  InlineCursor cursor(To<LayoutBlockFlow>(cue_box));
   cursor.MoveToFirstLine();
   if (cursor.IsNull())
     return {};

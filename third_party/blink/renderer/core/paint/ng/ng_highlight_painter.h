@@ -26,11 +26,11 @@ namespace blink {
 
 class ComputedStyle;
 class FrameSelection;
+class InlineCursor;
 class LayoutObject;
 class NGFragmentItem;
 class NGTextPainter;
 class NGTextDecorationPainter;
-class NGInlineCursor;
 class Node;
 struct LayoutSelectionStatus;
 struct NGTextFragmentPaintInfo;
@@ -54,11 +54,11 @@ class CORE_EXPORT NGHighlightPainter {
     // ComputeSelectionStyle must be called to finish initializing. Until then,
     // only Status() may be called.
     explicit SelectionPaintState(
-        const NGInlineCursor& containing_block,
+        const InlineCursor& containing_block,
         const PhysicalOffset& box_offset,
         const absl::optional<AffineTransform> writing_mode_rotation = {});
     explicit SelectionPaintState(
-        const NGInlineCursor& containing_block,
+        const InlineCursor& containing_block,
         const PhysicalOffset& box_offset,
         const absl::optional<AffineTransform> writing_mode_rotation,
         const FrameSelection&);
@@ -120,7 +120,7 @@ class CORE_EXPORT NGHighlightPainter {
 
     const LayoutSelectionStatus selection_status_;
     const SelectionState state_;
-    const NGInlineCursor& containing_block_;
+    const InlineCursor& containing_block_;
     const PhysicalOffset& box_offset_;
     const absl::optional<AffineTransform> writing_mode_rotation_;
     absl::optional<SelectionRect> selection_rect_;
@@ -133,7 +133,7 @@ class CORE_EXPORT NGHighlightPainter {
       NGTextPainter& text_painter,
       NGTextDecorationPainter& decoration_painter,
       const PaintInfo& paint_info,
-      const NGInlineCursor& cursor,
+      const InlineCursor& cursor,
       const NGFragmentItem& fragment_item,
       const absl::optional<AffineTransform> writing_mode_rotation,
       const PhysicalOffset& box_origin,
@@ -293,7 +293,7 @@ class CORE_EXPORT NGHighlightPainter {
   NGTextPainter& text_painter_;
   NGTextDecorationPainter& decoration_painter_;
   const PaintInfo& paint_info_;
-  const NGInlineCursor& cursor_;
+  const InlineCursor& cursor_;
   const NGFragmentItem& fragment_item_;
   const PhysicalOffset& box_origin_;
   const ComputedStyle& originating_style_;

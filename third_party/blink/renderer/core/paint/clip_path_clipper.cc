@@ -85,7 +85,7 @@ PhysicalRect BorderBoxRect(const LayoutBoxModelObject& object) {
   // See: https://crbug.com/641907
   const LayoutInline& layout_inline = To<LayoutInline>(object);
   if (layout_inline.IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(layout_inline);
     if (cursor) {
       return cursor.Current().RectInContainerFragment();

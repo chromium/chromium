@@ -210,7 +210,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
 
     NGInlinePaintContext* inline_context_;
     const Vector<AppliedTextDecoration, 1>* stop_at_;
-    absl::optional<NGInlineCursor> line_cursor_;
+    absl::optional<InlineCursor> line_cursor_;
     DecoratingBoxList* saved_decorating_boxes_;
     NGStyleVariant style_variant_;
   };
@@ -224,7 +224,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
 }
 
 NGInlinePaintContext::ScopedInlineBoxAncestors::ScopedInlineBoxAncestors(
-    const NGInlineCursor& inline_box,
+    const InlineCursor& inline_box,
     NGInlinePaintContext* inline_context) {
   if (!RuntimeEnabledFeatures::TextDecoratingBoxEnabled())
     return;
@@ -234,16 +234,16 @@ NGInlinePaintContext::ScopedInlineBoxAncestors::ScopedInlineBoxAncestors(
 }
 
 void NGInlinePaintContext::PushDecoratingBoxAncestors(
-    const NGInlineCursor& inline_box) {
+    const InlineCursor& inline_box) {
   DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
   DCHECK(inline_box.Current());
   DCHECK(inline_box.Current().IsInlineBox());
   DCHECK(decorating_boxes_.empty());
 
   Vector<const NGFragmentItem*, 16> ancestor_items;
-  for (NGInlineCursor cursor = inline_box;;) {
+  for (InlineCursor cursor = inline_box;;) {
     cursor.MoveToParent();
-    const NGInlineCursorPosition& current = cursor.Current();
+    const InlineCursorPosition& current = cursor.Current();
     DCHECK(current);
 
     if (current.IsLineBox()) {
@@ -264,7 +264,7 @@ void NGInlinePaintContext::PushDecoratingBoxes(
 }
 
 NGInlinePaintContext::ScopedLineBox::ScopedLineBox(
-    const NGInlineCursor& line_cursor,
+    const InlineCursor& line_cursor,
     NGInlinePaintContext* inline_context) {
   if (!RuntimeEnabledFeatures::TextDecoratingBoxEnabled())
     return;
@@ -273,7 +273,7 @@ NGInlinePaintContext::ScopedLineBox::ScopedLineBox(
   inline_context->SetLineBox(line_cursor);
 }
 
-void NGInlinePaintContext::SetLineBox(const NGInlineCursor& line_cursor) {
+void NGInlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
   DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
   DCHECK_EQ(line_cursor.Current()->Type(), NGFragmentItem::kLine);
   line_cursor_ = line_cursor;

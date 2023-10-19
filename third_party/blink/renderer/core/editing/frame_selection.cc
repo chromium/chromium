@@ -1330,12 +1330,12 @@ void FrameSelection::ClearDocumentCachedRange() {
 }
 
 LayoutSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(
-    const NGInlineCursor& cursor) const {
+    const InlineCursor& cursor) const {
   return layout_selection_->ComputeSelectionStatus(cursor);
 }
 
 SelectionState FrameSelection::ComputePaintingSelectionStateForCursor(
-    const NGInlineCursorPosition& position) const {
+    const InlineCursorPosition& position) const {
   return layout_selection_->ComputePaintingSelectionStateForCursor(position);
 }
 

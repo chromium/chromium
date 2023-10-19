@@ -21,7 +21,7 @@ namespace {
 // boxes.
 //
 // TODO(yosin): We should share |ResolvedDirection()| with "bidi_adjustment.cc"
-TextDirection ResolvedDirection(const NGInlineCursor& cursor) {
+TextDirection ResolvedDirection(const InlineCursor& cursor) {
   if (cursor.Current().IsText() || cursor.Current().IsAtomicInline())
     return cursor.Current().ResolvedDirection();
 
@@ -30,16 +30,16 @@ TextDirection ResolvedDirection(const NGInlineCursor& cursor) {
   // text editing caret. We currently use the line's base direction, but this is
   // wrong:
   //   <div dir=ltr>abc A<b>B</b>C abc</div>
-  NGInlineCursor line_box;
+  InlineCursor line_box;
   line_box.MoveTo(cursor);
   line_box.MoveToContainingLine();
   return line_box.Current().BaseDirection();
 }
 
-PhysicalRect ComputeLocalCaretRectByBoxSide(const NGInlineCursor& cursor,
+PhysicalRect ComputeLocalCaretRectByBoxSide(const InlineCursor& cursor,
                                             NGCaretPositionType position_type) {
   const bool is_horizontal = cursor.Current().Style().IsHorizontalWritingMode();
-  NGInlineCursor line_box(cursor);
+  InlineCursor line_box(cursor);
   line_box.MoveToContainingLine();
   DCHECK(line_box);
   const PhysicalOffset offset = cursor.Current().OffsetInContainerFragment();
@@ -109,7 +109,7 @@ LayoutUnit ClampAndRound(LayoutUnit value, LayoutUnit min, LayoutUnit max) {
   return LayoutUnit(ClampTo<LayoutUnit>(value, min_ceil, max_floor).Round());
 }
 
-PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
+PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
                                                unsigned offset) {
   DCHECK(cursor.Current().IsText());
   DCHECK_GE(offset, cursor.Current().TextStartOffset());
@@ -147,7 +147,7 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
   const PhysicalSize caret_size(caret_width, caret_height);
 
   const NGPhysicalBoxFragment& fragment = cursor.ContainerFragment();
-  NGInlineCursor line_box(cursor);
+  InlineCursor line_box(cursor);
   line_box.MoveToContainingLine();
   const PhysicalOffset line_box_offset =
       line_box.Current().OffsetInContainerFragment();
@@ -223,7 +223,7 @@ LocalCaretRect ComputeLocalSelectionRect(
   if (!caret_rect.layout_object)
     return caret_rect;
 
-  NGInlineCursor line_box(caret_position.cursor);
+  InlineCursor line_box(caret_position.cursor);
   line_box.MoveToContainingLine();
   // TODO(yosin): We'll hit this DCHECK for caret in empty block if we
   // enable LayoutNG in contenteditable.

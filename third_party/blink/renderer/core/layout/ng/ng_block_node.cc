@@ -357,7 +357,7 @@ const NGLayoutResult* NGBlockNode::Layout(
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
     // If we have fragment items, and we're not done (more fragments to follow),
     // be sure to miss the cache for any subsequent fragments, lest finalization
-    // be missed (which could cause trouble for NGInlineCursor when walking the
+    // be missed (which could cause trouble for InlineCursor when walking the
     // items).
     bool clear_trailing_results =
         new_fragment.BreakToken() && new_fragment.HasItems();
@@ -1550,7 +1550,7 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
         previous_break_token->ConsumedBlockSizeForLegacy();
   }
   bool initial_container_is_flipped = Style().IsFlippedBlocksWritingMode();
-  for (NGInlineCursor cursor(container, items); cursor; cursor.MoveToNext()) {
+  for (InlineCursor cursor(container, items); cursor; cursor.MoveToNext()) {
     if (const NGPhysicalBoxFragment* child = cursor.Current().BoxFragment()) {
       // Replaced elements and inline blocks need Location() set relative to
       // their block container. Similarly for block-in-inline anonymous wrapper

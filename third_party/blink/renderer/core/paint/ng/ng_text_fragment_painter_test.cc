@@ -35,7 +35,7 @@ TEST_P(NGTextFragmentPainterTest, TestTextStyle) {
 
   LayoutObject& container = *GetLayoutObjectByElementId("container");
   const auto& block_flow = To<LayoutNGBlockFlow>(container);
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*block_flow.FirstChild());
   const DisplayItemClient& text_fragment =
       *cursor.Current().GetDisplayItemClient();

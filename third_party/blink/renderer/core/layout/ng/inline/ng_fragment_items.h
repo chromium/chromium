@@ -117,7 +117,7 @@ class CORE_EXPORT NGFragmentItems final {
  private:
   const NGFragmentItem* ItemsData() const { return items_.data(); }
 
-  static bool CanReuseAll(NGInlineCursor* cursor);
+  static bool CanReuseAll(InlineCursor* cursor);
   static bool TryDirtyFirstLineFor(const LayoutObject& layout_object,
                                    const LayoutBlockFlow& container);
   static bool TryDirtyLastLineFor(const LayoutObject& layout_object,

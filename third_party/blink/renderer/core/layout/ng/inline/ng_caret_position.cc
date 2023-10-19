@@ -46,34 +46,34 @@ struct CaretPositionResolution {
   NGCaretPosition caret_position;
 };
 
-bool CanResolveCaretPositionBeforeFragment(const NGInlineCursor& cursor,
+bool CanResolveCaretPositionBeforeFragment(const InlineCursor& cursor,
                                            TextAffinity affinity) {
   if (affinity == TextAffinity::kDownstream)
     return true;
   if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
     return false;
-  NGInlineCursor current_line(cursor);
+  InlineCursor current_line(cursor);
   current_line.MoveToContainingLine();
   // A fragment after line wrap must be the first logical leaf in its line.
-  NGInlineCursor first_logical_leaf(current_line);
+  InlineCursor first_logical_leaf(current_line);
   first_logical_leaf.MoveToFirstLogicalLeaf();
   if (cursor != first_logical_leaf)
     return true;
-  NGInlineCursor last_line(current_line);
+  InlineCursor last_line(current_line);
   last_line.MoveToPreviousLine();
   return !last_line || !last_line.Current().HasSoftWrapToNextLine();
 }
 
-bool CanResolveCaretPositionAfterFragment(const NGInlineCursor& cursor,
+bool CanResolveCaretPositionAfterFragment(const InlineCursor& cursor,
                                           TextAffinity affinity) {
   if (affinity == TextAffinity::kUpstream)
     return true;
   if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
     return false;
-  NGInlineCursor current_line(cursor);
+  InlineCursor current_line(cursor);
   current_line.MoveToContainingLine();
   // A fragment before line wrap must be the last logical leaf in its line.
-  NGInlineCursor last_logical_leaf(current_line);
+  InlineCursor last_logical_leaf(current_line);
   last_logical_leaf.MoveToLastLogicalLeaf();
   if (cursor != last_logical_leaf)
     return true;
@@ -84,7 +84,7 @@ bool CanResolveCaretPositionAfterFragment(const NGInlineCursor& cursor,
 // fragment. Otherwise, return either |kFoundCandidate| or |kResolved| depending
 // on |affinity|.
 CaretPositionResolution TryResolveCaretPositionInTextFragment(
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     unsigned offset,
     TextAffinity affinity) {
   if (cursor.Current().IsGeneratedText())
@@ -161,7 +161,7 @@ unsigned GetTextOffsetBefore(const Node& node) {
 // inline box fragment. Otherwise, return either |kFoundCandidate| or
 // |kResolved| depending on |affinity|.
 CaretPositionResolution TryResolveCaretPositionByBoxFragmentSide(
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     unsigned offset,
     TextAffinity affinity) {
   const Node* const node = cursor.Current().GetNode();
@@ -196,7 +196,7 @@ CaretPositionResolution TryResolveCaretPositionByBoxFragmentSide(
 }
 
 CaretPositionResolution TryResolveCaretPositionWithFragment(
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     unsigned offset,
     TextAffinity affinity) {
   if (cursor.Current().IsText())
@@ -274,13 +274,13 @@ NGCaretPosition ComputeNGCaretPositionAfterInline(
   const LayoutInline& layout_inline =
       *To<LayoutInline>(position.AnchorNode()->GetLayoutObject());
 
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveToIncludingCulledInline(layout_inline);
   // This DCHECK can fail with the <area> element.
   // DCHECK(cursor);
   if (!cursor)
     return NGCaretPosition();
-  NGInlineCursor line = cursor;
+  InlineCursor line = cursor;
   line.MoveToContainingLine();
   DCHECK(line);
 
@@ -315,13 +315,13 @@ NGCaretPosition ComputeNGCaretPositionBeforeInline(
   const LayoutInline& layout_inline =
       *To<LayoutInline>(position.AnchorNode()->GetLayoutObject());
 
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveToIncludingCulledInline(layout_inline);
   // This DCHECK can fail with the <area> element.
   // DCHECK(cursor);
   if (!cursor)
     return NGCaretPosition();
-  NGInlineCursor line = cursor;
+  InlineCursor line = cursor;
   line.MoveToContainingLine();
   DCHECK(line);
 
@@ -359,7 +359,7 @@ NGCaretPosition ComputeNGCaretPosition(const LayoutBlockFlow& context,
                                        unsigned offset,
                                        TextAffinity affinity,
                                        const LayoutText* layout_text) {
-  NGInlineCursor cursor(context);
+  InlineCursor cursor(context);
 
   NGCaretPosition candidate;
   if (layout_text && layout_text->HasInlineFragments())

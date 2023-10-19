@@ -45,7 +45,7 @@ namespace {
 struct VisualOrdering;
 
 static PositionWithAffinity AdjustForSoftLineWrap(
-    const NGInlineCursorPosition& line_box,
+    const InlineCursorPosition& line_box,
     const PositionWithAffinity& position) {
   DCHECK(line_box.IsLineBox());
   if (position.IsNull())
@@ -102,7 +102,7 @@ static PositionWithAffinityTemplate<Strategy> EndPositionForLine(
       // |caret_position| here.
       return PositionWithAffinityTemplate<Strategy>();
     }
-    NGInlineCursor line_box = caret_position.cursor;
+    InlineCursor line_box = caret_position.cursor;
     line_box.MoveToContainingLine();
     const PositionWithAffinity end_position = line_box.PositionForEndOfLine();
     return FromPositionInDOMTree<Strategy>(
@@ -140,7 +140,7 @@ PositionWithAffinityTemplate<Strategy> StartPositionForLine(
       // |caret_position| here.
       return PositionWithAffinityTemplate<Strategy>();
     }
-    NGInlineCursor line_box = caret_position.cursor;
+    InlineCursor line_box = caret_position.cursor;
     line_box.MoveToContainingLine();
     DCHECK(line_box.Current().IsLineBox()) << line_box;
     return FromPositionInDOMTree<Strategy>(line_box.PositionForStartOfLine());

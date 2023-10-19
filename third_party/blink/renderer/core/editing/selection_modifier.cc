@@ -174,7 +174,7 @@ absl::optional<TextDirection> DirectionAt(
     return absl::nullopt;
 
   if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
-    const NGInlineCursor& cursor = ComputeNGCaretPosition(adjusted).cursor;
+    const InlineCursor& cursor = ComputeNGCaretPosition(adjusted).cursor;
     if (cursor)
       return cursor.Current().ResolvedDirection();
     return absl::nullopt;
@@ -194,7 +194,7 @@ absl::optional<TextDirection> LineDirectionAt(
     return absl::nullopt;
 
   if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
-    NGInlineCursor line = ComputeNGCaretPosition(adjusted).cursor;
+    InlineCursor line = ComputeNGCaretPosition(adjusted).cursor;
     if (!line)
       return absl::nullopt;
     line.MoveToContainingLine();

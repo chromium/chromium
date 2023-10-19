@@ -25,7 +25,7 @@
 
 namespace blink {
 
-class NGInlineCursor;
+class InlineCursor;
 
 class LayoutSVGInline : public LayoutInline {
  public:
@@ -76,7 +76,7 @@ class LayoutSVGInline : public LayoutInline {
 
   bool IsObjectBoundingBoxValid() const;
 
-  static void ObjectBoundingBoxForCursor(NGInlineCursor& cursor,
+  static void ObjectBoundingBoxForCursor(InlineCursor& cursor,
                                          gfx::RectF& bounds);
 };
 
