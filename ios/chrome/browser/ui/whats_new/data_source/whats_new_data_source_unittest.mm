@@ -23,7 +23,7 @@ using WhatsNewDataSourceTest = PlatformTest;
 
 base::FilePath GetTestDataPath() {
   base::FilePath test_path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_path));
+  EXPECT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_path));
   test_path = test_path.Append(FILE_PATH_LITERAL("whats_new"));
   test_path = test_path.Append(FILE_PATH_LITERAL("test"));
   test_path = test_path.Append(FILE_PATH_LITERAL("data"));

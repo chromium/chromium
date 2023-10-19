@@ -73,7 +73,7 @@ base::FilePath GetTestDataDir() {
 
 base::FilePath GetIOSInputDirectory() {
   base::FilePath dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir));
 
   return dir.AppendASCII("components")
       .AppendASCII("test")
@@ -85,7 +85,7 @@ base::FilePath GetIOSInputDirectory() {
 
 base::FilePath GetIOSOutputDirectory() {
   base::FilePath dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir));
 
   return dir.AppendASCII("components")
       .AppendASCII("test")
