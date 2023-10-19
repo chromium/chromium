@@ -84,6 +84,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
@@ -537,9 +538,9 @@
   CHECK(IsSafetyCheckMagicStackEnabled());
 
   [self.NTPMetricsDelegate safetyCheckOpened];
-  [self.contentSuggestionsMetricsRecorder
-      recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
-                                                  kSafetyCheck];
+  [self.contentSuggestionsMediator
+      logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                         kSafetyCheck];
 
   IOSChromeSafetyCheckManager* safetyCheckManager =
       IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
@@ -590,6 +591,17 @@
 #pragma mark - SetUpListViewDelegate
 
 - (void)didSelectSetUpListItem:(SetUpListItemType)type {
+  if (IsMagicStackEnabled()) {
+    if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
+      [self.contentSuggestionsMediator
+          logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                             kCompactedSetUpList];
+    } else {
+      [self.contentSuggestionsMediator
+          logMagicStackEngagementForType:SetUpListModuleTypeForSetUpListType(
+                                             type)];
+    }
+  }
   [self.contentSuggestionsMetricsRecorder recordSetUpListItemSelected:type];
   [self.NTPMetricsDelegate setUpListItemOpened];
   PrefService* localState = GetApplicationContext()->GetLocalState();

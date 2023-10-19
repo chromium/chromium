@@ -38,7 +38,8 @@ enum class SetUpListItemType;
 // Logs a metric for when the user taps on a module of `type` in the Magic
 // Stack.
 - (void)recordMagicStackModuleEngagementForType:
-    (ContentSuggestionsModuleType)type;
+            (ContentSuggestionsModuleType)type
+                                        atIndex:(int)index;
 
 // Logs a metric for the "Return to Recent Tab" tile being shown.
 - (void)recordReturnToRecentTabTileShown;

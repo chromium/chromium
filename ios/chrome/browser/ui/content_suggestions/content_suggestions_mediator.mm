@@ -555,6 +555,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           }));
 }
 
+- (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type {
+  [self.contentSuggestionsMetricsRecorder
+      recordMagicStackModuleEngagementForType:type
+                                      atIndex:
+                                          [self indexForMagicStackModule:type]];
+}
+
 #pragma mark - AppStateObserver
 
 // Conditionally starts the Safety Check if the upcoming init stage is
@@ -635,6 +642,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       return;
     }
     [self.NTPMetricsDelegate shortcutTileOpened];
+    if (IsMagicStackEnabled()) {
+      [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                               kShortcuts];
+    }
     [self.contentSuggestionsMetricsRecorder
         recordShortcutTileTapped:mostVisitedItem.collectionShortcutType];
     switch (mostVisitedItem.collectionShortcutType) {
@@ -702,6 +713,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
   tab_resumption_prefs::SetTabResumptionLastOpenedTabURL(
       _tabResumptionItem.tabURL, _localState);
+  [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                           kTabResumption];
+
   web::NavigationManager::WebLoadParams webLoadParams =
       web::NavigationManager::WebLoadParams(_tabResumptionItem.tabURL);
   UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);
@@ -713,9 +727,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)loadParcelTrackingPage:(GURL)parcelTrackingURL {
   [self.NTPMetricsDelegate parcelTrackingOpened];
-  [self.contentSuggestionsMetricsRecorder
-      recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
-                                                  kParcelTracking];
+  [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                           kParcelTracking];
   UrlLoadingBrowserAgent::FromBrowser(self.browser)
       ->Load(UrlLoadParams::InCurrentTab(parcelTrackingURL));
 }
@@ -1117,6 +1130,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)logMostVisitedOpening:(ContentSuggestionsMostVisitedItem*)item
                       atIndex:(NSInteger)mostVisitedIndex {
   [self.NTPMetricsDelegate mostVisitedTileOpened];
+  if (ShouldPutMostVisitedSitesInMagicStack()) {
+    [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                             kMostVisited];
+  }
   [self.contentSuggestionsMetricsRecorder
       recordMostVisitedTileOpened:item
                           atIndex:mostVisitedIndex

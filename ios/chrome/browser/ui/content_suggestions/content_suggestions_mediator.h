@@ -175,6 +175,9 @@ class WebStateList;
 // Returns the latest fetched tracked parcels.
 - (NSArray<ParcelTrackingItem*>*)parcelTrackingItems;
 
+// Logs a user Magic Stack engagement for module `type`.
+- (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_MEDIATOR_H_

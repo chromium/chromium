@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
@@ -561,4 +562,44 @@ TEST_F(ContentSuggestionsMediatorTest, TestParcelTracking) {
       "IOS.MagicStack.Module.Click",
       ContentSuggestionsModuleType::kParcelTracking, 1);
   EXPECT_EQ(parcelTrackingURL, url_loader_->last_params.web_params.url);
+}
+
+// Tests that logging for IOS.MagicStack.Module.Click.[ModuleName] works
+// correctly.
+TEST_F(ContentSuggestionsMediatorTest, TestModuleClickIndexMetric) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
+       {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
+        {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
+       {kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}}},
+      {});
+
+  mediator_.segmentationService =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetForBrowserState(chrome_browser_state_.get());
+  consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
+  mediator_.consumer = consumer_;
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return mediator_.hasReceivedMagicStackResponse;
+      }));
+
+  [mediator_ logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                                kSetUpListSync];
+  histogram_tester_->ExpectUniqueSample("IOS.MagicStack.Module.Click.SetUpList",
+                                        0, 1);
+
+  [mediator_
+      openMostVisitedItem:[[ContentSuggestionsMostVisitedItem alloc] init]
+                  atIndex:0];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.MagicStack.Module.Click.MostVisited", 3, 1);
+
+  [mediator_
+      openMostVisitedItem:[[ContentSuggestionsMostVisitedActionItem alloc] init]
+                  atIndex:0];
+  histogram_tester_->ExpectUniqueSample("IOS.MagicStack.Module.Click.Shortcuts",
+                                        4, 1);
 }

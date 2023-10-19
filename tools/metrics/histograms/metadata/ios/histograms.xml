@@ -1274,6 +1274,54 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.Module.Click.MostVisited" units="index"
+    expires_after="2024-07-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the rank index of the Most Visited Sites module when a user clicks
+    on it.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MagicStack.Module.Click.ParcelTracking" units="index"
+    expires_after="2024-07-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the rank index of the Parcel Tracking module when a user clicks on
+    it.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MagicStack.Module.Click.SafetyCheck" units="index"
+    expires_after="2024-07-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the rank index of the Safety Check module when a user clicks on it.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MagicStack.Module.Click.Shortcuts" units="index"
+    expires_after="2024-07-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the rank index of the Shortcuts module when a user clicks on it.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MagicStack.Module.Click.TabResumption" units="index"
+    expires_after="2024-07-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the rank index of the Tab Resumption module when a user clicks on
+    it.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MagicStack.Module.TopImpression"
     enum="IOSMagicStackModuleType" expires_after="2024-07-03">
   <owner>thegreenfrog@chromium.org</owner>
