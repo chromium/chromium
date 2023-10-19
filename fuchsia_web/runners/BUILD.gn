@@ -7,8 +7,8 @@ assert(is_fuchsia)
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/symbol_archive.gni")
 import("//testing/test.gni")
-import("//third_party/fuchsia-sdk/sdk/build/component.gni")
-import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+import("//third_party/fuchsia-gn-sdk/src/component.gni")
+import("//third_party/fuchsia-gn-sdk/src/package.gni")
 
 # Only allow use by targets in this directory unless explicitly specified.
 visibility = [ ":*" ]

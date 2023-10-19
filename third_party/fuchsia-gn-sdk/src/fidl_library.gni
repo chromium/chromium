@@ -74,7 +74,7 @@ template("fidl_base_library") {
   tables_file = "${fidl_gen_dir}/${library_name}.fidl-tables.c"
 
   action("${target_name}_response_file") {
-    script = "${fuchsia_sdk}/build/gen_fidl_response_file.py"
+    script = "//third_party/fuchsia-gn-sdk/src/gen_fidl_response_file.py"
 
     forward_variables_from(invoker,
                            [
@@ -172,7 +172,7 @@ template("fidl_base_library") {
 
     deps = [ ":${invoker.target_name}_response_file" ]
 
-    script = "${fuchsia_sdk}/build/gn_run_binary.py"
+    script = "//third_party/fuchsia-gn-sdk/src/gn_run_binary.py"
 
     inputs = [
       # Depend on the SDK hash, to ensure rebuild if the SDK tools change.
@@ -252,7 +252,7 @@ template("fidl_cpp_codegen") {
       }
     }
 
-    script = "${fuchsia_sdk}/build/gn_run_binary.py"
+    script = "//third_party/fuchsia-gn-sdk/src/gn_run_binary.py"
     args = [
       rebase_path(invoker.fidlgen_tool, root_build_dir),
       "--json",

@@ -46,7 +46,7 @@ template("fuchsia_package_tool") {
 
     # tool path
     _ffx_package_tool_path = "${fuchsia_tool_dir}/ffx_tools/ffx-package"
-    script = "${fuchsia_sdk}/build/gn_run_binary.py"
+    script = "//third_party/fuchsia-gn-sdk/src/gn_run_binary.py"
 
     # output files
     _pkg_out_dir = "${target_gen_dir}/${package_name}"

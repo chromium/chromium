@@ -18,8 +18,8 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 } else if (is_fuchsia) {
   import("//build/config/fuchsia/packaged_content_embedder_excluded_dirs.gni")
-  import("//third_party/fuchsia-sdk/sdk/build/component.gni")
-  import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+  import("//third_party/fuchsia-gn-sdk/src/component.gni")
+  import("//third_party/fuchsia-gn-sdk/src/package.gni")
 }
 
 # This target is for dependency tracking for the command ID header.

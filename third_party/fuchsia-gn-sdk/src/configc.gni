@@ -12,7 +12,7 @@ template("_configc_tool") {
                              "testonly",
                              "visibility",
                            ])
-    script = "${fuchsia_sdk}/build/gn_run_binary.py"
+    script = "//third_party/fuchsia-gn-sdk/src/gn_run_binary.py"
     _configc_tool_path = "${fuchsia_tool_dir}/configc"
 
     assert(defined(invoker.inputs), "inputs is a required parameter.")

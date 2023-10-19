@@ -9,8 +9,8 @@ assert(is_fuchsia)
 import("//build/cipd/cipd.gni")
 import("//build/config/chrome_build.gni")
 import("//build/util/process_version.gni")
-import("//third_party/fuchsia-sdk/sdk/build/build_id_dir.gni")
-import("//third_party/fuchsia-sdk/sdk/build/cipd.gni")
+import("//third_party/fuchsia-gn-sdk/src/build_id_dir.gni")
+import("//third_party/fuchsia-gn-sdk/src/cipd.gni")
 
 visibility = [ ":*" ]
 

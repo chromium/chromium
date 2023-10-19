@@ -100,7 +100,7 @@ if (is_android || is_robolectric) {
 }
 
 if (is_fuchsia) {
-  import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
+  import("//third_party/fuchsia-gn-sdk/src/fidl_library.gni")
 }
 
 # The Rust implementation of base::JSONReader. NaCl depends on base and doesn't
