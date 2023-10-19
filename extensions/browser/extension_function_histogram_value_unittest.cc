@@ -27,7 +27,7 @@ TEST(ExtensionFunctionHistogramValueTest, CheckEnums) {
   EXPECT_EQ(enums->size(), functions::ENUM_BOUNDARY);
 
   base::FilePath src_root;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root));
   base::FilePath function_histogram_value =
       src_root.AppendASCII("extensions")
           .AppendASCII("browser")
