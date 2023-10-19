@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/speech_recognition.mojom-forward.h"
 #include "services/accessibility/public/mojom/tts.mojom-forward.h"
 #include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
 
@@ -22,6 +23,7 @@ class DevToolsAgentHost;
 
 namespace ash {
 class AutomationClientImpl;
+class SpeechRecognitionImpl;
 class TtsClientImpl;
 class UserInterfaceImpl;
 
@@ -44,6 +46,8 @@ class AccessibilityServiceClient
       mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
       mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client)
       override;
+  void BindSpeechRecognition(
+      mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
   void BindUserInterface(
       mojo::PendingReceiver<ax::mojom::UserInterface> ui_receiver) override;
@@ -79,6 +83,7 @@ class AccessibilityServiceClient
       ax::mojom::AssistiveTechnologyType type);
 
   std::unique_ptr<AutomationClientImpl> automation_client_;
+  std::unique_ptr<SpeechRecognitionImpl> speech_recognition_impl_;
   std::unique_ptr<TtsClientImpl> tts_client_;
   std::unique_ptr<UserInterfaceImpl> user_interface_client_;
 

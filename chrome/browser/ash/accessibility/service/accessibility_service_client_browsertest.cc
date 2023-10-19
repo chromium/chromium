@@ -18,8 +18,10 @@
 #include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
 #include "chrome/browser/ash/accessibility/service/fake_accessibility_service.h"
+#include "chrome/browser/ash/accessibility/service/speech_recognition_impl.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/speech/speech_recognition_test_helper.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -28,7 +30,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/tts_utterance.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/fake_speech_recognition_manager.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -270,9 +274,13 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
             base::BindRepeating(
                 &AccessibilityServiceClientTest::CreateTestAccessibilityService,
                 base::Unretained(this)));
+    sr_test_helper_ = std::make_unique<SpeechRecognitionTestHelper>(
+        speech::SpeechRecognitionType::kNetwork);
+    sr_test_helper_->SetUp(browser()->profile());
   }
 
   void TearDownOnMainThread() override {
+    content::SpeechRecognitionManager::SetManagerForTesting(nullptr);
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -327,6 +335,8 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
   // Unowned.
   raw_ptr<FakeAccessibilityService, DanglingUntriaged | ExperimentalAsh>
       fake_service_ = nullptr;
+
+  std::unique_ptr<SpeechRecognitionTestHelper> sr_test_helper_;
 
  private:
   std::unique_ptr<KeyedService> CreateTestAccessibilityService(
@@ -1073,6 +1083,48 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   fake_service_->RequestSetVirtualKeyboardVisible(false);
   KeyboardVisibleWaiter(false).Wait();
   EXPECT_FALSE(keyboard_controller_->IsKeyboardVisible());
+}
+
+// Verifies that speech recognition can be started and stopped using the
+// AccessibilityServiceClient.
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SpeechRecognitionStartAndStop) {
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kDictation);
+  fake_service_->BindAnotherSpeechRecognition();
+
+  auto start_options = ax::mojom::StartOptions::New();
+  fake_service_->RequestSpeechRecognitionStart(std::move(start_options),
+                                               base::DoNothing());
+  sr_test_helper_->WaitForRecognitionStarted();
+
+  auto stop_options = ax::mojom::StopOptions::New();
+  fake_service_->RequestSpeechRecognitionStop(std::move(stop_options),
+                                              base::DoNothing());
+  sr_test_helper_->WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       SpeechRecognitionStartAndStopCallbacks) {
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kDictation);
+  fake_service_->BindAnotherSpeechRecognition();
+
+  base::RunLoop start_waiter;
+  auto start_options = ax::mojom::StartOptions::New();
+  fake_service_->RequestSpeechRecognitionStart(
+      std::move(start_options),
+      base::BindLambdaForTesting(
+          [&start_waiter](ax::mojom::SpeechRecognitionStartInfoPtr info) {
+            EXPECT_EQ(ax::mojom::SpeechRecognitionType::kNetwork, info->type);
+            start_waiter.Quit();
+          }));
+  start_waiter.Run();
+
+  base::RunLoop stop_waiter;
+  auto stop_options = ax::mojom::StopOptions::New();
+  fake_service_->RequestSpeechRecognitionStop(
+      std::move(stop_options),
+      base::BindLambdaForTesting([&stop_waiter]() { stop_waiter.Quit(); }));
+  stop_waiter.Run();
 }
 
 }  // namespace ash

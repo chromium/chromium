@@ -14,6 +14,8 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
+#include "services/accessibility/public/mojom/speech_recognition.mojom-forward.h"
+#include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
@@ -90,6 +92,7 @@ class FakeAccessibilityService
   // Allows tests to bind APIs multiple times, mimicking multiple
   // V8 instances in the service.
   void BindAnotherAutomation();
+  void BindAnotherSpeechRecognition();
   void BindAnotherTts();
   void BindAnotherUserInterface();
 
@@ -102,6 +105,17 @@ class FakeAccessibilityService
 
   // Waits for Automation events to come in.
   void WaitForAutomationEvents();
+
+  //
+  // Methods to pretend a SpeechRecognition request came from the service.
+  //
+
+  void RequestSpeechRecognitionStart(
+      ax::mojom::StartOptionsPtr options,
+      base::OnceCallback<void(ax::mojom::SpeechRecognitionStartInfoPtr)>
+          callback);
+  void RequestSpeechRecognitionStop(ax::mojom::StopOptionsPtr options,
+                                    base::OnceCallback<void()> callback);
 
   //
   // Methods to pretend a TTS request came from the service.
@@ -179,6 +193,7 @@ class FakeAccessibilityService
   mojo::AssociatedReceiverSet<ax::mojom::Automation> automation_receivers_;
   mojo::RemoteSet<ax::mojom::AutomationClient> automation_client_remotes_;
 
+  mojo::RemoteSet<ax::mojom::SpeechRecognition> sr_remotes_;
   mojo::RemoteSet<ax::mojom::Tts> tts_remotes_;
   mojo::RemoteSet<ax::mojom::UserInterface> ux_remotes_;
 

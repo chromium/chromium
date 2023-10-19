@@ -22,6 +22,7 @@
 #include "services/accessibility/features/devtools/os_devtools_agent.h"
 #include "services/accessibility/features/interface_binder.h"
 #include "services/accessibility/features/mojo/mojo.h"
+#include "services/accessibility/features/speech_recognition_interface_binder.h"
 #include "services/accessibility/features/tts_interface_binder.h"
 #include "services/accessibility/features/user_interface_interface_binder.h"
 #include "services/accessibility/features/v8_bindings_utils.h"
@@ -235,6 +236,13 @@ void V8Manager::ConfigureAutomation(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8_env_.AsyncCall(&V8Environment::InstallAutomation)
       .WithArgs(std::move(automation), std::move(automation_client));
+}
+
+void V8Manager::ConfigureSpeechRecognition(
+    mojom::AccessibilityServiceClient* ax_service_client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  interface_binders_.push_back(
+      std::make_unique<SpeechRecognitionInterfaceBinder>(ax_service_client));
 }
 
 void V8Manager::ConfigureTts(

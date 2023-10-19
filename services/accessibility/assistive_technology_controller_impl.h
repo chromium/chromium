@@ -49,6 +49,8 @@ class AssistiveTechnologyControllerImpl
       mojo::PendingAssociatedRemote<mojom::Automation> automation,
       mojo::PendingReceiver<mojom::AutomationClient> automation_client)
       override;
+  void BindSpeechRecognition(
+      mojo::PendingReceiver<mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<mojom::Tts> tts_receiver) override;
   void BindUserInterface(mojo::PendingReceiver<mojom::UserInterface>
                              user_interface_receiver) override;

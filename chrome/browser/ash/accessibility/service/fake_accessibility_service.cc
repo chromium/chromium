@@ -40,6 +40,13 @@ void FakeAccessibilityService::BindAnotherAutomation() {
       std::move(automation_remote), std::move(automation_client_receiver));
 }
 
+void FakeAccessibilityService::BindAnotherSpeechRecognition() {
+  mojo::PendingReceiver<ax::mojom::SpeechRecognition> receiver;
+  sr_remotes_.Add(receiver.InitWithNewPipeAndPassRemote());
+  accessibility_service_client_remote_->BindSpeechRecognition(
+      std::move(receiver));
+}
+
 void FakeAccessibilityService::BindAnotherTts() {
   mojo::PendingReceiver<ax::mojom::Tts> tts_receiver;
   tts_remotes_.Add(tts_receiver.InitWithNewPipeAndPassRemote());
@@ -146,6 +153,25 @@ void FakeAccessibilityService::WaitForAutomationEvents() {
   base::RunLoop runner;
   automation_events_closure_ = runner.QuitClosure();
   runner.Run();
+}
+
+void FakeAccessibilityService::RequestSpeechRecognitionStart(
+    ax::mojom::StartOptionsPtr options,
+    base::OnceCallback<void(ax::mojom::SpeechRecognitionStartInfoPtr)>
+        callback) {
+  CHECK_EQ(sr_remotes_.size(), 1u);
+  for (auto& remote : sr_remotes_) {
+    remote->Start(std::move(options), std::move(callback));
+  }
+}
+
+void FakeAccessibilityService::RequestSpeechRecognitionStop(
+    ax::mojom::StopOptionsPtr options,
+    base::OnceCallback<void()> callback) {
+  CHECK_EQ(sr_remotes_.size(), 1u);
+  for (auto& remote : sr_remotes_) {
+    remote->Stop(std::move(options), std::move(callback));
+  }
 }
 
 void FakeAccessibilityService::RequestSpeak(

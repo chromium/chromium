@@ -44,6 +44,8 @@ source_set("lib") {
       "features/mojo/mojo_watcher.h",
       "features/registered_wrappable.cc",
       "features/registered_wrappable.h",
+      "features/speech_recognition_interface_binder.cc",
+      "features/speech_recognition_interface_binder.h",
       "features/text_decoder.cc",
       "features/text_decoder.h",
       "features/text_encoder.cc",

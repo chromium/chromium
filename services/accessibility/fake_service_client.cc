@@ -24,6 +24,11 @@ void FakeServiceClient::BindAutomation(
 }
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+void FakeServiceClient::BindSpeechRecognition(
+    mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) {
+  sr_receivers_.Add(this, std::move(sr_receiver));
+}
+
 void FakeServiceClient::BindTts(
     mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) {
   tts_receivers_.Add(this, std::move(tts_receiver));
@@ -32,6 +37,22 @@ void FakeServiceClient::BindTts(
 void FakeServiceClient::BindUserInterface(
     mojo::PendingReceiver<mojom::UserInterface> ux_receiver) {
   ux_receivers_.Add(this, std::move(ux_receiver));
+}
+
+void FakeServiceClient::Start(ax::mojom::StartOptionsPtr options,
+                              StartCallback callback) {
+  auto info = mojom::SpeechRecognitionStartInfo::New();
+  info->type = mojom::SpeechRecognitionType::kNetwork;
+  info->observer = sr_event_observer_.BindNewPipeAndPassReceiver();
+  std::move(callback).Run(std::move(info));
+  if (speech_recognition_start_callback_) {
+    speech_recognition_start_callback_.Run();
+  }
+}
+
+void FakeServiceClient::Stop(ax::mojom::StopOptionsPtr options,
+                             StopCallback callback) {
+  std::move(callback).Run();
 }
 
 void FakeServiceClient::Speak(const std::string& utterance,
@@ -157,6 +178,15 @@ bool FakeServiceClient::AutomationIsBound() const {
 }
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+void FakeServiceClient::SetSpeechRecognitionStartCallback(
+    base::RepeatingCallback<void()> callback) {
+  speech_recognition_start_callback_ = std::move(callback);
+}
+
+void FakeServiceClient::SendSpeechRecognitionStopEvent() {
+  sr_event_observer_->OnStop();
+}
+
 void FakeServiceClient::SetTtsSpeakCallback(
     base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
         callback) {

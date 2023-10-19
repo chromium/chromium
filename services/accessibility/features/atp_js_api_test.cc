@@ -15,6 +15,7 @@
 #include "services/accessibility/features/mojo/test/js_test_interface.h"
 #include "services/accessibility/os_accessibility_service.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom-shared.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
@@ -727,5 +728,79 @@ TEST_F(AccessibilityPrivateJSApiTest, SetVirtualKeyboardInvisible) {
   )JS");
   waiter.Run();
 }
+
+class SpeechRecognitionJSApiTest : public AtpJSApiTest {
+ public:
+  SpeechRecognitionJSApiTest() = default;
+  SpeechRecognitionJSApiTest(const SpeechRecognitionJSApiTest&) = delete;
+  SpeechRecognitionJSApiTest& operator=(const SpeechRecognitionJSApiTest&) =
+      delete;
+  ~SpeechRecognitionJSApiTest() override = default;
+
+  mojom::AssistiveTechnologyType GetATTypeForTest() const override {
+    return mojom::AssistiveTechnologyType::kDictation;
+  }
+
+  const std::vector<std::string> GetJSFilePathsToLoad() const override {
+    // TODO(b:266856702): Eventually ATP will load its own JS instead of us
+    // doing it in the test. Right now the service doesn't have enough
+    // permissions so we load support JS within the test.
+    return std::vector<std::string>{
+        "services/accessibility/features/mojo/test/mojom_test_support.js",
+        "services/accessibility/public/mojom/speech_recognition.mojom-lite.js",
+        "services/accessibility/features/javascript/speech_recognition.js",
+    };
+  }
+};
+
+TEST_F(SpeechRecognitionJSApiTest, Start) {
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    const options = {};
+    chrome.speechRecognitionPrivate.start(options, (type) => {
+      if (type === 'network') {
+        remote.testComplete(/*success=*/true);
+      } else {
+        remote.testComplete(/*success=*/false);
+      }
+    });
+  )JS");
+  WaitForJSTestComplete();
+}
+
+TEST_F(SpeechRecognitionJSApiTest, StartAndStop) {
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    const options = {};
+    chrome.speechRecognitionPrivate.start(options, (type) => {
+      if (type !== 'network') {
+        remote.testComplete(/*success=*/false);
+        return;
+      }
+
+      chrome.speechRecognitionPrivate.stop(options, () => {
+        remote.testComplete(/*success=*/true);
+      });
+    });
+  )JS");
+  WaitForJSTestComplete();
+}
+
+TEST_F(SpeechRecognitionJSApiTest, StopEvent) {
+  client_->SetSpeechRecognitionStartCallback(base::BindLambdaForTesting(
+      [this]() { client_->SendSpeechRecognitionStopEvent(); }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.speechRecognitionPrivate.onStop.addListener(() => {
+      remote.testComplete(/*success=*/true);
+    });
+
+    const options = {};
+    chrome.speechRecognitionPrivate.start(options, (type) => {});
+  )JS");
+  WaitForJSTestComplete();
+}
+
+// TODO(b:304305202): Add test that has non-empty start options.
 
 }  // namespace ax

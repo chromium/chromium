@@ -60,6 +60,8 @@ source_set("ash") {
     "accessibility/service/accessibility_service_devtools_delegate.h",
     "accessibility/service/automation_client_impl.cc",
     "accessibility/service/automation_client_impl.h",
+    "accessibility/service/speech_recognition_impl.cc",
+    "accessibility/service/speech_recognition_impl.h",
     "accessibility/service/tts_client_impl.cc",
     "accessibility/service/tts_client_impl.h",
     "accessibility/service/user_interface_impl.cc",

@@ -8,6 +8,8 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "services/accessibility/public/mojom/automation.mojom";
 
 [EnableIf=supports_os_accessibility_service]
+import "services/accessibility/public/mojom/speech_recognition.mojom";
+[EnableIf=supports_os_accessibility_service]
 import "services/accessibility/public/mojom/tts.mojom";
 [EnableIf=supports_os_accessibility_service]
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -73,6 +75,11 @@ interface AccessibilityServiceClient {
   BindAutomation(
     pending_associated_remote<Automation> automation,
     pending_receiver<AutomationClient> automation_client);
+
+  // Binds to a Speech Recognition implementation in the main OS process,
+  // called by the service.
+  [EnableIf=supports_os_accessibility_service]
+  BindSpeechRecognition(pending_receiver<SpeechRecognition> sr_receiver);
 
   // Binds to a Text-to-Speech client implemented in the main OS process,
   // called by the service.

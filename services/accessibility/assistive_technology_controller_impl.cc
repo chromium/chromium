@@ -43,6 +43,12 @@ void AssistiveTechnologyControllerImpl::BindAutomation(
       std::move(automation), std::move(automation_client));
 }
 
+void AssistiveTechnologyControllerImpl::BindSpeechRecognition(
+    mojo::PendingReceiver<mojom::SpeechRecognition> sr_receiver) {
+  accessibility_service_client_remote_->BindSpeechRecognition(
+      std::move(sr_receiver));
+}
+
 void AssistiveTechnologyControllerImpl::BindTts(
     mojo::PendingReceiver<mojom::Tts> tts_receiver) {
   accessibility_service_client_remote_->BindTts(std::move(tts_receiver));
@@ -131,6 +137,9 @@ void AssistiveTechnologyControllerImpl::CreateV8ManagerForType(
       type == mojom::AssistiveTechnologyType::kAutoClick ||
       type == mojom::AssistiveTechnologyType::kSwitchAccess) {
     manager.ConfigureUserInterface(this);
+  }
+  if (type == mojom::AssistiveTechnologyType::kDictation) {
+    manager.ConfigureSpeechRecognition(this);
   }
   // TODO(b/262637071): Configure other bindings based on the type
   // once they are implemented.

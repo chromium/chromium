@@ -18,6 +18,7 @@
 #include "services/accessibility/public/mojom/automation.mojom.h"
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+#include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
@@ -31,6 +32,7 @@ namespace ax {
 // TODO(b/262637071): This should be split for OS vs Browser ATP.
 class FakeServiceClient : public mojom::AccessibilityServiceClient,
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+                          public mojom::SpeechRecognition,
                           public mojom::Tts,
                           public mojom::UserInterface,
 #endif
@@ -48,9 +50,16 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
       mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client)
       override;
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+  void BindSpeechRecognition(
+      mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
   void BindUserInterface(
       mojo::PendingReceiver<ax::mojom::UserInterface> ux_receiver) override;
+
+  // ax::mojom::SpeechRecognition:
+  void Start(ax::mojom::StartOptionsPtr options,
+             StartCallback callback) override;
+  void Stop(ax::mojom::StopOptionsPtr options, StopCallback callback) override;
 
   // ax::mojom::Tts:
   void Speak(const std::string& utterance,
@@ -79,6 +88,10 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   bool AutomationIsBound() const;
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+  void SetSpeechRecognitionStartCallback(
+      base::RepeatingCallback<void()> callback);
+  void SendSpeechRecognitionStopEvent();
+
   void SetTtsSpeakCallback(
       base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
           callback);
@@ -109,6 +122,10 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   mojo::AssociatedRemoteSet<mojom::Automation> automation_remotes_;
   mojo::ReceiverSet<mojom::AutomationClient> automation_client_receivers_;
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+  mojo::ReceiverSet<mojom::SpeechRecognition> sr_receivers_;
+  mojo::Remote<ax::mojom::SpeechRecognitionEventObserver> sr_event_observer_;
+  base::RepeatingCallback<void()> speech_recognition_start_callback_;
+
   base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
       tts_speak_callback_;
   mojo::ReceiverSet<mojom::Tts> tts_receivers_;

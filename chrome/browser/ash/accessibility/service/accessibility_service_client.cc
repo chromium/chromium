@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/service/accessibility_service_devtools_delegate.h"
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
+#include "chrome/browser/ash/accessibility/service/speech_recognition_impl.h"
 #include "chrome/browser/ash/accessibility/service/tts_client_impl.h"
 #include "chrome/browser/ash/accessibility/service/user_interface_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -33,6 +34,11 @@ void AccessibilityServiceClient::BindAutomation(
     mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
     mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
   automation_client_->Bind(std::move(automation), std::move(automation_client));
+}
+
+void AccessibilityServiceClient::BindSpeechRecognition(
+    mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) {
+  speech_recognition_impl_->Bind(std::move(sr_receiver));
 }
 
 void AccessibilityServiceClient::BindTts(
@@ -93,6 +99,7 @@ void AccessibilityServiceClient::SetDictationEnabled(bool enabled) {
 void AccessibilityServiceClient::Reset() {
   at_controller_.reset();
   automation_client_.reset();
+  speech_recognition_impl_.reset();
   tts_client_.reset();
   devtools_agent_hosts_.clear();
   user_interface_client_.reset();
@@ -155,6 +162,7 @@ void AccessibilityServiceClient::LaunchAccessibilityServiceAndBind() {
   }
 
   automation_client_ = std::make_unique<AutomationClientImpl>();
+  speech_recognition_impl_ = std::make_unique<SpeechRecognitionImpl>(profile_);
   tts_client_ = std::make_unique<TtsClientImpl>(profile_);
   user_interface_client_ = std::make_unique<UserInterfaceImpl>();
 
