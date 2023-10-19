@@ -24,7 +24,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/view_class_properties.h"
 
 namespace global_media_controls {
 
@@ -32,33 +31,31 @@ using media_session::mojom::MediaSessionAction;
 
 namespace {
 
-constexpr auto kBorderInsets = gfx::Insets::TLBR(16, 8, 8, 8);
-constexpr auto kMainRowInsets = gfx::Insets::TLBR(0, 8, 8, 8);
-constexpr auto kInfoColumnInsets = gfx::Insets::TLBR(0, 8, 0, 0);
-constexpr auto kPlayPauseContainerInsets = gfx::Insets::TLBR(0, 0, 8, 0);
-constexpr auto kSourceLabelInsets = gfx::Insets::TLBR(0, 0, 10, 0);
-constexpr auto kDeviceSelectorSeparatorInsets = gfx::Insets::VH(10, 12);
-constexpr auto kDeviceSelectorSeparatorLineInsets = gfx::Insets::VH(1, 1);
+constexpr gfx::Insets kBackgroundInsets = gfx::Insets::TLBR(16, 8, 8, 8);
+constexpr gfx::Insets kMainRowInsets = gfx::Insets::TLBR(0, 8, 8, 8);
+constexpr gfx::Insets kMediaInfoInsets = gfx::Insets::TLBR(0, 16, 0, 4);
+constexpr gfx::Insets kSourceRowInsets = gfx::Insets::TLBR(0, 0, 8, 0);
+constexpr gfx::Insets kControlsColumnInsets = gfx::Insets::TLBR(0, 2, 8, 2);
+constexpr gfx::Insets kDeviceSelectorSeparatorInsets = gfx::Insets::VH(10, 12);
+constexpr gfx::Insets kDeviceSelectorSeparatorLineInsets =
+    gfx::Insets::VH(1, 1);
 
-constexpr int kMainRowSeparator = 8;
+constexpr int kBackgroundCornerRadius = 16;
+constexpr int kArtworkCornerRadius = 12;
+constexpr int kTextLineHeight = 20;
+constexpr int kFontSize = 12;
 constexpr int kMediaInfoSeparator = 4;
-constexpr int kControlsRowSeparator = 2;
-constexpr int kPlayPauseContainerSpacing = 12;
+constexpr int kControlsColumnSeparator = 8;
 constexpr int kChevronIconSize = 15;
 constexpr int kPlayPauseIconSize = 26;
 constexpr int kControlsIconSize = 20;
-constexpr int kBackgroundCornerRadius = 16;
-constexpr int kArtworkCornerRadius = 12;
-constexpr int kSourceLineHeight = 18;
-constexpr int kTitleArtistLineHeight = 20;
 constexpr int kNotMediaActionButtonId = -1;
-constexpr int kFontSize = 12;
 
 constexpr float kFocusRingHaloInset = -3.0f;
 
-constexpr auto kArtworkSize = gfx::Size(80, 80);
-constexpr auto kPlayPauseButtonSize = gfx::Size(48, 48);
-constexpr auto kControlsButtonSize = gfx::Size(32, 32);
+constexpr gfx::Size kArtworkSize = gfx::Size(80, 80);
+constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(48, 48);
+constexpr gfx::Size kControlsButtonSize = gfx::Size(32, 32);
 
 constexpr char kMediaDisplayPageHistogram[] = "Media.Notification.DisplayPage";
 
@@ -155,11 +152,10 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
                                   media_display_page_);
   }
 
-  SetBorder(views::CreateEmptyBorder(kBorderInsets));
   SetBackground(views::CreateThemedRoundedRectBackground(
       theme_.background_color_id, kBackgroundCornerRadius));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical, kBackgroundInsets));
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   views::FocusRing::Install(this);
@@ -169,83 +165,88 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   focus_ring->SetHaloInset(kFocusRingHaloInset);
   focus_ring->SetColorId(theme_.focus_ring_color_id);
 
-  // |main_row| holds all the media object's information, as well as the
+  // |main_row| holds the media artwork, media information column and the
   // play/pause button.
-  auto* main_row = AddChildView(std::make_unique<views::View>());
-  auto* main_row_layout =
-      main_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, kMainRowInsets,
-          kMainRowSeparator));
+  auto* main_row = AddChildView(std::make_unique<views::BoxLayoutView>());
+  main_row->SetInsideBorderInsets(kMainRowInsets);
 
   artwork_view_ = main_row->AddChildView(std::make_unique<views::ImageView>());
   artwork_view_->SetPreferredSize(kArtworkSize);
 
-  // |media_info_column| holds the source, title, and artist.
+  // |media_info_column| inside |main_row| holds the media source, title, and
+  // artist.
   auto* media_info_column =
-      main_row->AddChildView(std::make_unique<views::View>());
-  media_info_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kInfoColumnInsets,
-      kMediaInfoSeparator));
-  main_row_layout->SetFlexForView(media_info_column, 1);
+      main_row->AddChildView(std::make_unique<views::BoxLayoutView>());
+  media_info_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  media_info_column->SetInsideBorderInsets(kMediaInfoInsets);
+  media_info_column->SetBetweenChildSpacing(kMediaInfoSeparator);
+  main_row->SetFlexForView(media_info_column, 1);
 
   const views::Label::CustomFont text_fonts = {
       gfx::FontList({"Google Sans", "Roboto"}, gfx::Font::NORMAL, kFontSize,
                     gfx::Font::Weight::NORMAL)};
 
-  source_label_ = media_info_column->AddChildView(
+  // Create the media source label.
+  auto* source_row =
+      media_info_column->AddChildView(std::make_unique<views::BoxLayoutView>());
+  source_row->SetInsideBorderInsets(kSourceRowInsets);
+
+  source_label_ = source_row->AddChildView(
       std::make_unique<views::Label>(base::EmptyString16(), text_fonts));
-  source_label_->SetLineHeight(kSourceLineHeight);
+  source_label_->SetLineHeight(kTextLineHeight);
   source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   source_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
-  source_label_->SetProperty(views::kMarginsKey, kSourceLabelInsets);
+  source_row->SetFlexForView(source_label_, 1);
 
-  title_row_ =
+  // Create the media title label.
+  auto* title_row =
       media_info_column->AddChildView(std::make_unique<views::BoxLayoutView>());
-  title_row_->SetCrossAxisAlignment(
+  title_row->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  title_label_ = title_row_->AddChildView(
+  title_label_ = title_row->AddChildView(
       std::make_unique<views::Label>(base::EmptyString16(), text_fonts));
-  title_label_->SetLineHeight(kTitleArtistLineHeight);
+  title_label_->SetLineHeight(kTextLineHeight);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetEnabledColorId(theme_.primary_foreground_color_id);
-  title_row_->SetFlexForView(title_label_, 1);
+  title_row->SetFlexForView(title_label_, 1);
 
   // Add a chevron right icon to the title if the media is displaying on the
   // quick settings media view to indicate user can click on the view to go to
   // the detailed view page.
   if (media_display_page_ == MediaDisplayPage::kQuickSettingsMediaView) {
-    chevron_icon_ = title_row_->AddChildView(
+    chevron_icon_ = title_row->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             media_message_center::kChevronRightIcon,
             theme_.secondary_foreground_color_id, kChevronIconSize)));
   }
 
+  // Create the media artist label.
   artist_label_ = media_info_column->AddChildView(
       std::make_unique<views::Label>(base::EmptyString16(), text_fonts));
-  artist_label_->SetLineHeight(kTitleArtistLineHeight);
+  artist_label_->SetLineHeight(kTextLineHeight);
   artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   artist_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
 
-  // Create the play/pause button and add the dismiss button if it exists.
-  auto* play_pause_container =
+  // |controls_column| inside |main_row| holds the play/pause button and the
+  // dismiss button on the top right corner if it exists.
+  auto* controls_column =
       main_row->AddChildView(std::make_unique<views::BoxLayoutView>());
-  play_pause_container->SetOrientation(
-      views::BoxLayout::Orientation::kVertical);
-  play_pause_container->SetMainAxisAlignment(
+  controls_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  controls_column->SetMainAxisAlignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
-  play_pause_container->SetCrossAxisAlignment(
+  controls_column->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kEnd);
+  controls_column->SetInsideBorderInsets(kControlsColumnInsets);
 
   if (dismiss_button) {
-    play_pause_container->SetBetweenChildSpacing(kPlayPauseContainerSpacing);
-    play_pause_container->AddChildView(std::move(dismiss_button));
-  } else {
-    play_pause_container->SetInsideBorderInsets(kPlayPauseContainerInsets);
+    controls_column->SetBetweenChildSpacing(kControlsColumnSeparator);
+    controls_column->AddChildView(std::move(dismiss_button));
   }
 
+  // Create the play/pause button.
   play_pause_button_ = CreateMediaButton(
-      play_pause_container, static_cast<int>(MediaSessionAction::kPlay),
+      controls_column, static_cast<int>(MediaSessionAction::kPlay),
       media_message_center::kPlayArrowIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
   play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
@@ -257,7 +258,6 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   auto* controls_row = AddChildView(std::make_unique<views::BoxLayoutView>());
   controls_row->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  controls_row->SetBetweenChildSpacing(kControlsRowSeparator);
 
   // Create the previous track button.
   CreateMediaButton(

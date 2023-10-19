@@ -169,8 +169,6 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
   raw_ptr<views::ImageView> artwork_view_ = nullptr;
   raw_ptr<views::Label> source_label_ = nullptr;
   raw_ptr<views::Label> artist_label_ = nullptr;
-
-  raw_ptr<views::BoxLayoutView> title_row_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::ImageView> chevron_icon_ = nullptr;
 
