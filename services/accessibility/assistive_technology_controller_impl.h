@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/file_loader.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
 
 namespace ax {
@@ -54,6 +55,9 @@ class AssistiveTechnologyControllerImpl
   void BindTts(mojo::PendingReceiver<mojom::Tts> tts_receiver) override;
   void BindUserInterface(mojo::PendingReceiver<mojom::UserInterface>
                              user_interface_receiver) override;
+  void BindAccessibilityFileLoader(
+      mojo::PendingReceiver<ax::mojom::AccessibilityFileLoader>
+          file_loader_receiver) override;
 
   // mojom::AssistiveTechnologyController:
   void EnableAssistiveTechnology(
@@ -89,6 +93,12 @@ class AssistiveTechnologyControllerImpl
   // The remote to the Accessibility Service Client in the OS.
   mojo::Remote<mojom::AccessibilityServiceClient>
       accessibility_service_client_remote_;
+
+  // Interface used to request loading of files by the accessibility service.
+  // This remote is shared between the V8Managers that are instantiated, but can
+  // be moved to be owned by the manager once only one instance of the manager
+  // exists.
+  mojo::Remote<mojom::AccessibilityFileLoader> file_loader_remote_;
 };
 
 }  // namespace ax

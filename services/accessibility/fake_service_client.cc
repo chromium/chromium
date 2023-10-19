@@ -5,6 +5,7 @@
 #include "services/accessibility/fake_service_client.h"
 
 #include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace ax {
@@ -53,6 +54,19 @@ void FakeServiceClient::Start(ax::mojom::StartOptionsPtr options,
 void FakeServiceClient::Stop(ax::mojom::StopOptionsPtr options,
                              StopCallback callback) {
   std::move(callback).Run();
+}
+
+void FakeServiceClient::BindAccessibilityFileLoader(
+    mojo::PendingReceiver<ax::mojom::AccessibilityFileLoader>
+        file_loader_receiver) {
+  DCHECK(!file_loader_.is_bound());
+  file_loader_.Bind(std::move(file_loader_receiver));
+}
+
+void FakeServiceClient::Load(const base::FilePath& path,
+                             LoadCallback callback) {
+  // TODO(crbug.com/1493546): Implement file loading for
+  // FakeAccessibilityServiceClient.
 }
 
 void FakeServiceClient::Speak(const std::string& utterance,

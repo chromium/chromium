@@ -132,6 +132,10 @@ mojom_component("base") {
           mojom = "mojo_base.mojom.FilePath"
           cpp = "::base::FilePath"
         },
+        {
+          mojom = "mojo_base.mojom.RelativeFilePath"
+          cpp = "::base::FilePath"
+        },
       ]
       traits_headers = [ "//mojo/public/cpp/base/file_path_mojom_traits.h" ]
       traits_public_deps = [

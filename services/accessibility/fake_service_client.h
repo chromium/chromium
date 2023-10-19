@@ -18,6 +18,7 @@
 #include "services/accessibility/public/mojom/automation.mojom.h"
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+#include "services/accessibility/public/mojom/file_loader.mojom.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
@@ -32,6 +33,7 @@ namespace ax {
 // TODO(b/262637071): This should be split for OS vs Browser ATP.
 class FakeServiceClient : public mojom::AccessibilityServiceClient,
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+                          public mojom::AccessibilityFileLoader,
                           public mojom::SpeechRecognition,
                           public mojom::Tts,
                           public mojom::UserInterface,
@@ -50,6 +52,9 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
       mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client)
       override;
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+  void BindAccessibilityFileLoader(
+      mojo::PendingReceiver<ax::mojom::AccessibilityFileLoader>
+          file_loader_receiver) override;
   void BindSpeechRecognition(
       mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
@@ -60,6 +65,9 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void Start(ax::mojom::StartOptionsPtr options,
              StartCallback callback) override;
   void Stop(ax::mojom::StopOptionsPtr options, StopCallback callback) override;
+
+  // ax::mojom::AccessibilityFileLoader:
+  void Load(const base::FilePath& path, LoadCallback callback) override;
 
   // ax::mojom::Tts:
   void Speak(const std::string& utterance,
@@ -145,6 +153,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
       highlights_callback_;
   base::RepeatingCallback<void(bool is_visible)>
       virtual_keyboard_visible_callback_;
+
+  mojo::Receiver<ax::mojom::AccessibilityFileLoader> file_loader_{this};
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   mojo::Receiver<mojom::AccessibilityServiceClient> a11y_client_receiver_{this};
 

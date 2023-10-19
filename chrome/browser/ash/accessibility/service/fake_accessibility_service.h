@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_SERVICE_FAKE_ACCESSIBILITY_SERVICE_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SERVICE_FAKE_ACCESSIBILITY_SERVICE_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router.h"
@@ -14,6 +15,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
+#include "services/accessibility/public/mojom/file_loader.mojom.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom-forward.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
@@ -79,8 +81,8 @@ class FakeAccessibilityService
   // Whether the service client remote is bound.
   bool IsBound() const;
 
-  // Waits for EnableAssistiveTechnology to be called.
-  void WaitForATChanged();
+  // Waits for EnableAssistiveTechnology to be called |count| times.
+  void WaitForATChangeCount(int count);
 
   // Gets the currently enabled assistive technology types.
   const std::set<ax::mojom::AssistiveTechnologyType>& GetEnabledATs() const {
@@ -178,6 +180,13 @@ class FakeAccessibilityService
     return location_changes_;
   }
 
+  // Loads a file indicated by |relative_path|, which must be a relative path.
+  // The base path used to load paths from is the base accessibility resources
+  // directory in ChromeOS. |callback| runs when the operation is completed.
+  void RequestLoadFile(
+      base::FilePath relative_path,
+      ax::mojom::AccessibilityFileLoader::LoadCallback callback);
+
  private:
   base::OnceClosure change_ATs_closure_;
   std::set<ax::mojom::AssistiveTechnologyType> enabled_ATs_;
@@ -190,6 +199,10 @@ class FakeAccessibilityService
 
   std::map<ax::mojom::AssistiveTechnologyType, int> connect_devtools_counts;
 
+  // Number of times ATs changed state.
+  int at_change_count_ = 0;
+  int expected_count_ = 0;
+
   mojo::AssociatedReceiverSet<ax::mojom::Automation> automation_receivers_;
   mojo::RemoteSet<ax::mojom::AutomationClient> automation_client_remotes_;
 
@@ -201,6 +214,7 @@ class FakeAccessibilityService
       at_controller_receivers_;
   mojo::Remote<ax::mojom::AccessibilityServiceClient>
       accessibility_service_client_remote_;
+  mojo::Remote<ax::mojom::AccessibilityFileLoader> file_loader_remote_;
 };
 
 }  // namespace ash

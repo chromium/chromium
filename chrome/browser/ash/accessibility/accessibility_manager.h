@@ -683,13 +683,14 @@ class AccessibilityManager
 
   base::WeakPtrFactory<AccessibilityManager> weak_ptr_factory_{this};
 
+  friend class AccessibilityManagerDictationDialogTest;
+  friend class AccessibilityManagerDictationKeyboardImprovementsTest;
+  friend class AccessibilityManagerDlcTest;
+  friend class AccessibilityManagerNoOnDeviceSpeechRecognitionTest;
+  friend class AccessibilityManagerTest;
+  friend class AccessibilityServiceClientTest;
   friend class DictationTest;
   friend class SwitchAccessTest;
-  friend class AccessibilityManagerTest;
-  friend class AccessibilityManagerDlcTest;
-  friend class AccessibilityManagerDictationDialogTest;
-  friend class AccessibilityManagerNoOnDeviceSpeechRecognitionTest;
-  friend class AccessibilityManagerDictationKeyboardImprovementsTest;
 };
 
 }  // namespace ash

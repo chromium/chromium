@@ -25,6 +25,8 @@ void FakeAccessibilityService::BindAccessibilityServiceClient(
         accessibility_service_client) {
   accessibility_service_client_remote_.Bind(
       std::move(accessibility_service_client));
+  accessibility_service_client_remote_->BindAccessibilityFileLoader(
+      file_loader_remote_.BindNewPipeAndPassReceiver());
 }
 
 void FakeAccessibilityService::BindAnotherAutomation() {
@@ -119,11 +121,18 @@ void FakeAccessibilityService::DispatchGetTextLocationResult(
 void FakeAccessibilityService::EnableAssistiveTechnology(
     const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features) {
   enabled_ATs_ = std::set(enabled_features.begin(), enabled_features.end());
-  if (change_ATs_closure_)
+  at_change_count_++;
+  if (change_ATs_closure_ && at_change_count_ == expected_count_) {
+    expected_count_ = 0;
     std::move(change_ATs_closure_).Run();
+  }
 }
 
-void FakeAccessibilityService::WaitForATChanged() {
+void FakeAccessibilityService::WaitForATChangeCount(int count) {
+  if (count == at_change_count_) {
+    return;
+  }
+  expected_count_ = count;
   base::RunLoop runner;
   change_ATs_closure_ = runner.QuitClosure();
   runner.Run();
@@ -260,6 +269,12 @@ void FakeAccessibilityService::RequestSetVirtualKeyboardVisible(
   for (auto& ux_client : ux_remotes_) {
     ux_client->SetVirtualKeyboardVisible(is_visible);
   }
+}
+
+void FakeAccessibilityService::RequestLoadFile(
+    base::FilePath relative_path,
+    ax::mojom::AccessibilityFileLoader::LoadCallback callback) {
+  file_loader_remote_->Load(relative_path, std::move(callback));
 }
 
 }  // namespace ash

@@ -41,6 +41,7 @@ mojom("mojom") {
 if (supports_os_accessibility_service) {
   mojom("os_service_mojom") {
     sources = [
+      "file_loader.mojom",
       "speech_recognition.mojom",
       "tts.mojom",
       "user_interface.mojom",

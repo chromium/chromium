@@ -262,6 +262,13 @@ void V8Manager::ConfigureUserInterface(
       std::make_unique<UserInterfaceInterfaceBinder>(ax_service_client));
 }
 
+void V8Manager::ConfigureFileLoader(
+    mojo::Remote<mojom::AccessibilityFileLoader>* file_loader_remote) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(file_loader_remote);
+  file_loader_remote_ = file_loader_remote;
+}
+
 void V8Manager::FinishContextSetUp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8_env_.AsyncCall(&V8Environment::AddV8Bindings);
