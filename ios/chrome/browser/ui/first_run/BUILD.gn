@@ -111,7 +111,7 @@ source_set("first_run_provider") {
     "//components/search_engines",
     "//components/sync/base:features",
     "//ios/chrome/browser/policy",
-    "//ios/chrome/browser/search_engines:template_url_service_factory",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_provider_protected",

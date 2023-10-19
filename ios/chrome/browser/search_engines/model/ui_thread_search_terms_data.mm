@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/search_engines/ui_thread_search_terms_data.h"
+#import "ios/chrome/browser/search_engines/model/ui_thread_search_terms_data.h"
 
 #import <string>
 

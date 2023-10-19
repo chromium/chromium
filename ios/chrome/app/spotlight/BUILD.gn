@@ -48,7 +48,7 @@ source_set("spotlight") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/reading_list/model",
-    "//ios/chrome/browser/search_engines:template_url_service_factory",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",

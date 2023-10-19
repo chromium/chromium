@@ -93,7 +93,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/ntp",
-    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

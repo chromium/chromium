@@ -11,7 +11,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"

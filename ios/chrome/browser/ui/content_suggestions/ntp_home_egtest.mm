@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/search_engines/search_engines_app_interface.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"

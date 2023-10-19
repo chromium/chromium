@@ -34,7 +34,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/reading_list/model",
-    "//ios/chrome/browser/search_engines:template_url_service_factory",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

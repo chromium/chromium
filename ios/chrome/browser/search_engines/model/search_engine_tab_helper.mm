@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_tab_helper.h"
 
 #import "base/functional/bind.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_fetcher.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/search_engines/template_url_fetcher_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_fetcher_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_context.h"

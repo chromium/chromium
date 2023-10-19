@@ -14,7 +14,7 @@
 #include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
 #include "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
-#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#include "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 

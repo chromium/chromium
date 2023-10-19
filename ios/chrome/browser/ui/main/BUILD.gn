@@ -166,7 +166,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:test_support",
-    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:test_support",
     "//ios/chrome/browser/shared/coordinator/scene",

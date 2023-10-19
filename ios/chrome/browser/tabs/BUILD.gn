@@ -93,7 +93,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/safe_browsing/model/tailored_security",
-    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/shared/model/application_context",

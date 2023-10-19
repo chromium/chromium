@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/search_engines/template_url_service_client_impl.h"
+#include "ios/chrome/browser/search_engines/model/template_url_service_client_impl.h"
 
 #include "base/check_op.h"
 #include "base/time/time.h"
@@ -16,7 +16,7 @@ namespace ios {
 TemplateURLServiceClientImpl::TemplateURLServiceClientImpl(
     history::HistoryService* history_service)
     : owner_(nullptr), history_service_(history_service) {
-  // TODO(sky): bug 1166191. The keywords should be moved into the history
+  // TODO(crbug.com/1166191): The keywords should be moved into the history
   // db, which will mean we no longer need this notification and the history
   // backend can handle automatically adding the search terms as the user
   // navigates.

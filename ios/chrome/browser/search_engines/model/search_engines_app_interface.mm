@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/search_engines/search_engines_app_interface.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 @implementation SearchEnginesAppInterface

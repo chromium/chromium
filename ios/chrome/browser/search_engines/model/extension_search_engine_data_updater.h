@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_EXTENSION_SEARCH_ENGINE_DATA_UPDATER_H_
-#define IOS_CHROME_BROWSER_SEARCH_ENGINES_EXTENSION_SEARCH_ENGINE_DATA_UPDATER_H_
+#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_EXTENSION_SEARCH_ENGINE_DATA_UPDATER_H_
+#define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_EXTENSION_SEARCH_ENGINE_DATA_UPDATER_H_
 
 #include "components/search_engines/template_url_service_observer.h"
 
@@ -22,4 +22,4 @@ class ExtensionSearchEngineDataUpdater : public TemplateURLServiceObserver {
 
   TemplateURLService* templateURLService_;  // weak
 };
-#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_EXTENSION_SEARCH_ENGINE_DATA_UPDATER_H_
+#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_EXTENSION_SEARCH_ENGINE_DATA_UPDATER_H_

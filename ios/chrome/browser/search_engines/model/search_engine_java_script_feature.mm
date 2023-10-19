@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/search_engines/search_engine_java_script_feature.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_java_script_feature.h"
 
 #import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"

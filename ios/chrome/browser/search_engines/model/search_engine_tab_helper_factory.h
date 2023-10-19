@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_SEARCH_ENGINE_TAB_HELPER_FACTORY_H_
-#define IOS_CHROME_BROWSER_SEARCH_ENGINES_SEARCH_ENGINE_TAB_HELPER_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_TAB_HELPER_FACTORY_H_
+#define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_TAB_HELPER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#import "ios/chrome/browser/search_engines/search_engine_java_script_feature.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_java_script_feature.h"
 
 class SearchEngineTabHelperFactory
     : public SearchEngineJavaScriptFeatureDelegate {
@@ -30,4 +30,4 @@ class SearchEngineTabHelperFactory
                             const GURL& osdd_url) override;
 };
 
-#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_SEARCH_ENGINE_TAB_HELPER_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_TAB_HELPER_FACTORY_H_

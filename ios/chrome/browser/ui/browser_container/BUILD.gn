@@ -23,7 +23,7 @@ source_set("browser_container") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/screen_time/model:buildflags",
-    "//ios/chrome/browser/search_engines:template_url_service_factory",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser_state",

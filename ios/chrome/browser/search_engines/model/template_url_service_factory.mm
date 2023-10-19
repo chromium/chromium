@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -12,8 +12,8 @@
 #import "components/search_engines/default_search_manager.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_client_impl.h"
-#import "ios/chrome/browser/search_engines/ui_thread_search_terms_data.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_client_impl.h"
+#import "ios/chrome/browser/search_engines/model/ui_thread_search_terms_data.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

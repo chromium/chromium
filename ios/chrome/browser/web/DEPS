@@ -29,7 +29,7 @@ include_rules = [
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/rlz",
   "+ios/chrome/browser/safe_browsing/model",
-  "+ios/chrome/browser/search_engines",
+  "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",

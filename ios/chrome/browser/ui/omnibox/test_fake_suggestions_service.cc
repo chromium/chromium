@@ -6,7 +6,7 @@
 
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/omnibox/fake_suggestions_database.h"
 #import "services/network/public/cpp/resource_request.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"

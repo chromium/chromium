@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/search_engines/extension_search_engine_data_updater.h"
+#import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/search_engines/search_engines_util.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 

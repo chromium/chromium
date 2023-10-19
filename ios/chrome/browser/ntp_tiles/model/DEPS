@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/favicon",
   "+ios/chrome/browser/history",
-  "+ios/chrome/browser/search_engines",
+  "+ios/chrome/browser/search_engines/model",
 ]
 
 specific_include_rules = {

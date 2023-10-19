@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"

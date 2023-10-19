@@ -215,7 +215,7 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/policy:policy_util",
-    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",

@@ -284,7 +284,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safe_browsing/model",
-    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",

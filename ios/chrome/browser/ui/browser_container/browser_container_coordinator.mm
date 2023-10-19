@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/link_to_text/model/link_to_text_payload.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

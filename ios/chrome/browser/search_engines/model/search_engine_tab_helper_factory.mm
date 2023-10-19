@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/search_engines/search_engine_tab_helper_factory.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_tab_helper_factory.h"
 
 #import "base/no_destructor.h"
-#import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_tab_helper.h"
 
 // static
 SearchEngineTabHelperFactory* SearchEngineTabHelperFactory::GetInstance() {

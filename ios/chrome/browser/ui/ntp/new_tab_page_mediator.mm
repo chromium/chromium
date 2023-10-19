@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

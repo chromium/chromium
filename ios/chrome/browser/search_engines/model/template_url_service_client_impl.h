@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_CLIENT_IMPL_H_
-#define IOS_CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_CLIENT_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_TEMPLATE_URL_SERVICE_CLIENT_IMPL_H_
+#define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_TEMPLATE_URL_SERVICE_CLIENT_IMPL_H_
 
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
@@ -52,4 +52,4 @@ class TemplateURLServiceClientImpl : public TemplateURLServiceClient,
 
 }  // namespace ios
 
-#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_CLIENT_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_TEMPLATE_URL_SERVICE_CLIENT_IMPL_H_

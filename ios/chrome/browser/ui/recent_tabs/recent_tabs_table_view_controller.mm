@@ -33,7 +33,7 @@
 #import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"

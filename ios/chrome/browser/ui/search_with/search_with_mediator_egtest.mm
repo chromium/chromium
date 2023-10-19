@@ -8,7 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/search_engines/search_engines_app_interface.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/browser_container/edit_menu_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"

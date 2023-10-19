@@ -40,7 +40,7 @@ source_set("model") {
     "//components/unified_consent",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

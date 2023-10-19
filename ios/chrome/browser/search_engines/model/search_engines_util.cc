@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/search_engines/search_engines_util.h"
+#include "ios/chrome/browser/search_engines/model/search_engines_util.h"
 
 #include <stddef.h>
 

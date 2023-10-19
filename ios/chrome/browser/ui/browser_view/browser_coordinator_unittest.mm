@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
