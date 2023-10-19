@@ -305,27 +305,6 @@ class PngReadStructInfo {
   RAW_PTR_EXCLUSION png_info* info_ptr_;
 };
 
-// Holds png struct and info ensuring the proper destruction.
-class PngWriteStructInfo {
- public:
-  PngWriteStructInfo() : png_ptr_(nullptr), info_ptr_(nullptr) {
-  }
-
-  PngWriteStructInfo(const PngWriteStructInfo&) = delete;
-  PngWriteStructInfo& operator=(const PngWriteStructInfo&) = delete;
-
-  ~PngWriteStructInfo() {
-    png_destroy_write_struct(&png_ptr_, &info_ptr_);
-  }
-
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION png_struct* png_ptr_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION png_info* info_ptr_;
-};
-
 // Libpng user error and warning functions which allows us to print libpng
 // errors and warnings using Chrome's logging facilities instead of stderr.
 
