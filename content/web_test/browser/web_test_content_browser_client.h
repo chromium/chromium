@@ -22,6 +22,7 @@
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/blink/public/mojom/cookie_manager/cookie_manager_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_automation.mojom-forward.h"
+#include "third_party/blink/public/mojom/sensor/web_sensor_provider_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request_automation.mojom-forward.h"
 
@@ -38,6 +39,7 @@ class FakeBluetoothDelegate;
 class MockBadgeService;
 class MockClipboardHost;
 class WebTestBrowserContext;
+class WebTestSensorProviderManager;
 
 class WebTestContentBrowserClient : public ShellContentBrowserClient {
  public:
@@ -156,6 +158,11 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       mojo::PendingReceiver<blink::test::mojom::FederatedAuthRequestAutomation>
           receiver);
 
+  void BindWebSensorProviderAutomation(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::test::mojom::WebSensorProviderAutomation>
+          receiver);
+
   void BindWebTestControlHost(
       int render_process_id,
       mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver);
@@ -171,6 +178,7 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   std::unique_ptr<FakeBluetoothDelegate> fake_bluetooth_delegate_;
   std::unique_ptr<MockClipboardHost> mock_clipboard_host_;
   std::unique_ptr<MockBadgeService> mock_badge_service_;
+  std::unique_ptr<WebTestSensorProviderManager> sensor_provider_manager_;
   mojo::UniqueReceiverSet<blink::test::mojom::CookieManagerAutomation>
       cookie_managers_;
   mojo::UniqueReceiverSet<blink::test::mojom::FederatedAuthRequestAutomation>

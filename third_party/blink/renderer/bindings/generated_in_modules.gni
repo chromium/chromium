@@ -3209,6 +3209,20 @@ generated_interface_extra_sources_in_modules = [
 
 # Generated sources for testing
 
+generated_dictionary_sources_for_testing_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_virtual_sensor_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_virtual_sensor_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_information.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_information.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_reading.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_reading.h",
+]
+
+generated_enumeration_sources_for_testing_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_type.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_type.h",
+]
+
 generated_interface_sources_for_testing_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_internals.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_internals.h",

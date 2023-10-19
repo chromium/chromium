@@ -192,6 +192,7 @@ mojom("mojom_platform") {
     "security_context/insecure_request_policy.mojom",
     "selection_menu/selection_menu_behavior.mojom",
     "sensor/web_sensor_provider.mojom",
+    "sensor/web_sensor_provider_automation.mojom",
     "service_worker/controller_service_worker_mode.mojom",
     "service_worker/dispatch_fetch_event_params.mojom",
     "service_worker/service_worker_ancestor_frame_type.mojom",

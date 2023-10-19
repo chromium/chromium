@@ -546,6 +546,25 @@
     return internals.confirmIdpLogin();
   }
 
+  window.test_driver_internal.create_virtual_sensor = function(
+      sensor_type, sensor_params) {
+    return internals.createVirtualSensor(sensor_type, sensor_params);
+  }
+
+  window.test_driver_internal.update_virtual_sensor = function(
+      sensor_type, reading) {
+    return internals.updateVirtualSensor(sensor_type, reading);
+  }
+
+  window.test_driver_internal.remove_virtual_sensor = function(sensor_type) {
+    return internals.removeVirtualSensor(sensor_type);
+  }
+
+  window.test_driver_internal.get_virtual_sensor_information = function(
+      sensor_type) {
+    return internals.getVirtualSensorInformation(sensor_type);
+  }
+
   // Enable automation so we don't wait for user input on unimplemented APIs
   window.test_driver_internal.in_automation = true;
 

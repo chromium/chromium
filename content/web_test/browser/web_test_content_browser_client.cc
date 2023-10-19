@@ -55,6 +55,7 @@
 #include "content/web_test/browser/web_test_fedcm_manager.h"
 #include "content/web_test/browser/web_test_origin_trial_throttle.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
+#include "content/web_test/browser/web_test_sensor_provider_manager.h"
 #include "content/web_test/browser/web_test_storage_access_manager.h"
 #include "content/web_test/browser/web_test_tts_platform.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
@@ -547,6 +548,9 @@ void WebTestContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<blink::test::mojom::FederatedAuthRequestAutomation>(
       base::BindRepeating(&WebTestContentBrowserClient::BindFedCmAutomation,
                           base::Unretained(this)));
+  map->Add<blink::test::mojom::WebSensorProviderAutomation>(base::BindRepeating(
+      &WebTestContentBrowserClient::BindWebSensorProviderAutomation,
+      base::Unretained(this)));
 }
 
 bool WebTestContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
@@ -605,6 +609,17 @@ void WebTestContentBrowserClient::BindFedCmAutomation(
         receiver) {
   fedcm_managers_.Add(std::make_unique<WebTestFedCmManager>(render_frame_host),
                       std::move(receiver));
+}
+
+void WebTestContentBrowserClient::BindWebSensorProviderAutomation(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::test::mojom::WebSensorProviderAutomation>
+        receiver) {
+  if (!sensor_provider_manager_) {
+    sensor_provider_manager_ = std::make_unique<WebTestSensorProviderManager>(
+        WebContents::FromRenderFrameHost(render_frame_host));
+  }
+  sensor_provider_manager_->Bind(std::move(receiver));
 }
 
 std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(
