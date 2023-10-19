@@ -125,6 +125,18 @@ class FeaturePromoController {
   virtual FeaturePromoStatus GetPromoStatus(
       const base::Feature& iph_feature) const = 0;
 
+  // Gets the feature for the current promo.
+  virtual const base::Feature* GetCurrentPromoFeature() const = 0;
+
+  // Gets the specification for a feature promo, if a promo is currently
+  // showing anchored to the given element identifier.
+  //
+  // This is used by menus to continue the promo and highlight menu items
+  // when the user opens the menu.
+  virtual const FeaturePromoSpecification*
+  GetCurrentPromoSpecificationForAnchor(
+      ui::ElementIdentifier menu_element_id) const = 0;
+
   // Returns whether a particular promo has previously been dismissed.
   // Useful in cases where determining if a promo should show could be
   // expensive. If `last_close_reason` is set, and the promo has been
@@ -224,6 +236,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   bool MaybeShowStartupPromo(FeaturePromoParams params) override;
   FeaturePromoStatus GetPromoStatus(
       const base::Feature& iph_feature) const override;
+  const FeaturePromoSpecification* GetCurrentPromoSpecificationForAnchor(
+      ui::ElementIdentifier menu_element_id) const override;
   bool HasPromoBeenDismissed(const base::Feature& iph_feature,
                              FeaturePromoStorageService::CloseReason*
                                  close_reason = nullptr) const override;
@@ -431,7 +445,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       bool custom_action_is_default,
       int custom_action_dismiss_string_id);
 
-  const base::Feature* GetCurrentPromoFeature() const;
+  const base::Feature* GetCurrentPromoFeature() const override;
 
   // Whether the IPH Demo Mode flag has been set at startup.
   const bool in_iph_demo_mode_;

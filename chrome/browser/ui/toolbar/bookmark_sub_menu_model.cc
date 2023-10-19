@@ -18,13 +18,18 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel,
                                       kShowBookmarkBarMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel,
+                                      kShowBookmarkSidePanelItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel,
+                                      kReadingListMenuItem);
 
 // For views and cocoa, we have complex delegate systems to handle
 // injecting the bookmarks to the bookmark submenu. This is done to support
 // advanced interactions with the menu contents, like right click context menus.
 
 BookmarkSubMenuModel::BookmarkSubMenuModel(
-    ui::SimpleMenuModel::Delegate* delegate, Browser* browser)
+    ui::SimpleMenuModel::Delegate* delegate,
+    Browser* browser)
     : SimpleMenuModel(delegate) {
   Build(browser);
 }
@@ -53,6 +58,9 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
   if (features::IsChromeRefresh2023()) {
     AddItemWithStringId(IDC_SHOW_BOOKMARK_SIDE_PANEL,
                         IDS_SHOW_BOOKMARK_SIDE_PANEL);
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(IDC_SHOW_BOOKMARK_SIDE_PANEL).value(),
+        kShowBookmarkSidePanelItem);
   }
   AddItemWithStringId(IDC_SHOW_BOOKMARK_MANAGER, IDS_BOOKMARK_MANAGER);
 
@@ -69,6 +77,8 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
         IDC_READING_LIST_MENU, IDS_READING_LIST_MENU,
         reading_list_sub_menu_model_.get(),
         ui::ImageModel::FromVectorIcon(kReadLaterIcon));
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_READING_LIST_MENU).value(),
+                           kReadingListMenuItem);
 
     auto set_icon = [this](int command_id, const gfx::VectorIcon& vector_icon) {
       auto index = GetIndexOfCommandId(command_id);

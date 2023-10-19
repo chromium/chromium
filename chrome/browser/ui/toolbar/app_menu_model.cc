@@ -141,6 +141,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kPasswordAndAutofillMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowSearchCompanion);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kChromeLabsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kReadingModeMenuItem);
@@ -810,6 +811,11 @@ AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,
 
 AppMenuModel::~AppMenuModel() = default;
 
+void AppMenuModel::SetHighlightedIdentifier(
+    ui::ElementIdentifier highlighted_menu_identifier) {
+  highlighted_menu_identifier_ = highlighted_menu_identifier;
+}
+
 void AppMenuModel::Init() {
   Build();
 
@@ -1407,21 +1413,16 @@ bool AppMenuModel::IsCommandIdEnabled(int command_id) const {
 }
 
 bool AppMenuModel::IsCommandIdAlerted(int command_id) const {
-  if ((command_id == IDC_RECENT_TABS_MENU) ||
-      (command_id == AppMenuModel::kMinRecentTabsCommandId)) {
-    return alert_item_ == AlertMenuItem::kReopenTabs;
-  }
-
-  if (command_id == IDC_PERFORMANCE) {
-    return alert_item_ == AlertMenuItem::kPerformance;
-  }
-
   if (command_id == IDC_VIEW_PASSWORDS ||
       command_id == IDC_SHOW_PASSWORD_MANAGER) {
     return alert_item_ == AlertMenuItem::kPasswordManager;
   }
 
   return false;
+}
+
+bool AppMenuModel::IsElementIdAlerted(ui::ElementIdentifier element_id) const {
+  return highlighted_menu_identifier_ == element_id;
 }
 
 bool AppMenuModel::GetAcceleratorForCommandId(
@@ -1604,6 +1605,9 @@ void AppMenuModel::Build() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (companion::IsCompanionFeatureEnabled()) {
       AddItemWithStringId(IDC_SHOW_SEARCH_COMPANION, IDS_SHOW_SEARCH_COMPANION);
+      SetElementIdentifierAt(
+          GetIndexOfCommandId(IDC_SHOW_SEARCH_COMPANION).value(),
+          kShowSearchCompanion);
     }
 #endif
     if (features::IsTabOrganization()) {

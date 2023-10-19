@@ -53,7 +53,6 @@ class BrowserAppMenuButton : public AppMenuButton {
   void OnThemeChanged() override;
   // Updates the presentation according to |severity_| and the theme provider.
   void UpdateIcon() override;
-  void HandleMenuClosed() override;
 
  private:
   void OnTouchUiChanged();
@@ -71,9 +70,10 @@ class BrowserAppMenuButton : public AppMenuButton {
   // Sets the padding values depending on whether label is visible.
   void UpdateLayoutInsets();
 
-  // Closes and continue the flow of an in-product help promo; Returns
-  // AlertMenuItem which indicates the app menu item that should be alerted.
-  AlertMenuItem CloseFeaturePromoAndContinue();
+  // TODO(mickeyburks): Highlight menu items through TutorialDescription
+  // Returns an AlertMenuItem which indicates the app menu item that
+  // should be alerted while certain tutorials are running.
+  AlertMenuItem GetAlertItemForRunningTutorial();
 
   AppMenuIconController::TypeAndSeverity type_and_severity_{
       AppMenuIconController::IconType::NONE,

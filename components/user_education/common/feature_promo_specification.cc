@@ -286,6 +286,12 @@ FeaturePromoSpecification::SetCustomActionDismissText(
   return *this;
 }
 
+FeaturePromoSpecification& FeaturePromoSpecification::SetHighlightedMenuItem(
+    const ui::ElementIdentifier highlighted_menu_identifier) {
+  highlighted_menu_identifier_ = highlighted_menu_identifier;
+  return *this;
+}
+
 ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
     ui::ElementContext context) const {
   auto* const element_tracker = ui::ElementTracker::GetElementTracker();

@@ -8329,6 +8329,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SIDE_PANEL_COMPANION_PROMO" desc="Text shown on promotional UI appearing next to the pinned companion button, which encourages users to try the feature.">
         Get a page summary, related searches, and other useful info about this page
       </message>
+      <message name="IDS_SIDE_PANEL_COMPANION_PROMO_PINNING" desc="Text shown on promotional UI appearing next to the pinned companion button, which encourages users to try the feature when Side Panel Pinning is enabled.">
+        You can search this page with Google to get additional useful info
+      </message>
       <message name="IDS_SIDE_PANEL_COMPANION_PROMO_SCREEN_READER" is_accessibility_with_no_ui="true" desc="Screen reader announcement on the promotional UI appearing next to the pinned companion button, which excourages users to try the feature.">
         To get a page summary, related searches, and other useful info about this page, select Google Search side panel button in the toolbar
       </message>
@@ -8656,6 +8659,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_SIDE_PANEL_PROMO"
                desc="Text for the in-product-help bubble shown for the reading mode bubble.">
         To show a simplified view of this page, open the side panel and select Reading mode
+      </message>
+      <message name="IDS_READING_MODE_SIDE_PANEL_PROMO_PINNING"
+               desc="Text for the in-product-help bubble shown for the reading mode bubble when Side Panel Pinning is enabled.">
+        To see a simplified view of this page, go to More Tools > Reading Mode
       </message>
 
       <!-- User note strings -->
@@ -9204,8 +9211,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_POWER_BOOKMARKS_SIDE_PANEL_PROMO" desc="Text shown on promotional UI appearing next to the side panel button, which encourages users to view their bookmarks there.">
         See all your bookmarks here
       </message>
+      <message name="IDS_POWER_BOOKMARKS_SIDE_PANEL_PROMO_PINNING" desc="Text shown on promotional UI appearing next to the side panel button, which encourages users to view their bookmarks there when Side Panel Pinning is enabled.">
+        See all your bookmarks in Bookmarks and Lists
+      </message>
       <message name="IDS_READING_LIST_DISCOVERY_PROMO" desc="Text shown on promotional UI appearing next to the reading list button">
         When you're ready, find your reading list here
+      </message>
+      <message name="IDS_READING_LIST_DISCOVERY_PROMO_PINNING" desc="Text shown on promotional UI appearing next to the reading list button when Side Panel Pinning is enabled">
+        When you're ready, find your reading list in Bookmarks and Lists
       </message>
       <message name="IDS_READING_LIST_ENTRY_POINT_PROMO" desc="Text shown on promotional UI to encourage users to add a tab to their reading list">
         To add this page to your reading list, click the Bookmark icon
@@ -9218,6 +9231,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_READING_LIST_IN_SIDE_PANEL_PROMO" desc="Text shown on promotional UI appearing next to the side panel button">
         Your reading list has moved to the new side panel. Try it here.
+      </message>
+      <message name="IDS_READING_LIST_IN_SIDE_PANEL_PROMO_PINNING" desc="Text shown on promotional UI appearing next to the side panel button when Side Panel Pinning is enabled">
+        Find your reading list and bookmarks in Bookmarks and Lists
       </message>
       <message name="IDS_TAB_GROUPS_NEW_GROUP_PROMO" desc="Text shown on promotional UI encouraging users to create a tab group in their tab strip">
         Organize your tabs with tab groups

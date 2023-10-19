@@ -219,6 +219,19 @@ FeaturePromoStatus FeaturePromoControllerCommon::GetPromoStatus(
              : FeaturePromoStatus::kContinued;
 }
 
+const FeaturePromoSpecification*
+FeaturePromoControllerCommon::GetCurrentPromoSpecificationForAnchor(
+    ui::ElementIdentifier menu_element_id) const {
+  auto* iph_feature = current_promo_ ? current_promo_->iph_feature() : nullptr;
+  if (iph_feature && registry_) {
+    auto* spec = registry_->GetParamsForFeature(*iph_feature);
+    if (spec->anchor_element_id() == menu_element_id) {
+      return spec;
+    }
+  }
+  return {};
+}
+
 bool FeaturePromoControllerCommon::HasPromoBeenDismissed(
     const base::Feature& iph_feature,
     CloseReason* last_close_reason) const {

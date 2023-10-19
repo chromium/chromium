@@ -8,6 +8,7 @@
 
 #include "base/observer_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
@@ -47,7 +48,7 @@ void AppMenuButton::CloseMenu() {
 }
 
 void AppMenuButton::OnMenuClosed() {
-  HandleMenuClosed();
+  promo_handle_.Release();
   for (AppMenuButtonObserver& observer : observer_list_)
     observer.AppMenuClosed();
 }
@@ -63,15 +64,31 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   // in the class declaration.
   menu_.reset();
   menu_model_ = std::move(menu_model);
+  if (BrowserWindow* browser_window = browser->window()) {
+    if (auto* controller = browser_window->GetFeaturePromoController()) {
+      if (auto* promo_specification =
+              controller->GetCurrentPromoSpecificationForAnchor(
+                  GetProperty(views::kElementIdentifierKey))) {
+        if (auto highlighted_identifier =
+                promo_specification->highlighted_menu_identifier()) {
+          promo_handle_ = browser_window->CloseFeaturePromoAndContinue(
+              *controller->GetCurrentPromoFeature());
+
+          if (promo_handle_.is_valid()) {
+            menu_model_->SetHighlightedIdentifier(highlighted_identifier);
+          }
+        }
+      }
+    }
+  }
   menu_model_->Init();
+
   menu_ = std::make_unique<AppMenu>(browser, menu_model_.get(), run_flags);
   menu_->RunMenu(menu_button_controller_);
 
   for (AppMenuButtonObserver& observer : observer_list_)
     observer.AppMenuShown();
 }
-
-void AppMenuButton::HandleMenuClosed() {}
 
 BEGIN_METADATA(AppMenuButton, ToolbarButton)
 END_METADATA

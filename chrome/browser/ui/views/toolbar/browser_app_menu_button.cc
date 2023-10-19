@@ -103,10 +103,9 @@ void BrowserAppMenuButton::ShowMenu(int run_types) {
 
   Browser* browser = toolbar_view_->browser();
 
-  // If the menu was opened while reopen tab in-product help was
-  // showing, we continue the IPH into the menu. Notify the promo
-  // controller we are taking control of the promo.
-  AlertMenuItem alert_item = CloseFeaturePromoAndContinue();
+  // Allow highlighting menu items when the menu was opened while
+  // certain tutorials are running.
+  AlertMenuItem alert_item = GetAlertItemForRunningTutorial();
 
   RunMenu(std::make_unique<AppMenuModel>(
               toolbar_view_, browser, toolbar_view_->app_menu_icon_controller(),
@@ -114,7 +113,7 @@ void BrowserAppMenuButton::ShowMenu(int run_types) {
           browser, run_types);
 }
 
-AlertMenuItem BrowserAppMenuButton::CloseFeaturePromoAndContinue() {
+AlertMenuItem BrowserAppMenuButton::GetAlertItemForRunningTutorial() {
   Browser* browser = toolbar_view_->browser();
   BrowserWindow* browser_window = browser->window();
 
@@ -127,12 +126,6 @@ AlertMenuItem BrowserAppMenuButton::CloseFeaturePromoAndContinue() {
                      kPasswordManagerTutorialId)) {
     return AlertMenuItem::kPasswordManager;
   }
-
-  promo_handle_ = browser_window->CloseFeaturePromoAndContinue(
-      feature_engagement::kIPHHighEfficiencyModeFeature);
-
-  if (promo_handle_.is_valid())
-    return AlertMenuItem::kPerformance;
 
   return AlertMenuItem::kNone;
 }
@@ -204,13 +197,6 @@ SkColor BrowserAppMenuButton::GetForegroundColor(ButtonState state) const {
   }
 
   return ToolbarButton::GetForegroundColor(state);
-}
-
-void BrowserAppMenuButton::HandleMenuClosed() {
-  // If we were showing a promo in the menu, drop the handle to notify
-  // FeaturePromoController we're done. This is a no-op if we weren't
-  // showing the promo.
-  promo_handle_.Release();
 }
 
 void BrowserAppMenuButton::UpdateTextAndHighlightColor() {

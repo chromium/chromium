@@ -37,6 +37,14 @@ class MockFeaturePromoController : public FeaturePromoController {
               GetPromoStatus,
               (const base::Feature&),
               (const, override));
+  MOCK_METHOD(const base::Feature*,
+              GetCurrentPromoFeature,
+              (),
+              (const, override));
+  MOCK_METHOD(const FeaturePromoSpecification*,
+              GetCurrentPromoSpecificationForAnchor,
+              (ui::ElementIdentifier),
+              (const, override));
   MOCK_METHOD(bool,
               EndPromo,
               (const base::Feature&, FeaturePromoCloseReason),
