@@ -80,6 +80,9 @@ public class FullscreenHtmlApiHandlerUnitTest {
                     // restrictions in DEPS.
                     @Override
                     public void destroySelectActionMode(Tab tab) {}
+
+                    @Override
+                    protected void updateMultiTouchZoomSupport(boolean enable) {}
                 };
     }
 
@@ -235,8 +238,7 @@ public class FullscreenHtmlApiHandlerUnitTest {
 
     @Test
     public void testNoObserverWhenCanceledBeforeBeingInteractable() {
-        // avoid calling GestureListenerManager/SelectionPopupController
-        doReturn(null).when(mTab).getWebContents();
+        doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(false).when(mTab).isUserInteractable();
 
         mAreControlsHidden.set(false);
@@ -255,7 +257,7 @@ public class FullscreenHtmlApiHandlerUnitTest {
 
     @Test
     public void testFullscreenObserverInTabNonInteractableState() {
-        doReturn(null).when(mTab).getWebContents();
+        doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(false).when(mTab).isUserInteractable(); // Tab not interactable at first.
 
         mAreControlsHidden.set(false);
