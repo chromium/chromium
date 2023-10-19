@@ -893,7 +893,7 @@ void NGInlineItemsBuilderTemplate<
         NGInlineItem& item = AppendTextItem(
             NGInlineItem::kControl, StringView(string, start, end - start),
             layout_object);
-        item.SetTextType(NGTextType::kFlowControl);
+        item.SetTextType(TextItemType::kFlowControl);
         start = end;
         is_score_line_break_disabled_ = true;
         continue;
@@ -901,7 +901,7 @@ void NGInlineItemsBuilderTemplate<
       // ZWNJ splits item, but it should be text.
       if (c != kZeroWidthNonJoinerCharacter) {
         NGInlineItem& item = Append(NGInlineItem::kControl, c, layout_object);
-        item.SetTextType(NGTextType::kFlowControl);
+        item.SetTextType(TextItemType::kFlowControl);
         start++;
         continue;
       }
@@ -958,7 +958,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
 
   NGInlineItem& item =
       Append(NGInlineItem::kControl, kNewlineCharacter, layout_object);
-  item.SetTextType(NGTextType::kForcedLineBreak);
+  item.SetTextType(TextItemType::kForcedLineBreak);
 
   // A forced break is not a collapsible space, but following collapsible spaces
   // are leading spaces and that they should be collapsed.
@@ -994,7 +994,7 @@ NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBreakOpportunity(
   DCHECK(layout_object);
   NGInlineItem& item = AppendOpaque(NGInlineItem::kControl,
                                     kZeroWidthSpaceCharacter, layout_object);
-  item.SetTextType(NGTextType::kFlowControl);
+  item.SetTextType(TextItemType::kFlowControl);
   return item;
 }
 

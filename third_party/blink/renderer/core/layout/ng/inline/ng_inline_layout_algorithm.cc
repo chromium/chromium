@@ -457,8 +457,8 @@ void NGInlineLayoutAlgorithm::CreateLine(
       if (box->include_used_fonts)
         box->AccumulateUsedFonts(item_result.shape_result.get());
 
-      DCHECK(item.TextType() == NGTextType::kNormal ||
-             item.TextType() == NGTextType::kSymbolMarker);
+      DCHECK(item.TextType() == TextItemType::kNormal ||
+             item.TextType() == TextItemType::kSymbolMarker);
       if (UNLIKELY(item_result.is_hyphenated)) {
         DCHECK(item_result.hyphen);
         LayoutUnit hyphen_inline_size = item_result.hyphen.InlineSize();
@@ -745,7 +745,7 @@ void NGInlineLayoutAlgorithm::PlaceControlItem(const NGInlineItem& item,
   DCHECK_EQ(item.Type(), NGInlineItem::kControl);
   DCHECK_GE(item.Length(), 1u);
   DCHECK(!item.TextShapeResult());
-  DCHECK_NE(item.TextType(), NGTextType::kNormal);
+  DCHECK_NE(item.TextType(), TextItemType::kNormal);
 #if DCHECK_IS_ON()
   item.CheckTextType(line_info.ItemsData().text_content);
 #endif

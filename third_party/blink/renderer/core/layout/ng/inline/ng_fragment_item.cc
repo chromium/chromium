@@ -66,13 +66,13 @@ NGFragmentItem::NGFragmentItem(
     DCHECK_EQ(text_.shape_result->EndIndex(), EndOffset());
   }
 #endif
-  DCHECK_NE(TextType(), NGTextType::kLayoutGenerated);
+  DCHECK_NE(TextType(), TextItemType::kLayoutGenerated);
   DCHECK(!IsFormattingContextRoot());
 }
 
 NGFragmentItem::NGFragmentItem(
     const LayoutObject& layout_object,
-    NGTextType text_type,
+    TextItemType text_type,
     NGStyleVariant style_variant,
     TextDirection direction,
     scoped_refptr<const ShapeResultView> shape_result,
@@ -179,7 +179,7 @@ NGFragmentItem::NGFragmentItem(NGLogicalLineItem&& line_item,
   if (line_item.layout_object) {
     const TextDirection direction = line_item.shape_result->Direction();
     new (this) NGFragmentItem(
-        *line_item.layout_object, NGTextType::kLayoutGenerated,
+        *line_item.layout_object, TextItemType::kLayoutGenerated,
         line_item.style_variant, direction, std::move(line_item.shape_result),
         line_item.text_content,
         ToPhysicalSize(line_item.MarginSize(), writing_mode),

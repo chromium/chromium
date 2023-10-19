@@ -74,7 +74,7 @@ NGInlineItem::NGInlineItem(NGInlineItemType type,
       layout_object_(layout_object,
                      Member<LayoutObject>::AtomicInitializerTag{}),
       type_(type),
-      text_type_(static_cast<unsigned>(NGTextType::kNormal)),
+      text_type_(static_cast<unsigned>(TextItemType::kNormal)),
       style_variant_(static_cast<unsigned>(NGStyleVariant::kStandard)),
       end_collapse_type_(kNotCollapsible),
       bidi_level_(UBIDI_LTR),
@@ -259,27 +259,27 @@ void NGInlineItem::CheckTextType(const String& text_content) const {
     case kNewlineCharacter:
       DCHECK_EQ(Length(), 1u);
       DCHECK_EQ(Type(), NGInlineItemType::kControl);
-      DCHECK_EQ(TextType(), NGTextType::kForcedLineBreak);
+      DCHECK_EQ(TextType(), TextItemType::kForcedLineBreak);
       break;
     case kTabulationCharacter:
       DCHECK_EQ(Type(), NGInlineItemType::kControl);
-      DCHECK_EQ(TextType(), NGTextType::kFlowControl);
+      DCHECK_EQ(TextType(), TextItemType::kFlowControl);
       break;
     case kCarriageReturnCharacter:
     case kFormFeedCharacter:
     case kZeroWidthSpaceCharacter:
       if (Type() == NGInlineItemType::kControl) {
         DCHECK_EQ(Length(), 1u);
-        DCHECK_EQ(TextType(), NGTextType::kFlowControl);
+        DCHECK_EQ(TextType(), TextItemType::kFlowControl);
       } else {
         DCHECK_EQ(Type(), NGInlineItemType::kText);
-        DCHECK_EQ(TextType(), NGTextType::kNormal);
+        DCHECK_EQ(TextType(), TextItemType::kNormal);
       }
       break;
     default:
       DCHECK_NE(Type(), NGInlineItemType::kControl);
-      DCHECK(TextType() == NGTextType::kNormal ||
-             TextType() == NGTextType::kSymbolMarker);
+      DCHECK(TextType() == TextItemType::kNormal ||
+             TextType() == TextItemType::kSymbolMarker);
       break;
   }
 }

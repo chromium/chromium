@@ -2320,7 +2320,7 @@ void NGLineBreaker::ComputeTrailingCollapsibleSpace(NGLineInfo* line_info) {
       return;
     }
     if (item.Type() == NGInlineItem::kControl) {
-      if (item.TextType() == NGTextType::kForcedLineBreak) {
+      if (item.TextType() == TextItemType::kForcedLineBreak) {
         DCHECK_EQ(text[item.StartOffset()], kNewlineCharacter);
         continue;
       }
@@ -2342,7 +2342,7 @@ void NGLineBreaker::HandleForcedLineBreak(const NGInlineItem* item,
     return;
 
   if (item) {
-    DCHECK_EQ(item->TextType(), NGTextType::kForcedLineBreak);
+    DCHECK_EQ(item->TextType(), TextItemType::kForcedLineBreak);
     DCHECK_EQ(Text()[item->StartOffset()], kNewlineCharacter);
 
     // Special-code for BR clear elements. If we have floats that extend into
@@ -2424,12 +2424,12 @@ void NGLineBreaker::HandleForcedLineBreak(const NGInlineItem* item,
 void NGLineBreaker::HandleControlItem(const NGInlineItem& item,
                                       NGLineInfo* line_info) {
   DCHECK_GE(item.Length(), 1u);
-  if (item.TextType() == NGTextType::kForcedLineBreak) {
+  if (item.TextType() == TextItemType::kForcedLineBreak) {
     HandleForcedLineBreak(&item, line_info);
     return;
   }
 
-  DCHECK_EQ(item.TextType(), NGTextType::kFlowControl);
+  DCHECK_EQ(item.TextType(), TextItemType::kFlowControl);
   UChar character = Text()[item.StartOffset()];
   switch (character) {
     case kTabulationCharacter: {

@@ -1358,7 +1358,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
       if (item.Type() == NGInlineItem::kText) {
         if (!item.Length())
           continue;
-        if (item.TextType() == NGTextType::kSymbolMarker) {
+        if (item.TextType() == TextItemType::kSymbolMarker) {
           break;
         }
         if (ShouldBreakShapingBeforeText(item, start_item, start_style, font,

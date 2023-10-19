@@ -71,20 +71,22 @@ class CORE_EXPORT NGInlineItem {
   NGInlineItemType Type() const { return type_; }
   const char* NGInlineItemTypeToString(NGInlineItemType val) const;
 
-  NGTextType TextType() const { return static_cast<NGTextType>(text_type_); }
-  bool IsForcedLineBreak() const {
-    return TextType() == NGTextType::kForcedLineBreak;
+  TextItemType TextType() const {
+    return static_cast<TextItemType>(text_type_);
   }
-  void SetTextType(NGTextType text_type) {
+  bool IsForcedLineBreak() const {
+    return TextType() == TextItemType::kForcedLineBreak;
+  }
+  void SetTextType(TextItemType text_type) {
     text_type_ = static_cast<unsigned>(text_type);
   }
   bool IsSymbolMarker() const {
-    return TextType() == NGTextType::kSymbolMarker;
+    return TextType() == TextItemType::kSymbolMarker;
   }
   void SetIsSymbolMarker() {
-    DCHECK(TextType() == NGTextType::kNormal ||
-           TextType() == NGTextType::kSymbolMarker);
-    SetTextType(NGTextType::kSymbolMarker);
+    DCHECK(TextType() == TextItemType::kNormal ||
+           TextType() == TextItemType::kSymbolMarker);
+    SetTextType(TextItemType::kSymbolMarker);
   }
 
   const ShapeResult* TextShapeResult() const { return shape_result_.get(); }
@@ -266,7 +268,7 @@ class CORE_EXPORT NGInlineItem {
   Member<LayoutObject> layout_object_;
 
   NGInlineItemType type_;
-  unsigned text_type_ : 3;          // NGTextType
+  unsigned text_type_ : 3;          // TextItemType
   unsigned style_variant_ : 2;      // NGStyleVariant
   unsigned end_collapse_type_ : 2;  // NGCollapseType
   unsigned bidi_level_ : 8;         // UBiDiLevel is defined as uint8_t.
