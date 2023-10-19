@@ -24,11 +24,6 @@ public class PrefService {
         mNativePrefServiceAndroid = 0;
     }
 
-    @CalledByNative
-    private long getNativePointer() {
-        return mNativePrefServiceAndroid;
-    }
-
     @VisibleForTesting
     PrefService(long nativePrefServiceAndroid) {
         mNativePrefServiceAndroid = nativePrefServiceAndroid;

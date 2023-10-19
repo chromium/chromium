@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -68,9 +69,11 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.supervised_user.SupervisedUserPreferences;
-import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.signin.Tribool;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -786,8 +789,24 @@ public class FeedSurfaceCoordinator
      * Returns true if the supervised user feed should be displayed.
      */
     public boolean shouldDisplaySupervisedFeed() {
-        PrefService prefService = UserPrefs.get(mProfile);
-        return SupervisedUserPreferences.isSubjectToParentalControls(prefService)
+        if (mProfile == null) {
+            return false;
+        }
+        final IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        final @Nullable CoreAccountInfo primaryAccount =
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+
+        if (primaryAccount == null) {
+            return false;
+        }
+
+        // Check if the primary account is supervised.
+        final @Nullable AccountInfo primaryAccountInfo =
+                identityManager.findExtendedAccountInfoByEmailAddress(primaryAccount.getEmail());
+        return primaryAccountInfo != null
+                && primaryAccountInfo.getAccountCapabilities().isSubjectToParentalControls()
+                        == Tribool.TRUE
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED);
     }
 

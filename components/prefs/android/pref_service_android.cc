@@ -9,7 +9,6 @@
 #include "components/prefs/android/jni_headers/PrefService_jni.h"
 #include "components/prefs/pref_service.h"
 
-using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -18,29 +17,14 @@ PrefServiceAndroid::PrefServiceAndroid(PrefService* pref_service)
 
 PrefServiceAndroid::~PrefServiceAndroid() {
   if (java_ref_) {
-    Java_PrefService_clearNativePtr(AttachCurrentThread(), java_ref_);
+    Java_PrefService_clearNativePtr(base::android::AttachCurrentThread(),
+                                    java_ref_);
     java_ref_.Reset();
   }
 }
 
-// static
-PrefService* PrefServiceAndroid::FromPrefServiceAndroid(
-    const JavaParamRef<jobject>& obj) {
-  if (obj.is_null()) {
-    return nullptr;
-  }
-
-  PrefServiceAndroid* pref_service_android =
-      reinterpret_cast<PrefServiceAndroid*>(
-          Java_PrefService_getNativePointer(AttachCurrentThread(), obj));
-  if (!pref_service_android) {
-    return nullptr;
-  }
-  return pref_service_android->pref_service_;
-}
-
 ScopedJavaLocalRef<jobject> PrefServiceAndroid::GetJavaObject() {
-  JNIEnv* env = AttachCurrentThread();
+  JNIEnv* env = base::android::AttachCurrentThread();
   if (!java_ref_) {
     java_ref_.Reset(
         Java_PrefService_create(env, reinterpret_cast<intptr_t>(this)));

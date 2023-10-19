@@ -10,22 +10,17 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "components/prefs/prefs_export.h"
 
 class PrefService;
 
 // The native side of the PrefServiceAndroid is created and destroyed by the
 // Java.
-class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
+class PrefServiceAndroid {
  public:
   explicit PrefServiceAndroid(PrefService* pref_service);
   PrefServiceAndroid(const PrefServiceAndroid& other) = delete;
   PrefServiceAndroid& operator=(const PrefServiceAndroid& other) = delete;
   ~PrefServiceAndroid();
-
-  // Returns the native counterpart of a Java `PrefService`.
-  static PrefService* FromPrefServiceAndroid(
-      const base::android::JavaParamRef<jobject>& obj);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
