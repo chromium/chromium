@@ -7041,5 +7041,3 @@ crbug.com/1493342 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamu
 crbug.com/1493342 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-video.html [ Failure ]
 crbug.com/1493455 external/wpt/pointerevents/pointerevent_pointerrawupdate.html [ Failure ]
 
-# Gardener 2023-10-19
-crbug.com/1494133 [ Mac ] media/controls/video-overlay-cast-light-rendering.html [ Pass Failure ]
