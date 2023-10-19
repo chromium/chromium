@@ -715,11 +715,9 @@ void LockContentsView::ApplyUserChanges(
   for (const LoginUserInfo& user : users) {
     UserState* old_state = FindStateForUser(user.basic_user_info.account_id);
     if (old_state) {
-      // Update the state of the recovery factor since it might have change.
-      old_state->is_recovery_configured = user.is_recovery_configured;
       new_users.push_back(std::move(*old_state));
     } else {
-      new_users.emplace_back(user);
+      new_users.push_back(UserState(user));
     }
   }
 
@@ -2251,10 +2249,7 @@ void LockContentsView::ShowAuthErrorMessage() {
       auto recover_user_button = std::make_unique<PillButton>(
           base::BindRepeating(&LockContentsView::RecoverUserButtonPressed,
                               base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              user_state->is_recovery_configured
-                  ? IDS_ASH_LOGIN_RECOVER_USER_BUTTON
-                  : IDS_ASH_LOGIN_FORGOT_PASSWORD_BUTTON));
+          l10n_util::GetStringUTF16(IDS_ASH_LOGIN_RECOVER_USER_BUTTON));
 
       container->AddChildView(std::move(recover_user_button));
     }
