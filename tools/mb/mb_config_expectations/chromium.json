@@ -93,6 +93,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "target_os": "chromeos",
+      "use_cups": true,
       "use_remoteexec": true
     }
   },

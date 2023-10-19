@@ -185,6 +185,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "target_os": "chromeos",
+      "use_cups": true,
       "use_remoteexec": true
     }
   },
@@ -206,6 +207,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "chromeos",
+      "use_cups": true,
       "use_remoteexec": true
     }
   },
@@ -218,6 +220,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "target_os": "chromeos",
+      "use_cups": true,
       "use_remoteexec": true
     }
   },

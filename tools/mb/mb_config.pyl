@@ -2474,11 +2474,11 @@
     ],
 
     'chromeos_with_codecs_debug_bot_reclient': [
-      'chromeos_with_codecs', 'debug_bot_reclient',
+      'chromeos_with_codecs', 'debug_bot_reclient', 'use_cups',
     ],
 
     'chromeos_with_codecs_debug_trybot_reclient': [
-      'chromeos_with_codecs', 'debug_bot_reclient', 'use_dummy_lastchange',
+      'chromeos_with_codecs', 'debug_bot_reclient', 'use_cups', 'use_dummy_lastchange',
     ],
 
     'chromeos_with_codecs_release_bot_coverage_reclient': [
@@ -2486,13 +2486,13 @@
     ],
 
     'chromeos_with_codecs_release_bot_reclient': [
-      'chromeos_with_codecs', 'release_bot_reclient',
+      'chromeos_with_codecs', 'release_bot_reclient', 'use_cups',
     ],
 
     # Keep in sync with chromeos_with_codecs_release_trybot_reclient_cxx17.
     'chromeos_with_codecs_release_trybot_code_coverage_reclient': [
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'also_build_lacros_chrome',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
+      'use_clang_coverage', 'use_cups', 'partial_code_coverage_instrumentation',
       'enable_dangling_raw_ptr_feature_flag', 'enable_backup_ref_ptr_feature_flag',
     ],
 
@@ -2504,7 +2504,7 @@
     ],
 
     'chromeos_with_codecs_release_trybot_invert_fieldtrials_reclient': [
-      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'invert_fieldtrials',
+      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'use_cups', 'invert_fieldtrials',
     ],
 
     'chromeos_with_codecs_release_trybot_reclient': [
@@ -2512,7 +2512,7 @@
     ],
 
     'chromeos_with_codecs_with_lacros_release_bot_reclient': [
-      'chromeos_with_codecs', 'release_bot_reclient', 'also_build_lacros_chrome'
+      'chromeos_with_codecs', 'release_bot_reclient', 'use_cups', 'also_build_lacros_chrome'
     ],
 
     'clang_code_coverage_ios_xctest_reclient': [
@@ -2618,7 +2618,7 @@
     ],
 
     'codesearch_gen_chromium_chromiumos_bot_reclient': [
-      'codesearch_reclient', 'chromeos',
+      'codesearch_reclient', 'chromeos', 'use_cups',
     ],
 
     'codesearch_gen_chromium_cronet_bot_reclient': [
@@ -2638,7 +2638,7 @@
     # Lacros uses different gn args to build for chromeOS device vs. Linux. For
     # simplicity, we only generate codesearch x-refs for lacros on Linux.
     'codesearch_gen_chromium_lacros_bot_reclient': [
-      'codesearch_reclient', 'lacros_on_linux',
+      'codesearch_reclient', 'lacros_on_linux', 'use_cups',
     ],
 
     'codesearch_gen_chromium_mac_bot_reclient': [
@@ -4936,6 +4936,10 @@
 
     'use_clang_coverage': {
       'gn_args': 'use_clang_coverage=true',
+    },
+
+    'use_cups': {
+      'gn_args': 'use_cups=true',
     },
 
     # TODO(crbug.com/869348): Remove this if we set this by default or don't use
