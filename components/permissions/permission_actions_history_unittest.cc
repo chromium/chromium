@@ -57,6 +57,8 @@ struct TestEntry {
      false},
     {PermissionAction::GRANTED, RequestType::kNotifications,
      PermissionPromptDisposition::ANCHORED_BUBBLE, false, false},
+    {PermissionAction::GRANTED_ONCE, RequestType::kNotifications,
+     PermissionPromptDisposition::ANCHORED_BUBBLE, false, false},
 };
 
 const char kLegacyPrefs[] = R"({
@@ -136,7 +138,7 @@ class PermissionActionHistoryTest : public testing::Test {
 TEST_F(PermissionActionHistoryTest, GetHistorySortedOrder) {
   auto all_entries = GetHistory(absl::nullopt);
 
-  EXPECT_EQ(9u, all_entries.size());
+  EXPECT_EQ(10u, all_entries.size());
 
   size_t index = 0;
   for (const auto& entry : kTestEntries)
@@ -196,13 +198,13 @@ TEST_F(PermissionActionHistoryTest, ClearHistory) {
   } kTests[] = {
       // Misc and baseline tests cases.
       {base::Time(), base::Time::Max(), 0, 0},
-      {base::Time(), base::Time::Now(), 1, 1},
+      {base::Time(), base::Time::Now(), 2, 2},
       {base::Time(), base::Time::Now() + base::Microseconds(1), 0, 0},
 
       // Test cases specifying only the upper bound.
-      {base::Time(), base::Time::Now() - base::Days(1), 4, 2},
-      {base::Time(), base::Time::Now() - base::Days(2), 6, 3},
-      {base::Time(), base::Time::Now() - base::Days(3), 9, 6},
+      {base::Time(), base::Time::Now() - base::Days(1), 5, 3},
+      {base::Time(), base::Time::Now() - base::Days(2), 7, 4},
+      {base::Time(), base::Time::Now() - base::Days(3), 10, 7},
 
       // Test cases specifying only the lower bound.
       {base::Time::Now() - base::Days(3), base::Time::Max(), 0, 0},
@@ -213,30 +215,30 @@ TEST_F(PermissionActionHistoryTest, ClearHistory) {
       // Test cases with both bounds.
       {base::Time::Now() - base::Days(3),
        base::Time::Now() + base::Microseconds(1), 0, 0},
-      {base::Time::Now() - base::Days(3), base::Time::Now(), 1, 1},
-      {base::Time::Now() - base::Days(3), base::Time::Now() - base::Days(1), 4,
-       2},
-      {base::Time::Now() - base::Days(3), base::Time::Now() - base::Days(2), 6,
+      {base::Time::Now() - base::Days(3), base::Time::Now(), 2, 2},
+      {base::Time::Now() - base::Days(3), base::Time::Now() - base::Days(1), 5,
        3},
-      {base::Time::Now() - base::Days(3), base::Time::Now() - base::Days(3), 9,
-       6},
+      {base::Time::Now() - base::Days(3), base::Time::Now() - base::Days(2), 7,
+       4},
+      {base::Time::Now() - base::Days(3), base::Time::Now() - base::Days(3), 10,
+       7},
 
       {base::Time::Now() - base::Days(2),
        base::Time::Now() + base::Microseconds(1), 3, 3},
-      {base::Time::Now() - base::Days(2), base::Time::Now(), 4, 4},
-      {base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1), 7,
-       5},
-      {base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(2), 9,
+      {base::Time::Now() - base::Days(2), base::Time::Now(), 5, 5},
+      {base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1), 8,
        6},
+      {base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(2), 10,
+       7},
 
       {base::Time::Now() - base::Days(1),
        base::Time::Now() + base::Microseconds(1), 5, 4},
-      {base::Time::Now() - base::Days(1), base::Time::Now(), 6, 5},
-      {base::Time::Now() - base::Days(1), base::Time::Now() - base::Days(1), 9,
-       6},
+      {base::Time::Now() - base::Days(1), base::Time::Now(), 7, 6},
+      {base::Time::Now() - base::Days(1), base::Time::Now() - base::Days(1), 10,
+       7},
 
       {base::Time::Now(), base::Time::Now() + base::Microseconds(1), 8, 5},
-      {base::Time::Now(), base::Time::Now(), 9, 6},
+      {base::Time::Now(), base::Time::Now(), 10, 7},
   };
 
   // We need to account for much we have already advanced the time for each test
@@ -266,7 +268,7 @@ TEST_F(PermissionActionHistoryTest, EntryFilterTest) {
   auto loud_entries =
       GetHistory(absl::nullopt,
                  PermissionActionsHistory::EntryFilter::WANT_LOUD_PROMPTS_ONLY);
-  EXPECT_EQ(4u, loud_entries.size());
+  EXPECT_EQ(5u, loud_entries.size());
 
   auto quiet_entries = GetHistory(
       absl::nullopt, PermissionActionsHistory::PermissionActionsHistory::
@@ -275,13 +277,39 @@ TEST_F(PermissionActionHistoryTest, EntryFilterTest) {
 
   auto all_entries = GetHistory(
       absl::nullopt, PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
-  EXPECT_EQ(9u, all_entries.size());
+  EXPECT_EQ(10u, all_entries.size());
 
   auto quiet_entries_in_last_two_days =
       GetPermissionActionsHistory()->GetHistory(
           base::Time::Now() - base::Days(2),
           PermissionActionsHistory::EntryFilter::WANT_QUIET_PROMPTS_ONLY);
   EXPECT_EQ(2u, quiet_entries_in_last_two_days.size());
+}
+
+TEST_F(PermissionActionHistoryTest, FillInActionCountsTest) {
+  auto all_entries =
+      GetHistory(RequestType::kNotifications,
+                 PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
+  PredictionRequestFeatures::ActionCounts actions_counts;
+  PermissionActionsHistory::FillInActionCounts(&actions_counts, all_entries);
+  EXPECT_EQ(3u, actions_counts.grants);
+  EXPECT_EQ(7u, actions_counts.total());
+
+  // FillInActionCounts combines one time and permanent grants, but on a storage
+  // level they are still stored separately.
+  uint32_t permanent_grant_count = 0;
+  uint32_t one_time_grant_count = 0;
+  for (auto entry : all_entries) {
+    if (entry.action == PermissionAction::GRANTED) {
+      permanent_grant_count++;
+    }
+    if (entry.action == PermissionAction::GRANTED_ONCE) {
+      one_time_grant_count++;
+    }
+  }
+  EXPECT_EQ(2u, permanent_grant_count);
+  EXPECT_EQ(1u, one_time_grant_count);
+  EXPECT_EQ(7u, all_entries.size());
 }
 
 }  // namespace permissions
