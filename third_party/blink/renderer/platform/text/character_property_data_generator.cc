@@ -65,6 +65,8 @@ class CharacterPropertyValues {
     Set(kFullwidthFullStop, HanKerningCharType::kDot);
     Set(kFullwidthColon, HanKerningCharType::kColon);
     Set(kFullwidthSemicolon, HanKerningCharType::kSemicolon);
+    Set(kMiddleDotCharacter, HanKerningCharType::kMiddle);
+    Set(kHyphenationPointCharacter, HanKerningCharType::kMiddle);
     Set(kKatakanaMiddleDot, HanKerningCharType::kMiddle);
     SetForUnicodeSet("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Ps:]]",
                      HanKerningCharType::kOpen);

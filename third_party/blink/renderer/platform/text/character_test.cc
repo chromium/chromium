@@ -245,6 +245,7 @@ TEST(CharacterTest, HanKerning) {
   } data_list[] = {
       {kLeftDoubleQuotationMarkCharacter, HanKerningCharType::kOpenQuote},
       {kRightDoubleQuotationMarkCharacter, HanKerningCharType::kCloseQuote},
+      {kMiddleDotCharacter, HanKerningCharType::kMiddle},
       {kIdeographicSpaceCharacter, HanKerningCharType::kMiddle},
       {kFullwidthComma, HanKerningCharType::kDot},
       {0x3008, HanKerningCharType::kOpen},
