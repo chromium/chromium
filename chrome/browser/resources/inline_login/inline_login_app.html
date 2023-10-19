@@ -24,9 +24,6 @@
 
 <if expr="chromeos_ash">
   #addAccount {
-    /* Content of the webview already has 64px border, add negative margin to
-     * make distance to the top 64px. */
-    margin-top: calc(-1 * var(--dialog-top-border-size));
     /* margin-bottom = padding below button + button height
      *                 + padding above button. */
     margin-bottom: calc(3 * 32px);
@@ -34,12 +31,6 @@
   /* Make distance to the top 64px. */
   #welcome, #arcAccountPicker, #signinBlockedByPolicy, #signinError {
     margin-top: calc(64px - var(--dialog-top-border-size));
-  }
-</if>
-
-  .signin-frame {
-    background-color: white;
-    overflow: hidden;
   }
 
   .buttons {
@@ -50,6 +41,16 @@
   .action-buttons,
   .next-button {
     margin-inline-start: auto;
+  }
+
+  .rounded-button {
+    border-radius: 20px;
+  }
+</if>
+
+  .signin-frame {
+    background-color: white;
+    overflow: hidden;
   }
 
   paper-spinner-lite {
@@ -111,7 +112,7 @@
 <if expr="chromeos_ash">
   <div class="buttons"
       hidden$="[[isSpinnerActive_(loading_, verifyingAccount_)]]">
-    <cr-button class="back-button"
+    <cr-button class="back-button rounded-button"
         aria-label="$i18n{accessibleBackButtonLabel}"
         on-click="handleGoBack_"
         hidden$="[[!shouldShowBackButton_(currentView_, verifyingAccount_)]]">
@@ -122,11 +123,12 @@
     <div class="action-buttons"
         hidden$="[[!shouldShowGaiaButtons_(currentView_)]]">
       <gaia-action-buttons authenticator="[[authExtHost_]]"
+          rounded-button="true"
           on-set-focus-to-webview="setFocusToWebview_">
       </gaia-action-buttons>
     </div>
 
-    <cr-button class="next-button action-button"
+    <cr-button class="next-button action-button rounded-button"
         aria-label="[[getNextButtonLabel_(currentView_, isArcAccountRestrictionsEnabled_)]]"
         on-click="onOkButtonClick_"
         hidden$="[[!shouldShowOkButton_(currentView_)]]">
