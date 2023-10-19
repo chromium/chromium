@@ -196,6 +196,8 @@ class PasswordsPrivateDelegateImpl
       api::passwords_private::PasswordStoreSet from_stores);
   void UndoRemoveSavedPasswordOrExceptionInternal();
 
+  void MaybeShowPasswordShareButtonIPH(content::WebContents* web_contents);
+
   // Callback for when the password list has been written to the destination.
   void OnPasswordsExportProgress(
       const password_manager::PasswordExportInfo& progress);
@@ -210,6 +212,7 @@ class PasswordsPrivateDelegateImpl
   // Callback for RequestCredentialDetails() after authentication check.
   void OnRequestCredentialDetailsAuthResult(const std::vector<int>& ids,
                                             UiEntriesCallback callback,
+                                            content::WebContents* web_contents,
                                             bool authenticated);
 
   // Callback for ExportPasswords() after authentication check.

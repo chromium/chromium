@@ -255,6 +255,9 @@ chromium-metrics-reviews@google.com.
       summary="Password Manager shortcut."/>
   <variant name="IPH_PasswordsAccountStorage"
       summary="passwords account storage"/>
+  <variant name="IPH_PasswordSharingFeature"
+      summary="educating the users about password sharing when they open
+               password details page"/>
   <variant name="IPH_PasswordsManagementBubbleAfterSave"
       summary="educating the users about the password management bubble after
                saving a password"/>

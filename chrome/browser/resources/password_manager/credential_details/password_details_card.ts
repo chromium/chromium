@@ -201,6 +201,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private onShareButtonClick_() {
     recordPasswordSharingInteraction(
         PasswordSharingActions.PASSWORD_DETAILS_SHARE_BUTTON_CLICKED);
+    this.hideHelpBubble(PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID);
     this.showShareFlow_ = true;
   }
 

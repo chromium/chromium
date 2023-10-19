@@ -444,6 +444,18 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
           .SetBubbleTitleText(IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_TITLE)));
 
+  // kIPHPasswordSharingFeature:
+  registry.RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForToastPromo(
+                    feature_engagement::kIPHPasswordSharingFeature,
+                    PasswordManagerUI::kSharePasswordElementId,
+                    IDS_PASSWORD_MANAGER_IPH_SHARE_PASSWORD_BUTTON,
+                    IDS_PASSWORD_MANAGER_IPH_SHARE_PASSWORD_BUTTON_SCREENREADER,
+                    FeaturePromoSpecification::AcceleratorInfo())
+                    .SetInAnyContext(true)
+                    .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
+                    .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
+
   // kIPHPowerBookmarksSidePanelFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
       feature_engagement::kIPHPowerBookmarksSidePanelFeature,

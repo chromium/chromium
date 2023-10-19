@@ -550,7 +550,8 @@ void PasswordsPrivateDelegateImpl::RequestCredentialsDetails(
           GetReauthPurpose(api::passwords_private::PLAINTEXT_REASON_VIEW)),
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult,
-          weak_ptr_factory_.GetWeakPtr(), ids, std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), ids, std::move(callback),
+          web_contents));
 }
 
 void PasswordsPrivateDelegateImpl::OnFetchingFamilyMembersCompleted(
@@ -902,6 +903,16 @@ void PasswordsPrivateDelegateImpl::RestartAuthTimer() {
   auth_timeout_handler_.RestartAuthTimer();
 }
 
+void PasswordsPrivateDelegateImpl::MaybeShowPasswordShareButtonIPH(
+    content::WebContents* web_contents) {
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (!browser || !browser->window()) {
+    return;
+  }
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHPasswordSharingFeature);
+}
+
 void PasswordsPrivateDelegateImpl::OnPasswordsExportProgress(
     const password_manager::PasswordExportInfo& progress) {
   PasswordsPrivateEventRouter* router =
@@ -945,6 +956,7 @@ void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
 void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
     const std::vector<int>& ids,
     UiEntriesCallback callback,
+    content::WebContents* web_contents,
     bool authenticated) {
   if (!authenticated) {
     std::move(callback).Run({});
@@ -976,6 +988,17 @@ void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
         last_entry, api::passwords_private::PLAINTEXT_REASON_VIEW);
   }
   std::move(callback).Run(std::move(passwords));
+
+  // Attempt to show "Password Share Button" help-bubble when the user opens
+  // PasswordsDetailsSection. The task is posted with a delay because WebUI is
+  // rendered asynchronously and help-bubble anchor might be registered with
+  // some delay.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &PasswordsPrivateDelegateImpl::MaybeShowPasswordShareButtonIPH,
+          weak_ptr_factory_.GetWeakPtr(), web_contents),
+      base::Milliseconds(300));
 }
 
 void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(
