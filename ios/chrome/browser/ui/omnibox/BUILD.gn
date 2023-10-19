@@ -271,23 +271,45 @@ source_set("eg2_tests") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_web_location_bar.cc",
+    "test_web_location_bar.h",
+  ]
+  deps = [
+    ":omnibox",
+    "//base",
+    "//components/omnibox/browser:location_bar",
+    "//ios/web/public",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "chrome_omnibox_client_ios_unittest.mm",
     "fake_suggestions_database_unittest.cc",
     "omnibox_text_field_ios_experimental_unittest.mm",
     "omnibox_text_field_ios_unittest.mm",
     "zero_suggest_prefetch_helper_unittest.mm",
   ]
   deps = [
+    ":features",
     ":omnibox",
     ":omnibox_internal",
     ":resources_unit_tests",
+    ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//components/omnibox/browser:test_support",
     "//components/search_engines",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
@@ -296,6 +318,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/test:block_cleanup_test",
+    "//ios/testing:nserror_support",
     "//ios/web/common:uikit",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

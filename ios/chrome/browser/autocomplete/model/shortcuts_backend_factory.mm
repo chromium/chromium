@@ -34,6 +34,13 @@ scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(
   return shortcuts_backend->Init() ? shortcuts_backend : nullptr;
 }
 
+scoped_refptr<RefcountedKeyedService> BuildShortcutsBackend(
+    web::BrowserState* context) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  return CreateShortcutsBackend(browser_state, false /* suppress_db */);
+}
+
 }  // namespace
 
 // static
@@ -57,6 +64,12 @@ ShortcutsBackendFactory* ShortcutsBackendFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+ShortcutsBackendFactory::TestingFactory
+ShortcutsBackendFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildShortcutsBackend);
+}
+
 ShortcutsBackendFactory::ShortcutsBackendFactory()
     : RefcountedBrowserStateKeyedServiceFactory(
           "ShortcutsBackend",
@@ -70,9 +83,7 @@ ShortcutsBackendFactory::~ShortcutsBackendFactory() {}
 scoped_refptr<RefcountedKeyedService>
 ShortcutsBackendFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return CreateShortcutsBackend(browser_state, false /* suppress_db */);
+  return BuildShortcutsBackend(context);
 }
 
 bool ShortcutsBackendFactory::ServiceIsNULLWhileTesting() const {

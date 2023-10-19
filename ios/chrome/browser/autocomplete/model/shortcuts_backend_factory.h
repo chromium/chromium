@@ -23,6 +23,8 @@ class ShortcutsBackendFactory
   static scoped_refptr<ShortcutsBackend> GetForBrowserStateIfExists(
       ChromeBrowserState* browser_state);
   static ShortcutsBackendFactory* GetInstance();
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
 
   ShortcutsBackendFactory(const ShortcutsBackendFactory&) = delete;
   ShortcutsBackendFactory& operator=(const ShortcutsBackendFactory&) = delete;
