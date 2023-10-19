@@ -4353,6 +4353,124 @@
             ]
         }
     ],
+    "CookieDeprecationFacilitatedTestingCookieDeprecation": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "windows",
+                "mac",
+                "linux",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ControlOne_PreStable_20231002",
+                    "params": {
+                        "decision_delay_time": "1s",
+                        "disable_3p_cookies": "false",
+                        "disable_ads_apis": "false",
+                        "enable_otr_profiles": "false",
+                        "label": "prestable_control_1.1",
+                        "use_profile_filtering": "false",
+                        "version": "1"
+                    },
+                    "enable_features": [
+                        "CookieDeprecationFacilitatedTesting"
+                    ]
+                },
+                {
+                    "name": "PerProfileControlOne_PreStable_20231002",
+                    "params": {
+                        "decision_delay_time": "1s",
+                        "disable_3p_cookies": "false",
+                        "disable_ads_apis": "false",
+                        "enable_otr_profiles": "false",
+                        "label": "prestable_control_1.2",
+                        "use_profile_filtering": "true",
+                        "version": "1"
+                    },
+                    "enable_features": [
+                        "CookieDeprecationFacilitatedTesting"
+                    ]
+                },
+                {
+                    "name": "Treatment_PreStable_20231002",
+                    "params": {
+                        "decision_delay_time": "1s",
+                        "disable_3p_cookies": "true",
+                        "disable_ads_apis": "false",
+                        "enable_otr_profiles": "false",
+                        "label": "prestable_treatment_1",
+                        "use_profile_filtering": "false",
+                        "version": "1"
+                    },
+                    "enable_features": [
+                        "CookieDeprecationFacilitatedTesting"
+                    ]
+                },
+                {
+                    "name": "ControlTwo_PreStable_20231002",
+                    "params": {
+                        "decision_delay_time": "1s",
+                        "disable_3p_cookies": "true",
+                        "disable_ads_apis": "true",
+                        "enable_otr_profiles": "false",
+                        "label": "prestable_control_2",
+                        "use_profile_filtering": "false",
+                        "version": "1"
+                    },
+                    "enable_features": [
+                        "CookieDeprecationFacilitatedTesting"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CookieDeprecationFacilitatedTestingLabelOnly": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "windows",
+                "mac",
+                "linux",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "LabelOnly_PreStable_20231002",
+                    "params": {
+                        "decision_delay_time": "1s",
+                        "disable_3p_cookies": "false",
+                        "disable_ads_apis": "false",
+                        "enable_otr_profiles": "false",
+                        "label": "prestable_label_only_1",
+                        "use_profile_filtering": "false",
+                        "version": "1"
+                    },
+                    "enable_features": [
+                        "CookieDeprecationFacilitatedTesting"
+                    ]
+                },
+                {
+                    "name": "PerProfileLabelOnly_PreStable_20231002",
+                    "params": {
+                        "decision_delay_time": "1s",
+                        "disable_3p_cookies": "false",
+                        "disable_ads_apis": "false",
+                        "enable_otr_profiles": "false",
+                        "label": "prestable_label_only_2",
+                        "use_profile_filtering": "true",
+                        "version": "1"
+                    },
+                    "enable_features": [
+                        "CookieDeprecationFacilitatedTesting"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSBluetoothCoredump": [
         {
             "platforms": [
@@ -13095,110 +13213,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PrivacyIndicators"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrivacySandboxCookieDeprecationFacilitatedTesting": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "windows",
-                "mac",
-                "linux",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ControlOne_PreStable_20231002",
-                    "params": {
-                        "decision_delay_time": "1s",
-                        "disable_3p_cookies": "false",
-                        "disable_ads_apis": "false",
-                        "enable_otr_profiles": "false",
-                        "label": "prestable_control_1.1",
-                        "use_profile_filtering": "false",
-                        "version": "1"
-                    },
-                    "enable_features": [
-                        "CookieDeprecationFacilitatedTesting"
-                    ]
-                },
-                {
-                    "name": "PerProfileControlOne_PreStable_20231002",
-                    "params": {
-                        "decision_delay_time": "1s",
-                        "disable_3p_cookies": "false",
-                        "disable_ads_apis": "false",
-                        "enable_otr_profiles": "false",
-                        "label": "prestable_control_1.2",
-                        "use_profile_filtering": "true",
-                        "version": "1"
-                    },
-                    "enable_features": [
-                        "CookieDeprecationFacilitatedTesting"
-                    ]
-                },
-                {
-                    "name": "LabelOnly_PreStable_20231002",
-                    "params": {
-                        "decision_delay_time": "1s",
-                        "disable_3p_cookies": "false",
-                        "disable_ads_apis": "false",
-                        "enable_otr_profiles": "false",
-                        "label": "prestable_label_only_1",
-                        "use_profile_filtering": "false",
-                        "version": "1"
-                    },
-                    "enable_features": [
-                        "CookieDeprecationFacilitatedTesting"
-                    ]
-                },
-                {
-                    "name": "PerProfileLabelOnly_PreStable_20231002",
-                    "params": {
-                        "decision_delay_time": "1s",
-                        "disable_3p_cookies": "false",
-                        "disable_ads_apis": "false",
-                        "enable_otr_profiles": "false",
-                        "label": "prestable_label_only_2",
-                        "use_profile_filtering": "true",
-                        "version": "1"
-                    },
-                    "enable_features": [
-                        "CookieDeprecationFacilitatedTesting"
-                    ]
-                },
-                {
-                    "name": "Treatment_PreStable_20231002",
-                    "params": {
-                        "decision_delay_time": "1s",
-                        "disable_3p_cookies": "true",
-                        "disable_ads_apis": "false",
-                        "enable_otr_profiles": "false",
-                        "label": "prestable_treatment_1",
-                        "use_profile_filtering": "false",
-                        "version": "1"
-                    },
-                    "enable_features": [
-                        "CookieDeprecationFacilitatedTesting"
-                    ]
-                },
-                {
-                    "name": "ControlTwo_PreStable_20231002",
-                    "params": {
-                        "decision_delay_time": "1s",
-                        "disable_3p_cookies": "true",
-                        "disable_ads_apis": "true",
-                        "enable_otr_profiles": "false",
-                        "label": "prestable_control_2",
-                        "use_profile_filtering": "false",
-                        "version": "1"
-                    },
-                    "enable_features": [
-                        "CookieDeprecationFacilitatedTesting"
                     ]
                 }
             ]
