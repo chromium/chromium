@@ -10,7 +10,7 @@
 
 extern "C" {
 // This JNI registration method is found and called by module framework code.
-JNI_GENERATOR_EXPORT bool JNI_OnLoad_cast_browser(JNIEnv* env) {
+JNI_BOUNDARY_EXPORT bool JNI_OnLoad_cast_browser(JNIEnv* env) {
   content::Compositor::Initialize();
   content::SetContentMainDelegate(new chromecast::shell::CastMainDelegate);
   return true;

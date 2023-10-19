@@ -18,10 +18,11 @@
 
 // Step 1: Forward declarations.
 
-JNI_REGISTRATION_EXPORT extern const char kClassPath_org_jni_1zero_samples_JavapClass[];
+JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char kClassPath_org_jni_1zero_samples_JavapClass[];
 const char kClassPath_org_jni_1zero_samples_JavapClass[] = "org/jni_zero/samples/JavapClass";
 // Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_REGISTRATION_EXPORT std::atomic<jclass> g_org_jni_1zero_samples_JavapClass_clazz(nullptr);
+JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
+    g_org_jni_1zero_samples_JavapClass_clazz(nullptr);
 #ifndef org_jni_1zero_samples_JavapClass_clazz_defined
 #define org_jni_1zero_samples_JavapClass_clazz_defined
 inline jclass org_jni_1zero_samples_JavapClass_clazz(JNIEnv* env) {

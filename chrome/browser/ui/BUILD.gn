@@ -1001,7 +1001,7 @@ static_library("ui") {
       "//device/vr/buildflags",
       "//services/device/public/cpp/usb",
       "//services/device/public/mojom:usb",
-      "//third_party/jni_zero:jni_helpers",
+      "//third_party/jni_zero",
       "//ui/android",
       "//url",
     ]

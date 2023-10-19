@@ -23,75 +23,75 @@
 
 // Step 2: Forward declarations (methods).
 
-JNI_GENERATOR_EXPORT jobject
+JNI_BOUNDARY_EXPORT jobject
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1bar(
     JNIEnv* env,
     jclass jcaller,
     jobject sample);
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1foo(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1hasPhalange(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jclass
+JNI_BOUNDARY_EXPORT jclass
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnClass(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
+JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnClasses(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobject
+JNI_BOUNDARY_EXPORT jobject
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnObject(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
+JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnObjects(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jstring
+JNI_BOUNDARY_EXPORT jstring
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnString(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
+JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnStrings(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobject
+JNI_BOUNDARY_EXPORT jobject
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnStruct(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
+JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnStructs(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jthrowable
+JNI_BOUNDARY_EXPORT jthrowable
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnThrowable(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
+JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnThrowables(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jstring
+JNI_BOUNDARY_EXPORT jstring
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1revString(
     JNIEnv* env,
     jclass jcaller,
     jstring stringToReverse);
-JNI_GENERATOR_EXPORT jobjectArray
+JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1sendSamplesToNative(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
-JNI_GENERATOR_EXPORT jobjectArray
+JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1sendToNative(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
-JNI_GENERATOR_EXPORT jintArray
+JNI_BOUNDARY_EXPORT jintArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1testAllPrimitives(
     JNIEnv* env,
     jclass jcaller,
@@ -111,7 +111,7 @@ JNI_GENERATOR_EXPORT jintArray
     jfloatArray floats,
     jboolean zbool,
     jbooleanArray bools);
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1testSpecialTypes(
     JNIEnv* env,
     jclass jcaller,
@@ -198,7 +198,7 @@ static const JNINativeMethod kMethods_org_jni_1zero_GEN_1JNI[] = {
 
 namespace {
 
-JNI_REGISTRATION_EXPORT bool RegisterNative_org_jni_1zero_GEN_1JNI(JNIEnv* env) {
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_GEN_1JNI(JNIEnv* env) {
   const int number_of_methods = std::size(kMethods_org_jni_1zero_GEN_1JNI);
 
   base::android::ScopedJavaLocalRef<jclass> native_clazz =

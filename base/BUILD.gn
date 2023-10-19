@@ -1340,7 +1340,6 @@ component("base") {
     deps += [
       ":base_jni",
       ":process_launcher_jni",
-      "//third_party/jni_zero:jni_helpers",
     ]
   }  # is_android || is_robolectric
 
@@ -3725,6 +3724,7 @@ test("base_unittests") {
     deps += [
       ":base_java_unittest_support",
       "//base/test:test_support_java",
+      "//third_party/jni_zero",
     ]
   }
 

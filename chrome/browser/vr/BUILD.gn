@@ -122,6 +122,7 @@ component("vr_ui") {
 
   if (is_android) {
     sources += [ "jni_onload.cc" ]
+    deps += [ "//third_party/jni_zero" ]
   }
 
   if (use_command_buffer) {

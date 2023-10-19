@@ -8,7 +8,7 @@
 
 extern "C" {
 // This JNI registration method is found and called by module framework code.
-JNI_GENERATOR_EXPORT bool JNI_OnLoad_cablev2_authenticator(JNIEnv* env) {
+JNI_BOUNDARY_EXPORT bool JNI_OnLoad_cablev2_authenticator(JNIEnv* env) {
   if (!cablev2_authenticator::RegisterNatives(env)) {
     return false;
   }

@@ -240,7 +240,7 @@ def _GenerateStubs(natives):
 
 def _AddForwardingCalls(signature_to_cases, short_gen_jni_class):
   template = string.Template("""
-JNI_GENERATOR_EXPORT ${RETURN} Java_${CLASS_NAME}_${PROXY_SIGNATURE}(
+JNI_BOUNDARY_EXPORT ${RETURN} Java_${CLASS_NAME}_${PROXY_SIGNATURE}(
     JNIEnv* env,
     jclass jcaller,
     ${PARAMS_IN_STUB}) {
@@ -286,7 +286,7 @@ ${KMETHODS}
 
 namespace {
 
-JNI_REGISTRATION_EXPORT bool ${REGISTRATION_NAME}(JNIEnv* env) {
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool ${REGISTRATION_NAME}(JNIEnv* env) {
   const int number_of_methods = std::size(kMethods_${ESCAPED_PROXY_CLASS});
 
   base::android::ScopedJavaLocalRef<jclass> native_clazz =
@@ -538,7 +538,7 @@ class DictionaryGenerator(object):
   def _AddForwardDeclaration(self):
     """Add the content of the forward declaration to the dictionary."""
     template = string.Template("""\
-JNI_GENERATOR_EXPORT ${RETURN} ${STUB_NAME}(
+JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
     JNIEnv* env,
     ${PARAMS_IN_STUB});
 """)
@@ -680,7 +680,7 @@ ${KMETHODS}
     if not natives:
       return ''
     template = string.Template("""\
-JNI_REGISTRATION_EXPORT bool ${REGISTER_NAME}(JNIEnv* env) {
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool ${REGISTER_NAME}(JNIEnv* env) {
 ${NATIVES}\
   return true;
 }

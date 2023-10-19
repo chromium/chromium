@@ -43,25 +43,25 @@ std::atomic<jclass> g_GvrApi_clazz __attribute__((unused)) (nullptr);
 namespace GvrApi {
 // Step 2: method stubs.
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportListCreate(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportListDestroy(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewportList);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportListGetSize(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewportList);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportListGetItem(
     JNIEnv* env,
     jclass jcaller,
@@ -69,7 +69,7 @@ Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportListGetItem(
     jint index,
     jlong nativeBufferViewport);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportListSetItem(
     JNIEnv* env,
     jclass jcaller,
@@ -77,26 +77,26 @@ Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportListSetItem(
     jint index,
     jlong nativeBufferViewport);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportCreate(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportDestroy(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportGetSourceUv(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport,
     jobject out);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportSetSourceUv(
     JNIEnv* env,
     jclass jcaller,
@@ -106,14 +106,14 @@ Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportSetSourceUv(
     jfloat right,
     jfloat bottom);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportGetSourceFov(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport,
     jobject out);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportSetSourceFov(
     JNIEnv* env,
     jclass jcaller,
@@ -123,112 +123,112 @@ Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportSetSourceFov(
     jfloat right,
     jfloat bottom);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportGetTransform(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport,
     jfloatArray matrix);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportSetTransform(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport,
     jfloatArray matrix);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportEqual(JNIEnv* env,
                                                              jclass jcaller,
                                                              jlong nativeA,
                                                              jlong nativeB);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportGetTargetEye(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportSetTargetEye(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport,
     jint eye);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportGetSourceBufferIndex(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportSetSourceBufferIndex(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport,
     jint index);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportGetExternalSurfaceId(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportSetExternalSurfaceId(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport,
     jint id);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportSetExternalSurface(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport,
     jlong nativeExternalSurface);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportGetReprojection(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportSetReprojection(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport,
     jint reprojection);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferViewportSetSourceLayer(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferViewport,
     jint layerIndex);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferSpecCreate(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferSpecDestroy(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferSpec);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferSpecGetSize(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferSpec,
     jobject size);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferSpecSetSize(
     JNIEnv* env,
     jclass jcaller,
@@ -236,41 +236,41 @@ Java_com_google_vr_ndk_base_GvrApi_nativeBufferSpecSetSize(
     jint width,
     jint height);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferSpecSetColorFormat(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferSpec,
     jint format);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferSpecSetDepthStencilFormat(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferSpec,
     jint format);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferSpecSetMultiviewLayers(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferSpec,
     jint numLayers);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferSpecGetSamples(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferSpec);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeBufferSpecSetSamples(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferSpec,
     jint samples);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeExternalSurfaceCreateWithListeners(
     JNIEnv* env,
     jclass jcaller,
@@ -279,42 +279,42 @@ Java_com_google_vr_ndk_base_GvrApi_nativeExternalSurfaceCreateWithListeners(
     jobject frameListener,
     jobject handler);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeExternalSurfaceDestroy(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferSpec);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeExternalSurfaceGetId(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferSpec);
 
-JNI_GENERATOR_EXPORT jobject
+JNI_BOUNDARY_EXPORT jobject
 Java_com_google_vr_ndk_base_GvrApi_nativeExternalSurfaceGetSurface(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeBufferSpec);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeSwapChainCreate(JNIEnv* env,
                                                          jclass jcaller,
                                                          jlong nativeContext,
                                                          jlongArray specs);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeSwapChainDestroy(JNIEnv* env,
                                                           jclass jcaller,
                                                           jlong nativeContext);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeSwapChainGetBufferCount(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeSwapChain);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeSwapChainGetBufferSize(
     JNIEnv* env,
     jclass jcaller,
@@ -322,7 +322,7 @@ Java_com_google_vr_ndk_base_GvrApi_nativeSwapChainGetBufferSize(
     jint bufferIndex,
     jobject size);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeSwapChainResizeBuffer(
     JNIEnv* env,
     jclass jcaller,
@@ -331,65 +331,65 @@ Java_com_google_vr_ndk_base_GvrApi_nativeSwapChainResizeBuffer(
     jint width,
     jint height);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeSwapChainAcquireFrame(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeSwapChain);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeFrameBindBuffer(JNIEnv* env,
                                                          jclass jcaller,
                                                          jlong nativeFrame,
                                                          jint bufferIndex);
 
-JNI_GENERATOR_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeFrameUnbind(
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeFrameUnbind(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeFrame);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeFrameGetFramebufferObject(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeFrame,
     jint bufferIndex);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeFrameGetBufferSize(JNIEnv* env,
                                                             jclass jcaller,
                                                             jlong nativeFrame,
                                                             jint bufferIndex,
                                                             jobject size);
 
-JNI_GENERATOR_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeFrameSubmit(
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeFrameSubmit(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeFrame,
     jlong nativeBufferViewportList,
     jfloatArray headSpaceFromStartSpace);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
 Java_com_google_vr_ndk_base_GvrApi_nativeUsingDynamicLibrary(JNIEnv* env,
                                                              jclass jcaller);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
 Java_com_google_vr_ndk_base_GvrApi_nativeUsingShimLibrary(JNIEnv* env,
                                                           jclass jcaller);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeSetApplicationState(JNIEnv* env,
                                                              jclass jcaller,
                                                              jclass classLoader,
                                                              jobject context);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeSetDynamicLibraryLoadingEnabled(
     JNIEnv* env,
     jclass jcaller,
     jboolean enabled);
 
-JNI_GENERATOR_EXPORT jlong Java_com_google_vr_ndk_base_GvrApi_nativeCreate(
+JNI_BOUNDARY_EXPORT jlong Java_com_google_vr_ndk_base_GvrApi_nativeCreate(
     JNIEnv* env,
     jobject jcaller,
     jclass classLoader,
@@ -401,101 +401,101 @@ JNI_GENERATOR_EXPORT jlong Java_com_google_vr_ndk_base_GvrApi_nativeCreate(
     jfloat yDpi,
     jobject optionalPoseTrackingForTesting);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeRequestContextSharing(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext,
     jobject eglListener);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeGetError(JNIEnv* env,
                                                   jobject jcaller,
                                                   jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeClearError(JNIEnv* env,
                                                     jobject jcaller,
                                                     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jstring
+JNI_BOUNDARY_EXPORT jstring
 Java_com_google_vr_ndk_base_GvrApi_nativeGetErrorString(JNIEnv* env,
                                                         jclass jcaller,
                                                         jint errorCode);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeGetUserPrefs(JNIEnv* env,
                                                       jobject jcaller,
                                                       jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeUserPrefsGetControllerHandedness(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeUserPrefs);
 
-JNI_GENERATOR_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativePause(
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativePause(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeResume(
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeResume(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeReleaseGvrContext(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeInitializeGl(
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeInitializeGl(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeOnSurfaceCreatedReprojectionThread(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeOnSurfaceChangedReprojectionThread(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeGetRecommendedBufferViewports(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext,
     jlong nativeBufferViewportList);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeGetScreenBufferViewports(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext,
     jlong nativeBufferViewportList);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeGetMaximumEffectiveRenderTargetSize(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext,
     jobject size);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeGetScreenTargetSize(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext,
     jobject size);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeDistortToScreen(
     JNIEnv* env,
     jobject jcaller,
@@ -505,25 +505,25 @@ Java_com_google_vr_ndk_base_GvrApi_nativeDistortToScreen(
     jfloatArray headSpaceFromStartSpace,
     jlong timeNs);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeSetDefaultFramebufferActive(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jobject
+JNI_BOUNDARY_EXPORT jobject
 Java_com_google_vr_ndk_base_GvrApi_nativeRenderReprojectionThread(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeOnPauseReprojectionThread(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeGetHeadSpaceFromStartSpaceRotation(
     JNIEnv* env,
     jobject jcaller,
@@ -531,7 +531,7 @@ Java_com_google_vr_ndk_base_GvrApi_nativeGetHeadSpaceFromStartSpaceRotation(
     jfloatArray outRotation,
     jlong timeNs);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeGetHeadSpaceFromStartSpaceTransform(
     JNIEnv* env,
     jobject jcaller,
@@ -539,48 +539,48 @@ Java_com_google_vr_ndk_base_GvrApi_nativeGetHeadSpaceFromStartSpaceTransform(
     jfloatArray outTransform,
     jlong timeNs);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeSetIgnoreManualPauseResumeTracker(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext,
     jboolean shouldIgnore);
 
-JNI_GENERATOR_EXPORT void
-Java_com_google_vr_ndk_base_GvrApi_nativePauseTracking(JNIEnv* env,
-                                                       jobject jcaller,
-                                                       jlong nativeGvrContext);
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativePauseTracking(
+    JNIEnv* env,
+    jobject jcaller,
+    jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jbyteArray
+JNI_BOUNDARY_EXPORT jbyteArray
 Java_com_google_vr_ndk_base_GvrApi_nativePauseTrackingGetState(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeResumeTracking(JNIEnv* env,
                                                         jobject jcaller,
                                                         jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeResumeTrackingSetState(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext,
     jbyteArray trackerStateBytes);
 
-JNI_GENERATOR_EXPORT void
-Java_com_google_vr_ndk_base_GvrApi_nativeResetTracking(JNIEnv* env,
-                                                       jobject jcaller,
-                                                       jlong nativeGvrContext);
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeResetTracking(
+    JNIEnv* env,
+    jobject jcaller,
+    jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeRecenterTracking(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeGetEyeFromHeadMatrix(
     JNIEnv* env,
     jobject jcaller,
@@ -588,13 +588,13 @@ Java_com_google_vr_ndk_base_GvrApi_nativeGetEyeFromHeadMatrix(
     jint eye,
     jfloatArray out);
 
-JNI_GENERATOR_EXPORT jintArray
+JNI_BOUNDARY_EXPORT jintArray
 Java_com_google_vr_ndk_base_GvrApi_nativeGetWindowBounds(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jfloatArray
+JNI_BOUNDARY_EXPORT jfloatArray
 Java_com_google_vr_ndk_base_GvrApi_nativeComputeDistortedPoint(
     JNIEnv* env,
     jobject jcaller,
@@ -602,69 +602,69 @@ Java_com_google_vr_ndk_base_GvrApi_nativeComputeDistortedPoint(
     jint eyeType,
     jfloatArray uvIn);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
 Java_com_google_vr_ndk_base_GvrApi_nativeSetDefaultViewerProfile(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext,
     jstring viewerProfileUri);
 
-JNI_GENERATOR_EXPORT jstring
+JNI_BOUNDARY_EXPORT jstring
 Java_com_google_vr_ndk_base_GvrApi_nativeGetViewerVendor(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jstring
+JNI_BOUNDARY_EXPORT jstring
 Java_com_google_vr_ndk_base_GvrApi_nativeGetViewerModel(JNIEnv* env,
                                                         jobject jcaller,
                                                         jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeGetViewerType(JNIEnv* env,
                                                        jobject jcaller,
                                                        jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
 Java_com_google_vr_ndk_base_GvrApi_nativeSetAsyncReprojectionEnabled(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext,
     jboolean enabled);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
 Java_com_google_vr_ndk_base_GvrApi_nativeGetAsyncReprojectionEnabled(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
 Java_com_google_vr_ndk_base_GvrApi_nativeIsFeatureSupported(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext,
     jint feature);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeReconnectSensors(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeSetIdleListener(JNIEnv* env,
                                                          jobject jcaller,
                                                          jlong nativeGvrContext,
                                                          jobject idleListener);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
 Java_com_google_vr_ndk_base_GvrApi_nativeSetViewerParams(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext,
     jbyteArray serializedViewerParams);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeSetDisplayMetrics(
     JNIEnv* env,
     jobject jcaller,
@@ -674,13 +674,13 @@ Java_com_google_vr_ndk_base_GvrApi_nativeSetDisplayMetrics(
     jfloat xDpi,
     jfloat yDpi);
 
-JNI_GENERATOR_EXPORT jfloat
+JNI_BOUNDARY_EXPORT jfloat
 Java_com_google_vr_ndk_base_GvrApi_nativeGetBorderSizeMeters(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeSetSurfaceSize(
     JNIEnv* env,
     jobject jcaller,
@@ -688,116 +688,116 @@ Java_com_google_vr_ndk_base_GvrApi_nativeSetSurfaceSize(
     jint surfaceWidthPixels,
     jint surfaceHeightPixels);
 
-JNI_GENERATOR_EXPORT void
-Java_com_google_vr_ndk_base_GvrApi_nativeSetLensOffset(JNIEnv* env,
-                                                       jobject jcaller,
-                                                       jlong nativeGvrContext,
-                                                       jfloat x,
-                                                       jfloat y,
-                                                       jfloat rotation);
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeSetLensOffset(
+    JNIEnv* env,
+    jobject jcaller,
+    jlong nativeGvrContext,
+    jfloat x,
+    jfloat y,
+    jfloat rotation);
 
-JNI_GENERATOR_EXPORT void
-Java_com_google_vr_ndk_base_GvrApi_nativeDumpDebugData(JNIEnv* env,
-                                                       jobject jcaller,
-                                                       jlong nativeGvrContext);
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeDumpDebugData(
+    JNIEnv* env,
+    jobject jcaller,
+    jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
 Java_com_google_vr_ndk_base_GvrApi_nativeUsingVrDisplayService(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeGvrContext);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeCreateEvent(JNIEnv* env, jclass clazz);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeCreateValue(JNIEnv* env, jclass clazz);
 
-JNI_GENERATOR_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeDestroyEvent(
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeDestroyEvent(
     JNIEnv* env,
     jclass clazz,
     jlong native_object);
 
-JNI_GENERATOR_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeDestroyValue(
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeDestroyValue(
     JNIEnv* env,
     jclass clazz,
     jlong native_object);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeGetCurrentProperties(
     JNIEnv* env,
     jobject object,
     jlong native_object);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeGetEventFlags(JNIEnv* env,
                                                        jclass clazz,
                                                        jlong native_object);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeGetEventTimestamp(JNIEnv* env,
                                                            jclass clazz,
                                                            jlong native_object);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeGetEventType(JNIEnv* env,
                                                       jclass clazz,
                                                       jlong native_object);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
 Java_com_google_vr_ndk_base_GvrApi_nativeGetProperty(JNIEnv* env,
                                                      jclass clazz,
                                                      jlong native_properties,
                                                      jint property_key,
                                                      jlong native_value);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeGetRecenterEventFlags(
     JNIEnv* env,
     jclass clazz,
     jlong native_object);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_ndk_base_GvrApi_nativeGetRecenterEventStartSpaceFromTrackingSpaceTransform(
     JNIEnv* env,
     jclass clazz,
     jlong native_object,
     jfloatArray rotation_out_array);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeGetRecenterEventType(
     JNIEnv* env,
     jclass clazz,
     jlong native_object);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
 Java_com_google_vr_ndk_base_GvrApi_nativePollEvent(JNIEnv* env,
                                                    jobject object,
                                                    jlong native_object,
                                                    jlong event_out);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeValueAsFlags(JNIEnv* env,
                                                       jclass clazz,
                                                       jlong native_object);
 
-JNI_GENERATOR_EXPORT jfloat
+JNI_BOUNDARY_EXPORT jfloat
 Java_com_google_vr_ndk_base_GvrApi_nativeValueAsFloat(JNIEnv* env,
                                                       jclass clazz,
                                                       jlong native_object);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
 Java_com_google_vr_ndk_base_GvrApi_nativeValueAsInt(JNIEnv* env,
                                                     jclass clazz,
                                                     jlong native_object);
 
-JNI_GENERATOR_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeValueAsMat4f(
+JNI_BOUNDARY_EXPORT void Java_com_google_vr_ndk_base_GvrApi_nativeValueAsMat4f(
     JNIEnv* env,
     jclass clazz,
     jlong native_object,
     jfloatArray mat4_out_array);
 
-JNI_GENERATOR_EXPORT jlong
+JNI_BOUNDARY_EXPORT jlong
 Java_com_google_vr_ndk_base_GvrApi_nativeValueGetFlags(JNIEnv* env,
                                                        jclass clazz,
                                                        jlong native_object);

@@ -23,59 +23,59 @@
 
 // Step 2: Forward declarations (methods).
 
-JNI_GENERATOR_EXPORT jobject Java_J_N_MxkAf2fl(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MxkAf2fl(
     JNIEnv* env,
     jclass jcaller,
     jobject sample);
-JNI_GENERATOR_EXPORT void Java_J_N_Md6LK1o9(
+JNI_BOUNDARY_EXPORT void Java_J_N_Md6LK1o9(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jboolean Java_J_N_M_000244zYzAg(
+JNI_BOUNDARY_EXPORT jboolean Java_J_N_M_000244zYzAg(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jclass Java_J_N_M4l0zJba(
+JNI_BOUNDARY_EXPORT jclass Java_J_N_M4l0zJba(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MKH66mnL(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MKH66mnL(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobject Java_J_N_Mvc7ImXr(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_Mvc7ImXr(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MocgXEXX(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MocgXEXX(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jstring Java_J_N_M3yd9YCr(
+JNI_BOUNDARY_EXPORT jstring Java_J_N_M3yd9YCr(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_M_1qL1Hyw(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M_1qL1Hyw(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobject Java_J_N_MxvVNTxJ(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MxvVNTxJ(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MJLr_000245QK(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MJLr_000245QK(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jthrowable Java_J_N_MXcljN68(
+JNI_BOUNDARY_EXPORT jthrowable Java_J_N_MXcljN68(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_M1FJFJy5(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M1FJFJy5(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jstring Java_J_N_MGrgOT84(
+JNI_BOUNDARY_EXPORT jstring Java_J_N_MGrgOT84(
     JNIEnv* env,
     jclass jcaller,
     jstring stringToReverse);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MMtgBdva(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MMtgBdva(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MPVz5ily(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MPVz5ily(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
-JNI_GENERATOR_EXPORT jintArray Java_J_N_MHRNkgW8(
+JNI_BOUNDARY_EXPORT jintArray Java_J_N_MHRNkgW8(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
@@ -94,7 +94,7 @@ JNI_GENERATOR_EXPORT jintArray Java_J_N_MHRNkgW8(
     jfloatArray floats,
     jboolean zbool,
     jbooleanArray bools);
-JNI_GENERATOR_EXPORT void Java_J_N_MEbp5PPc(
+JNI_BOUNDARY_EXPORT void Java_J_N_MEbp5PPc(
     JNIEnv* env,
     jclass jcaller,
     jclass clazz,
@@ -109,7 +109,7 @@ JNI_GENERATOR_EXPORT void Java_J_N_MEbp5PPc(
     jobjectArray objects);
 
 
-JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA(
+JNI_BOUNDARY_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jclass class_param1, jobjectArray class_array_param1, jthrowable throwable_param1, jobjectArray throwable_array_param1, jstring string_param1, jobjectArray string_array_param1, jobject object_param1, jobjectArray object_array_param1, jobject object_param2, jobjectArray object_array_param2) {
@@ -123,7 +123,7 @@ JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA(
             return;
         }
 }
-JNI_GENERATOR_EXPORT jintArray Java_J_N_resolve_1for_1int_1array_1IIAJJASSACCABBADDAFFAZZA(
+JNI_BOUNDARY_EXPORT jintArray Java_J_N_resolve_1for_1int_1array_1IIAJJASSACCABBADDAFFAZZA(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jint int_param1, jintArray int_array_param1, jlong long_param1, jlongArray long_array_param1, jshort short_param1, jshortArray short_array_param1, jchar char_param1, jcharArray char_array_param1, jbyte byte_param1, jbyteArray byte_array_param1, jdouble double_param1, jdoubleArray double_array_param1, jfloat float_param1, jfloatArray float_array_param1, jboolean boolean_param1, jbooleanArray boolean_array_param1) {
@@ -137,7 +137,7 @@ JNI_GENERATOR_EXPORT jintArray Java_J_N_resolve_1for_1int_1array_1IIAJJASSACCABB
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jclass Java_J_N_resolve_1for_1class(
+JNI_BOUNDARY_EXPORT jclass Java_J_N_resolve_1for_1class(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -151,7 +151,7 @@ JNI_GENERATOR_EXPORT jclass Java_J_N_resolve_1for_1class(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobject Java_J_N_resolve_1for_1object(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_resolve_1for_1object(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -168,7 +168,7 @@ JNI_GENERATOR_EXPORT jobject Java_J_N_resolve_1for_1object(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jstring Java_J_N_resolve_1for_1string(
+JNI_BOUNDARY_EXPORT jstring Java_J_N_resolve_1for_1string(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -182,7 +182,7 @@ JNI_GENERATOR_EXPORT jstring Java_J_N_resolve_1for_1string(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jstring Java_J_N_resolve_1for_1string_1R(
+JNI_BOUNDARY_EXPORT jstring Java_J_N_resolve_1for_1string_1R(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jstring string_param1) {
@@ -196,7 +196,7 @@ JNI_GENERATOR_EXPORT jstring Java_J_N_resolve_1for_1string_1R(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jthrowable Java_J_N_resolve_1for_1throwable(
+JNI_BOUNDARY_EXPORT jthrowable Java_J_N_resolve_1for_1throwable(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -210,7 +210,7 @@ JNI_GENERATOR_EXPORT jthrowable Java_J_N_resolve_1for_1throwable(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1class_1array(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_resolve_1for_1class_1array(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -224,7 +224,7 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1class_1array(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -241,7 +241,7 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array_1OA(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array_1OA(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jobjectArray object_array_param1) {
@@ -255,7 +255,7 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array_1OA(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -269,7 +269,7 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array_1RA(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array_1RA(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jobjectArray string_array_param1) {
@@ -283,7 +283,7 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array_1RA(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1throwable_1array(
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_resolve_1for_1throwable_1array(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -297,7 +297,7 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1throwable_1array(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jboolean Java_J_N_resolve_1for_1boolean(
+JNI_BOUNDARY_EXPORT jboolean Java_J_N_resolve_1for_1boolean(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -311,7 +311,7 @@ JNI_GENERATOR_EXPORT jboolean Java_J_N_resolve_1for_1boolean(
             return {};
         }
 }
-JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void(
+JNI_BOUNDARY_EXPORT void Java_J_N_resolve_1for_1void(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -325,7 +325,7 @@ JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void(
             return;
         }
 }
-JNI_GENERATOR_EXPORT jobject Java_J_N_resolve_1for_1object_1O(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_resolve_1for_1object_1O(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jobject object_param1) {

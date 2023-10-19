@@ -15,7 +15,10 @@ shared_library("chromium_android_linker") {
     "linker_minimal_libcxx.cc",
   ]
 
-  deps = [ "//build:buildflag_header_h" ]
+  deps = [
+    "//build:buildflag_header_h",
+    "//third_party/jni_zero:jni_export",
+  ]
 
   # Export JNI symbols.
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]

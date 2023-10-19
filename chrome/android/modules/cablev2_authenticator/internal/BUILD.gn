@@ -30,6 +30,7 @@ component_with_jni("cablev2_authenticator") {
   deps = [
     "//base",
     "//chrome/android/features/cablev2_authenticator:native",
+    "//third_party/jni_zero",
   ]
 
   # caBLE v2 authenticator native entrypoints belong in the partition.

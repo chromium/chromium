@@ -29,6 +29,7 @@ component_with_jni("test_dummy") {
   deps = [
     "//base",
     "//chrome/browser/test_dummy/internal:native",
+    "//third_party/jni_zero",
   ]
 
   # Test dummy native entrypoints belong in the partition.

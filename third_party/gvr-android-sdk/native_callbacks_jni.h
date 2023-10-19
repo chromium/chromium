@@ -48,7 +48,7 @@ std::atomic<jclass> g_NativeCallbacks_clazz __attribute__((unused)) (nullptr);
 namespace NativeCallbacks {
 // Step 2: method stubs.
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleStateChanged(
     JNIEnv* env,
     jobject jcaller,
@@ -56,7 +56,7 @@ Java_com_google_vr_internal_controller_NativeCallbacks_handleStateChanged(
     jint controllerIndex,
     jint newState);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleControllerRecentered(
     JNIEnv* env,
     jobject jcaller,
@@ -68,7 +68,7 @@ Java_com_google_vr_internal_controller_NativeCallbacks_handleControllerRecentere
     jfloat qz,
     jfloat qw);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleTouchEvent(
     JNIEnv* env,
     jobject jcaller,
@@ -79,7 +79,7 @@ Java_com_google_vr_internal_controller_NativeCallbacks_handleTouchEvent(
     jfloat x,
     jfloat y);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleOrientationEvent(
     JNIEnv* env,
     jobject jcaller,
@@ -91,7 +91,7 @@ Java_com_google_vr_internal_controller_NativeCallbacks_handleOrientationEvent(
     jfloat qz,
     jfloat qw);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleButtonEvent(
     JNIEnv* env,
     jobject jcaller,
@@ -101,7 +101,7 @@ Java_com_google_vr_internal_controller_NativeCallbacks_handleButtonEvent(
     jint buttonCode,
     jboolean down);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleAccelEvent(
     JNIEnv* env,
     jobject jcaller,
@@ -112,7 +112,7 @@ Java_com_google_vr_internal_controller_NativeCallbacks_handleAccelEvent(
     jfloat y,
     jfloat z);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleGyroEvent(
     JNIEnv* env,
     jobject jcaller,
@@ -123,7 +123,7 @@ Java_com_google_vr_internal_controller_NativeCallbacks_handleGyroEvent(
     jfloat y,
     jfloat z);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handlePositionEvent(
     JNIEnv* env,
     jobject jcaller,
@@ -134,7 +134,7 @@ Java_com_google_vr_internal_controller_NativeCallbacks_handlePositionEvent(
     jfloat y,
     jfloat z);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleBatteryEvent(
     JNIEnv* env,
     jobject jcaller,
@@ -144,33 +144,33 @@ Java_com_google_vr_internal_controller_NativeCallbacks_handleBatteryEvent(
     jboolean isCharging,
     jint batteryLevelBucket);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleServiceInitFailed(
     JNIEnv* env,
     jobject jcaller,
     jlong userData,
     jint failureReason);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleServiceFailed(
     JNIEnv* env,
     jobject jcaller,
     jlong userData);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleServiceUnavailable(
     JNIEnv* env,
     jobject jcaller,
     jlong userData);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleServiceConnected(
     JNIEnv* env,
     jobject jcaller,
     jlong userData,
     jint flags);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
 Java_com_google_vr_internal_controller_NativeCallbacks_handleServiceDisconnected(
     JNIEnv* env,
     jobject jcaller,

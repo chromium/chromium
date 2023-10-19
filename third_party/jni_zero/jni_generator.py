@@ -421,7 +421,7 @@ extern const char kClassPath_${JAVA_CLASS}[];
 """)
     else:
       template = Template("""
-JNI_REGISTRATION_EXPORT extern const char kClassPath_${JAVA_CLASS}[];
+JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char kClassPath_${JAVA_CLASS}[];
 const char kClassPath_${JAVA_CLASS}[] = \
 "${JNI_CLASS_PATH}";
 """)
@@ -452,7 +452,7 @@ extern std::atomic<jclass> g_${JAVA_CLASS}_clazz;
     else:
       template = Template("""\
 // Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_REGISTRATION_EXPORT std::atomic<jclass> g_${JAVA_CLASS}_clazz(nullptr);
+JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass> g_${JAVA_CLASS}_clazz(nullptr);
 """ + class_getter)
 
     for full_clazz in classes.values():
@@ -672,7 +672,7 @@ $METHOD_STUBS
           'P0_TYPE': native.first_param_cpp_type,
       })
       template = Template("""\
-JNI_GENERATOR_EXPORT ${RETURN} ${STUB_NAME}(
+JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
     JNIEnv* env,
     ${PARAMS_IN_STUB}) {
   ${P0_TYPE}* native = reinterpret_cast<${P0_TYPE}*>(${PARAM0_NAME});
@@ -686,7 +686,7 @@ JNI_GENERATOR_EXPORT ${RETURN} ${STUB_NAME}(
       template = Template("""\
 static ${RETURN_DECLARATION} ${IMPL_METHOD_NAME}(JNIEnv* env${PARAMS});
 
-JNI_GENERATOR_EXPORT ${RETURN} ${STUB_NAME}(
+JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
     JNIEnv* env,
     ${PARAMS_IN_STUB}) {
   return ${IMPL_METHOD_NAME}(${PARAMS_IN_CALL})${POST_CALL};
