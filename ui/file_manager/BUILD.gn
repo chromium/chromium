@@ -286,12 +286,17 @@ ts_library("test_build_ts") {
     ":copy_definitions_to_preprocess",
     ":copy_fmp_test",
     ":generate_definitions",
-    ":preprocess_static",
   ]
   if (enable_webui_inline_sourcemaps) {
-    extra_deps += [ ":create_source_maps_copy_ts" ]
+    extra_deps += [
+      ":create_source_maps_copy_ts",
+      ":create_source_maps_static",
+    ]
   } else {
-    extra_deps += [ ":copy_ts" ]
+    extra_deps += [
+      ":copy_ts",
+      ":preprocess_static",
+    ]
   }
 }
 
