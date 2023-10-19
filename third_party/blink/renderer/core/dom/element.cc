@@ -608,7 +608,8 @@ bool Element::IsFocusableStyle() const {
   // following DCHECK can be removed.
   DCHECK(
       !GetDocument().IsActive() || GetDocument().InStyleRecalc() ||
-      !GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*this));
+      !GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*this))
+      << *this;
 
   if (LayoutObject* layout_object = GetLayoutObject()) {
     return layout_object->StyleRef().IsFocusable();
