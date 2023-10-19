@@ -117,6 +117,10 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, ExternalRequestMetrics) {
   histogram_tester_oninstalled.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result",
       /*expected_count=*/1);
+  histogram_tester_oninstalled.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result_"
+      "PostReturn",
+      /*expected_count=*/1);
 }
 
 class EventMetricsDispatchToSenderBrowserTest
@@ -235,6 +239,10 @@ IN_PROC_BROWSER_TEST_P(EventMetricsDispatchToSenderBrowserTest,
         /*expected_count=*/1);
     histogram_tester.ExpectTotalCount(
         "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result",
+        /*expected_count=*/1);
+    histogram_tester.ExpectTotalCount(
+        "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result_"
+        "PostReturn",
         /*expected_count=*/1);
   }
 }
