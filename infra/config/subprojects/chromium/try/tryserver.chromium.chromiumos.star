@@ -255,6 +255,7 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
+        "chromium.pre_retry_shards_without_patch_compile": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
