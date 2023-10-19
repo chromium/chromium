@@ -2634,6 +2634,11 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
       // to this update.
       AutofillProfile updated_profile =
           GetProfileWithRemovedInvalidObservations(*existing_profile, profile);
+      // Unless only metadata has changed, which operator== ignores, update the
+      // modification date. This happens e.g. when increasing the use count.
+      if (*existing_profile != updated_profile) {
+        updated_profile.set_modification_date(AutofillClock::Now());
+      }
       webdata_service->UpdateAutofillProfile(updated_profile);
       break;
     }

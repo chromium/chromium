@@ -52,7 +52,6 @@ class AutofillDataModel : public FormGroup {
   bool UseDateEqualsInSeconds(const AutofillDataModel* other) const;
 
   const base::Time& modification_date() const { return modification_date_; }
-  // This should only be called from database code.
   void set_modification_date(const base::Time& time) {
     modification_date_ = time;
   }

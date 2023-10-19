@@ -434,6 +434,32 @@ TEST_F(PersonalDataManagerTest, AddProfile) {
   ExpectSameElements(profiles, personal_data_->GetProfiles());
 }
 
+TEST_F(PersonalDataManagerTest, UpdateProfile_ModificationDate) {
+  TestAutofillClock test_clock;
+  test_clock.SetNow(kArbitraryTime);
+  AutofillProfile profile = test::GetFullProfile();
+  AddProfileToPersonalDataManager(profile);
+  ASSERT_THAT(personal_data_->GetProfiles(),
+              UnorderedElementsAre(Pointee(profile)));
+
+  // Update the profile arbitrarily. Expect that the modification date changes.
+  // Note that `AutofillProfile::operator==()` doesn't check the
+  // `modification_date()`.
+  test_clock.SetNow(kSomeLaterTime);
+  profile.SetRawInfo(EMAIL_ADDRESS, u"new" + profile.GetRawInfo(EMAIL_ADDRESS));
+  UpdateProfileOnPersonalDataManager(profile);
+  std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles();
+  ASSERT_THAT(profiles, UnorderedElementsAre(Pointee(profile)));
+  EXPECT_EQ(profiles[0]->modification_date(), kSomeLaterTime);
+
+  // If the profile hasn't change, expect that updating is a no-op.
+  test_clock.SetNow(kMuchLaterTime);
+  UpdateProfileOnPersonalDataManager(profile);
+  profiles = personal_data_->GetProfiles();
+  ASSERT_THAT(profiles, UnorderedElementsAre(Pointee(profile)));
+  EXPECT_EQ(profiles[0]->modification_date(), kSomeLaterTime);
+}
+
 // Tests that profiles with source `kAccount` and `kLocalOrSyncable` are loaded,
 // and accessible via `GetProfiles()` and `GetProfilesFromSource()`.
 // If duplicates exist across sources, they should be considered distinct.

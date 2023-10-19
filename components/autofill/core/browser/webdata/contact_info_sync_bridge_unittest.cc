@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/base/features.h"
@@ -225,6 +226,30 @@ TEST_F(ContactInfoSyncBridgeTest, ApplyIncrementalSyncChanges) {
 
   // Expect that the local profiles have changed.
   EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote));
+}
+
+// Regression test checking that the modification date of incoming profiles is
+// kept.
+TEST_F(ContactInfoSyncBridgeTest,
+       ApplyIncrementalSyncChanges_ModificationDate) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+
+  // Create a profile and advance time. Incoming profiles through Sync shouldn't
+  // care about the current time.
+  TestAutofillClock test_clock;
+  const AutofillProfile profile = TestProfile(kGUID1);
+  test_clock.Advance(base::Minutes(123));
+
+  // Receive a profile through Sync and expect that the `modification_date()`
+  // hasn't changed.
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      profile.guid(), ProfileToEntity(profile)));
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+  std::vector<AutofillProfile> profiles = GetAllDataFromTable();
+  ASSERT_EQ(profiles.size(), 1u);
+  EXPECT_EQ(profiles[0].modification_date(), profile.modification_date());
 }
 
 // Tests that `GetData()` returns all local profiles of matching GUID.

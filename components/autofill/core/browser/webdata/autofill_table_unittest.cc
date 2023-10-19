@@ -221,30 +221,6 @@ class AutofillTableProfileTest
                : "contact_info";
   }
 
-  // Update tests verify that the modification date is set correctly. These
-  // functions simplify accessing and modifying it for testing.
-  bool GetDateModified(const std::string& guid, time_t& date_modified) {
-    sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
-        base::StrCat({"SELECT date_modified FROM ", GetProfileTable(),
-                      " WHERE guid = ?"})
-            .c_str()));
-    s.BindString(0, guid);
-    if (!s.Step())
-      return false;
-    date_modified = s.ColumnInt64(0);
-    return true;
-  }
-
-  bool SetDateModified(const std::string& guid, time_t date_modified) {
-    sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
-        base::StrCat({"UPDATE ", GetProfileTable(),
-                      " SET date_modified = ? WHERE guid = ?"})
-            .c_str()));
-    s.BindInt64(0, date_modified);
-    s.BindString(1, guid);
-    return s.Run();
-  }
-
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -1002,11 +978,9 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
   home_profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
   home_profile.SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, 1997);
   home_profile.set_language_code("en");
-  Time pre_creation_time = AutofillClock::Now();
 
   // Add the profile to the table.
   EXPECT_TRUE(table_->AddAutofillProfile(home_profile));
-  Time post_creation_time = AutofillClock::Now();
 
   // Get the 'Home' profile from the table.
   std::unique_ptr<AutofillProfile> db_profile =
@@ -1015,11 +989,6 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
 
   // Verify that it is correct.
   EXPECT_EQ(home_profile, *db_profile);
-
-  time_t date_modified;
-  ASSERT_TRUE(GetDateModified(home_profile.guid(), date_modified));
-  EXPECT_GE(date_modified, pre_creation_time.ToTimeT());
-  EXPECT_LE(date_modified, post_creation_time.ToTimeT());
 
   // Remove the profile and expect that no profiles remain.
   EXPECT_TRUE(
@@ -1572,18 +1541,11 @@ TEST_P(AutofillTableProfileTest, UpdateAutofillProfile) {
   profile.FinalizeAfterImport();
   table_->AddAutofillProfile(profile);
 
-  // Set a mocked value for the profile's creation time.
-  const time_t kMockCreationDate = AutofillClock::Now().ToTimeT() - 13;
-  ASSERT_TRUE(SetDateModified(profile.guid(), kMockCreationDate));
-
   // Get the profile.
   std::unique_ptr<AutofillProfile> db_profile =
       table_->GetAutofillProfile(profile.guid(), profile.source());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
-  time_t date_modified;
-  ASSERT_TRUE(GetDateModified(profile.guid(), date_modified));
-  EXPECT_EQ(kMockCreationDate, date_modified);
 
   // Now, update the profile and save the update to the database.
   // The modification date should change to reflect the update.
@@ -1594,23 +1556,6 @@ TEST_P(AutofillTableProfileTest, UpdateAutofillProfile) {
   db_profile = table_->GetAutofillProfile(profile.guid(), profile.source());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
-  ASSERT_TRUE(GetDateModified(profile.guid(), date_modified));
-  EXPECT_LT(kMockCreationDate, date_modified);
-
-  // Set a mocked value for the profile's modification time.
-  const time_t kMockModificationDate = AutofillClock::Now().ToTimeT() - 7;
-  ASSERT_TRUE(SetDateModified(profile.guid(), kMockModificationDate));
-
-  // Finally, call into |UpdateAutofillProfile()| without changing the
-  // profile.  The modification date should not change.
-  table_->UpdateAutofillProfile(profile);
-
-  // Get the profile.
-  db_profile = table_->GetAutofillProfile(profile.guid(), profile.source());
-  ASSERT_TRUE(db_profile);
-  EXPECT_EQ(profile, *db_profile);
-  ASSERT_TRUE(GetDateModified(profile.guid(), date_modified));
-  EXPECT_EQ(kMockModificationDate, date_modified);
 }
 
 TEST_F(AutofillTableTest, UpdateCreditCard) {

@@ -960,16 +960,13 @@ time_t GetEndTime(const base::Time& end) {
 
 // This helper function binds the `profile`s properties to the placeholders in
 // `s`, in the order the columns are defined in the header file.
-// Instead of `profile.modification_date()`, `modification_date` is used. This
-// makes the function useful for updates as well.
 void BindAutofillProfileToStatement(const AutofillProfile& profile,
-                                    const base::Time& modification_date,
                                     sql::Statement& s) {
   int index = 0;
   s.BindString(index++, profile.guid());
   s.BindInt64(index++, profile.use_count());
   s.BindInt64(index++, profile.use_date().ToTimeT());
-  s.BindInt64(index++, modification_date.ToTimeT());
+  s.BindInt64(index++, profile.modification_date().ToTimeT());
   s.BindString(index++, profile.language_code());
   s.BindString(index++, profile.profile_label());
   s.BindInt(index++, profile.initial_creator_id());
@@ -1001,15 +998,13 @@ std::string_view GetProfileTypeTokensTable(AutofillProfile::Source source) {
 
 // Inserts `profile` into `GetProfileMetadataTable()` and
 // `GetProfileTypeTokensTable()`, depending on the profile's source.
-// Parameterized by `modification_date` to be reusable for updates.
 bool AddAutofillProfileToTable(sql::Database* db,
-                               const AutofillProfile& profile,
-                               const base::Time& modification_date) {
+                               const AutofillProfile& profile) {
   sql::Statement s;
   InsertBuilder(db, s, GetProfileMetadataTable(profile.source()),
                 {kGuid, kUseCount, kUseDate, kDateModified, kLanguageCode,
                  kLabel, kInitialCreatorId, kLastModifierId});
-  BindAutofillProfileToStatement(profile, modification_date, s);
+  BindAutofillProfileToStatement(profile, s);
   if (!s.Run())
     return false;
   for (ServerFieldType type :
@@ -1070,13 +1065,12 @@ bool AddAutofillProfileToTable(sql::Database* db,
 // The code was copied from `AddAutofillProfileToTable()` in version 113. Like
 // the migration logic, it shouldn't be changed.
 bool AddAutofillProfileToTableVersion113(sql::Database* db,
-                                         const AutofillProfile& profile,
-                                         const base::Time& modification_date) {
+                                         const AutofillProfile& profile) {
   sql::Statement s;
   InsertBuilder(db, s, GetProfileMetadataTable(profile.source()),
                 {kGuid, kUseCount, kUseDate, kDateModified, kLanguageCode,
                  kLabel, kInitialCreatorId, kLastModifierId});
-  BindAutofillProfileToStatement(profile, modification_date, s);
+  BindAutofillProfileToStatement(profile, s);
   if (!s.Run()) {
     return false;
   }
@@ -1602,9 +1596,7 @@ bool AutofillTable::UpdateAutofillEntries(
 
 bool AutofillTable::AddAutofillProfile(const AutofillProfile& profile) {
   sql::Transaction transaction(db_);
-  return transaction.Begin() &&
-         AddAutofillProfileToTable(
-             db_, profile, /*modification_date=*/AutofillClock::Now()) &&
+  return transaction.Begin() && AddAutofillProfileToTable(db_, profile) &&
          transaction.Commit();
 }
 
@@ -1616,10 +1608,6 @@ bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
   if (!old_profile)
     return false;
 
-  base::Time new_modification_date = *old_profile != profile
-                                         ? AutofillClock::Now()
-                                         : old_profile->modification_date();
-
   // Implementing an update as remove + add has multiple advantages:
   // - Prevents outdated (ServerFieldType, value) pairs from remaining in the
   //   `GetProfileTypeTokensTable(profile)`, in case field types are removed.
@@ -1629,8 +1617,7 @@ bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
          RemoveAutofillProfile(profile.guid(), profile.source()) &&
-         AddAutofillProfileToTable(db_, profile, new_modification_date) &&
-         transaction.Commit();
+         AddAutofillProfileToTable(db_, profile) && transaction.Commit();
 }
 
 bool AutofillTable::RemoveAutofillProfile(
@@ -3557,8 +3544,7 @@ bool AutofillTable::MigrateToVersion113MigrateLocalAddressProfilesToNewTable() {
     success = GetAutofillProfilesFromLegacyTable(&profiles);
     // Migrate profiles to the new tables. Preserve the modification dates.
     for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
-      success = success && AddAutofillProfileToTableVersion113(
-                               db_, *profile, profile->modification_date());
+      success = success && AddAutofillProfileToTableVersion113(db_, *profile);
     }
   }
   // Delete all profiles from the legacy tables. The tables are dropped in
