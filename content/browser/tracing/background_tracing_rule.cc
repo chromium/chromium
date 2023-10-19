@@ -332,8 +332,8 @@ class HistogramRule : public BackgroundTracingRule,
                             base::Unretained(this), histogram_lower_value_,
                             histogram_upper_value_));
     BackgroundTracingManagerImpl::GetInstance().SetNamedTriggerCallback(
-        GetDefaultRuleId(), base::BindRepeating(&HistogramRule::OnRuleTriggered,
-                                                base::Unretained(this)));
+        rule_id(), base::BindRepeating(&HistogramRule::OnRuleTriggered,
+                                       base::Unretained(this)));
     BackgroundTracingManagerImpl::GetInstance().AddAgentObserver(this);
   }
 
@@ -341,7 +341,7 @@ class HistogramRule : public BackgroundTracingRule,
     histogram_sample_callback_.reset();
     BackgroundTracingManagerImpl::GetInstance().RemoveAgentObserver(this);
     BackgroundTracingManagerImpl::GetInstance().SetNamedTriggerCallback(
-        GetDefaultRuleId(), base::NullCallback());
+        rule_id(), base::NullCallback());
   }
 
   base::Value::Dict ToDict() const override {

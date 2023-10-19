@@ -78,7 +78,9 @@ perfetto::TraceConfig StopTracingTriggerConfig(
   auto* trigger_cfg = trace_config.mutable_trigger_config();
   trigger_cfg->set_trigger_mode(
       perfetto::TraceConfig::TriggerConfig::STOP_TRACING);
-  trigger_cfg->set_trigger_timeout_ms(15000);
+  // Unless a test is failing we should never hit the trigger_timeout_ms and
+  // thus is safe to pass a full minute.
+  trigger_cfg->set_trigger_timeout_ms(60000);
   auto* trigger = trigger_cfg->add_triggers();
   trigger->set_name(trigger_name);
   trigger->set_stop_delay_ms(1);
@@ -417,7 +419,18 @@ std::unique_ptr<BackgroundTracingConfig> CreateSystemConfig() {
                                .Set("rule",
                                     "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED")
                                .Set("trigger_name", "system_test_with_rule_id")
-                               .Set("rule_id", "rule_id_override")))));
+                               .Set("rule_id", "rule_id_override"))
+                       .Append(
+                           base::Value::Dict()
+                               .Set("rule",
+                                    "MONITOR_AND_DUMP_WHEN_SPECIFIC_"
+                                    "HISTOGRAM_AND_VALUE")
+                               // Any histogram that will be emitted by Blink
+                               // when reloading the content shell window.
+                               .Set("histogram_name",
+                                    "Blink.MainFrame.UpdateTime.PreFCP")
+                               .Set("histogram_lower_value", 0)
+                               .Set("rule_id", "blink_histogram_rule_id")))));
 
   EXPECT_TRUE(config);
   return config;
@@ -1852,7 +1865,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
                        PerfettoSystemBackgroundScenarioRuleId) {
   // This test will ensure that a BackgroundTracing scenario set to SYSTEM mode
-  // can issue a SystemTrigger that users the |rule_id| json field to let the
+  // can issue a SystemTrigger that uses the |rule_id| json field to let the
   // Android Perfetto service know the trace is interesting.
   //
   // This requires setting up a Perfetto Service which runs two unix sockets on
@@ -1894,6 +1907,60 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   system_consumer->WaitForAllDataSourcesStopped();
   system_consumer->ReadBuffers();
   system_no_more_packets_runloop.Run();
+  // We should at the very least receive the system packets if the trigger was
+  // properly received by the trace. However if the background trigger was not
+  // received we won't see any packets and |received_packets()| will be 0.
+  EXPECT_LT(0u, system_consumer->received_packets());
+}
+
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
+                       PerfettoSystemBackgroundScenarioRendererHistogramRule) {
+  // This test will ensure that a BackgroundTracing scenario set to SYSTEM mode
+  // can issue a SystemTrigger for a histogram emitted by a renderer process,
+  // and with a custom rule_id.
+  //
+  // Structure of this test is similar to the one above.
+
+  // *********** Setup the sideloaded Perfetto System service **********
+  auto system_service = std::make_unique<tracing::MockSystemService>(tmp_dir());
+  SetSystemProducerSocketAndChecksAsync(system_service->producer());
+
+  //  ******************** Start System trace **********************
+  perfetto::TraceConfig trace_config =
+      StopTracingTriggerConfig("blink_histogram_rule_id");
+  base::RunLoop system_no_more_packets_runloop;
+  auto system_consumer = CreateDefaultConsumer(std::move(trace_config),
+                                               system_service->GetService(),
+                                               &system_no_more_packets_runloop);
+  system_consumer->WaitForAllDataSourcesStarted();
+
+  // ************* Setup & Run SYSTEM background scenario ******************
+
+  std::unique_ptr<BackgroundTracingConfig> config = CreateSystemConfig();
+  ASSERT_TRUE(config);
+  ASSERT_TRUE(BackgroundTracingManager::GetInstance().SetActiveScenario(
+      std::move(config), BackgroundTracingManager::NO_DATA_FILTERING));
+
+  // Because histogram monitoring isn't set up immediately (or synchronously).
+  // On ChromeOS & Mac in particular it was noticed that we sometimes miss the
+  // first trigger. Causing test flakiness. We address this by navigating
+  // waiting for everything to load. This ensures that we have enough time to
+  // register the histogram monitoring agent. And then we navigate to the same
+  // page (so we don't get a new renderer). This will for sure trigger the trace
+  // to be collected. And even if we did get the first there will just be two
+  // triggers in the trace which doesn't pose a problem or issue to this test.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // ************ Wait and verify packets received & clean up ************
+  system_consumer->WaitForAllDataSourcesStopped();
+  system_consumer->ReadBuffers();
+  system_no_more_packets_runloop.Run();
+
   // We should at the very least receive the system packets if the trigger was
   // properly received by the trace. However if the background trigger was not
   // received we won't see any packets and |received_packets()| will be 0.
