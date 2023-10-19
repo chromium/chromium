@@ -92,6 +92,7 @@ class MODULES_EXPORT SharedStorage final
       shared_storage_document_service_{nullptr};
 
   Member<SharedStorageWorklet> shared_storage_worklet_;
+  bool keep_alive_after_operation_ = true;
 };
 
 }  // namespace blink

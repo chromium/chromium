@@ -53,6 +53,10 @@ namespace blink {
 
 namespace {
 
+const char kSharedStorageWorkletExpiredMessage[] =
+    "The sharedStorage worklet cannot execute further operations because the "
+    "previous operation did not include the option \'keepAlive: true\'.";
+
 enum class GlobalScope {
   kWindow,
   kSharedStorageWorklet,
@@ -837,6 +841,18 @@ ScriptPromise SharedStorage::selectURL(
     return promise;
   }
 
+  if (!shared_storage_worklet_ || !shared_storage_worklet_->GetWorkletHost()) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        "sharedStorage.worklet.addModule() has to be called before "
+        "selectURL()."));
+
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
+
+    return promise;
+  }
+
   if (!IsValidSharedStorageURLsArrayLength(urls.size())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
@@ -962,7 +978,20 @@ ScriptPromise SharedStorage::selectURL(
     resolve_to_config = false;
   }
 
+  if (!keep_alive_after_operation_) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        kSharedStorageWorkletExpiredMessage));
+
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
+
+    return promise;
+  }
+
   bool keep_alive = options->keepAlive();
+  keep_alive_after_operation_ = keep_alive;
+
   WTF::String context_id;
   if (!CheckPrivateAggregationContextId(*options, *script_state, *resolver,
                                         /*out_string=*/&context_id)) {
@@ -971,8 +1000,8 @@ ScriptPromise SharedStorage::selectURL(
     return promise;
   }
 
-  GetSharedStorageDocumentService(execution_context)
-      ->RunURLSelectionOperationOnWorklet(
+  shared_storage_worklet_->GetWorkletHost()
+      ->SelectURL(
           name, std::move(converted_urls), std::move(*serialized_data),
           keep_alive, std::move(context_id),
           WTF::BindOnce(
@@ -1055,7 +1084,29 @@ ScriptPromise SharedStorage::run(
     return promise;
   }
 
+  if (!shared_storage_worklet_ || !shared_storage_worklet_->GetWorkletHost()) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        "sharedStorage.worklet.addModule() has to be called before run()."));
+
+    LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
+
+    return promise;
+  }
+
+  if (!keep_alive_after_operation_) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        kSharedStorageWorkletExpiredMessage));
+
+    LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
+
+    return promise;
+  }
+
   bool keep_alive = options->keepAlive();
+  keep_alive_after_operation_ = keep_alive;
+
   WTF::String context_id;
   if (!CheckPrivateAggregationContextId(*options, *script_state, *resolver,
                                         /*out_string=*/&context_id)) {
@@ -1063,13 +1114,12 @@ ScriptPromise SharedStorage::run(
     return promise;
   }
 
-  GetSharedStorageDocumentService(execution_context)
-      ->RunOperationOnWorklet(
-          name, std::move(*serialized_data), keep_alive, std::move(context_id),
-          WTF::BindOnce(&OnVoidOperationFinished, WrapPersistent(resolver),
-                        WrapPersistent(this),
-                        blink::SharedStorageVoidOperation::kRun,
-                        GlobalScope::kWindow, start_time));
+  shared_storage_worklet_->GetWorkletHost()->Run(
+      name, std::move(*serialized_data), keep_alive, std::move(context_id),
+      WTF::BindOnce(&OnVoidOperationFinished, WrapPersistent(resolver),
+                    WrapPersistent(this),
+                    blink::SharedStorageVoidOperation::kRun,
+                    GlobalScope::kWindow, start_time));
 
   return promise;
 }

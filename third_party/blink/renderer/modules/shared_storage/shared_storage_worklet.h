@@ -5,10 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_WORKLET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_WORKLET_H_
 
+#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
 namespace blink {
 
@@ -30,7 +32,16 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
                           const String& module_url,
                           ExceptionState&);
 
+  // Returns the worklet host. Returns nullptr if addModule() hasn't been
+  // called, or has failed early renderer side checks.
+  mojom::blink::SharedStorageWorkletHost* GetWorkletHost() {
+    return worklet_host_.get();
+  }
+
  private:
+  HeapMojoAssociatedRemote<mojom::blink::SharedStorageWorkletHost>
+      worklet_host_{nullptr};
+
   Member<SharedStorage> shared_storage_;
 };
 

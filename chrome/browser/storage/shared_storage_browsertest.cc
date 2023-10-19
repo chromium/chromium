@@ -2017,10 +2017,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
-  EXPECT_EQ(base::StrCat({"a JavaScript error: \"Error: ",
-                          "sharedStorage.worklet.addModule() can only ",
-                          "be invoked once per browsing context.\"\n"}),
-            result.error);
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("sharedStorage.worklet.addModule() can only "
+                                 "be invoked once per browsing context"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -2037,16 +2036,20 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              R"(
+  content::EvalJsResult result = content::EvalJs(GetActiveWebContents(), R"(
       sharedStorage.run(
           'test-operation', {data: {}});
-    )"));
+    )");
+
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr(
+          "sharedStorage.worklet.addModule() has to be called before run()"));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
-      kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kRunWebVisible,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
@@ -2187,10 +2190,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
         })()
       )");
 
-  EXPECT_EQ(base::StrCat({"a JavaScript error: \"Error: ",
-                          "sharedStorage.worklet.addModule() has to be ",
-                          "called before sharedStorage.selectURL().\"\n"}),
-            result.error);
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("sharedStorage.worklet.addModule() has to be "
+                                 "called before selectURL()"));
 
   WaitForHistograms({kErrorTypeHistogram});
 

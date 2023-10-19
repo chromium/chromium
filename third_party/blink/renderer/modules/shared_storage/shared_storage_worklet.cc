@@ -25,6 +25,7 @@ SharedStorageWorklet::SharedStorageWorklet(SharedStorage* shared_storage)
     : shared_storage_(shared_storage) {}
 
 void SharedStorageWorklet::Trace(Visitor* visitor) const {
+  visitor->Trace(worklet_host_);
   visitor->Trace(shared_storage_);
   ScriptWrappable::Trace(visitor);
 }
@@ -77,15 +78,27 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
     return promise;
   }
 
+  if (worklet_host_) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        "sharedStorage.worklet.addModule() can only be invoked once per "
+        "browsing context."));
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kAddModuleWebVisible);
+    return promise;
+  }
+
   std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
       origin_trial_features =
           OriginTrialContext::GetInheritedTrialFeatures(execution_context);
 
   shared_storage_->GetSharedStorageDocumentService(execution_context)
-      ->AddModuleOnWorklet(
+      ->CreateWorklet(
           script_source_url,
           origin_trial_features ? *origin_trial_features
                                 : Vector<mojom::blink::OriginTrialFeature>(),
+          worklet_host_.BindNewEndpointAndPassReceiver(
+              execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
           WTF::BindOnce(
               [](ScriptPromiseResolver* resolver,
                  SharedStorageWorklet* shared_storage_worklet,

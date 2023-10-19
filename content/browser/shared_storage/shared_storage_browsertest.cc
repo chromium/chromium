@@ -81,6 +81,10 @@ using SharedStorageUrlSpecWithMetadata =
 
 namespace {
 
+const char kSharedStorageWorkletExpiredMessage[] =
+    "The sharedStorage worklet cannot execute further operations because the "
+    "previous operation did not include the option \'keepAlive: true\'.";
+
 const auto& SetOperation = SharedStorageWriteOperationAndResult::SetOperation;
 const auto& AppendOperation =
     SharedStorageWriteOperationAndResult::AppendOperation;
@@ -225,10 +229,22 @@ auto describe_param = [](const auto& info) {
 class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
  public:
   TestSharedStorageWorkletHost(
-      std::unique_ptr<SharedStorageWorkletDriver> driver,
       SharedStorageDocumentServiceImpl& document_service,
+      const url::Origin& frame_origin,
+      const GURL& script_source_url,
+      const std::vector<blink::mojom::OriginTrialFeature>&
+          origin_trial_features,
+      mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
+          worklet_host,
+      blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
+          callback,
       bool should_defer_worklet_messages)
-      : SharedStorageWorkletHost(std::move(driver), document_service),
+      : SharedStorageWorkletHost(document_service,
+                                 frame_origin,
+                                 script_source_url,
+                                 origin_trial_features,
+                                 std::move(worklet_host),
+                                 std::move(callback)),
         should_defer_worklet_messages_(should_defer_worklet_messages) {}
 
   ~TestSharedStorageWorkletHost() override = default;
@@ -308,7 +324,7 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
 
  private:
   void OnAddModuleOnWorkletFinished(
-      blink::mojom::SharedStorageDocumentService::AddModuleOnWorkletCallback
+      blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
           callback,
       bool success,
       const std::string& error_message) override {
@@ -318,7 +334,7 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
   }
 
   void OnAddModuleOnWorkletFinishedHelper(
-      blink::mojom::SharedStorageDocumentService::AddModuleOnWorkletCallback
+      blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
           callback,
       bool success,
       const std::string& error_message,
@@ -705,11 +721,20 @@ class TestSharedStorageWorkletHostManager
 
   ~TestSharedStorageWorkletHostManager() override = default;
 
-  std::unique_ptr<SharedStorageWorkletHost> CreateSharedStorageWorkletHost(
-      std::unique_ptr<SharedStorageWorkletDriver> driver,
-      SharedStorageDocumentServiceImpl& document_service) override {
+  std::unique_ptr<SharedStorageWorkletHost> CreateWorkletHostHelper(
+      SharedStorageDocumentServiceImpl& document_service,
+      const url::Origin& frame_origin,
+      const GURL& script_source_url,
+      const std::vector<blink::mojom::OriginTrialFeature>&
+          origin_trial_features,
+      mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
+          worklet_host,
+      blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
+          callback) override {
     return std::make_unique<TestSharedStorageWorkletHost>(
-        std::move(driver), document_service, should_defer_worklet_messages_);
+        document_service, frame_origin, script_source_url,
+        origin_trial_features, std::move(worklet_host), std::move(callback),
+        should_defer_worklet_messages_);
   }
 
   // Precondition: there's only one eligible worklet host.
@@ -1324,14 +1349,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
 
-  std::string expected_error =
-      "a JavaScript error: \"Error: sharedStorage.worklet.addModule() can only "
-      "be invoked once per browsing context.\"\n";
-
   EvalJsResult result = EvalJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )");
-  EXPECT_EQ(expected_error, result.error);
+
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("sharedStorage.worklet.addModule() can only "
+                                 "be invoked once per browsing context"));
 
   EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
@@ -1355,239 +1379,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   ExpectAccessObserved(
       {{AccessType::kDocumentAddModule, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
-            "a.test", "/shared_storage/simple_module.js"))},
-       {AccessType::kDocumentAddModule, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
             "a.test", "/shared_storage/simple_module.js"))}});
-}
-
-IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
-                       AddModule_SecondAddModuleAfterKeepAliveTrueRun_Failure) {
-  // The test assumes pages get deleted after navigation. To ensure this,
-  // disable back/forward cache.
-  content::DisableBackForwardCacheForTesting(
-      shell()->web_contents(),
-      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
-
-  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-    )"));
-
-  // There is 1 more "worklet operation": `run()`.
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->SetExpectedWorkletResponsesCount(1);
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-      sharedStorage.run(
-          'test-operation', {data: {'customKey': 'customValue'},
-                             keepAlive: true});
-    )"));
-
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->WaitForWorkletResponses();
-
-  std::string expected_error =
-      "a JavaScript error: \"Error: sharedStorage.worklet.addModule() can only "
-      "be invoked once per browsing context.\"\n";
-
-  EvalJsResult result = EvalJs(shell(), R"(
-      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-    )");
-  EXPECT_EQ(expected_error, result.error);
-
-  EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
-  EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
-  EXPECT_EQ(5u, console_observer.messages().size());
-  EXPECT_EQ("Start executing simple_module.js",
-            base::UTF16ToUTF8(console_observer.messages()[0].message));
-  EXPECT_EQ("Finish executing simple_module.js",
-            base::UTF16ToUTF8(console_observer.messages()[1].message));
-  EXPECT_EQ("Start executing 'test-operation'",
-            base::UTF16ToUTF8(console_observer.messages()[2].message));
-  EXPECT_EQ("{\"customKey\":\"customValue\"}",
-            base::UTF16ToUTF8(console_observer.messages()[3].message));
-  EXPECT_EQ("Finish executing 'test-operation'",
-            base::UTF16ToUTF8(console_observer.messages()[4].message));
-
-  // Navigate again to record histograms.
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  WaitForHistograms(
-      {kDestroyedStatusHistogram, kTimingUsefulResourceHistogram});
-
-  histogram_tester_.ExpectUniqueSample(
-      kDestroyedStatusHistogram,
-      blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
-  histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
-
-  std::string origin_str = url::Origin::Create(url).Serialize();
-  ExpectAccessObserved(
-      {{AccessType::kDocumentAddModule, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
-            "a.test", "/shared_storage/simple_module.js"))},
-       {AccessType::kDocumentRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun("test-operation",
-                                               blink::CloneableMessage())},
-       {AccessType::kDocumentAddModule, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
-            "a.test", "/shared_storage/simple_module.js"))}});
-}
-
-IN_PROC_BROWSER_TEST_P(
-    SharedStorageBrowserTest,
-    AddModule_SecondAddModuleAfterKeepAliveFalseRun_Failure) {
-  // The test assumes pages get deleted after navigation. To ensure this,
-  // disable back/forward cache.
-  content::DisableBackForwardCacheForTesting(
-      shell()->web_contents(),
-      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
-
-  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-    )"));
-
-  // There is 1 more "worklet operation": `run()`.
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->SetExpectedWorkletResponsesCount(1);
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-      sharedStorage.run(
-          'test-operation', {data: {'customKey': 'customValue'},
-                             keepAlive: false});
-    )"));
-
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->WaitForWorkletResponses();
-
-  std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ", kSharedStorageWorkletExpiredMessage,
-       "\"\n"});
-
-  EvalJsResult result = EvalJs(shell(), R"(
-      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-    )");
-  EXPECT_EQ(expected_error, result.error);
-
-  EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
-  EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
-  EXPECT_EQ(5u, console_observer.messages().size());
-  EXPECT_EQ("Start executing simple_module.js",
-            base::UTF16ToUTF8(console_observer.messages()[0].message));
-  EXPECT_EQ("Finish executing simple_module.js",
-            base::UTF16ToUTF8(console_observer.messages()[1].message));
-  EXPECT_EQ("Start executing 'test-operation'",
-            base::UTF16ToUTF8(console_observer.messages()[2].message));
-  EXPECT_EQ("{\"customKey\":\"customValue\"}",
-            base::UTF16ToUTF8(console_observer.messages()[3].message));
-  EXPECT_EQ("Finish executing 'test-operation'",
-            base::UTF16ToUTF8(console_observer.messages()[4].message));
-
-  // Navigate again to record histograms.
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  WaitForHistograms(
-      {kDestroyedStatusHistogram, kTimingUsefulResourceHistogram});
-
-  histogram_tester_.ExpectUniqueSample(
-      kDestroyedStatusHistogram,
-      blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
-  histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
-
-  std::string origin_str = url::Origin::Create(url).Serialize();
-  ExpectAccessObserved(
-      {{AccessType::kDocumentAddModule, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
-            "a.test", "/shared_storage/simple_module.js"))},
-       {AccessType::kDocumentRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun("test-operation",
-                                               blink::CloneableMessage())}});
-}
-
-IN_PROC_BROWSER_TEST_P(
-    SharedStorageBrowserTest,
-    AddModule_SecondAddModuleAfterKeepAliveDefaultRun_Failure) {
-  // The test assumes pages get deleted after navigation. To ensure this,
-  // disable back/forward cache.
-  content::DisableBackForwardCacheForTesting(
-      shell()->web_contents(),
-      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
-
-  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-    )"));
-
-  // There is 1 more "worklet operation": `run()`.
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->SetExpectedWorkletResponsesCount(1);
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-      sharedStorage.run(
-          'test-operation', {data: {'customKey': 'customValue'}});
-    )"));
-
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->WaitForWorkletResponses();
-
-  std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ", kSharedStorageWorkletExpiredMessage,
-       "\"\n"});
-
-  EvalJsResult result = EvalJs(shell(), R"(
-      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-    )");
-  EXPECT_EQ(expected_error, result.error);
-
-  EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
-  EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
-  EXPECT_EQ(5u, console_observer.messages().size());
-  EXPECT_EQ("Start executing simple_module.js",
-            base::UTF16ToUTF8(console_observer.messages()[0].message));
-  EXPECT_EQ("Finish executing simple_module.js",
-            base::UTF16ToUTF8(console_observer.messages()[1].message));
-  EXPECT_EQ("Start executing 'test-operation'",
-            base::UTF16ToUTF8(console_observer.messages()[2].message));
-  EXPECT_EQ("{\"customKey\":\"customValue\"}",
-            base::UTF16ToUTF8(console_observer.messages()[3].message));
-  EXPECT_EQ("Finish executing 'test-operation'",
-            base::UTF16ToUTF8(console_observer.messages()[4].message));
-
-  // Navigate again to record histograms.
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  WaitForHistograms(
-      {kDestroyedStatusHistogram, kTimingUsefulResourceHistogram});
-
-  histogram_tester_.ExpectUniqueSample(
-      kDestroyedStatusHistogram,
-      blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
-  histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
-
-  std::string origin_str = url::Origin::Create(url).Serialize();
-  ExpectAccessObserved(
-      {{AccessType::kDocumentAddModule, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
-            "a.test", "/shared_storage/simple_module.js"))},
-       {AccessType::kDocumentRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun("test-operation",
-                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, RunOperation_Success) {
@@ -1657,11 +1449,16 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
-  EXPECT_TRUE(ExecJs(shell(), R"(
+  EvalJsResult result = EvalJs(shell(), R"(
       sharedStorage.run(
           'test-operation', {data: {'customKey': 'customValue'},
                              keepAlive: true});
-    )"));
+    )");
+
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr(
+          "sharedStorage.worklet.addModule() has to be called before run()"));
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
@@ -1670,52 +1467,28 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
-  // We cannot set the expected number of responses for `run()/selectURL()`
-  // until the worklet host is created. Normally we set these expectations after
-  // the call to `addModule()` and before making any calls to `run()` or
-  // `selectURL()`. Yet, here `run()` and `addModule()` are intentionally called
-  // in the wrong order.
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->SetExpectedWorkletResponsesCount(1);
-
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->WaitForWorkletResponses();
-
-  EXPECT_EQ(3u, console_observer.messages().size());
-  EXPECT_EQ(
-      "sharedStorage.worklet.addModule() has to be called before "
-      "sharedStorage.run().",
-      base::UTF16ToUTF8(console_observer.messages()[0].message));
-  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
-            console_observer.messages()[0].log_level);
+  EXPECT_EQ(2u, console_observer.messages().size());
   EXPECT_EQ("Start executing simple_module.js",
-            base::UTF16ToUTF8(console_observer.messages()[1].message));
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
   EXPECT_EQ("Finish executing simple_module.js",
-            base::UTF16ToUTF8(console_observer.messages()[2].message));
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
 
-  // Navigate again to record histograms.
+  content::FetchHistogramsFromChildProcesses();
+
+  // Navigate to terminate the worklet.
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  WaitForHistograms({kDestroyedStatusHistogram, kTimingUsefulResourceHistogram,
-                     kErrorTypeHistogram,
-                     kTimingRunExecutedInWorkletHistogram});
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
       blink::SharedStorageWorkletDestroyedStatus::kDidNotEnterKeepAlive, 1);
   histogram_tester_.ExpectUniqueSample(
-      kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kRunWebVisible,
+      1);
   histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessType::kDocumentRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun("test-operation",
-                                               blink::CloneableMessage())},
-       {AccessType::kDocumentAddModule, MainFrameId(), origin_str,
+      {{AccessType::kDocumentAddModule, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
             "a.test", "/shared_storage/simple_module.js"))}});
 }
@@ -2087,15 +1860,12 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ("Finish executing 'test-operation'",
             base::UTF16ToUTF8(console_observer.messages()[4].message));
 
-  std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ", kSharedStorageWorkletExpiredMessage,
-       "\"\n"});
-
   EvalJsResult result = EvalJs(shell(), R"(
       sharedStorage.run(
           'test-operation', {data: {'customKey': 'customValue'}});
     )");
-  EXPECT_EQ(expected_error, result.error);
+  EXPECT_THAT(result.error,
+              testing::HasSubstr(kSharedStorageWorkletExpiredMessage));
 
   WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
   histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
@@ -2159,15 +1929,12 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ("Finish executing 'test-operation'",
             base::UTF16ToUTF8(console_observer.messages()[4].message));
 
-  std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ", kSharedStorageWorkletExpiredMessage,
-       "\"\n"});
-
   EvalJsResult result = EvalJs(shell(), R"(
       sharedStorage.run(
           'test-operation', {data: {'customKey': 'customValue'}});
     )");
-  EXPECT_EQ(expected_error, result.error);
+  EXPECT_THAT(result.error,
+              testing::HasSubstr(kSharedStorageWorkletExpiredMessage));
 
   WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
   histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
@@ -3171,10 +2938,6 @@ IN_PROC_BROWSER_TEST_P(
   TestSelectURLFencedFrameConfigObserver config_observer2(
       GetStoragePartition());
 
-  std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ", kSharedStorageWorkletExpiredMessage,
-       "\"\n"});
-
   EvalJsResult result2 = EvalJs(shell(), R"(
       (async function() {
         window.select_url_result = await sharedStorage.selectURL(
@@ -3197,7 +2960,8 @@ IN_PROC_BROWSER_TEST_P(
       })()
     )");
 
-  EXPECT_EQ(expected_error, result2.error);
+  EXPECT_THAT(result2.error,
+              testing::HasSubstr(kSharedStorageWorkletExpiredMessage));
 
   EXPECT_FALSE(config_observer2.ConfigObserved());
 
@@ -3292,13 +3056,10 @@ IN_PROC_BROWSER_TEST_P(
   TestSelectURLFencedFrameConfigObserver config_observer2(
       GetStoragePartition());
 
-  std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ", kSharedStorageWorkletExpiredMessage,
-       "\"\n"});
-
   EvalJsResult result2 = EvalJs(shell(), select_url_script);
 
-  EXPECT_EQ(expected_error, result2.error);
+  EXPECT_THAT(result2.error,
+              testing::HasSubstr(kSharedStorageWorkletExpiredMessage));
 
   EXPECT_FALSE(config_observer2.ConfigObserved());
 
@@ -3351,10 +3112,6 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
 
-  std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ", kSharedStorageWorkletExpiredMessage,
-       "\"\n"});
-
   EvalJsResult result = EvalJs(shell(), R"(
       (async function() {
         window.select_url_result = await sharedStorage.selectURL(
@@ -3377,7 +3134,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       })()
     )");
 
-  EXPECT_EQ(expected_error, result.error);
+  EXPECT_THAT(result.error,
+              testing::HasSubstr(kSharedStorageWorkletExpiredMessage));
 
   EXPECT_FALSE(config_observer.ConfigObserved());
 
@@ -3559,10 +3317,6 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   TestSelectURLFencedFrameConfigObserver config_observer(GetStoragePartition());
 
-  std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ", kSharedStorageWorkletExpiredMessage,
-       "\"\n"});
-
   EvalJsResult result = EvalJs(shell(), R"(
       (async function() {
         window.select_url_result = await sharedStorage.selectURL(
@@ -3585,7 +3339,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       })()
     )");
 
-  EXPECT_EQ(expected_error, result.error);
+  EXPECT_THAT(result.error,
+              testing::HasSubstr(kSharedStorageWorkletExpiredMessage));
 
   EXPECT_FALSE(config_observer.ConfigObserved());
 
@@ -3815,15 +3570,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
-  std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ", kSharedStorageWorkletExpiredMessage,
-       "\"\n"});
-
   EvalJsResult result2 = EvalJs(shell(), R"(
       sharedStorage.run(
           'test-operation', {data: {'customKey': 'customValue'}});
     )");
-  EXPECT_EQ(expected_error, result2.error);
+  EXPECT_THAT(result2.error,
+              testing::HasSubstr(kSharedStorageWorkletExpiredMessage));
 
   EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
@@ -3923,15 +3675,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
-  std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ", kSharedStorageWorkletExpiredMessage,
-       "\"\n"});
-
   EvalJsResult result2 = EvalJs(shell(), R"(
       sharedStorage.run(
           'test-operation', {data: {'customKey': 'customValue'}});
     )");
-  EXPECT_EQ(expected_error, result2.error);
+  EXPECT_THAT(result2.error,
+              testing::HasSubstr(kSharedStorageWorkletExpiredMessage));
 
   EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
