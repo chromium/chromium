@@ -3564,8 +3564,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, XmlInIframeCrash) {
   RunRegressionTest(FILE_PATH_LITERAL("xml-in-iframe-crash.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ActivedescendantCrash) {
-  RunRegressionTest(FILE_PATH_LITERAL("activedescendant-crash.html"));
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       RelationPointsToInvalidNodesCrash) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("relation-points-to-invalid-nodes-crash.html"));
 }
 
 // TODO(crbug.com/1191098): Test is flaky on all platforms.
