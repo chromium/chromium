@@ -532,7 +532,8 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
     return absl::nullopt;
   }
 
-  UseCounter::Count(window, mojom::blink::WebFeature::kConversionAPIAll);
+  UseCounter::Count(window,
+                    mojom::blink::WebFeature::kAttributionReportingAPIAll);
 
   // Only record the ads APIs counter if enabled in that manner.
   if (RuntimeEnabledFeatures::PrivacySandboxAdsAPIsEnabled(window)) {

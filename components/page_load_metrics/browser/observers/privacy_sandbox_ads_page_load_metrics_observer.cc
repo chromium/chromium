@@ -148,7 +148,7 @@ void PrivacySandboxAdsPageLoadMetricsObserver::OnFeaturesUsageObserved(
 
     absl::optional<PrivacySandboxAdsApi> api;
     switch (static_cast<WebFeature>(feature.value())) {
-      case WebFeature::kConversionAPIAll:
+      case WebFeature::kAttributionReportingAPIAll:
         api = PrivacySandboxAdsApi::kAttributionReporting;
         break;
       case WebFeature::kHTMLFencedFrameElement:

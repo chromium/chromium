@@ -2665,7 +2665,7 @@ enum WebFeature {
   kHtmlClipboardApiRead = 3362,
   kHtmlClipboardApiWrite = 3363,
   kOBSOLETE_CSSSystemColorComputeToSelf = 3364,
-  kConversionAPIAll = 3365,
+  kAttributionReportingAPIAll = 3365,
   kOBSOLETE_ImpressionRegistration = 3366,
   kOBSOLETE_ConversionRegistration = 3367,
   kWebSharePolicyAllow = 3368,

@@ -286,7 +286,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kMediaStreamOnInactive,
           WebFeature::kPrivacySandboxAdsAPIs,
           WebFeature::kV8Navigator_RunAdAuction_Method,
-          WebFeature::kConversionAPIAll,
+          WebFeature::kAttributionReportingAPIAll,
           WebFeature::kSharedStorageAPI_SharedStorage_DOMReference,
           WebFeature::kSharedStorageAPI_Run_Method,
           WebFeature::kSharedStorageAPI_SelectURL_Method,
