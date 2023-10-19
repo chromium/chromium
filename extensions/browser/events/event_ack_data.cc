@@ -141,9 +141,23 @@ void EventAckData::DecrementInflightEvent(
   if (worker_stopped || !start_ok)
     return;
 
-  if (result != content::ServiceWorkerExternalRequestResult::kOk) {
-    LOG(ERROR) << "FinishExternalRequest failed: " << static_cast<int>(result);
-    std::move(failure_callback).Run();
+  // TODO(crbug.com/1485425): Emit a metric here that records `result` to see
+  // what results remain after we've stopped executing due to the worker being
+  // stopped or the start external request not succeeding.
+
+  switch (result) {
+    case content::ServiceWorkerExternalRequestResult::kOk:
+    // Metrics have shown us that it is possible that a worker may not be found
+    // or not running at this point.
+    case content::ServiceWorkerExternalRequestResult::kWorkerNotFound:
+    case content::ServiceWorkerExternalRequestResult::kWorkerNotRunning:
+      break;
+    case content::ServiceWorkerExternalRequestResult::kBadRequestId:
+    case content::ServiceWorkerExternalRequestResult::kNullContext:
+      LOG(ERROR) << "FinishExternalRequest failed: "
+                 << static_cast<int>(result);
+      std::move(failure_callback).Run();
+      break;
   }
 }
 
