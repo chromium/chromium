@@ -68,8 +68,8 @@ export class EduCoexistenceApp extends EduCoexistenceAppBase {
     };
   }
 
-  protected isArcAccountRestrictionsEnabled: boolean;
-  protected currentScreen: Screens;
+  isArcAccountRestrictionsEnabled: boolean;
+  currentScreen: Screens;
 
   override ready() {
     super.ready();

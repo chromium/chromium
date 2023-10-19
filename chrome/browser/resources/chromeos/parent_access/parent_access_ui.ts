@@ -53,7 +53,7 @@ export class ParentAccessUi extends PolymerElement {
     };
   }
 
-  protected webviewLoading: boolean;
+  webviewLoading: boolean;
   private webviewManager: WebviewManager;
   private server: ParentAccessController;
   private parentAccessUiHandler: ParentAccessUiHandlerInterface;

@@ -61,9 +61,9 @@ export class EduCoexistenceUi extends EduCoexistenceUiBase {
     };
   }
 
-  protected loading: boolean;
-  protected showGaiaButtons: boolean;
-  protected showGaiaNextButton: boolean;
+  loading: boolean;
+  showGaiaButtons: boolean;
+  showGaiaNextButton: boolean;
   private webview: chrome.webviewTag.WebView;
   private controller: EduCoexistenceController;
 

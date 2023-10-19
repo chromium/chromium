@@ -30,7 +30,7 @@ export class ExtensionApprovalsAfter extends ExtensionApprovalsAfterBase {
     };
   }
 
-  protected childDisplayName: string;
+  childDisplayName: string;
 
   override ready() {
     super.ready();
