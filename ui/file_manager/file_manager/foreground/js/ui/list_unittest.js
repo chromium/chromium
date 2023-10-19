@@ -22,16 +22,27 @@ export function testClearPinnedItem() {
   document.body.appendChild(list);
 
   const model = new ArrayDataModel(['Item A', 'Item B']);
+  // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type
+  // 'HTMLUListElement'.
   list.dataModel = model;
+  // @ts-ignore: error TS2339: Property 'selectionModel' does not exist on type
+  // 'HTMLUListElement'.
   list.selectionModel.setIndexSelected(0, true);
+  // @ts-ignore: error TS2339: Property 'selectionModel' does not exist on type
+  // 'HTMLUListElement'.
   list.selectionModel.leadIndex = 0;
+  // @ts-ignore: error TS2339: Property 'ensureLeadItemExists' does not exist on
+  // type 'HTMLUListElement'.
   list.ensureLeadItemExists();
 
   list.style.height = '0px';
   model.splice(0, 1);
 
   list.style.height = '800px';
+  // @ts-ignore: error TS2339: Property 'redraw' does not exist on type
+  // 'HTMLUListElement'.
   list.redraw();
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('Item B', list.querySelectorAll('li')[0].textContent);
 }
 
@@ -49,22 +60,35 @@ export function testClickOutsideListItem() {
   list.appendChild(header);
 
   const model = new ArrayDataModel(['Item A', 'Item B']);
+  // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type
+  // 'HTMLUListElement'.
   list.dataModel = model;
 
+  // @ts-ignore: error TS2339: Property 'redraw' does not exist on type
+  // 'HTMLUListElement'.
   list.redraw();
 
   const item = list.querySelector('li');
   const span = document.createElement('span');
   span.innerText = 'some text';
+  // @ts-ignore: error TS18047: 'item' is possibly 'null'.
   item.appendChild(span);
 
   // Non-LI children should return null.
+  // @ts-ignore: error TS2339: Property 'getListItemAncestor' does not exist on
+  // type 'HTMLUListElement'.
   assertEquals(null, list.getListItemAncestor(header));
 
   // It should return null for the list itself.
+  // @ts-ignore: error TS2339: Property 'getListItemAncestor' does not exist on
+  // type 'HTMLUListElement'.
   assertEquals(null, list.getListItemAncestor(list));
 
   // Anything inside a LI should return the LI itself.
+  // @ts-ignore: error TS2339: Property 'getListItemAncestor' does not exist on
+  // type 'HTMLUListElement'.
   assertEquals(item, list.getListItemAncestor(item));
+  // @ts-ignore: error TS2339: Property 'getListItemAncestor' does not exist on
+  // type 'HTMLUListElement'.
   assertEquals(item, list.getListItemAncestor(span));
 }

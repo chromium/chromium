@@ -119,14 +119,14 @@ async function addMyFilesAndDriveToStore(state: State):
   // - Shared with me
   const sharedWithMeEntry =
       driveVolumeInfo
-          .fakeEntries[VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME];
+          .fakeEntries[VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME]!;
   state.allEntries[sharedWithMeEntry.toURL()] =
       convertEntryToFileData(sharedWithMeEntry);
   state.uiEntries.push(sharedWithMeEntry.toURL());
   driveRootEntryList.addEntry(sharedWithMeEntry);
   // - Offline
   const offlineEntry =
-      driveVolumeInfo.fakeEntries[VolumeManagerCommon.RootType.DRIVE_OFFLINE];
+      driveVolumeInfo.fakeEntries[VolumeManagerCommon.RootType.DRIVE_OFFLINE]!;
   state.allEntries[offlineEntry.toURL()] = convertEntryToFileData(offlineEntry);
   state.uiEntries.push(offlineEntry.toURL());
   driveRootEntryList.addEntry(offlineEntry);
@@ -816,8 +816,8 @@ export async function testRemoveLastTeamDrive(done: () => void) {
   });
 
   // Remove the only child from Team drives.
-  await new Promise(resolve => {
-    driveFs.entries['/team_drives/a'].remove(resolve);
+  await new Promise<void>(resolve => {
+    driveFs.entries['/team_drives/a']!.remove(resolve);
   });
 
   const event = {
@@ -911,8 +911,8 @@ export async function testRemoveLastComputer(done: () => void) {
 
   // Check that removing the local computer "My Laptop" results in the entire
   // "Computers" element being removed, as it has no children.
-  await new Promise(resolve => {
-    driveFs.entries['/Computers/My Laptop'].remove(resolve);
+  await new Promise<void>(resolve => {
+    driveFs.entries['/Computers/My Laptop']!.remove(resolve);
   });
 
   const event = {

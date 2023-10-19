@@ -62,9 +62,17 @@ export function setUp() {
   new MockCommandLinePrivate();
 
   // Override VolumeInfo.prototype.resolveDisplayRoot to be sync.
+  // @ts-ignore: error TS7006: Parameter 'successCallback' implicitly has an
+  // 'any' type.
   VolumeInfoImpl.prototype.resolveDisplayRoot = function(successCallback) {
+    // @ts-ignore: error TS2341: Property 'fileSystem_' is private and only
+    // accessible within class 'VolumeInfoImpl'.
     this.displayRoot_ = this.fileSystem_.root;
+    // @ts-ignore: error TS2341: Property 'displayRoot_' is private and only
+    // accessible within class 'VolumeInfoImpl'.
     successCallback(this.displayRoot_);
+    // @ts-ignore: error TS2341: Property 'fileSystem_' is private and only
+    // accessible within class 'VolumeInfoImpl'.
     return Promise.resolve(this.fileSystem_.root);
   };
 
@@ -107,7 +115,7 @@ export function testModel() {
   assertEquals(
       '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
       (model.item(1)).entry.fullPath);
-  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(2).label);
+  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(2)?.label);
   assertEquals(
       fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(3)).volumeInfo.volumeId);
@@ -122,7 +130,7 @@ export function testModel() {
   const myFilesItem = /** @type NavigationModelFakeItem */ (model.item(2));
   const myFilesEntryList = /** @type {!EntryList} */ (myFilesItem.entry);
   assertEquals(1, myFilesEntryList.getUIChildren().length);
-  assertEquals('linux-files-label', myFilesEntryList.getUIChildren()[0].name);
+  assertEquals('linux-files-label', myFilesEntryList.getUIChildren()[0]?.name);
 
   // Trash is displayed as a root when feature is enabled and should be the last
   // item in the model.
@@ -154,7 +162,7 @@ export function testNoRecentOrLinuxFiles() {
   assertEquals(
       '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
       (model.item(0)).entry.fullPath);
-  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
+  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1)?.label);
   const driveItem = /** @type {!NavigationModelVolumeItem} */ (model.item(2));
   assertEquals(fakeDriveVolumeId, driveItem.volumeInfo.volumeId);
   assertFalse(driveItem.disabled);
@@ -181,7 +189,7 @@ export function testDisabledVolumes() {
   assertEquals(
       '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
       (model.item(0)).entry.fullPath);
-  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
+  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1)?.label);
 
   const driveItem = /** @type {!NavigationModelVolumeItem} */ (model.item(2));
   assertEquals(fakeDriveVolumeId, driveItem.volumeInfo.volumeId);
@@ -284,15 +292,19 @@ export function testAddAndRemoveVolumes() {
   assertEquals(
       '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
       (model.item(0)).entry.fullPath);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
   assertEquals(
       fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(2)).volumeInfo.volumeId);
   if (util.isSinglePartitionFormatEnabled()) {
     const drive = model.item(3);
+    // @ts-ignore: error TS18048: 'drive' is possibly 'undefined'.
     assertEquals('External Drive', drive.label);
     assertEquals(
         'removable:hoge', /** @type {!NavigationModelFakeItem} */
+        // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+        // type 'FilesAppEntry'.
         (drive).entry.getUIChildren()[0].volumeInfo.volumeId);
   } else {
     assertEquals(
@@ -310,6 +322,7 @@ export function testAddAndRemoveVolumes() {
   assertEquals(
       '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
       (model.item(0)).entry.fullPath);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
   assertEquals(
       fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
@@ -317,13 +330,19 @@ export function testAddAndRemoveVolumes() {
   if (util.isSinglePartitionFormatEnabled()) {
     const drive1 = model.item(3);
     const drive2 = model.item(4);
+    // @ts-ignore: error TS18048: 'drive1' is possibly 'undefined'.
     assertEquals('External Drive', drive1.label);
+    // @ts-ignore: error TS18048: 'drive2' is possibly 'undefined'.
     assertEquals('External Drive', drive2.label);
     assertEquals(
         'removable:hoge', /** @type {!NavigationModelFakeItem} */
+        // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+        // type 'FilesAppEntry'.
         (drive1).entry.getUIChildren()[0].volumeInfo.volumeId);
     assertEquals(
         'removable:fuga', /** @type {!NavigationModelFakeItem} */
+        // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+        // type 'FilesAppEntry'.
         (drive2).entry.getUIChildren()[0].volumeInfo.volumeId);
   } else {
     assertEquals(
@@ -344,12 +363,15 @@ export function testAddAndRemoveVolumes() {
   assertEquals(
       '/shortcut2', /** @type {!NavigationModelShortcutItem} */
       (model.item(1)).entry.fullPath);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(2).label);
   assertEquals(
       fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(3)).volumeInfo.volumeId);
   if (util.isSinglePartitionFormatEnabled()) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('External Drive', model.item(4).label);
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('External Drive', model.item(5).label);
   } else {
     assertEquals(
@@ -445,76 +467,111 @@ export function testOrderAndNestItems() {
   // Check items order and that MTP/Archive/Removable respect the original
   // order.
   assertEquals(15, model.length);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('recent-label', model.item(0).label);
 
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('shortcut', model.item(1).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('shortcut2', model.item(2).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(3).label);
 
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('DRIVE_DIRECTORY_LABEL'), model.item(4).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('provided:odfs', model.item(5).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('smb:file-share', model.item(6).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('provided:prov1', model.item(7).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('provided:prov2', model.item(8).label);
 
   if (util.isSinglePartitionFormatEnabled()) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('External Drive', model.item(9).label);
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('External Drive', model.item(10).label);
   } else {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('removable:hoge', model.item(9).label);
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('removable:fuga', model.item(10).label);
   }
 
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('archive:a-rar', model.item(11).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('mtp:a-phone', model.item(12).label);
 
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('android:app1', model.item(13).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('android:app2', model.item(14).label);
 
   // Check NavigationSection, which defaults to TOP.
   // recent-label.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.TOP, model.item(0).section);
   // shortcut.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.TOP, model.item(1).section);
   // shortcut2.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.TOP, model.item(2).section);
 
   // My Files.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.MY_FILES, model.item(3).section);
 
   // My Drive.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.GOOGLE_DRIVE, model.item(4).section);
 
   // ODFS.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.ODFS, model.item(5).section);
 
   // SMB and other FSP are grouped together.
   // smb:file-share.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.CLOUD, model.item(6).section);
   // provided:prov1.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.CLOUD, model.item(7).section);
   // provided:prov2.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.CLOUD, model.item(8).section);
 
   // MTP/Archive/Removable are grouped together.
   // removable:hoge.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.REMOVABLE, model.item(9).section);
   // removable:fuga.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.REMOVABLE, model.item(10).section);
   // archive:a-rar.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.REMOVABLE, model.item(11).section);
   // mtp:a-phone.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.REMOVABLE, model.item(12).section);
 
   // android:app1
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.ANDROID_APPS, model.item(13).section);
   // android:app2
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.ANDROID_APPS, model.item(14).section);
 
   const myFilesModel = model.item(3);
   // Re-order again: cast to allow calling this private model function.
+  // @ts-ignore: error TS2339: Property 'orderAndNestItems_' does not exist on
+  // type 'Object'.
   /** @type {!Object} */ (model).orderAndNestItems_();
   // Check if My Files is still in the same position.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.MY_FILES, model.item(3).section);
   // Check if My Files model is still the same instance, because DirectoryTree
   // expects it to be the same instance to be able to find it on the tree.
@@ -524,6 +581,7 @@ export function testOrderAndNestItems() {
 /**
  * Tests model with My files enabled.
  */
+/** @param {()=>void} callback */
 export function testMyFilesVolumeEnabled(callback) {
   const volumeManager = new MockVolumeManager();
   // Item 1 of the volume info list should have Downloads volume type.
@@ -561,7 +619,9 @@ export function testMyFilesVolumeEnabled(callback) {
   model.linuxFilesItem = crostiniFakeItem;
 
   assertEquals(2, model.length);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(0).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('DRIVE_DIRECTORY_LABEL'), model.item(1).label);
 
   // Android and Crostini are displayed within My files. And there is no
@@ -570,10 +630,14 @@ export function testMyFilesVolumeEnabled(callback) {
   const myFilesItem = /** @type NavigationModelFakeItem */ (model.item(0));
   const myFilesEntryList = /** @type {!EntryList} */ (myFilesItem.entry);
   assertEquals(2, myFilesEntryList.getUIChildren().length);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('android_files:droid', myFilesEntryList.getUIChildren()[0].name);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('linux-files-label', myFilesEntryList.getUIChildren()[1].name);
 
   const reader = myFilesEntryList.createReader();
+  // @ts-ignore: error TS7034: Variable 'foundEntries' implicitly has type
+  // 'any[]' in some locations where its type cannot be determined.
   const foundEntries = [];
   reader.readEntries((entries) => {
     for (const entry of entries) {
@@ -586,7 +650,11 @@ export function testMyFilesVolumeEnabled(callback) {
         // Wait for Downloads folder to be read from My files volume.
         return foundEntries.length >= 1;
       }).then(() => {
+        // @ts-ignore: error TS7005: Variable 'foundEntries' implicitly has an
+        // 'any[]' type.
         assertEquals(foundEntries[0].name, 'Downloads');
+        // @ts-ignore: error TS7005: Variable 'foundEntries' implicitly has an
+        // 'any[]' type.
         assertTrue(foundEntries[0].isDirectory);
       }),
       callback);
@@ -634,7 +702,9 @@ export function testMyFilesSubdirectoriesCanBeDisabled() {
       directoryModel, androidAppListModel, DialogType.FULL_PAGE);
 
   assertEquals(2, model.length);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(0).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('DRIVE_DIRECTORY_LABEL'), model.item(1).label);
 
   // Android is displayed within My files, and should be disabled.
@@ -678,6 +748,8 @@ export function testMultipleUsbPartitionsGrouping() {
   // Check that the common root shows 3 partitions.
   let groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
+  // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on type
+  // 'FilesAppEntry'.
   assertEquals(3, groupedUsbs.entry.getUIChildren().length);
 
   // Add a 4th partition, which triggers NavigationListModel to recalculate.
@@ -688,6 +760,8 @@ export function testMultipleUsbPartitionsGrouping() {
   // Check that the common root shows 4 partitions.
   groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
+  // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on type
+  // 'FilesAppEntry'.
   assertEquals(4, groupedUsbs.entry.getUIChildren().length);
 
   // Remove the 4th partition, which triggers NavigationListModel to
@@ -697,6 +771,8 @@ export function testMultipleUsbPartitionsGrouping() {
   // Check that the common root shows 3 partitions.
   groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
+  // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on type
+  // 'FilesAppEntry'.
   assertEquals(3, groupedUsbs.entry.getUIChildren().length);
 
   // Add an extra copy of partition3, which replaces the existing partition3
@@ -708,5 +784,7 @@ export function testMultipleUsbPartitionsGrouping() {
   // Check that partition3 is not duplicated.
   groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
+  // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on type
+  // 'FilesAppEntry'.
   assertEquals(3, groupedUsbs.entry.getUIChildren().length);
 }

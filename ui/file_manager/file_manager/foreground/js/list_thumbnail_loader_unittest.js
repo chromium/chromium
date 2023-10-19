@@ -24,7 +24,7 @@ let currentVolumeType;
 /** @type {!ListThumbnailLoader} */
 let listThumbnailLoader;
 
-/** @type {!Object} */
+/** @type {!Record<string, Function>} */
 let getCallbacks;
 
 /** @type {!Array<Event>} */
@@ -83,6 +83,9 @@ export function setUp() {
   canvas.width = MockThumbnailLoader.testImageWidth;
   canvas.height = MockThumbnailLoader.testImageHeight;
   const context = canvas.getContext('2d');
+  if (!context) {
+    throw new Error('Failed to get context from canvas');
+  }
   context.fillStyle = 'black';
   context.fillRect(0, 0, 80, 80);
   context.fillRect(80, 80, 80, 80);
@@ -102,8 +105,15 @@ export function setUp() {
     },
   });
 
+  // @ts-ignore: error TS2352: Conversion of type '{ get: () => void; getCache:
+  // (entries: FileSystemEntry[], names: string[]) => {}[]; }' to type
+  // 'MetadataModel' may be a mistake because neither type sufficiently overlaps
+  // with the other. If this was intentional, convert the expression to
+  // 'unknown' first.
   metadataModel = /** @type {!MetadataModel} */ ({
     get: function() {},
+    // @ts-ignore: error TS6133: 'names' is declared but its value is never
+    // read.
     getCache: function(entries, names) {
       return [{}];
     },
@@ -126,6 +136,8 @@ export function setUp() {
   directoryModel = /** @type {!DirectoryModel} */ (new TestDirectoryModel());
 
   const fakeVolumeManager = /** @type {!VolumeManager} */ ({
+    // @ts-ignore: error TS6133: 'entry' is declared but its value is never
+    // read.
     getVolumeInfo: function(entry) {
       return {
         volumeType: currentVolumeType,
@@ -142,25 +154,32 @@ export function setUp() {
   });
 }
 
+/**
+ * @param {!Array<Entry>} entries
+ * @returns {string}
+ */
 function getKeyOfGetCallback_(entries) {
   return entries.reduce((previous, current) => {
     return previous + '|' + current.toURL();
   }, '');
 }
 
+// @ts-ignore: error TS7006: Parameter 'entries' implicitly has an 'any' type.
 function resolveGetLatestCallback(entries) {
   const key = getKeyOfGetCallback_(entries);
   assert(getCallbacks[key]);
-  getCallbacks[key](entries.map(() => {
+  getCallbacks[key]?.(entries.map(() => {
     return {thumbnail: {}};
   }));
   delete getCallbacks[key];
 }
 
+// @ts-ignore: error TS7006: Parameter 'entries' implicitly has an 'any' type.
 function hasPendingGetLatestCallback(entries) {
   return !!getCallbacks[getKeyOfGetCallback_(entries)];
 }
 
+// @ts-ignore: error TS7006: Parameter 'entries' implicitly has an 'any' type.
 function areEntriesInCache(entries) {
   for (let i = 0; i < entries.length; i++) {
     if (null === listThumbnailLoader.getThumbnailFromCache(entries[i])) {
@@ -172,6 +191,7 @@ function areEntriesInCache(entries) {
 
 /**
  * Story test for list thumbnail loader.
+ * @param {()=>void} callback
  */
 export function testStory(callback) {
   fileListModel.push(directory1, entry1, entry2, entry3, entry4, entry5);
@@ -204,17 +224,30 @@ export function testStory(callback) {
       })
           .then(() => {
             const event = thumbnailLoadedEvents.shift();
+            // @ts-ignore: error TS2339: Property 'fileUrl' does not exist on
+            // type 'Event'.
             assertEquals('filesystem:volume-id/Test2.jpg', event.fileUrl);
+            // @ts-ignore: error TS2339: Property 'dataUrl' does not exist on
+            // type 'Event'.
             assertTrue(event.dataUrl.length > 0);
+            // @ts-ignore: error TS2339: Property 'width' does not exist on type
+            // 'Event'.
             assertEquals(160, event.width);
+            // @ts-ignore: error TS2339: Property 'height' does not exist on
+            // type 'Event'.
             assertEquals(160, event.height);
 
             // Since thumbnail of Test2.jpg is loaded into the cache,
             // getThumbnailFromCache returns thumbnail for the image.
             const thumbnail = listThumbnailLoader.getThumbnailFromCache(entry2);
+            // @ts-ignore: error TS18047: 'thumbnail' is possibly 'null'.
             assertEquals('filesystem:volume-id/Test2.jpg', thumbnail.fileUrl);
+            // @ts-ignore: error TS18047: 'thumbnail.dataUrl' is possibly
+            // 'null'.
             assertTrue(thumbnail.dataUrl.length > 0);
+            // @ts-ignore: error TS18047: 'thumbnail' is possibly 'null'.
             assertEquals(160, thumbnail.width);
+            // @ts-ignore: error TS18047: 'thumbnail' is possibly 'null'.
             assertEquals(160, thumbnail.height);
 
             // Assert that new task is enqueued.
@@ -254,6 +287,7 @@ export function testRangeIsAtTheEndOfList() {
   assertEquals(1, Object.keys(getCallbacks).length);
 }
 
+/** @param {()=>void} callback */
 export function testCache(callback) {
   ListThumbnailLoader.numOfMaxActiveTasksForTest = 5;
 
@@ -316,6 +350,7 @@ export function testCache(callback) {
 /**
  * Test case for thumbnail fetch error. In this test case, thumbnail fetch for
  * entry 2 is failed.
+ * @param {()=>void} callback
  */
 export function testErrorHandling(callback) {
   MockThumbnailLoader.errorUrls = [entry2.toURL()];
@@ -335,6 +370,7 @@ export function testErrorHandling(callback) {
 
 /**
  * Test case for handling sorted event in data model.
+ * @param {()=>void} callback
  */
 export function testSortedEvent(callback) {
   listThumbnailLoader.setHighPriorityRange(0, 2);
@@ -364,6 +400,7 @@ export function testSortedEvent(callback) {
 
 /**
  * Test case for handling change event in data model.
+ * @param {()=>void} callback
  */
 export function testChangeEvent(callback) {
   listThumbnailLoader.setHighPriorityRange(0, 2);
@@ -379,11 +416,14 @@ export function testChangeEvent(callback) {
       }).then(() => {
         // entry1 is changed.
         const changeEvent = new Event('change');
+        // @ts-ignore: error TS2339: Property 'index' does not exist on type
+        // 'Event'.
         changeEvent.index = 1;
         fileListModel.dispatchEvent(changeEvent);
 
         // cache of entry1 should become invalid.
         const thumbnail = listThumbnailLoader.getThumbnailFromCache(entry1);
+        // @ts-ignore: error TS18047: 'thumbnail' is possibly 'null'.
         assertTrue(thumbnail.outdated);
 
         resolveGetLatestCallback([entry1]);
@@ -430,18 +470,28 @@ export function testDirectoryScanIsRunning() {
 
 /**
  * Test case for EXIF IO error and retrying logic.
+ * @param {()=>void} callback
  */
 export function testExifIOError(callback) {
   const task = new ListThumbnailLoader.Task(
       entry1,
       /** @type {!VolumeManager} */ ({
+        // @ts-ignore: error TS6133: 'entry' is declared but its value is never
+        // read.
         getVolumeInfo: function(entry) {
           return {
             volumeType: currentVolumeType,
           };
         },
       }),
+      // @ts-ignore: error TS2352: Conversion of type '{ get: (entries:
+      // FileSystemEntry[]) => Promise<{ thumbnail: { urlError: {
+      // errorDescription: string; }; }; }[]>; }' to type 'ThumbnailModel' may
+      // be a mistake because neither type sufficiently overlaps with the other.
+      // If this was intentional, convert the expression to 'unknown' first.
       /** @type {!ThumbnailModel} */ ({
+        // @ts-ignore: error TS6133: 'entries' is declared but its value is
+        // never read.
         get: function(entries) {
           return Promise.resolve([{
             thumbnail: {

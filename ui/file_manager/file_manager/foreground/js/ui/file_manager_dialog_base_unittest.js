@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {assertFalse} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../../../common/js/test_error_reporting.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 
+// @ts-ignore: error TS7006: Parameter 'done' implicitly has an 'any' type.
 export async function testShowDialogAfterHide(done) {
   const dialog = new FileManagerDialogBase(document.body);
 
   /** @return {boolean} True if cr.ui.dialog container has .shown class */
   function isShown() {
     const element = document.querySelector('.cr-dialog-container');
+    // @ts-ignore: error TS18047: 'element' is possibly 'null'.
     return element.classList.contains('shown');
   }
 

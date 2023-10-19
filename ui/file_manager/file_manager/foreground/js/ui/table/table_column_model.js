@@ -29,6 +29,7 @@ export class TableColumnModel extends EventTarget {
     /** @type {!Array<TableColumn>} */
     this.columns_ = [];
     for (let i = 0; i < tableColumns.length; i++) {
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       this.columns_.push(tableColumns[i].clone());
     }
   }
@@ -47,6 +48,7 @@ export class TableColumnModel extends EventTarget {
    * @return {string} Column id.
    */
   getId(index) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     return this.columns_[index].id;
   }
 
@@ -57,6 +59,7 @@ export class TableColumnModel extends EventTarget {
    * @return {string} Column name.
    */
   getName(index) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     return this.columns_[index].name;
   }
 
@@ -69,10 +72,12 @@ export class TableColumnModel extends EventTarget {
     if (index < 0 || index >= this.columns_.length) {
       return;
     }
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     if (name != this.columns_[index].name) {
       return;
     }
 
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     this.columns_[index].name = name;
     dispatchSimpleEvent(this, 'change');
   }
@@ -83,6 +88,7 @@ export class TableColumnModel extends EventTarget {
    * @return {number} Column width in pixels.
    */
   getWidth(index) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     return this.columns_[index].width;
   }
 
@@ -92,6 +98,7 @@ export class TableColumnModel extends EventTarget {
    * @return {boolean} True if the column is aligned to end.
    */
   isEndAlign(index) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     return this.columns_[index].endAlign;
   }
 
@@ -107,13 +114,16 @@ export class TableColumnModel extends EventTarget {
 
     const column = this.columns_[index];
     width = Math.max(width, MIMIMAL_WIDTH);
+    // @ts-ignore: error TS18048: 'column' is possibly 'undefined'.
     if (width == column.absoluteWidth) {
       return;
     }
 
+    // @ts-ignore: error TS18048: 'column' is possibly 'undefined'.
     column.width = width;
 
     // Dispatch an event if a visible column was resized.
+    // @ts-ignore: error TS18048: 'column' is possibly 'undefined'.
     if (column.visible) {
       dispatchSimpleEvent(this, 'resize');
     }
@@ -125,6 +135,7 @@ export class TableColumnModel extends EventTarget {
    * @return {function(*, string, Element): HTMLElement} Render function.
    */
   getRenderFunction(index) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     return this.columns_[index].renderFunction;
   }
 
@@ -138,10 +149,12 @@ export class TableColumnModel extends EventTarget {
     if (index < 0 || index >= this.columns_.length) {
       return;
     }
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     if (renderFunction !== this.columns_[index].renderFunction) {
       return;
     }
 
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     this.columns_[index].renderFunction = renderFunction;
     dispatchSimpleEvent(this, 'change');
   }
@@ -153,6 +166,7 @@ export class TableColumnModel extends EventTarget {
    */
   renderHeader(index, table) {
     const c = this.columns_[index];
+    // @ts-ignore: error TS18048: 'c' is possibly 'undefined'.
     return c.headerRenderFunction.call(c, table);
   }
 
@@ -163,6 +177,7 @@ export class TableColumnModel extends EventTarget {
   get totalWidth() {
     let total = 0;
     for (let i = 0; i < this.size; i++) {
+      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       total += this.columns_[i].width;
     }
     return total;
@@ -171,11 +186,14 @@ export class TableColumnModel extends EventTarget {
   /**
    * Normalizes widths to make their sum 100%.
    */
+  // @ts-ignore: error TS7006: Parameter 'contentWidth' implicitly has an 'any'
+  // type.
   normalizeWidths(contentWidth) {
     if (this.size == 0) {
       return;
     }
     const c = this.columns_[0];
+    // @ts-ignore: error TS18048: 'c' is possibly 'undefined'.
     c.width = Math.max(10, c.width - this.totalWidth + contentWidth);
   }
 
@@ -185,6 +203,7 @@ export class TableColumnModel extends EventTarget {
    * @return {string} 'asc' or 'desc'.
    */
   getDefaultOrder(index) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     return this.columns_[index].defaultOrder;
   }
 
@@ -213,6 +232,7 @@ export class TableColumnModel extends EventTarget {
     }
 
     const column = this.columns_[index];
+    // @ts-ignore: error TS18048: 'column' is possibly 'undefined'.
     if (column.visible == visible) {
       return;
     }
@@ -220,6 +240,7 @@ export class TableColumnModel extends EventTarget {
     // Changing column visibility alters the width.  Save the total width out
     // first, then change the column visibility, then relayout the table.
     const contentWidth = this.totalWidth;
+    // @ts-ignore: error TS18048: 'column' is possibly 'undefined'.
     column.visible = visible;
     this.normalizeWidths(contentWidth);
   }
@@ -230,6 +251,7 @@ export class TableColumnModel extends EventTarget {
    * @return {boolean} Whether the column is visible.
    */
   isVisible(index) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     return this.columns_[index].visible;
   }
 }

@@ -7,7 +7,6 @@ import {assertEquals, assertFalse} from 'chrome://webui-test/chromeos/chai_asser
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {FileFilter, RecentContentScanner} from './directory_contents.js';
@@ -19,6 +18,8 @@ import {FileFilter, RecentContentScanner} from './directory_contents.js';
 const mockChrome = {
   fileManagerPrivate: {
     getRecentFiles:
+        // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an
+        // 'any' type.
         (sourceRestriction, fileType, invalidateCache, callback) => {
           /** @type {!Array<!FileEntry>} */
           const entries = [
@@ -46,6 +47,8 @@ export function testHiddenFiles() {
   let volumeManagerRootType = VolumeManagerCommon.RootType.DOWNLOADS;
   // Create a fake volume manager that provides entry location info.
   const volumeManager = /** @type {!VolumeManager} */ ({
+    // @ts-ignore: error TS6133: 'entry' is declared but its value is never
+    // read.
     getLocationInfo: (entry) => {
       return /** @type {!EntryLocation} */ ({
         rootType: volumeManagerRootType,
@@ -53,7 +56,13 @@ export function testHiddenFiles() {
     },
   });
 
+  // @ts-ignore: error TS7006: Parameter 'fullPath' implicitly has an 'any'
+  // type.
   const entry = (fullPath) =>
+      // @ts-ignore: error TS2352: Conversion of type '{ name: any; fullPath:
+      // any; filesystem: string; }' to type 'FileSystemEntry' may be a mistake
+      // because neither type sufficiently overlaps with the other. If this was
+      // intentional, convert the expression to 'unknown' first.
       /** @type {!Entry} */ (
           {name: fullPath.split('/').pop(), fullPath, filesystem: 'test'});
 
@@ -71,8 +80,11 @@ export function testHiddenFiles() {
   assertFalse(filter.isHiddenFilesVisible());
   let hidden = entries.filter(entry => !filter.filter(entry));
   assertEquals(3, hidden.length);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('/.test', hidden[0].fullPath);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('/PvmDefault/.test', hidden[1].fullPath);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('/PvmDefault/$RECYCLE.BIN', hidden[2].fullPath);
 
   // No files hidden when we show hidden files.
@@ -85,7 +97,9 @@ export function testHiddenFiles() {
   filter.setHiddenFilesVisible(false);
   hidden = entries.filter(entry => !filter.filter(entry));
   assertEquals(2, hidden.length);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('/.test', hidden[0].fullPath);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('/PvmDefault/.test', hidden[1].fullPath);
 
   // Still no files hidden when we show hidden files.
@@ -105,14 +119,16 @@ export async function testRecentScannerFilter() {
       if (entry.name === '1.txt') {
         return null;
       }
-      return /** @type {!VolumeInfo} */ ({
-        volumeId: 'fakeId',
-      });
+      return /** @type {!import("../../externs/volume_info.js").VolumeInfo} */ (
+          {
+            volumeId: 'fakeId',
+          });
     },
   });
   const scanner = new RecentContentScanner('txt', volumeManager);
   /** @type {!Array<!FileEntry>} */
   let entriesCallbackResult = [];
+  // @ts-ignore: error TS7006: Parameter 'entries' implicitly has an 'any' type.
   function entriesCallback(entries) {
     entriesCallbackResult = entries;
   }
@@ -120,5 +136,6 @@ export async function testRecentScannerFilter() {
   await scanner.scan(entriesCallback, otherCallback, otherCallback);
   // 1.txt: volume is not allowed; 3.png: query is not matched.
   assertEquals(1, entriesCallbackResult.length);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('2.txt', entriesCallbackResult[0].name);
 }

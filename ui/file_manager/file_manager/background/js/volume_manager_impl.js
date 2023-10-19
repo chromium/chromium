@@ -9,7 +9,6 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {promisify} from '../../common/js/api.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {removeVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
@@ -32,7 +31,8 @@ export class VolumeManagerImpl extends EventTarget {
     /**
      * The list of archives requested to mount. We will show contents once
      * archive is mounted, but only for mounts from within this filebrowser tab.
-     * @type {Object<Object>}
+     * TODO: Add interface to replace `any` below.
+     * @type {Record<string, any>}
      * @private
      */
     this.requests_ = {};
@@ -73,16 +73,22 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
+  // '@override' tag because it is not declared in the base class 'EventTarget'.
   getFuseBoxOnlyFilterEnabled() {
     return false;
   }
 
   /** @override */
+  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
+  // '@override' tag because it is not declared in the base class 'EventTarget'.
   getMediaStoreFilesOnlyFilterEnabled() {
     return false;
   }
 
   /** @override */
+  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
+  // '@override' tag because it is not declared in the base class 'EventTarget'.
   dispose() {}
 
   /**
@@ -97,6 +103,8 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
+  // '@override' tag because it is not declared in the base class 'EventTarget'.
   getDriveConnectionState() {
     return this.driveConnectionState_;
   }
@@ -104,8 +112,8 @@ export class VolumeManagerImpl extends EventTarget {
   /**
    * Adds new volume info from the given volumeMetadata. If the corresponding
    * volume info has already been added, the volumeMetadata is ignored.
-   * @param {!VolumeInfo} volumeInfo
-   * @return {!VolumeInfo}
+   * @param {!import("../../externs/volume_info.js").VolumeInfo} volumeInfo
+   * @return {!import("../../externs/volume_info.js").VolumeInfo}
    * @private
    */
   addVolumeInfo_(volumeInfo) {
@@ -165,6 +173,7 @@ export class VolumeManagerImpl extends EventTarget {
       }
       finished = true;
       console.warn('Volumes initialization finished');
+      // @ts-ignore: error TS2554: Expected 1 arguments, but got 0.
       this.finishInitialization_();
     };
 
@@ -177,12 +186,15 @@ export class VolumeManagerImpl extends EventTarget {
         finishInitialization();
         return;
       }
+      // @ts-ignore: error TS7006: Parameter 'volume' implicitly has an 'any'
+      // type.
       volumeMetadataList = volumeMetadataList.filter(volume => !volume.hidden);
       console.debug(`There are ${volumeMetadataList.length} volumes`);
 
       let counter = 0;
 
       // Create VolumeInfo for each volume.
+      // @ts-ignore: error TS7006: Parameter 'idx' implicitly has an 'any' type.
       volumeMetadataList.map(async (volumeMetadata, idx) => {
         const volumeId = volumeMetadata.volumeId;
         let volumeInfo = null;
@@ -263,6 +275,7 @@ export class VolumeManagerImpl extends EventTarget {
               console.warn(
                   'Unable to create volumeInfo for ' +
                   `${volumeId} mounted on ${sourcePath}.` +
+                  // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
                   `Mount status: ${status}. Error: ${error.stack || error}.`);
               this.finishRequest_(requestKey, status);
               throw (error);
@@ -279,6 +292,8 @@ export class VolumeManagerImpl extends EventTarget {
                 volumeId}'`);
             const navigationEvent =
                 new Event(VolumeManagerCommon.VOLUME_ALREADY_MOUNTED);
+            // @ts-ignore: error TS2339: Property 'volumeId' does not exist on
+            // type 'Event'.
             navigationEvent.volumeId = volumeId;
             this.dispatchEvent(navigationEvent);
             this.finishRequest_(requestKey, status);
@@ -342,6 +357,8 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'password' implicitly has an 'any'
+  // type.
   async mountArchive(fileUrl, password) {
     const path =
         await promisify(chrome.fileManagerPrivate.addMount, fileUrl, password);
@@ -351,12 +368,15 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileUrl' implicitly has an 'any' type.
   async cancelMounting(fileUrl) {
     console.debug(`Cancelling mounting archive at '${fileUrl}'`);
     return promisify(chrome.fileManagerPrivate.cancelMounting, fileUrl);
   }
 
   /** @override */
+  // @ts-ignore: error TS7031: Binding element 'volumeId' implicitly has an
+  // 'any' type.
   async unmount({volumeId}) {
     console.debug(`Unmounting '${volumeId}'`);
     const key = this.makeRequestKey_('unmount', volumeId);
@@ -366,12 +386,15 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'volumeInfo' implicitly has an 'any'
+  // type.
   configure(volumeInfo) {
     return promisify(
         chrome.fileManagerPrivate.configureVolume, volumeInfo.volumeId);
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
   getVolumeInfo(entry) {
     if (!entry) {
       console.warn(`Invalid entry passed to getVolumeInfo: ${entry}`);
@@ -397,6 +420,8 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'volumeType' implicitly has an 'any'
+  // type.
   getCurrentProfileVolumeInfo(volumeType) {
     for (let i = 0; i < this.volumeInfoList.length; i++) {
       const volumeInfo = this.volumeInfoList.item(i);
@@ -409,6 +434,7 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
   getLocationInfo(entry) {
     if (!entry) {
       console.warn(`Invalid entry passed to getLocationInfo: ${entry}`);
@@ -427,6 +453,8 @@ export class VolumeManagerImpl extends EventTarget {
         isReadOnly = false;
       }
       return new EntryLocationImpl(
+          // @ts-ignore: error TS2345: Argument of type 'VolumeInfo | null' is
+          // not assignable to parameter of type 'VolumeInfo'.
           volumeInfo, assert(entry.rootType),
           true /* The entry points a root directory. */, isReadOnly);
     }
@@ -536,6 +564,8 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'devicePath' implicitly has an 'any'
+  // type.
   findByDevicePath(devicePath) {
     for (let i = 0; i < this.volumeInfoList.length; i++) {
       const volumeInfo = this.volumeInfoList.item(i);
@@ -547,6 +577,8 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'volumeId' implicitly has an 'any'
+  // type.
   whenVolumeInfoReady(volumeId) {
     return new Promise((fulfill) => {
       const handler = () => {
@@ -562,6 +594,8 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any'
+  // type.
   getDefaultDisplayRoot(callback) {
     console.warn('Unexpected call to VolumeManagerImpl.getDefaultDisplayRoot');
     callback(null);
@@ -569,8 +603,9 @@ export class VolumeManagerImpl extends EventTarget {
 
   /**
    * @param {string} key Key produced by |makeRequestKey_|.
-   * @return {!Promise<!VolumeInfo>} Fulfilled on success, otherwise rejected
-   *     with a VolumeManagerCommon.VolumeError.
+   * @return {!Promise<!import("../../externs/volume_info.js").VolumeInfo>}
+   *     Fulfilled on success, otherwise rejected with a
+   *     VolumeManagerCommon.VolumeError.
    * @private
    */
   startRequest_(key) {
@@ -606,7 +641,8 @@ export class VolumeManagerImpl extends EventTarget {
    * @param {string} key Key produced by |makeRequestKey_|.
    * @param {!VolumeManagerCommon.VolumeError|string} status Status received
    *     from the API.
-   * @param {VolumeInfo=} opt_volumeInfo Volume info of the mounted volume.
+   * @param {import("../../externs/volume_info.js").VolumeInfo=} opt_volumeInfo
+   *     Volume info of the mounted volume.
    * @private
    */
   finishRequest_(key, status, opt_volumeInfo) {
@@ -624,10 +660,12 @@ export class VolumeManagerImpl extends EventTarget {
    * @param {Object} request Structure created in |startRequest_|.
    * @param {!VolumeManagerCommon.VolumeError|string} status If status ===
    *     'success' success callbacks are called.
-   * @param {VolumeInfo=} opt_volumeInfo Volume info of the mounted volume.
+   * @param {import("../../externs/volume_info.js").VolumeInfo=} opt_volumeInfo
+   *     Volume info of the mounted volume.
    * @private
    */
   invokeRequestCallbacks_(request, status, opt_volumeInfo) {
+    // @ts-ignore: error TS7006: Parameter 'args' implicitly has an 'any' type.
     const callEach = (callbacks, self, args) => {
       for (let i = 0; i < callbacks.length; i++) {
         callbacks[i].apply(self, args);
@@ -635,24 +673,33 @@ export class VolumeManagerImpl extends EventTarget {
     };
 
     if (status === 'success') {
+      // @ts-ignore: error TS2339: Property 'successCallbacks' does not exist on
+      // type 'Object'.
       callEach(request.successCallbacks, this, [opt_volumeInfo]);
     } else {
       volumeManagerUtil.validateError(status);
+      // @ts-ignore: error TS2339: Property 'errorCallbacks' does not exist on
+      // type 'Object'.
       callEach(request.errorCallbacks, this, [status]);
     }
   }
 
   /** @override */
+  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
+  // '@override' tag because it is not declared in the base class 'EventTarget'.
   hasDisabledVolumes() {
     return false;
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'volume' implicitly has an 'any' type.
   isDisabled(volume) {
     return false;
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'volumeInfo' implicitly has an 'any'
+  // type.
   isAllowedVolume(volumeInfo) {
     return true;
   }

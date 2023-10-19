@@ -104,10 +104,11 @@ class ByteWriter {
 
       default:
         throw new Error('Invalid width: ' + width);
-        break;
     }
 
     this.validateWrite(width);
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type 'DataView'.
     this.view_[method](this.pos_, value, this.littleEndian_);
     this.pos_ += width;
   }
@@ -134,6 +135,8 @@ class ByteWriter {
       throw new Error('Duplicate forward key ' + key);
     }
     this.validateWrite(width);
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string | number' can't be used to index type '{}'.
     this.forwards_[key] = {
       pos: this.pos_,
       width: width,
@@ -150,11 +153,15 @@ class ByteWriter {
     if (!(key in this.forwards_)) {
       throw new Error('Undeclared forward key ' + key.toString(16));
     }
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string | number' can't be used to index type '{}'.
     const forward = this.forwards_[key];
     const curPos = this.pos_;
     this.pos_ = forward.pos;
     this.writeScalar(value, forward.width);
     this.pos_ = curPos;
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string | number' can't be used to index type '{}'.
     delete this.forwards_[key];
   }
 
@@ -191,7 +198,7 @@ ByteWriter.ByteOrder = {
 /**
  * Creates a directory with specified tag. This method only supports string
  * format tag, which is longer than 4 characters.
- * @param {!TypedArray} bytes Bytes to be written.
+ * @param {!ArrayBufferView} bytes Bytes to be written.
  * @param {!ExifEntry} tag An exif entry which will be written.
  */
 function writeDirectory_(bytes, tag) {
@@ -224,14 +231,17 @@ class ConsoleLogger {
     this.verbose = true;
   }
 
+  // @ts-ignore: error TS7006: Parameter 'arg' implicitly has an 'any' type.
   error(arg) {
     console.error(arg);
   }
 
+  // @ts-ignore: error TS7006: Parameter 'arg' implicitly has an 'any' type.
   log(arg) {
     console.log(arg);
   }
 
+  // @ts-ignore: error TS7006: Parameter 'arg' implicitly has an 'any' type.
   vlog(arg) {
     console.log(arg);
   }
@@ -239,7 +249,7 @@ class ConsoleLogger {
 
 /**
  * Parses exif data bytes (with logging) and returns the parsed tags.
- * @param {!TypedArray} bytes Bytes to be read.
+ * @param {!ArrayBufferView} bytes Bytes to be read.
  * @return {!Object<!Exif.Tag, !ExifEntry>} Tags.
  */
 function parseExifData_(bytes) {
@@ -247,6 +257,8 @@ function parseExifData_(bytes) {
 
   const tags = {};
   const byteReader = new ByteReader(bytes.buffer);
+  // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
+  // parameter of type '{ [x: number]: Object; }'.
   assertEquals(0, exifParser.readDirectory(byteReader, tags));
   return tags;
 }
@@ -268,7 +280,7 @@ export function testWithoutNullCharacterTermination() {
   const tags = parseExifData_(data);
 
   // The parsed value should end in a null character.
-  const parsedTag = tags[/** @type {!Exif.Tag<number>} */ (0x10f)];
+  const parsedTag = tags[/** @type {!Exif.Tag} */ (0x10f)];
   assertEquals(9, parsedTag.componentCount);
   assertEquals('Manufact\0', parsedTag.value);
 }

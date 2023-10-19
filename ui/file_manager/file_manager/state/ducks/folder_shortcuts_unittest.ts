@@ -31,7 +31,7 @@ export async function testRefreshFolderShortcuts(done: () => void) {
   const initialState = getEmptyState();
   // Add shortcut-1 to the store.
   const fileSystem = setupFileSystem();
-  const shortcutEntry1: DirectoryEntry = fileSystem.entries['/shortcut-1'];
+  const shortcutEntry1 = fileSystem.entries['/shortcut-1'] as DirectoryEntry;
   initialState.allEntries[shortcutEntry1.toURL()] =
       convertEntryToFileData(shortcutEntry1);
   initialState.folderShortcuts.push(shortcutEntry1.toURL());
@@ -39,8 +39,8 @@ export async function testRefreshFolderShortcuts(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch a refresh action with shortcut 2 and 3.
-  const shortcutEntry2: DirectoryEntry = fileSystem.entries['/shortcut-2'];
-  const shortcutEntry3: DirectoryEntry = fileSystem.entries['/shortcut-3'];
+  const shortcutEntry2 = fileSystem.entries['/shortcut-2'] as DirectoryEntry;
+  const shortcutEntry3 = fileSystem.entries['/shortcut-3'] as DirectoryEntry;
   store.dispatch(
       refreshFolderShortcut({entries: [shortcutEntry2, shortcutEntry3]}));
 
@@ -66,8 +66,8 @@ export async function testAddFolderShortcut(done: () => void) {
   const initialState = getEmptyState();
   // Add shortcut-1 and shortcut-3 to the store.
   const fileSystem = setupFileSystem();
-  const shortcutEntry1: DirectoryEntry = fileSystem.entries['/shortcut-1'];
-  const shortcutEntry3: DirectoryEntry = fileSystem.entries['/shortcut-3'];
+  const shortcutEntry1 = fileSystem.entries['/shortcut-1'] as DirectoryEntry;
+  const shortcutEntry3 = fileSystem.entries['/shortcut-3'] as DirectoryEntry;
   initialState.allEntries[shortcutEntry1.toURL()] =
       convertEntryToFileData(shortcutEntry1);
   initialState.allEntries[shortcutEntry3.toURL()] =
@@ -78,7 +78,7 @@ export async function testAddFolderShortcut(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to add shortcut 4.
-  const shortcutEntry4: DirectoryEntry = fileSystem.entries['/shortcut-4'];
+  const shortcutEntry4 = fileSystem.entries['/shortcut-4'] as DirectoryEntry;
   store.dispatch(addFolderShortcut({entry: shortcutEntry4}));
 
   // Expect the newly added shortcut 4 is in the store.
@@ -109,7 +109,7 @@ export async function testAddFolderShortcut(done: () => void) {
                                      }));
 
   // Dispatch another action to add shortcut 2 to check sorting.
-  const shortcutEntry2: DirectoryEntry = fileSystem.entries['/shortcut-2'];
+  const shortcutEntry2 = fileSystem.entries['/shortcut-2'] as DirectoryEntry;
   store.dispatch(addFolderShortcut({entry: shortcutEntry2}));
 
   // Expect shortcut 2 will be inserted in the middle.
@@ -138,7 +138,7 @@ export async function testRemoveFolderShortcut(done: () => void) {
   const initialState = getEmptyState();
   // Add shortcut-1 to the store.
   const fileSystem = setupFileSystem();
-  const shortcutEntry1: DirectoryEntry = fileSystem.entries['/shortcut-1'];
+  const shortcutEntry1 = fileSystem.entries['/shortcut-1'] as DirectoryEntry;
   initialState.allEntries[shortcutEntry1.toURL()] =
       convertEntryToFileData(shortcutEntry1);
   initialState.folderShortcuts.push(shortcutEntry1.toURL());
@@ -152,7 +152,7 @@ export async function testRemoveFolderShortcut(done: () => void) {
   await waitDeepEquals(store, [], (state) => state.folderShortcuts);
 
   // Dispatch another action to remove non-existed shortcut 2.
-  const shortcutEntry2: DirectoryEntry = fileSystem.entries['/shortcut-2'];
+  const shortcutEntry2 = fileSystem.entries['/shortcut-2'] as DirectoryEntry;
   store.dispatch(removeFolderShortcut({key: shortcutEntry2.toURL()}));
 
   // Expect no changes in the store.

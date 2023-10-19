@@ -22,20 +22,26 @@ export class TableList extends List {
    * @param {Object=} opt_propertyBag Optional properties.
    */
   constructor(opt_propertyBag) {
+    // @ts-ignore: error TS2554: Expected 0 arguments, but got 1.
     super(opt_propertyBag);
 
-    /** @private @type {Table} */
+    /** @private @type {?Table} */
     this.table_ = null;
 
     /**
      * Actually defined and managed by List.
-     * @private @type {HTMLElement}
+     * @private @type {?HTMLElement}
      * */
     this.afterFiller_;
   }
 
+  // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
   static decorate(el) {
+    // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
+    // 'typeof List'.
     if (List.decorate) {
+      // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
+      // 'typeof List'.
       List.decorate(el);
     }
 
@@ -52,6 +58,8 @@ export class TableList extends List {
       return;
     }
     if (this.updateScrollbars_()) {
+      // @ts-ignore: error TS2339: Property 'redraw' does not exist on type
+      // 'List'.
       List.prototype.redraw.call(this);
     }  // Redraw items only.
     this.resizeCells_();
@@ -61,6 +69,7 @@ export class TableList extends List {
    * Updates width of cells.
    */
   resizeCells_() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const cm = this.table_.columnModel;
     for (let row = this.firstElementChild; row; row = row.nextElementSibling) {
       if (row.tagName != 'LI') {
@@ -68,10 +77,16 @@ export class TableList extends List {
       }
 
       for (let i = 0; i < cm.size; i++) {
+        // @ts-ignore: error TS2339: Property 'style' does not exist on type
+        // 'Element'.
         row.children[i].style.width = cm.getWidth(i) + 'px';
       }
+      // @ts-ignore: error TS2339: Property 'style' does not exist on type
+      // 'Element'.
       row.style.width = cm.totalWidth + 'px';
     }
+    // @ts-ignore: error TS2339: Property 'afterFiller_' does not exist on type
+    // 'TableList'.
     this.afterFiller_.style.width = cm.totalWidth + 'px';
   }
 
@@ -79,11 +94,15 @@ export class TableList extends List {
    * Redraws the viewport.
    */
   redraw() {
+    // @ts-ignore: error TS2339: Property 'batchCount_' does not exist on type
+    // 'TableList'.
     if (this.batchCount_ != 0) {
       return;
     }
     this.updateScrollbars_();
 
+    // @ts-ignore: error TS2339: Property 'redraw' does not exist on type
+    // 'List'.
     List.prototype.redraw.call(this);
     this.resizeCells_();
   }
@@ -94,11 +113,15 @@ export class TableList extends List {
    * @return {number} The height of after filler.
    * @override
    */
+  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
+  // '@override' tag because it is not declared in the base class 'List'.
   getAfterFillerHeight(lastIndex) {
     // If the list is empty set height to 1 to show horizontal
     // scroll bar.
     return lastIndex == 0 ?
         1 :
+        // @ts-ignore: error TS2339: Property 'getAfterFillerHeight' does not
+        // exist on type 'List'.
         List.prototype.getAfterFillerHeight.call(this, lastIndex);
   }
 
@@ -107,6 +130,7 @@ export class TableList extends List {
    * @return {boolean} True if horizontal scroll bar changed.
    */
   updateScrollbars_() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const cm = this.table_.columnModel;
     const style = this.style;
     if (!cm || cm.size == 0) {
@@ -170,6 +194,8 @@ export class TableList extends List {
     if (!this.dataModel || this.dataModel.length == 0) {
       return true;
     }
+    // @ts-ignore: error TS2339: Property 'getItemTop' does not exist on type
+    // 'TableList'.
     return this.getItemTop(this.dataModel.length) <= visibleHeight;
   }
 
@@ -180,6 +206,8 @@ export class TableList extends List {
    */
   createItem(dataItem) {
     return /** @type {!ListItem} */ (
+        // @ts-ignore: error TS2345: Argument of type 'Table | null' is not
+        // assignable to parameter of type 'Table'.
         this.table_.getRenderFunction().call(null, dataItem, this.table_));
   }
 
@@ -188,15 +216,19 @@ export class TableList extends List {
    * @return {boolean}
    */
   needsFullRedraw_() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const cm = this.table_.columnModel;
     const row = this.firstElementChild;
     // If the number of columns in the model has changed, a full redraw is
     // needed.
+    // @ts-ignore: error TS18047: 'row' is possibly 'null'.
     if (row.children.length != cm.size) {
       return true;
     }
     // If the column visibility has changed, a full redraw is required.
     for (let i = 0; i < cm.size; ++i) {
+      // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
+      // 'Element'.
       if (cm.isVisible(i) == row.children[i].hidden) {
         return true;
       }
@@ -209,6 +241,7 @@ export class TableList extends List {
    * The table associated with the list.
    * @type {Element}
    */
-  TableList.prototype.table;
-  Object.defineProperty(
-      TableList.prototype, 'table', getPropertyDescriptor('table'));
+// @ts-ignore: error TS2565: Property 'table' is used before being assigned.
+TableList.prototype.table;
+Object.defineProperty(
+    TableList.prototype, 'table', getPropertyDescriptor('table'));

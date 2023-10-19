@@ -11,15 +11,6 @@ visibility = [
   "//ui/file_manager/*",
 ]
 
-group("closure_compile") {
-  testonly = true
-  deps = [
-    ":closure_compile_jsmodules",
-    ":js_test_type_check",
-    ":test_support_modules_type_check",
-  ]
-}
-
 group("js_modules") {
   deps = [
     ":app_util",
@@ -42,54 +33,6 @@ group("js_modules") {
     ":util",
     ":volume_manager_types",
   ]
-}
-
-js_type_check("closure_compile_jsmodules") {
-  deps = [
-    ":app_util",
-    ":array_data_model",
-    ":async_util",
-    ":error_counter",
-    ":file_type",
-    ":file_types_data",
-    ":files_app_entry_types",
-    ":filtered_volume_manager",
-    ":glitch",
-    ":icon_util",
-    ":mock_entry",
-    ":notifications",
-    ":progress_center_common",
-    ":recent_date_bucket",
-    ":storage",
-    ":ui",
-    ":url_constants",
-    ":util",
-    ":volume_manager_types",
-  ]
-
-  closure_flags = strict_error_checking_closure_args + [
-                    "language_in=ECMASCRIPT_2020",
-                    "js_module_root=./gen/ui",
-                    "js_module_root=" + rebase_path("//ui", root_build_dir),
-                    "hide_warnings_for=third_party/",
-                  ]
-}
-
-js_type_check("test_support_modules_type_check") {
-  testonly = true
-  deps = [
-    ":mock_chrome",
-    ":test_error_reporting",
-    ":unittest_util",
-  ]
-
-  closure_flags =
-      strict_error_checking_closure_args + [
-        "language_in=ECMASCRIPT_2020",
-        "js_module_root=./gen/ui",
-        "js_module_root=" + rebase_path("//ui", root_build_dir),
-        "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
-      ]
 }
 
 js_library("app_util") {
@@ -136,7 +79,6 @@ js_unittest("files_app_entry_types_unittest") {
     "//ash/webui/common/resources:assert",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/externs:volume_info",
   ]
 }
 
@@ -144,7 +86,6 @@ js_library("files_app_entry_types") {
   deps = [
     ":icon_util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
   ]
 }
 
@@ -191,8 +132,6 @@ js_library("filtered_volume_manager") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/file_manager/file_manager/externs:volume_info_list",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
@@ -277,7 +216,6 @@ js_library("util") {
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/ts:store",
     "//ui/file_manager/file_manager/foreground/js:constants",
@@ -313,30 +251,4 @@ js_library("volume_manager_types") {
 
 js_library("icon_util") {
   deps = [ "//ui/file_manager/file_manager/externs:file_manager_private" ]
-}
-
-js_test_type_check("js_test_type_check") {
-  deps = [
-    ":array_data_model_unittest",
-    ":file_type_unittest",
-    ":files_app_entry_types_unittest",
-    ":filtered_volume_manager_unittest",
-    ":recent_date_bucket_unittest",
-    ":storage_unittest",
-    ":util_unittest",
-    ":volume_manager_types_unittest",
-  ]
-
-  closure_flags = strict_error_checking_closure_args + [
-                    "language_in=ECMASCRIPT_2020",
-                    "js_module_root=./gen/ui/file_manager/tsc/",
-                    "js_module_root=./gen/ui/file_manager/",
-                    "js_module_root=" +
-                        rebase_path("//ui/file_manager", root_build_dir),
-                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
-                    "hide_warnings_for=third_party/",
-                    "hide_warnings_for=gen/ui/file_manager/tsc/",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
-                  ]
-  extra_deps = [ "//ui/file_manager:js_from_ts" ]
 }

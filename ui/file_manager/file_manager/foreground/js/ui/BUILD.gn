@@ -9,15 +9,6 @@ import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
-group("closure_compile") {
-  testonly = true
-  visibility += [ "//ui/file_manager:closure_compile" ]
-  deps = [
-    ":closure_compile_jsmodules",
-    ":js_test_type_check",
-  ]
-}
-
 group("js_modules") {
   deps = [
     ":a11y_announce",
@@ -59,61 +50,6 @@ group("js_modules") {
   ]
 }
 
-js_type_check("closure_compile_jsmodules") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "language_in=ECMASCRIPT_2020",
-                    "js_module_root=gen/ui/file_manager/tsc/",
-                    "js_module_root=" +
-                        rebase_path("//ui/file_manager/", root_build_dir),
-                    "js_module_root=gen/ui/file_manager/",
-                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
-                    "hide_warnings_for=gen/ui/file_manager/tsc/",
-                  ]
-
-  deps = [
-    ":a11y_announce",
-    ":action_model_ui",
-    ":actions_submenu",
-    ":combobutton",
-    ":commandbutton",
-    ":default_task_dialog",
-    ":dialog_footer",
-    ":dialogs",
-    ":directory_tree",
-    ":drag_selector",
-    ":file_grid",
-    ":file_list_selection_model",
-    ":file_manager_dialog_base",
-    ":file_manager_ui",
-    ":file_metadata_formatter",
-    ":file_table",
-    ":file_table_list",
-    ":file_tap_handler",
-    ":files_alert_dialog",
-    ":files_confirm_dialog",
-    ":files_menu",
-    ":gear_menu",
-    ":import_crostini_image_dialog",
-    ":install_linux_package_dialog",
-    ":list_container",
-    ":multi_menu",
-    ":multi_menu_button",
-    ":progress_center_panel",
-    ":providers_menu",
-    ":splitter",
-    ":tree",
-    "table:table",
-    "table:table_column",
-    "table:table_column_model",
-    "table:table_header",
-    "table:table_list",
-    "table:table_splitter",
-    "//ui/file_manager:js_from_ts",
-  ]
-}
-
 js_library("a11y_announce") {
 }
 
@@ -130,7 +66,6 @@ js_library("actions_submenu") {
     ":files_menu",
     ":menu",
     ":menu_item",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:actions_model",
   ]
 }
@@ -152,7 +87,6 @@ js_library("combobutton") {
     ":menu_item",
     ":multi_menu_button",
     "//ui/file_manager/file_manager/common/js:ui",
-    "//ui/file_manager/file_manager/common/js:util",
   ]
 
   externs_list = [ "//ui/file_manager/file_manager/externs/paper_elements.js" ]
@@ -245,7 +179,6 @@ js_library("directory_tree") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
     "//ui/file_manager/file_manager/foreground/js:constants",
@@ -781,48 +714,4 @@ js_unittest("splitter_unittest") {
 
 js_library("tree") {
   deps = [ "//ash/webui/common/resources:assert" ]
-}
-
-js_test_type_check("js_test_type_check") {
-  deps = [
-    ":actions_submenu_unittest",
-    ":command_unittest",
-    ":context_menu_handler_unittest",
-    ":directory_tree_unittest",
-    ":file_grid_unittest",
-    ":file_list_selection_model_unittest",
-    ":file_manager_dialog_base_unittest",
-    ":file_table_list_unittest",
-    ":file_table_unittest",
-    ":file_tap_handler_unittest",
-    ":grid_unittest",
-    ":install_linux_package_dialog_unittest",
-    ":list_selection_model_test_util",
-    ":list_selection_model_unittest",
-    ":list_single_selection_model_unittest",
-    ":list_unittest",
-    ":menu_button_unittest",
-    ":menu_unittest",
-    ":multi_menu_unittest",
-    ":position_util_unittest",
-    ":splitter_unittest",
-  ]
-  is_polymer3 = true
-
-  closure_flags = strict_error_checking_closure_args + [
-                    "language_in=ECMASCRIPT_2020",
-                    "generate_exports=false",
-                    "js_module_root=./gen/ui",
-                    "js_module_root=./gen/ui/file_manager/tsc/",
-                    "js_module_root=" +
-                        rebase_path("//ui/file_manager/", root_build_dir),
-                    "js_module_root=./gen/ui/file_manager/",
-                    "jscomp_off=duplicate",
-                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
-                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
-                    "hide_warnings_for=third_party/",
-                    "hide_warnings_for=gen/ui/file_manager/tsc/",
-                  ]
-  extra_deps = [ "//ui/file_manager:js_from_ts" ]
 }

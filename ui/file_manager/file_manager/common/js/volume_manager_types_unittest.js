@@ -11,6 +11,9 @@ import {VolumeManagerCommon} from './volume_manager_types.js';
 // volumeType.
 export function testRootTypeFromVolumeTypeBijection() {
   Object.keys(VolumeManagerCommon.VolumeType).forEach((key) => {
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type 'typeof
+    // VolumeType'.
     const volumeType = VolumeManagerCommon.VolumeType[key];
     assertTrue(volumeType !== undefined);
 
@@ -29,6 +32,9 @@ export function testRootTypeFromVolumeTypeBijection() {
 // root types that do not have a volume of their own.
 export function testEveryRootTypeHasAVolumeType() {
   Object.keys(VolumeManagerCommon.RootType).forEach((key) => {
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type 'typeof
+    // RootType'.
     const rootType = VolumeManagerCommon.RootType[key];
     assertTrue(rootType !== undefined);
 

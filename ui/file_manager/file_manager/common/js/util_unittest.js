@@ -12,6 +12,8 @@ import {LEGACY_FILES_APP_URL, SWA_FILES_APP_URL} from './url_constants.js';
 import {str, util} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
+// @ts-ignore: error TS7034: Variable 'fileSystem' implicitly has type 'any' in
+// some locations where its type cannot be determined.
 let fileSystem;
 
 export function setUp() {
@@ -28,12 +30,19 @@ export function setUp() {
   fileSystem.populate(filenames);
 }
 
+// @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any' type.
 export function testReadEntriesRecursively(callback) {
+  // @ts-ignore: error TS7034: Variable 'foundEntries' implicitly has type
+  // 'any[]' in some locations where its type cannot be determined.
   let foundEntries = [];
   util.readEntriesRecursively(
+      // @ts-ignore: error TS7005: Variable 'fileSystem' implicitly has an 'any'
+      // type.
       fileSystem.root,
       (entries) => {
         const fileEntries = entries.filter(entry => !entry.isDirectory);
+        // @ts-ignore: error TS7005: Variable 'foundEntries' implicitly has an
+        // 'any[]' type.
         foundEntries = foundEntries.concat(fileEntries);
       },
       () => {
@@ -44,12 +53,19 @@ export function testReadEntriesRecursively(callback) {
       () => {}, () => false);
 }
 
+// @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any' type.
 export function testReadEntriesRecursivelyLevel0(callback) {
+  // @ts-ignore: error TS7034: Variable 'foundEntries' implicitly has type
+  // 'any[]' in some locations where its type cannot be determined.
   let foundEntries = [];
   util.readEntriesRecursively(
+      // @ts-ignore: error TS7005: Variable 'fileSystem' implicitly has an 'any'
+      // type.
       fileSystem.root,
       (entries) => {
         const fileEntries = entries.filter(entry => !entry.isDirectory);
+        // @ts-ignore: error TS7005: Variable 'foundEntries' implicitly has an
+        // 'any[]' type.
         foundEntries = foundEntries.concat(fileEntries);
       },
       () => {
@@ -60,12 +76,19 @@ export function testReadEntriesRecursivelyLevel0(callback) {
       () => {}, () => false, 0 /* opt_maxDepth */);
 }
 
+// @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any' type.
 export function testReadEntriesRecursivelyLevel1(callback) {
+  // @ts-ignore: error TS7034: Variable 'foundEntries' implicitly has type
+  // 'any[]' in some locations where its type cannot be determined.
   let foundEntries = [];
   util.readEntriesRecursively(
+      // @ts-ignore: error TS7005: Variable 'fileSystem' implicitly has an 'any'
+      // type.
       fileSystem.root,
       (entries) => {
         const fileEntries = entries.filter(entry => !entry.isDirectory);
+        // @ts-ignore: error TS7005: Variable 'foundEntries' implicitly has an
+        // 'any[]' type.
         foundEntries = foundEntries.concat(fileEntries);
       },
       () => {
@@ -78,10 +101,20 @@ export function testReadEntriesRecursivelyLevel1(callback) {
 
 
 export function testIsDescendantEntry() {
+  // @ts-ignore: error TS7005: Variable 'fileSystem' implicitly has an 'any'
+  // type.
   const root = fileSystem.root;
+  // @ts-ignore: error TS7005: Variable 'fileSystem' implicitly has an 'any'
+  // type.
   const folder = fileSystem.entries['/dir_a'];
+  // @ts-ignore: error TS7005: Variable 'fileSystem' implicitly has an 'any'
+  // type.
   const subFolder = fileSystem.entries['/dir_a/dir_b'];
+  // @ts-ignore: error TS7005: Variable 'fileSystem' implicitly has an 'any'
+  // type.
   const file = fileSystem.entries['/file_a.txt'];
+  // @ts-ignore: error TS7005: Variable 'fileSystem' implicitly has an 'any'
+  // type.
   const deepFile = fileSystem.entries['/dir_a/dir_b/dir_c/file_g.txt'];
 
   const fakeEntry = new FakeEntryImpl(
@@ -99,6 +132,8 @@ export function testIsDescendantEntry() {
   const downloadsVolumeInfo = volumeManager.volumeInfoList.item(1);
   const mockFs = /** @type {MockFileSystem} */ (downloadsVolumeInfo.fileSystem);
   mockFs.populate(['/folder1/']);
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   const folder1 = downloadsVolumeInfo.fileSystem.entries['/folder1'];
 
   const volumeEntry = new VolumeEntry(downloadsVolumeInfo);
@@ -131,19 +166,31 @@ export function testIsDescendantEntry() {
  */
 export function testEntryDebugString() {
   // Check static values.
+  // @ts-ignore: error TS2345: Argument of type 'null' is not assignable to
+  // parameter of type 'FileSystemEntry | FilesAppEntry'.
   assertEquals('entry is null', util.entryDebugString(null));
   (/**
     * @suppress {checkTypes} Closure doesn't allow passing undefined or {} due
     * to type constraints nor casting to {Entry}.
     */
    function() {
+     // @ts-ignore: error TS2345: Argument of type 'undefined' is not assignable
+     // to parameter of type 'FileSystemEntry | FilesAppEntry'.
      assertEquals('entry is undefined', util.entryDebugString(undefined));
+     // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
+     // parameter of type 'FileSystemEntry | FilesAppEntry'.
      assertEquals('(Object) ', util.entryDebugString({}));
    })();
 
   // Construct some types of entries.
+  // @ts-ignore: error TS7005: Variable 'fileSystem' implicitly has an 'any'
+  // type.
   const root = fileSystem.root;
+  // @ts-ignore: error TS7005: Variable 'fileSystem' implicitly has an 'any'
+  // type.
   const folder = fileSystem.entries['/dir_a'];
+  // @ts-ignore: error TS7005: Variable 'fileSystem' implicitly has an 'any'
+  // type.
   const file = fileSystem.entries['/file_a.txt'];
   const fakeEntry = new FakeEntryImpl(
       'fake-entry-label', VolumeManagerCommon.RootType.CROSTINI);

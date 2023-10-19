@@ -14,7 +14,7 @@ import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
 

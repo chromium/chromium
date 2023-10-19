@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-
 /**
  * Processes touch events and calls back to the class user when tap events
  * defined by FileTapHandler.TapEvent are detected.
@@ -83,7 +81,8 @@ export class FileTapHandler {
    *
    * @param {!Event} event Touch event.
    * @param {number} index Index of the target item in the file list.
-   * @param {function(!Event, number, !FileTapHandler.TapEvent)} callback
+   * @param {function(!Event, number, !FileTapHandler.TapEvent):boolean}
+callback
    *     Called when a tap event is detected. Should return true if it has
    *     taken any action, and false if it ignores the event.
    * @return {boolean} True if a tap event was detected and the |callback|
@@ -105,21 +104,29 @@ export class FileTapHandler {
       case 'touchstart': {
         // Only track the position of the single touch. However, we detect a
         // two-finger tap for opening a context menu of the target.
+        // @ts-ignore: error TS2339: Property 'touches' does not exist on type
+        // 'Event'.
         if (event.touches.length > 2) {
           this.tapStarted_ = false;
           return false;
         } else if (this.activeTouchId_ !== undefined) {
+          // @ts-ignore: error TS2339: Property 'touches' does not exist on type
+          // 'Event'.
           this.isTwoFingerTap_ = event.touches.length === 2;
           return false;
         }
 
         this.resetTouchTracking_();
+        // @ts-ignore: error TS2339: Property 'targetTouches' does not exist on
+        // type 'Event'.
         const touch = event.targetTouches[0];
         this.activeTouchId_ = touch.identifier;
         this.tapStarted_ = true;
 
         this.activeItemIndex_ = index;
         this.isLongTap_ = false;
+        // @ts-ignore: error TS2339: Property 'touches' does not exist on type
+        // 'Event'.
         this.isTwoFingerTap_ = event.touches.length === 2;
 
         this.hasLongPressProcessed_ = false;
@@ -141,6 +148,8 @@ export class FileTapHandler {
       } break;
 
       case 'touchmove': {
+        // @ts-ignore: error TS2339: Property 'changedTouches' does not exist on
+        // type 'Event'.
         const touch = this.findActiveTouch_(event.changedTouches);
         if (touch === undefined) {
           break;
@@ -248,11 +257,13 @@ export class FileTapHandler {
   findActiveTouch_(touches) {
     if (this.activeTouchId_ !== undefined) {
       for (let i = 0; i < touches.length; i++) {
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         if (touches[i].identifier === this.activeTouchId_) {
           return touches[i];
         }
       }
     }
+    return;
   }
 }
 
@@ -272,6 +283,8 @@ FileTapHandler.LONG_PRESS_THRESHOLD_MILLISECONDS = 500;
  * @type {number}
  * @private
  */
+// @ts-ignore: error TS2341: Property 'MAX_TRACKING_FOR_TAP_' is private and
+// only accessible within class 'FileTapHandler'.
 FileTapHandler.MAX_TRACKING_FOR_TAP_ = 8;
 
 /**

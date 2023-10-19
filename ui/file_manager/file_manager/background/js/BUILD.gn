@@ -10,15 +10,6 @@ import("//ui/webui/webui_features.gni")
 
 related_apps = [ "//ui/file_manager/file_manager/*" ]
 
-group("closure_compile") {
-  testonly = true
-  deps = [
-    ":closure_compile_jsmodules",
-    ":js_test_type_check",
-    ":test_support_modules_type_check",
-  ]
-}
-
 group("js_modules") {
   deps = [
     ":file_manager_base",
@@ -32,56 +23,6 @@ group("js_modules") {
 # Default to private.
 visibility = [ ":*" ]
 
-js_type_check("closure_compile_jsmodules") {
-  deps = [
-    ":file_manager_base",
-    ":file_operation_manager",
-    ":file_operation_util",
-    ":mock_progress_center",
-    ":progress_center",
-    ":runtime_loaded_test_util",
-    ":test_util_base",
-    ":volume_manager_impl",
-    ":volume_manager_util",
-    "//ui/file_manager:js_from_ts",
-  ]
-
-  closure_flags = strict_error_checking_closure_args + [
-                    "language_in=ECMASCRIPT_2020",
-                    "js_module_root=./gen/ui/file_manager/tsc",
-                    "js_module_root=./gen/ui/file_manager",
-                    "js_module_root=" +
-                        rebase_path("//ui/file_manager", root_build_dir),
-                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
-                    "hide_warnings_for=third_party/",
-                    "hide_warnings_for=gen/ui/file_manager/tsc/",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
-                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
-                  ]
-}
-
-js_type_check("test_support_modules_type_check") {
-  testonly = true
-  deps = [
-    ":mock_crostini",
-    ":mock_file_operation_manager",
-    ":mock_progress_center",
-    ":mock_volume_manager",
-    ":runtime_loaded_test_util",
-    "//ui/file_manager:js_from_ts",
-  ]
-  closure_flags = strict_error_checking_closure_args + [
-                    "language_in=ECMASCRIPT_2020",
-                    "js_module_root=./gen/ui/file_manager/tsc",
-                    "js_module_root=./gen/ui",
-                    "js_module_root=" + rebase_path("//ui", root_build_dir),
-                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
-                    "hide_warnings_for=third_party/",
-                    "hide_warnings_for=gen/ui/file_manager/tsc/",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
-                  ]
-}
-
 js_library("file_manager_base") {
   visibility += [ "//ui/file_manager/file_manager/foreground/js:file_manager" ]
   deps = [
@@ -92,7 +33,6 @@ js_library("file_manager_base") {
     "//ui/file_manager/file_manager/common/js:url_constants",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:crostini",
     "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
@@ -164,8 +104,6 @@ js_library("mock_volume_manager") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/file_manager/file_manager/externs:volume_info_list",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
@@ -230,7 +168,6 @@ js_library("volume_manager_impl") {
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/ts:store",
   ]
@@ -253,31 +190,8 @@ js_library("volume_manager_util") {
   deps = [
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs/ts:store",
   ]
-}
-
-js_test_type_check("js_test_type_check") {
-  deps = [
-    ":file_operation_handler_unittest",
-    ":file_operation_manager_unittest",
-    ":volume_manager_unittest",
-  ]
-
-  closure_flags = strict_error_checking_closure_args + [
-                    "language_in=ECMASCRIPT_2020",
-                    "js_module_root=gen/ui/file_manager/tsc/",
-                    "js_module_root=gen/ui/file_manager/",
-                    "js_module_root=" +
-                        rebase_path("//ui/file_manager/", root_build_dir),
-                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
-                    "hide_warnings_for=third_party/",
-                    "hide_warnings_for=gen/ui/file_manager/tsc/",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
-                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
-                  ]
-  extra_deps = [ "//ui/file_manager:js_from_ts" ]
 }
 
 tsc_folder =

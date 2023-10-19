@@ -33,6 +33,9 @@ declare global {
     /** Log action data in the console for debugging purpose. */
     DEBUG_STORE: boolean;
 
+    /** Namespace used for test utils. */
+    test: any;
+
     webkitResolveLocalFileSystemURL(
         url: string, successCallback: FileSystemEntryCallback,
         errorCallback: ErrorCallback): void;

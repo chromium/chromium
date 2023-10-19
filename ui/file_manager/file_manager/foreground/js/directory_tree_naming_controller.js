@@ -7,7 +7,6 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {util} from '../../common/js/util.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
 import {readSubDirectoriesForRenamedEntry} from '../../state/ducks/all_entries.js';
 import {getStore} from '../../state/store.js';
 import {XfTree} from '../../widgets/xf_tree.js';
@@ -56,7 +55,7 @@ export class DirectoryTreeNamingController {
      */
     this.isRemovableRoot_ = false;
 
-    /** @private @type {?VolumeInfo} */
+    /** @private @type {?import("../../externs/volume_info.js").VolumeInfo} */
     this.volumeInfo_ = null;
 
     /** @private @const @type {!HTMLInputElement} */
@@ -87,7 +86,9 @@ export class DirectoryTreeNamingController {
    * @return {!HTMLElement}
    */
   getLabelElement_() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const element = this.currentDirectoryItem_.firstElementChild;
+    // @ts-ignore: error TS18047: 'element' is possibly 'null'.
     const label = element.querySelector('.label');
     return /** @type {!HTMLElement} */ (assert(label));
   }
@@ -98,9 +99,10 @@ export class DirectoryTreeNamingController {
    *     node of the target.
    * @param {boolean} isRemovableRoot Indicates whether the target is a
    *     removable volume root or not.
-   * @param {VolumeInfo} volumeInfo A volume information about the target entry.
-   *     |volumeInfo| can be null if method is invoked on a folder that is in
-   *     the tree view and is not root of an external drive.
+   * @param {import("../../externs/volume_info.js").VolumeInfo} volumeInfo A
+   *     volume information about the target entry. |volumeInfo| can be null if
+   *     method is invoked on a folder that is in the tree view and is not root
+   *     of an external drive.
    */
   attachAndStart(directoryItem, isRemovableRoot, volumeInfo) {
     this.isRemovableRoot_ = isRemovableRoot;
@@ -111,6 +113,8 @@ export class DirectoryTreeNamingController {
     }
 
     this.currentDirectoryItem_ = directoryItem;
+    // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+    // parameter of type 'string'.
     this.currentDirectoryItem_.setAttribute('renaming', true);
 
     if (isTreeItem(directoryItem)) {  // XfTreeItem instance
@@ -118,10 +122,12 @@ export class DirectoryTreeNamingController {
       this.currentDirectoryItem_.appendChild(this.inputElement_);
     } else {  // DirectoryItem instance
       const renameInputElementPlaceholder =
+          // @ts-ignore: error TS2531: Object is possibly 'null'.
           this.currentDirectoryItem_.firstElementChild.getElementsByClassName(
               'rename-placeholder');
 
       if (this.isRemovableRoot_ && renameInputElementPlaceholder.length === 1) {
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         renameInputElementPlaceholder[0].appendChild(this.inputElement_);
       } else {
         const label = this.getLabelElement_();
@@ -141,16 +147,21 @@ export class DirectoryTreeNamingController {
    * @private
    */
   async commitRename_() {
+    // @ts-ignore: error TS2551: Property 'contextMenu' does not exist on type
+    // 'HTMLInputElement'. Did you mean 'oncontextmenu'?
     const contextMenu = this.inputElement_.contextMenu;
     if (!this.editing_ || (contextMenu && !contextMenu.hidden)) {
       return;
     }
     this.editing_ = false;
 
+    // @ts-ignore: error TS2339: Property 'entry' does not exist on type
+    // 'XfTreeItem | DirectoryItem'.
     const entry = this.currentDirectoryItem_.entry;
     const newName = this.inputElement_.value;
 
     // If new name is the same as current name or empty, do nothing.
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     if (newName === this.currentDirectoryItem_.label || newName.length == 0) {
       this.detach_();
       return;
@@ -163,6 +174,7 @@ export class DirectoryTreeNamingController {
           this.volumeInfo_, this.isRemovableRoot_);
       await this.performRename_(entry, newName);
     } catch (error) {
+      // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
       await this.alertDialog_.showAsync(/** @type {string} */ (error.message));
       this.editing_ = true;
     }
@@ -191,10 +203,12 @@ export class DirectoryTreeNamingController {
       // Put the new name in the .label element before detaching the
       // <input> to prevent showing the old name.
       if (util.isNewDirectoryTreeEnabled()) {
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.currentDirectoryItem_.label = newName;
       } else {
         this.getLabelElement_().textContent = newName;
         if (window.IN_TEST) {
+          // @ts-ignore: error TS2531: Object is possibly 'null'.
           this.currentDirectoryItem_.setAttribute('entry-label', newName);
         }
       }
@@ -211,7 +225,11 @@ export class DirectoryTreeNamingController {
         this.directoryTreeContainer_.focusItemWithKeyWhenRendered(
             newEntry.toURL());
       } else {
+        // @ts-ignore: error TS2339: Property 'entry' does not exist on type
+        // 'XfTreeItem | DirectoryItem'.
         this.currentDirectoryItem_.entry = newEntry;
+        // @ts-ignore: error TS2339: Property 'updateSubDirectories' does not
+        // exist on type 'XfTreeItem | DirectoryItem'.
         this.currentDirectoryItem_.updateSubDirectories(/* recursive= */ true);
       }
 
@@ -226,6 +244,7 @@ export class DirectoryTreeNamingController {
       this.directoryModel_.setIgnoringCurrentDirectoryDeletion(
           /* ignore= */ false);
 
+      // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
       this.alertDialog_.show(/** @type {string} */ (error.message));
     } finally {
       this.detach_();
@@ -254,6 +273,7 @@ export class DirectoryTreeNamingController {
 
     this.inputElement_.remove();
 
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.currentDirectoryItem_.removeAttribute('renaming');
     this.currentDirectoryItem_ = null;
 
@@ -269,6 +289,7 @@ export class DirectoryTreeNamingController {
   onKeyDown_(event) {
     event.stopPropagation();
 
+    // @ts-ignore: error TS2339: Property 'key' does not exist on type 'Event'.
     switch (getKeyModifiers(event) + event.key) {
       case 'Escape':
         this.cancelRename_();

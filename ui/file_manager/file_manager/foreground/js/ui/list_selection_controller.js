@@ -27,6 +27,11 @@ ListSelectionController.prototype = {
    * @type {ListSelectionModel}
    */
   get selectionModel() {
+    // @ts-ignore: error TS2551: Property 'selectionModel_' does not exist on
+    // type '{ readonly selectionModel: ListSelectionModel; getIndexBelow(index:
+    // number): number; getIndexAbove(index: number): number;
+    // getIndexBefore(index: number): number; ... 7 more ...; handleKeyDown(e:
+    // Event): void; }'. Did you mean 'selectionModel'?
     return this.selectionModel_;
   },
 
@@ -59,6 +64,7 @@ ListSelectionController.prototype = {
    * @param {number} index The index to get the index before.
    * @return {number} The index before or -1 if not found.
    */
+  // @ts-ignore: error TS6133: 'index' is declared but its value is never read.
   getIndexBefore(index) {
     return -1;
   },
@@ -71,6 +77,7 @@ ListSelectionController.prototype = {
    * @param {number} index The index to get the index after.
    * @return {number} The index after or -1 if not found.
    */
+  // @ts-ignore: error TS6133: 'index' is declared but its value is never read.
   getIndexAfter(index) {
     return -1;
   },
@@ -131,6 +138,8 @@ ListSelectionController.prototype = {
       sm.leadIndex = sm.anchorIndex = -1;
       sm.unselectAll();
     } else {
+      // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
+      // 'Event'.
       if (sm.multiple && (e.ctrlKey && !e.shiftKey)) {
         // Selection is handled at mouseUp on windows/linux, mouseDown on mac.
         if (!isDown) {
@@ -139,6 +148,8 @@ ListSelectionController.prototype = {
           sm.leadIndex = index;
           sm.anchorIndex = index;
         }
+        // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
+        // 'Event'.
       } else if (e.shiftKey && anchorIndex !== -1 && anchorIndex !== index) {
         // Shift is done in mousedown.
         if (isDown) {
@@ -152,6 +163,8 @@ ListSelectionController.prototype = {
         }
       } else {
         // Right click for a context menu needs to not clear the selection.
+        // @ts-ignore: error TS2339: Property 'button' does not exist on type
+        // 'Event'.
         const isRightClick = e.button === 2;
 
         // If the index is selected this is handled in mouseup.
@@ -176,6 +189,7 @@ ListSelectionController.prototype = {
    * @param {number} index The index that was under the touched point, -1 if
    *     none.
    */
+  // @ts-ignore: error TS6133: 'index' is declared but its value is never read.
   handleTouchEvents(e, index) {
     // Do nothing.
   },
@@ -185,19 +199,27 @@ ListSelectionController.prototype = {
    * @param {Event} e The keydown event.
    */
   handleKeyDown(e) {
+    // @ts-ignore: error TS2339: Property 'tagName' does not exist on type
+    // 'EventTarget'.
     const tagName = e.target.tagName;
     // If focus is in an input field of some kind, only handle navigation keys
     // that aren't likely to conflict with input interaction (e.g., text
     // editing, or changing the value of a checkbox or select).
     if (tagName === 'INPUT') {
+      // @ts-ignore: error TS2339: Property 'type' does not exist on type
+      // 'EventTarget'.
       const inputType = e.target.type;
       // Just protect space (for toggling) for checkbox and radio.
       if (inputType === 'checkbox' || inputType === 'radio') {
+        // @ts-ignore: error TS2339: Property 'key' does not exist on type
+        // 'Event'.
         if (e.key === ' ') {
           return;
         }
         // Protect all but the most basic navigation commands in anything
         // else.
+        // @ts-ignore: error TS2339: Property 'key' does not exist on type
+        // 'Event'.
       } else if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') {
         return;
       }
@@ -213,15 +235,20 @@ ListSelectionController.prototype = {
     let prevent = true;
 
     // Ctrl/Meta+A
+    // @ts-ignore: error TS2339: Property 'ctrlKey' does not exist on type
+    // 'Event'.
     if (sm.multiple && e.keyCode === 65 && e.ctrlKey) {
       sm.selectAll();
       e.preventDefault();
       return;
     }
 
+    // @ts-ignore: error TS2339: Property 'key' does not exist on type 'Event'.
     if (e.key === ' ') {
       if (leadIndex !== -1) {
         const selected = sm.getIndexSelected(leadIndex);
+        // @ts-ignore: error TS2339: Property 'ctrlKey' does not exist on type
+        // 'Event'.
         if (e.ctrlKey || !selected) {
           sm.setIndexSelected(leadIndex, !selected || !sm.multiple);
           return;
@@ -229,6 +256,7 @@ ListSelectionController.prototype = {
       }
     }
 
+    // @ts-ignore: error TS2339: Property 'key' does not exist on type 'Event'.
     switch (e.key) {
       case 'Home':
         newIndex = this.getFirstIndex();
@@ -262,6 +290,8 @@ ListSelectionController.prototype = {
       sm.beginChange();
 
       sm.leadIndex = newIndex;
+      // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
+      // 'Event'.
       if (e.shiftKey) {
         const anchorIndex = sm.anchorIndex;
         if (sm.multiple) {

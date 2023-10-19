@@ -70,15 +70,23 @@ export class Id3Parser extends MetadataParser {
    */
   readString_(reader, encoding, size) {
     switch (encoding) {
+        // @ts-ignore: error TS4111: Property 'ENCODING' comes from an index
+        // signature, so it must be accessed with ['ENCODING'].
       case Id3Parser.v2.ENCODING.ISO_8859_1:
         return reader.readNullTerminatedString(size);
 
+        // @ts-ignore: error TS4111: Property 'ENCODING' comes from an index
+        // signature, so it must be accessed with ['ENCODING'].
       case Id3Parser.v2.ENCODING.UTF_16:
         return reader.readNullTerminatedStringUTF16(true, size);
 
+        // @ts-ignore: error TS4111: Property 'ENCODING' comes from an index
+        // signature, so it must be accessed with ['ENCODING'].
       case Id3Parser.v2.ENCODING.UTF_16BE:
         return reader.readNullTerminatedStringUTF16(false, size);
 
+        // @ts-ignore: error TS4111: Property 'ENCODING' comes from an index
+        // signature, so it must be accessed with ['ENCODING'].
       case Id3Parser.v2.ENCODING.UTF_8:
         // TODO: implement UTF_8.
         this.log('UTF8 encoding not supported, used ISO_8859_1 instead');
@@ -100,8 +108,14 @@ export class Id3Parser extends MetadataParser {
    * @param {number} end Frame end position in reader.
    * @private
    */
+  // @ts-ignore: error TS6133: 'majorVersion' is declared but its value is never
+  // read.
   readTextFrame_(reader, majorVersion, frame, end) {
+    // @ts-ignore: error TS2339: Property 'encoding' does not exist on type
+    // 'Object'.
     frame.encoding = reader.readScalar(1, false, end);
+    // @ts-ignore: error TS2339: Property 'encoding' does not exist on type
+    // 'Object'.
     frame.value = this.readString_(reader, frame.encoding, end - reader.tell());
   }
 
@@ -114,12 +128,22 @@ export class Id3Parser extends MetadataParser {
    * @param {number} end Frame end position in reader.
    * @private
    */
+  // @ts-ignore: error TS6133: 'majorVersion' is declared but its value is never
+  // read.
   readUserDefinedTextFrame_(reader, majorVersion, frame, end) {
+    // @ts-ignore: error TS2339: Property 'encoding' does not exist on type
+    // 'Object'.
     frame.encoding = reader.readScalar(1, false, end);
 
+    // @ts-ignore: error TS2339: Property 'description' does not exist on type
+    // 'Object'.
     frame.description =
+        // @ts-ignore: error TS2339: Property 'encoding' does not exist on type
+        // 'Object'.
         this.readString_(reader, frame.encoding, end - reader.tell());
 
+    // @ts-ignore: error TS2339: Property 'encoding' does not exist on type
+    // 'Object'.
     frame.value = this.readString_(reader, frame.encoding, end - reader.tell());
   }
 
@@ -130,17 +154,35 @@ export class Id3Parser extends MetadataParser {
    * @param {number} end Frame end position in reader.
    * @private
    */
+  // @ts-ignore: error TS6133: 'majorVersion' is declared but its value is never
+  // read.
   readPIC_(reader, majorVersion, frame, end) {
+    // @ts-ignore: error TS2339: Property 'encoding' does not exist on type
+    // 'Object'.
     frame.encoding = reader.readScalar(1, false, end);
+    // @ts-ignore: error TS2339: Property 'format' does not exist on type
+    // 'Object'.
     frame.format = reader.readNullTerminatedString(3, end - reader.tell());
+    // @ts-ignore: error TS2339: Property 'pictureType' does not exist on type
+    // 'Object'.
     frame.pictureType = reader.readScalar(1, false, end);
+    // @ts-ignore: error TS2339: Property 'description' does not exist on type
+    // 'Object'.
     frame.description =
+        // @ts-ignore: error TS2339: Property 'encoding' does not exist on type
+        // 'Object'.
         this.readString_(reader, frame.encoding, end - reader.tell());
 
 
+    // @ts-ignore: error TS2339: Property 'format' does not exist on type
+    // 'Object'.
     if (frame.format == '-->') {
+      // @ts-ignore: error TS2339: Property 'imageUrl' does not exist on type
+      // 'Object'.
       frame.imageUrl = reader.readNullTerminatedString(end - reader.tell());
     } else {
+      // @ts-ignore: error TS2339: Property 'imageUrl' does not exist on type
+      // 'Object'.
       frame.imageUrl = reader.readImage(end - reader.tell());
     }
   }
@@ -152,17 +194,35 @@ export class Id3Parser extends MetadataParser {
    * @param {number} end Frame end position in reader.
    * @private
    */
+  // @ts-ignore: error TS6133: 'majorVersion' is declared but its value is never
+  // read.
   readAPIC_(reader, majorVersion, frame, end) {
     this.vlog('Extracting picture');
+    // @ts-ignore: error TS2339: Property 'encoding' does not exist on type
+    // 'Object'.
     frame.encoding = reader.readScalar(1, false, end);
+    // @ts-ignore: error TS2339: Property 'mime' does not exist on type
+    // 'Object'.
     frame.mime = reader.readNullTerminatedString(end - reader.tell());
+    // @ts-ignore: error TS2339: Property 'pictureType' does not exist on type
+    // 'Object'.
     frame.pictureType = reader.readScalar(1, false, end);
+    // @ts-ignore: error TS2339: Property 'description' does not exist on type
+    // 'Object'.
     frame.description =
+        // @ts-ignore: error TS2339: Property 'encoding' does not exist on type
+        // 'Object'.
         this.readString_(reader, frame.encoding, end - reader.tell());
 
+    // @ts-ignore: error TS2339: Property 'mime' does not exist on type
+    // 'Object'.
     if (frame.mime == '-->') {
+      // @ts-ignore: error TS2339: Property 'imageUrl' does not exist on type
+      // 'Object'.
       frame.imageUrl = reader.readNullTerminatedString(end - reader.tell());
     } else {
+      // @ts-ignore: error TS2339: Property 'imageUrl' does not exist on type
+      // 'Object'.
       frame.imageUrl = reader.readImage(end - reader.tell());
     }
   }
@@ -177,6 +237,8 @@ export class Id3Parser extends MetadataParser {
    */
   readFrame_(reader, majorVersion) {
     if (reader.eof()) {
+      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+      // 'Object'.
       return null;
     }
 
@@ -190,6 +252,8 @@ export class Id3Parser extends MetadataParser {
                                        reader.readNullTerminatedString(4);
 
     if (frame.name == '') {
+      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+      // 'Object'.
       return null;
     }
 
@@ -215,7 +279,11 @@ export class Id3Parser extends MetadataParser {
     this.vlog(
         'Found frame [' + frame.name + '] with size [' + frame.size + ']');
 
+    // @ts-ignore: error TS4111: Property 'HANDLERS' comes from an index
+    // signature, so it must be accessed with ['HANDLERS'].
     if (Id3Parser.v2.HANDLERS[frame.name]) {
+      // @ts-ignore: error TS4111: Property 'HANDLERS' comes from an index
+      // signature, so it must be accessed with ['HANDLERS'].
       Id3Parser.v2.HANDLERS[frame.name].call(
           this, reader, majorVersion, frame, reader.tell() + frame.size);
     } else if (frame.name.charAt(0) == 'T' || frame.name.charAt(0) == 'W') {
@@ -233,8 +301,8 @@ export class Id3Parser extends MetadataParser {
   /**
    * @param {File} file File object to parse.
    * @param {Object} metadata Metadata object of the file.
-   * @param {function(Object)} callback Success callback.
-   * @param {function(string)} onError Error callback.
+   * @param {function(Object):void} callback Success callback.
+   * @param {function(string):void} onError Error callback.
    */
   parse(file, metadata, callback, onError) {
     const self = this;
@@ -251,6 +319,8 @@ export class Id3Parser extends MetadataParser {
            */
           function readTail(file) {
             MetadataParser.readFileBytes(
+                // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
+                // because it does not have a type annotation.
                 file, file.size - 128, file.size, this.nextStep, this.onError);
           },
 
@@ -260,14 +330,22 @@ export class Id3Parser extends MetadataParser {
            *     used for logging purposes.
            * @param {ByteReader} reader ByteReader of 128 bytes.
            */
+          // @ts-ignore: error TS6133: 'file' is declared but its value is never
+          // read.
           function extractId3v1(file, reader) {
             if (reader.readString(3) == 'TAG') {
+              // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
+              // because it does not have a type annotation.
               this.logger.vlog('id3v1 found');
+              // @ts-ignore: error TS2339: Property 'id3v1' does not exist on
+              // type 'Object'.
               const id3v1 = metadata.id3v1 = {};
 
               const title = reader.readNullTerminatedString(30).trim();
 
               if (title.length > 0) {
+                // @ts-ignore: error TS2339: Property 'title' does not exist on
+                // type 'Object'.
                 metadata.title = title;
               }
 
@@ -275,6 +353,8 @@ export class Id3Parser extends MetadataParser {
 
               const artist = reader.readNullTerminatedString(30).trim();
               if (artist.length > 0) {
+                // @ts-ignore: error TS2339: Property 'artist' does not exist on
+                // type 'Object'.
                 metadata.artist = artist;
               }
 
@@ -282,18 +362,28 @@ export class Id3Parser extends MetadataParser {
 
               const album = reader.readNullTerminatedString(30).trim();
               if (album.length > 0) {
+                // @ts-ignore: error TS2339: Property 'album' does not exist on
+                // type 'Object'.
                 metadata.album = album;
               }
             }
+            // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
+            // because it does not have a type annotation.
             this.nextStep();
           },
         ],
+        // @ts-ignore: error TS6133: 'error' is declared but its value is never
+        // read.
         this, () => {}, error => {});
 
     const id3v2Parser = new FunctionSequence(
         'id3v2parser', [
+          // @ts-ignore: error TS7006: Parameter 'file' implicitly has an 'any'
+          // type.
           function readHead(file) {
             MetadataParser.readFileBytes(
+                // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
+                // because it does not have a type annotation.
                 file, 0, 10, this.nextStep, this.onError);
           },
 
@@ -305,16 +395,32 @@ export class Id3Parser extends MetadataParser {
            */
           function checkId3v2(file, reader) {
             if (reader.readString(3) == 'ID3') {
+              // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
+              // because it does not have a type annotation.
               this.logger.vlog('id3v2 found');
+              // @ts-ignore: error TS2339: Property 'id3v2' does not exist on
+              // type 'Object'.
               const id3v2 = metadata.id3v2 = {};
+              // @ts-ignore: error TS2339: Property 'major' does not exist on
+              // type '{}'.
               id3v2.major = reader.readScalar(1, false);
+              // @ts-ignore: error TS2339: Property 'minor' does not exist on
+              // type '{}'.
               id3v2.minor = reader.readScalar(1, false);
+              // @ts-ignore: error TS2339: Property 'flags' does not exist on
+              // type '{}'.
               id3v2.flags = reader.readScalar(1, false);
+              // @ts-ignore: error TS2339: Property 'size' does not exist on
+              // type '{}'.
               id3v2.size = Id3Parser.readSynchSafe_(reader, 4);
 
               MetadataParser.readFileBytes(
+                  // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
+                  // because it does not have a type annotation.
                   file, 10, 10 + id3v2.size, this.nextStep, this.onError);
             } else {
+              // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
+              // because it does not have a type annotation.
               this.finish();
             }
           },
@@ -324,10 +430,17 @@ export class Id3Parser extends MetadataParser {
            * @param {File} file File being parsed.
            * @param {ByteReader} reader Reader to use for metadata extraction.
            */
+          // @ts-ignore: error TS6133: 'file' is declared but its value is never
+          // read.
           function extractFrames(file, reader) {
+            // @ts-ignore: error TS2339: Property 'id3v2' does not exist on type
+            // 'Object'.
             const id3v2 = metadata.id3v2;
 
             if ((id3v2.major > 2) &&
+                // @ts-ignore: error TS2363: The right-hand side of an
+                // arithmetic operation must be of type 'any', 'number',
+                // 'bigint' or an enum type.
                 (id3v2.flags & Id3Parser.v2.FLAG_EXTENDED_HEADER != 0)) {
               // Skip extended header if found
               if (id3v2.major == 3) {
@@ -340,9 +453,13 @@ export class Id3Parser extends MetadataParser {
             let frame;
 
             while (frame = self.readFrame_(reader, id3v2.major)) {
+              // @ts-ignore: error TS2339: Property 'name' does not exist on
+              // type 'Object'.
               metadata.id3v2[frame.name] = frame;
             }
 
+            // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
+            // because it does not have a type annotation.
             this.nextStep();
           },
 
@@ -354,20 +471,34 @@ export class Id3Parser extends MetadataParser {
            * to properly format value before displaying to user.
            */
           function prepareDescription() {
+            // @ts-ignore: error TS2339: Property 'id3v2' does not exist on type
+            // 'Object'.
             const id3v2 = metadata.id3v2;
 
             if (id3v2['APIC']) {
+              // @ts-ignore: error TS2339: Property 'thumbnailURL' does not
+              // exist on type 'Object'.
               metadata.thumbnailURL = id3v2['APIC'].imageUrl;
             } else if (id3v2['PIC']) {
+              // @ts-ignore: error TS2339: Property 'thumbnailURL' does not
+              // exist on type 'Object'.
               metadata.thumbnailURL = id3v2['PIC'].imageUrl;
             }
 
+            // @ts-ignore: error TS2339: Property 'description' does not exist
+            // on type 'Object'.
             metadata.description = [];
 
             for (const key in id3v2) {
+              // @ts-ignore: error TS4111: Property 'MAPPERS' comes from an
+              // index signature, so it must be accessed with ['MAPPERS'].
               if (typeof (Id3Parser.v2.MAPPERS[key]) != 'undefined' &&
                   id3v2[key].value.trim().length > 0) {
+                // @ts-ignore: error TS2339: Property 'description' does not
+                // exist on type 'Object'.
                 metadata.description.push({
+                  // @ts-ignore: error TS4111: Property 'MAPPERS' comes from an
+                  // index signature, so it must be accessed with ['MAPPERS'].
                   key: Id3Parser.v2.MAPPERS[key],
                   value: id3v2[key].value.trim(),
                 });
@@ -378,10 +509,15 @@ export class Id3Parser extends MetadataParser {
              * @param {string} propName
              * @param {...string} tags
              */
+            // @ts-ignore: error TS6133: 'tags' is declared but its value is
+            // never read.
             function extract(propName, tags) {
               for (let i = 1; i != arguments.length; i++) {
                 const tag = id3v2[arguments[i]];
                 if (tag && tag.value) {
+                  // @ts-ignore: error TS7053: Element implicitly has an 'any'
+                  // type because expression of type 'string' can't be used to
+                  // index type 'Object'.
                   metadata[propName] = tag.value;
                   break;
                 }
@@ -392,16 +528,24 @@ export class Id3Parser extends MetadataParser {
             extract('title', 'TIT2', 'TT2');
             extract('artist', 'TPE1', 'TP1');
 
+            // @ts-ignore: error TS7006: Parameter 'b' implicitly has an 'any'
+            // type.
             metadata.description.sort((a, b) => {
               return Id3Parser.METADATA_ORDER.indexOf(a.key) -
                   Id3Parser.METADATA_ORDER.indexOf(b.key);
             });
+            // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
+            // because it does not have a type annotation.
             this.nextStep();
           },
         ],
+        // @ts-ignore: error TS6133: 'error' is declared but its value is never
+        // read.
         this, () => {}, error => {});
 
     const metadataParser = new FunctionParallel(
+        // @ts-ignore: error TS2322: Type 'FunctionSequence' is not assignable
+        // to type 'Function'.
         'mp3metadataParser', [id3v1Parser, id3v2Parser], this, () => {
           callback.call(null, metadata);
         }, onError);
@@ -449,7 +593,7 @@ Id3Parser.METADATA_ORDER = [
 
 /**
  * Id3v1 constants.
- * @type {Object<*>}
+ * @type {Record<string, *>}
  */
 Id3Parser.v1 = {
   /**
@@ -612,7 +756,7 @@ Id3Parser.v1 = {
 
 /**
  * Id3v2 constants.
- * @type {Object<*>}
+ * @type {Record<string, *>}
  */
 Id3Parser.v2 = {
   FLAG_EXTENDED_HEADER: 1 << 5,
@@ -656,20 +800,32 @@ Id3Parser.v2 = {
   },
   HANDLERS: {
     // User defined text information frame
+    // @ts-ignore: error TS2341: Property 'readUserDefinedTextFrame_' is private
+    // and only accessible within class 'Id3Parser'.
     TXX: Id3Parser.prototype.readUserDefinedTextFrame_,
     // User defined URL link frame
+    // @ts-ignore: error TS2341: Property 'readUserDefinedTextFrame_' is private
+    // and only accessible within class 'Id3Parser'.
     WXX: Id3Parser.prototype.readUserDefinedTextFrame_,
 
     // User defined text information frame
+    // @ts-ignore: error TS2341: Property 'readUserDefinedTextFrame_' is private
+    // and only accessible within class 'Id3Parser'.
     TXXX: Id3Parser.prototype.readUserDefinedTextFrame_,
 
     // User defined URL link frame
+    // @ts-ignore: error TS2341: Property 'readUserDefinedTextFrame_' is private
+    // and only accessible within class 'Id3Parser'.
     WXXX: Id3Parser.prototype.readUserDefinedTextFrame_,
 
     // User attached image
+    // @ts-ignore: error TS2341: Property 'readPIC_' is private and only
+    // accessible within class 'Id3Parser'.
     PIC: Id3Parser.prototype.readPIC_,
 
     // User attached image
+    // @ts-ignore: error TS2341: Property 'readAPIC_' is private and only
+    // accessible within class 'Id3Parser'.
     APIC: Id3Parser.prototype.readAPIC_,
   },
   MAPPERS: {

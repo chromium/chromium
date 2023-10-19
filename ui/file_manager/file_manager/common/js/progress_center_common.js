@@ -70,9 +70,11 @@ Object.freeze(ProgressItemType);
  * `callback` defines the arbitrary action.
  * @typedef {{
  *   text: string,
- *   callback: !function(),
+ *   callback: !function():void,
  * }}
  */
+// @ts-ignore: error TS7005: Variable 'ProgressItemExtraButton' implicitly has
+// an 'any' type.
 export let ProgressItemExtraButton;
 
 /**
@@ -149,13 +151,15 @@ export class ProgressCenterItem {
 
     /**
      * Callback function to cancel the item.
-     * @type {?function()}
+     * @type {?function():void}
      */
     this.cancelCallback = null;
 
     /**
      * Optional callback to be invoked after dismissing the item.
      */
+    // @ts-ignore: error TS7008: Member 'dismissCallback' implicitly has an
+    // 'any' type.
     this.dismissCallback = null;
 
     /**
@@ -204,8 +208,8 @@ export class ProgressCenterItem {
    * @param {!ProgressItemState} state Which state to show the button for.
    *     Currently only `ProgressItemState.COMPLETED`,
    * `ProgressItemState.ERROR`, and `ProgressItemState.PAUSED` are supported.
-   * @param {!function()} callback The callback to invoke when the button is
-   *     pressed.
+   * @param {!function():void} callback The callback to invoke when the button
+   *     is pressed.
    */
   setExtraButton(state, text, callback) {
     if (!text || !callback) {

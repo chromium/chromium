@@ -13,8 +13,14 @@ import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 let anchor;
 /** @type {!HTMLElement} */
 let popup;
+// @ts-ignore: error TS7034: Variable 'anchorParent' implicitly has type 'any'
+// in some locations where its type cannot be determined.
 let anchorParent;
+// @ts-ignore: error TS7034: Variable 'oldGetBoundingClientRect' implicitly has
+// type 'any' in some locations where its type cannot be determined.
 let oldGetBoundingClientRect;
+// @ts-ignore: error TS7034: Variable 'availRect' implicitly has type 'any' in
+// some locations where its type cannot be determined.
 let availRect;
 
 /**
@@ -75,18 +81,24 @@ export function setUp() {
   anchor = /** @type {!HTMLElement} */ (document.getElementById('anchor'));
   popup = /** @type {!HTMLElement} */ (document.getElementById('popup'));
   anchorParent = anchor.offsetParent;
+  // @ts-ignore: error TS18047: 'anchorParent' is possibly 'null'.
   oldGetBoundingClientRect = anchorParent.getBoundingClientRect;
 
   anchor.style.top = '100px';
   anchor.style.left = '100px';
   availRect = new MockRect(200, 200);
+  // @ts-ignore: error TS18047: 'anchorParent' is possibly 'null'.
   anchorParent.getBoundingClientRect = function() {
+    // @ts-ignore: error TS7005: Variable 'availRect' implicitly has an 'any'
+    // type.
     return availRect;
   };
 }
 
 export function tearDown() {
   document.documentElement.dir = 'ltr';
+  // @ts-ignore: error TS7005: Variable 'oldGetBoundingClientRect' implicitly
+  // has an 'any' type.
   anchorParent.getBoundingClientRect = oldGetBoundingClientRect;
 }
 

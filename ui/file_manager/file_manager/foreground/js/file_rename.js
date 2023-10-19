@@ -13,7 +13,6 @@ import {getEntry, getParentEntry, moveEntryTo, validatePathNameLength} from '../
 import {createDOMError} from '../../common/js/dom_utils.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
 
 /**
  * Verifies name for file, folder, or removable root to be created or renamed.
@@ -23,14 +22,17 @@ import {VolumeInfo} from '../../externs/volume_info.js';
  * @param {string} name New file, folder, or removable root name.
  * @param {boolean} areHiddenFilesVisible Whether to report hidden file
  *     name errors or not.
- * @param {?VolumeInfo} volumeInfo Volume information about the target entry.
+ * @param {?import("../../externs/volume_info.js").VolumeInfo} volumeInfo Volume
+ *     information about the target entry.
  * @param {boolean} isRemovableRoot Whether the target is a removable root.
- * @return {!Promise} Fulfills on success, throws error message otherwise.
+ * @return {!Promise<void>} Fulfills on success, throws error message otherwise.
  */
 export async function validateEntryName(
     entry, name, areHiddenFilesVisible, volumeInfo, isRemovableRoot) {
   if (isRemovableRoot) {
     const diskFileSystemType = volumeInfo && volumeInfo.diskFileSystemType;
+    // @ts-ignore: error TS2345: Argument of type 'string | null' is not
+    // assignable to parameter of type 'string'.
     validateExternalDriveName(name, assert(diskFileSystemType));
   } else {
     const parentEntry = await getParentEntry(entry);
@@ -59,8 +61,14 @@ export function validateExternalDriveName(name, fileSystem) {
 
   // Verify length for the target file system type.
   if (lengthLimit.hasOwnProperty(fileSystem) &&
+      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+      // expression of type 'string' can't be used to index type '{ vfat:
+      // number; exfat: number; ntfs: number; }'.
       nameLength > lengthLimit[fileSystem]) {
     throw Error(
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type '{
+        // vfat: number; exfat: number; ntfs: number; }'.
         strf('ERROR_EXTERNAL_DRIVE_LONG_NAME', lengthLimit[fileSystem]));
   }
 
@@ -69,6 +77,8 @@ export function validateExternalDriveName(name, fileSystem) {
   // cros-disks/filesystem_label.cc on the ChromeOS side.
   const validCharRegex = /[a-zA-Z0-9 \!\#\$\%\&\(\)\-\@\^\_\`\{\}\~]/;
   for (let i = 0; i < nameLength; i++) {
+    // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+    // assignable to parameter of type 'string'.
     if (!validCharRegex.test(name[i])) {
       throw Error(strf('ERROR_EXTERNAL_DRIVE_INVALID_CHARACTER', name[i]));
     }
@@ -89,7 +99,7 @@ export function validateExternalDriveName(name, fileSystem) {
  * @param {string} name New file or folder name.
  * @param {boolean} areHiddenFilesVisible Whether to report the hidden file
  *     name error or not.
- * @return {!Promise} Fulfills on success, throws error message otherwise.
+ * @return {!Promise<void>} Fulfills on success, throws error message otherwise.
  */
 export async function validateFileName(
     parentEntry, name, areHiddenFilesVisible) {
@@ -120,13 +130,15 @@ export async function validateFileName(
  * Renames file, folder, or removable root with newName.
  * @param {!Entry} entry The entry to be renamed.
  * @param {string} newName The new name.
- * @param {?VolumeInfo} volumeInfo Volume information about the target entry.
+ * @param {?import("../../externs/volume_info.js").VolumeInfo} volumeInfo Volume
+ *     information about the target entry.
  * @param {boolean} isRemovableRoot Whether the target is a removable root.
  * @return {!Promise<!Entry>} Resolves the renamed entry if successful, else
  * throws error message.
  */
 export async function renameEntry(entry, newName, volumeInfo, isRemovableRoot) {
   if (isRemovableRoot) {
+    // @ts-ignore: error TS18047: 'volumeInfo' is possibly 'null'.
     chrome.fileManagerPrivate.renameVolume(volumeInfo.volumeId, newName);
     return entry;
   }
@@ -154,6 +166,7 @@ export async function renameFile(entry, newName) {
     try {
       await getEntry(parent, newName, entry.isFile, {create: false});
     } catch (error) {
+      // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
       if (error.name == util.FileError.NOT_FOUND_ERR) {
         return moveEntryTo(entry, parent, newName);
       }
@@ -165,6 +178,8 @@ export async function renameFile(entry, newName) {
     // The entry with the name already exists.
     throw createDOMError(util.FileError.PATH_EXISTS_ERR);
   } catch (error) {
+    // @ts-ignore: error TS2345: Argument of type 'unknown' is not assignable to
+    // parameter of type 'DOMError'.
     throw getRenameErrorMessage(error, entry, newName);
   }
 }
@@ -174,7 +189,7 @@ export async function renameFile(entry, newName) {
  * @param {DOMError} error
  * @param {!Entry} entry
  * @param {string} newName
- * @return {!Error<string>}
+ * @return {!Error}
  */
 function getRenameErrorMessage(error, entry, newName) {
   if (error &&

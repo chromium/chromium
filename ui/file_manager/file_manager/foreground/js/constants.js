@@ -23,6 +23,8 @@ constants.ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES = [
  * @const
  * @type {Array<string>}
  */
+// @ts-ignore: error TS4104: The type 'readonly string[]' is 'readonly' and
+// cannot be assigned to the mutable type 'string[]'.
 constants.EXECUTABLE_EXTENSIONS = Object.freeze([
   '.exe',
   '.lnk',

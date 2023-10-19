@@ -16,7 +16,7 @@ export class MockProgressCenter {
   constructor() {
     /**
      * Items stored in the progress center.
-     * @const @type {!Object<ProgressCenterItem>}
+     * @const @type {!Record<string, ProgressCenterItem>}
      */
     this.items = {};
   }
@@ -26,6 +26,8 @@ export class MockProgressCenter {
    * @param {ProgressCenterItem} item Progress center item to be stored.
    */
   updateItem(item) {
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type '{}'.
     this.items[item.id] = item;
   }
 

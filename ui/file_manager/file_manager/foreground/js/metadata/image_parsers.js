@@ -28,16 +28,18 @@ export class SimpleImageParser extends ImageParser {
   /**
    * @param {File} file File to be parses.
    * @param {Object} metadata Metadata object of the file.
-   * @param {function(Object)} callback Success callback.
-   * @param {function(string)} errorCallback Error callback.
+   * @param {function(Object):void} callback Success callback.
+   * @param {function(string):void} errorCallback Error callback.
    */
   parse(file, metadata, callback, errorCallback) {
     const self = this;
+    // @ts-ignore: error TS6133: 'file' is declared but its value is never read.
     MetadataParser.readFileBytes(file, 0, this.headerSize, (file, br) => {
       try {
         self.parseHeader(metadata, br);
         callback(metadata);
       } catch (e) {
+        // @ts-ignore: error TS18046: 'e' is of type 'unknown'.
         errorCallback(e.toString());
       }
     }, errorCallback);
@@ -49,6 +51,8 @@ export class SimpleImageParser extends ImageParser {
    * @param {Object} metadata Dictionary to store the parsed metadata.
    * @param {ByteReader} byteReader Reader for header binary data.
    */
+  // @ts-ignore: error TS6133: 'byteReader' is declared but its value is never
+  // read.
   parseHeader(metadata, byteReader) {}
 }
 
@@ -67,6 +71,7 @@ export class PngParser extends SimpleImageParser {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
   parseHeader(metadata, br) {
     br.setByteOrder(ByteReader.BIG_ENDIAN);
 
@@ -101,6 +106,7 @@ export class BmpParser extends SimpleImageParser {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
   parseHeader(metadata, br) {
     br.setByteOrder(ByteReader.LITTLE_ENDIAN);
 
@@ -130,6 +136,7 @@ export class GifParser extends SimpleImageParser {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
   parseHeader(metadata, br) {
     br.setByteOrder(ByteReader.LITTLE_ENDIAN);
 
@@ -158,6 +165,7 @@ export class WebpParser extends SimpleImageParser {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
   parseHeader(metadata, br) {
     br.setByteOrder(ByteReader.LITTLE_ENDIAN);
 
@@ -233,6 +241,8 @@ export class IcoParser extends SimpleImageParser {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'byteReader' implicitly has an 'any'
+  // type.
   parseHeader(metadata, byteReader) {
     byteReader.setByteOrder(ByteReader.LITTLE_ENDIAN);
 

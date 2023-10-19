@@ -37,10 +37,14 @@ export function testSplitterIgnoresRightMouse() {
 export function testSplitterResizePreviousElement() {
   const splitter = getRequiredElement('splitter');
   decorate(splitter, Splitter);
+  // @ts-ignore: error TS2339: Property 'resizeNextElement' does not exist on
+  // type 'HTMLElement'.
   splitter.resizeNextElement = false;
 
   const previousElement = document.getElementById('previous');
+  // @ts-ignore: error TS18047: 'previousElement' is possibly 'null'.
   previousElement.style.width = '0px';
+  // @ts-ignore: error TS18047: 'previousElement' is possibly 'null'.
   const beforeWidth = parseFloat(previousElement.style.width);
 
   const down =
@@ -59,6 +63,7 @@ export function testSplitterResizePreviousElement() {
       new MouseEvent('mouseup', {button: 0, cancelable: true, clientX: 100});
   splitter.dispatchEvent(up);
 
+  // @ts-ignore: error TS18047: 'previousElement' is possibly 'null'.
   const afterWidth = parseFloat(previousElement.style.width);
   assertEquals(100, afterWidth - beforeWidth);
 }
@@ -66,9 +71,13 @@ export function testSplitterResizePreviousElement() {
 export function testSplitterResizeNextElement() {
   const splitter = getRequiredElement('splitter');
   decorate(splitter, Splitter);
+  // @ts-ignore: error TS2339: Property 'resizeNextElement' does not exist on
+  // type 'HTMLElement'.
   splitter.resizeNextElement = true;
   const nextElement = document.getElementById('next');
+  // @ts-ignore: error TS18047: 'nextElement' is possibly 'null'.
   nextElement.style.width = '0px';
+  // @ts-ignore: error TS18047: 'nextElement' is possibly 'null'.
   const beforeWidth = parseFloat(nextElement.style.width);
 
   const down =
@@ -86,6 +95,7 @@ export function testSplitterResizeNextElement() {
       new MouseEvent('mouseup', {button: 0, cancelable: true, clientX: 0});
   splitter.dispatchEvent(up);
 
+  // @ts-ignore: error TS18047: 'nextElement' is possibly 'null'.
   const afterWidth = parseFloat(nextElement.style.width);
   assertEquals(100, afterWidth - beforeWidth);
 }
