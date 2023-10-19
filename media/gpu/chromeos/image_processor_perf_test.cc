@@ -13,9 +13,11 @@
 #include "base/test/bind.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/test/image.h"
 #include "media/gpu/test/video_test_environment.h"
 #include "media/gpu/video_frame_mapper_factory.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "third_party/libyuv/include/libyuv.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
@@ -33,8 +35,8 @@ static constexpr int kMM21TileWidth = 32;
 static constexpr int kMM21TileHeight = 16;
 
 static constexpr int kNumberOfTestFrames = 10;
-static constexpr int kNumberOfTestCycles = 1000;
-static constexpr int kNumberOfCappedTestCycles = 300;
+static constexpr int kNumberOfTestCycles = 200;
+static constexpr int kNumberOfCappedTestCycles = 200;
 
 static constexpr int kTestImageWidth = 1920;
 static constexpr int kTestImageHeight = 1088;
@@ -42,6 +44,12 @@ static constexpr int kTestImageHeight = 1088;
 static constexpr int kRandomFrameSeed = 1000;
 
 static constexpr int kUsecPerFrameAt60fps = 16666;
+
+static constexpr int kUpScalingOutputWidth = 1920;
+static constexpr int kUpScalingOutputHeight = 1080;
+
+static constexpr int kDownScalingOutputWidth = 480;
+static constexpr int kDownScalingOutputHeight = 270;
 
 namespace media {
 namespace {
@@ -55,10 +63,21 @@ const char* help_msg =
     "The following arguments are supported:\n"
     "  --gtest_help          display the gtest help and exit.\n"
     "  --help                display this help and exit.\n"
+    "  --source_directory    specify test input files location.\n"
     "   -v                   enable verbose mode, e.g. -v=2.\n"
     "  --vmodule             enable verbose mode for the specified module.\n";
 
 media::test::VideoTestEnvironment* g_env;
+
+base::FilePath g_source_directory =
+    base::FilePath(base::FilePath::kCurrentDirectory);
+
+base::FilePath BuildSourceFilePath(const base::FilePath& filename) {
+  return media::g_source_directory.Append(filename);
+}
+
+constexpr char kNV12Image720P[] =
+    FILE_PATH_LITERAL("puppets-1280x720.nv12.yuv");
 
 bool SupportsNecessaryGLExtension() {
   scoped_refptr<gl::GLSurface> gl_surface =
@@ -145,7 +164,13 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
 
 class ImageProcessorPerfTest : public ::testing::Test {
  public:
-  void InitializeImageProcessorTest(bool use_cpu_memory) {
+  enum TestType {
+    kMM21Detiling,
+    kNV12Downscaling,
+    kNV12Upscaling,
+  };
+
+  void InitializeImageProcessorTest(bool use_cpu_memory, TestType test_type) {
     test_image_size_.SetSize(kTestImageWidth, kTestImageHeight);
     ASSERT_TRUE((test_image_size_.width() % kMM21TileWidth) == 0);
     ASSERT_TRUE((test_image_size_.height() % kMM21TileHeight) == 0);
@@ -153,6 +178,8 @@ class ImageProcessorPerfTest : public ::testing::Test {
     test_image_visible_rect_.set_size(test_image_size_);
 
     candidate_.size = test_image_size_;
+    candidate_.fourcc = test_type == kMM21Detiling ? Fourcc(Fourcc::MM21)
+                                                   : Fourcc(Fourcc::NV12);
     candidates_ = {candidate_};
 
     scoped_refptr<base::SequencedTaskRunner> client_task_runner_ =
@@ -167,8 +194,17 @@ class ImageProcessorPerfTest : public ::testing::Test {
                                            : VideoFrame::STORAGE_DMABUFS));
     }
 
-    output_frame_ = CreateNV12Frame(test_image_size_,
-                                    VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+    gfx::Size output_size = test_image_size_;
+    if (test_type == kNV12Downscaling) {
+      output_size =
+          gfx::Size(kDownScalingOutputWidth, kDownScalingOutputHeight);
+    } else if (test_type == kNV12Upscaling) {
+      output_size = gfx::Size(kUpScalingOutputWidth, kUpScalingOutputHeight);
+    }
+
+    ASSERT_EQ(test_type == kMM21Detiling, output_size == test_image_size_);
+    output_frame_ =
+        CreateNV12Frame(output_size, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
     ASSERT_TRUE(output_frame_) << "Error creating output frame";
 
     error_cb_ = base::BindRepeating(
@@ -186,6 +222,31 @@ class ImageProcessorPerfTest : public ::testing::Test {
         });
   }
 
+  void InitializeInputImage(bool use_cpu_memory) {
+    std::unique_ptr<test::Image> input_image = std::make_unique<test::Image>(
+        BuildSourceFilePath(base::FilePath(kNV12Image720P)));
+    ASSERT_TRUE(input_image->Load());
+    ASSERT_TRUE(input_image->LoadMetadata());
+    const auto input_layout = test::CreateVideoFrameLayout(
+        input_image->PixelFormat(), input_image->Size());
+    ASSERT_TRUE(input_layout) << "Error creating input layout.";
+
+    scoped_refptr<const VideoFrame> tmp_video_frame =
+        CreateVideoFrameFromImage(*input_image);
+    ASSERT_TRUE(tmp_video_frame);
+
+    input_image_frame_ = test::CloneVideoFrame(
+        tmp_video_frame.get(), *input_layout,
+        use_cpu_memory ? VideoFrame::STORAGE_OWNED_MEMORY
+                       : VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+    ASSERT_TRUE(input_image_frame_) << "Error creating input frame.";
+
+    candidate_.fourcc = Fourcc(Fourcc::NV12);
+    candidate_.size = input_image->Size();
+    candidates_ = {candidate_};
+  }
+
   gfx::Size test_image_size_;
   gfx::Rect test_image_visible_rect_;
   ImageProcessor::PixelLayoutCandidate candidate_{Fourcc(Fourcc::MM21),
@@ -196,6 +257,7 @@ class ImageProcessorPerfTest : public ::testing::Test {
   scoped_refptr<VideoFrame> output_frame_;
   ImageProcessor::ErrorCB error_cb_;
   ImageProcessorFactory::PickFormatCB pick_format_cb_;
+  scoped_refptr<VideoFrame> input_image_frame_;
 };
 
 // Tests GLImageProcessor by feeding in |kNumberOfTestFrames| unique input
@@ -210,7 +272,7 @@ TEST_F(ImageProcessorPerfTest, UncappedGLImageProcessorPerfTest) {
     GTEST_SKIP() << "Skipping GL Backend test, unsupported platform.";
   }
 
-  InitializeImageProcessorTest(/*use_cpu_memory=*/false);
+  InitializeImageProcessorTest(/*use_cpu_memory=*/false, kMM21Detiling);
 
   scoped_refptr<base::SequencedTaskRunner> client_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
@@ -239,7 +301,7 @@ TEST_F(ImageProcessorPerfTest, UncappedGLImageProcessorPerfTest) {
   run_loop_.Run();
   auto end_time = base::TimeTicks::Now();
   base::TimeDelta delta_time = end_time - start_time;
-  const double fps = (kNumberOfTestCycles / delta_time.InSeconds());
+  const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
 
   perf_test::PerfResultReporter reporter("GLImageProcessor", "Uncapped Test");
   reporter.RegisterImportantMetric(".frames_decoded", "frames");
@@ -257,7 +319,7 @@ TEST_F(ImageProcessorPerfTest, UncappedGLImageProcessorPerfTest) {
 // frames looped over |kNumberOfTestCycles| iterations to the LibYUV
 // as fast as possible. Will print out elapsed processing time.
 TEST_F(ImageProcessorPerfTest, UncappedLibYUVPerfTest) {
-  InitializeImageProcessorTest(/*use_cpu_memory=*/true);
+  InitializeImageProcessorTest(/*use_cpu_memory=*/true, kMM21Detiling);
 
   scoped_refptr<base::SequencedTaskRunner> client_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
@@ -290,7 +352,8 @@ TEST_F(ImageProcessorPerfTest, UncappedLibYUVPerfTest) {
   run_loop_.Run();
   auto end_time = base::TimeTicks::Now();
   base::TimeDelta delta_time = end_time - start_time;
-  const double fps = (kNumberOfTestCycles / delta_time.InSeconds());
+  // Preventing integer division inaccuracies with |delta_time|.
+  const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
 
   perf_test::PerfResultReporter reporter("LibYUV", "Uncapped Test");
   reporter.RegisterImportantMetric(".frames_decoded", "frames");
@@ -308,7 +371,7 @@ TEST_F(ImageProcessorPerfTest, UncappedLibYUVPerfTest) {
 // frames looped over |kNumberOfCappedTestCycles| iterations to the
 // GLImageProcessor at 60fps. Will print out elapsed processing time.
 TEST_F(ImageProcessorPerfTest, CappedGLImageProcessorPerfTest) {
-  InitializeImageProcessorTest(/*use_cpu_memory=*/false);
+  InitializeImageProcessorTest(/*use_cpu_memory=*/false, kMM21Detiling);
 
   scoped_refptr<base::SequencedTaskRunner> client_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
@@ -357,7 +420,8 @@ TEST_F(ImageProcessorPerfTest, CappedGLImageProcessorPerfTest) {
 
   auto total_end_time = base::TimeTicks::Now();
   base::TimeDelta total_delta_time = total_end_time - total_start_time;
-  const double fps = (kNumberOfCappedTestCycles / total_delta_time.InSeconds());
+  const double fps =
+      (kNumberOfCappedTestCycles / total_delta_time.InSecondsF());
 
   perf_test::PerfResultReporter reporter("GLImageProcessor", "Capped Test");
   reporter.RegisterImportantMetric(".frames_decoded", "frames");
@@ -375,7 +439,7 @@ TEST_F(ImageProcessorPerfTest, CappedGLImageProcessorPerfTest) {
 // frames looped over |kNumberOfCappedTestCycles| iterations to the
 // LibYUV at 60fps. Will print out elapsed processing time.
 TEST_F(ImageProcessorPerfTest, CappedLibYUVPerfTest) {
-  InitializeImageProcessorTest(/*use_cpu_memory=*/true);
+  InitializeImageProcessorTest(/*use_cpu_memory=*/true, kMM21Detiling);
 
   scoped_refptr<base::SequencedTaskRunner> client_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
@@ -426,7 +490,8 @@ TEST_F(ImageProcessorPerfTest, CappedLibYUVPerfTest) {
 
   auto total_end_time = base::TimeTicks::Now();
   base::TimeDelta total_delta_time = total_end_time - total_start_time;
-  const double fps = (kNumberOfCappedTestCycles / total_delta_time.InSeconds());
+  const double fps =
+      (kNumberOfCappedTestCycles / total_delta_time.InSecondsF());
 
   perf_test::PerfResultReporter reporter("LibYUV", "Capped Test");
   reporter.RegisterImportantMetric(".frames_decoded", "frames");
@@ -437,6 +502,349 @@ TEST_F(ImageProcessorPerfTest, CappedLibYUVPerfTest) {
                      static_cast<double>(kNumberOfCappedTestCycles));
   reporter.AddResult(".total_duration",
                      static_cast<double>(total_delta_time.InMicroseconds()));
+  reporter.AddResult(".frames_per_second", fps);
+}
+
+// Tests the GLImageProcessor by feeding in a 1280x720 NV12 input frame and
+// scaling it up to 1920x1080 and then scaling it back down to its original
+// size. Will print out the PSNR calculation for each plane and verify that
+// the PSNR values are greater than 40.0.
+TEST_F(ImageProcessorPerfTest, NV12ScalingComparisonTest) {
+  InitializeInputImage(/*use_cpu_memory=*/false);
+
+  base::RunLoop run_loop;
+  auto client_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  bool image_processor_error = false;
+  ImageProcessor::ErrorCB error_cb = base::BindRepeating(
+      [](scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+         base::RepeatingClosure quit_closure, bool* image_processor_error) {
+        CHECK(client_task_runner->RunsTasksInCurrentSequence());
+        *image_processor_error = true;
+        quit_closure.Run();
+      },
+      client_task_runner, quit_closure, &image_processor_error);
+  ImageProcessorFactory::PickFormatCB pick_format_cb = base::BindRepeating(
+      [](const std::vector<Fourcc>&, absl::optional<Fourcc>) {
+        return absl::make_optional<Fourcc>(Fourcc::NV12);
+      });
+
+  std::unique_ptr<ImageProcessor> gl_upscaling_image_processor =
+      ImageProcessorFactory::
+          CreateGLImageProcessorWithInputCandidatesForTesting(
+              candidates_, gfx::Rect(input_image_frame_->coded_size()),
+              gfx::Size(kUpScalingOutputWidth, kUpScalingOutputHeight),
+              /*num_buffers=*/1, client_task_runner, pick_format_cb, error_cb);
+  ASSERT_TRUE(gl_upscaling_image_processor)
+      << "Error creating GLImageProcessor";
+
+  const ImageProcessor::PixelLayoutCandidate downscaling_candidate = {
+      Fourcc(Fourcc::NV12),
+      gfx::Size(kUpScalingOutputWidth, kUpScalingOutputHeight)};
+  std::vector<ImageProcessor::PixelLayoutCandidate> downscaling_candidates = {
+      downscaling_candidate};
+
+  std::unique_ptr<ImageProcessor> gl_downscaling_image_processor =
+      ImageProcessorFactory::
+          CreateGLImageProcessorWithInputCandidatesForTesting(
+              downscaling_candidates,
+              gfx::Rect(kUpScalingOutputWidth, kUpScalingOutputHeight),
+              input_image_frame_->coded_size(),
+              /*num_buffers=*/1, client_task_runner, pick_format_cb, error_cb);
+  ASSERT_TRUE(gl_downscaling_image_processor)
+      << "Error creating GLImageProcessor";
+
+  scoped_refptr<VideoFrame> gl_upscaling_output_frame =
+      CreateNV12Frame(gfx::Size(kUpScalingOutputWidth, kUpScalingOutputHeight),
+                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  ASSERT_TRUE(gl_upscaling_output_frame) << "Error creating GL output frame";
+
+  scoped_refptr<VideoFrame> gl_downscaling_output_frame = CreateNV12Frame(
+      input_image_frame_->coded_size(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  ASSERT_TRUE(gl_downscaling_output_frame) << "Error creating GL output frame";
+
+  ImageProcessor::FrameReadyCB gl_callback2 =
+      base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+        CHECK(client_task_runner->RunsTasksInCurrentSequence());
+        gl_downscaling_output_frame = std::move(frame);
+        quit_closure.Run();
+      });
+
+  ImageProcessor::FrameReadyCB gl_callback1 =
+      base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+        CHECK(client_task_runner->RunsTasksInCurrentSequence());
+        gl_downscaling_image_processor->Process(
+            frame, gl_downscaling_output_frame, std::move(gl_callback2));
+      });
+
+  gl_upscaling_image_processor->Process(
+      input_image_frame_, gl_upscaling_output_frame, std::move(gl_callback1));
+  run_loop.Run();
+
+  const std::unique_ptr<VideoFrameMapper> output_frame_mapper =
+      VideoFrameMapperFactory::CreateMapper(
+          PIXEL_FORMAT_NV12, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, true);
+  ASSERT_TRUE(output_frame_mapper);
+
+  const scoped_refptr<VideoFrame> mapped_gl_output = output_frame_mapper->Map(
+      gl_downscaling_output_frame, PROT_READ | PROT_WRITE);
+  ASSERT_TRUE(mapped_gl_output);
+
+  const scoped_refptr<VideoFrame> mapped_input_frame =
+      output_frame_mapper->Map(input_image_frame_, PROT_READ | PROT_WRITE);
+  ASSERT_TRUE(mapped_input_frame);
+
+  const gfx::Size image_size = mapped_gl_output->visible_rect().size();
+  const gfx::Size half_image_size((image_size.width() + 1) / 2,
+                                  (image_size.height() + 1) / 2);
+
+  uint8_t* out_y = static_cast<uint8_t*>(
+      mmap(nullptr, image_size.GetArea(), PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  uint8_t* out_u = static_cast<uint8_t*>(
+      mmap(nullptr, half_image_size.GetArea(), PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  uint8_t* out_v = static_cast<uint8_t*>(
+      mmap(nullptr, half_image_size.GetArea(), PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  libyuv::NV12ToI420(
+      mapped_gl_output->visible_data(0), mapped_gl_output->stride(0),
+      mapped_gl_output->visible_data(1), mapped_gl_output->stride(1), out_y,
+      image_size.width(), out_u, half_image_size.width(), out_v,
+      half_image_size.width(), image_size.width(), image_size.height());
+
+  uint8_t* input_y = static_cast<uint8_t*>(
+      mmap(nullptr, image_size.GetArea(), PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  uint8_t* input_u = static_cast<uint8_t*>(
+      mmap(nullptr, half_image_size.GetArea(), PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  uint8_t* input_v = static_cast<uint8_t*>(
+      mmap(nullptr, half_image_size.GetArea(), PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+
+  libyuv::NV12ToI420(
+      mapped_input_frame->visible_data(0), mapped_input_frame->stride(0),
+      mapped_input_frame->visible_data(1), mapped_input_frame->stride(1),
+      input_y, image_size.width(), input_u, half_image_size.width(), input_v,
+      half_image_size.width(), image_size.width(), image_size.height());
+
+  double psnr_test = libyuv::I420Psnr(
+      out_y, image_size.width(), out_u, half_image_size.width(), out_v,
+      half_image_size.width(), input_y, image_size.width(), input_u,
+      half_image_size.width(), input_v, half_image_size.width(),
+      image_size.width(), image_size.height());
+
+  munmap(out_y, image_size.GetArea());
+  munmap(out_u, half_image_size.GetArea());
+  munmap(out_v, half_image_size.GetArea());
+  munmap(input_y, image_size.GetArea());
+  munmap(input_u, half_image_size.GetArea());
+  munmap(input_v, half_image_size.GetArea());
+
+  perf_test::PerfResultReporter reporter("GLImageProcessor NV12 Scaling",
+                                         "PSNR Test");
+  reporter.RegisterImportantMetric(".PSNR", "decibels");
+  reporter.AddResult(".PSNR", psnr_test);
+}
+
+// Tests GLImageProcessor by feeding in |kNumberOfTestFrames| unique NV12 input
+// frames looped over |kNumberOfTestCycles| iterations to the GLImageProcessor
+// to be downscaled to 480x270. Will print out elapsed processing time.
+TEST_F(ImageProcessorPerfTest, GLImageProcessorNV12DownscalingTest) {
+  InitializeImageProcessorTest(/*use_cpu_memory=*/false, kNV12Downscaling);
+
+  scoped_refptr<base::SequencedTaskRunner> client_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  base::RepeatingClosure quit_closure = run_loop_.QuitClosure();
+  std::unique_ptr<ImageProcessor> gl_image_processor = ImageProcessorFactory::
+      CreateGLImageProcessorWithInputCandidatesForTesting(
+          candidates_, test_image_visible_rect_,
+          gfx::Size(kDownScalingOutputWidth, kDownScalingOutputHeight),
+          /*num_buffers=*/1, client_task_runner, pick_format_cb_, error_cb_);
+  ASSERT_TRUE(gl_image_processor) << "Error creating GLImageProcessor";
+
+  LOG(INFO) << "Running GLImageProcessor NV12 Downscaling Test";
+  int outstanding_processors = kNumberOfTestCycles;
+  for (int num_cycles = outstanding_processors; num_cycles > 0; num_cycles--) {
+    ImageProcessor::FrameReadyCB gl_callback =
+        base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+          CHECK(client_task_runner->RunsTasksInCurrentSequence());
+          if (!(--outstanding_processors)) {
+            quit_closure.Run();
+          }
+        });
+    gl_image_processor->Process(input_frames_[num_cycles % kNumberOfTestFrames],
+                                output_frame_, std::move(gl_callback));
+  }
+
+  auto start_time = base::TimeTicks::Now();
+  run_loop_.Run();
+  auto end_time = base::TimeTicks::Now();
+  base::TimeDelta delta_time = end_time - start_time;
+  const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
+
+  perf_test::PerfResultReporter reporter("GLImageProcessor",
+                                         "NV12 Downscaling Test");
+  reporter.RegisterImportantMetric(".frames_decoded", "frames");
+  reporter.RegisterImportantMetric(".total_duration", "us");
+  reporter.RegisterImportantMetric(".frames_per_second", "fps");
+
+  reporter.AddResult(".frames_decoded",
+                     static_cast<double>(kNumberOfTestCycles));
+  reporter.AddResult(".total_duration", delta_time.InMicrosecondsF());
+  reporter.AddResult(".frames_per_second", fps);
+}
+
+// Tests GLImageProcessor by feeding in |kNumberOfTestFrames| unique NV12 input
+// frames looped over |kNumberOfTestCycles| iterations to the GLImageProcessor
+// to be upscaled to 1920x1080. Will print out elapsed processing time.
+TEST_F(ImageProcessorPerfTest, GLImageProcessorNV12UpscalingTest) {
+  InitializeImageProcessorTest(/*use_cpu_memory=*/false, kNV12Upscaling);
+
+  scoped_refptr<base::SequencedTaskRunner> client_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  base::RepeatingClosure quit_closure = run_loop_.QuitClosure();
+  std::unique_ptr<ImageProcessor> gl_image_processor = ImageProcessorFactory::
+      CreateGLImageProcessorWithInputCandidatesForTesting(
+          candidates_, test_image_visible_rect_,
+          gfx::Size(kUpScalingOutputWidth, kUpScalingOutputHeight),
+          /*num_buffers=*/1, client_task_runner, pick_format_cb_, error_cb_);
+  ASSERT_TRUE(gl_image_processor) << "Error creating GLImageProcessor";
+
+  LOG(INFO) << "Running GLImageProcessor NV12 Upscaling Test";
+  int outstanding_processors = kNumberOfTestCycles;
+  for (int num_cycles = outstanding_processors; num_cycles > 0; num_cycles--) {
+    ImageProcessor::FrameReadyCB gl_callback =
+        base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+          CHECK(client_task_runner->RunsTasksInCurrentSequence());
+          if (!(--outstanding_processors)) {
+            quit_closure.Run();
+          }
+        });
+    gl_image_processor->Process(input_frames_[num_cycles % kNumberOfTestFrames],
+                                output_frame_, std::move(gl_callback));
+  }
+
+  auto start_time = base::TimeTicks::Now();
+  run_loop_.Run();
+  auto end_time = base::TimeTicks::Now();
+  base::TimeDelta delta_time = end_time - start_time;
+  const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
+
+  perf_test::PerfResultReporter reporter("GLImageProcessor",
+                                         "NV12 Upscaling Test");
+  reporter.RegisterImportantMetric(".frames_decoded", "frames");
+  reporter.RegisterImportantMetric(".total_duration", "us");
+  reporter.RegisterImportantMetric(".frames_per_second", "fps");
+
+  reporter.AddResult(".frames_decoded",
+                     static_cast<double>(kNumberOfTestCycles));
+  reporter.AddResult(".total_duration", delta_time.InMicrosecondsF());
+  reporter.AddResult(".frames_per_second", fps);
+}
+
+// Tests LibYUV by feeding in |kNumberOfTestFrames| unique NV12 input
+// frames looped over |kNumberOfTestCycles| iterations to the LibYUV
+// to be downscaled to 480x270. Will print out elapsed processing time.
+TEST_F(ImageProcessorPerfTest, LibYUVNV12DownscalingTest) {
+  InitializeImageProcessorTest(/*use_cpu_memory=*/false, kNV12Downscaling);
+
+  scoped_refptr<base::SequencedTaskRunner> client_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  base::RepeatingClosure quit_closure = run_loop_.QuitClosure();
+
+  std::unique_ptr<ImageProcessor> libyuv_image_processor =
+      ImageProcessorFactory::
+          CreateLibYUVImageProcessorWithInputCandidatesForTesting(
+              candidates_, test_image_visible_rect_,
+              gfx::Size(kDownScalingOutputWidth, kDownScalingOutputHeight),
+              /*num_buffers=*/1, client_task_runner, pick_format_cb_,
+              error_cb_);
+  ASSERT_TRUE(libyuv_image_processor) << "Error creating LibYUV";
+
+  LOG(INFO) << "Running LibYUV NV12 Downscaling Test";
+  int outstanding_processors = kNumberOfTestCycles;
+  for (int num_cycles = outstanding_processors; num_cycles > 0; num_cycles--) {
+    ImageProcessor::FrameReadyCB libyuv_callback =
+        base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+          CHECK(client_task_runner->RunsTasksInCurrentSequence());
+          if (!(--outstanding_processors)) {
+            quit_closure.Run();
+          }
+        });
+    libyuv_image_processor->Process(
+        input_frames_[num_cycles % kNumberOfTestFrames], output_frame_,
+        std::move(libyuv_callback));
+  }
+
+  auto start_time = base::TimeTicks::Now();
+  run_loop_.Run();
+  auto end_time = base::TimeTicks::Now();
+  base::TimeDelta delta_time = end_time - start_time;
+  // Preventing integer division inaccuracies with |delta_time|.
+  const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
+
+  perf_test::PerfResultReporter reporter("LibYUV", "NV12 Downscaling Test");
+  reporter.RegisterImportantMetric(".frames_decoded", "frames");
+  reporter.RegisterImportantMetric(".total_duration", "us");
+  reporter.RegisterImportantMetric(".frames_per_second", "fps");
+
+  reporter.AddResult(".frames_decoded",
+                     static_cast<double>(kNumberOfTestCycles));
+  reporter.AddResult(".total_duration", delta_time.InMicrosecondsF());
+  reporter.AddResult(".frames_per_second", fps);
+}
+
+// Tests LibYUV by feeding in |kNumberOfTestFrames| unique NV12 input
+// frames looped over |kNumberOfTestCycles| iterations to the LibYUV
+// to be upscaled to 1920x1080. Will print out elapsed processing time.
+TEST_F(ImageProcessorPerfTest, LibYUVNV12UpscalingTest) {
+  InitializeImageProcessorTest(/*use_cpu_memory=*/false, kNV12Upscaling);
+
+  scoped_refptr<base::SequencedTaskRunner> client_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  base::RepeatingClosure quit_closure = run_loop_.QuitClosure();
+
+  std::unique_ptr<ImageProcessor> libyuv_image_processor =
+      ImageProcessorFactory::
+          CreateLibYUVImageProcessorWithInputCandidatesForTesting(
+              candidates_, test_image_visible_rect_,
+              gfx::Size(kUpScalingOutputWidth, kUpScalingOutputHeight),
+              /*num_buffers=*/1, client_task_runner, pick_format_cb_,
+              error_cb_);
+  ASSERT_TRUE(libyuv_image_processor) << "Error creating LibYUV";
+
+  LOG(INFO) << "Running LibYUV NV12 Upscaling Test";
+  int outstanding_processors = kNumberOfTestCycles;
+  for (int num_cycles = outstanding_processors; num_cycles > 0; num_cycles--) {
+    ImageProcessor::FrameReadyCB libyuv_callback =
+        base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+          CHECK(client_task_runner->RunsTasksInCurrentSequence());
+          if (!(--outstanding_processors)) {
+            quit_closure.Run();
+          }
+        });
+    libyuv_image_processor->Process(
+        input_frames_[num_cycles % kNumberOfTestFrames], output_frame_,
+        std::move(libyuv_callback));
+  }
+
+  auto start_time = base::TimeTicks::Now();
+  run_loop_.Run();
+  auto end_time = base::TimeTicks::Now();
+  base::TimeDelta delta_time = end_time - start_time;
+  // Preventing integer division inaccuracies with |delta_time|.
+  const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
+
+  perf_test::PerfResultReporter reporter("LibYUV", "NV12 Upscaling Test");
+  reporter.RegisterImportantMetric(".frames_decoded", "frames");
+  reporter.RegisterImportantMetric(".total_duration", "us");
+  reporter.RegisterImportantMetric(".frames_per_second", "fps");
+
+  reporter.AddResult(".frames_decoded",
+                     static_cast<double>(kNumberOfTestCycles));
+  reporter.AddResult(".total_duration", delta_time.InMicrosecondsF());
   reporter.AddResult(".frames_per_second", fps);
 }
 
@@ -461,6 +869,10 @@ int main(int argc, char** argv) {
     if (it->first.find("gtest_") == 0 ||               // Handled by GoogleTest
         it->first == "v" || it->first == "vmodule") {  // Handled by Chrome
       continue;
+    }
+
+    if (it->first == "source_directory") {
+      media::g_source_directory = base::FilePath(it->second);
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::usage_msg;

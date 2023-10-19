@@ -34,6 +34,17 @@ namespace {
 
 #define ALIGN(x, y) (x + (y - 1)) & (~(y - 1))
 
+template <typename T>
+base::CheckedNumeric<T> GetNV12PlaneDimension(int dimension, int plane) {
+  base::CheckedNumeric<T> dimension_scaled(base::strict_cast<T>(dimension));
+  if (plane == 0) {
+    return dimension_scaled;
+  }
+  dimension_scaled += 1;
+  dimension_scaled /= 2;
+  return dimension_scaled;
+}
+
 bool CreateAndAttachShader(GLuint program,
                            GLenum type,
                            const char* source,
@@ -57,11 +68,16 @@ bool CreateAndAttachShader(GLuint program,
 std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
     const VideoFrame* video_frame,
     GLenum target,
-    GLuint texture_id) {
+    GLuint texture_id,
+    bool should_split_planes,
+    int plane) {
+  CHECK(plane == 0 || plane == 1);
+
   if (video_frame->format() != PIXEL_FORMAT_NV12) {
     LOG(ERROR) << "The frame's format is not NV12";
     return nullptr;
   }
+
   if (!video_frame->visible_rect().origin().IsOrigin()) {
     LOG(ERROR) << "The frame's visible rectangle's origin is not (0, 0)";
     return nullptr;
@@ -76,14 +92,54 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
     LOG(ERROR) << "Failed to create native GpuMemoryBufferHandle";
     return nullptr;
   }
+
   auto buffer_format =
       VideoPixelFormatToGfxBufferFormat(video_frame->layout().format());
   if (!buffer_format) {
     LOG(ERROR) << "Unexpected video frame format";
     return nullptr;
   }
+
+  if (!should_split_planes) {
+    auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
+        video_frame->coded_size(), *buffer_format,
+        std::move(gpu_memory_buffer_handle.native_pixmap_handle));
+    DCHECK(native_pixmap->AreDmaBufFdsValid());
+
+    // Import the NativePixmap into GL.
+    return ui::OzonePlatform::GetInstance()
+        ->GetSurfaceFactoryOzone()
+        ->GetCurrentGLOzone()
+        ->ImportNativePixmap(
+            std::move(native_pixmap), gfx::BufferFormat::YUV_420_BIPLANAR,
+            gfx::BufferPlane::DEFAULT, video_frame->coded_size(),
+            gfx::ColorSpace(), target, texture_id);
+  }
+
+  base::CheckedNumeric<int> uv_width(0);
+  base::CheckedNumeric<int> uv_height(0);
+
+  if (plane == 1) {
+    uv_width = GetNV12PlaneDimension<int>(
+        video_frame->visible_rect().size().width(), plane);
+    uv_height = GetNV12PlaneDimension<int>(
+        video_frame->visible_rect().size().height(), plane);
+
+    if (!uv_width.IsValid() || !uv_height.IsValid()) {
+      LOG(ERROR) << "Could not compute the UV plane's dimensions";
+      return nullptr;
+    }
+  }
+
+  const gfx::Size plane_size =
+      plane ? gfx::Size(uv_width.ValueOrDie(), uv_height.ValueOrDie())
+            : video_frame->visible_rect().size();
+
+  const gfx::BufferFormat plane_format =
+      plane ? gfx::BufferFormat::RG_88 : gfx::BufferFormat::R_8;
+
   auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-      video_frame->coded_size(), *buffer_format,
+      plane_size, plane_format,
       std::move(gpu_memory_buffer_handle.native_pixmap_handle));
   DCHECK(native_pixmap->AreDmaBufFdsValid());
 
@@ -91,10 +147,9 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
   return ui::OzonePlatform::GetInstance()
       ->GetSurfaceFactoryOzone()
       ->GetCurrentGLOzone()
-      ->ImportNativePixmap(std::move(native_pixmap),
-                           gfx::BufferFormat::YUV_420_BIPLANAR,
-                           gfx::BufferPlane::DEFAULT, video_frame->coded_size(),
-                           gfx::ColorSpace(), target, texture_id);
+      ->ImportNativePixmap(std::move(native_pixmap), plane_format,
+                           plane ? gfx::BufferPlane::UV : gfx::BufferPlane::Y,
+                           plane_size, gfx::ColorSpace(), target, texture_id);
 }
 
 }  // namespace
@@ -123,13 +178,21 @@ bool GLImageProcessorBackend::IsSupported(const PortConfig& input_config,
                                           const PortConfig& output_config) {
   if (input_config.fourcc.ToVideoPixelFormat() != PIXEL_FORMAT_NV12 ||
       output_config.fourcc.ToVideoPixelFormat() != PIXEL_FORMAT_NV12) {
-    VLOGF(2)
-        << "The GLImageProcessorBackend only supports MM21 to NV12 conversion.";
+    VLOGF(2) << "The GLImageProcessorBackend only supports NV12.";
     return false;
   }
 
-  if (input_config.visible_rect != output_config.visible_rect) {
-    VLOGF(2) << "The GLImageProcessorBackend does not support scaling.";
+  if ((input_config.fourcc != Fourcc(Fourcc::MM21) &&
+       input_config.fourcc != Fourcc(Fourcc::NV12)) ||
+      output_config.fourcc != Fourcc(Fourcc::NV12)) {
+    VLOGF(2) << "The GLImageProcessor only supports MM21->NV12 and NV12->NV12.";
+    return false;
+  }
+
+  if (input_config.visible_rect != output_config.visible_rect &&
+      input_config.fourcc == Fourcc(Fourcc::MM21)) {
+    VLOGF(2)
+        << "The GLImageProcessorBackend only supports scaling for NV12->NV12.";
     return false;
   }
 
@@ -154,11 +217,12 @@ bool GLImageProcessorBackend::IsSupported(const PortConfig& input_config,
     return false;
   }
 
-  if ((input_config.size.width() & (kTileWidth - 1)) ||
-      (input_config.size.height() & (kTileHeight - 1))) {
+  if (input_config.fourcc == Fourcc(Fourcc::MM21) &&
+      ((input_config.size.width() & (kTileWidth - 1)) ||
+       (input_config.size.height() & (kTileHeight - 1)))) {
     VLOGF(2) << "The input frame coded size (" << input_config.size.ToString()
-             << ") is not aligned to the tile dimensions (" << kTileWidth << "x"
-             << kTileHeight << ").";
+             << ") is not aligned to the MM21 tile dimensions (" << kTileWidth
+             << "x" << kTileHeight << ").";
     return false;
   }
 
@@ -233,14 +297,6 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
     return;
   }
 
-  // The GL_EXT_YUV_target extension is needed for using a YUV texture (target =
-  // GL_TEXTURE_EXTERNAL_OES) as a rendering target.
-  if (!gl_context_->HasExtension("GL_EXT_YUV_target")) {
-    LOG(ERROR) << "The context doesn't support GL_EXT_YUV_target";
-    done->Signal();
-    return;
-  }
-
   const gfx::Size input_visible_size = input_config_.visible_rect.size();
   const gfx::Size output_visible_size = output_config_.visible_rect.size();
   GLint max_texture_size;
@@ -261,7 +317,8 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   glGenFramebuffersEXT(1, &fb_id_);
   glGenTextures(1, &dst_texture_id_);
 
-  // Create a shader program to convert an MM21 buffer into an NV12 buffer.
+  // Create a vertex shader program which will be used for both scaling and
+  // conversion shader programs.
   GLuint program = glCreateProgram();
   constexpr GLchar kVertexShader[] =
       "#version 300 es\n"
@@ -288,62 +345,96 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
     return;
   }
 
-  // Detiling fragment shader. Notice how we have to sample the Y and UV channel
-  // separately. This is because the driver calculates UV coordinates by simply
-  // dividing the Y coordinates by 2, but this results in subtle UV plane
-  // artifacting, since we should really be dividing by 2 before calculating the
-  // detiled coordinates. In practice, this second sample pass usually hits the
-  // GPU's cache, so this doesn't influence DRAM bandwidth too negatively.
-  constexpr GLchar kFragmentShader[] =
-      R"(#version 300 es
-      #extension GL_EXT_YUV_target : require
-      #pragma disable_alpha_to_coverage
-      precision mediump float;
-      precision mediump int;
-      uniform __samplerExternal2DY2YEXT tex;
-      const uvec2 kYTileDims = uvec2(16, 32);
-      const uvec2 kUVTileDims = uvec2(8, 16);
-      uniform uint width;
-      uniform uint height;
-      in vec2 texPos;
-      layout(yuv) out vec4 fragColor;
-      void main() {
-        uvec2 iCoord = uvec2(gl_FragCoord.xy);
-        uvec2 tileCoords = iCoord / kYTileDims;
-        uint numTilesPerRow = width / kYTileDims.x;
-        uint tileIdx = (tileCoords.y * numTilesPerRow) + tileCoords.x;
-        uvec2 inTileCoord = iCoord % kYTileDims;
-        uint offsetInTile = (inTileCoord.y * kYTileDims.x) + inTileCoord.x;
-        highp uint linearIndex = tileIdx;
-        linearIndex = linearIndex * kYTileDims.x;
-        linearIndex = linearIndex * kYTileDims.y;
-        linearIndex = linearIndex + offsetInTile;
-        uint detiledY = linearIndex / width;
-        uint detiledX = linearIndex % width;
-        fragColor = vec4(0, 0, 0, 1);
-        fragColor.r = texelFetch(tex, ivec2(detiledX, detiledY), 0).r;
-        iCoord = iCoord / uint(2);
-        tileCoords = iCoord / kUVTileDims;
-        uint uvWidth = width / uint(2);
-        numTilesPerRow = uvWidth / kUVTileDims.x;
-        tileIdx = (tileCoords.y * numTilesPerRow) + tileCoords.x;
-        inTileCoord = iCoord % kUVTileDims;
-        offsetInTile = (inTileCoord.y * kUVTileDims.x) + inTileCoord.x;
-        linearIndex = tileIdx;
-        linearIndex = linearIndex * kUVTileDims.x;
-        linearIndex = linearIndex * kUVTileDims.y;
-        linearIndex = linearIndex + offsetInTile;
-        detiledY = linearIndex / uvWidth;
-        detiledX = linearIndex % uvWidth;
-        detiledY = detiledY * uint(2);
-        detiledX = detiledX * uint(2);
-        fragColor.gb = texelFetch(tex, ivec2(detiledX, detiledY), 0).gb;
-      })";
-  if (!CreateAndAttachShader(program, GL_FRAGMENT_SHADER, kFragmentShader,
-                             sizeof(kFragmentShader))) {
-    LOG(ERROR) << "Could not compile the fragment shader";
-    done->Signal();
-    return;
+  const bool scaling = (input_config_.fourcc == Fourcc(Fourcc::NV12) &&
+                        output_config_.fourcc == Fourcc(Fourcc::NV12));
+
+  if (scaling) {
+    // Creates a fragment shader program to do NV12 scaling.
+    constexpr GLchar kFragmentShader[] =
+        R"(#version 300 es
+          precision mediump float;
+          precision mediump int;
+          uniform sampler2D videoTexture;
+          in vec2 texPos;
+          layout(location=0) out vec4 fragColour;
+          void main() {
+            fragColour = texture(videoTexture, texPos);
+        })";
+    if (!CreateAndAttachShader(program, GL_FRAGMENT_SHADER, kFragmentShader,
+                               sizeof(kFragmentShader))) {
+      LOG(ERROR) << "Could not compile the fragment shader";
+      done->Signal();
+      return;
+    }
+  } else {
+    // The GL_EXT_YUV_target extension is needed for using a YUV texture (target
+    // = GL_TEXTURE_EXTERNAL_OES) as a rendering target.
+    CHECK_EQ(input_config_.fourcc, Fourcc(Fourcc::MM21));
+    if (!gl_context_->HasExtension("GL_EXT_YUV_target")) {
+      LOG(ERROR) << "The context doesn't support GL_EXT_YUV_target";
+      done->Signal();
+      return;
+    }
+
+    // Creates a shader program to convert an MM21 buffer into an NV12 buffer.
+    // Detiling fragment shader. Notice how we have to sample the Y and UV
+    // channel separately. This is because the driver calculates UV coordinates
+    // by simply dividing the Y coordinates by 2, but this results in subtle UV
+    // plane artifacting, since we should really be dividing by 2 before
+    // calculating the detiled coordinates. In practice, this second sample pass
+    // usually hits the GPU's cache, so this doesn't influence DRAM bandwidth
+    // too negatively.
+    constexpr GLchar kFragmentShader[] =
+        R"(#version 300 es
+        #extension GL_EXT_YUV_target : require
+        #pragma disable_alpha_to_coverage
+        precision mediump float;
+        precision mediump int;
+        uniform __samplerExternal2DY2YEXT tex;
+        const uvec2 kYTileDims = uvec2(16, 32);
+        const uvec2 kUVTileDims = uvec2(8, 16);
+        uniform uint width;
+        uniform uint height;
+        in vec2 texPos;
+        layout(yuv) out vec4 fragColor;
+        void main() {
+          uvec2 iCoord = uvec2(gl_FragCoord.xy);
+          uvec2 tileCoords = iCoord / kYTileDims;
+          uint numTilesPerRow = width / kYTileDims.x;
+          uint tileIdx = (tileCoords.y * numTilesPerRow) + tileCoords.x;
+          uvec2 inTileCoord = iCoord % kYTileDims;
+          uint offsetInTile = (inTileCoord.y * kYTileDims.x) + inTileCoord.x;
+          highp uint linearIndex = tileIdx;
+          linearIndex = linearIndex * kYTileDims.x;
+          linearIndex = linearIndex * kYTileDims.y;
+          linearIndex = linearIndex + offsetInTile;
+          uint detiledY = linearIndex / width;
+          uint detiledX = linearIndex % width;
+          fragColor = vec4(0, 0, 0, 1);
+          fragColor.r = texelFetch(tex, ivec2(detiledX, detiledY), 0).r;
+          iCoord = iCoord / uint(2);
+          tileCoords = iCoord / kUVTileDims;
+          uint uvWidth = width / uint(2);
+          numTilesPerRow = uvWidth / kUVTileDims.x;
+          tileIdx = (tileCoords.y * numTilesPerRow) + tileCoords.x;
+          inTileCoord = iCoord % kUVTileDims;
+          offsetInTile = (inTileCoord.y * kUVTileDims.x) + inTileCoord.x;
+          linearIndex = tileIdx;
+          linearIndex = linearIndex * kUVTileDims.x;
+          linearIndex = linearIndex * kUVTileDims.y;
+          linearIndex = linearIndex + offsetInTile;
+          detiledY = linearIndex / uvWidth;
+          detiledX = linearIndex % uvWidth;
+          detiledY = detiledY * uint(2);
+          detiledX = detiledX * uint(2);
+          fragColor.gb = texelFetch(tex, ivec2(detiledX, detiledY), 0).gb;
+        })";
+    if (!CreateAndAttachShader(program, GL_FRAGMENT_SHADER, kFragmentShader,
+                               sizeof(kFragmentShader))) {
+      LOG(ERROR) << "Could not compile the fragment shader";
+      done->Signal();
+      return;
+    }
   }
 
   glLinkProgram(program);
@@ -363,17 +454,22 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // Create an input texture. This will be eventually attached to the input
   // dma-buf and we will sample from it, so we need to set some parameters.
   glGenTextures(1, &src_texture_id_);
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, src_texture_id_);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glUniform1i(glGetUniformLocation(program, "tex"), 0);
-  glUniform1ui(glGetUniformLocation(program, "width"),
-               ALIGN(output_visible_size.width(), kTileWidth));
-  glUniform1ui(glGetUniformLocation(program, "height"),
-               ALIGN(output_visible_size.height(), kTileHeight));
-  glViewport(0, 0, output_visible_size.width(), output_visible_size.height());
+  const auto gl_texture_target =
+      scaling ? GL_TEXTURE_2D : GL_TEXTURE_EXTERNAL_OES;
+  const auto gl_texture_filter = scaling ? GL_LINEAR : GL_NEAREST;
+  glBindTexture(gl_texture_target, src_texture_id_);
+  glTexParameteri(gl_texture_target, GL_TEXTURE_MIN_FILTER, gl_texture_filter);
+  glTexParameteri(gl_texture_target, GL_TEXTURE_MAG_FILTER, gl_texture_filter);
+  glTexParameteri(gl_texture_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(gl_texture_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  if (!scaling) {
+    glUniform1i(glGetUniformLocation(program, "tex"), 0);
+    glUniform1ui(glGetUniformLocation(program, "width"),
+                 ALIGN(output_visible_size.width(), kTileWidth));
+    glUniform1ui(glGetUniformLocation(program, "height"),
+                 ALIGN(output_visible_size.height(), kTileHeight));
+  }
 
   // This glGetError() blocks until all the commands above have executed. This
   // should be okay because initialization only happens once.
@@ -431,41 +527,68 @@ void GLImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
   // Note that calling glFramebufferTexture2DEXT() during InitializeTask()
   // didn't work: it generates a GL error. I guess this means the texture must
   // have a valid image prior to attaching it to the framebuffer.
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, dst_texture_id_);
-  auto output_image_binding = CreateAndBindImage(
-      output_frame.get(), GL_TEXTURE_EXTERNAL_OES, dst_texture_id_);
-  if (!output_image_binding) {
-    LOG(ERROR) << "Could not import the output buffer into GL";
-    error_cb_.Run();
-    return;
-  }
-  glBindFramebufferEXT(GL_FRAMEBUFFER, fb_id_);
-  glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                            GL_TEXTURE_EXTERNAL_OES, dst_texture_id_, 0);
-  if (glCheckFramebufferStatusEXT(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    LOG(ERROR) << "The GL framebuffer is incomplete";
-    error_cb_.Run();
-    return;
-  }
 
-  // Import the input buffer into GL. This is done after importing the output
-  // buffer so that binding so that the input texture remains as the texture in
-  // unit 0 (otherwise, the sampler would be sampling out of the output texture
-  // which wouldn't make sense).
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, src_texture_id_);
-  auto input_image_binding = CreateAndBindImage(
-      input_frame.get(), GL_TEXTURE_EXTERNAL_OES, src_texture_id_);
-  if (!input_image_binding) {
-    LOG(ERROR) << "Could not import the input buffer into GL";
-    error_cb_.Run();
-    return;
-  }
+  const bool scaling = (input_config_.fourcc == Fourcc(Fourcc::NV12) &&
+                        output_config_.fourcc == Fourcc(Fourcc::NV12));
+  const int num_planes = scaling ? 2 : 1;
+  const auto gl_texture_target =
+      scaling ? GL_TEXTURE_2D : GL_TEXTURE_EXTERNAL_OES;
+  for (int plane = 0; plane < num_planes; plane++) {
+    base::CheckedNumeric<GLsizei> output_width = GetNV12PlaneDimension<GLsizei>(
+        output_frame->visible_rect().width(), plane);
+    base::CheckedNumeric<GLsizei> output_height =
+        GetNV12PlaneDimension<GLsizei>(output_frame->visible_rect().height(),
+                                       plane);
+    if (!output_width.IsValid() || !output_height.IsValid()) {
+      LOG(ERROR) << "Could not calculate the viewport dimensions";
+      error_cb_.Run();
+      return;
+    }
+    glViewport(0, 0, output_width.ValueOrDie(), output_height.ValueOrDie());
 
-  GLuint indices[4] = {0, 1, 2, 3};
-  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, indices);
+    glBindTexture(gl_texture_target, dst_texture_id_);
+    auto output_image_binding = CreateAndBindImage(
+        output_frame.get(), gl_texture_target, dst_texture_id_,
+        /*should_split_planes=*/scaling, plane);
+    if (!output_image_binding) {
+      LOG(ERROR) << "Could not import the output buffer into GL";
+      error_cb_.Run();
+      return;
+    }
+
+    glBindFramebufferEXT(GL_FRAMEBUFFER, fb_id_);
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                              gl_texture_target, dst_texture_id_, 0);
+    if (glCheckFramebufferStatusEXT(GL_FRAMEBUFFER) !=
+        GL_FRAMEBUFFER_COMPLETE) {
+      LOG(ERROR) << "The GL framebuffer is incomplete";
+      error_cb_.Run();
+      return;
+    }
+
+    // Import the input buffer into GL. This is done after importing the output
+    // buffer so that binding so that the input texture remains as the texture
+    // in unit 0 (otherwise, the sampler would be sampling out of the output
+    // texture which wouldn't make sense).
+    glBindTexture(gl_texture_target, src_texture_id_);
+
+    auto input_image_binding = CreateAndBindImage(
+        input_frame.get(), gl_texture_target, src_texture_id_,
+        /*should_split_planes=*/scaling, plane);
+    if (!input_image_binding) {
+      LOG(ERROR) << "Could not import the input buffer into GL";
+      error_cb_.Run();
+      return;
+    }
+
+    GLuint indices[4] = {0, 1, 2, 3};
+    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, indices);
+  }
 
   // glFlush() is not quite sufficient, and will result in frames being output
   // out of order, so we use a full glFinish() call.
+  // TODO(bchoobineh): add proper synchronization that does not require
+  // blocking the CPU.
   glFinish();
 
   output_frame->set_timestamp(input_frame->timestamp());
