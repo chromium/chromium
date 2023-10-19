@@ -5,7 +5,7 @@
 import 'chrome://customize-chrome-side-panel.top-chrome/combobox/customize_chrome_combobox.js';
 
 import {CustomizeChromeCombobox, OptionElement} from 'chrome://customize-chrome-side-panel.top-chrome/combobox/customize_chrome_combobox.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -175,5 +175,26 @@ suite('ComboboxTest', () => {
     combobox.value = 'option-2-value';
     assertFalse(option1.hasAttribute('selected'));
     assertTrue(option2.hasAttribute('selected'));
+  });
+
+  test('SetsUniqueIdsAndAriaActiveDescendant', async () => {
+    const option1 = addOption();
+    option1.value = 'option-1-value';
+    const option2 = addOption();
+    option2.value = 'option-2-value';
+    await flushTasks();
+
+    assertTrue(option1.id.includes('comboboxItem'));
+    assertTrue(option2.id.includes('comboboxItem'));
+    assertNotEquals(option1.id, option2.id);
+
+    combobox.$.input.click();
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertEquals(
+        option1.id, combobox.$.input.getAttribute('aria-activedescendant'));
+
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertEquals(
+        option2.id, combobox.$.input.getAttribute('aria-activedescendant'));
   });
 });

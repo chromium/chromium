@@ -17,6 +17,9 @@ const SELECTABLE_ITEMS_SELECTOR = '[role=option]';
 
 export type OptionElement = HTMLElement&{value?: string};
 
+/* Running count of total items. Incremented to provide unique IDs. */
+let itemCount = 0;
+
 export interface CustomizeChromeCombobox {
   $: {
     input: HTMLDivElement,
@@ -41,6 +44,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
         reflectToAttribute: true,
         observer: 'onExpandedChange_',
       },
+      highlightedElement_: Object,
       label: String,
       selectedElement_: {
         type: Object,
@@ -82,6 +86,10 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.domObserver_ = null;
   }
 
+  private getAriaActiveDescendant_(): string|undefined {
+    return this.highlightedElement_?.id;
+  }
+
   private getInputLabel_(): string {
     if (this.selectedElement_) {
       return this.selectedElement_.textContent!;
@@ -105,6 +113,12 @@ export class CustomizeChromeCombobox extends PolymerElement {
   private onDomChange_() {
     this.highlightableElements_ = Array.from(
         this.querySelectorAll<HTMLElement>(HIGHLIGHTABLE_ITEMS_SELECTOR));
+
+    this.highlightableElements_.forEach(element => {
+      if (!element.id) {
+        element.id = `comboboxItem${itemCount++}`;
+      }
+    });
   }
 
   private onDropdownClick_(event: MouseEvent) {
