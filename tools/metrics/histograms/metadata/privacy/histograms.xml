@@ -910,6 +910,17 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.TrackingProtection.OnboardingStartup.EligibleToOnboardedDuration"
+    units="ms" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration it takes while being eligible up till onboarding to
+    3PCD. This occurs once per profile during the startup of onboarding.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.TrackingProtection.OnboardingStartup.State"
     enum="OnboardingStartupState" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
@@ -917,6 +928,28 @@ reviewer.
   <summary>
     Records the state on startup of being onboarded to 3PCD. This occurs once
     per profile during the startup of onboarding.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.OnboardingStartup.WaitingToAckSince"
+    units="ms" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the time it takes to acknowledge the notice for 3PCD after being
+    onboarded. This occurs once per profile during the startup of onboarding.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.OnboardingStartup.WaitingToOnboardSince"
+    units="ms" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the time it takes while waiting to be onboarded to 3PCD. This occurs
+    once per profile during the startup of onboarding.
   </summary>
 </histogram>
 

@@ -78,13 +78,39 @@ void CreateHistogramOnboardingStartupState(
       "PrivacySandbox.TrackingProtection.OnboardingStartup.State", state);
 }
 
+void CreateTimingHistogramOnboardingStartup(const char* name,
+                                            base::TimeDelta sample) {
+  base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(1),
+                                base::Days(10), 100);
+}
+
 void RecordOnboardedHistogramsOnStartup(PrefService* pref_service) {
   if (!pref_service->GetBoolean(prefs::kTrackingProtectionOnboardingAcked)) {
     CreateHistogramOnboardingStartupState(
         TrackingProtectionOnboarding::OnboardingStartupState::
             kOnboardedWaitingToAck);
+    auto waiting_to_ack_since =
+        base::Time::Now() -
+        pref_service->GetTime(prefs::kTrackingProtectionOnboardedSince);
+    auto eligible_to_onboarded_duration =
+        pref_service->GetTime(prefs::kTrackingProtectionOnboardedSince) -
+        pref_service->GetTime(prefs::kTrackingProtectionEligibleSince);
+    CreateTimingHistogramOnboardingStartup(
+        "PrivacySandbox.TrackingProtection.OnboardingStartup.WaitingToAckSince",
+        waiting_to_ack_since);
+    CreateTimingHistogramOnboardingStartup(
+        "PrivacySandbox.TrackingProtection.OnboardingStartup."
+        "EligibleToOnboardedDuration",
+        eligible_to_onboarded_duration);
     return;
   }
+  auto eligible_to_onboarded_duration =
+      pref_service->GetTime(prefs::kTrackingProtectionOnboardedSince) -
+      pref_service->GetTime(prefs::kTrackingProtectionEligibleSince);
+  CreateTimingHistogramOnboardingStartup(
+      "PrivacySandbox.TrackingProtection.OnboardingStartup."
+      "EligibleToOnboardedDuration",
+      eligible_to_onboarded_duration);
   auto action = static_cast<TrackingProtectionOnboardingAckAction>(
       pref_service->GetInteger(prefs::kTrackingProtectionOnboardingAckAction));
   switch (action) {
@@ -121,11 +147,19 @@ void RecordHistogramsOnStartup(PrefService* pref_service) {
       CreateHistogramOnboardingStartupState(
           TrackingProtectionOnboarding::OnboardingStartupState::kIneligible);
       break;
-    case TrackingProtectionOnboardingStatus::kEligible:
+    case TrackingProtectionOnboardingStatus::kEligible: {
       CreateHistogramOnboardingStartupState(
           TrackingProtectionOnboarding::OnboardingStartupState::
               kEligibleWaitingToOnboard);
+      auto waiting_to_onboard_since =
+          base::Time::Now() -
+          pref_service->GetTime(prefs::kTrackingProtectionEligibleSince);
+      CreateTimingHistogramOnboardingStartup(
+          "PrivacySandbox.TrackingProtection.OnboardingStartup."
+          "WaitingToOnboardSince",
+          waiting_to_onboard_since);
       break;
+    }
     case TrackingProtectionOnboardingStatus::kOnboarded:
       RecordOnboardedHistogramsOnStartup(pref_service);
       break;
