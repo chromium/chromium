@@ -58,6 +58,8 @@ class DefaultExternalConstants : public ExternalConstants {
     return absl::nullopt;
   }
 
+  bool EnableDiffUpdates() const override { return false; }
+
  private:
   ~DefaultExternalConstants() override = default;
 };

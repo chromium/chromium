@@ -222,6 +222,18 @@ absl::optional<bool> ExternalConstantsOverrider::IsMachineManaged() const {
   return absl::make_optional(is_managed->GetBool());
 }
 
+bool ExternalConstantsOverrider::EnableDiffUpdates() const {
+  if (!override_values_.contains(kDevOverrideKeyEnableDiffUpdates)) {
+    return next_provider_->EnableDiffUpdates();
+  }
+  const base::Value* value =
+      override_values_.Find(kDevOverrideKeyEnableDiffUpdates);
+  CHECK(value->is_bool()) << "Unexpected type of override["
+                          << kDevOverrideKeyEnableDiffUpdates
+                          << "]: " << base::Value::GetTypeName(value->type());
+  return value->GetBool();
+}
+
 // static
 scoped_refptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(

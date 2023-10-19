@@ -67,6 +67,9 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
   // Overrides machine management state.
   virtual absl::optional<bool> IsMachineManaged() const = 0;
 
+  // True if the updater should request and apply diff updates.
+  virtual bool EnableDiffUpdates() const = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<ExternalConstants>;
   scoped_refptr<ExternalConstants> next_provider_;

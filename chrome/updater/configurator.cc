@@ -170,7 +170,7 @@ scoped_refptr<update_client::PatcherFactory> Configurator::GetPatcherFactory() {
 }
 
 bool Configurator::EnabledDeltas() const {
-  return false;
+  return external_constants_->EnableDiffUpdates();
 }
 
 bool Configurator::EnabledBackgroundDownloader() const {

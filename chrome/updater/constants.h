@@ -227,6 +227,7 @@ extern const char kDevOverrideKeyGroupPolicies[];
 extern const char kDevOverrideKeyOverinstallTimeout[];
 extern const char kDevOverrideKeyIdleCheckPeriodSeconds[];
 extern const char kDevOverrideKeyManagedDevice[];
+extern const char kDevOverrideKeyEnableDiffUpdates[];
 
 // Timing constants.
 // How long to wait for an application installer (such as chrome_installer.exe)
