@@ -32,8 +32,7 @@ class APIRequestHandler::ArgumentAdapter {
  public:
   ArgumentAdapter(const base::Value::List* base_argumements,
                   mojom::ExtraResponseDataPtr extra_data);
-  explicit ArgumentAdapter(
-      const std::vector<v8::Local<v8::Value>>& v8_arguments);
+  explicit ArgumentAdapter(const v8::LocalVector<v8::Value>& v8_arguments);
 
   ArgumentAdapter(ArgumentAdapter&) = delete;
   ArgumentAdapter& operator=(const ArgumentAdapter&) = delete;
@@ -42,7 +41,7 @@ class APIRequestHandler::ArgumentAdapter {
 
   ~ArgumentAdapter();
 
-  const std::vector<v8::Local<v8::Value>>& GetArguments(
+  const v8::LocalVector<v8::Value>& GetArguments(
       v8::Local<v8::Context> context) const;
 
   mojom::ExtraResponseDataPtr TakeExtraData() { return std::move(extra_data_); }
@@ -50,7 +49,7 @@ class APIRequestHandler::ArgumentAdapter {
  private:
   raw_ptr<const base::Value::List, ExperimentalRenderer> base_arguments_ =
       nullptr;
-  mutable std::vector<v8::Local<v8::Value>> v8_arguments_;
+  mutable absl::optional<v8::LocalVector<v8::Value>> v8_arguments_;
   mojom::ExtraResponseDataPtr extra_data_ = nullptr;
 };
 
@@ -59,27 +58,29 @@ APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
     mojom::ExtraResponseDataPtr extra_data)
     : base_arguments_(base_arguments), extra_data_(std::move(extra_data)) {}
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
-    const std::vector<v8::Local<v8::Value>>& v8_arguments)
+    const v8::LocalVector<v8::Value>& v8_arguments)
     : v8_arguments_(v8_arguments) {}
 APIRequestHandler::ArgumentAdapter::~ArgumentAdapter() = default;
 
-const std::vector<v8::Local<v8::Value>>&
+const v8::LocalVector<v8::Value>&
 APIRequestHandler::ArgumentAdapter::GetArguments(
     v8::Local<v8::Context> context) const {
   v8::Isolate* isolate = context->GetIsolate();
   DCHECK(isolate->GetCurrentContext() == context);
 
   if (base_arguments_) {
-    DCHECK(v8_arguments_.empty())
+    DCHECK(!v8_arguments_.has_value())
         << "GetArguments() should only be called once.";
     std::unique_ptr<content::V8ValueConverter> converter =
         content::V8ValueConverter::Create();
-    v8_arguments_.reserve(base_arguments_->size());
+    v8_arguments_.emplace(isolate);
+    v8_arguments_->reserve(base_arguments_->size());
     for (const auto& arg : *base_arguments_)
-      v8_arguments_.push_back(converter->ToV8Value(arg, context));
+      v8_arguments_->push_back(converter->ToV8Value(arg, context));
   }
 
-  return v8_arguments_;
+  DCHECK(v8_arguments_.has_value());
+  return v8_arguments_.value();
 }
 
 // A helper class to handler delivering the results of an API call to a handler,
@@ -114,7 +115,7 @@ class APIRequestHandler::AsyncResultHandler {
   // immediately.
   void ResolveRequest(v8::Local<v8::Context> context,
                       APILastError* last_error,
-                      const std::vector<v8::Local<v8::Value>>& response_args,
+                      const v8::LocalVector<v8::Value>& response_args,
                       const std::string& error,
                       mojom::ExtraResponseDataPtr extra_data);
 
@@ -123,18 +124,16 @@ class APIRequestHandler::AsyncResultHandler {
 
  private:
   // Delivers the result to the promise resolver.
-  static void ResolvePromise(
-      v8::Local<v8::Context> context,
-      const std::vector<v8::Local<v8::Value>>& response_args,
-      const std::string& error,
-      v8::Local<v8::Promise::Resolver> resolver);
+  static void ResolvePromise(v8::Local<v8::Context> context,
+                             const v8::LocalVector<v8::Value>& response_args,
+                             const std::string& error,
+                             v8::Local<v8::Promise::Resolver> resolver);
 
   // Delivers the result to the callback provided by the extension.
-  static void CallExtensionCallback(
-      v8::Local<v8::Context> context,
-      std::vector<v8::Local<v8::Value>> response_args,
-      v8::Local<v8::Function> extension_callback,
-      ExceptionHandler* exception_handler);
+  static void CallExtensionCallback(v8::Local<v8::Context> context,
+                                    v8::LocalVector<v8::Value> response_args,
+                                    v8::Local<v8::Function> extension_callback,
+                                    ExceptionHandler* exception_handler);
 
   // Helper function to handle the result after the bindings' custom callback
   // has completed.
@@ -142,10 +141,9 @@ class APIRequestHandler::AsyncResultHandler {
       const v8::FunctionCallbackInfo<v8::Value>& info);
 
   // Delivers the result to the custom callback.
-  void CallCustomCallback(
-      v8::Local<v8::Context> context,
-      const std::vector<v8::Local<v8::Value>>& response_args,
-      const std::string& error);
+  void CallCustomCallback(v8::Local<v8::Context> context,
+                          const v8::LocalVector<v8::Value>& response_args,
+                          const std::string& error);
 
   // The type of asynchronous response this handler is for.
   const binding::AsyncResponseType async_type_;
@@ -207,7 +205,7 @@ APIRequestHandler::AsyncResultHandler::~AsyncResultHandler() = default;
 void APIRequestHandler::AsyncResultHandler::ResolveRequest(
     v8::Local<v8::Context> context,
     APILastError* last_error,
-    const std::vector<v8::Local<v8::Value>>& response_args,
+    const v8::LocalVector<v8::Value>& response_args,
     const std::string& error,
     mojom::ExtraResponseDataPtr extra_data) {
   v8::Isolate* isolate = context->GetIsolate();
@@ -224,7 +222,7 @@ void APIRequestHandler::AsyncResultHandler::ResolveRequest(
   // arguments before we send them back.
   // Note: a request can end up with a result modifier and be returning an empty
   // set of args if we are responding that an error occurred.
-  std::vector<v8::Local<v8::Value>> args =
+  v8::LocalVector<v8::Value> args =
       result_modifier_.is_null() || response_args.empty()
           ? response_args
           : std::move(result_modifier_)
@@ -235,7 +233,7 @@ void APIRequestHandler::AsyncResultHandler::ResolveRequest(
     // to the custom callback. The custom callback can then incorporate these
     // blobs appropriately in its response.
     if (extra_data) {
-      std::vector<v8::Local<v8::Value>> v8_blobs;
+      v8::LocalVector<v8::Value> v8_blobs(isolate);
       for (auto& blob : extra_data->blobs) {
         auto web_blob =
             blink::WebBlob::CreateFromSerializedBlob(std::move(blob));
@@ -269,7 +267,7 @@ void APIRequestHandler::AsyncResultHandler::ResolveRequest(
 // static
 void APIRequestHandler::AsyncResultHandler::ResolvePromise(
     v8::Local<v8::Context> context,
-    const std::vector<v8::Local<v8::Value>>& response_args,
+    const v8::LocalVector<v8::Value>& response_args,
     const std::string& error,
     v8::Local<v8::Promise::Resolver> resolver) {
   DCHECK_LE(response_args.size(), 1u);
@@ -306,7 +304,7 @@ void APIRequestHandler::AsyncResultHandler::ResolvePromise(
 // static
 void APIRequestHandler::AsyncResultHandler::CallExtensionCallback(
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>> args,
+    v8::LocalVector<v8::Value> args,
     v8::Local<v8::Function> extension_callback,
     ExceptionHandler* exception_handler) {
   DCHECK(exception_handler);
@@ -357,7 +355,7 @@ void APIRequestHandler::AsyncResultHandler::CustomCallbackAdaptor(
 
 void APIRequestHandler::AsyncResultHandler::CallCustomCallback(
     v8::Local<v8::Context> context,
-    const std::vector<v8::Local<v8::Value>>& response_args,
+    const v8::LocalVector<v8::Value>& response_args,
     const std::string& error) {
   v8::Isolate* isolate = context->GetIsolate();
 
@@ -386,7 +384,7 @@ void APIRequestHandler::AsyncResultHandler::CallCustomCallback(
 
   // Custom callbacks in the JS bindings are called with the arguments of the
   // callback function and the response from the API.
-  std::vector<v8::Local<v8::Value>> custom_callback_args;
+  v8::LocalVector<v8::Value> custom_callback_args(isolate);
   custom_callback_args.reserve(1 + response_args.size());
   custom_callback_args.push_back(callback_to_pass);
   custom_callback_args.insert(custom_callback_args.end(), response_args.begin(),
@@ -496,7 +494,7 @@ void APIRequestHandler::CompleteRequest(
 
 void APIRequestHandler::CompleteRequest(
     int request_id,
-    const std::vector<v8::Local<v8::Value>>& response_args,
+    const v8::LocalVector<v8::Value>& response_args,
     const std::string& error) {
   CompleteRequestImpl(request_id, ArgumentAdapter(response_args), error);
 }
@@ -624,7 +622,7 @@ void APIRequestHandler::CompleteRequestImpl(int request_id,
     return;
   }
 
-  const std::vector<v8::Local<v8::Value>>& response_args =
+  const v8::LocalVector<v8::Value>& response_args =
       arguments.GetArguments(context);
 
   std::unique_ptr<InteractionProvider::Scope> user_gesture;

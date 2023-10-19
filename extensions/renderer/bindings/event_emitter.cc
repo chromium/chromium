@@ -56,7 +56,7 @@ const char* EventEmitter::GetTypeName() {
 }
 
 void EventEmitter::Fire(v8::Local<v8::Context> context,
-                        std::vector<v8::Local<v8::Value>>* args,
+                        v8::LocalVector<v8::Value>* args,
                         mojom::EventFilteringInfoPtr filter,
                         JSRunner::ResultCallback callback) {
   DispatchAsync(context, args, std::move(filter), std::move(callback));
@@ -64,7 +64,7 @@ void EventEmitter::Fire(v8::Local<v8::Context> context,
 
 v8::Local<v8::Value> EventEmitter::FireSync(
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* args,
+    v8::LocalVector<v8::Value>* args,
     mojom::EventFilteringInfoPtr filter) {
   DCHECK(context == context->GetIsolate()->GetCurrentContext());
   return DispatchSync(context, args, std::move(filter));
@@ -147,7 +147,7 @@ void EventEmitter::Dispatch(gin::Arguments* arguments) {
   v8::Isolate* isolate = arguments->isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  std::vector<v8::Local<v8::Value>> v8_args = arguments->GetAll();
+  v8::LocalVector<v8::Value> v8_args = arguments->GetAll();
 
   // Since this is directly from JS, we know it should be safe to call
   // synchronously and use the return result, so we don't use Fire().
@@ -156,10 +156,10 @@ void EventEmitter::Dispatch(gin::Arguments* arguments) {
 
 v8::Local<v8::Value> EventEmitter::DispatchSync(
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* args,
+    v8::LocalVector<v8::Value>* args,
     mojom::EventFilteringInfoPtr filter) {
   // Note that |listeners_| can be modified during handling.
-  std::vector<v8::Local<v8::Function>> listeners =
+  v8::LocalVector<v8::Function> listeners =
       listeners_->GetListeners(std::move(filter), context);
 
   JSRunner* js_runner = JSRunner::Get(context);
@@ -222,7 +222,7 @@ v8::Local<v8::Value> EventEmitter::DispatchSync(
 }
 
 void EventEmitter::DispatchAsync(v8::Local<v8::Context> context,
-                                 std::vector<v8::Local<v8::Value>>* args,
+                                 v8::LocalVector<v8::Value>* args,
                                  mojom::EventFilteringInfoPtr filter,
                                  JSRunner::ResultCallback callback) {
   v8::Isolate* isolate = context->GetIsolate();
@@ -305,7 +305,7 @@ void EventEmitter::DispatchAsyncHelper(
           .ToLocalChecked();
   DCHECK(arguments_value->IsArray());
   v8::Local<v8::Array> arguments_array = arguments_value.As<v8::Array>();
-  std::vector<v8::Local<v8::Value>> arguments;
+  v8::LocalVector<v8::Value> arguments(isolate);
   uint32_t arguments_count = arguments_array->Length();
   arguments.reserve(arguments_count);
   for (uint32_t i = 0; i < arguments_count; ++i)

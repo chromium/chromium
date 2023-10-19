@@ -74,7 +74,7 @@ class APIBindingHooks {
   RequestResult RunHooks(const std::string& method_name,
                          v8::Local<v8::Context> context,
                          const APISignature* signature,
-                         std::vector<v8::Local<v8::Value>>* arguments,
+                         v8::LocalVector<v8::Value>* arguments,
                          const APITypeReferenceMap& type_refs);
 
   // Handler function to resolve asynchronous requests associated with handle
@@ -108,7 +108,7 @@ class APIBindingHooks {
   // returned result.
   bool UpdateArguments(v8::Local<v8::Function> function,
                        v8::Local<v8::Context> context,
-                       std::vector<v8::Local<v8::Value>>* arguments);
+                       v8::LocalVector<v8::Value>* arguments);
 
   // The name of the associated API.
   std::string api_name_;

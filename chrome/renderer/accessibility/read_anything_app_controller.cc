@@ -290,7 +290,7 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
 
   v8::Local<v8::Value> v8_nodes;
   v8_snapshot_dict.Get("nodes", &v8_nodes);
-  std::vector<v8::Local<v8::Value>> v8_nodes_vector;
+  v8::LocalVector<v8::Value> v8_nodes_vector(isolate);
   if (!gin::ConvertFromV8(isolate, v8_nodes, &v8_nodes_vector)) {
     return snapshot;
   }

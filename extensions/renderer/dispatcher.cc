@@ -156,7 +156,7 @@ void CallModuleMethod(const std::string& module_name,
   std::unique_ptr<content::V8ValueConverter> converter =
       content::V8ValueConverter::Create();
 
-  std::vector<v8::Local<v8::Value>> arguments;
+  v8::LocalVector<v8::Value> arguments(context->isolate());
   for (const auto& arg : *args) {
     arguments.push_back(converter->ToV8Value(arg, context->v8_context()));
   }

@@ -465,7 +465,7 @@ TEST_F(APIEventHandlerTest, RemovingListenersWhileHandlingEvent) {
       "})();";
 
   // Create and add a bunch of listeners.
-  std::vector<v8::Local<v8::Function>> listeners;
+  v8::LocalVector<v8::Function> listeners(isolate());
   const size_t kNumListeners = 20u;
   listeners.reserve(kNumListeners);
   for (size_t i = 0; i < kNumListeners; ++i)

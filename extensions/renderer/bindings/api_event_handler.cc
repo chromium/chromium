@@ -85,9 +85,9 @@ void DispatchEvent(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
   v8::Global<v8::Object>& v8_emitter = iter->second;
 
-  std::vector<v8::Local<v8::Value>> args;
-  CHECK(gin::Converter<std::vector<v8::Local<v8::Value>>>::FromV8(
-      isolate, info[0], &args));
+  v8::LocalVector<v8::Value> args(isolate);
+  CHECK(gin::Converter<v8::LocalVector<v8::Value>>::FromV8(isolate, info[0],
+                                                           &args));
 
   EventEmitter* emitter = nullptr;
   gin::Converter<EventEmitter*>::FromV8(isolate, v8_emitter.Get(isolate),
@@ -234,7 +234,7 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
   std::unique_ptr<content::V8ValueConverter> converter =
       content::V8ValueConverter::Create();
 
-  std::vector<v8::Local<v8::Value>> v8_args;
+  v8::LocalVector<v8::Value> v8_args(context->GetIsolate());
   v8_args.reserve(args.size());
   for (const auto& arg : args)
     v8_args.push_back(converter->ToV8Value(arg, context));
@@ -243,12 +243,11 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
                      JSRunner::ResultCallback());
 }
 
-void APIEventHandler::FireEventInContext(
-    const std::string& event_name,
-    v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
-    mojom::EventFilteringInfoPtr filter,
-    JSRunner::ResultCallback callback) {
+void APIEventHandler::FireEventInContext(const std::string& event_name,
+                                         v8::Local<v8::Context> context,
+                                         v8::LocalVector<v8::Value>* arguments,
+                                         mojom::EventFilteringInfoPtr filter,
+                                         JSRunner::ResultCallback callback) {
   APIEventPerContextData* data =
       APIEventPerContextData::GetFrom(context, kDontCreateIfMissing);
   if (!data)

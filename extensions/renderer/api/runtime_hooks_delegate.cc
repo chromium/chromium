@@ -119,8 +119,8 @@ void GetBackgroundPageCallback(
 // Note: This is to allow the promise version of the API to return a single
 // object, while still supporting the previous callback version which expects
 // multiple parameters to be passed to the callback.
-std::vector<v8::Local<v8::Value>> MassageRequestUpdateCheckResults(
-    const std::vector<v8::Local<v8::Value>>& result_args,
+v8::LocalVector<v8::Value> MassageRequestUpdateCheckResults(
+    const v8::LocalVector<v8::Value>& result_args,
     v8::Local<v8::Context> context,
     binding::AsyncResponseType async_type) {
   // If this is not a callback based API call, we don't need to modify anything.
@@ -147,7 +147,7 @@ std::vector<v8::Local<v8::Value>> MassageRequestUpdateCheckResults(
   v8::Local<v8::Object> details = v8::Object::New(isolate);
   auto key = gin::StringToV8(isolate, "version");
   details->CreateDataProperty(context, key, version).Check();
-  return {status, details};
+  return v8::LocalVector<v8::Value>(isolate, {status, details});
 }
 
 }  // namespace
@@ -160,7 +160,7 @@ RuntimeHooksDelegate::~RuntimeHooksDelegate() = default;
 // static
 RequestResult RuntimeHooksDelegate::GetURL(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const v8::LocalVector<v8::Value>& arguments) {
   DCHECK_EQ(1u, arguments.size());
   DCHECK(arguments[0]->IsString());
   DCHECK(script_context->extension());
@@ -191,7 +191,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   using Handler = RequestResult (RuntimeHooksDelegate::*)(
       ScriptContext*, const APISignature::V8ParseResult&);
@@ -288,7 +288,7 @@ RequestResult RuntimeHooksDelegate::HandleGetURL(
 RequestResult RuntimeHooksDelegate::HandleSendMessage(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(4u, arguments.size());
 
   std::string target_id;
@@ -341,7 +341,7 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
 RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(3u, arguments.size());
 
   std::string application_name =
@@ -385,7 +385,7 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
 RequestResult RuntimeHooksDelegate::HandleConnect(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(2u, arguments.size());
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
@@ -421,7 +421,7 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
 RequestResult RuntimeHooksDelegate::HandleConnectNative(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(1u, arguments.size());
   DCHECK(arguments[0]->IsString());
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);

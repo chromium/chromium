@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -478,7 +477,7 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
     gin::Handle<GinPort> port =
         CreatePort(script_context, channel_name, target_port_id);
     port->SetSender(v8_context, sender);
-    std::vector<v8::Local<v8::Value>> args = {port.ToV8()};
+    v8::LocalVector<v8::Value> args(isolate, {port.ToV8()});
     bindings_system_->api_system()->event_handler()->FireEventInContext(
         event_name, v8_context, &args, nullptr, JSRunner::ResultCallback());
   }

@@ -143,7 +143,7 @@ void TestJSRunner::Flush() {
     v8::Isolate* isolate = call.isolate;
     v8::Local<v8::Context> context = call.context.Get(isolate);
     v8::Context::Scope context_scope(context);
-    std::vector<v8::Local<v8::Value>> local_arguments;
+    v8::LocalVector<v8::Value> local_arguments(isolate);
     local_arguments.reserve(call.arguments.size());
     for (auto& arg : call.arguments)
       local_arguments.push_back(arg.Get(isolate));

@@ -240,7 +240,7 @@ RequestResult I18nHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   using Handler = RequestResult (I18nHooksDelegate::*)(
       ScriptContext*, const APISignature::V8ParseResult&);
@@ -280,7 +280,7 @@ RequestResult I18nHooksDelegate::HandleRequest(
 RequestResult I18nHooksDelegate::HandleGetMessage(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   DCHECK(script_context->extension());
   DCHECK(arguments[0]->IsString());
@@ -317,7 +317,7 @@ RequestResult I18nHooksDelegate::HandleGetUILanguage(
 RequestResult I18nHooksDelegate::HandleDetectLanguage(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK(arguments[0]->IsString());
 
   v8::Local<v8::Context> v8_context = script_context->v8_context();

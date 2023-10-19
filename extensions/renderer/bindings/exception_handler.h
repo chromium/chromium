@@ -55,11 +55,10 @@ class ExceptionHandler {
   // Safely runs an `extension_callback` with the provided `callback_arguments`,
   // handling any exceptions that arise. If an exception is found, prefixes the
   // exception with `message`.
-  void RunExtensionCallback(
-      v8::Local<v8::Context> context,
-      v8::Local<v8::Function> extension_callback,
-      std::vector<v8::Local<v8::Value>> callback_arguments,
-      const std::string& message);
+  void RunExtensionCallback(v8::Local<v8::Context> context,
+                            v8::Local<v8::Function> extension_callback,
+                            v8::LocalVector<v8::Value> callback_arguments,
+                            const std::string& message);
 
  private:
   // Returns the custom handler for the given |context|, or an empty handle if

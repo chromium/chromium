@@ -114,7 +114,7 @@ RequestResult ExtensionHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   // TODO(devlin): This logic is the same in the RuntimeCustomHooksDelegate -
   // would it make sense to share it?
@@ -212,7 +212,7 @@ void ExtensionHooksDelegate::InitializeInstance(
 RequestResult ExtensionHooksDelegate::HandleSendRequest(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(3u, arguments.size());
   // This DCHECK() is correct because no context with sendRequest-related
   // APIs disabled should have scriptable access to a context with them
@@ -268,7 +268,7 @@ RequestResult ExtensionHooksDelegate::HandleGetURL(
 APIBindingHooks::RequestResult ExtensionHooksDelegate::HandleGetViews(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   const Extension* extension = script_context->extension();
   DCHECK(extension);
@@ -322,7 +322,7 @@ APIBindingHooks::RequestResult ExtensionHooksDelegate::HandleGetViews(
 RequestResult ExtensionHooksDelegate::HandleGetExtensionTabs(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   const Extension* extension = script_context->extension();
   DCHECK(extension);

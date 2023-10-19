@@ -22,7 +22,7 @@ APIBindingHooks::RequestResult DOMHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   using RequestResult = APIBindingHooks::RequestResult;
 
@@ -57,7 +57,7 @@ APIBindingHooks::RequestResult DOMHooksDelegate::HandleRequest(
 
 v8::Local<v8::Value> DOMHooksDelegate::OpenOrClosedShadowRoot(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& parsed_arguments) {
+    const v8::LocalVector<v8::Value>& parsed_arguments) {
   DCHECK(script_context->extension());
   DCHECK(parsed_arguments[0]->IsObject());
 

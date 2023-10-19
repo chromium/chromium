@@ -72,7 +72,7 @@ class APIEventListeners {
   virtual size_t GetNumListeners() = 0;
 
   // Returns the listeners that should be notified for the given |filter|.
-  virtual std::vector<v8::Local<v8::Function>> GetListeners(
+  virtual v8::LocalVector<v8::Function> GetListeners(
       mojom::EventFilteringInfoPtr filter,
       v8::Local<v8::Context> context) = 0;
 
@@ -107,7 +107,7 @@ class UnfilteredEventListeners final : public APIEventListeners {
                       v8::Local<v8::Context> context) override;
   bool HasListener(v8::Local<v8::Function> listener) override;
   size_t GetNumListeners() override;
-  std::vector<v8::Local<v8::Function>> GetListeners(
+  v8::LocalVector<v8::Function> GetListeners(
       mojom::EventFilteringInfoPtr filter,
       v8::Local<v8::Context> context) override;
   void Invalidate(v8::Local<v8::Context> context) override;
@@ -182,7 +182,7 @@ class FilteredEventListeners final : public APIEventListeners {
                       v8::Local<v8::Context> context) override;
   bool HasListener(v8::Local<v8::Function> listener) override;
   size_t GetNumListeners() override;
-  std::vector<v8::Local<v8::Function>> GetListeners(
+  v8::LocalVector<v8::Function> GetListeners(
       mojom::EventFilteringInfoPtr filter,
       v8::Local<v8::Context> context) override;
   void Invalidate(v8::Local<v8::Context> context) override;

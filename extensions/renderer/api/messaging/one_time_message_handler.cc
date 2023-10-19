@@ -337,8 +337,8 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
   v8::Local<v8::Value> v8_message =
       messaging_util::MessageToV8(context, message);
   v8::Local<v8::Object> v8_sender = port.sender.Get(isolate);
-  std::vector<v8::Local<v8::Value>> args = {v8_message, v8_sender,
-                                            response_function};
+  v8::LocalVector<v8::Value> args(isolate,
+                                  {v8_message, v8_sender, response_function});
 
   JSRunner::ResultCallback dispatch_callback;
   // For runtime.onMessage, we require that the listener return `true` if they
@@ -391,7 +391,7 @@ bool OneTimeMessageHandler::DeliverReplyToOpener(ScriptContext* script_context,
   // receiver. Invoke the callback and close the message port.
   v8::Local<v8::Value> v8_message =
       messaging_util::MessageToV8(v8_context, message);
-  std::vector<v8::Local<v8::Value>> args = {v8_message};
+  v8::LocalVector<v8::Value> args(v8_context->GetIsolate(), {v8_message});
   bindings_system_->api_system()->request_handler()->CompleteRequest(
       port.request_id, args, std::string());
 
@@ -470,7 +470,8 @@ bool OneTimeMessageHandler::DisconnectOpener(ScriptContext* script_context,
   }
 
   bindings_system_->api_system()->request_handler()->CompleteRequest(
-      opener.request_id, std::vector<v8::Local<v8::Value>>(), error);
+      opener.request_id, v8::LocalVector<v8::Value>(v8_context->GetIsolate()),
+      error);
 
   // Note: The context could be invalidated at this point!
 

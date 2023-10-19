@@ -63,7 +63,7 @@ gin::ObjectTemplateBuilder APIBindingJSUtil::GetObjectTemplateBuilder(
 void APIBindingJSUtil::SendRequest(
     gin::Arguments* arguments,
     const std::string& name,
-    const std::vector<v8::Local<v8::Value>>& request_args,
+    const v8::LocalVector<v8::Value>& request_args,
     v8::Local<v8::Value> options) {
   v8::Isolate* isolate = arguments->isolate();
   v8::HandleScope handle_scope(isolate);
@@ -339,7 +339,7 @@ void APIBindingJSUtil::ValidateCustomSignature(
     NOTREACHED();
   }
 
-  std::vector<v8::Local<v8::Value>> vector_arguments;
+  v8::LocalVector<v8::Value> vector_arguments(isolate);
   if (!gin::ConvertFromV8(isolate, arguments_to_validate, &vector_arguments)) {
     NOTREACHED();
     return;

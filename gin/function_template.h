@@ -6,6 +6,7 @@
 #define GIN_FUNCTION_TEMPLATE_H_
 
 #include <stddef.h>
+#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
@@ -132,7 +133,7 @@ GIN_EXPORT void ThrowConversionError(Arguments* args,
 
 // Class template for extracting and storing single argument for callback
 // at position |index|.
-template <size_t index, typename ArgType>
+template <size_t index, typename ArgType, typename = void>
 struct ArgumentHolder {
   using ArgLocalType = typename CallbackParamTraits<ArgType>::LocalType;
 
@@ -143,6 +144,32 @@ struct ArgumentHolder {
       : ok(GetNextArgument(args, invoker_options, index == 0, &value)) {
     if (!ok)
       ThrowConversionError(args, invoker_options, index);
+  }
+};
+
+// This is required for types such as v8::LocalVector<T>, which don't have
+// a default constructor. To create an element of such a type, the isolate
+// has to be provided.
+template <size_t index, typename ArgType>
+struct ArgumentHolder<
+    index,
+    ArgType,
+    std::enable_if_t<!std::is_default_constructible_v<
+                         typename CallbackParamTraits<ArgType>::LocalType> &&
+                     std::is_constructible_v<
+                         typename CallbackParamTraits<ArgType>::LocalType,
+                         v8::Isolate*>>> {
+  using ArgLocalType = typename CallbackParamTraits<ArgType>::LocalType;
+
+  ArgLocalType value;
+  bool ok;
+
+  ArgumentHolder(Arguments* args, const InvokerOptions& invoker_options)
+      : value(args->isolate()),
+        ok(GetNextArgument(args, invoker_options, index == 0, &value)) {
+    if (!ok) {
+      ThrowConversionError(args, invoker_options, index);
+    }
   }
 };
 

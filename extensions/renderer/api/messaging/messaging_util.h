@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "extensions/common/extension_id.h"
 #include "v8/include/v8-forward.h"
@@ -103,10 +102,9 @@ bool GetTargetExtensionId(ScriptContext* script_context,
 // result if successful; otherwise leaves |arguments| untouched. (If the massage
 // is unsuccessful, our normal argument parsing code should throw a reasonable
 // error.
-void MassageSendMessageArguments(
-    v8::Isolate* isolate,
-    bool allow_options_argument,
-    std::vector<v8::Local<v8::Value>>* arguments_out);
+void MassageSendMessageArguments(v8::Isolate* isolate,
+                                 bool allow_options_argument,
+                                 v8::LocalVector<v8::Value>* arguments_out);
 
 // Returns true if the sendRequest-related properties are disabled for the given
 // |script_context|.

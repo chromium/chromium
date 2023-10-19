@@ -32,7 +32,7 @@ const char kEchoArgs[] =
 const char kMethod[] = "method";
 
 // TODO(devlin): We should probably hoist this up to e.g. api_binding_types.h.
-using ArgumentList = std::vector<v8::Local<v8::Value>>;
+using ArgumentList = v8::LocalVector<v8::Value>;
 
 // TODO(devlin): Should we move some parts of api_binding_unittest.cc to here?
 
@@ -239,7 +239,7 @@ TEST_F(APIRequestHandlerTest, CustomCallbackArguments) {
   v8::Local<v8::Array> result;
   ASSERT_TRUE(
       GetPropertyFromObjectAs(context->Global(), context, "result", &result));
-  ArgumentList args;
+  ArgumentList args(isolate());
   ASSERT_TRUE(gin::Converter<ArgumentList>::FromV8(isolate(), result, &args));
   ASSERT_EQ(3u, args.size());
   EXPECT_TRUE(args[0]->IsFunction());
@@ -357,7 +357,7 @@ TEST_F(APIRequestHandlerTest, CustomCallbackPromiseBased) {
   v8::Local<v8::Array> result;
   ASSERT_TRUE(
       GetPropertyFromObjectAs(context->Global(), context, "result", &result));
-  ArgumentList args;
+  ArgumentList args(isolate());
   ASSERT_TRUE(gin::Converter<ArgumentList>::FromV8(isolate(), result, &args));
   ASSERT_EQ(3u, args.size());
   // Even though this is a promise based request the custom callbacks expect a
@@ -404,7 +404,7 @@ TEST_F(APIRequestHandlerTest, CustomCallbackArgumentsWithEmptyCallback) {
   v8::Local<v8::Array> result;
   ASSERT_TRUE(
       GetPropertyFromObjectAs(context->Global(), context, "result", &result));
-  ArgumentList args;
+  ArgumentList args(isolate());
   ASSERT_TRUE(gin::Converter<ArgumentList>::FromV8(isolate(), result, &args));
   ASSERT_EQ(1u, args.size());
   EXPECT_TRUE(args[0]->IsUndefined());
@@ -417,7 +417,7 @@ TEST_F(APIRequestHandlerTest, ResultModifier) {
   v8::Local<v8::Context> context = MainContext();
 
   binding::ResultModifierFunction result_modifier =
-      base::BindOnce([](const std::vector<v8::Local<v8::Value>>& result_args,
+      base::BindOnce([](const v8::LocalVector<v8::Value>& result_args,
                         v8::Local<v8::Context> context,
                         binding::AsyncResponseType async_type) {
         EXPECT_EQ(1u, result_args.size());
@@ -433,7 +433,8 @@ TEST_F(APIRequestHandlerTest, ResultModifier) {
             v8_helpers::GetProperty(context, result_obj, "prop2", &prop_2);
         DCHECK(success);
 
-        std::vector<v8::Local<v8::Value>> new_args{prop_1, prop_2};
+        v8::LocalVector<v8::Value> new_args(context->GetIsolate(),
+                                            {prop_1, prop_2});
         return new_args;
       });
 
@@ -640,14 +641,13 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
     // and since the callback checks last error no error should be logged to the
     // console.
     bool result_modifier_called = false;
-    auto result_modifier =
-        [&result_modifier_called](
-            const std::vector<v8::Local<v8::Value>>& result_args,
-            v8::Local<v8::Context> context,
-            binding::AsyncResponseType async_type) {
-          result_modifier_called = true;
-          return result_args;
-        };
+    auto result_modifier = [&result_modifier_called](
+                               const v8::LocalVector<v8::Value>& result_args,
+                               v8::Local<v8::Context> context,
+                               binding::AsyncResponseType async_type) {
+      result_modifier_called = true;
+      return result_args;
+    };
     v8::Local<v8::Function> callback =
         FunctionFromString(context, kReportExposedLastError);
     request_handler.StartRequest(context, kMethod, base::Value::List(),
@@ -752,7 +752,7 @@ TEST_F(APIRequestHandlerTest, AddPendingRequestWithResultModifier) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
   binding::ResultModifierFunction result_modifier =
-      base::BindOnce([](const std::vector<v8::Local<v8::Value>>& result_args,
+      base::BindOnce([](const v8::LocalVector<v8::Value>& result_args,
                         v8::Local<v8::Context> context,
                         binding::AsyncResponseType async_type) {
         DCHECK_EQ(1u, result_args.size());
@@ -768,7 +768,8 @@ TEST_F(APIRequestHandlerTest, AddPendingRequestWithResultModifier) {
             v8_helpers::GetProperty(context, result_obj, "prop2", &prop_2);
         DCHECK(success);
 
-        std::vector<v8::Local<v8::Value>> new_args{prop_1, prop_2};
+        v8::LocalVector<v8::Value> new_args(context->GetIsolate(),
+                                            {prop_1, prop_2});
         return new_args;
       });
 

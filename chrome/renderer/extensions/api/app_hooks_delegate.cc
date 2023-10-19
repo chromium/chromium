@@ -49,7 +49,7 @@ void AppHooksDelegate::IsInstalledGetterCallback(
   // Since this is more-or-less an API, log it as an API call.
   APIActivityLogger::LogAPICall(hooks_delegate->ipc_sender_, context,
                                 "app.getIsInstalled",
-                                std::vector<v8::Local<v8::Value>>());
+                                v8::LocalVector<v8::Value>(info.GetIsolate()));
   info.GetReturnValue().Set(hooks_delegate->GetIsInstalled(script_context));
 }
 
@@ -73,7 +73,7 @@ APIBindingHooks::RequestResult AppHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   using RequestResult = APIBindingHooks::RequestResult;
 

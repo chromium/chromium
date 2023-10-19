@@ -5,8 +5,6 @@
 #ifndef CHROME_RENDERER_EXTENSIONS_API_IDENTITY_HOOKS_DELEGATE_H_
 #define CHROME_RENDERER_EXTENSIONS_API_IDENTITY_HOOKS_DELEGATE_H_
 
-#include <vector>
-
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "v8/include/v8-forward.h"
@@ -28,7 +26,7 @@ class IdentityHooksDelegate : public APIBindingHooksDelegate {
       const std::string& method_name,
       const APISignature* signature,
       v8::Local<v8::Context> context,
-      std::vector<v8::Local<v8::Value>>* arguments,
+      v8::LocalVector<v8::Value>* arguments,
       const APITypeReferenceMap& refs) override;
 };
 

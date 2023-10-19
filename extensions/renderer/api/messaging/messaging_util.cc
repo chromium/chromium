@@ -281,10 +281,9 @@ bool GetTargetExtensionId(ScriptContext* script_context,
   return true;
 }
 
-void MassageSendMessageArguments(
-    v8::Isolate* isolate,
-    bool allow_options_argument,
-    std::vector<v8::Local<v8::Value>>* arguments_out) {
+void MassageSendMessageArguments(v8::Isolate* isolate,
+                                 bool allow_options_argument,
+                                 v8::LocalVector<v8::Value>* arguments_out) {
   base::span<const v8::Local<v8::Value>> arguments = *arguments_out;
   size_t max_size = allow_options_argument ? 4u : 3u;
   if (arguments.empty() || arguments.size() > max_size)

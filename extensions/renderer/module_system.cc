@@ -332,10 +332,9 @@ void ModuleSystem::CallModuleMethodSafe(const std::string& module_name,
                        blink::WebScriptExecutionCallback());
 }
 
-void ModuleSystem::CallModuleMethodSafe(
-    const std::string& module_name,
-    const std::string& method_name,
-    std::vector<v8::Local<v8::Value>>* args) {
+void ModuleSystem::CallModuleMethodSafe(const std::string& module_name,
+                                        const std::string& method_name,
+                                        v8::LocalVector<v8::Value>* args) {
   CallModuleMethodSafe(module_name, method_name, args->size(), args->data(),
                        blink::WebScriptExecutionCallback());
 }

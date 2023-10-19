@@ -32,7 +32,7 @@ RequestResult PrintingHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   // Error checks.
   // Ensure we would like to call the SubmitJob function.
@@ -52,7 +52,7 @@ RequestResult PrintingHooksDelegate::HandleRequest(
 
 RequestResult PrintingHooksDelegate::HandleSubmitJob(
     v8::Isolate* isolate,
-    std::vector<v8::Local<v8::Value>>* arguments) {
+    v8::LocalVector<v8::Value>* arguments) {
   // If being called without the callback parameter (i.e. a promise based API
   // call) the bindings require the final argument to be filled out with a null
   // argument instead.
