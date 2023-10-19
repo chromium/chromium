@@ -2069,7 +2069,7 @@
   },
   {
     "name": "enable-bookmarks-account-storage",
-    "owners": [ "jlebel", "bsazonov", "chrome-signin-team" ],
+    "owners": [ "jlebel", "bsazonov", "chrome-signin-team@google.com" ],
     "expiry_milestone": 118
   },
   {
@@ -3090,8 +3090,8 @@
   },
   {
     "name": "enable-passwords-account-storage",
-    "owners": [ "victorvianna", "chrome-sync-dev+finch@google.com" ],
-    "expiry_milestone": 121
+    "owners": [ "victorvianna@google.com", "chrome-sync-dev+finch@google.com" ],
+    "expiry_milestone": 124
   },
   {
     "name": "enable-per-desk-z-order",
@@ -3230,12 +3230,12 @@
   },
   {
     "name": "enable-reading-list-account-storage",
-    "owners": [ "mmrashad", "mastiz", "myuu", "chrome-signin-team" ],
+    "owners": [ "mmrashad@google.com", "mastiz", "myuu@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 119
   },
   {
     "name": "enable-reading-list-sign-in-promo",
-    "owners": [ "mmrashad", "mastiz", "myuu", "chrome-signin-team" ],
+    "owners": [ "mmrashad@google.com", "mastiz", "myuu@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 119
   },
   {
@@ -4313,7 +4313,7 @@
   },
   {
     "name": "force-startup-signin-promo",
-    "owners": [ "jlebel", "chrome-signin-team" ],
+    "owners": [ "jlebel", "chrome-signin-team@google.com" ],
     // This is required by test teams and dev teams to verify the startup
     // sign-in promo functionality.
     "expiry_milestone": -1
@@ -4585,8 +4585,8 @@
   },
   {
     "name": "ignore-sync-encryption-keys-long-missing",
-    "owners": ["victorvianna", "chrome-sync-dev@google.com"],
-    "expiry_milestone": 116
+    "owners": ["victorvianna@google.com", "chrome-sync-dev@google.com"],
+    "expiry_milestone": 124
   },
   {
     "name": "ignore-ui-gains",
@@ -4720,7 +4720,7 @@
   },
   {
     "name": "ios-bulk-upload-local-passwords",
-    "owners": ["nicolasmacbeth", "rkgibson", "tmartino", "bling-transactions@google.com"],
+    "owners": ["nicolasmacbeth@google.com", "rkgibson@google.com", "tmartino", "bling-transactions@google.com"],
     "expiry_milestone": 122
   },
   {
@@ -5270,7 +5270,7 @@
   },
   {
     "name": "minutes-delay-to-restore-gaia-cookies-if-deleted",
-    "owners": ["jlebel", "chrome-signin-team"],
+    "owners": ["jlebel", "chrome-signin-team@google.com"],
     // Used for automated testing of Gaia cookie restoration in iOS.
     "expiry_milestone": -1
   },
@@ -6469,7 +6469,7 @@
   },
   {
     "name": "profiles-reordering",
-    "owners": ["rsult", "chrome-signin-team"],
+    "owners": ["rsult", "chrome-signin-team@google.com"],
     "expiry_milestone": 122
   },
   {
@@ -6714,7 +6714,7 @@
   },
   {
     "name": "replace-sync-promos-with-sign-in-promos",
-    "owners": [ "treib", "mastiz", "jood@google.com", "bling-flags@google.com", "chrome-sync-dev@google.com", "chrome-signin-team"],
+    "owners": [ "treib", "mastiz", "jood@google.com", "bling-flags@google.com", "chrome-sync-dev@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 125
   },
   {
@@ -7458,7 +7458,7 @@
   },
   {
     "name": "tangible-sync",
-    "owners": [ "aliceywang", "chrome-signin-team" ],
+    "owners": [ "aliceywang", "chrome-signin-team@google.com" ],
     "expiry_milestone":120
   },
   {
@@ -7905,7 +7905,7 @@
   },
   {
     "name": "wait-threshold-seconds-for-capabilities-api",
-    "owners": [ "jlebel", "chrome-signin-team" ],
+    "owners": [ "jlebel", "chrome-signin-team@google.com" ],
     // Used for manual testing to extend the wait time for capabilities fetching on iOS devices.
     "expiry_milestone": -1
   },
