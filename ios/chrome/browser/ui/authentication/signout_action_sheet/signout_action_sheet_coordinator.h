@@ -31,12 +31,16 @@ class Browser;
 
 @end
 
-// Displays sign-out action sheet with options to clear or keep user data
-// on the device. The user must be signed-in to use these actions.
-// The owner is responsible to block the UI, when the sign-out flow is in
-// progress.
-// The UI needs to be blocked and unblocked using methods from
+// Initiate a sign-out action.
+// If the sync feature is disabled, directly sign-out, and display a toast.
+// If the sync feature is enabled, displays sign-out action sheet with options
+// to clear or keep user data on the device.
+// The user must be signed-in to use these actions. The owner is responsible to
+// block the UI, when the sign-out flow is in progress. The UI needs to be
+// blocked and unblocked using methods from
 // SignoutActionSheetCoordinatorDelegate.
+// When `kReplaceSyncPromosWithSignInPromos` will be removed, the sync feature
+// won't be enabled anymore.
 @interface SignoutActionSheetCoordinator : ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
