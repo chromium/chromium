@@ -41,8 +41,8 @@ template <typename T, typename U, typename V>
 constexpr bool IsRefCountPreferenceOverridden(
     const T*,
     const RefCountedThreadSafe<U, V>*) {
-  return !std::is_same<std::decay_t<decltype(T::kRefCountPreference)>,
-                       std::decay_t<decltype(U::kRefCountPreference)>>::value;
+  return !std::is_same_v<std::decay_t<decltype(T::kRefCountPreference)>,
+                         std::decay_t<decltype(U::kRefCountPreference)>>;
 }
 
 constexpr bool IsRefCountPreferenceOverridden(...) {

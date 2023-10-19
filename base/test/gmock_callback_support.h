@@ -44,7 +44,7 @@ template <typename Callback, typename Tuple>
 decltype(auto) RunImpl(Callback&& cb, Tuple&& tuple) {
   return RunImpl(std::forward<Callback>(cb), std::forward<Tuple>(tuple),
                  std::make_index_sequence<
-                     std::tuple_size<std::remove_reference_t<Tuple>>::value>());
+                     std::tuple_size_v<std::remove_reference_t<Tuple>>>());
 }
 
 // Invoked when the arguments to a OnceCallback are copy constructible. In this

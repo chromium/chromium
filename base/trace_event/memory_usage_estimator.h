@@ -214,9 +214,9 @@ struct HasEMU : std::false_type {};
 template <class T>
 struct HasEMU<
     T,
-    typename std::enable_if<std::is_same<
+    typename std::enable_if<std::is_same_v<
         size_t,
-        decltype(EstimateMemoryUsage(std::declval<const T&>()))>::value>::type>
+        decltype(EstimateMemoryUsage(std::declval<const T&>()))>>::type>
     : std::true_type {};
 
 // EMUCaller<T> does three things:

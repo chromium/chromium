@@ -87,20 +87,20 @@ static_assert(BigEnoughPromotion<int32_t, uint32_t>::is_contained, "");
 static_assert(BigEnoughPromotion<intmax_t, int8_t>::is_contained, "");
 static_assert(!BigEnoughPromotion<uintmax_t, int8_t>::is_contained, "");
 static_assert(
-    std::is_same<FastIntegerArithmeticPromotion<int16_t, int8_t>::type,
-                 int32_t>::value,
+    std::is_same_v<FastIntegerArithmeticPromotion<int16_t, int8_t>::type,
+                   int32_t>,
     "");
 static_assert(
-    std::is_same<FastIntegerArithmeticPromotion<int32_t, uint32_t>::type,
-                 int64_t>::value,
+    std::is_same_v<FastIntegerArithmeticPromotion<int32_t, uint32_t>::type,
+                   int64_t>,
     "");
 static_assert(
-    std::is_same<FastIntegerArithmeticPromotion<intmax_t, int8_t>::type,
-                 intmax_t>::value,
+    std::is_same_v<FastIntegerArithmeticPromotion<intmax_t, int8_t>::type,
+                   intmax_t>,
     "");
 static_assert(
-    std::is_same<FastIntegerArithmeticPromotion<uintmax_t, int8_t>::type,
-                 uintmax_t>::value,
+    std::is_same_v<FastIntegerArithmeticPromotion<uintmax_t, int8_t>::type,
+                   uintmax_t>,
     "");
 static_assert(FastIntegerArithmeticPromotion<int16_t, int8_t>::is_contained,
               "");
@@ -1421,9 +1421,9 @@ size_t TestOverload(size_t) {  // Overload succeeds.
 
 static_assert(std::is_same_v<decltype(TestOverload(StrictNumeric<int>())), int>,
               "");
-static_assert(std::is_same<decltype(TestOverload(StrictNumeric<size_t>())),
-                           size_t>::value,
-              "");
+static_assert(
+    std::is_same_v<decltype(TestOverload(StrictNumeric<size_t>())), size_t>,
+    "");
 
 template <typename T>
 struct CastTest1 {
@@ -1542,12 +1542,11 @@ TEST(SafeNumerics, CastTests) {
   auto int8_max = MakeCheckedNum(numeric_limits<int8_t>::max());
   auto double_max = MakeCheckedNum(numeric_limits<double>::max());
   static_assert(
-      std::is_same<int16_t,
-                   decltype(int8_min.ValueOrDie<int16_t>())::type>::value,
+      std::is_same_v<int16_t, decltype(int8_min.ValueOrDie<int16_t>())::type>,
       "ValueOrDie returning incorrect type.");
   static_assert(
-      std::is_same<int16_t,
-                   decltype(int8_min.ValueOrDefault<int16_t>(0))::type>::value,
+      std::is_same_v<int16_t,
+                     decltype(int8_min.ValueOrDefault<int16_t>(0))::type>,
       "ValueOrDefault returning incorrect type.");
   EXPECT_FALSE(IsValidForType<uint8_t>(int8_min));
   EXPECT_TRUE(IsValidForType<uint8_t>(int8_max));

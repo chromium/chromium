@@ -97,9 +97,9 @@ template <typename T,
           typename DoneArg = std::vector<RawArg>,
           template <typename>
           class CallbackType,
-          typename std::enable_if<std::is_same<
-              std::vector<RawArg>,
-              base::remove_cvref_t<DoneArg>>::value>::type* = nullptr,
+          typename std::enable_if<
+              std::is_same_v<std::vector<RawArg>,
+                             base::remove_cvref_t<DoneArg>>>::type* = nullptr,
           typename = base::EnableIfIsBaseCallback<CallbackType>>
 RepeatingCallback<void(T)> BarrierCallback(
     size_t num_callbacks,

@@ -493,8 +493,7 @@ template <
     typename Lhs,
     typename Rhs = Lhs,
     bool is_intmax_type =
-        std::is_integral<
-            typename MaxExponentPromotion<Lhs, Rhs>::type>::value &&
+        std::is_integral_v<typename MaxExponentPromotion<Lhs, Rhs>::type> &&
         IntegerBitsPlusSign<typename MaxExponentPromotion<Lhs, Rhs>::type>::
                 value == IntegerBitsPlusSign<intmax_t>::value,
     bool is_max_exponent = StaticDstRangeRelationToSrcRange<

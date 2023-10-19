@@ -470,9 +470,9 @@ struct TraceValue::Helper<std::string> {
 // ownership of the pointed object!
 template <typename CONVERTABLE_TYPE>
 struct TraceValue::Helper<std::unique_ptr<CONVERTABLE_TYPE>,
-                          typename std::enable_if<std::is_convertible<
+                          typename std::enable_if<std::is_convertible_v<
                               CONVERTABLE_TYPE*,
-                              ConvertableToTraceFormat*>::value>::type> {
+                              ConvertableToTraceFormat*>>::type> {
   static constexpr unsigned char kType = TRACE_VALUE_TYPE_CONVERTABLE;
   static inline void SetValue(TraceValue* v,
                               std::unique_ptr<CONVERTABLE_TYPE> value) {

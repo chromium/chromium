@@ -28,7 +28,7 @@ inline void DoInitialize(DispatcherType& dispatcher,
                          const VerifiedObservers& verified_observers,
                          const UnverifiedObservers& unverified_observers,
                          std::index_sequence<IndicesToSelect...> indices) {
-  if constexpr (CurrentIndex < std::tuple_size<UnverifiedObservers>::value) {
+  if constexpr (CurrentIndex < std::tuple_size_v<UnverifiedObservers>) {
     // We still have some items left to handle.
     if (check_observer(std::get<CurrentIndex>(unverified_observers))) {
       // The current observer is valid. Hence, append the index of the current
@@ -43,8 +43,7 @@ inline void DoInitialize(DispatcherType& dispatcher,
                                      verified_observers, unverified_observers,
                                      indices);
     }
-  } else if constexpr (CurrentIndex ==
-                       std::tuple_size<UnverifiedObservers>::value) {
+  } else if constexpr (CurrentIndex == std::tuple_size_v<UnverifiedObservers>) {
     // So we have met the end of the tuple of observers to verify.
     // Hence, we extract the additional valid observers, append to the tuple of
     // already verified observers and hand over to the dispatcher.
@@ -54,7 +53,7 @@ inline void DoInitialize(DispatcherType& dispatcher,
 
     // Do a final check that neither the maximum total number of observers nor
     // the maximum number of optional observers is exceeded.
-    static_assert(std::tuple_size<decltype(observers)>::value <=
+    static_assert(std::tuple_size_v<decltype(observers)> <=
                   configuration::kMaximumNumberOfObservers);
     static_assert(sizeof...(IndicesToSelect) <=
                   configuration::kMaximumNumberOfOptionalObservers);
@@ -102,7 +101,7 @@ struct BASE_EXPORT Initializer {
   template <typename... NewMandatoryObservers,
             std::enable_if_t<
                 internal::LessEqual((sizeof...(NewMandatoryObservers) +
-                                     std::tuple_size<OptionalObservers>::value),
+                                     std::tuple_size_v<OptionalObservers>),
                                     configuration::kMaximumNumberOfObservers),
                 bool> = true>
   Initializer<std::tuple<NewMandatoryObservers*...>, OptionalObservers>
@@ -115,9 +114,9 @@ struct BASE_EXPORT Initializer {
   // configuration::maximum_number_of_observers.
   template <typename... AdditionalMandatoryObservers,
             std::enable_if_t<internal::LessEqual(
-                                 std::tuple_size<MandatoryObservers>::value +
+                                 std::tuple_size_v<MandatoryObservers> +
                                      sizeof...(AdditionalMandatoryObservers) +
-                                     std::tuple_size<OptionalObservers>::value,
+                                     std::tuple_size_v<OptionalObservers>,
                                  configuration::kMaximumNumberOfObservers),
                              bool> = true>
   Initializer<TupleCat<MandatoryObservers,
@@ -140,7 +139,7 @@ struct BASE_EXPORT Initializer {
               sizeof...(NewOptionalObservers),
               configuration::kMaximumNumberOfOptionalObservers) &&
               internal::LessEqual((sizeof...(NewOptionalObservers) +
-                                   std::tuple_size<MandatoryObservers>::value),
+                                   std::tuple_size_v<MandatoryObservers>),
                                   configuration::kMaximumNumberOfObservers),
           bool> = true>
   Initializer<MandatoryObservers, std::tuple<NewOptionalObservers*...>>
@@ -156,12 +155,12 @@ struct BASE_EXPORT Initializer {
       typename... AdditionalOptionalObservers,
       std::enable_if_t<
           internal::LessEqual(
-              std::tuple_size<OptionalObservers>::value +
+              std::tuple_size_v<OptionalObservers> +
                   sizeof...(AdditionalOptionalObservers),
               configuration::kMaximumNumberOfOptionalObservers) &&
-              internal::LessEqual((std::tuple_size<OptionalObservers>::value +
+              internal::LessEqual((std::tuple_size_v<OptionalObservers> +
                                    sizeof...(AdditionalOptionalObservers) +
-                                   std::tuple_size<MandatoryObservers>::value),
+                                   std::tuple_size_v<MandatoryObservers>),
                                   configuration::kMaximumNumberOfObservers),
           bool> = true>
   Initializer<

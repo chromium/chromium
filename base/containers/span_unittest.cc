@@ -257,32 +257,32 @@ TEST(SpanTest, AllowedConversionsFromStdArray) {
       std::is_convertible_v<std::array<int, 3>&, base::span<const int, 3>>,
       "Error: l-value reference to std::array<int> should be convertible to "
       "base::span<const int> with the same static extent.");
-  static_assert(std::is_convertible<const std::array<int, 3>&,
-                                    base::span<const int>>::value,
-                "Error: const l-value reference to std::array<int> should be "
-                "convertible to base::span<const int> with dynamic extent.");
   static_assert(
-      std::is_convertible<const std::array<int, 3>&,
-                          base::span<const int, 3>>::value,
+      std::is_convertible_v<const std::array<int, 3>&, base::span<const int>>,
+      "Error: const l-value reference to std::array<int> should be "
+      "convertible to base::span<const int> with dynamic extent.");
+  static_assert(
+      std::is_convertible_v<const std::array<int, 3>&,
+                            base::span<const int, 3>>,
       "Error: const l-value reference to std::array<int> should be convertible "
       "to base::span<const int> with the same static extent.");
-  static_assert(std::is_convertible<std::array<const int, 3>&,
-                                    base::span<const int>>::value,
-                "Error: l-value reference to std::array<const int> should be "
-                "convertible to base::span<const int> with dynamic extent.");
   static_assert(
-      std::is_convertible<std::array<const int, 3>&,
-                          base::span<const int, 3>>::value,
+      std::is_convertible_v<std::array<const int, 3>&, base::span<const int>>,
+      "Error: l-value reference to std::array<const int> should be "
+      "convertible to base::span<const int> with dynamic extent.");
+  static_assert(
+      std::is_convertible_v<std::array<const int, 3>&,
+                            base::span<const int, 3>>,
       "Error: l-value reference to std::array<const int> should be convertible "
       "to base::span<const int> with the same static extent.");
   static_assert(
-      std::is_convertible<const std::array<const int, 3>&,
-                          base::span<const int>>::value,
+      std::is_convertible_v<const std::array<const int, 3>&,
+                            base::span<const int>>,
       "Error: const l-value reference to std::array<const int> should be "
       "convertible to base::span<const int> with dynamic extent.");
   static_assert(
-      std::is_convertible<const std::array<const int, 3>&,
-                          base::span<const int, 3>>::value,
+      std::is_convertible_v<const std::array<const int, 3>&,
+                            base::span<const int, 3>>,
       "Error: const l-value reference to std::array<const int> should be "
       "convertible to base::span<const int> with the same static extent.");
 }
@@ -307,8 +307,8 @@ TEST(SpanTest, DisallowedConstructionsFromStdArray) {
       "from l-value reference to std::array<const int>");
 
   static_assert(
-      !std::is_constructible<base::span<int>,
-                             const std::array<const int, 3>&>::value,
+      !std::is_constructible_v<base::span<int>,
+                               const std::array<const int, 3>&>,
       "Error: base::span<int> with dynamic extent should not be constructible "
       "const from l-value reference to std::array<const int>");
 
@@ -1342,8 +1342,8 @@ TEST(SpanTest, MakeStaticSpanFromConstexprContainer) {
   constexpr auto made_span = make_span<12>(str);
   static_assert(str.data() == made_span.data(), "Error: data() does not match");
   static_assert(str.size() == made_span.size(), "Error: size() does not match");
-  static_assert(std::is_same<decltype(str)::value_type,
-                             decltype(made_span)::value_type>::value,
+  static_assert(std::is_same_v<decltype(str)::value_type,
+                               decltype(made_span)::value_type>,
                 "Error: value_type does not match");
   static_assert(str.size() == decltype(made_span)::extent,
                 "Error: extent does not match");
@@ -1383,8 +1383,8 @@ TEST(SpanTest, MakeSpanFromDynamicSpan) {
   static constexpr int kArray[] = {1, 2, 3, 4, 5};
   constexpr span<const int> expected_span(kArray);
   constexpr auto made_span = make_span(expected_span);
-  static_assert(std::is_same<decltype(expected_span)::element_type,
-                             decltype(made_span)::element_type>::value,
+  static_assert(std::is_same_v<decltype(expected_span)::element_type,
+                               decltype(made_span)::element_type>,
                 "make_span(span) should have the same element_type as span");
 
   static_assert(expected_span.data() == made_span.data(),
@@ -1404,8 +1404,8 @@ TEST(SpanTest, MakeSpanFromStaticSpan) {
   static constexpr int kArray[] = {1, 2, 3, 4, 5};
   constexpr span<const int, 5> expected_span(kArray);
   constexpr auto made_span = make_span(expected_span);
-  static_assert(std::is_same<decltype(expected_span)::element_type,
-                             decltype(made_span)::element_type>::value,
+  static_assert(std::is_same_v<decltype(expected_span)::element_type,
+                               decltype(made_span)::element_type>,
                 "make_span(span) should have the same element_type as span");
 
   static_assert(expected_span.data() == made_span.data(),
@@ -1550,13 +1550,13 @@ TEST(SpanTest, SpanExtentConversions) {
 }
 
 TEST(SpanTest, IteratorConversions) {
-  static_assert(std::is_convertible<span<int>::iterator,
-                                    span<const int>::iterator>::value,
-                "Error: iterator should be convertible to const iterator");
+  static_assert(
+      std::is_convertible_v<span<int>::iterator, span<const int>::iterator>,
+      "Error: iterator should be convertible to const iterator");
 
-  static_assert(!std::is_convertible<span<const int>::iterator,
-                                     span<int>::iterator>::value,
-                "Error: const iterator should not be convertible to iterator");
+  static_assert(
+      !std::is_convertible_v<span<const int>::iterator, span<int>::iterator>,
+      "Error: const iterator should not be convertible to iterator");
 }
 
 TEST(SpanTest, ExtentMacro) {

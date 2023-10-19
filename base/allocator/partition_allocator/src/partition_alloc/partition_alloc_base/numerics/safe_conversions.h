@@ -206,8 +206,8 @@ constexpr Dst saturated_cast(Src value) {
   using SrcType = typename UnderlyingType<Src>::type;
   return !PA_IsConstantEvaluated() &&
                  SaturateFastOp<Dst, SrcType>::is_supported &&
-                 std::is_same<SaturationHandler<Dst>,
-                              SaturationDefaultLimits<Dst>>::value
+                 std::is_same_v<SaturationHandler<Dst>,
+                                SaturationDefaultLimits<Dst>>
              ? SaturateFastOp<Dst, SrcType>::Do(static_cast<SrcType>(value))
              : saturated_cast_impl<Dst, SaturationHandler, SrcType>(
                    static_cast<SrcType>(value),

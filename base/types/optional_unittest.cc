@@ -207,9 +207,9 @@ class NonTriviallyDestructibleOverloadAddressOf {
 static_assert(std::is_trivially_destructible_v<std::optional<int>>,
               "OptionalIsTriviallyDestructible");
 
-static_assert(!std::is_trivially_destructible<
-                  std::optional<NonTriviallyDestructible>>::value,
-              "OptionalIsTriviallyDestructible");
+static_assert(
+    !std::is_trivially_destructible_v<std::optional<NonTriviallyDestructible>>,
+    "OptionalIsTriviallyDestructible");
 
 TEST(OptionalTest, DefaultConstructor) {
   {
@@ -2258,9 +2258,9 @@ TEST(OptionalTest, Noexcept) {
 TEST(OptionalTest, OverrideAddressOf) {
   // Objects with an overloaded address-of should not trigger the overload for
   // arrow or copy assignment.
-  static_assert(std::is_trivially_destructible<
-                    TriviallyDestructibleOverloadAddressOf>::value,
-                "Trivially...AddressOf must be trivially destructible.");
+  static_assert(
+      std::is_trivially_destructible_v<TriviallyDestructibleOverloadAddressOf>,
+      "Trivially...AddressOf must be trivially destructible.");
   std::optional<TriviallyDestructibleOverloadAddressOf> optional;
   TriviallyDestructibleOverloadAddressOf n;
   optional = n;
@@ -2273,8 +2273,8 @@ TEST(OptionalTest, OverrideAddressOf) {
   const auto& const_optional = optional;
   const_optional->const_method();
 
-  static_assert(!std::is_trivially_destructible<
-                    NonTriviallyDestructibleOverloadAddressOf>::value,
+  static_assert(!std::is_trivially_destructible_v<
+                    NonTriviallyDestructibleOverloadAddressOf>,
                 "NotTrivially...AddressOf must not be trivially destructible.");
   std::optional<NonTriviallyDestructibleOverloadAddressOf> nontrivial_optional;
   NonTriviallyDestructibleOverloadAddressOf n1;

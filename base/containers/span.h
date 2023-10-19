@@ -82,8 +82,8 @@ using IteratorHasConvertibleReferenceType =
 
 template <typename Iter, typename T>
 using EnableIfCompatibleContiguousIterator = std::enable_if_t<
-    std::conjunction<IsContiguousIterator<Iter>,
-                     IteratorHasConvertibleReferenceType<Iter, T>>::value>;
+    std::conjunction_v<IsContiguousIterator<Iter>,
+                       IteratorHasConvertibleReferenceType<Iter, T>>>;
 
 template <typename Container, typename T>
 using ContainerHasConvertibleData = IsLegalDataConversion<

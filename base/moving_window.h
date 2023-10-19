@@ -710,8 +710,8 @@ class MovingWindow {
       internal::MovingDeviationBase<
           T,
           typename internal::get_type_deviation<EnabledFeatures>::type,
-          std::is_floating_point<typename internal::get_type_deviation<
-              EnabledFeatures>::type>::value>,
+          std::is_floating_point_v<
+              typename internal::get_type_deviation<EnabledFeatures>::type>>,
       internal::NullDeviationImpl<T>>::type deviation_impl_;
 
   // Member for storing the moving window.

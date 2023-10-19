@@ -186,9 +186,9 @@ TEST(CallbackHelpersTest, SplitOnceCallback_EmptyCallback) {
 
   auto split = base::SplitOnceCallback(std::move(cb));
 
-  static_assert(std::is_same<decltype(split),
-                             std::pair<base::OnceCallback<void(int*)>,
-                                       base::OnceCallback<void(int*)>>>::value,
+  static_assert(std::is_same_v<decltype(split),
+                               std::pair<base::OnceCallback<void(int*)>,
+                                         base::OnceCallback<void(int*)>>>,
                 "");
   EXPECT_FALSE(split.first);
   EXPECT_FALSE(split.second);
@@ -201,9 +201,9 @@ TEST(CallbackHelpersTest, SplitOnceCallback_FirstCallback) {
 
   auto split = base::SplitOnceCallback(std::move(cb));
 
-  static_assert(std::is_same<decltype(split),
-                             std::pair<base::OnceCallback<void(int*)>,
-                                       base::OnceCallback<void(int*)>>>::value,
+  static_assert(std::is_same_v<decltype(split),
+                               std::pair<base::OnceCallback<void(int*)>,
+                                         base::OnceCallback<void(int*)>>>,
                 "");
 
   EXPECT_EQ(0, count);
@@ -222,9 +222,9 @@ TEST(CallbackHelpersTest, SplitOnceCallback_SecondCallback) {
 
   auto split = base::SplitOnceCallback(std::move(cb));
 
-  static_assert(std::is_same<decltype(split),
-                             std::pair<base::OnceCallback<void(int*)>,
-                                       base::OnceCallback<void(int*)>>>::value,
+  static_assert(std::is_same_v<decltype(split),
+                               std::pair<base::OnceCallback<void(int*)>,
+                                         base::OnceCallback<void(int*)>>>,
                 "");
 
   EXPECT_EQ(0, count);

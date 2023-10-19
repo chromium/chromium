@@ -1499,9 +1499,8 @@ TEST_F(BindTest, CapturelessLambda) {
   EXPECT_TRUE(internal::IsCallableObject<decltype(g)>::value);
 
   auto h = [](int, double) { return 'k'; };
-  EXPECT_TRUE(
-      (std::is_same<char(int, double),
-                    internal::ExtractCallableRunType<decltype(h)>>::value));
+  EXPECT_TRUE((std::is_same_v<char(int, double),
+                              internal::ExtractCallableRunType<decltype(h)>>));
 
   EXPECT_EQ(42, BindRepeating([] { return 42; }).Run());
   EXPECT_EQ(42, BindRepeating([](int i) { return i * 7; }, 6).Run());
