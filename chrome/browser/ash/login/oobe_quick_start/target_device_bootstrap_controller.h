@@ -207,6 +207,9 @@ class TargetDeviceBootstrapController
   base::WeakPtrFactory<TargetDeviceBootstrapController> weak_ptr_factory_{this};
 };
 
+std::ostream& operator<<(std::ostream& stream,
+                         const TargetDeviceBootstrapController::Step& step);
+
 }  // namespace ash::quick_start
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_TARGET_DEVICE_BOOTSTRAP_CONTROLLER_H_

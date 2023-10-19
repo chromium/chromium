@@ -206,6 +206,9 @@ std::string TargetDeviceBootstrapController::GetDiscoverableName() {
 }
 
 void TargetDeviceBootstrapController::NotifyObservers() {
+  QS_LOG(INFO)
+      << "Notifying observers that the status has changed. New status step: "
+      << status_.step;
   for (auto& obs : observers_) {
     obs.OnStatusChanged(status_);
   }
@@ -385,6 +388,46 @@ void TargetDeviceBootstrapController::CleanupIfNeeded() {
   if (base::Contains(kPossibleSteps, status_.step)) {
     quick_start_connectivity_service_->Cleanup();
   }
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const TargetDeviceBootstrapController::Step& step) {
+  switch (step) {
+    case TargetDeviceBootstrapController::Step::NONE:
+      stream << "[none]";
+      break;
+    case TargetDeviceBootstrapController::Step::ERROR:
+      stream << "[error]";
+      break;
+    case TargetDeviceBootstrapController::Step::ADVERTISING_WITH_QR_CODE:
+      stream << "[advertising with QR code]";
+      break;
+    case TargetDeviceBootstrapController::Step::ADVERTISING_WITHOUT_QR_CODE:
+      stream << "[advertising without QR code]";
+      break;
+    case TargetDeviceBootstrapController::Step::PIN_VERIFICATION:
+      stream << "[pin verification]";
+      break;
+    case TargetDeviceBootstrapController::Step::CONNECTED:
+      stream << "[connected]";
+      break;
+    case TargetDeviceBootstrapController::Step::CONNECTING_TO_WIFI:
+      stream << "[connecting to wifi]";
+      break;
+    case TargetDeviceBootstrapController::Step::WIFI_CREDENTIALS_RECEIVED:
+      stream << "[wifi credentials received]";
+      break;
+    case TargetDeviceBootstrapController::Step::
+        TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
+      stream << "[transferring Google account details]";
+      break;
+    case TargetDeviceBootstrapController::Step::
+        TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
+      stream << "[transferred Google account details]";
+      break;
+  }
+
+  return stream;
 }
 
 }  // namespace ash::quick_start
