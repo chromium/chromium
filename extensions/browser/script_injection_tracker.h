@@ -130,9 +130,9 @@ class ScriptInjectionTracker {
 
   // See the doc comment of DoContentScriptsMatch in the .cc file.
   friend class ContentScriptMatchingBrowserTest;
-  static bool DoContentScriptsMatchForTesting(const Extension& extension,
-                                              content::RenderFrameHost* frame,
-                                              const GURL& url);
+  static bool DoScriptsMatchForTesting(const Extension& extension,
+                                       content::RenderFrameHost* frame,
+                                       const GURL& url);
 };
 
 }  // namespace extensions

@@ -26,7 +26,7 @@
 namespace extensions {
 
 // Test suite covering
-// `extensions::ScriptInjectionTracker::DoContentScriptsMatchForTesting` from
+// `extensions::ScriptInjectionTracker::DoScriptsMatchForTesting` from
 // //extensions/browser/script_injection_tracker.h.
 //
 // See also ScriptInjectionTrackerBrowserTest in
@@ -191,7 +191,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   bool DoContentScriptsMatch(content::RenderFrameHost* navigating_frame,
                              const GURL& navigation_target) {
-    return ScriptInjectionTracker::DoContentScriptsMatchForTesting(
+    return ScriptInjectionTracker::DoScriptsMatchForTesting(
         *extension_, navigating_frame, navigation_target);
   }
 
