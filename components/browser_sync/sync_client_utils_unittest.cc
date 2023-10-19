@@ -533,6 +533,11 @@ TEST_F(LocalDataMigrationHelperTest, ShouldLogRequestsToHistogram) {
   }
   {
     base::HistogramTester histogram_tester;
+
+    // Required by MarkAllForUploadToSyncServerIfNeeded() to work.
+    ON_CALL(processor_, IsTrackingMetadata)
+        .WillByDefault(::testing::Return(true));
+
     local_data_migration_helper_->Run(syncer::ModelTypeSet(
         {syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST}));
 
@@ -929,6 +934,34 @@ TEST_F(LocalDataMigrationHelperTest, ShouldMoveBookmarksToAccountStore) {
   EXPECT_FALSE(local_bookmark_model_->HasBookmarks());
 }
 
+TEST_F(LocalDataMigrationHelperTest, ShouldClearBookmarksFromLocalStore) {
+  // -------- The local model --------
+  // bookmark_bar
+  //    |- url1(https://www.google.com)
+  local_bookmark_model_->AddURL(
+      local_bookmark_model_->bookmark_bar_node(), /*index=*/0,
+      base::UTF8ToUTF16(std::string("url1")), GURL("https://www.google.com"));
+
+  // -------- The account model --------
+  // bookmark_bar
+  //    |- url1(https://www.google.com)
+  account_bookmark_model_->AddURL(
+      account_bookmark_model_->bookmark_bar_node(), /*index=*/0,
+      base::UTF8ToUTF16(std::string("url1")), GURL("https://www.google.com"));
+
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::BOOKMARKS}));
+
+  // No actual move happens since the data already exists in the account store.
+  // -------- The expected merge outcome --------
+  // bookmark_bar
+  //    |- url1(https://www.google.com)
+  EXPECT_EQ(1u,
+            account_bookmark_model_->bookmark_bar_node()->children().size());
+
+  // The data is still cleared from the local store.
+  EXPECT_FALSE(local_bookmark_model_->HasBookmarks());
+}
+
 TEST_F(LocalDataMigrationHelperTest, ShouldIgnoreManagedBookmarks) {
   // -------- The local model --------
   // bookmark_bar
@@ -1043,6 +1076,10 @@ TEST_F(LocalDataMigrationHelperTest, ShouldHandleMultipleRequestsForPasswords) {
 }
 
 TEST_F(LocalDataMigrationHelperTest, ShouldMoveReadingListToAccountStore) {
+  // Required by MarkAllForUploadToSyncServerIfNeeded() to work.
+  ON_CALL(processor_, IsTrackingMetadata)
+      .WillByDefault(::testing::Return(true));
+
   // Add test data.
   local_reading_list_model_->AddOrReplaceEntry(
       GURL("https://www.amazon.de"), "url1",
@@ -1053,16 +1090,44 @@ TEST_F(LocalDataMigrationHelperTest, ShouldMoveReadingListToAccountStore) {
       reading_list::ADDED_VIA_CURRENT_APP,
       /*estimated_read_time=*/base::TimeDelta());
 
-  // To allow moving local reading list to account model.
-  ON_CALL(processor_, IsTrackingMetadata)
-      .WillByDefault(::testing::Return(true));
-
   local_data_migration_helper_->Run(
       syncer::ModelTypeSet({syncer::READING_LIST}));
 
   RunAllPendingTasks();
 
   EXPECT_EQ(2u, account_reading_list_model_->size());
+  EXPECT_EQ(0u, local_reading_list_model_->size());
+}
+
+TEST_F(LocalDataMigrationHelperTest, ShouldClearReadingListFromLocalStore) {
+  // Required by MarkAllForUploadToSyncServerIfNeeded() to work.
+  ON_CALL(processor_, IsTrackingMetadata)
+      .WillByDefault(::testing::Return(true));
+
+  const GURL kCommonUrl("http://common_url.com/");
+
+  // Add test data.
+  local_reading_list_model_->AddOrReplaceEntry(
+      kCommonUrl, "url1", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+  // Same data exists in the account store.
+  account_reading_list_model_->AddOrReplaceEntry(
+      kCommonUrl, "url1", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_EQ(
+      dual_reading_list_model_->GetStorageStateForURLForTesting(kCommonUrl),
+      reading_list::DualReadingListModel::StorageStateForTesting::
+          kExistsInBothModels);
+
+  local_data_migration_helper_->Run(
+      syncer::ModelTypeSet({syncer::READING_LIST}));
+
+  RunAllPendingTasks();
+
+  // No new data in the account reading list since it already existed.
+  EXPECT_EQ(1u, account_reading_list_model_->size());
+  // Local store is still cleared.
   EXPECT_EQ(0u, local_reading_list_model_->size());
 }
 
