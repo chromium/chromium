@@ -44,7 +44,7 @@ extern NSString* const kLastInteractionTimeForDiscoverGoodVisits;
 extern NSString* const kLastInteractionTimeForFollowingGoodVisits;
 // Stores the last day the Time in Feed was reported on UMA. It stores the
 // midnight (beginning of the day) of the last interaction.
-extern NSString* const kLastDayTimeInFeedReportedKey;
+extern const char kLastDayTimeInFeedReportedKey[];
 // Stores the time spent on the feed for a day.
 extern const char kTimeSpentInFeedAggregateKey[];
 // Stores the last time the activity bucket was reported.

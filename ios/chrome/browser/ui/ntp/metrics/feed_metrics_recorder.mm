@@ -1361,21 +1361,15 @@ using feed::FeedUserActionType;
 - (void)recordTimeSpentInFeedIfDayIsDone {
   // The midnight time for the day in which the
   // `ContentSuggestions.Feed.TimeSpentInFeed` was last recorded.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSDate* lastInteractionReported = base::apple::ObjCCast<NSDate>(
-      [defaults objectForKey:kLastDayTimeInFeedReportedKey]);
-  base::Time lastInteractionReportedInTime;
-  if (lastInteractionReported != nil) {
-    lastInteractionReportedInTime =
-        base::Time::FromNSDate(lastInteractionReported);
-  }
+  const base::Time lastInteractionReported =
+      self.prefService->GetTime(kLastDayTimeInFeedReportedKey);
 
   DCHECK(self.timeSpentInFeed >= base::Seconds(0));
 
   BOOL shouldResetData = NO;
-  if (lastInteractionReported) {
+  if (lastInteractionReported != base::Time()) {
     base::Time now = base::Time::Now();
-    base::TimeDelta sinceDayStart = (now - lastInteractionReportedInTime);
+    base::TimeDelta sinceDayStart = (now - lastInteractionReported);
     if (sinceDayStart >= base::Days(1)) {
       // Check if the user has spent any time in the feed.
       if (self.timeSpentInFeed > base::Seconds(0)) {
@@ -1389,11 +1383,8 @@ using feed::FeedUserActionType;
   }
 
   if (shouldResetData) {
-    lastInteractionReported =
-        [NSDate dateWithTimeIntervalSince1970:base::Time::Now().ToDoubleT()];
-    // Save to Defaults
-    [defaults setObject:lastInteractionReported
-                 forKey:kLastDayTimeInFeedReportedKey];
+    // Update the last report time in PrefService.
+    self.prefService->SetTime(kLastDayTimeInFeedReportedKey, base::Time::Now());
     // Reset time spent in feed aggregate.
     self.timeSpentInFeed = base::Seconds(0);
     self.prefService->SetDouble(kTimeSpentInFeedAggregateKey,

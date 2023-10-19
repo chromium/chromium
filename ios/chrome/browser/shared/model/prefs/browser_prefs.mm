@@ -612,6 +612,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(kActivityBucketLastReportedDateKey, base::Time());
   registry->RegisterIntegerPref(kActivityBucketKey, 0);
   registry->RegisterDoublePref(kTimeSpentInFeedAggregateKey, 0.0);
+  registry->RegisterTimePref(kLastDayTimeInFeedReportedKey, base::Time());
 
   registry->RegisterBooleanPref(kSyncRequested, false);
 }
@@ -759,6 +760,11 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   // Added 10/2023.
   // TODO(crbug.com/1486770) To be removed after a few milestones.
   MigrateDoublePreferenceFromUserDefaults(kTimeSpentInFeedAggregateKey, prefs,
+                                          defaults);
+
+  // Added 10/2023.
+  // TODO(crbug.com/1486770) To be removed after a few milestones.
+  MigrateNSDatePreferenceFromUserDefaults(kLastDayTimeInFeedReportedKey, prefs,
                                           defaults);
 }
 
