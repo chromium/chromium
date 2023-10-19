@@ -126,7 +126,9 @@ import java.util.List;
 })
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group"
+    "force-fieldtrials=Study/Group",
+    // TODO(crbug.com/1491942): This fails with the field trial testing config.
+    "disable-field-trial-config"
 })
 @DoNotBatch(reason = "This test suite tests startup behaviors.")
 public class StartSurfaceTest {
