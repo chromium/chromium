@@ -31,6 +31,12 @@ template("in_process_fuzzer") {
       sanitizer_options = [
         "allow_user_segv_handler=1",
         "handle_sigtrap=1",
+        "handle_abort=1",
+        "handle_segv=1",
+        "handle_sigbus=1",
+        "handle_sigfpe=1",
+        "handle_sigill=1",
+        "handle_sigtrap=1",
       ]
 
       asan_options = [
