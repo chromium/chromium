@@ -29,7 +29,6 @@ group("js_modules") {
     ":metadata_model",
     ":metadata_parser",
     ":metadata_provider",
-    ":metadata_request",
     ":mock_metadata",
     ":mpeg_parser",
     ":multi_metadata_provider",
@@ -56,7 +55,6 @@ js_library("content_metadata_provider") {
 js_unittest("content_metadata_provider_unittest") {
   deps = [
     ":content_metadata_provider",
-    ":metadata_request",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
@@ -97,7 +95,6 @@ js_library("external_metadata_provider") {
   deps = [
     ":metadata_item",
     ":metadata_provider",
-    ":metadata_request",
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/externs:file_manager_private",
   ]
@@ -106,7 +103,6 @@ js_library("external_metadata_provider") {
 js_unittest("external_metadata_provider_unittest") {
   deps = [
     ":external_metadata_provider",
-    ":metadata_request",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
@@ -123,7 +119,6 @@ js_library("file_system_metadata_provider") {
 js_unittest("file_system_metadata_provider_unittest") {
   deps = [
     ":file_system_metadata_provider",
-    ":metadata_request",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
@@ -174,7 +169,6 @@ js_library("metadata_cache_set") {
   deps = [
     ":metadata_cache_item",
     ":metadata_item",
-    ":metadata_request",
     "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/common/js:util",
   ]
@@ -237,12 +231,8 @@ js_library("metadata_parser") {
 js_library("metadata_provider") {
   deps = [
     ":metadata_item",
-    ":metadata_request",
     "//ash/webui/common/resources:assert",
   ]
-}
-
-js_library("metadata_request") {
 }
 
 js_library("mock_metadata") {
@@ -265,7 +255,6 @@ js_library("multi_metadata_provider") {
     ":file_system_metadata_provider",
     ":metadata_item",
     ":metadata_provider",
-    ":metadata_request",
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
@@ -278,7 +267,6 @@ js_unittest("multi_metadata_provider_unittest") {
     ":dlp_metadata_provider",
     ":external_metadata_provider",
     ":file_system_metadata_provider",
-    ":metadata_request",
     ":multi_metadata_provider",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
