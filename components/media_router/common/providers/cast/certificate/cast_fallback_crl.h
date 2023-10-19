@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 // no-include-guard-because-pch-file
+
+#include <time.h>
+
 // fallback CRL:
 const unsigned char kCastFallbackCRLs[] = {
     0x0a, 0xfc, 0x0d, 0x0a, 0xa8, 0x04, 0x08, 0x00, 0x10, 0x90, 0xbe, 0xb5,
@@ -155,3 +158,6 @@ const unsigned char kCastFallbackCRLs[] = {
     0x4b, 0x36, 0xcd, 0xc6, 0x14, 0x3a, 0x55, 0xfc, 0xa9, 0x98, 0x01, 0x43,
     0x6c, 0x51, 0x42,
 };
+
+// A valid time for the fallback CRL:
+const time_t kCastFallbackCRLTimestamp = 1692255600;

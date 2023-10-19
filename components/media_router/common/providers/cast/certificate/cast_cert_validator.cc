@@ -428,8 +428,9 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
   }
 
   // Check for revocation.
-  if (crl && !crl->CheckRevocation(result.GetBestValidPath()->certs, time))
+  if (crl && !crl->CheckRevocation(result.GetBestValidPath()->certs, time)) {
     return CastCertError::ERR_CERTS_REVOKED;
+  }
 
   return CastCertError::OK;
 }

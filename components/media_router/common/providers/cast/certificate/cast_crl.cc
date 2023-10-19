@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/time/time.h"
 #include "components/media_router/common/providers/cast/certificate/cast_fallback_crl.h"
 #include "crypto/sha2.h"
 #include "net/cert/pki/cert_errors.h"
@@ -117,11 +118,14 @@ bool ConvertTimeSeconds(uint64_t seconds,
 // at |time|. The validity period of the CRL is adjusted to be the earliest
 // of the issuer certificate chain's expiration and the CRL's expiration and
 // the result is stored in |overall_not_after|.
+// |is_fallback_crl| states whether a fallback CRL is used. When true,
+// ignore the validity range of the fallback CRL's issuer certificate.
 bool VerifyCRL(const Crl& crl,
                const TbsCrl& tbs_crl,
                const base::Time& time,
                net::TrustStore* trust_store,
-               net::der::GeneralizedTime* overall_not_after) {
+               net::der::GeneralizedTime* overall_not_after,
+               bool is_fallback_crl) {
   if (!crl.has_signature() || !crl.has_signer_cert()) {
     VLOG(2) << "CRL - Missing fields";
     return false;
@@ -167,9 +171,17 @@ bool VerifyCRL(const Crl& crl,
   }
 
   // Verify the issuer certificate.
-  net::der::GeneralizedTime verification_time;
-  if (!net::EncodeTimeAsGeneralizedTime(time, &verification_time)) {
-    VLOG(2) << "CRL - Unable to parse verification time.";
+  net::der::GeneralizedTime issuer_verification_time;
+  base::Time time_issuer_check = time;
+  if (is_fallback_crl) {
+    time_issuer_check = base::Time::FromTimeT(kCastFallbackCRLTimestamp);
+    VLOG(2) << "CRL - Issuer certifcate's verification time overridden for the "
+               "fallback CRL.";
+  }
+  if (!net::EncodeTimeAsGeneralizedTime(time_issuer_check,
+                                        &issuer_verification_time)) {
+    VLOG(2) << "CRL - Unable to parse verification time for issuer certificate "
+               "check.";
     return false;
   }
 
@@ -180,9 +192,9 @@ bool VerifyCRL(const Crl& crl,
 
   // Verify the trust of the CRL authority.
   net::CertPathBuilder path_builder(
-      parsed_cert, trust_store, &path_builder_delegate, verification_time,
-      net::KeyPurpose::ANY_EKU, net::InitialExplicitPolicy::kFalse,
-      {net::der::Input(net::kAnyPolicyOid)},
+      parsed_cert, trust_store, &path_builder_delegate,
+      issuer_verification_time, net::KeyPurpose::ANY_EKU,
+      net::InitialExplicitPolicy::kFalse, {net::der::Input(net::kAnyPolicyOid)},
       net::InitialPolicyMappingInhibit::kFalse,
       net::InitialAnyPolicyInhibit::kFalse);
   net::CertPathBuilder::Result result = path_builder.Run();
@@ -197,6 +209,12 @@ bool VerifyCRL(const Crl& crl,
   // particular KeyUsages. Leaf certificate checks are bypassed.
 
   // Verify the CRL is still valid.
+  net::der::GeneralizedTime crl_verification_time;
+  if (!net::EncodeTimeAsGeneralizedTime(time, &crl_verification_time)) {
+    VLOG(2)
+        << "CRL - Unable to parse verification time for CRL validity check.";
+    return false;
+  }
   net::der::GeneralizedTime not_before;
   if (!ConvertTimeSeconds(tbs_crl.not_before_seconds(), &not_before)) {
     VLOG(2) << "CRL - Unable to parse not_before.";
@@ -207,7 +225,8 @@ bool VerifyCRL(const Crl& crl,
     VLOG(2) << "CRL - Unable to parse not_after.";
     return false;
   }
-  if ((verification_time < not_before) || (verification_time > not_after)) {
+  if ((crl_verification_time < not_before) ||
+      (crl_verification_time > not_after)) {
     VLOG(2) << "CRL - Not time-valid.";
 #ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     return false;
@@ -227,10 +246,13 @@ bool VerifyCRL(const Crl& crl,
   const net::ParsedCertificateList& path_certs =
       result.GetBestValidPath()->certs;
 #endif
-  for (const auto& cert : path_certs) {
-    net::der::GeneralizedTime cert_not_after = cert->tbs().validity_not_after;
-    if (cert_not_after < *overall_not_after)
-      *overall_not_after = cert_not_after;
+  if (!is_fallback_crl) {
+    for (const auto& cert : path_certs) {
+      net::der::GeneralizedTime cert_not_after = cert->tbs().validity_not_after;
+      if (cert_not_after < *overall_not_after) {
+        *overall_not_after = cert_not_after;
+      }
+    }
   }
 
   // Perform sanity check on serial numbers.
@@ -414,7 +436,8 @@ std::unique_ptr<CastCRL> ParseAndVerifyCRLUsingCustomTrustStore(
     }
 
     net::der::GeneralizedTime overall_not_after;
-    if (!VerifyCRL(crl, tbs_crl, time, trust_store, &overall_not_after)) {
+    if (!VerifyCRL(crl, tbs_crl, time, trust_store, &overall_not_after,
+                   is_fallback_crl)) {
       LOG(ERROR) << "CRL - Verification failed.";
       return nullptr;
     }
@@ -430,7 +453,6 @@ std::unique_ptr<CastCRL> ParseAndVerifyFallbackCRLUsingCustomTrustStore(
   std::string fallback_serialized_crl(
       kCastFallbackCRLs, kCastFallbackCRLs + sizeof kCastFallbackCRLs /
                                                  sizeof kCastFallbackCRLs[0]);
-
   return ParseAndVerifyCRLUsingCustomTrustStore(
       fallback_serialized_crl, time, trust_store, true /* is_fallback_crl */);
 }
