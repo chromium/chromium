@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -24,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/tast_support/stack_sampling_recorder.h"
 #include "chrome/installer/util/google_update_settings.h"
 #endif
 
@@ -36,7 +38,6 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/command_line.h"
 #include "base/linux_util.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -53,9 +54,16 @@ ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() {
 }
 
 void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 #if BUILDFLAG(IS_CHROMEOS)
-  // No-op: Ash and Lacros Bluetooth DBusManager initialization depend on
-  // FeatureList, and is done elsewhere.
+  if (command_line->HasSwitch(
+          chromeos::tast_support::kRecordStackSamplingDataSwitch)) {
+    stack_sampling_recorder_ =
+        base::MakeRefCounted<chromeos::tast_support::StackSamplingRecorder>();
+    stack_sampling_recorder_->Start();
+  }
+  // Don't initialize DBus here. Ash and Lacros Bluetooth DBusManager
+  // initialization depend on FeatureList, and is done elsewhere.
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -70,8 +78,7 @@ void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
   std::unique_ptr<os_crypt::Config> config =
       std::make_unique<os_crypt::Config>();
   // Forward to os_crypt the flag to use a specific password store.
-  config->store = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      switches::kPasswordStore);
+  config->store = command_line->GetSwitchValueASCII(switches::kPasswordStore);
   // Forward the product name
   config->product_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
   // OSCrypt can be disabled in a special settings file.

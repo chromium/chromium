@@ -7,8 +7,15 @@
 #ifndef CHROME_BROWSER_CHROME_BROWSER_MAIN_LINUX_H_
 #define CHROME_BROWSER_CHROME_BROWSER_MAIN_LINUX_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_posix.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+namespace chromeos::tast_support {
+class StackSamplingRecorder;
+}
+#endif
 
 class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
  public:
@@ -30,6 +37,16 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
   void PostBrowserStart() override;
 #endif
   void PostDestroyThreads() override;
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS)
+  // Used by ChromeOS tast tests. This is used by both Lacros and Ash, which
+  // is why it's in ChromeBrowserMainPartsLinux, even though it's not used in
+  // Linux. ChromeBrowserMainPartsLinux is the base class of both
+  // ChromeBrowserMainPartsAsh and ChromeBrowserMainPartsLacros.
+  scoped_refptr<chromeos::tast_support::StackSamplingRecorder>
+      stack_sampling_recorder_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_LINUX_H_

@@ -185,6 +185,8 @@ source_set("chromeos") {
     "tablet_mode/chrome_content_browser_client_tablet_mode_part.h",
     "tablet_mode/tablet_mode_page_behavior.cc",
     "tablet_mode/tablet_mode_page_behavior.h",
+    "tast_support/stack_sampling_recorder.cc",
+    "tast_support/stack_sampling_recorder.h",
     "upload_office_to_cloud/upload_office_to_cloud.cc",
     "upload_office_to_cloud/upload_office_to_cloud.h",
     "video_conference/video_conference_manager_client.cc",
@@ -261,6 +263,7 @@ source_set("chromeos") {
     "//url",
   ]
   deps = [
+    ":system_stack_sampled_metrics_status_proto",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
@@ -525,6 +528,7 @@ source_set("unit_tests") {
     "reporting/websites/website_events_observer_unittest.cc",
     "reporting/websites/website_usage_observer_unittest.cc",
     "reporting/websites/website_usage_telemetry_sampler_unittest.cc",
+    "tast_support/stack_sampling_recorder_unittest.cc",
     "video_conference/video_conference_ukm_helper_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
@@ -535,6 +539,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":chromeos",
+    ":system_stack_sampled_metrics_status_proto",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -679,4 +684,11 @@ source_set("unit_tests") {
       "//components/reporting/util:rate_limiter_interface",
     ]
   }
+}
+
+proto_library("system_stack_sampled_metrics_status_proto") {
+  sources = [ "//third_party/cros_system_api/proto/stack_sampled_metrics_status//stack_sampled_metrics_status.proto" ]
+
+  proto_out_dir =
+      "third_party/cros_system_api/proto/stack_sampled_metrics_status"
 }
