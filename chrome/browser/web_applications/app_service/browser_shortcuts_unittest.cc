@@ -58,7 +58,8 @@ class BrowserShortcutsTest : public testing::Test,
     web_app_info->start_url = kAppUrl;
 
     std::string app_id =
-        test::InstallWebApp(profile(), std::move(web_app_info));
+        test::InstallWebApp(profile(), std::move(web_app_info),
+                            /*overwrite_existing_manifest_fields=*/true);
     CHECK(
         WebAppProvider::GetForTest(profile())->registrar_unsafe().IsShortcutApp(
             app_id));
@@ -76,7 +77,8 @@ class BrowserShortcutsTest : public testing::Test,
     web_app_info->scope = kAppUrl;
 
     std::string app_id =
-        test::InstallWebApp(profile(), std::move(web_app_info));
+        test::InstallWebApp(profile(), std::move(web_app_info),
+                            /*overwrite_existing_manifest_fields=*/true);
     CHECK(!WebAppProvider::GetForTest(profile())
                ->registrar_unsafe()
                .IsShortcutApp(app_id));
@@ -344,6 +346,31 @@ TEST_F(BrowserShortcutsTest, GetCompressedShortcutIcon) {
       result.GetCallback());
   apps::IconValuePtr icon = result.Take();
   ASSERT_EQ(expected_icon->compressed, icon->compressed);
+}
+
+TEST_F(BrowserShortcutsTest, ReplaceBetweenShortcutAndWebApp) {
+  InitializeBrowserShortcutPublisher();
+  apps::ShortcutRegistryCache* shortcut_cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->ShortcutRegistryCache();
+  apps::AppRegistryCache& app_cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->AppRegistryCache();
+  ASSERT_EQ(shortcut_cache->GetAllShortcuts().size(), 0u);
+
+  auto web_app_id = CreateShortcut("Shortcut");
+  EXPECT_TRUE(shortcut_cache->HasShortcut(apps::ShortcutId(web_app_id)));
+  EXPECT_FALSE(app_cache.IsAppInstalled(web_app_id));
+
+  // Install a web app with same url should replace the shortcut.
+  CreateWebApp("App");
+  EXPECT_FALSE(shortcut_cache->HasShortcut(apps::ShortcutId(web_app_id)));
+  EXPECT_TRUE(app_cache.IsAppInstalled(web_app_id));
+
+  // Create a shortcut with same url should replace the web app.
+  CreateShortcut("Shortcut");
+  EXPECT_TRUE(shortcut_cache->HasShortcut(apps::ShortcutId(web_app_id)));
+  EXPECT_FALSE(app_cache.IsAppInstalled(web_app_id));
 }
 
 }  // namespace web_app

@@ -299,6 +299,25 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
     }
   }
 
+  // Remove shortcut if the user installed a web app with the same start_url
+  // over a shortcut. Currently the browser created shortcut is still based on
+  // the web app system, which means if the user installs a web app and shortcut
+  // with the same start url, they will replace each other and share the same
+  // ID. We have to remove the replaced shortcut when publishing the new app
+  // before the app gets published so that it will not create duplicated item in
+  // the launcher and shelf. This should be temporary and should be removed once
+  // we remove the shortcut from the web app system.
+  if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+    for (const auto& delta : deltas) {
+      if (delta->app_type == AppType::kWeb &&
+          ShortcutRegistryCache()->HasShortcut(ShortcutId(delta->app_id))) {
+        // Use the app service proxy interface here to also clean up the icon
+        // folder and the shortcut removal dialogs.
+        ShortcutRemoved(ShortcutId(delta->app_id));
+      }
+    }
+  }
+
   if (crosapi_subscriber_) {
     crosapi_subscriber_->OnApps(deltas, app_type, should_notify_initialized);
   }
@@ -492,6 +511,35 @@ void AppServiceProxyAsh::PublishShortcut(ShortcutPtr delta) {
   if (delta->icon_key.has_value() && delta->icon_key->raw_icon_updated) {
     MaybeScheduleIconFolderDeletionForShortcut(delta->shortcut_id);
   }
+
+  // Remove web app if the user created a shortcut with the same start_url
+  // over a web app. Currently the browser created shortcut is still based on
+  // the web app system, which means if the user installs a web app and shortcut
+  // with the same start url, they will replace each other and share the same
+  // ID. We have to remove the replaced app when publishing the new shortcut
+  // before the shortcut gets published so that it will not create duplicated
+  // item in the launcher and shelf. This should be temporary and should be
+  // removed once we remove the shortcut from the web app system.
+  if (AppRegistryCache().GetAppType(delta->shortcut_id.value()) ==
+      AppType::kWeb) {
+    auto uninstall_delta =
+        std::make_unique<apps::App>(AppType::kWeb, delta->shortcut_id.value());
+    uninstall_delta->readiness = Readiness::kUninstalledByUser;
+    std::vector<AppPtr> apps;
+    apps.push_back(std::move(uninstall_delta));
+    auto remove_delta =
+        std::make_unique<apps::App>(AppType::kWeb, delta->shortcut_id.value());
+    remove_delta->readiness = Readiness::kRemoved;
+    apps.push_back(std::move(remove_delta));
+
+    // Use the app service proxy interface here to also clean up the icon folder
+    // and the app uninstall dialogs.
+    OnApps(std::move(apps), apps::AppType::kWeb, false);
+
+    // TODO(b/305872222): Clean up / copy the capability access status, pause
+    // status, notification status, etc.
+  }
+
   ShortcutRegistryCache()->UpdateShortcut(std::move(delta));
 }
 

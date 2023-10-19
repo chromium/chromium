@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/profiles/profile.h"
@@ -91,10 +92,24 @@ class AppServiceShortcutItemBrowserTest
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = shortcut_url;
     web_app_info->title = shortcut_name;
-    auto local_shortcut_id =
-        web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+    auto local_shortcut_id = web_app::test::InstallWebApp(
+        profile(), std::move(web_app_info),
+        /*overwrite_existing_manifest_fields=*/true);
     return apps::GenerateShortcutId(app_constants::kChromeAppId,
                                     local_shortcut_id);
+  }
+
+  std::string CreateWebApp(const GURL& app_url,
+                           const std::u16string& app_name) {
+    // Create web app.
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    web_app_info->start_url = app_url;
+    web_app_info->title = app_name;
+    web_app_info->scope = app_url;
+    auto web_app_id = web_app::test::InstallWebApp(
+        profile(), std::move(web_app_info),
+        /*overwrite_existing_manifest_fields=*/true);
+    return web_app_id;
   }
 
  private:
@@ -474,6 +489,34 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, SetToSyncPosition) {
   ChromeAppListItem* item = model_updater->FindItem(shortcut_id.value());
   ASSERT_TRUE(item);
   EXPECT_EQ(item->position(), ordinal);
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest,
+                       ReplaceBetweenShortcutAndWebApp) {
+  GURL url = GURL("https://example.org/");
+  apps::ShortcutId shortcut_id = CreateWebAppBasedShortcut(url, u"Shortcut");
+
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ChromeAppListItem* item = model_updater->FindItem(shortcut_id.value());
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->GetItemType(), AppServiceShortcutItem::kItemType);
+  EXPECT_EQ(item->name(), "Shortcut");
+
+  // Install a web app with the same url should replace the shortcut.
+  std::string app_id = CreateWebApp(url, u"App");
+  ASSERT_EQ(app_id, shortcut_id.value());
+  item = model_updater->FindItem(app_id);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->GetItemType(), AppServiceAppItem::kItemType);
+  EXPECT_EQ(item->name(), "App");
+
+  // Create a shortcut with the same url should replace the web app.
+  CreateWebAppBasedShortcut(url, u"Shortcut");
+  item = model_updater->FindItem(shortcut_id.value());
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->GetItemType(), AppServiceShortcutItem::kItemType);
+  EXPECT_EQ(item->name(), "Shortcut");
 }
 
 }  // namespace apps

@@ -105,10 +105,13 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&name](const apps::AppUpdate& update) {
-        name = update.Name();
+        if (apps_util::IsInstalled(update.Readiness())) {
+          name = update.Name();
+        }
       });
-  if (!name.empty())
+  if (!name.empty()) {
     return base::UTF8ToUTF16(name);
+  }
 
   if (ash::features::ArePromiseIconsEnabled()) {
     const std::u16string promise_app_title =
