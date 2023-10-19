@@ -8252,6 +8252,7 @@ test("unit_tests") {
       "../browser/ui/webui/ash/enterprise_reporting/history_converter_unittest.cc",
       "../browser/ui/webui/ash/sensor_info/sensor_page_handler_unittest.cc",
       "../browser/ui/webui/ash/settings/pages/people/os_sync_handler_unittest.cc",
+      "../browser/ui/webui/ash/smb_shares/smb_handler_unittest.cc",
       "../browser/ui/webui/help/version_updater_chromeos_unittest.cc",
       "../browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher_unittest.cc",
       "../browser/ui/window_sizer/window_sizer_chromeos_unittest.cc",

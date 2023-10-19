@@ -5883,6 +5883,8 @@ source_set("unit_tests") {
     "smb_client/smb_kerberos_credentials_updater_unittest.cc",
     "smb_client/smb_persisted_share_registry_unittest.cc",
     "smb_client/smb_service_helper_unittest.cc",
+    "smb_client/smb_service_test_base.cc",
+    "smb_client/smb_service_test_base.h",
     "smb_client/smb_service_unittest.cc",
     "smb_client/smb_share_finder_unittest.cc",
     "smb_client/smb_url_unittest.cc",
