@@ -6,16 +6,21 @@
 
 #import "build/blink_buildflags.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
-#import "ios/web/common/features.h"
 #import "ios/web/common/user_agent.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
-#import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
+#import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"
+
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 namespace TabInsertion {
 Params::Params() = default;
@@ -26,52 +31,39 @@ BROWSER_USER_DATA_KEY_IMPL(TabInsertionBrowserAgent)
 
 namespace {
 
-// Creates an unrealized web state to be restored without load.
-std::unique_ptr<web::WebState> CreateUnrealizedWebStateForTab(
+// Returns whether `index` is valid for insertion in `browser`.
+bool IsIndexValidForBrowser(Browser* browser, int index) {
+  if (index == TabInsertion::kPositionAutomatically) {
+    return true;
+  }
+
+  return index >= 0 && index <= browser->GetWebStateList()->count();
+}
+
+// Returns whether the tab can be created in an unrealized state or
+// not according to `web_load_params` and `tab_insertion_params`.
+bool MustCreateRealizedWebState(
     const web::NavigationManager::WebLoadParams& web_load_params,
-    const std::u16string& title,
-    web::WebState::CreateParams create_params,
-    base::Time creation_time) {
-  // Creates the tab.
-  CRWNavigationItemStorage* item_storage =
-      [[CRWNavigationItemStorage alloc] init];
-  item_storage.URL = web_load_params.url;
-  item_storage.virtualURL = web_load_params.virtual_url;
-  item_storage.referrer = web_load_params.referrer;
-  item_storage.timestamp = creation_time;
-  item_storage.title = title;
-  item_storage.HTTPRequestHeaders = web_load_params.extra_headers;
-
-  // Creates the session with the tab.
-  CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
-  session_storage.hasOpener = create_params.created_with_opener;
-  session_storage.lastCommittedItemIndex = 0;
-  session_storage.creationTime = creation_time;
-  session_storage.userAgentType = web::UserAgentType::MOBILE;
-  session_storage.certPolicyCacheStorage =
-      [[CRWSessionCertificatePolicyCacheStorage alloc] init];
-  session_storage.itemStorages = @[ item_storage ];
-
-  return web::WebState::CreateWithStorageSession(create_params,
-                                                 session_storage);
+    const TabInsertion::Params& tab_insertion_params) {
+  return tab_insertion_params.instant_load || web_load_params.post_data != nil;
 }
 
 }  // namespace
 
 TabInsertionBrowserAgent::TabInsertionBrowserAgent(Browser* browser)
-    : browser_state_(browser->GetBrowserState()),
-      web_state_list_(browser->GetWebStateList()) {}
+    : browser_(browser) {
+  DCHECK(browser_);
+}
 
-TabInsertionBrowserAgent::~TabInsertionBrowserAgent() {}
+TabInsertionBrowserAgent::~TabInsertionBrowserAgent() = default;
 
 web::WebState* TabInsertionBrowserAgent::InsertWebState(
     const web::NavigationManager::WebLoadParams& web_load_params,
     const TabInsertion::Params& tab_insertion_params) {
-  DCHECK(tab_insertion_params.index == TabInsertion::kPositionAutomatically ||
-         (tab_insertion_params.index >= 0 &&
-          tab_insertion_params.index <= web_state_list_->count()));
+  DCHECK(IsIndexValidForBrowser(browser_.get(), tab_insertion_params.index));
+
+  WebStateList* const web_state_list = browser_->GetWebStateList();
+  ChromeBrowserState* const browser_state = browser_->GetBrowserState();
 
   int insertion_index = WebStateList::kInvalidIndex;
   int insertion_flags = WebStateList::INSERT_NO_FLAGS;
@@ -81,7 +73,7 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
     insertion_flags |= WebStateList::INSERT_FORCE_INDEX;
   } else if (!ui::PageTransitionCoreTypeIs(web_load_params.transition_type,
                                            ui::PAGE_TRANSITION_LINK)) {
-    insertion_index = web_state_list_->count();
+    insertion_index = web_state_list->count();
     insertion_flags |= WebStateList::INSERT_FORCE_INDEX;
   }
 
@@ -94,18 +86,30 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
   }
 
   std::unique_ptr<web::WebState> web_state;
-  web::WebState::CreateParams create_params(browser_state_);
+  web::WebState::CreateParams create_params(browser_state);
   create_params.created_with_opener = tab_insertion_params.opened_by_dom;
 
-  // TODO(crbug.com/1383087): Needs an API in SessionRestorationService.
-  if (tab_insertion_params.instant_load ||
-      web::features::UseSessionSerializationOptimizations()) {
+  // Check whether the tab must be created as realized or not.
+  if (MustCreateRealizedWebState(web_load_params, tab_insertion_params)) {
     web_state = web::WebState::Create(create_params);
   } else {
-    web_state = CreateUnrealizedWebStateForTab(
-        web_load_params, tab_insertion_params.placeholder_title, create_params,
+    web::proto::WebStateStorage storage = web::CreateWebStateStorage(
+        web_load_params, tab_insertion_params.placeholder_title,
+        tab_insertion_params.opened_by_dom, web::UserAgentType::MOBILE,
         base::Time::Now());
+
+    // If the optimised session storage feature is enabled, the creation of
+    // the WebState needs to happen through SessionRestorationService.
+    if (web::features::UseSessionSerializationOptimizations()) {
+      web_state =
+          SessionRestorationServiceFactory::GetForBrowserState(browser_state)
+              ->CreateUnrealizedWebState(browser_.get(), std::move(storage));
+    } else {
+      web_state = web::WebState::CreateWithStorageSession(
+          create_params, [[CRWSessionStorage alloc] initWithProto:storage]);
+    }
   }
+  DCHECK(web_state);
 
   if (tab_insertion_params.should_show_start_surface) {
     NewTabPageTabHelper::CreateForWebState(web_state.get());
@@ -123,27 +127,28 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
     web_state->GetNavigationManager()->LoadURLWithParams(web_load_params);
   }
 
-  int inserted_index = web_state_list_->InsertWebState(
-      insertion_index, std::move(web_state), insertion_flags,
-      WebStateOpener(tab_insertion_params.parent));
-
-  return web_state_list_->GetWebStateAt(inserted_index);
+  web::WebState* web_state_ptr = web_state.get();
+  web_state_list->InsertWebState(insertion_index, std::move(web_state),
+                                 insertion_flags,
+                                 WebStateOpener(tab_insertion_params.parent));
+  return web_state_ptr;
 }
 
 web::WebState* TabInsertionBrowserAgent::InsertWebStateOpenedByDOM(
     web::WebState* parent) {
-  web::WebState::CreateParams createParams(browser_state_);
-  createParams.created_with_opener = YES;
+  web::WebState::CreateParams create_params(browser_->GetBrowserState());
+  create_params.created_with_opener = YES;
 #if BUILDFLAG(USE_BLINK)
-  createParams.opener_web_state = parent;
+  create_params.opener_web_state = parent;
 #endif
   std::unique_ptr<web::WebState> web_state =
-      web::WebState::Create(createParams);
-  int insertion_flags =
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE;
-  int inserted_index = web_state_list_->InsertWebState(
-      web_state_list_->count(), std::move(web_state), insertion_flags,
-      WebStateOpener(parent));
+      web::WebState::Create(create_params);
 
-  return web_state_list_->GetWebStateAt(inserted_index);
+  web::WebState* web_state_ptr = web_state.get();
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web_state_list->InsertWebState(
+      web_state_list->count(), std::move(web_state),
+      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
+      WebStateOpener(parent));
+  return web_state_ptr;
 }
