@@ -6,6 +6,7 @@
 
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -459,6 +460,87 @@ TEST_F(PasswordDetailsMediatorTest, MoveCredentialToAccountStoreWithConflict) {
 
   // Verify information sent to consumer.
   CheckConsumerPasswords(/*expected_passwords=*/@[ password_details ]);
+  CheckConsumerTitle();
+}
+
+// Tests that `moveCredentialToAccountStoreWithConflict` moves the credential
+// from the the profile password store to the account password store and keep
+// the most recent version of the credential when there is a conflict.
+TEST_F(PasswordDetailsMediatorTest,
+       MoveCredentialToAccountStoreWithConflictKeepMostRecent) {
+  // Add a second credential that is saved in the profile password store. Use
+  // same url and username, but different password as the other credential so
+  // there is a conflict when moving the second one to the account store.
+  AddSafePasswordForm(/*url=*/kExampleURL1, /*password=*/kExamplePassword1);
+
+  // Add saved credential to the account password store.
+  AddSafePasswordFormToAccountStore(/*url=*/kExampleURL1,
+                                    /*password=*/kExamplePassword2);
+
+  // Update the mediator's credentials.
+  std::vector<CredentialUIEntry> credentials = GetAffiliatedGroupCredentials();
+  // Update the last used time of the credentials.
+  credentials[0].last_used_time = base::Time::Now();
+  credentials[1].last_used_time = base::Time::Now() + base::Hours(1);
+  mediator().credentials = credentials;
+
+  PasswordForm profile_store_form =
+      password_check_manager()
+          ->GetSavedPasswordsPresenter()
+          ->GetCorrespondingPasswordForms(mediator().credentials[0])[0];
+
+  PasswordForm account_store_form =
+      password_check_manager()
+          ->GetSavedPasswordsPresenter()
+          ->GetCorrespondingPasswordForms(mediator().credentials[1])[0];
+
+  // Check that the mediator's credentials are associated with the expected
+  // store.
+  EXPECT_EQ(mediator().credentials.size(), 2u);
+  EXPECT_EQ(*mediator().credentials[0].stored_in.begin(),
+            PasswordForm::Store::kProfileStore);
+  EXPECT_EQ(*mediator().credentials[1].stored_in.begin(),
+            PasswordForm::Store::kAccountStore);
+
+  // Check that the both stores both contain the expected password.
+  EXPECT_THAT(
+      GetTestProfileStore().stored_passwords(),
+      ElementsAre(Pair(kExampleSignonRealm, ElementsAre(profile_store_form))));
+  EXPECT_THAT(
+      GetTestAccountStore().stored_passwords(),
+      ElementsAre(Pair(kExampleSignonRealm, ElementsAre(account_store_form))));
+
+  // Move the profile credential to the account password store to resolve the
+  // conflict.
+  [mediator() moveCredentialToAccountStoreWithConflict:
+                  [[PasswordDetails alloc]
+                      initWithCredential:mediator().credentials[0]]];
+  RunUntilIdle();
+
+  // The account credential only should be in the account store.
+  PasswordForm expected_form = account_store_form;
+  expected_form.in_store = PasswordForm::Store::kAccountStore;
+
+  // Check that the mediator only has one credential left, that it is saved in
+  // the account store and and its password is "password2" that is the most
+  // recent.
+  EXPECT_EQ(mediator().credentials.size(), 1u);
+  EXPECT_EQ(*mediator().credentials[0].stored_in.begin(),
+            PasswordForm::Store::kAccountStore);
+  EXPECT_EQ(mediator().credentials[0].password, kExamplePassword2);
+
+  // Check that the profile password store is now empty and that the account
+  // store only has the updated version (i.e., version with password
+  // "password2") of the credential previously saved.
+  EXPECT_THAT(GetTestProfileStore().stored_passwords(),
+              ElementsAre(Pair(kExampleSignonRealm, IsEmpty())));
+  EXPECT_THAT(
+      GetTestAccountStore().stored_passwords(),
+      ElementsAre(Pair(kExampleSignonRealm, ElementsAre(expected_form))));
+
+  // Verify information sent to consumer.
+  CheckConsumerPasswords(/*expected_passwords=*/@[ [[PasswordDetails alloc]
+      initWithCredential:mediator().credentials[0]] ]);
   CheckConsumerTitle();
 }
 
