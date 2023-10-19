@@ -22,6 +22,7 @@
 #error "DECLARE_RESOURCE_ID should be defined before including this file"
 #endif
 
+DECLARE_RESOURCE_ID(IDR_ANDROID_GLOBE, R.drawable.ic_globe_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_ACCESSIBILITY_EVENTS,
                     R.drawable.infobar_accessibility_events)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_CLIPBOARD,

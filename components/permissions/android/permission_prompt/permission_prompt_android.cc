@@ -99,8 +99,14 @@ static void CheckValidRequestGroup(
 
 int PermissionPromptAndroid::GetIconId() const {
   const std::vector<PermissionRequest*>& requests = delegate_->Requests();
-  if (requests.size() == 1)
+  if (requests.size() == 1) {
+    if (requests[0]->request_type() == RequestType::kStorageAccess &&
+        base::FeatureList::IsEnabled(
+            permissions::features::kPermissionStorageAccessAPI)) {
+      return IDR_ANDROID_GLOBE;
+    }
     return permissions::GetIconId(requests[0]->request_type());
+  }
   CheckValidRequestGroup(requests);
   return IDR_ANDROID_INFOBAR_MEDIA_STREAM_CAMERA;
 }
