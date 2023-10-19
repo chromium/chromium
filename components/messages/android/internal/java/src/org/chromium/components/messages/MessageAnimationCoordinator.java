@@ -186,9 +186,6 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
         if (currentFront == nextFront && currentBack == nextBack) {
             if (currentFront == null && mMessageQueueDelegate.isReadyForShowing()) {
                 mMessageQueueDelegate.onFinishHiding();
-            } else if (currentFront != null && !mMessageQueueDelegate.isSwitchingScope()) {
-                assert mMessageQueueDelegate.isReadyForShowing()
-                    : "onRequestShowing should have been called";
             }
             return;
         }
