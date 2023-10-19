@@ -892,7 +892,7 @@ void PopupViewViews::SetCellWithOpenSubPopup(
   if (open_sub_popup_cell_ && HasPopupRowViewAt(open_sub_popup_cell_->first)) {
     controller_->HideSubPopup();
     GetPopupRowViewAt(open_sub_popup_cell_->first)
-        .SetCellPermanentlyHighlighted(open_sub_popup_cell_->second, false);
+        .SetChildSuggestionsDisplayed(false);
     open_sub_popup_cell_ = absl::nullopt;
   }
 
@@ -909,7 +909,7 @@ void PopupViewViews::SetCellWithOpenSubPopup(
             row.GetControlCellBounds(), suggestion.children,
             AutoselectFirstSuggestion(selection_source ==
                                       PopupCellSelectionSource::kKeyboard))) {
-      row.SetCellPermanentlyHighlighted(cell_index->second, true);
+      row.SetChildSuggestionsDisplayed(true);
       open_sub_popup_cell_ = cell_index;
       if (selection_source == PopupCellSelectionSource::kKeyboard) {
         row.SetSelectedCell(absl::nullopt);

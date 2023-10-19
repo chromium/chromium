@@ -334,10 +334,12 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
   UpdateBackground();
 }
 
-void PopupRowView::SetCellPermanentlyHighlighted(CellType type,
-                                                 bool highlighted) {
-  if (PopupCellView* view = GetCellView(type)) {
-    view->SetPermanentlyHighlighted(highlighted);
+void PopupRowView::SetChildSuggestionsDisplayed(
+    bool child_suggestions_displayed) {
+  child_suggestions_displayed_ = child_suggestions_displayed;
+
+  if (PopupCellView* view = GetCellView(CellType::kControl)) {
+    view->SetChecked(child_suggestions_displayed);
   }
 
   UpdateBackground();
@@ -419,12 +421,11 @@ PopupCellView* PopupRowView::GetCellView(CellType type) {
 }
 
 void PopupRowView::UpdateBackground() {
-  PopupCellView* control_cell = GetCellView(CellType::kControl);
-  if (!control_cell) {
-    return;
+  bool highlighted = child_suggestions_displayed_;
+  if (PopupCellView* control_cell = GetCellView(CellType::kControl)) {
+    highlighted = highlighted || control_cell->GetSelected();
   }
-
-  ui::ColorId kBackgroundColorId = control_cell->IsHighlighted()
+  ui::ColorId kBackgroundColorId = highlighted
                                        ? ui::kColorDropdownBackgroundSelected
                                        : ui::kColorDropdownBackground;
   SetBackground(views::CreateThemedRoundedRectBackground(

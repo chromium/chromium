@@ -56,17 +56,14 @@ void PopupCellView::SetSelected(bool selected) {
   }
 }
 
-void PopupCellView::SetPermanentlyHighlighted(bool permanently_highlighted) {
-  if (permanently_highlighted_ != permanently_highlighted) {
-    permanently_highlighted_ = permanently_highlighted;
-    RefreshStyle();
-    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
-                             /*send_native_event=*/true);
+void PopupCellView::SetChecked(bool checked) {
+  if (checked_ == checked) {
+    return;
   }
-}
 
-bool PopupCellView::IsHighlighted() const {
-  return selected_ || permanently_highlighted_;
+  checked_ = checked;
+  NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
+                           /*send_native_event=*/true);
 }
 
 void PopupCellView::SetAccessibilityDelegate(
@@ -89,13 +86,12 @@ void PopupCellView::TrackLabel(views::Label* label) {
 
 void PopupCellView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (a11y_delegate_) {
-    a11y_delegate_->GetAccessibleNodeData(GetSelected(),
-                                          permanently_highlighted_, node_data);
+    a11y_delegate_->GetAccessibleNodeData(GetSelected(), checked_, node_data);
   }
 }
 
 void PopupCellView::RefreshStyle() {
-  if (IsHighlighted()) {
+  if (GetSelected()) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillShowAutocompleteDeleteButton)) {
       SetBackground(views::CreateThemedRoundedRectBackground(

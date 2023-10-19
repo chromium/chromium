@@ -85,7 +85,7 @@ class ContentItemAccessibilityDelegate
   ~ContentItemAccessibilityDelegate() override = default;
 
   void GetAccessibleNodeData(bool is_selected,
-                             bool is_permanently_highlighted,
+                             bool is_checked,
                              ui::AXNodeData* node_data) const override;
 
  private:
@@ -121,7 +121,7 @@ ContentItemAccessibilityDelegate::ContentItemAccessibilityDelegate(
 
 void ContentItemAccessibilityDelegate::GetAccessibleNodeData(
     bool is_selected,
-    bool is_permanently_highlighted,
+    bool is_checked,
     ui::AXNodeData* node_data) const {
   DCHECK(node_data);
   // Options are selectable.
@@ -141,23 +141,22 @@ class ExpandableControlCellAccessibilityDelegate
   ~ExpandableControlCellAccessibilityDelegate() override = default;
 
   void GetAccessibleNodeData(bool is_selected,
-                             bool is_permanently_highlighted,
+                             bool is_checked,
                              ui::AXNodeData* node_data) const override;
 };
 
-// Sets the checked state according to `is_permanently_highlighted`,
+// Sets the checked state according to `is_checked`,
 // `is_selected` is ignored as the first one is more important and updating
 // two states within hundreds of milliseconds can be confusing.
 void ExpandableControlCellAccessibilityDelegate::GetAccessibleNodeData(
     bool is_selected,
-    bool is_permanently_highlighted,
+    bool is_checked,
     ui::AXNodeData* node_data) const {
   node_data->role = ax::mojom::Role::kToggleButton;
   node_data->SetNameChecked(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_EXPANDABLE_SUGGESTION_CONTROLL_A11Y_NAME));
-  node_data->SetCheckedState(is_permanently_highlighted
-                                 ? ax::mojom::CheckedState::kTrue
-                                 : ax::mojom::CheckedState::kFalse);
+  node_data->SetCheckedState(is_checked ? ax::mojom::CheckedState::kTrue
+                                        : ax::mojom::CheckedState::kFalse);
 }
 
 }  // namespace

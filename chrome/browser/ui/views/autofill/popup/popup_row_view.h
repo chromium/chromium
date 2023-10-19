@@ -129,8 +129,10 @@ class PopupRowView : public views::View, public views::ViewObserver {
   absl::optional<CellType> GetSelectedCell() const { return selected_cell_; }
   void SetSelectedCell(absl::optional<CellType> cell);
 
-  // Sets the highlighted state on the cell of specified type.
-  void SetCellPermanentlyHighlighted(CellType cell, bool highlighted);
+  // Sets whether the row's child suggestions are displayed in a sub-popup.
+  // Note that the row doesn't control the sub-popup, but rather should be
+  // synced with it by this method.
+  void SetChildSuggestionsDisplayed(bool child_suggestions_displayed);
 
   // Returns the control cell's bounds. The cell must be present.
   gfx::RectF GetControlCellBounds() const;
@@ -209,6 +211,10 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // not mean that the popup just showed up to the user so there is no need to
   // move the cursor out and in.
   const bool should_ignore_mouse_observed_outside_item_bounds_check_;
+
+  // Whether the row's child suggestions (see `Suggestion::children`) are
+  // displayed in a sub-popup.
+  bool child_suggestions_displayed_ = false;
 };
 
 }  // namespace autofill
