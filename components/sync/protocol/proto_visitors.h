@@ -967,6 +967,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData& proto) {
   VISIT(sender_name);
   VISIT(date_received_windows_epoch_micros);
   VISIT(sharing_notification_displayed);
+  VISIT(sender_profile_image_url);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordIssues& proto) {
