@@ -22,32 +22,35 @@ struct PasswordForm;
 
 namespace sync_util {
 
-// Returns the sync username received from |identity_manager| (if not null).
-// Moreover, using |sync_service| (if not null), this function also tries to
-// return an empty string if the user isn't syncing passwords, but it is not
-// always possible to determine since this code can be called during sync setup
-// (http://crbug.com/393626).
-std::string GetSyncUsernameIfSyncingPasswords(
+// Uses `sync_service` and `identity_manager` to determine whether the user is
+// signed in with sync-the-feature turned on, and if so, return the e-mail
+// representing the account for which sync is on. Returns an empty string
+// otherwise (which includes the sync-off case even if account passwords are
+// on).
+// TODO(crbug.com/1462552): Remove this function once IsSyncFeatureEnabled() is
+// fully deprecated, see ConsentLevel::kSync documentation for details.
+std::string GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
     const syncer::SyncService* sync_service,
     const signin::IdentityManager* identity_manager);
 
-// Returns true if |url| is google.com domain and |username| corresponds to the
-// account specified by GetSyncUsernameIfSyncingPasswords. Returns false if
-// GetSyncUsernameIfSyncingPasswords does not specify any account.
+// Returns true if `url` is google.com domain and `username` corresponds to the
+// account specified by GetAccountEmailIfSyncFeatureEnabledIncludingPasswords.
+// Returns false if GetAccountEmailIfSyncFeatureEnabledIncludingPasswords does
+// not specify any account.
 bool IsSyncAccountCredential(const GURL& url,
                              const std::u16string& username,
                              const syncer::SyncService* sync_service,
                              const signin::IdentityManager* identity_manager);
 
-// If |username| matches the signed-in account.
+// If `username` matches the signed-in account.
 bool IsSyncAccountEmail(const std::string& username,
                         const signin::IdentityManager* identity_manager,
                         signin::ConsentLevel consent_level);
 
-// If |signon_realm| matches Gaia signon realm.
+// If `signon_realm` matches Gaia signon realm.
 bool IsGaiaCredentialPage(const std::string& signon_realm);
 
-// If |form|'s origin matches enterprise login URL or enterprise change password
+// If `form`'s origin matches enterprise login URL or enterprise change password
 // URL.
 bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs);
@@ -90,7 +93,7 @@ absl::optional<std::string> GetAccountForSaving(
     const syncer::SyncService* sync_service);
 
 // Reports whether and how passwords are currently synced. In particular, for a
-// null |sync_service| returns NOT_SYNCING.
+// null `sync_service` returns NOT_SYNCING.
 password_manager::SyncState GetPasswordSyncState(
     const syncer::SyncService* sync_service);
 

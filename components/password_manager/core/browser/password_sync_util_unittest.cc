@@ -38,7 +38,8 @@ PasswordForm SimpleForm(const char* signon_realm, const char* username) {
   return form;
 }
 
-TEST_F(PasswordSyncUtilTest, GetSyncUsernameIfSyncingPasswords) {
+TEST_F(PasswordSyncUtilTest,
+       GetAccountEmailIfSyncFeatureEnabledIncludingPasswords) {
   const struct TestCase {
     enum { SYNCING_PASSWORDS, NOT_SYNCING_PASSWORDS } password_sync;
     std::string fake_sync_username;
@@ -52,15 +53,13 @@ TEST_F(PasswordSyncUtilTest, GetSyncUsernameIfSyncingPasswords) {
       {TestCase::SYNCING_PASSWORDS, "a@example.org", "a@example.org",
        sync_service(), identity_manager()},
 
-      // If sync_service is not available, we assume passwords are synced, even
-      // if they are not.
-      {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", "a@example.org",
-       nullptr, identity_manager()},
+      {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", std::string(), nullptr,
+       identity_manager()},
 
       {TestCase::SYNCING_PASSWORDS, "a@example.org", std::string(),
        sync_service(), nullptr},
 
-      {TestCase::SYNCING_PASSWORDS, "a@example.org", std::string(), nullptr,
+      {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", std::string(), nullptr,
        nullptr},
   };
 
@@ -70,7 +69,7 @@ TEST_F(PasswordSyncUtilTest, GetSyncUsernameIfSyncingPasswords) {
                         TestCase::SYNCING_PASSWORDS);
     FakeSigninAs(kTestCases[i].fake_sync_username);
     EXPECT_EQ(kTestCases[i].expected_result,
-              GetSyncUsernameIfSyncingPasswords(
+              GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
                   kTestCases[i].sync_service, kTestCases[i].identity_manager));
   }
 }

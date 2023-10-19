@@ -684,9 +684,9 @@ StoreMetricsReporter::StoreMetricsReporter(
       password_manager::prefs::kLastTimePasswordStoreMetricsReported,
       base::Time::Now().ToDoubleT());
 
-  sync_username_ =
-      password_manager::sync_util::GetSyncUsernameIfSyncingPasswords(
-          sync_service, identity_manager);
+  sync_username_ = password_manager::sync_util::
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(sync_service,
+                                                            identity_manager);
 
   custom_passphrase_enabled_ = IsCustomPassphraseEnabled(
       password_manager::sync_util::GetPasswordSyncState(sync_service));
