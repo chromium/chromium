@@ -859,9 +859,7 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
         ->GetDefaultStoragePartition();
   }
 
-  void TearDownOnMainThread() override {
-    test_worklet_host_manager_->RemoveSharedStorageObserver(observer_.get());
-  }
+  void TearDownOnMainThread() override { test_worklet_host_manager_ = nullptr; }
 
   // Virtual so that derived classes can use a different flavor of mock instead
   // of `testing::NiceMock`.
@@ -1177,8 +1175,8 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   base::HistogramTester histogram_tester_;
 
-  raw_ptr<TestSharedStorageWorkletHostManager, DanglingUntriaged>
-      test_worklet_host_manager_ = nullptr;
+  raw_ptr<TestSharedStorageWorkletHostManager> test_worklet_host_manager_ =
+      nullptr;
   std::unique_ptr<TestSharedStorageObserver> observer_;
 
   std::unique_ptr<MockPrivateAggregationShellContentBrowserClient>
@@ -6389,6 +6387,11 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
         shell(), https_server()->GetURL("a.test", kSimplePagePath)));
   }
 
+  void TearDownOnMainThread() override {
+    private_aggregation_host_ = nullptr;
+    SharedStorageBrowserTestBase::TearDownOnMainThread();
+  }
+
   void MakeMockPrivateAggregationShellContentBrowserClient() override {
     browser_client_ =
         std::make_unique<MockPrivateAggregationShellContentBrowserClient>();
@@ -6407,7 +6410,7 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
   url::Origin a_test_origin_;
 
  private:
-  raw_ptr<PrivateAggregationHost, DanglingUntriaged> private_aggregation_host_;
+  raw_ptr<PrivateAggregationHost> private_aggregation_host_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
