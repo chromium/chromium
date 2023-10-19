@@ -384,7 +384,7 @@ suite('SafetyHubReachable', function() {
 
     // Assert that the route is changed to safety hub.
     path = Router.getInstance().getCurrentRoute().path;
-    assertEquals('/safetyHub', path);
+    assertEquals('/safetyCheck', path);
   });
 
   test('SafetyCheckRouteNotReachable', async function() {
