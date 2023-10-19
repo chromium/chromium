@@ -7,24 +7,17 @@
  *
  * Keep this in sync with FileManagerDialog::GetDialogTypeAsString, except
  * FULL_PAGE which is specific to this code.
- *
- * @enum {string}
- * @const
  */
-export const DialogType = {
-  SELECT_FOLDER: 'folder',
-  SELECT_UPLOAD_FOLDER: 'upload-folder',
-  SELECT_SAVEAS_FILE: 'saveas-file',
-  SELECT_OPEN_FILE: 'open-file',
-  SELECT_OPEN_MULTI_FILE: 'open-multi-file',
-  FULL_PAGE: 'full-page',
-};
+export enum DialogType {
+  SELECT_FOLDER = 'folder',
+  SELECT_UPLOAD_FOLDER = 'upload-folder',
+  SELECT_SAVEAS_FILE = 'saveas-file',
+  SELECT_OPEN_FILE = 'open-file',
+  SELECT_OPEN_MULTI_FILE = 'open-multi-file',
+  FULL_PAGE = 'full-page',
+}
 
-/**
- * @param {DialogType} type Dialog type.
- * @return {boolean} Whether the type is modal.
- */
-export function isModal(type) {
+export function isModal(type: DialogType): boolean {
   return type == DialogType.SELECT_FOLDER ||
       type == DialogType.SELECT_UPLOAD_FOLDER ||
       type == DialogType.SELECT_SAVEAS_FILE ||
@@ -32,11 +25,7 @@ export function isModal(type) {
       type == DialogType.SELECT_OPEN_MULTI_FILE;
 }
 
-/**
- * @param {DialogType} type Dialog type.
- * @return {boolean} Whether the type is folder selection dialog.
- */
-export function isFolderDialogType(type) {
+export function isFolderDialogType(type: DialogType): boolean {
   return type == DialogType.SELECT_FOLDER ||
       type == DialogType.SELECT_UPLOAD_FOLDER;
 }

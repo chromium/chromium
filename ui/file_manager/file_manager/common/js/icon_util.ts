@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {constants} from '../../foreground/js/constants.js';
+
 /**
  * @fileoverview This file contains utils for working with icons.
  */
 
-/**
- * @param {!chrome.fileManagerPrivate.VmType|undefined} vmType
- * @return {string}
- */
-export function vmTypeToIconName(vmType) {
+/** Return icon name for the VM type. */
+export function vmTypeToIconName(vmType: chrome.fileManagerPrivate.VmType|
+                                 undefined): string {
   if (vmType === undefined) {
     console.error('vmType: is undefined');
     return '';
   }
   switch (vmType) {
     case chrome.fileManagerPrivate.VmType.BRUSCHETTA:
-      return 'bruschetta';
+      return constants.ICON_TYPES.BRUSCHETTA;
     case chrome.fileManagerPrivate.VmType.ARCVM:
-      return 'android_files';
+      return constants.ICON_TYPES.ANDROID_FILES;
     case chrome.fileManagerPrivate.VmType.TERMINA:
-      return 'crostini';
+      return constants.ICON_TYPES.CROSTINI;
     default:
       console.error('Unable to determine icon for vmType: ' + vmType);
       return '';

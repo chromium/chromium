@@ -16,14 +16,12 @@ group("js_modules") {
     ":app_util",
     ":array_data_model",
     ":async_util",
-    ":dialog_type",
     ":error_counter",
     ":file_type",
     ":file_types_data",
     ":files_app_entry_types",
     ":filtered_volume_manager",
     ":glitch",
-    ":icon_util",
     ":notifications",
     ":progress_center_common",
     ":recent_date_bucket",
@@ -69,9 +67,6 @@ js_library("error_counter") {
 js_library("glitch") {
 }
 
-js_library("dialog_type") {
-}
-
 js_unittest("files_app_entry_types_unittest") {
   deps = [
     ":files_app_entry_types",
@@ -83,17 +78,11 @@ js_unittest("files_app_entry_types_unittest") {
 }
 
 js_library("files_app_entry_types") {
-  deps = [
-    ":icon_util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-  ]
+  deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types" ]
 }
 
 js_library("files_app_state") {
-  deps = [
-    ":dialog_type",
-    ":volume_manager_types",
-  ]
+  deps = [ ":volume_manager_types" ]
 }
 
 js_library("file_types_data") {
@@ -247,8 +236,4 @@ js_library("volume_manager_types") {
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/externs:file_manager_private",
   ]
-}
-
-js_library("icon_util") {
-  deps = [ "//ui/file_manager/file_manager/externs:file_manager_private" ]
 }
