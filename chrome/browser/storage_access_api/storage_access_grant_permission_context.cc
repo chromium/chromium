@@ -42,8 +42,6 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
-using content_settings::URLToSchemefulSitePattern;
-
 namespace {
 
 // `kPermissionStorageAccessAPI` enables StorageAccessAPIwithPrompts

@@ -106,7 +106,8 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     // If it does not exist, it will fall through the default wildcard.
     if (should_exist) {
       EXPECT_EQ(info.secondary_pattern,
-                content_settings::URLToSchemefulSitePattern(first_party_url));
+                ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                    first_party_url));
     } else {
       EXPECT_TRUE(info.secondary_pattern.MatchesAllHosts());
     }

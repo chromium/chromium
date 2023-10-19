@@ -141,7 +141,7 @@ void CookieSettings::SetCookieSettingForUserBypass(
 
   host_content_settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
-      content_settings::URLToSchemefulSitePattern(first_party_url),
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url),
       ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW,
       constraints);
 }
@@ -191,7 +191,8 @@ void CookieSettings::ResetThirdPartyCookieSetting(const GURL& first_party_url) {
 
   // TODO(crbug.com/1446230): Log metrics when there is pattern that has domain
   // as wildcard.
-  auto pattern = content_settings::URLToSchemefulSitePattern(first_party_url);
+  auto pattern =
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url);
 
   SettingInfo info;
   host_content_settings_map_->GetContentSetting(

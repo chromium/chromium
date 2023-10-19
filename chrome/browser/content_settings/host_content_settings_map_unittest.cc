@@ -1804,9 +1804,10 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
       ContentSettingsType::STORAGE_ACCESS);
 
   EXPECT_EQ(settings[0].primary_pattern,
-            content_settings::URLToSchemefulSitePattern(primary_url));
-  EXPECT_EQ(settings[0].secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(secondary_url));
+            ContentSettingsPattern::FromURLToSchemefulSitePattern(primary_url));
+  EXPECT_EQ(
+      settings[0].secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(secondary_url));
 
   // Testing cases:
   //   WebsiteSettingsInfo::REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE,
@@ -1818,7 +1819,7 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
       ContentSettingsType::COOKIE_CONTROLS_METADATA);
 
   EXPECT_EQ(settings[0].primary_pattern,
-            content_settings::URLToSchemefulSitePattern(primary_url));
+            ContentSettingsPattern::FromURLToSchemefulSitePattern(primary_url));
   EXPECT_EQ(settings[0].secondary_pattern, ContentSettingsPattern::Wildcard());
 
   // Testing cases:
@@ -1846,8 +1847,9 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
 
   EXPECT_EQ(settings[0].primary_pattern,
             ContentSettingsPattern::FromURLNoWildcard(primary_url));
-  EXPECT_EQ(settings[0].secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(secondary_url));
+  EXPECT_EQ(
+      settings[0].secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(secondary_url));
 
   // Testing cases:
   //   WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,

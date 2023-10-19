@@ -462,6 +462,27 @@ ContentSettingsPattern ContentSettingsPattern::FromURLNoWildcard(
 }
 
 // static
+ContentSettingsPattern ContentSettingsPattern::FromURLToSchemefulSitePattern(
+    const GURL& url) {
+  std::string registrable_domain = GetDomainAndRegistry(
+      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  auto builder = ContentSettingsPattern::CreateBuilder();
+
+  if (registrable_domain.empty()) {
+    registrable_domain = url.host();
+  } else {
+    builder->WithDomainWildcard();
+  }
+
+  return builder->WithScheme(url.scheme())
+      ->WithHost(registrable_domain)
+      ->WithPathWildcard()
+      ->WithPortWildcard()
+      ->Build();
+}
+
+// static
 ContentSettingsPattern ContentSettingsPattern::FromString(
     base::StringPiece pattern_spec) {
   ContentSettingsPattern::Builder builder;

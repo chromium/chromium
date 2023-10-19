@@ -416,16 +416,18 @@ TEST_P(CookieSettingsTest, UserBypassThirdPartyCookiesPermanentExceptions) {
                                              &exception_info),
             CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(exception_info.secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(first_party_url));
+  EXPECT_EQ(
+      exception_info.secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url));
 
   EXPECT_EQ(
       settings_map_->GetContentSetting(
           GURL(), same_site_url, ContentSettingsType::COOKIES, &exception_info),
       CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(exception_info.secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(first_party_url));
+  EXPECT_EQ(
+      exception_info.secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url));
 
   cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
   EXPECT_FALSE(
@@ -917,16 +919,18 @@ TEST_P(CookieSettingsTestUserBypass,
                                              &exception_info),
             CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(exception_info.secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(first_party_url));
+  EXPECT_EQ(
+      exception_info.secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url));
 
   EXPECT_EQ(
       settings_map_->GetContentSetting(
           GURL(), same_site_url, ContentSettingsType::COOKIES, &exception_info),
       CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(exception_info.secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(first_party_url));
+  EXPECT_EQ(
+      exception_info.secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url));
 
   cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
   EXPECT_FALSE(
@@ -1008,8 +1012,9 @@ TEST_P(CookieSettingsTestUserBypass,
                                              &exception_info),
             CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(exception_info.secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(first_party_url));
+  EXPECT_EQ(
+      exception_info.secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url));
 
   cookie_settings_incognito_->ResetThirdPartyCookieSetting(first_party_url);
   EXPECT_FALSE(cookie_settings_incognito_->IsThirdPartyAccessAllowed(
