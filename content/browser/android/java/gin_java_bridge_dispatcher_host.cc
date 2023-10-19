@@ -55,33 +55,28 @@ void GinJavaBridgeDispatcherHost::InstallFilterAndRegisterAllRoutingIds() {
     return;
   }
 
-  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      [this](RenderFrameHostImpl* frame) {
-        if (frame->IsRenderFrameLive()) {
-          InstallFilterAndRegisterRoutingId(frame);
-        }
-      });
-}
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->ForEachRenderFrameHost(
+          [this](RenderFrameHostImpl* frame) {
+            AgentSchedulingGroupHost& agent_scheduling_group =
+                frame->GetAgentSchedulingGroup();
 
-void GinJavaBridgeDispatcherHost::InstallFilterAndRegisterRoutingId(
-    RenderFrameHost* render_frame_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  AgentSchedulingGroupHost& agent_scheduling_group =
-      static_cast<RenderFrameHostImpl*>(render_frame_host)
-          ->GetAgentSchedulingGroup();
-  scoped_refptr<GinJavaBridgeMessageFilter> per_asg_filter =
-      GinJavaBridgeMessageFilter::FromHost(agent_scheduling_group,
-                                           /*create_if_not_exists=*/true);
-  if (base::FeatureList::IsEnabled(features::kMBIMode)) {
-    scoped_refptr<GinJavaBridgeObjectDeletionMessageFilter>
-        process_global_filter =
-            GinJavaBridgeObjectDeletionMessageFilter::FromHost(
-                agent_scheduling_group.GetProcess(),
-                /*create_if_not_exists=*/true);
-    process_global_filter->AddRoutingIdForHost(this, render_frame_host);
-  }
+            scoped_refptr<GinJavaBridgeMessageFilter> per_asg_filter =
+                GinJavaBridgeMessageFilter::FromHost(
+                    agent_scheduling_group,
+                    /*create_if_not_exists=*/true);
+            if (base::FeatureList::IsEnabled(features::kMBIMode)) {
+              scoped_refptr<GinJavaBridgeObjectDeletionMessageFilter>
+                  process_global_filter =
+                      GinJavaBridgeObjectDeletionMessageFilter::FromHost(
+                          agent_scheduling_group.GetProcess(),
+                          /*create_if_not_exists=*/true);
+              process_global_filter->AddRoutingIdForHost(this, frame);
+            }
 
-  per_asg_filter->AddRoutingIdForHost(this, render_frame_host);
+            per_asg_filter->AddRoutingIdForHost(this, frame);
+          });
 }
 
 WebContentsImpl* GinJavaBridgeDispatcherHost::web_contents() const {
@@ -91,11 +86,16 @@ WebContentsImpl* GinJavaBridgeDispatcherHost::web_contents() const {
 void GinJavaBridgeDispatcherHost::RenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (named_objects_.empty()) {
-    return;
+  AgentSchedulingGroupHost& agent_scheduling_group =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)
+          ->GetAgentSchedulingGroup();
+  if (scoped_refptr<GinJavaBridgeMessageFilter> filter =
+          GinJavaBridgeMessageFilter::FromHost(
+              agent_scheduling_group, /*create_if_not_exists=*/false)) {
+    filter->AddRoutingIdForHost(this, render_frame_host);
+  } else {
+    InstallFilterAndRegisterAllRoutingIds();
   }
-
-  InstallFilterAndRegisterRoutingId(render_frame_host);
   for (NamedObjectMap::const_iterator iter = named_objects_.begin();
        iter != named_objects_.end();
        ++iter) {
@@ -104,18 +104,19 @@ void GinJavaBridgeDispatcherHost::RenderFrameCreated(
   }
 }
 
-void GinJavaBridgeDispatcherHost::RenderFrameDeleted(
-    RenderFrameHost* render_frame_host) {
-  AgentSchedulingGroupHost& agent_scheduling_group =
-      static_cast<RenderFrameHostImpl*>(render_frame_host)
-          ->GetAgentSchedulingGroup();
-  scoped_refptr<GinJavaBridgeMessageFilter> filter =
-      GinJavaBridgeMessageFilter::FromHost(agent_scheduling_group,
-                                           /*create_if_not_exists=*/false);
+void GinJavaBridgeDispatcherHost::WebContentsDestroyed() {
+  // Unretained() is safe because ForEachRenderFrameHost() is synchronous.
+  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [this](RenderFrameHostImpl* frame) {
+        AgentSchedulingGroupHost& agent_scheduling_group =
+            frame->GetAgentSchedulingGroup();
+        scoped_refptr<GinJavaBridgeMessageFilter> filter =
+            GinJavaBridgeMessageFilter::FromHost(
+                agent_scheduling_group, /*create_if_not_exists=*/false);
 
-  if (filter) {
-    filter->RemoveHost(this);
-  }
+        if (filter)
+          filter->RemoveHost(this);
+      });
 }
 
 void GinJavaBridgeDispatcherHost::PrimaryPageChanged(Page& page) {
