@@ -101,7 +101,10 @@ static_library("observers") {
     "//services/metrics/public/cpp:metrics_cpp",
   ]
   if (is_chromeos) {
-    deps += [ "//chromeos/components/kiosk" ]
+    deps += [
+      "//chromeos/components/kiosk",
+      "//chromeos/components/mgs",
+    ]
   }
 
   public_deps = [ "//components/unified_consent" ]
@@ -156,7 +159,10 @@ source_set("unit_tests") {
     "//url",
   ]
   if (is_chromeos) {
-    deps += [ "//chromeos/components/kiosk:test_support" ]
+    deps += [
+      "//chromeos/components/kiosk:test_support",
+      "//chromeos/components/mgs:test_support",
+    ]
   }
   if (is_chromeos_ash) {
     deps += [ "//components/user_manager:test_support" ]
