@@ -183,6 +183,8 @@
   E_CPONLY(kColorSysStateRipplePrimary) \
   E_CPONLY(kColorSysStateFocusRing) \
   E_CPONLY(kColorSysStateFocusHighlight) \
+  E_CPONLY(kColorSysStateTextHighlight) \
+  E_CPONLY(kColorSysStateOnTextHighlight) \
   E_CPONLY(kColorSysStateDisabled) \
   E_CPONLY(kColorSysStateDisabledContainer) \
   E_CPONLY(kColorSysStateHoverDimBlendProtection) \

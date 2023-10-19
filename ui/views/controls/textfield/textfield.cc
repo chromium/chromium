@@ -2595,12 +2595,18 @@ void Textfield::UpdateDefaultBorder() {
 }
 
 void Textfield::UpdateSelectionTextColor() {
+  if (!GetWidget()) {
+    return;
+  }
   GetRenderText()->set_selection_color(GetSelectionTextColor());
   OnPropertyChanged(&model_ + kTextfieldSelectionTextColor,
                     kPropertyEffectsPaint);
 }
 
 void Textfield::UpdateSelectionBackgroundColor() {
+  if (!GetWidget()) {
+    return;
+  }
   GetRenderText()->set_selection_background_focused_color(
       GetSelectionBackgroundColor());
   OnPropertyChanged(&model_ + kTextfieldSelectionBackgroundColor,

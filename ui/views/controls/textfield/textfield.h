@@ -716,6 +716,7 @@ class VIEWS_EXPORT Textfield : public View,
   int minimum_width_in_chars_ = -1;
 
   // Colors which override default system colors.
+  // TODO(tluk): These should be updated to be ColorIds instead of SkColors.
   absl::optional<SkColor> text_color_;
   absl::optional<SkColor> background_color_;
   absl::optional<SkColor> selection_text_color_;
