@@ -143,6 +143,10 @@ void EditorMenuControllerImpl::OnChipButtonPressed(
 
 void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
     std::u16string_view text) {
+  if (text.empty()) {
+    return;
+  }
+
   GetEditorPanelManager().StartEditingFlowWithFreeform(base::UTF16ToUTF8(text));
 }
 
