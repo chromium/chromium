@@ -34,18 +34,24 @@ import org.chromium.base.test.util.Feature;
 import java.util.Arrays;
 import java.util.Collection;
 
-/**
- * Test suite for Java Geolocation.
- */
+/** Test suite for Java Geolocation. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LocationProviderTest {
-    public static enum LocationProviderType { MOCK, ANDROID, GMS_CORE }
+    public static enum LocationProviderType {
+        MOCK,
+        ANDROID,
+        GMS_CORE
+    }
 
     @Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {{LocationProviderType.MOCK},
-                {LocationProviderType.ANDROID}, {LocationProviderType.GMS_CORE}});
+        return Arrays.asList(
+                new Object[][] {
+                    {LocationProviderType.MOCK},
+                    {LocationProviderType.ANDROID},
+                    {LocationProviderType.GMS_CORE}
+                });
     }
 
     @Rule(order = -2)
@@ -69,9 +75,7 @@ public class LocationProviderTest {
         mLocationManager = RuntimeEnvironment.application.getSystemService(LocationManager.class);
     }
 
-    /**
-     * Verify a normal start/stop call pair with the given LocationProvider.
-     */
+    /** Verify a normal start/stop call pair with the given LocationProvider. */
     @Test
     @Feature({"Location"})
     public void testStartStop() {
@@ -84,9 +88,7 @@ public class LocationProviderTest {
         stopLocationProviderAdapter();
     }
 
-    /**
-     * Verify a start/upgrade/stop call sequencewith the given LocationProvider.
-     */
+    /** Verify a start/upgrade/stop call sequencewith the given LocationProvider. */
     @Test
     @Feature({"Location"})
     public void testStartUpgradeStop() {

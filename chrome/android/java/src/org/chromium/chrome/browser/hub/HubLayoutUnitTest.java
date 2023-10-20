@@ -80,34 +80,24 @@ public class HubLayoutUnitTest {
     // This animation doesn't depend on time from the LayoutManager.
     private static final long FAKE_TIME = 0L;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock
-    private LayoutUpdateHost mUpdateHost;
-    @Mock
-    private LayoutRenderHost mRenderHost;
-    @Mock
-    private LayoutStateProvider mLayoutStateProvider;
+    @Mock private LayoutUpdateHost mUpdateHost;
+    @Mock private LayoutRenderHost mRenderHost;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private HubController mHubController;
     @Mock private Tab mTab;
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private TabContentManager mTabContentManager;
-    @Mock
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock
-    private ResourceManager mResourceManager;
-    @Mock
-    private SceneLayer.Natives mSceneLayerJni;
-    @Mock
-    private StaticTabSceneLayer.Natives mStaticTabSceneLayerJni;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabContentManager mTabContentManager;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private ResourceManager mResourceManager;
+    @Mock private SceneLayer.Natives mSceneLayerJni;
+    @Mock private StaticTabSceneLayer.Natives mStaticTabSceneLayerJni;
 
     private Activity mActivity;
     private FrameLayout mFrameLayout;
@@ -124,14 +114,20 @@ public class HubLayoutUnitTest {
                 .thenReturn(FAKE_NATIVE_ADDRESS_1)
                 .thenReturn(FAKE_NATIVE_ADDRESS_2);
         // Fake proper cleanup of the native ptr.
-        doCallback(/*index=*/1, (SceneLayer sceneLayer) -> {
-            sceneLayer.setNativePtr(0L);
-        }).when(mSceneLayerJni).destroy(anyLong(), any());
+        doCallback(
+                        /* index= */ 1,
+                        (SceneLayer sceneLayer) -> {
+                            sceneLayer.setNativePtr(0L);
+                        })
+                .when(mSceneLayerJni)
+                .destroy(anyLong(), any());
         // Ensure SceneLayer has a native ptr.
-        doAnswer(invocation -> {
-            ((SceneLayer) invocation.getArguments()[0]).setNativePtr(FAKE_NATIVE_ADDRESS_1);
-            return FAKE_NATIVE_ADDRESS_1;
-        })
+        doAnswer(
+                        invocation -> {
+                            ((SceneLayer) invocation.getArguments()[0])
+                                    .setNativePtr(FAKE_NATIVE_ADDRESS_1);
+                            return FAKE_NATIVE_ADDRESS_1;
+                        })
                 .when(mStaticTabSceneLayerJni)
                 .init(any());
 
@@ -159,11 +155,15 @@ public class HubLayoutUnitTest {
                             mHubLayout.onFinishNativeInitialization();
                         });
 
-        doAnswer(invocation -> {
-            var args = invocation.getArguments();
-            return new LayoutTab((Integer) args[0], (Boolean) args[1], ((Float) args[2]).intValue(),
-                    ((Float) args[3]).intValue());
-        })
+        doAnswer(
+                        invocation -> {
+                            var args = invocation.getArguments();
+                            return new LayoutTab(
+                                    (Integer) args[0],
+                                    (Boolean) args[1],
+                                    ((Float) args[2]).intValue(),
+                                    ((Float) args[3]).intValue());
+                        })
                 .when(mUpdateHost)
                 .createLayoutTab(anyInt(), anyBoolean(), anyFloat(), anyFloat());
         when(mTab.getId()).thenReturn(TAB_ID);
@@ -214,7 +214,11 @@ public class HubLayoutUnitTest {
         float contentOffset = 100f;
         when(mBrowserControlsStateProvider.getContentOffset())
                 .thenReturn(Math.round(contentOffset));
-        mHubLayout.updateSceneLayer(new RectF(), new RectF(), mTabContentManager, mResourceManager,
+        mHubLayout.updateSceneLayer(
+                new RectF(),
+                new RectF(),
+                mTabContentManager,
+                mResourceManager,
                 mBrowserControlsStateProvider);
         assertEquals(contentOffset, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET), FLOAT_ERROR);
 
@@ -307,7 +311,9 @@ public class HubLayoutUnitTest {
         assertEquals(0, mFrameLayout.getChildCount());
     }
 
-    private void show(@LayoutType int fromLayout, boolean animate,
+    private void show(
+            @LayoutType int fromLayout,
+            boolean animate,
             @HubLayoutAnimationType int expectedAnimationType) {
         assertFalse(mHubLayout.isRunningAnimations());
         assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
@@ -329,7 +335,10 @@ public class HubLayoutUnitTest {
         assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
     }
 
-    private void hide(@LayoutType int nextLayout, int nextTabId, boolean hintAtTabSelection,
+    private void hide(
+            @LayoutType int nextLayout,
+            int nextTabId,
+            boolean hintAtTabSelection,
             @HubLayoutAnimationType int expectedAnimationType) {
         if (expectedAnimationType == HubLayoutAnimationType.NEW_TAB) {
             assertTrue(mHubLayout.isRunningAnimations());

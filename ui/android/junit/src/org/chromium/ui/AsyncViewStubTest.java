@@ -24,11 +24,11 @@ import org.chromium.ui.shadows.ShadowAsyncLayoutInflater;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Tests logic in the AsyncViewStub class.
- */
+/** Tests logic in the AsyncViewStub class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowAsyncLayoutInflater.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowAsyncLayoutInflater.class})
 public class AsyncViewStubTest {
     private AsyncViewStub mAsyncViewStub;
     private final AtomicInteger mEventCount = new AtomicInteger();
@@ -39,8 +39,10 @@ public class AsyncViewStubTest {
 
     @Before
     public void setUp() {
-        LinearLayout mainView = (LinearLayout) LayoutInflater.from(RuntimeEnvironment.application)
-                                        .inflate(MAIN_LAYOUT_RESOURCE_ID, null);
+        LinearLayout mainView =
+                (LinearLayout)
+                        LayoutInflater.from(RuntimeEnvironment.application)
+                                .inflate(MAIN_LAYOUT_RESOURCE_ID, null);
         mAsyncViewStub = mainView.findViewById(STUB_ID);
         mAsyncViewStub.setLayoutResource(INFLATE_LAYOUT_RESOURCE_ID);
         mAsyncViewStub.setShouldInflateOnBackgroundThread(true);
@@ -49,10 +51,11 @@ public class AsyncViewStubTest {
 
     @Test
     public void testCallsListenersOnUiThread() {
-        mAsyncViewStub.addOnInflateListener((View v) -> {
-            assertTrue(ThreadUtils.runningOnUiThread());
-            mEventCount.incrementAndGet();
-        });
+        mAsyncViewStub.addOnInflateListener(
+                (View v) -> {
+                    assertTrue(ThreadUtils.runningOnUiThread());
+                    mEventCount.incrementAndGet();
+                });
         mAsyncViewStub.inflate();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         // ensure callback gets called.
@@ -62,11 +65,17 @@ public class AsyncViewStubTest {
     @Test
     public void testCallsListenersInOrder() {
         mAsyncViewStub.addOnInflateListener(
-                (View v) -> { assertEquals(mEventCount.incrementAndGet(), 1); });
+                (View v) -> {
+                    assertEquals(mEventCount.incrementAndGet(), 1);
+                });
         mAsyncViewStub.addOnInflateListener(
-                (View v) -> { assertEquals(mEventCount.incrementAndGet(), 2); });
+                (View v) -> {
+                    assertEquals(mEventCount.incrementAndGet(), 2);
+                });
         mAsyncViewStub.addOnInflateListener(
-                (View v) -> { assertEquals(mEventCount.decrementAndGet(), 1); });
+                (View v) -> {
+                    assertEquals(mEventCount.decrementAndGet(), 1);
+                });
         assertEquals(mEventCount.get(), 0);
         mAsyncViewStub.inflate();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();

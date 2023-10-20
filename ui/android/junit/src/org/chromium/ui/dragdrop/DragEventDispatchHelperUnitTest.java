@@ -33,9 +33,7 @@ import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 
-/**
- * Unit test for {@link DragEventDispatchHelper}.
- */
+/** Unit test for {@link DragEventDispatchHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowView.class)
 public class DragEventDispatchHelperUnitTest {
@@ -46,12 +44,12 @@ public class DragEventDispatchHelperUnitTest {
 
     Activity mActivity;
 
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule().silent();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule().silent();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenario =
             new ActivityScenarioRule<>(TestActivity.class);
+
     FrameLayout mContentView;
     View mDestinationView;
     View mStarterView;
@@ -70,43 +68,46 @@ public class DragEventDispatchHelperUnitTest {
 
         mStarterView = new View(mActivity);
         mDestinationView = new View(mActivity);
-        mDestinationView.setOnDragListener((view, dragEvent) -> {
-            mDragEventCallbackHelper.notifyCalled(dragEvent);
-            return true;
-        });
+        mDestinationView.setOnDragListener(
+                (view, dragEvent) -> {
+                    mDragEventCallbackHelper.notifyCalled(dragEvent);
+                    return true;
+                });
 
         mContentView.addView(mDestinationView);
         mContentView.addView(mStarterView);
         mStarterView.bringToFront();
 
-        mDestination = new DragEventDispatchDestination() {
-            @Override
-            public View view() {
-                return mDestinationView;
-            }
+        mDestination =
+                new DragEventDispatchDestination() {
+                    @Override
+                    public View view() {
+                        return mDestinationView;
+                    }
 
-            @Override
-            public boolean onDragEventWithOffset(DragEvent event, int dx, int dy) {
-                mCordCallbackHelper.notifyCalled(new Pair<>(dx, dy));
-                return mDestinationView.dispatchDragEvent(event);
-            }
-        };
+                    @Override
+                    public boolean onDragEventWithOffset(DragEvent event, int dx, int dy) {
+                        mCordCallbackHelper.notifyCalled(new Pair<>(dx, dy));
+                        return mDestinationView.dispatchDragEvent(event);
+                    }
+                };
         mHelper = new DragEventDispatchHelper(mStarterView, mDestination);
     }
 
     @Test
     public void supportActions() {
-        int[] defaultSupportedDragActions = new int[] {
-                DragEvent.ACTION_DRAG_LOCATION,
-                DragEvent.ACTION_DROP,
-                DragEvent.ACTION_DRAG_ENTERED,
-                DragEvent.ACTION_DRAG_EXITED,
-        };
+        int[] defaultSupportedDragActions =
+                new int[] {
+                    DragEvent.ACTION_DRAG_LOCATION,
+                    DragEvent.ACTION_DROP,
+                    DragEvent.ACTION_DRAG_ENTERED,
+                    DragEvent.ACTION_DRAG_EXITED,
+                };
 
-        int[] defaultUnSupportedActions = new int[] {
-                DragEvent.ACTION_DRAG_STARTED,
-                DragEvent.ACTION_DRAG_ENDED,
-        };
+        int[] defaultUnSupportedActions =
+                new int[] {
+                    DragEvent.ACTION_DRAG_STARTED, DragEvent.ACTION_DRAG_ENDED,
+                };
 
         for (int action : defaultSupportedDragActions) {
             assertTrue("Default for supported action is wrong.", mHelper.isActionSupported(action));
@@ -118,14 +119,17 @@ public class DragEventDispatchHelperUnitTest {
         }
 
         mHelper.markActionSupported(DragEvent.ACTION_DRAG_LOCATION, false);
-        assertFalse("Removed action is no longer supported.",
+        assertFalse(
+                "Removed action is no longer supported.",
                 mHelper.isActionSupported(DragEvent.ACTION_DRAG_LOCATION));
         mHelper.markActionSupported(DragEvent.ACTION_DROP, false);
-        assertFalse("Removed action is no longer supported.",
+        assertFalse(
+                "Removed action is no longer supported.",
                 mHelper.isActionSupported(DragEvent.ACTION_DROP));
 
         mHelper.markActionSupported(DragEvent.ACTION_DRAG_LOCATION, true);
-        assertTrue("Action is supported again.",
+        assertTrue(
+                "Action is supported again.",
                 mHelper.isActionSupported(DragEvent.ACTION_DRAG_LOCATION));
         mHelper.markActionSupported(DragEvent.ACTION_DROP, true);
         assertTrue("Action is supported again.", mHelper.isActionSupported(DragEvent.ACTION_DROP));
@@ -172,7 +176,9 @@ public class DragEventDispatchHelperUnitTest {
 
         DragEvent d1 = mockDragEvent(DragEvent.ACTION_DRAG_STARTED, 1f, 1f);
         mStarterView.dispatchDragEvent(d1);
-        assertEquals("Should not receive dispatched view when destination is disabled.", 0,
+        assertEquals(
+                "Should not receive dispatched view when destination is disabled.",
+                0,
                 mDragEventCallbackHelper.getCallCount());
     }
 
@@ -183,7 +189,9 @@ public class DragEventDispatchHelperUnitTest {
 
         DragEvent d1 = mockDragEvent(DragEvent.ACTION_DRAG_STARTED, 1f, 1f);
         mStarterView.dispatchDragEvent(d1);
-        assertEquals("Should not receive dispatched view when destination is not attached.", 0,
+        assertEquals(
+                "Should not receive dispatched view when destination is not attached.",
+                0,
                 mDragEventCallbackHelper.getCallCount());
     }
 

@@ -61,8 +61,22 @@ public class SwipePinchDetectorTest {
      */
     private void injectEvent(int action) {
         final long eventTime = SystemClock.uptimeMillis();
-        MotionEvent event = MotionEvent.obtain(eventTime, eventTime, action, 2, mPointers,
-                mCurrentPositions, 0, 0, 1, 1, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
+        MotionEvent event =
+                MotionEvent.obtain(
+                        eventTime,
+                        eventTime,
+                        action,
+                        2,
+                        mPointers,
+                        mCurrentPositions,
+                        0,
+                        0,
+                        1,
+                        1,
+                        0,
+                        0,
+                        InputDevice.SOURCE_TOUCHSCREEN,
+                        0);
         mDetector.onTouchEvent(event);
     }
 

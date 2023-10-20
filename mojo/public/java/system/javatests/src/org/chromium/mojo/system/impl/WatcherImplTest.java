@@ -29,13 +29,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Testing the Watcher.
- */
+/** Testing the Watcher. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class WatcherImplTest {
-    @Rule
-    public MojoTestRule mTestRule = new MojoTestRule();
+    @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
     private List<Handle> mHandlesToClose = new ArrayList<Handle>();
     private Watcher mWatcher;
@@ -86,6 +83,7 @@ public class WatcherImplTest {
         public WatcherResult(MessagePipeHandle readPipe) {
             mReadPipe = readPipe;
         }
+
         public WatcherResult() {
             this(null);
         }
@@ -110,9 +108,7 @@ public class WatcherImplTest {
         }
     }
 
-    /**
-     * Testing {@link Watcher} implementation.
-     */
+    /** Testing {@link Watcher} implementation. */
     @Test
     @SmallTest
     public void testCorrectResult() {
@@ -131,9 +127,7 @@ public class WatcherImplTest {
         Assert.assertEquals(MojoResult.OK, watcherResult.getResult());
     }
 
-    /**
-     * Testing {@link Watcher} implementation.
-     */
+    /** Testing {@link Watcher} implementation. */
     @Test
     @SmallTest
     public void testClosingPeerHandle() {
@@ -155,9 +149,7 @@ public class WatcherImplTest {
         Assert.assertEquals(MojoResult.FAILED_PRECONDITION, watcherResult.getResult());
     }
 
-    /**
-     * Testing {@link Watcher} implementation.
-     */
+    /** Testing {@link Watcher} implementation. */
     @Test
     @SmallTest
     public void testClosingWatchedHandle() {
@@ -179,9 +171,7 @@ public class WatcherImplTest {
         Assert.assertEquals(MojoResult.CANCELLED, watcherResult.getResult());
     }
 
-    /**
-     * Testing {@link Watcher} implementation.
-     */
+    /** Testing {@link Watcher} implementation. */
     @Test
     @SmallTest
     public void testInvalidHandle() {
@@ -193,7 +183,8 @@ public class WatcherImplTest {
         Assert.assertEquals(Integer.MIN_VALUE, watcherResult.getResult());
 
         handles.first.close();
-        Assert.assertEquals(MojoResult.INVALID_ARGUMENT,
+        Assert.assertEquals(
+                MojoResult.INVALID_ARGUMENT,
                 mWatcher.start(handles.first, Core.HandleSignals.READABLE, watcherResult));
         Assert.assertEquals(Integer.MIN_VALUE, watcherResult.getResult());
 
@@ -201,16 +192,15 @@ public class WatcherImplTest {
         Assert.assertEquals(Integer.MIN_VALUE, watcherResult.getResult());
     }
 
-    /**
-     * Testing {@link Watcher} implementation.
-     */
+    /** Testing {@link Watcher} implementation. */
     @Test
     @SmallTest
     public void testDefaultInvalidHandle() {
         final WatcherResult watcherResult = new WatcherResult();
         Assert.assertEquals(Integer.MIN_VALUE, watcherResult.getResult());
 
-        Assert.assertEquals(MojoResult.INVALID_ARGUMENT,
+        Assert.assertEquals(
+                MojoResult.INVALID_ARGUMENT,
                 mWatcher.start(InvalidHandle.INSTANCE, Core.HandleSignals.READABLE, watcherResult));
         Assert.assertEquals(Integer.MIN_VALUE, watcherResult.getResult());
 
@@ -218,9 +208,7 @@ public class WatcherImplTest {
         Assert.assertEquals(Integer.MIN_VALUE, watcherResult.getResult());
     }
 
-    /**
-     * Testing {@link Watcher} implementation.
-     */
+    /** Testing {@link Watcher} implementation. */
     @Test
     @SmallTest
     public void testCancel() {
@@ -247,9 +235,7 @@ public class WatcherImplTest {
         Assert.assertEquals(Integer.MIN_VALUE, watcherResult.getResult());
     }
 
-    /**
-     * Testing {@link Watcher} implementation.
-     */
+    /** Testing {@link Watcher} implementation. */
     @Test
     @SmallTest
     public void testImmediateCancelOnInvalidHandle() {

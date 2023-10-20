@@ -23,9 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.nio.ByteBuffer;
 
-/**
- * Tests for MediaFormatBuilder.
- */
+/** Tests for MediaFormatBuilder. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MediaFormatBuilderTest {
@@ -33,9 +31,11 @@ public class MediaFormatBuilderTest {
     private static final int VIDEO_WIDTH = 640;
     private static final int VIDEO_HEIGHT = 480;
     private static final byte[] AVC_SPS_EXAMPLE = {
-            0x00, 0x00, 0x00, 0x01, 0x67, 0x42, 0x00, 0x0a, (byte) 0xf8, 0x41, (byte) 0xa2};
+        0x00, 0x00, 0x00, 0x01, 0x67, 0x42, 0x00, 0x0a, (byte) 0xf8, 0x41, (byte) 0xa2
+    };
     private static final byte[] AVC_PPS_EXAMPLE = {
-            0x00, 0x00, 0x00, 0x01, 0x68, (byte) 0xce, 0x38, (byte) 0x80};
+        0x00, 0x00, 0x00, 0x01, 0x68, (byte) 0xce, 0x38, (byte) 0x80
+    };
 
     private static final String VIDEO_ENCODER_MIME = MediaFormat.MIMETYPE_VIDEO_AVC;
     private static final int BITRATE_MODE_CBR = 2;
@@ -74,8 +74,9 @@ public class MediaFormatBuilderTest {
     @Test
     public void testCreateVideoDecoderWithNoCodecSpecificData() {
         byte[][] csds = {};
-        MediaFormat format = MediaFormatBuilder.createVideoDecoderFormat(
-                VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
+        MediaFormat format =
+                MediaFormatBuilder.createVideoDecoderFormat(
+                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
         assertFalse(format.containsKey("csd-0"));
         assertFalse(format.containsKey("csd-1"));
         assertFalse(format.containsKey("csd-2"));
@@ -85,8 +86,9 @@ public class MediaFormatBuilderTest {
     public void testCreateVideoDecoderWithSingleCodecSpecificDataBuffer() {
         byte[] csd0 = AVC_SPS_EXAMPLE;
         byte[][] csds = {csd0};
-        MediaFormat format = MediaFormatBuilder.createVideoDecoderFormat(
-                VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
+        MediaFormat format =
+                MediaFormatBuilder.createVideoDecoderFormat(
+                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
         assertEquals(format.getByteBuffer("csd-0"), ByteBuffer.wrap(csd0));
         assertFalse(format.containsKey("csd-1"));
         assertFalse(format.containsKey("csd-2"));
@@ -97,8 +99,9 @@ public class MediaFormatBuilderTest {
         byte[] csd0 = AVC_SPS_EXAMPLE;
         byte[] csd1 = AVC_PPS_EXAMPLE;
         byte[][] csds = {csd0, csd1};
-        MediaFormat format = MediaFormatBuilder.createVideoDecoderFormat(
-                VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
+        MediaFormat format =
+                MediaFormatBuilder.createVideoDecoderFormat(
+                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
         assertEquals(format.getByteBuffer("csd-0"), ByteBuffer.wrap(csd0));
         assertEquals(format.getByteBuffer("csd-1"), ByteBuffer.wrap(csd1));
         assertFalse(format.containsKey("csd-2"));
@@ -108,16 +111,18 @@ public class MediaFormatBuilderTest {
     public void testCreateVideoDecoderWithHdrMetadata() {
         byte[][] csds = {};
         MockHdrMetadata hdrMetadata = new MockHdrMetadata();
-        MediaFormat format = MediaFormatBuilder.createVideoDecoderFormat(
-                VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, hdrMetadata, false);
+        MediaFormat format =
+                MediaFormatBuilder.createVideoDecoderFormat(
+                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, hdrMetadata, false);
         assertTrue(hdrMetadata.was_called);
     }
 
     @Test
     public void testCreateVideoDecoderWithAdaptivePlaybackDisabled() {
         byte[][] csds = {};
-        MediaFormat format = MediaFormatBuilder.createVideoDecoderFormat(
-                VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
+        MediaFormat format =
+                MediaFormatBuilder.createVideoDecoderFormat(
+                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
         assertFalse(format.containsKey(MediaFormat.KEY_MAX_WIDTH));
         assertFalse(format.containsKey(MediaFormat.KEY_MAX_HEIGHT));
     }
@@ -125,42 +130,65 @@ public class MediaFormatBuilderTest {
     @Test
     public void testCreateVideoDecoderWithAdaptivePlaybackEnabled() {
         byte[][] csds = {};
-        MediaFormat format = MediaFormatBuilder.createVideoDecoderFormat(
-                VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, true);
+        MediaFormat format =
+                MediaFormatBuilder.createVideoDecoderFormat(
+                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, true);
         assertTrue(format.containsKey(MediaFormat.KEY_MAX_WIDTH));
         assertTrue(format.containsKey(MediaFormat.KEY_MAX_HEIGHT));
     }
 
     @Test
     public void testCreateVideoEncoderSetsRelevantKeys() {
-        MediaFormat format = MediaFormatBuilder.createVideoEncoderFormat(VIDEO_ENCODER_MIME,
-                VIDEO_WIDTH, VIDEO_HEIGHT, BITRATE_MODE_CBR, VIDEO_ENCODER_BIT_RATE,
-                VIDEO_ENCODER_FRAME_RATE, VIDEO_ENCODER_I_FRAME_INTERVAL,
-                VIDEO_ENCODER_COLOR_FORMAT, false);
+        MediaFormat format =
+                MediaFormatBuilder.createVideoEncoderFormat(
+                        VIDEO_ENCODER_MIME,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        BITRATE_MODE_CBR,
+                        VIDEO_ENCODER_BIT_RATE,
+                        VIDEO_ENCODER_FRAME_RATE,
+                        VIDEO_ENCODER_I_FRAME_INTERVAL,
+                        VIDEO_ENCODER_COLOR_FORMAT,
+                        false);
         assertEquals(format.getInteger(MediaFormat.KEY_BIT_RATE), VIDEO_ENCODER_BIT_RATE);
         assertEquals(format.getInteger(MediaFormat.KEY_BITRATE_MODE), BITRATE_MODE_CBR);
         assertEquals(format.getInteger(MediaFormat.KEY_FRAME_RATE), VIDEO_ENCODER_FRAME_RATE);
-        assertEquals(format.getInteger(MediaFormat.KEY_I_FRAME_INTERVAL),
+        assertEquals(
+                format.getInteger(MediaFormat.KEY_I_FRAME_INTERVAL),
                 VIDEO_ENCODER_I_FRAME_INTERVAL);
         assertEquals(format.getInteger(MediaFormat.KEY_COLOR_FORMAT), VIDEO_ENCODER_COLOR_FORMAT);
     }
 
     @Test
     public void testCreateVideoEncoderWithAdaptivePlaybackDisabled() {
-        MediaFormat format = MediaFormatBuilder.createVideoEncoderFormat(VIDEO_ENCODER_MIME,
-                VIDEO_WIDTH, VIDEO_HEIGHT, BITRATE_MODE_CBR, VIDEO_ENCODER_BIT_RATE,
-                VIDEO_ENCODER_FRAME_RATE, VIDEO_ENCODER_I_FRAME_INTERVAL,
-                VIDEO_ENCODER_COLOR_FORMAT, false);
+        MediaFormat format =
+                MediaFormatBuilder.createVideoEncoderFormat(
+                        VIDEO_ENCODER_MIME,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        BITRATE_MODE_CBR,
+                        VIDEO_ENCODER_BIT_RATE,
+                        VIDEO_ENCODER_FRAME_RATE,
+                        VIDEO_ENCODER_I_FRAME_INTERVAL,
+                        VIDEO_ENCODER_COLOR_FORMAT,
+                        false);
         assertFalse(format.containsKey(MediaFormat.KEY_MAX_WIDTH));
         assertFalse(format.containsKey(MediaFormat.KEY_MAX_HEIGHT));
     }
 
     @Test
     public void testCreateVideoEncoderWithAdaptivePlaybackEnabled() {
-        MediaFormat format = MediaFormatBuilder.createVideoEncoderFormat(VIDEO_ENCODER_MIME,
-                VIDEO_WIDTH, VIDEO_HEIGHT, BITRATE_MODE_CBR, VIDEO_ENCODER_BIT_RATE,
-                VIDEO_ENCODER_FRAME_RATE, VIDEO_ENCODER_I_FRAME_INTERVAL,
-                VIDEO_ENCODER_COLOR_FORMAT, true);
+        MediaFormat format =
+                MediaFormatBuilder.createVideoEncoderFormat(
+                        VIDEO_ENCODER_MIME,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        BITRATE_MODE_CBR,
+                        VIDEO_ENCODER_BIT_RATE,
+                        VIDEO_ENCODER_FRAME_RATE,
+                        VIDEO_ENCODER_I_FRAME_INTERVAL,
+                        VIDEO_ENCODER_COLOR_FORMAT,
+                        true);
         assertTrue(format.containsKey(MediaFormat.KEY_MAX_WIDTH));
         assertTrue(format.containsKey(MediaFormat.KEY_MAX_HEIGHT));
     }
@@ -168,24 +196,39 @@ public class MediaFormatBuilderTest {
     @Test
     public void testCreateAudioFormatWithoutAdtsHeader() {
         byte[][] csds = {};
-        MediaFormat format = MediaFormatBuilder.createAudioFormat(AUDIO_DECODER_MIME,
-                AUDIO_DECODER_SAMPLE_RATE, AUDIO_DECODER_CHANNEL_COUNT, csds, false);
+        MediaFormat format =
+                MediaFormatBuilder.createAudioFormat(
+                        AUDIO_DECODER_MIME,
+                        AUDIO_DECODER_SAMPLE_RATE,
+                        AUDIO_DECODER_CHANNEL_COUNT,
+                        csds,
+                        false);
         assertFalse(format.containsKey(MediaFormat.KEY_IS_ADTS));
     }
 
     @Test
     public void testCreateAudioFormatWithAdtsHeader() {
         byte[][] csds = {};
-        MediaFormat format = MediaFormatBuilder.createAudioFormat(AUDIO_DECODER_MIME,
-                AUDIO_DECODER_SAMPLE_RATE, AUDIO_DECODER_CHANNEL_COUNT, csds, true);
+        MediaFormat format =
+                MediaFormatBuilder.createAudioFormat(
+                        AUDIO_DECODER_MIME,
+                        AUDIO_DECODER_SAMPLE_RATE,
+                        AUDIO_DECODER_CHANNEL_COUNT,
+                        csds,
+                        true);
         assertEquals(format.getInteger(MediaFormat.KEY_IS_ADTS), 1);
     }
 
     @Test
     public void testCreateAudioFormatWithoutCsds() {
         byte[][] csds = {};
-        MediaFormat format = MediaFormatBuilder.createAudioFormat(AUDIO_DECODER_MIME,
-                AUDIO_DECODER_SAMPLE_RATE, AUDIO_DECODER_CHANNEL_COUNT, csds, false);
+        MediaFormat format =
+                MediaFormatBuilder.createAudioFormat(
+                        AUDIO_DECODER_MIME,
+                        AUDIO_DECODER_SAMPLE_RATE,
+                        AUDIO_DECODER_CHANNEL_COUNT,
+                        csds,
+                        false);
         assertFalse(format.containsKey("csd-0"));
         assertFalse(format.containsKey("csd-1"));
         assertFalse(format.containsKey("csd-2"));
@@ -197,8 +240,13 @@ public class MediaFormatBuilderTest {
         byte[] csd1 = OPUS_PRE_SKIP_NSEC;
         byte[] csd2 = OPUS_SEEK_PRE_ROLL_NSEC;
         byte[][] csds = {csd0, csd1, csd2};
-        MediaFormat format = MediaFormatBuilder.createAudioFormat(AUDIO_DECODER_MIME,
-                AUDIO_DECODER_SAMPLE_RATE, AUDIO_DECODER_CHANNEL_COUNT, csds, false);
+        MediaFormat format =
+                MediaFormatBuilder.createAudioFormat(
+                        AUDIO_DECODER_MIME,
+                        AUDIO_DECODER_SAMPLE_RATE,
+                        AUDIO_DECODER_CHANNEL_COUNT,
+                        csds,
+                        false);
         assertEquals(format.getByteBuffer("csd-0"), ByteBuffer.wrap(csd0));
         assertEquals(format.getByteBuffer("csd-1"), ByteBuffer.wrap(csd1));
         assertEquals(format.getByteBuffer("csd-2"), ByteBuffer.wrap(csd2));

@@ -28,13 +28,10 @@ import org.chromium.mojo.system.impl.CoreImpl;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-/**
- * Testing {@link Router}
- */
+/** Testing {@link Router} */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class RouterTest {
-    @Rule
-    public MojoTestRule mTestRule = new MojoTestRule();
+    @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
     private MessagePipeHandle mHandle;
     private Router mRouter;
@@ -57,9 +54,7 @@ public class RouterTest {
         mRouter.start();
     }
 
-    /**
-     * Testing sending a message via the router that expected a response.
-     */
+    /** Testing sending a message via the router that expected a response. */
     @Test
     @SmallTest
     public void testSendingToRouterWithResponse() {
@@ -67,8 +62,9 @@ public class RouterTest {
         final int responseMessageType = 0xbeaf;
 
         // Sending a message expecting a response.
-        MessageHeader header = new MessageHeader(
-                requestMessageType, MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG, 0);
+        MessageHeader header =
+                new MessageHeader(
+                        requestMessageType, MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG, 0);
         Encoder encoder = new Encoder(CoreImpl.getInstance(), header.getSize());
         header.encode(encoder);
         mRouter.acceptWithResponder(encoder.getMessage(), mReceiver);
@@ -86,18 +82,24 @@ public class RouterTest {
         Assert.assertTrue(receivedHeader.getRequestId() != 0);
 
         // Sending the response.
-        MessageHeader responseHeader = new MessageHeader(responseMessageType,
-                MessageHeader.MESSAGE_IS_RESPONSE_FLAG, receivedHeader.getRequestId());
+        MessageHeader responseHeader =
+                new MessageHeader(
+                        responseMessageType,
+                        MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
+                        receivedHeader.getRequestId());
         encoder = new Encoder(CoreImpl.getInstance(), header.getSize());
         responseHeader.encode(encoder);
         Message responseMessage = encoder.getMessage();
-        mHandle.writeMessage(responseMessage.getData(), new ArrayList<Handle>(),
+        mHandle.writeMessage(
+                responseMessage.getData(),
+                new ArrayList<Handle>(),
                 MessagePipeHandle.WriteFlags.NONE);
         mTestRule.runLoopUntilIdle();
 
         Assert.assertEquals(1, mReceiver.messages.size());
         ServiceMessage receivedResponseMessage = mReceiver.messages.get(0).asServiceMessage();
-        Assert.assertEquals(MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
+        Assert.assertEquals(
+                MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
                 receivedResponseMessage.getHeader().getFlags());
         Assert.assertEquals(responseMessage.getData(), receivedResponseMessage.getData());
     }
@@ -111,12 +113,15 @@ public class RouterTest {
      * @param requestId The requestId to use in the header of the sent message.
      */
     private void sendMessageToRouter(int messageIndex, int requestMessageType, int requestId) {
-        MessageHeader header = new MessageHeader(
-                requestMessageType, MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG, requestId);
+        MessageHeader header =
+                new MessageHeader(
+                        requestMessageType, MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG, requestId);
         Encoder encoder = new Encoder(CoreImpl.getInstance(), header.getSize());
         header.encode(encoder);
         Message headerMessage = encoder.getMessage();
-        mHandle.writeMessage(headerMessage.getData(), new ArrayList<Handle>(),
+        mHandle.writeMessage(
+                headerMessage.getData(),
+                new ArrayList<Handle>(),
                 MessagePipeHandle.WriteFlags.NONE);
         mTestRule.runLoopUntilIdle();
 
@@ -139,8 +144,9 @@ public class RouterTest {
 
         long requestId = receivedMessage.first.asServiceMessage().getHeader().getRequestId();
 
-        MessageHeader responseHeader = new MessageHeader(
-                responseMessageType, MessageHeader.MESSAGE_IS_RESPONSE_FLAG, requestId);
+        MessageHeader responseHeader =
+                new MessageHeader(
+                        responseMessageType, MessageHeader.MESSAGE_IS_RESPONSE_FLAG, requestId);
         Encoder encoder = new Encoder(CoreImpl.getInstance(), responseHeader.getSize());
         responseHeader.encode(encoder);
         Message message = encoder.getMessage();
@@ -162,21 +168,22 @@ public class RouterTest {
      * message receivers. We do this in a custom thread to better approximate what the JVM does.
      */
     private void clearAllMessageReceivers() {
-        Thread myFinalizerThread = new Thread() {
-            @Override
-            public void run() {
-                for (Pair<Message, MessageReceiver> receivedMessage :
-                        mReceiver.messagesWithReceivers) {
-                    RouterImpl.ResponderThunk thunk =
-                            (RouterImpl.ResponderThunk) receivedMessage.second;
-                    try {
-                        thunk.finalize();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+        Thread myFinalizerThread =
+                new Thread() {
+                    @Override
+                    public void run() {
+                        for (Pair<Message, MessageReceiver> receivedMessage :
+                                mReceiver.messagesWithReceivers) {
+                            RouterImpl.ResponderThunk thunk =
+                                    (RouterImpl.ResponderThunk) receivedMessage.second;
+                            try {
+                                thunk.finalize();
+                            } catch (Throwable e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                     }
-                }
-            }
-        };
+                };
         myFinalizerThread.start();
         try {
             myFinalizerThread.join();
@@ -186,9 +193,7 @@ public class RouterTest {
         mReceiver.messagesWithReceivers.clear();
     }
 
-    /**
-     * Testing receiving a message via the router that expected a response.
-     */
+    /** Testing receiving a message via the router that expected a response. */
     @Test
     @SmallTest
     public void testReceivingViaRouterWithResponse() {

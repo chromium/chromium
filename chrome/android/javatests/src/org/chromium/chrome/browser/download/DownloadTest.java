@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.download;
 
-
 import android.app.Notification;
 import android.content.Intent;
 import android.graphics.Bitmap;

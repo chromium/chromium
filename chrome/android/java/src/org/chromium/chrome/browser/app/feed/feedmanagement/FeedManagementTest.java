@@ -51,18 +51,19 @@ public final class FeedManagementTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            NetworkChangeNotifier.forceConnectivityState(true);
-            FirstRunUtils.setEulaAccepted();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    NetworkChangeNotifier.forceConnectivityState(true);
+                    FirstRunUtils.setEulaAccepted();
+                });
         mActionTester = new UserActionTester();
         // Initialize the intent catcher/matcher.
         Intents.init();
@@ -106,7 +107,9 @@ public final class FeedManagementTest {
 
         // Verifies that the Feed Interestitial Activity received an intent
         // with the correct package name and data.
-        intended(allOf(toPackage(PACKAGE_NAME),
-                hasData("https://myactivity.google.com/myactivity?product=50")));
+        intended(
+                allOf(
+                        toPackage(PACKAGE_NAME),
+                        hasData("https://myactivity.google.com/myactivity?product=50")));
     }
 }

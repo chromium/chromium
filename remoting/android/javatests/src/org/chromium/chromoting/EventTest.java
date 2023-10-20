@@ -21,9 +21,7 @@ import org.chromium.chromoting.test.util.MutableReference;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests for {@link Event}.
- */
+/** Tests for {@link Event}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class EventTest {
     @Test
@@ -32,26 +30,32 @@ public class EventTest {
     public void testBasicScenario() {
         Event.Raisable<Void> event = new Event.Raisable<>();
         final MutableReference<Integer> callTimes = new MutableReference<Integer>(0);
-        Object eventId1 = event.add(new Event.ParameterRunnable<Void>() {
-                @Override
-                public void run(Void nil) {
-                    callTimes.set(callTimes.get() + 1);
-                }
-        });
-        Object eventId2 = event.add(new Event.ParameterRunnable<Void>() {
-                @Override
-                public void run(Void nil) {
-                    callTimes.set(callTimes.get() + 1);
-                }
-        });
-        Object eventId3 = event.add(new Event.ParameterRunnable<Void>() {
-                @Override
-                public void run(Void nil) {
-                    // Should not reach.
-                    Assert.fail();
-                    callTimes.set(callTimes.get() + 1);
-                }
-        });
+        Object eventId1 =
+                event.add(
+                        new Event.ParameterRunnable<Void>() {
+                            @Override
+                            public void run(Void nil) {
+                                callTimes.set(callTimes.get() + 1);
+                            }
+                        });
+        Object eventId2 =
+                event.add(
+                        new Event.ParameterRunnable<Void>() {
+                            @Override
+                            public void run(Void nil) {
+                                callTimes.set(callTimes.get() + 1);
+                            }
+                        });
+        Object eventId3 =
+                event.add(
+                        new Event.ParameterRunnable<Void>() {
+                            @Override
+                            public void run(Void nil) {
+                                // Should not reach.
+                                Assert.fail();
+                                callTimes.set(callTimes.get() + 1);
+                            }
+                        });
         Assert.assertNotNull(eventId1);
         Assert.assertNotNull(eventId2);
         Assert.assertNotNull(eventId3);
@@ -69,8 +73,8 @@ public class EventTest {
         private final Event.Raisable<Void> mEvent;
         private final MutableReference<Boolean> mError;
 
-        public MultithreadingTestRunner(Event.Raisable<Void> event,
-                                        MutableReference<Boolean> error) {
+        public MultithreadingTestRunner(
+                Event.Raisable<Void> event, MutableReference<Boolean> error) {
             Preconditions.notNull(event);
             Preconditions.notNull(error);
             mEvent = event;
@@ -81,12 +85,14 @@ public class EventTest {
         public void run() {
             for (int i = 0; i < 100; i++) {
                 final MutableReference<Boolean> called = new MutableReference<>();
-                Object id = mEvent.add(new Event.ParameterRunnable<Void>() {
-                        @Override
-                        public void run(Void nil) {
-                            called.set(true);
-                        }
-                });
+                Object id =
+                        mEvent.add(
+                                new Event.ParameterRunnable<Void>() {
+                                    @Override
+                                    public void run(Void nil) {
+                                        called.set(true);
+                                    }
+                                });
                 if (id == null) {
                     mError.set(true);
                 }
@@ -136,13 +142,14 @@ public class EventTest {
         final MutableReference<Boolean> called = new MutableReference<>();
         final MutableReference<Boolean> nextReturn = new MutableReference<>();
         nextReturn.set(true);
-        event.addSelfRemovable(new Event.ParameterCallback<Boolean, Void>() {
-            @Override
-            public Boolean run(Void nil) {
-                called.set(true);
-                return nextReturn.get();
-            }
-        });
+        event.addSelfRemovable(
+                new Event.ParameterCallback<Boolean, Void>() {
+                    @Override
+                    public Boolean run(Void nil) {
+                        called.set(true);
+                        return nextReturn.get();
+                    }
+                });
         Assert.assertEquals(event.raise(null), 1);
         Assert.assertTrue(called.get());
         Assert.assertFalse(event.isEmpty());
@@ -162,76 +169,84 @@ public class EventTest {
     @SmallTest
     @Feature({"Chromoting"})
     public void testPromisedEvent() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Assert.assertNull(Looper.myLooper());
-                Event.Raisable<Object> event = new Event.PromisedRaisable<>();
-                final List<Object> called1 = new ArrayList<>();
-                final List<Object> called2 = new ArrayList<>();
-                final List<Object> called3 = new ArrayList<>();
-                final List<Object> called4 = new ArrayList<>();
-                final List<Object> parameters = new ArrayList<>();
-                event.add(new Event.ParameterRunnable<Object>() {
-                    @Override
-                    public void run(Object obj) {
-                        called1.add(obj);
-                    }
-                });
-                Object parameter = new Object();
-                event.raise(parameter);
-                parameters.add(parameter);
-                event.add(new Event.ParameterRunnable<Object>() {
-                    @Override
-                    public void run(Object obj) {
-                        called2.add(obj);
-                    }
-                });
-                parameter = new Object();
-                event.raise(parameter);
-                parameters.add(parameter);
-                event.add(new Event.ParameterRunnable<Object>() {
-                    @Override
-                    public void run(Object obj) {
-                        called3.add(obj);
-                    }
-                });
-                parameter = new Object();
-                event.raise(parameter);
-                parameters.add(parameter);
-                event.add(new Event.ParameterRunnable<Object>() {
-                    @Override
-                    public void run(Object obj) {
-                        called4.add(obj);
-                    }
-                });
+        Thread thread =
+                new Thread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Assert.assertNull(Looper.myLooper());
+                                Event.Raisable<Object> event = new Event.PromisedRaisable<>();
+                                final List<Object> called1 = new ArrayList<>();
+                                final List<Object> called2 = new ArrayList<>();
+                                final List<Object> called3 = new ArrayList<>();
+                                final List<Object> called4 = new ArrayList<>();
+                                final List<Object> parameters = new ArrayList<>();
+                                event.add(
+                                        new Event.ParameterRunnable<Object>() {
+                                            @Override
+                                            public void run(Object obj) {
+                                                called1.add(obj);
+                                            }
+                                        });
+                                Object parameter = new Object();
+                                event.raise(parameter);
+                                parameters.add(parameter);
+                                event.add(
+                                        new Event.ParameterRunnable<Object>() {
+                                            @Override
+                                            public void run(Object obj) {
+                                                called2.add(obj);
+                                            }
+                                        });
+                                parameter = new Object();
+                                event.raise(parameter);
+                                parameters.add(parameter);
+                                event.add(
+                                        new Event.ParameterRunnable<Object>() {
+                                            @Override
+                                            public void run(Object obj) {
+                                                called3.add(obj);
+                                            }
+                                        });
+                                parameter = new Object();
+                                event.raise(parameter);
+                                parameters.add(parameter);
+                                event.add(
+                                        new Event.ParameterRunnable<Object>() {
+                                            @Override
+                                            public void run(Object obj) {
+                                                called4.add(obj);
+                                            }
+                                        });
 
-                Assert.assertEquals(called1.size(), 3);
-                Assert.assertEquals(called2.size(), 3);
-                Assert.assertEquals(called3.size(), 2);
-                Assert.assertEquals(called4.size(), 1);
+                                Assert.assertEquals(called1.size(), 3);
+                                Assert.assertEquals(called2.size(), 3);
+                                Assert.assertEquals(called3.size(), 2);
+                                Assert.assertEquals(called4.size(), 1);
 
-                for (int i = 0; i < 3; i++) {
-                    Assert.assertTrue(called1.get(i) == parameters.get(i));
-                    Assert.assertTrue(called2.get(i) == parameters.get(i));
-                }
-                for (int i = 0; i < 2; i++) {
-                    Assert.assertTrue(called3.get(i) == parameters.get(i + 1));
-                }
-                Assert.assertTrue(called4.get(0) == parameters.get(2));
-            }
-        });
-        thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                // Forward exceptions from test thread.
-                Assert.assertFalse(true);
-            }
-        });
+                                for (int i = 0; i < 3; i++) {
+                                    Assert.assertTrue(called1.get(i) == parameters.get(i));
+                                    Assert.assertTrue(called2.get(i) == parameters.get(i));
+                                }
+                                for (int i = 0; i < 2; i++) {
+                                    Assert.assertTrue(called3.get(i) == parameters.get(i + 1));
+                                }
+                                Assert.assertTrue(called4.get(0) == parameters.get(2));
+                            }
+                        });
+        thread.setUncaughtExceptionHandler(
+                new Thread.UncaughtExceptionHandler() {
+                    @Override
+                    public void uncaughtException(Thread t, Throwable e) {
+                        // Forward exceptions from test thread.
+                        Assert.assertFalse(true);
+                    }
+                });
         thread.start();
         try {
             thread.join();
-        } catch (InterruptedException ex) { }
+        } catch (InterruptedException ex) {
+        }
     }
 
     @Test
@@ -246,47 +261,52 @@ public class EventTest {
         final List<Object> called3 = new ArrayList<>();
         final List<Object> called4 = new ArrayList<>();
         final List<Object> parameters = new ArrayList<>();
-        event.add(new Event.ParameterRunnable<Object>() {
-            @Override
-            public void run(Object obj) {
-                called1.add(obj);
-            }
-        });
+        event.add(
+                new Event.ParameterRunnable<Object>() {
+                    @Override
+                    public void run(Object obj) {
+                        called1.add(obj);
+                    }
+                });
         Object parameter = new Object();
         event.raise(parameter);
         parameters.add(parameter);
-        event.add(new Event.ParameterRunnable<Object>() {
-            @Override
-            public void run(Object obj) {
-                called2.add(obj);
-            }
-        });
+        event.add(
+                new Event.ParameterRunnable<Object>() {
+                    @Override
+                    public void run(Object obj) {
+                        called2.add(obj);
+                    }
+                });
         parameter = new Object();
         event.raise(parameter);
         parameters.add(parameter);
-        event.add(new Event.ParameterRunnable<Object>() {
-            @Override
-            public void run(Object obj) {
-                called3.add(obj);
-            }
-        });
+        event.add(
+                new Event.ParameterRunnable<Object>() {
+                    @Override
+                    public void run(Object obj) {
+                        called3.add(obj);
+                    }
+                });
         parameter = new Object();
         event.raise(parameter);
         parameters.add(parameter);
-        event.add(new Event.ParameterRunnable<Object>() {
-            @Override
-            public void run(Object obj) {
-                called4.add(obj);
-            }
-        });
+        event.add(
+                new Event.ParameterRunnable<Object>() {
+                    @Override
+                    public void run(Object obj) {
+                        called4.add(obj);
+                    }
+                });
 
         Handler h = new Handler(Looper.myLooper());
-        h.post(new Runnable() {
-            @Override
-            public void run() {
-                Looper.myLooper().quit();
-            }
-        });
+        h.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Looper.myLooper().quit();
+                    }
+                });
         Looper.loop();
 
         Assert.assertEquals(called1.size(), 3);

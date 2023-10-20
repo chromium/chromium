@@ -22,9 +22,7 @@ import java.io.RandomAccessFile;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 
-/**
- * Tests for org.chromium.net.X509Util.
- */
+/** Tests for org.chromium.net.X509Util. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class X509UtilTest {
@@ -34,7 +32,6 @@ public class X509UtilTest {
     private static final String WEB_CLIENT_AUTH_EE = "invalid_key_usage_cert.der";
     private static final String OK_CERT = "ok_cert.pem";
     private static final String GOOD_ROOT_CA = "root_ca_cert.pem";
-
 
     private static byte[] readFileBytes(String pathname) throws IOException {
         RandomAccessFile file = new RandomAccessFile(pathname, "r");
@@ -61,16 +58,26 @@ public class X509UtilTest {
         X509Util.addTestRootCertificate(CertTestUtil.pemToDer(CERTS_DIRECTORY + BAD_EKU_TEST_ROOT));
         X509Util.addTestRootCertificate(CertTestUtil.pemToDer(CERTS_DIRECTORY + GOOD_ROOT_CA));
 
-        Assert.assertFalse(X509Util.verifyKeyUsage(X509Util.createCertificateFromBytes(
-                CertTestUtil.pemToDer(CERTS_DIRECTORY + CRITICAL_CODE_SIGNING_EE))));
+        Assert.assertFalse(
+                X509Util.verifyKeyUsage(
+                        X509Util.createCertificateFromBytes(
+                                CertTestUtil.pemToDer(
+                                        CERTS_DIRECTORY + CRITICAL_CODE_SIGNING_EE))));
 
-        Assert.assertFalse(X509Util.verifyKeyUsage(X509Util.createCertificateFromBytes(
-                CertTestUtil.pemToDer(CERTS_DIRECTORY + NON_CRITICAL_CODE_SIGNING_EE))));
+        Assert.assertFalse(
+                X509Util.verifyKeyUsage(
+                        X509Util.createCertificateFromBytes(
+                                CertTestUtil.pemToDer(
+                                        CERTS_DIRECTORY + NON_CRITICAL_CODE_SIGNING_EE))));
 
-        Assert.assertFalse(X509Util.verifyKeyUsage(X509Util.createCertificateFromBytes(
-                readFileBytes(CERTS_DIRECTORY + WEB_CLIENT_AUTH_EE))));
+        Assert.assertFalse(
+                X509Util.verifyKeyUsage(
+                        X509Util.createCertificateFromBytes(
+                                readFileBytes(CERTS_DIRECTORY + WEB_CLIENT_AUTH_EE))));
 
-        Assert.assertTrue(X509Util.verifyKeyUsage(X509Util.createCertificateFromBytes(
-                CertTestUtil.pemToDer(CERTS_DIRECTORY + OK_CERT))));
+        Assert.assertTrue(
+                X509Util.verifyKeyUsage(
+                        X509Util.createCertificateFromBytes(
+                                CertTestUtil.pemToDer(CERTS_DIRECTORY + OK_CERT))));
     }
 }

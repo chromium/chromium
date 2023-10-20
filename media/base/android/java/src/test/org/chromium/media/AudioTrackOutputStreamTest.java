@@ -25,9 +25,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for AudioTrackOutputStream.
- */
+/** Tests for AudioTrackOutputStream. */
 @RunWith(BaseRobolectricTestRunner.class)
 // Need sdk > Q for robolectric 4.6.
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
@@ -36,8 +34,13 @@ public class AudioTrackOutputStreamTest {
         private List<Byte> mReceivedData = new ArrayList<Byte>();
         private boolean mPartialWrite = true;
 
-        public ObservableAudioTrack(int streamType, int sampleRateInHz, int channelConfig,
-                int audioFormat, int bufferSizeInBytes, int mode) {
+        public ObservableAudioTrack(
+                int streamType,
+                int sampleRateInHz,
+                int channelConfig,
+                int audioFormat,
+                int bufferSizeInBytes,
+                int mode) {
             super(streamType, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes, mode);
         }
 
@@ -96,10 +99,21 @@ public class AudioTrackOutputStreamTest {
         }
 
         @Override
-        public AudioTrack createAudioTrack(int streamType, int sampleRateInHz, int channelConfig,
-                int audioFormat, int bufferSizeInBytes, int mode) {
-            mAudioTrack = new ObservableAudioTrack(streamType, sampleRateInHz, channelConfig,
-                    audioFormat, bufferSizeInBytes, mode);
+        public AudioTrack createAudioTrack(
+                int streamType,
+                int sampleRateInHz,
+                int channelConfig,
+                int audioFormat,
+                int bufferSizeInBytes,
+                int mode) {
+            mAudioTrack =
+                    new ObservableAudioTrack(
+                            streamType,
+                            sampleRateInHz,
+                            channelConfig,
+                            audioFormat,
+                            bufferSizeInBytes,
+                            mode);
             return mAudioTrack;
         }
 
@@ -146,7 +160,8 @@ public class AudioTrackOutputStreamTest {
         public int getBufferSize() {
             return MIN_BUFFER_SIZE;
         }
-    };
+    }
+    ;
 
     @Test
     public void playSimpleBitstream() throws InterruptedException {

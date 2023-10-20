@@ -27,9 +27,11 @@ public class BitrateAdjusterTest {
     @Test
     @SmallTest
     public void testNoAdjustmentDoesNotChangeTargetBitrate() {
-        assertEquals(BitrateAdjuster.getTargetBitrate(Type.NO_ADJUSTMENT, BITRATE_8_KBPS, 30),
+        assertEquals(
+                BitrateAdjuster.getTargetBitrate(Type.NO_ADJUSTMENT, BITRATE_8_KBPS, 30),
                 BITRATE_8_KBPS);
-        assertEquals(BitrateAdjuster.getTargetBitrate(Type.NO_ADJUSTMENT, BITRATE_8_KBPS, 15),
+        assertEquals(
+                BitrateAdjuster.getTargetBitrate(Type.NO_ADJUSTMENT, BITRATE_8_KBPS, 15),
                 BITRATE_8_KBPS);
     }
 
@@ -58,7 +60,8 @@ public class BitrateAdjusterTest {
     @Test
     @SmallTest
     public void testFrameRateAdjustmentDoesNotDivideByZero() {
-        assertEquals(BitrateAdjuster.getTargetBitrate(Type.FRAMERATE_ADJUSTMENT, BITRATE_8_KBPS, 0),
+        assertEquals(
+                BitrateAdjuster.getTargetBitrate(Type.FRAMERATE_ADJUSTMENT, BITRATE_8_KBPS, 0),
                 BITRATE_8_KBPS);
     }
 

@@ -43,29 +43,24 @@ public class TabFaviconTest {
         public boolean hasNext() {
             return false;
         }
+
         @Override
         public TabObserver next() {
             return null;
         }
+
         @Override
         public void rewind() {}
     }
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private TabFavicon.Natives mTabFaviconJni;
-    @Mock
-    private TabImpl mTab;
-    @Mock
-    private Context mContext;
-    @Mock
-    private Resources mResources;
-    @Mock
-    private WebContents mWebContents;
+    @Mock private TabFavicon.Natives mTabFaviconJni;
+    @Mock private TabImpl mTab;
+    @Mock private Context mContext;
+    @Mock private Resources mResources;
+    @Mock private WebContents mWebContents;
 
     private UserDataHost mUserDataHost;
     private TabFavicon mTabFavicon;

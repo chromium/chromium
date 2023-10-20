@@ -49,9 +49,12 @@ public class HostBrowserUtilsTest {
     private static final String[] BROWSERS_NOT_SUPPORTING_WEBAPKS =
             new String[] {"com.random.browser1", "com.random.browser2"};
     private static final String[] ALL_BROWSERS =
-            mergeStringArrays(new String[] {DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
-                                      DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS},
-                    BROWSERS_SUPPORTING_WEBAPKS, BROWSERS_NOT_SUPPORTING_WEBAPKS);
+            mergeStringArrays(
+                    new String[] {
+                        DEFAULT_BROWSER_SUPPORTING_WEBAPKS, DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS
+                    },
+                    BROWSERS_SUPPORTING_WEBAPKS,
+                    BROWSERS_NOT_SUPPORTING_WEBAPKS);
 
     private Context mContext;
     private SharedPreferences mSharedPrefs;
@@ -116,7 +119,8 @@ public class HostBrowserUtilsTest {
             final String sharedPrefBrowserSupportingWebApks = BROWSERS_SUPPORTING_WEBAPKS[1];
             setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.YES, ALL_BROWSERS);
             setHostBrowserInSharedPreferences(sharedPrefBrowserSupportingWebApks);
-            Assert.assertEquals(sharedPrefBrowserSupportingWebApks,
+            Assert.assertEquals(
+                    sharedPrefBrowserSupportingWebApks,
                     HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
         }
 
@@ -124,14 +128,16 @@ public class HostBrowserUtilsTest {
         // Bound browser in AndroidManifest.xml: Still installed
         setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.YES, ALL_BROWSERS);
         setHostBrowserInSharedPreferences(null);
-        Assert.assertEquals(boundBrowserSupportingWebApks,
+        Assert.assertEquals(
+                boundBrowserSupportingWebApks,
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
 
         // Shared pref browser: No longer installed
         // Bound browser in AndroidManifest.xml: Still installed
         setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.YES, ALL_BROWSERS);
         setHostBrowserInSharedPreferences(null);
-        Assert.assertEquals(boundBrowserSupportingWebApks,
+        Assert.assertEquals(
+                boundBrowserSupportingWebApks,
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
 
         // Shared pref browser: Null
@@ -161,7 +167,8 @@ public class HostBrowserUtilsTest {
             final String sharedPrefBrowserSupportingWebApks = BROWSERS_SUPPORTING_WEBAPKS[0];
             setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.YES, ALL_BROWSERS);
             setHostBrowserInSharedPreferences(sharedPrefBrowserSupportingWebApks);
-            Assert.assertEquals(sharedPrefBrowserSupportingWebApks,
+            Assert.assertEquals(
+                    sharedPrefBrowserSupportingWebApks,
                     HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
         }
 
@@ -169,7 +176,8 @@ public class HostBrowserUtilsTest {
         // Default browser: Supports WebAPKs
         setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.YES, ALL_BROWSERS);
         setHostBrowserInSharedPreferences(null);
-        Assert.assertEquals(DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
+        Assert.assertEquals(
+                DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
 
         // Shared pref browser: Null
@@ -183,21 +191,29 @@ public class HostBrowserUtilsTest {
         // Shared pref browser: Null
         // Default browser: Does not support WebAPKS
         // 1 installed browser supporting WebAPKS
-        setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.NO,
-                new String[] {BROWSERS_SUPPORTING_WEBAPKS[0], BROWSERS_NOT_SUPPORTING_WEBAPKS[0],
-                        BROWSERS_NOT_SUPPORTING_WEBAPKS[1]});
+        setInstalledBrowsersAndClearedCachedData(
+                DefaultBrowserWebApkSupport.NO,
+                new String[] {
+                    BROWSERS_SUPPORTING_WEBAPKS[0],
+                    BROWSERS_NOT_SUPPORTING_WEBAPKS[0],
+                    BROWSERS_NOT_SUPPORTING_WEBAPKS[1]
+                });
         setHostBrowserInSharedPreferences(null);
-        Assert.assertEquals(BROWSERS_SUPPORTING_WEBAPKS[0],
+        Assert.assertEquals(
+                BROWSERS_SUPPORTING_WEBAPKS[0],
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
 
         // Shared pref browser: Null
         // Default browser: Does not support WebAPKs
         // > 1 installed browsers
-        setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.NO,
+        setInstalledBrowsersAndClearedCachedData(
+                DefaultBrowserWebApkSupport.NO,
                 new String[] {
-                        BROWSERS_NOT_SUPPORTING_WEBAPKS[0], BROWSERS_NOT_SUPPORTING_WEBAPKS[1]});
+                    BROWSERS_NOT_SUPPORTING_WEBAPKS[0], BROWSERS_NOT_SUPPORTING_WEBAPKS[1]
+                });
         setHostBrowserInSharedPreferences(null);
-        Assert.assertEquals(DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS,
+        Assert.assertEquals(
+                DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS,
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
     }
 
@@ -217,7 +233,8 @@ public class HostBrowserUtilsTest {
             final String sharedPrefBrowserSupportingWebApks = BROWSERS_SUPPORTING_WEBAPKS[1];
             setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.YES, ALL_BROWSERS);
             setHostBrowserInSharedPreferences(sharedPrefBrowserSupportingWebApks);
-            Assert.assertEquals(sharedPrefBrowserSupportingWebApks,
+            Assert.assertEquals(
+                    sharedPrefBrowserSupportingWebApks,
                     HostBrowserUtils.getCachedHostBrowserPackage(mContext));
         }
 
@@ -242,15 +259,19 @@ public class HostBrowserUtilsTest {
         final String sharedPrefBrowserSupportingWebApks = BROWSERS_SUPPORTING_WEBAPKS[0];
         setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.NO, ALL_BROWSERS);
         setHostBrowserInSharedPreferences(sharedPrefBrowserSupportingWebApks);
-        Assert.assertEquals(sharedPrefBrowserSupportingWebApks,
+        Assert.assertEquals(
+                sharedPrefBrowserSupportingWebApks,
                 HostBrowserUtils.getCachedHostBrowserPackage(mContext));
-        Assert.assertEquals(sharedPrefBrowserSupportingWebApks,
+        Assert.assertEquals(
+                sharedPrefBrowserSupportingWebApks,
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
 
         mBrowserInstaller.uninstallBrowser(sharedPrefBrowserSupportingWebApks);
-        Assert.assertNotEquals(sharedPrefBrowserSupportingWebApks,
+        Assert.assertNotEquals(
+                sharedPrefBrowserSupportingWebApks,
                 HostBrowserUtils.getCachedHostBrowserPackage(mContext));
-        Assert.assertNotEquals(sharedPrefBrowserSupportingWebApks,
+        Assert.assertNotEquals(
+                sharedPrefBrowserSupportingWebApks,
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
     }
 
@@ -271,7 +292,8 @@ public class HostBrowserUtilsTest {
         setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.NO, ALL_BROWSERS);
         setHostBrowserInSharedPreferences(sharedPrefBrowserSupportingWebApks);
 
-        Assert.assertEquals(sharedPrefBrowserSupportingWebApks,
+        Assert.assertEquals(
+                sharedPrefBrowserSupportingWebApks,
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
         Assert.assertEquals("random", mSharedPrefs.getString(sharedPrefToTest, null));
 
@@ -302,7 +324,8 @@ public class HostBrowserUtilsTest {
         setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.NO, ALL_BROWSERS);
         setHostBrowserInSharedPreferences(sharedPrefBrowserSupportingWebApks);
 
-        Assert.assertEquals(sharedPrefBrowserSupportingWebApks,
+        Assert.assertEquals(
+                sharedPrefBrowserSupportingWebApks,
                 HostBrowserUtils.getCachedHostBrowserPackage(mContext));
 
         mBrowserInstaller.uninstallBrowser(sharedPrefBrowserSupportingWebApks);
@@ -330,9 +353,10 @@ public class HostBrowserUtilsTest {
     private void setInstalledBrowsersAndClearedCachedData(
             @DefaultBrowserWebApkSupport int defaultBrowser, String[] newPackages) {
         HostBrowserUtils.resetCachedHostPackageForTesting();
-        String defaultPackage = (defaultBrowser == DefaultBrowserWebApkSupport.YES)
-                ? DEFAULT_BROWSER_SUPPORTING_WEBAPKS
-                : DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS;
+        String defaultPackage =
+                (defaultBrowser == DefaultBrowserWebApkSupport.YES)
+                        ? DEFAULT_BROWSER_SUPPORTING_WEBAPKS
+                        : DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS;
         mBrowserInstaller.setInstalledModernBrowsers(defaultPackage, newPackages);
     }
 
@@ -350,6 +374,6 @@ public class HostBrowserUtilsTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.RUNTIME_HOST, hostBrowserPackage);
         WebApkTestHelper.registerWebApkWithMetaData(
-                mContext.getPackageName(), bundle, null /* shareTargetMetaData */);
+                mContext.getPackageName(), bundle, /* shareTargetMetaData= */ null);
     }
 }

@@ -27,9 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import java.io.FileNotFoundException;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Test basic functionality of {@link DropDataProviderImpl}.
- */
+/** Test basic functionality of {@link DropDataProviderImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DropDataProviderImplTest {
     private static final byte[] IMAGE_DATA_A = new byte[100];
@@ -64,23 +62,29 @@ public class DropDataProviderImplTest {
     @SmallTest
     public void testCache() {
         Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
-        Assert.assertEquals("The MIME type for jpg file should be image/jpeg", "image/jpeg",
+        Assert.assertEquals(
+                "The MIME type for jpg file should be image/jpeg",
+                "image/jpeg",
                 mDropDataProviderImpl.getType(uri));
-        assertImageSizeRecorded(/*expectedCnt*/ 1);
+        assertImageSizeRecorded(/* expectedCnt= */ 1);
         // Android.DragDrop.Image.UriCreatedInterval is not recorded for the first created Uri.
-        assertImageUriCreatedIntervalRecorded(/*expectedCnt*/ 0);
+        assertImageUriCreatedIntervalRecorded(/* expectedCnt= */ 0);
 
         uri = mDropDataProviderImpl.cache(IMAGE_DATA_B, EXTENSION_B, IMAGE_FILENAME_B);
-        Assert.assertEquals("The MIME type for gif file should be image/gif", "image/gif",
+        Assert.assertEquals(
+                "The MIME type for gif file should be image/gif",
+                "image/gif",
                 mDropDataProviderImpl.getType(uri));
-        assertImageSizeRecorded(/*expectedCnt*/ 2);
-        assertImageUriCreatedIntervalRecorded(/*expectedCnt*/ 1);
+        assertImageSizeRecorded(/* expectedCnt= */ 2);
+        assertImageUriCreatedIntervalRecorded(/* expectedCnt= */ 1);
 
         uri = mDropDataProviderImpl.cache(IMAGE_DATA_C, EXTENSION_C, IMAGE_FILENAME_C);
-        Assert.assertEquals("The MIME type for png file should be image/png", "image/png",
+        Assert.assertEquals(
+                "The MIME type for png file should be image/png",
+                "image/png",
                 mDropDataProviderImpl.getType(uri));
-        assertImageSizeRecorded(/*expectedCnt*/ 3);
-        assertImageUriCreatedIntervalRecorded(/*expectedCnt*/ 2);
+        assertImageSizeRecorded(/* expectedCnt= */ 3);
+        assertImageUriCreatedIntervalRecorded(/* expectedCnt= */ 2);
     }
 
     @Test
@@ -117,11 +121,14 @@ public class DropDataProviderImplTest {
     public void testClearCache() {
         Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         mDropDataProviderImpl.onDragEnd(false);
-        Assert.assertNull("Image bytes should be null after clearing cache.",
+        Assert.assertNull(
+                "Image bytes should be null after clearing cache.",
                 mDropDataProviderImpl.getImageBytesForTesting());
-        Assert.assertNull("Handler should be null after clearing cache.",
+        Assert.assertNull(
+                "Handler should be null after clearing cache.",
                 mDropDataProviderImpl.getHandlerForTesting());
-        Assert.assertNull("MIME type should be null after clearing cache.",
+        Assert.assertNull(
+                "MIME type should be null after clearing cache.",
                 mDropDataProviderImpl.getType(uri));
     }
 
@@ -137,20 +144,25 @@ public class DropDataProviderImplTest {
         Assert.assertNotNull(
                 "Image bytes should not be null immediately after clear cache with delay.",
                 mDropDataProviderImpl.getImageBytesForTesting());
-        Assert.assertNotNull("Handler should not be null after clear cache with delay.",
+        Assert.assertNotNull(
+                "Handler should not be null after clear cache with delay.",
                 mDropDataProviderImpl.getHandlerForTesting());
-        Assert.assertEquals("The MIME type for jpg file should be image/jpeg", "image/jpeg",
+        Assert.assertEquals(
+                "The MIME type for jpg file should be image/jpeg",
+                "image/jpeg",
                 mDropDataProviderImpl.getType(uri));
-        assertImageFirstOpenFileRecorded(/*expectedCnt*/ 1);
-        assertImageLastOpenFileRecorded(/*expectedCnt*/ 0);
+        assertImageFirstOpenFileRecorded(/* expectedCnt= */ 1);
+        assertImageLastOpenFileRecorded(/* expectedCnt= */ 0);
 
         ShadowLooper.idleMainLooper(CLEAR_CACHED_DATA_INTERVAL_MS, TimeUnit.MILLISECONDS);
-        Assert.assertNull("Image bytes should be null after the delayed time.",
+        Assert.assertNull(
+                "Image bytes should be null after the delayed time.",
                 mDropDataProviderImpl.getImageBytesForTesting());
-        Assert.assertNull("MIME type should be null after the delayed time.",
+        Assert.assertNull(
+                "MIME type should be null after the delayed time.",
                 mDropDataProviderImpl.getType(uri));
-        assertImageFirstOpenFileRecorded(/*expectedCnt*/ 1);
-        assertImageLastOpenFileRecorded(/*expectedCnt*/ 1);
+        assertImageFirstOpenFileRecorded(/* expectedCnt= */ 1);
+        assertImageLastOpenFileRecorded(/* expectedCnt= */ 1);
     }
 
     @Test
@@ -162,31 +174,33 @@ public class DropDataProviderImplTest {
         ShadowLooper.idleMainLooper(1, TimeUnit.MILLISECONDS);
         mDropDataProviderImpl.openFile(new DropDataContentProvider(), uri);
         // Android.DragDrop.Image.UriCreatedInterval is not recorded for the first created Uri.
-        assertImageUriCreatedIntervalRecorded(/*expectedCnt*/ 0);
+        assertImageUriCreatedIntervalRecorded(/* expectedCnt= */ 0);
 
         // Next image drag starts before the previous image expires.
         mDropDataProviderImpl.cache(IMAGE_DATA_B, EXTENSION_B, IMAGE_FILENAME_B);
-        assertImageUriCreatedIntervalRecorded(/*expectedCnt*/ 1);
-        assertImageFirstExpiredOpenFileRecorded(/*expectedCnt*/ 0);
-        assertImageAllExpiredOpenFileRecorded(/*expectedCnt*/ 0);
+        assertImageUriCreatedIntervalRecorded(/* expectedCnt= */ 1);
+        assertImageFirstExpiredOpenFileRecorded(/* expectedCnt= */ 0);
+        assertImageAllExpiredOpenFileRecorded(/* expectedCnt= */ 0);
 
         // #openFile is called from the drop target app with the expired uri.
-        Assert.assertNull("Previous uri should expire.",
+        Assert.assertNull(
+                "Previous uri should expire.",
                 mDropDataProviderImpl.openFile(new DropDataContentProvider(), uri));
-        assertImageFirstExpiredOpenFileRecorded(/*expectedCnt*/ 1);
-        assertImageAllExpiredOpenFileRecorded(/*expectedCnt*/ 1);
+        assertImageFirstExpiredOpenFileRecorded(/* expectedCnt= */ 1);
+        assertImageAllExpiredOpenFileRecorded(/* expectedCnt= */ 1);
 
         // #openFile is called again from the drop target app with the expired uri.
-        Assert.assertNull("Previous uri should expire.",
+        Assert.assertNull(
+                "Previous uri should expire.",
                 mDropDataProviderImpl.openFile(new DropDataContentProvider(), uri));
-        assertImageFirstExpiredOpenFileRecorded(/*expectedCnt*/ 1);
-        assertImageAllExpiredOpenFileRecorded(/*expectedCnt*/ 2);
+        assertImageFirstExpiredOpenFileRecorded(/* expectedCnt= */ 1);
+        assertImageAllExpiredOpenFileRecorded(/* expectedCnt= */ 2);
 
         ShadowLooper.idleMainLooper(CLEAR_CACHED_DATA_INTERVAL_MS, TimeUnit.MILLISECONDS);
-        assertImageFirstOpenFileRecorded(/*expectedCnt*/ 1);
+        assertImageFirstOpenFileRecorded(/* expectedCnt= */ 1);
         // Android.DragDrop.Image.OpenFileTime.LastAttempt is not recorded because #clearCache is
         // cancelled by the second #cache.
-        assertImageLastOpenFileRecorded(/*expectedCnt*/ 0);
+        assertImageLastOpenFileRecorded(/* expectedCnt= */ 0);
     }
 
     private void assertImageSizeRecorded(int expectedCnt) {

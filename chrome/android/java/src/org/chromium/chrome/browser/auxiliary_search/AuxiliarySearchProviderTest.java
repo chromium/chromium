@@ -46,9 +46,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-/**
- * Unit tests for {@link AuxiliarySearchProvider}
- */
+/** Unit tests for {@link AuxiliarySearchProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
@@ -116,11 +114,12 @@ public class AuxiliarySearchProviderTest {
     @Test
     @SmallTest
     public void testGetBookmarksSearchableDataProto() {
-        var bookmark = AuxiliarySearchEntry.newBuilder()
-                               .setTitle(BOOKMARK_TITLE)
-                               .setUrl(BOOKMARK_URL)
-                               .setCreationTimestamp(1)
-                               .build();
+        var bookmark =
+                AuxiliarySearchEntry.newBuilder()
+                        .setTitle(BOOKMARK_TITLE)
+                        .setUrl(BOOKMARK_URL)
+                        .setCreationTimestamp(1)
+                        .build();
         var proto = AuxiliarySearchBookmarkGroup.newBuilder().addBookmark(bookmark).build();
 
         doReturn(proto.toByteArray())
@@ -279,10 +278,11 @@ public class AuxiliarySearchProviderTest {
         Object[] tabObject = new Object[tabList.size()];
         tabList.toArray(tabObject);
         doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
-        doAnswer(invocation -> {
-            invocation.<Callback<Object[]>>getArgument(2).onResult(tabObject);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            invocation.<Callback<Object[]>>getArgument(2).onResult(tabObject);
+                            return null;
+                        })
                 .when(mMockAuxiliarySearchBridgeJni)
                 .getNonSensitiveTabs(eq(FAKE_NATIVE_PROVIDER), any(), any(Callback.class));
 
@@ -301,7 +301,8 @@ public class AuxiliarySearchProviderTest {
                             assertFalse(tab.hasLastModificationTimestamp());
 
                             int number = Integer.valueOf(tab.getUrl().substring(TAB_URL.length()));
-                            assertTrue("Only the newest 100 tabs should be received",
+                            assertTrue(
+                                    "Only the newest 100 tabs should be received",
                                     number >= 100 && number <= 199);
                             assertEquals(number, (int) tab.getLastAccessTimestamp());
                             returnedTabsNumbers.add(number);

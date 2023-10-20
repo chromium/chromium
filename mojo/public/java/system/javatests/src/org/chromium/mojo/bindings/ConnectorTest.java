@@ -28,13 +28,10 @@ import org.chromium.mojo.system.impl.CoreImpl;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-/**
- * Testing the {@link Connector} class.
- */
+/** Testing the {@link Connector} class. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ConnectorTest {
-    @Rule
-    public MojoTestRule mTestRule = new MojoTestRule();
+    @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
     private static final int DATA_LENGTH = 1024;
 
@@ -73,9 +70,7 @@ public class ConnectorTest {
         mHandle.close();
     }
 
-    /**
-     * Test sending a message through a {@link Connector}.
-     */
+    /** Test sending a message through a {@link Connector}. */
     @Test
     @SmallTest
     public void testSendingMessage() {
@@ -88,9 +83,7 @@ public class ConnectorTest {
         Assert.assertEquals(mTestMessage.getData(), ByteBuffer.wrap(result.getValue().mData));
     }
 
-    /**
-     * Test receiving a message through a {@link Connector}
-     */
+    /** Test receiving a message through a {@link Connector} */
     @Test
     @SmallTest
     public void testReceivingMessage() {
@@ -104,16 +97,15 @@ public class ConnectorTest {
         Assert.assertEquals(mTestMessage.getData(), received.getData());
     }
 
-    /**
-     * Test receiving an error through a {@link Connector}.
-     */
+    /** Test receiving an error through a {@link Connector}. */
     @Test
     @SmallTest
     public void testErrors() {
         mHandle.close();
         mTestRule.runLoopUntilIdle();
         Assert.assertNotNull(mErrorHandler.getLastMojoException());
-        Assert.assertEquals(MojoResult.FAILED_PRECONDITION,
+        Assert.assertEquals(
+                MojoResult.FAILED_PRECONDITION,
                 mErrorHandler.getLastMojoException().getMojoResult());
     }
 }

@@ -28,11 +28,11 @@ import org.chromium.ui.shadows.ShadowAsyncLayoutInflater;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Tests logic in the AsyncViewProvider class.
- */
+/** Tests logic in the AsyncViewProvider class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowAsyncLayoutInflater.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowAsyncLayoutInflater.class})
 public class AsyncViewProviderTest {
     private LinearLayout mRoot;
     private AsyncViewStub mAsyncViewStub;
@@ -46,8 +46,10 @@ public class AsyncViewProviderTest {
 
     @Before
     public void setUp() {
-        mRoot = (LinearLayout) LayoutInflater.from(RuntimeEnvironment.application)
-                        .inflate(MAIN_LAYOUT_RESOURCE_ID, null);
+        mRoot =
+                (LinearLayout)
+                        LayoutInflater.from(RuntimeEnvironment.application)
+                                .inflate(MAIN_LAYOUT_RESOURCE_ID, null);
         mAsyncViewStub = mRoot.findViewById(STUB_ID);
         mAsyncViewStub.setLayoutResource(INFLATE_LAYOUT_RESOURCE_ID);
         mAsyncViewStub.setShouldInflateOnBackgroundThread(true);
@@ -97,18 +99,25 @@ public class AsyncViewProviderTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         AsyncViewProvider<View> provider = AsyncViewProvider.of(mAsyncViewStub, INFLATED_VIEW_ID);
         assertEquals(mEventCount.get(), 0);
-        provider.whenLoaded((View v) -> { mEventCount.incrementAndGet(); });
+        provider.whenLoaded(
+                (View v) -> {
+                    mEventCount.incrementAndGet();
+                });
         assertEquals(mEventCount.get(), 1);
-        provider.whenLoaded((View v) -> { mEventCount.incrementAndGet(); });
+        provider.whenLoaded(
+                (View v) -> {
+                    mEventCount.incrementAndGet();
+                });
         assertEquals(mEventCount.get(), 2);
     }
 
     @Test
     public void testCallsListenersOnUiThread() {
-        mAsyncViewProvider.whenLoaded((View v) -> {
-            assertTrue(ThreadUtils.runningOnUiThread());
-            mEventCount.incrementAndGet();
-        });
+        mAsyncViewProvider.whenLoaded(
+                (View v) -> {
+                    assertTrue(ThreadUtils.runningOnUiThread());
+                    mEventCount.incrementAndGet();
+                });
         mAsyncViewStub.inflate();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         // ensure callback gets called.
@@ -118,11 +127,17 @@ public class AsyncViewProviderTest {
     @Test
     public void testCallsListenersInOrder() {
         mAsyncViewProvider.whenLoaded(
-                (View v) -> { assertEquals(mEventCount.incrementAndGet(), 1); });
+                (View v) -> {
+                    assertEquals(mEventCount.incrementAndGet(), 1);
+                });
         mAsyncViewProvider.whenLoaded(
-                (View v) -> { assertEquals(mEventCount.incrementAndGet(), 2); });
+                (View v) -> {
+                    assertEquals(mEventCount.incrementAndGet(), 2);
+                });
         mAsyncViewProvider.whenLoaded(
-                (View v) -> { assertEquals(mEventCount.decrementAndGet(), 1); });
+                (View v) -> {
+                    assertEquals(mEventCount.decrementAndGet(), 1);
+                });
         assertEquals(mEventCount.get(), 0);
         mAsyncViewStub.inflate();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();

@@ -45,31 +45,25 @@ import org.chromium.components.commerce.core.ShoppingService;
 /** Unit tests for {@link ContextualPageActionController} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, ChromeFeatureList.SHOPPING_LIST})
+@EnableFeatures({
+    ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+    ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+    ChromeFeatureList.SHOPPING_LIST
+})
 public class ContextualPageActionControllerUnitTest {
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private ObservableSupplierImpl<Tab> mTabSupplier;
 
-    @Mock
-    private Profile mMockProfile;
-    @Mock
-    private Tab mMockTab;
-    @Mock
-    private ActivityLifecycleDispatcher mMockActivityLifecycleDispatcher;
-    @Mock
-    private Resources mMockResources;
-    @Mock
-    private Configuration mMockConfiguration;
-    @Mock
-    private AdaptiveToolbarButtonController mMockAdaptiveToolbarController;
-    @Mock
-    private ContextualPageActionController.Natives mMockControllerJni;
+    @Mock private Profile mMockProfile;
+    @Mock private Tab mMockTab;
+    @Mock private ActivityLifecycleDispatcher mMockActivityLifecycleDispatcher;
+    @Mock private Resources mMockResources;
+    @Mock private Configuration mMockConfiguration;
+    @Mock private AdaptiveToolbarButtonController mMockAdaptiveToolbarController;
+    @Mock private ContextualPageActionController.Natives mMockControllerJni;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {
@@ -85,18 +79,23 @@ public class ContextualPageActionControllerUnitTest {
 
     private ContextualPageActionController createContextualPageActionController() {
         ContextualPageActionController contextualPageActionController =
-                new ContextualPageActionController(mProfileSupplier, mTabSupplier,
-                        mMockAdaptiveToolbarController, null, null) {
+                new ContextualPageActionController(
+                        mProfileSupplier,
+                        mTabSupplier,
+                        mMockAdaptiveToolbarController,
+                        null,
+                        null) {
                     @Override
                     protected void initActionProviders(
                             Supplier<ShoppingService> shoppingServiceSupplier,
                             Supplier<BookmarkModel> bookmarkModelSupplier) {
-                        mActionProviders.add((tab, signalAccumulator) -> {
-                            // Supply all signals and notify controller.
-                            signalAccumulator.setHasReaderMode(true);
-                            signalAccumulator.setHasPriceTracking(true);
-                            signalAccumulator.notifySignalAvailable();
-                        });
+                        mActionProviders.add(
+                                (tab, signalAccumulator) -> {
+                                    // Supply all signals and notify controller.
+                                    signalAccumulator.setHasReaderMode(true);
+                                    signalAccumulator.setHasPriceTracking(true);
+                                    signalAccumulator.notifySignalAvailable();
+                                });
                     }
                 };
 
@@ -106,11 +105,12 @@ public class ContextualPageActionControllerUnitTest {
     }
 
     private void setMockSegmentationResult(@AdaptiveToolbarButtonVariant int buttonVariant) {
-        Mockito.doAnswer(invocation -> {
-                   Callback<Integer> callback = invocation.getArgument(2);
-                   callback.onResult(buttonVariant);
-                   return null;
-               })
+        Mockito.doAnswer(
+                        invocation -> {
+                            Callback<Integer> callback = invocation.getArgument(2);
+                            callback.onResult(buttonVariant);
+                            return null;
+                        })
                 .when(mMockControllerJni)
                 .computeContextualPageAction(any(), any(), any());
     }

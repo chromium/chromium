@@ -22,7 +22,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** JUnit tests for {@link AnimationPerformanceTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowSystemClock.class})
 public class AnimationPerformanceTrackerUnitTest implements AnimationPerformanceTracker.Listener {
     private static final long INITIAL_TIME = 1000;
     private static final long INVALID_TIME = -1L;
@@ -89,10 +91,15 @@ public class AnimationPerformanceTrackerUnitTest implements AnimationPerformance
         assertEquals(
                 "Unexpected max frame interval", time1DeltaMs, mMetrics.getMaxFrameIntervalMs());
         assertEquals("Unexpected frame count", 2, mMetrics.getFrameCount());
-        assertEquals("Unexpected elapsed time", time1DeltaMs + time2DeltaMs,
+        assertEquals(
+                "Unexpected elapsed time",
+                time1DeltaMs + time2DeltaMs,
                 mMetrics.getElapsedTimeMs());
-        assertEquals("Unexpected fps", 2f * 1000f / (time1DeltaMs + time2DeltaMs),
-                mMetrics.getFramesPerSecond(), TOLERANCE);
+        assertEquals(
+                "Unexpected fps",
+                2f * 1000f / (time1DeltaMs + time2DeltaMs),
+                mMetrics.getFramesPerSecond(),
+                TOLERANCE);
     }
 
     @Override

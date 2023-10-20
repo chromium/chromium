@@ -92,8 +92,7 @@ public class TasksViewBinderUnitTest {
 
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private IncognitoCookieControlsManager mCookieControlsManager;
+    @Mock private IncognitoCookieControlsManager mCookieControlsManager;
 
     @Mock private Profile mProfile;
 

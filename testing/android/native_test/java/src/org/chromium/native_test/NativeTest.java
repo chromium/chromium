@@ -24,9 +24,7 @@ import org.chromium.test.reporter.TestStatusReporter;
 
 import java.io.File;
 
-/**
- *  Helper to run tests inside Activity or NativeActivity.
- */
+/** Helper to run tests inside Activity or NativeActivity. */
 @JNINamespace("testing::android")
 public class NativeTest {
     private static final String TAG = "NativeTest";
@@ -43,8 +41,8 @@ public class NativeTest {
         private TestStatusReporter mReporter;
         private Thread.UncaughtExceptionHandler mWrappedHandler;
 
-        public ReportingUncaughtExceptionHandler(TestStatusReporter reporter,
-                Thread.UncaughtExceptionHandler wrappedHandler) {
+        public ReportingUncaughtExceptionHandler(
+                TestStatusReporter reporter, Thread.UncaughtExceptionHandler wrappedHandler) {
             mReporter = reporter;
             mWrappedHandler = wrappedHandler;
         }
@@ -79,8 +77,8 @@ public class NativeTest {
         mReporter = new TestStatusReporter(activity);
         mReporter.testRunStarted(Process.myPid());
         Thread.setDefaultUncaughtExceptionHandler(
-                new ReportingUncaughtExceptionHandler(mReporter,
-                        Thread.getDefaultUncaughtExceptionHandler()));
+                new ReportingUncaughtExceptionHandler(
+                        mReporter, Thread.getDefaultUncaughtExceptionHandler()));
     }
 
     private void parseArgumentsFromIntent(Activity activity, Intent intent) {
@@ -98,8 +96,8 @@ public class NativeTest {
         } else {
             File commandLineFile = new File(mCommandLineFilePath);
             if (!commandLineFile.isAbsolute()) {
-                mCommandLineFilePath = Environment.getExternalStorageDirectory() + "/"
-                        + mCommandLineFilePath;
+                mCommandLineFilePath =
+                        Environment.getExternalStorageDirectory() + "/" + mCommandLineFilePath;
             }
             Log.i(TAG, "command line file path: %s", mCommandLineFilePath);
         }
@@ -122,12 +120,13 @@ public class NativeTest {
     }
 
     public void postStart(final Activity activity, boolean forceRunInSubThread) {
-        final Runnable runTestsTask = new Runnable() {
-            @Override
-            public void run() {
-                runTests(activity);
-            }
-        };
+        final Runnable runTestsTask =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        runTests(activity);
+                    }
+                };
 
         if (mRunInSubThread || forceRunInSubThread) {
             // Post a task that posts a task that creates a new thread and runs tests on it.
@@ -139,18 +138,20 @@ public class NativeTest {
             // the test output. See crbug.com/678146 for additional context.
 
             final Handler handler = new Handler();
-            final Runnable startTestThreadTask = new Runnable() {
-                @Override
-                public void run() {
-                    new Thread(runTestsTask).start();
-                }
-            };
-            final Runnable postTestStarterTask = new Runnable() {
-                @Override
-                public void run() {
-                    handler.post(startTestThreadTask);
-                }
-            };
+            final Runnable startTestThreadTask =
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            new Thread(runTestsTask).start();
+                        }
+                    };
+            final Runnable postTestStarterTask =
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            handler.post(startTestThreadTask);
+                        }
+                    };
             handler.post(postTestStarterTask);
         } else {
             // Post a task to run the tests. This allows us to not block
@@ -160,8 +161,13 @@ public class NativeTest {
     }
 
     private void runTests(Activity activity) {
-        NativeTestJni.get().runTests(mCommandLineFlags.toString(), mCommandLineFilePath,
-                mStdoutFilePath, activity.getApplicationContext(), UrlUtils.getIsolatedTestRoot());
+        NativeTestJni.get()
+                .runTests(
+                        mCommandLineFlags.toString(),
+                        mCommandLineFilePath,
+                        mStdoutFilePath,
+                        activity.getApplicationContext(),
+                        UrlUtils.getIsolatedTestRoot());
         activity.finish();
         mReporter.testRunFinished(Process.myPid());
     }
@@ -175,7 +181,11 @@ public class NativeTest {
 
     @NativeMethods
     interface Natives {
-        void runTests(String commandLineFlags, String commandLineFilePath, String stdoutFilePath,
-                Context appContext, String testDataDir);
+        void runTests(
+                String commandLineFlags,
+                String commandLineFilePath,
+                String stdoutFilePath,
+                Context appContext,
+                String testDataDir);
     }
 }

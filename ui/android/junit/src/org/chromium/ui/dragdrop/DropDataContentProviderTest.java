@@ -30,8 +30,7 @@ import java.io.FileNotFoundException;
 public class DropDataContentProviderTest {
     private DropDataContentProvider mDropDataContentProvider;
 
-    @Mock
-    public DropDataProviderImpl mDropDataProviderImplMock;
+    @Mock public DropDataProviderImpl mDropDataProviderImplMock;
 
     @Before
     public void setUp() {

@@ -24,15 +24,13 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests to ensure/validate SimpleRecyclerViewAdapter behavior.
- */
+/** Tests to ensure/validate SimpleRecyclerViewAdapter behavior. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        instrumentedPackages =
-                {
-                        "androidx.recyclerview.widget.RecyclerView" // required to mock final
-                })
+@Config(
+        manifest = Config.NONE,
+        instrumentedPackages = {
+            "androidx.recyclerview.widget.RecyclerView" // required to mock final
+        })
 public class SimpleRecyclerViewAdapterTest {
     private static final PropertyModel.WritableIntPropertyKey INT_PROPERTY =
             new PropertyModel.WritableIntPropertyKey();
@@ -55,10 +53,12 @@ public class SimpleRecyclerViewAdapterTest {
 
         // Note: this behaves both like a mock and a real object.
         // Methods calls can be mocked or tracked to validate class behavior.
-        mSpyAdapter = Mockito.mock(SimpleRecyclerViewAdapter.class,
-                Mockito.withSettings()
-                        .useConstructor(mModelList)
-                        .defaultAnswer(Mockito.CALLS_REAL_METHODS));
+        mSpyAdapter =
+                Mockito.mock(
+                        SimpleRecyclerViewAdapter.class,
+                        Mockito.withSettings()
+                                .useConstructor(mModelList)
+                                .defaultAnswer(Mockito.CALLS_REAL_METHODS));
 
         View view = new View(Robolectric.setupActivity(Activity.class));
         mSpyAdapter.registerType(VIEW_TYPE_1, parent -> view, (m, v, p) -> {});

@@ -18,9 +18,7 @@ import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
 import java.util.ArrayList;
 
-/**
- * Tests for HostBrowserLauncherParams's WebShareTarget parsing.
- */
+/** Tests for HostBrowserLauncherParams's WebShareTarget parsing. */
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HostBrowserLauncherParamsTest {
@@ -34,20 +32,24 @@ public class HostBrowserLauncherParamsTest {
         params.add(new Pair<>("title", "mytitle"));
         params.add(new Pair<>("foo", "bar"));
 
-        String uri = HostBrowserLauncherParams.createGETWebShareTargetUriString(
-                "https://www.chromium.org/wst", params);
+        String uri =
+                HostBrowserLauncherParams.createGETWebShareTargetUriString(
+                        "https://www.chromium.org/wst", params);
         Assert.assertEquals("https://www.chromium.org/wst?title=mytitle&foo=bar", uri);
 
-        uri = HostBrowserLauncherParams.createGETWebShareTargetUriString(
-                "https://www.chromium.org/wst/", params);
+        uri =
+                HostBrowserLauncherParams.createGETWebShareTargetUriString(
+                        "https://www.chromium.org/wst/", params);
         Assert.assertEquals("https://www.chromium.org/wst/?title=mytitle&foo=bar", uri);
 
-        uri = HostBrowserLauncherParams.createGETWebShareTargetUriString(
-                "https://www.chromium.org/base/wst.html", params);
+        uri =
+                HostBrowserLauncherParams.createGETWebShareTargetUriString(
+                        "https://www.chromium.org/base/wst.html", params);
         Assert.assertEquals("https://www.chromium.org/base/wst.html?title=mytitle&foo=bar", uri);
 
-        uri = HostBrowserLauncherParams.createGETWebShareTargetUriString(
-                "https://www.chromium.org/base/wst.html/", params);
+        uri =
+                HostBrowserLauncherParams.createGETWebShareTargetUriString(
+                        "https://www.chromium.org/base/wst.html/", params);
         Assert.assertEquals("https://www.chromium.org/base/wst.html/?title=mytitle&foo=bar", uri);
     }
 
@@ -64,8 +66,9 @@ public class HostBrowserLauncherParamsTest {
         params.add(new Pair<>(null, null));
         // The baseUrl, shareAction and params are checked to be non-null in
         // HostBrowserLauncherParams#extractShareTarget.
-        String uri = HostBrowserLauncherParams.createGETWebShareTargetUriString(
-                "https://www.chromium.org/wst", params);
+        String uri =
+                HostBrowserLauncherParams.createGETWebShareTargetUriString(
+                        "https://www.chromium.org/wst", params);
         Assert.assertEquals("https://www.chromium.org/wst?hello=world", uri);
     }
 
@@ -78,8 +81,9 @@ public class HostBrowserLauncherParamsTest {
         ArrayList<Pair<String, String>> params = new ArrayList<>();
         params.add(new Pair<>(null, null));
         params.add(new Pair<>(null, null));
-        String uri = HostBrowserLauncherParams.createGETWebShareTargetUriString(
-                "https://www.chromium.org/wst", params);
+        String uri =
+                HostBrowserLauncherParams.createGETWebShareTargetUriString(
+                        "https://www.chromium.org/wst", params);
         Assert.assertEquals("https://www.chromium.org/wst", uri);
     }
 
@@ -92,8 +96,9 @@ public class HostBrowserLauncherParamsTest {
         ArrayList<Pair<String, String>> params = new ArrayList<>();
         params.add(new Pair<>("a", null));
         params.add(new Pair<>(null, "b"));
-        String uri = HostBrowserLauncherParams.createGETWebShareTargetUriString(
-                "https://www.chromium.org/wst", params);
+        String uri =
+                HostBrowserLauncherParams.createGETWebShareTargetUriString(
+                        "https://www.chromium.org/wst", params);
         Assert.assertEquals("https://www.chromium.org/wst", uri);
     }
 
@@ -106,8 +111,9 @@ public class HostBrowserLauncherParamsTest {
         ArrayList<Pair<String, String>> params = new ArrayList<>();
         params.add(new Pair<>("hello", "world"));
         params.add(new Pair<>("foobar", "baz"));
-        String uri = HostBrowserLauncherParams.createGETWebShareTargetUriString(
-                "https://www.chromium.org/wst?a=b&c=d", params);
+        String uri =
+                HostBrowserLauncherParams.createGETWebShareTargetUriString(
+                        "https://www.chromium.org/wst?a=b&c=d", params);
         Assert.assertEquals("https://www.chromium.org/wst?hello=world&foobar=baz", uri);
     }
 
@@ -121,8 +127,9 @@ public class HostBrowserLauncherParamsTest {
         params.add(new Pair<>("hello", "world !\"#$%&'()*+,-./0?@[\\]^_a`{}~"));
         params.add(new Pair<>("foo bar", "baz"));
         params.add(new Pair<>("a!\"#$%&'()*+,-./0?@[\\]^_a`{}~", "b"));
-        String uri = HostBrowserLauncherParams.createGETWebShareTargetUriString(
-                "https://www.chromium.org/wst%25%20space", params);
+        String uri =
+                HostBrowserLauncherParams.createGETWebShareTargetUriString(
+                        "https://www.chromium.org/wst%25%20space", params);
         Assert.assertEquals(
                 "https://www.chromium.org/wst%25%20space?hello=world+!%22%23%24%25%26'()*%2B%2C-.%2F0%3F%40%5B%5C%5D%5E_a%60%7B%7D~&foo+bar=baz&a!%22%23%24%25%26'()*%2B%2C-.%2F0%3F%40%5B%5C%5D%5E_a%60%7B%7D~=b",
                 uri);
@@ -144,12 +151,10 @@ public class HostBrowserLauncherParamsTest {
 
         intent.putExtra(Intent.EXTRA_SUBJECT, "world");
 
-        String getUri =
-                HostBrowserLauncherParams.computeStartUrlForShareTarget(metaData, intent);
+        String getUri = HostBrowserLauncherParams.computeStartUrlForShareTarget(metaData, intent);
 
         metaData.putString(WebApkMetaDataKeys.SHARE_METHOD, "POST");
-        String postUri =
-                HostBrowserLauncherParams.computeStartUrlForShareTarget(metaData, intent);
+        String postUri = HostBrowserLauncherParams.computeStartUrlForShareTarget(metaData, intent);
 
         Assert.assertEquals("https://www.chromium.org/wst?hello=world", getUri);
         Assert.assertEquals(shareAction, postUri);

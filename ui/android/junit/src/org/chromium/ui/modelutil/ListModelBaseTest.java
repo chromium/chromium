@@ -30,8 +30,7 @@ import java.util.Arrays;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ListModelBaseTest {
-    @Mock
-    private ListObserver<Integer> mObserver;
+    @Mock private ListObserver<Integer> mObserver;
 
     private ListModelBase<Integer, Integer> mIntegerList = new ListModelBase<>();
 

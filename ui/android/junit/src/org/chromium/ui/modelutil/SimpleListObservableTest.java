@@ -20,14 +20,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 
-/**
- * Basic test ensuring the {@link ListModel} notifies listeners properly.
- */
+/** Basic test ensuring the {@link ListModel} notifies listeners properly. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SimpleListObservableTest {
-    @Mock
-    private ListObserver<Void> mObserver;
+    @Mock private ListObserver<Void> mObserver;
 
     private ListModel<Integer> mIntegerList = new ListModel<>();
 
