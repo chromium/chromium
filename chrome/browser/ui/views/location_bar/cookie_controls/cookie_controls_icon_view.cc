@@ -126,8 +126,7 @@ void CookieControlsIconView::UpdateImpl() {
                                               profile->GetOriginalProfile())
                                         : nullptr,
               HostContentSettingsMapFactory::GetForProfile(profile),
-              TrackingProtectionSettingsFactory::GetForProfile(
-                  profile->GetOriginalProfile()));
+              TrackingProtectionSettingsFactory::GetForProfile(profile));
       controller_observation_.Observe(controller_.get());
     }
     controller_->Update(web_contents);

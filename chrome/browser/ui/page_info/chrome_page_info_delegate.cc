@@ -227,8 +227,7 @@ ChromePageInfoDelegate::CreateCookieControlsController() {
           ? CookieSettingsFactory::GetForProfile(profile->GetOriginalProfile())
           : nullptr,
       HostContentSettingsMapFactory::GetForProfile(profile),
-      TrackingProtectionSettingsFactory::GetForProfile(
-          profile->GetOriginalProfile()));
+      TrackingProtectionSettingsFactory::GetForProfile(profile));
 }
 
 bool ChromePageInfoDelegate::IsIsolatedWebApp() {
