@@ -12,6 +12,7 @@
 #include "ios/chrome/browser/shared/public/features/features.h"
 #include "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 #include "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
+#import "ios/web/common/features.h"
 
 class FullscreenModelObserver;
 
@@ -38,7 +39,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
 
   // Whether the base offset has been recorded after state has been invalidated
   // by navigations or toolbar height changes.
-  bool has_base_offset() const { return !std::isnan(base_offset_); }
+  bool has_base_offset() const {
+    CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
+    return !std::isnan(base_offset_);
+  }
 
   // The base offset against which the fullscreen progress is being calculated.
   CGFloat base_offset() const { return base_offset_; }
@@ -233,7 +237,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   CGFloat progress_ = 0.0;
   // The base offset from which to calculate fullscreen state.  When `locked_`
   // is false, it is reset to the current offset after each scroll event.
-  CGFloat base_offset_ = NAN;
+  CGFloat base_offset_ = 0.0;
   // The height of the toolbars being shown or hidden by this model.
   CGFloat collapsed_top_toolbar_height_ = 0.0;
   CGFloat expanded_top_toolbar_height_ = 0.0;
