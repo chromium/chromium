@@ -297,8 +297,6 @@ static_library("test_support") {
     "../public/test/test_aggregation_service.h",
     "../public/test/test_browser_context.cc",
     "../public/test/test_browser_context.h",
-    "../public/test/test_cert_verifier_service_factory.cc",
-    "../public/test/test_cert_verifier_service_factory.h",
     "../public/test/test_content_client_initializer.cc",
     "../public/test/test_content_client_initializer.h",
     "../public/test/test_devtools_protocol_client.cc",
