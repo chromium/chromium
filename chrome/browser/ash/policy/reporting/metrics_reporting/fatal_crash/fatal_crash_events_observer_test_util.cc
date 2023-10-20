@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
 namespace reporting {
@@ -20,11 +19,8 @@ FatalCrashEventsObserver::TestEnvironment::~TestEnvironment() = default;
 std::unique_ptr<FatalCrashEventsObserver>
 FatalCrashEventsObserver::TestEnvironment::CreateFatalCrashEventsObserver()
     const {
-  auto observer = base::WrapUnique(new FatalCrashEventsObserver(
-      GetReportedLocalIdSaveFilePath(), GetUploadedCrashInfoSaveFilePath(),
-      // Don't delay any tasks in unit tests.
-      /*backoff_time_for_loading=*/base::TimeDelta()));
-  return observer;
+  return base::WrapUnique(new FatalCrashEventsObserver(
+      GetReportedLocalIdSaveFilePath(), GetUploadedCrashInfoSaveFilePath()));
 }
 
 const base::FilePath&

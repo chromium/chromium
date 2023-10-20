@@ -14,7 +14,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -128,19 +127,6 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
       observer->SetOnEventObservedCallback(test_event->GetRepeatingCallback());
     }
     return observer;
-  }
-
-  // Recreate a `FatalCrashEventsObserver` object and enables reporting. It
-  // optionally sets the OnEventObserved callback if test_event is provided. It
-  // ensures that the existing `FatalCrashEventsObserver` object is destroyed
-  // and all its IO tasks are executed first before creating the new object.
-  void RecreateAndEnableFatalCrashEventsObserver(
-      std::unique_ptr<FatalCrashEventsObserver>& observer,
-      base::test::TestFuture<MetricData>* test_event = nullptr) const {
-    base::RunLoop().RunUntilIdle();
-    observer.reset();
-    base::RunLoop().RunUntilIdle();
-    observer = CreateAndEnableFatalCrashEventsObserver(test_event);
   }
 
   // Let the fake cros_healthd emit the crash event and wait for the
@@ -588,7 +574,7 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
   CreateFatalCrashEvent(/*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
                         *fatal_crash_events_observer);
   if (reload()) {
-    RecreateAndEnableFatalCrashEventsObserver(fatal_crash_events_observer);
+    fatal_crash_events_observer = CreateAndEnableFatalCrashEventsObserver();
   }
 
   base::HistogramTester histogram_tester;
@@ -615,7 +601,7 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
   if (reload()) {
     // As a sanity test, if the observer is reloaded, then the repeated local ID
     // would not lead to a skipped crash.
-    RecreateAndEnableFatalCrashEventsObserver(fatal_crash_events_observer);
+    fatal_crash_events_observer = CreateAndEnableFatalCrashEventsObserver();
     // We are uninterested in the crash itself since this is a sanity test, only
     // need to know that a new crash is reported.
     CreateFatalCrashEvent(/*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
@@ -637,8 +623,8 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
       CreateFatalCrashEventsObserverFilledWithMaxNumberOfSavedLocalIds();
 
   if (reload()) {
-    RecreateAndEnableFatalCrashEventsObserver(fatal_crash_events_observer,
-                                              result_metric_data.get());
+    fatal_crash_events_observer =
+        CreateAndEnableFatalCrashEventsObserver(result_metric_data.get());
   }
 
   // Crashes with an earlier timestamp are skipped. Repeat twice for robustness
@@ -670,8 +656,8 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
       CreateFatalCrashEventsObserverFilledWithMaxNumberOfSavedLocalIds();
 
   if (reload()) {
-    RecreateAndEnableFatalCrashEventsObserver(fatal_crash_events_observer,
-                                              result_metric_data.get());
+    fatal_crash_events_observer =
+        CreateAndEnableFatalCrashEventsObserver(result_metric_data.get());
   }
 
   // Crashes with the same timestamp are skipped. Repeat twice for robustness --
@@ -705,8 +691,8 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
       CreateFatalCrashEventsObserverFilledWithMaxNumberOfSavedLocalIds();
 
   if (reload()) {
-    RecreateAndEnableFatalCrashEventsObserver(fatal_crash_events_observer,
-                                              result_metric_data.get());
+    fatal_crash_events_observer =
+        CreateAndEnableFatalCrashEventsObserver(result_metric_data.get());
   }
 
   // Crash with later timestamps are reported.
@@ -743,8 +729,8 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
                         /*is_uploaded=*/true);
 
   if (reload()) {
-    RecreateAndEnableFatalCrashEventsObserver(fatal_crash_events_observer,
-                                              &result_metric_data);
+    fatal_crash_events_observer =
+        CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
   }
 
   // Create kMaxNumOfLocalIds - 1 crashes with an earlier capture time.
@@ -833,8 +819,8 @@ TEST_F(FatalCrashEventsObserverReportedLocalIdsTest,
   }
 
   // Reload.
-  RecreateAndEnableFatalCrashEventsObserver(fatal_crash_events_observer,
-                                            &result_metric_data);
+  fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
 
   // Create kMaxNumOfLocalIds - 1 crashes with an earlier capture time.
   for (size_t i = 0u; i < kMaxNumOfLocalIds - 1u; ++i) {
@@ -998,8 +984,6 @@ TEST_F(FatalCrashEventsObserverReportedLocalIdsCorruptSaveFileTest,
   auto fatal_crash_events_observer =
       CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
 
-  // (kMaxNumOfLocalIds - 1) more crashes to fill saved local IDs to maximum
-  // capacity.
   for (size_t i = 0u; i < kMaxNumOfLocalIds - 1; ++i) {
     std::ostringstream ss;
     ss << kLocalId << i;
@@ -1009,7 +993,7 @@ TEST_F(FatalCrashEventsObserverReportedLocalIdsCorruptSaveFileTest,
   }
 
   // Because one good line is still parsed and loaded, the
-  // (kMaxNumOfLocalIds+1)'th crash with the zero capture time would be skipped.
+  // kMaxNumOfLocalIds'th crash with the zero capture time would be skipped.
   const auto local_id_entry = WaitForSkippedFatalCrashEvent(
       /*local_id=*/kLocalId,
       /*capture_time=*/kCaptureTimeZero, *fatal_crash_events_observer);
@@ -1022,9 +1006,6 @@ TEST_F(FatalCrashEventsObserverReportedLocalIdsCorruptSaveFileTest,
       CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
   CreateFatalCrashEvent(kLocalId, kCaptureTime, *fatal_crash_events_observer,
                         &result_metric_data);
-
-  // Make sure the save file writing task is executed.
-  base::RunLoop().RunUntilIdle();
 
   // The save file is now available. Make it unreadable.
   ASSERT_TRUE(base::PathExists(GetSaveFilePath()));
@@ -1260,8 +1241,8 @@ TEST_P(FatalCrashEventsObserverUploadedCrashTest,
   }
 
   if (reload()) {
-    RecreateAndEnableFatalCrashEventsObserver(fatal_crash_events_observer,
-                                              &result_metric_data);
+    fatal_crash_events_observer =
+        CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
   }
 
   if (should_be_reported()) {
