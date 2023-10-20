@@ -180,6 +180,7 @@ command
   --enable-lacros        enables lacros.
   --ash-chrome-build-dir specifies the build directory for ash-chrome.
   --lacros-build-dir     specifies the build directory for lacros.
+  --user-data-dir        specifies the user data dir
   --touch-device-id=<id> [ash-chrome only] Specify the input device to emulate
                          touch. Use id from 'show-xinput-device-id'.
   --wayland-debug        [ash-chrome,lacros] Enable WAYLAND_DEBUG=1
@@ -211,6 +212,9 @@ do
     --lacros-build-dir=*)
       LACROS_ENABLED=true
       LACROS_BUILD_DIR=${1:19}
+      ;;
+    --user-data-dir=*)
+      USER_DATA_DIR=${1:16}
       ;;
     --wayland-debug)
       export WAYLAND_DEBUG=1
