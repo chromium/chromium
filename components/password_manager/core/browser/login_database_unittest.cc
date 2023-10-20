@@ -119,6 +119,7 @@ PasswordForm GenerateExamplePasswordForm() {
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user2"));
   form.sender_email = u"sender@gmail.com";
   form.sender_name = u"Cool Sender";
+  form.sender_profile_image_url = GURL("http://www.sender.com/profile_image");
   form.date_received = base::Time::Now() - base::Hours(1);
   form.sharing_notification_displayed = true;
   return form;

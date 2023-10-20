@@ -490,6 +490,9 @@ struct PasswordForm {
   std::u16string sender_email;
   // Similar to `sender_email` but for the sender name.
   std::u16string sender_name;
+  // The URL of the profile image of the password sender to be displayed in the
+  // UI.
+  GURL sender_profile_image_url;
   // The time when the password was received via sharing feature from another
   // user.
   base::Time date_received;

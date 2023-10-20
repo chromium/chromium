@@ -215,6 +215,8 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
 
   target.Set("sender_email", form.sender_email);
   target.Set("sender_name", form.sender_name);
+  target.Set("sender_profile_image_url",
+             form.sender_profile_image_url.possibly_invalid_spec());
   target.Set("date_received", base::TimeToValue(form.date_received));
   target.Set("sharing_notification_displayed",
              form.sharing_notification_displayed);
@@ -459,6 +461,7 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
              rhs.previously_associated_sync_account_email &&
          lhs.sender_email == rhs.sender_email &&
          lhs.sender_name == rhs.sender_name &&
+         lhs.sender_profile_image_url == rhs.sender_profile_image_url &&
          lhs.date_received == rhs.date_received &&
          lhs.sharing_notification_displayed ==
              rhs.sharing_notification_displayed;

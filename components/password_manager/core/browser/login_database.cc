@@ -71,7 +71,7 @@ using metrics_util::MigrationToOSCrypt;
 #endif
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 40;
+constexpr int kCurrentVersionNumber = 41;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
 constexpr int kCompatibleVersionNumber = 40;
@@ -179,6 +179,7 @@ enum LoginDatabaseTableColumns {
   COLUMN_DATE_RECEIVED,
   COLUMN_SHARING_NOTIFICATION_DISPLAYED,
   COLUMN_KEYCHAIN_IDENTIFIER,
+  COLUMN_SENDER_PROFILE_IMAGE_URL,
   COLUMN_NUM  // Keep this last.
 };
 
@@ -274,6 +275,10 @@ void BindAddStatement(const PasswordForm& form,
   s->BindTime(COLUMN_DATE_PASSWORD_MODIFIED, form.date_password_modified);
   s->BindString16(COLUMN_SENDER_EMAIL, form.sender_email);
   s->BindString16(COLUMN_SENDER_NAME, form.sender_name);
+  s->BindString(COLUMN_SENDER_PROFILE_IMAGE_URL,
+                form.sender_profile_image_url.is_valid()
+                    ? form.sender_profile_image_url.spec()
+                    : "");
   s->BindTime(COLUMN_DATE_RECEIVED, form.date_received);
   s->BindBool(COLUMN_SHARING_NOTIFICATION_DISPLAYED,
               form.sharing_notification_displayed);
@@ -577,7 +582,13 @@ void InitializeBuilders(SQLTableBuilders builders) {
   // Migrate password notes encryption to OSCrypt.
   SealVersion(builders, /*expected_version=*/40u);
 
-  static_assert(kCurrentVersionNumber == 40, "Seal the recent version");
+  // Version 41.
+  // Add sender profile image url as part of the shared passwords metadata
+  // similar to changes in version 37.
+  builders.logins->AddColumn("sender_profile_image_url", "VARCHAR");
+  SealVersion(builders, /*expected_version=*/41u);
+
+  static_assert(kCurrentVersionNumber == 41, "Seal the recent version");
   CHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
          "here.";
@@ -1474,6 +1485,9 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   s.BindTime(next_param++, form.date_received);
   s.BindBool(next_param++, form.sharing_notification_displayed);
   s.BindBlob(next_param++, new_keychain_identifier);
+  s.BindString(next_param++, form.sender_profile_image_url.is_valid()
+                                 ? form.sender_profile_image_url.spec()
+                                 : "");
   // NOTE: Add new fields here unless the field is a part of the unique key.
   // If so, add new field below.
 
@@ -1724,6 +1738,8 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
   form.date_password_modified = s.ColumnTime(COLUMN_DATE_PASSWORD_MODIFIED);
   form.sender_email = s.ColumnString16(COLUMN_SENDER_EMAIL);
   form.sender_name = s.ColumnString16(COLUMN_SENDER_NAME);
+  form.sender_profile_image_url =
+      GURL(s.ColumnString(COLUMN_SENDER_PROFILE_IMAGE_URL));
   form.date_received = s.ColumnTime(COLUMN_DATE_RECEIVED);
   form.sharing_notification_displayed =
       s.ColumnBool(COLUMN_SHARING_NOTIFICATION_DISPLAYED);
