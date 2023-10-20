@@ -1769,6 +1769,26 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no la estableces, se habilitará la función Llamar con un clic de forma predeterminada.</translation>
 <translation id="2482676533225429905">Mensajería nativa</translation>
 <translation id="2483146640187052324">Predecir acciones de la red en cualquier conexión de red</translation>
+<translation id="2487495476672607707">La sincronización de archivos <ph name="PRODUCT_OS_NAME" /> permite automáticamente que los archivos <ph name="GOOGLE_DRIVE_NAME" /> de la sección "Mi
+unidad" de un usuario estén disponibles sin conexión (si el espacio lo permite) en
+dispositivos <ph name="CHROMEBOOK_PLUS_NAME" />.
+
+Luego de que se active la función, todos los archivos nuevos también estarán disponibles sin conexión automáticamente. Si luego no queda espacio, todos los archivos nuevos dejarán
+de estar disponibles sin conexión automáticamente. Sin embargo, el usuario aún puede
+hacer que los elementos estén disponibles sin conexión de forma manual.
+
+Si estableces la política como <ph name="POLICY_VALUE_VISIBLE" />, se mostrará
+la sincronización de archivos en la app de Archivos y en la Configuración. El usuario puede activar o
+desactivar la sincronización de archivos.
+
+Si estableces la política como <ph name="POLICY_VALUE_DISABLEDE" />, se
+desactivará la sincronización de archivos en el caso de que el usuario la haya activado. Oculta la función
+en la app de Archivos y de la Configuración para que el usuario no pueda volver a activarla. Los archivos
+existentes que el usuario puso a disposición sin conexión permanecerán disponibles
+sin conexión. El usuario aún puede hacer que los elementos estén disponibles sin conexión de forma manual.
+
+Si no estableces la política, <ph name="POLICY_VALUE_VISIBLE" /> es la
+selección predeterminada.</translation>
 <translation id="2489558694350871332">Permitir que el dispositivo ejecute máquinas virtuales</translation>
 <translation id="2492240920793040106">Habilitar los informes de información del sistema y el contenido de la página para ayudar a mejorar la Navegación segura</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
@@ -3378,6 +3398,7 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 
       Si no la estableces o la dejas vacía, no se aplicará ninguna restricción.</translation>
 <translation id="3799417300383048419">Conservar los datos de perfil en el disco cuando finalice la sesión del usuario</translation>
+<translation id="3799436555130241393">Sincronización de archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">No permitir que ningún sitio cargue contenido mixto</translation>
 <translation id="3808945828600697669">Especificar una lista de complementos inhabilitados</translation>
 <translation id="3810642039169532482">Habilita la función de accesibilidad de dictado en la pantalla de acceso.
@@ -3707,6 +3728,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 <translation id="4098920079809952737">Permitir la impresión con y sin gráficos de fondo</translation>
 <translation id="410061592404122032">Preguntar siempre que un sitio quiera obtener el permiso de Administración de ventanas</translation>
 <translation id="410068710490553233">Permite acceder en más Cuentas de Google</translation>
+<translation id="4101222634611892813">El usuario puede utilizar la función de sincronización de archivos de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4101282687722389021">Una marca de tiempo (UTC) que indica la última vez que se actualizó esta entrada. Se envía como un string ya que la marca de tiempo no entra en un valor entero.</translation>
 <translation id="4102347680024644994">Informar eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="4105989332710272578">Inhabilitar la aplicación del Certificado de transparencia para una lista de URL</translation>
@@ -3741,6 +3763,7 @@ a esta API.</translation>
 
 Si no estableces la política, se aplicará la tasa predeterminada de 1 día.</translation>
 <translation id="4121350739760194865">Impedir que aparezcan las promociones de aplicaciones en la página de la nueva pestaña</translation>
+<translation id="4122432898152851612">El usuario no puede ver ninguna de las IU relacionadas con la función de sincronización de archivos de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4122473079291425973">La página Nueva pestaña mostrará tarjetas si hay contenido disponible, pero permitirá que el usuario cambie esta configuración</translation>
 <translation id="4122565688998751716">Esta política dejó de estar disponible. Usa la política "<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />" en su lugar.
 

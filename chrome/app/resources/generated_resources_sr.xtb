@@ -794,7 +794,7 @@
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Ц&amp;ентар за помоћ</translation>
 <translation id="1619879934359211038">Повезивање са Google Play-ом није успело. Проверите мрежну везу и пробајте поново. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
-<translation id="1620307519959413822">Погрешна лозинка. Пробајте поново или кликните на Заборавили сте лозинку да бисте је ресетовали.</translation>
+<translation id="1620307519959413822">Погрешна лозинка. Пробајте поново или кликните на Заборављена лозинка да бисте је ресетовали.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621382140075772850">Алатка за текст</translation>
 <translation id="1621485112342885423">Корпе</translation>
@@ -2742,7 +2742,7 @@
 <translation id="3129173833825111527">Лева маргина</translation>
 <translation id="3130528281680948470">Уређај ће бити ресетован и сви кориснички налози и локални подаци ће бити уклоњени. То не може да се опозове.</translation>
 <translation id="3130863904455712965">Историја и друго</translation>
-<translation id="313205617302240621">Заборавили сте лозинку?</translation>
+<translation id="313205617302240621">Заборављена лозинка?</translation>
 <translation id="3132277757485842847">Нисмо успели да одржимо везу са телефоном. Уверите се да је телефон у близини, да је откључан и да су Bluetooth и WiFi укључени.</translation>
 <translation id="3132896062549112541">Правило</translation>
 <translation id="3132996321662585180">Освежавај дневно</translation>

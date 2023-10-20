@@ -1722,6 +1722,11 @@
       如果不設定這項政策，系統在預設狀態下會啟用「點選通話」功能。</translation>
 <translation id="2482676533225429905">內建訊息傳遞</translation>
 <translation id="2483146640187052324">無論使用任何網路連線，皆預測網路動作</translation>
+<translation id="2487495476672607707"><ph name="PRODUCT_OS_NAME" /> 同步處理檔案功能可自動讓使用者在 <ph name="CHROMEBOOK_PLUS_NAME" /> 裝置上，離線使用「我的雲端硬碟」中的 <ph name="GOOGLE_DRIVE_NAME" /> 檔案 (在空間允許的前提下)。開啟這項功能後，系統也會自動將所有新檔案設為可離線使用。如果日後儲存空間不足，系統將不再自動將新檔案設為可離線使用。不過，使用者仍可手動將項目設為可離線使用。如果將這項政策設為 <ph name="POLICY_VALUE_VISIBLE" />：在「檔案」應用程式和「設定」中會顯示同步處理檔案功能，且使用者可以開啟或關閉同步處理檔案功能。
+
+將這項政策設為 <ph name="POLICY_VALUE_DISABLEDE" />：如果使用者先前已開啟同步處理檔案功能，系統會關閉這項功能，並從「檔案」應用程式和「設定」中隱藏這項功能，讓使用者無法重新開啟。使用者設為可離線使用的現有檔案仍可離線使用。使用者仍可手動將檔案設為可離線使用。
+
+如果不設定這項政策：預設選項為 <ph name="POLICY_VALUE_VISIBLE" />。</translation>
 <translation id="2489558694350871332">允許裝置執行虛擬機器</translation>
 <translation id="2492240920793040106">啟用系統資訊及頁面內容回報功能，協助改善安全瀏覽服務</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
@@ -3258,6 +3263,7 @@
 
       如果將這項政策留空或不設定，則等同於不設限制。</translation>
 <translation id="3799417300383048419">在使用者工作階段結束後保留磁碟上的設定檔資料</translation>
+<translation id="3799436555130241393"><ph name="PRODUCT_OS_NAME" /> 同步處理檔案功能</translation>
 <translation id="3803171355925844705">不允許任何網站載入複合型內容</translation>
 <translation id="3808945828600697669">指定停用的外掛程式清單</translation>
 <translation id="3810642039169532482">在登入畫面上啟用語音輸入無障礙功能。
@@ -3582,6 +3588,7 @@
 <translation id="4098920079809952737">不論是否使用背景圖形一律允許列印</translation>
 <translation id="410061592404122032">每當網站要取得視窗管理權限時詢問我</translation>
 <translation id="410068710490553233">允許登入其他 Google 帳戶</translation>
+<translation id="4101222634611892813">使用者可以使用 <ph name="PRODUCT_OS_NAME" /> 同步處理檔案功能。</translation>
 <translation id="4101282687722389021">這個項目上次進行更新的時間戳記 (世界標準時間)。時間戳記並非整數值，因此會以字串的形式傳送</translation>
 <translation id="4102347680024644994">回報擴展式偵測及回應 (XDR) 事件</translation>
 <translation id="4105989332710272578">不針對列出的網址強制執行憑證透明化政策</translation>
@@ -3612,6 +3619,7 @@
 
 如果未設定，系統會套用 1 天的預設頻率。</translation>
 <translation id="4121350739760194865">阻止應用程式宣傳資訊在新分頁上顯示</translation>
+<translation id="4122432898152851612">使用者看不到任何與 <ph name="PRODUCT_OS_NAME" /> 同步處理檔案功能相關的使用者介面。</translation>
 <translation id="4122473079291425973">如果系統可以取得與卡片相關的網頁內容，新分頁就會顯示卡片，但使用者可以變更這項設定</translation>
 <translation id="4122565688998751716">這項政策已遭淘汰，請改用「<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />」政策。
 

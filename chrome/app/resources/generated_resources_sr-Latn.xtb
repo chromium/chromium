@@ -794,7 +794,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;entar za pomoć</translation>
 <translation id="1619879934359211038">Povezivanje sa Google Play-om nije uspelo. Proverite mrežnu vezu i probajte ponovo. Kôd greške: <ph name="ERROR_CODE" />.</translation>
-<translation id="1620307519959413822">Pogrešna lozinka. Probajte ponovo ili kliknite na Zaboravili ste lozinku da biste je resetovali.</translation>
+<translation id="1620307519959413822">Pogrešna lozinka. Probajte ponovo ili kliknite na Zaboravljena lozinka da biste je resetovali.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621382140075772850">Alatka za tekst</translation>
 <translation id="1621485112342885423">Korpe</translation>
@@ -2742,7 +2742,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3129173833825111527">Leva margina</translation>
 <translation id="3130528281680948470">Uređaj će biti resetovan i svi korisnički nalozi i lokalni podaci će biti uklonjeni. To ne može da se opozove.</translation>
 <translation id="3130863904455712965">Istorija i drugo</translation>
-<translation id="313205617302240621">Zaboravili ste lozinku?</translation>
+<translation id="313205617302240621">Zaboravljena lozinka?</translation>
 <translation id="3132277757485842847">Nismo uspeli da održimo vezu sa telefonom. Uverite se da je telefon u blizini, da je otključan i da su Bluetooth i WiFi uključeni.</translation>
 <translation id="3132896062549112541">Pravilo</translation>
 <translation id="3132996321662585180">Osvežavaj dnevno</translation>

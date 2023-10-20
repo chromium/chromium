@@ -1407,7 +1407,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME" />. Per utilitzar i desar les dades de Chrome al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="850600235656508448">Obre en mode d'incògnit</translation>
-<translation id="8517375800490286174">Llicències de programari lliure</translation>
+<translation id="8517375800490286174">Llicències de codi obert</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} contrasenya i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los en altres dispositius, desa'ls al teu Compte de Google {email}.}other{{count} contrasenyes i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los en altres dispositius, desa'ls al teu Compte de Google {email}.}}</translation>
 <translation id="8524799873541103884">Pestanyes <ph name="INCOGNITO" />: de <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> d'un total de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Obre els enllaços d'altres aplicacions en mode d'incògnit</translation>

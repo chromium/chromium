@@ -250,7 +250,7 @@
 <translation id="235789365079050412">Google 私隱權政策</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2362083820973145409">已使用<ph name="USER_NAME" />的身分登入。<ph name="USER_EMAIL" />。開啟設定。</translation>
-<translation id="2364539095045928896">「關閉」按鈕，用於關閉頁面洞察中心的隱私權聲明。</translation>
+<translation id="2364539095045928896">關閉按鈕用於關閉頁面數據分析中心的私隱聲明。</translation>
 <translation id="2386938421315164605">隱藏和取消隱藏主題</translation>
 <translation id="2390510615457643724">要再次下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="2394602618534698961">您下載的檔案會在這裡顯示</translation>
@@ -874,7 +874,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5458366071038729214">您可在此找到您追蹤的網站</translation>
 <translation id="5468068603361015296">仍要下載「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
-<translation id="5486841595534124508">頁面洞察中心的隱私權聲明標誌，點選後會重新導向至「我的活動」頁面。</translation>
+<translation id="5486841595534124508">選擇頁面數據分析中心的私隱聲明標誌後，會重新導向至我的活動頁面。</translation>
 <translation id="5487521232677179737">清除資料</translation>
 <translation id="5492637351392383067">在裝置上加密</translation>
 <translation id="5514904542973294328">此裝置的管理員已停用</translation>
@@ -1349,7 +1349,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="7810647596859435254">選擇開啟應用程式…</translation>
 <translation id="7815484226266492798">長螢幕截圖</translation>
 <translation id="7822705602465980873">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
-<translation id="782705168687182233">你的活動記錄會儲存至 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />。</translation>
+<translation id="782705168687182233">你的活動已儲存至 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />。</translation>
 <translation id="78270725016672455">您的電腦想註冊此裝置以登入網站</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
 <translation id="7846296061357476882">Google 服務</translation>

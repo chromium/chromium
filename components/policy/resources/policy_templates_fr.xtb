@@ -1740,6 +1740,15 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si vous ne définissez pas cette règle, la fonctionnalité Click to Call est activée par défaut.</translation>
 <translation id="2482676533225429905">Messagerie native</translation>
 <translation id="2483146640187052324">Prédire les actions réseau lors d'une connexion au réseau</translation>
+<translation id="2487495476672607707">Sur les appareils <ph name="CHROMEBOOK_PLUS_NAME" />, la synchronisation de fichiers <ph name="PRODUCT_OS_NAME" /> rend automatiquement disponibles hors connexion les fichiers <ph name="GOOGLE_DRIVE_NAME" /> du dossier "Mon Drive" de l'utilisateur (si l'espace le permet).
+
+Une fois la fonctionnalité activée, tous les nouveaux fichiers sont aussi rendus automatiquement disponibles hors connexion. Si, par la suite, l'espace est insuffisant, tous les nouveaux fichiers cesseront d'être rendus automatiquement disponibles hors connexion. Toutefois, l'utilisateur peut toujours rendre des éléments disponibles hors connexion, manuellement.
+
+Si cette règle est définie sur <ph name="POLICY_VALUE_VISIBLE" />, la fonctionnalité de synchronisation de fichiers est affichée dans l'application Fichiers et dans les paramètres. L'utilisateur peut activer ou désactiver la synchronisation de fichiers.
+
+Si cette la règle est définie sur <ph name="POLICY_VALUE_DISABLEDE" />, la synchronisation de fichiers est désactivée si l'utilisateur l'avait auparavant activée. Cette fonctionnalité est masquée dans l'application Fichiers et dans les paramètres afin que l'utilisateur ne puisse pas la réactiver. Les fichiers existants que l'utilisateur avaient rendus disponibles hors connexion le resteront. L'utilisateur peut toujours rendre des éléments disponibles hors connexion, manuellement.
+
+Si cette règle n'est pas configurée, la valeur par défaut est <ph name="POLICY_VALUE_VISIBLE" />.</translation>
 <translation id="2489558694350871332">Autoriser l'appareil à exécuter des machines virtuelles</translation>
 <translation id="2492240920793040106">Activer les rapports sur les informations système et du contenu de pages afin d'améliorer la navigation sécurisée</translation>
 <translation id="2496180316473517155">Historique de navigation</translation>
@@ -3306,6 +3315,7 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 
       Si cette règle n'est pas configurée ou si elle est vide, aucune restriction n'est appliquée.</translation>
 <translation id="3799417300383048419">Conserver les données de profil sur le disque à la fin de la session utilisateur</translation>
+<translation id="3799436555130241393">Synchronisation des fichiers <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">Interdire à tous les sites de charger un contenu mixte</translation>
 <translation id="3808945828600697669">Répertorier les plug-ins désactivés</translation>
 <translation id="3810642039169532482">Permet d'activer la fonctionnalité d'accessibilité de dictée sur l'écran de connexion.
@@ -3631,6 +3641,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 <translation id="4098920079809952737">Autoriser l'impression à la fois avec et sans graphiques d'arrière-plan</translation>
 <translation id="410061592404122032">Demander chaque fois qu'un site souhaite obtenir l'autorisation de gestion des fenêtres</translation>
 <translation id="410068710490553233">Autoriser la connexion à d'autres comptes Google</translation>
+<translation id="4101222634611892813">L'utilisateur peut utiliser la fonctionnalité de synchronisation des fichiers <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4101282687722389021">Horodatage UTC de la dernière mise à jour de cette entrée. Il est envoyé sous forme de chaîne, car il ne tiendrait pas dans un entier.</translation>
 <translation id="4102347680024644994">Signaler les événements de détection et réponse étendues (XDR)</translation>
 <translation id="4105989332710272578">Désactiver l'application des règles de transparence des certificats pour une liste d'URL</translation>
@@ -3657,6 +3668,7 @@ Si cette règle n'est pas configurée, toutes les origines nécessitent un geste
 
 Si cette règle n'est pas configurée, la fréquence par défaut (1 jour) est appliquée.</translation>
 <translation id="4121350739760194865">Empêcher les promotions pour des applications de s'afficher sur la page Nouvel onglet</translation>
+<translation id="4122432898152851612">L'utilisateur ne peut voir aucune interface utilisateur concernant la fonctionnalité de synchronisation des fichiers <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4122473079291425973">Fiches affichées sur la page Nouvel onglet si du contenu est disponible, avec toutefois la possibilité pour l'utilisateur de modifier ce paramètre</translation>
 <translation id="4122565688998751716">Cette règle est obsolète (veuillez utiliser la règle <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" /> à la place).
 
