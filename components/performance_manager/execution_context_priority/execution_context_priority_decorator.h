@@ -7,6 +7,7 @@
 
 #include "components/performance_manager/execution_context_priority/ad_frame_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
+#include "components/performance_manager/execution_context_priority/frame_capturing_video_stream_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
 #include "components/performance_manager/execution_context_priority/inherit_client_priority_voter.h"
 #include "components/performance_manager/execution_context_priority/max_vote_aggregator.h"
@@ -57,6 +58,9 @@ class ExecutionContextPriorityDecorator final : public GraphOwned {
 
   // Casts a USER_VISIBLE vote when a frame is audible.
   FrameAudibleVoter frame_audible_voter_;
+
+  // Casts a USER_VISIBLE vote when a frame is capturing video.
+  FrameCapturingVideoStreamVoter frame_capturing_video_stream_voter_;
 
   // Casts a vote for each child worker with the client's priority.
   InheritClientPriorityVoter inherit_client_priority_voter_;
