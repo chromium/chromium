@@ -622,6 +622,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   void SetServiceWorkerRaceNetworkRequestToken(
       const base::UnguessableToken& token) {
+    // TODO(crbug.com/1492640) Consider using base::TokenType not to include
+    // null token by strong typing.
+    if (token.is_empty()) {
+      return;
+    }
     service_worker_race_network_request_token_ = token;
   }
 
