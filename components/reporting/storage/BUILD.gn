@@ -136,7 +136,6 @@ static_library("missive_storage_module") {
   public_deps = [ ":storage_configuration" ]
 
   deps = [
-    ":storage",
     ":storage_module_interface",
     ":storage_uploader_interface",
     "//base",

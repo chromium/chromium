@@ -197,24 +197,5 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
 
   EXPECT_THAT(response.status().code(), Eq(::reporting::error::OK));
 }
-
-TEST_F(EncryptedReportingServiceProviderTest,
-       NoRecordUploadWhenUploaderDisabled) {
-  SetupForRequestUploadEncryptedRecord();
-
-  ::reporting::UploadEncryptedRecordRequest request;
-  request.add_encrypted_record()->CheckTypeAndMergeFrom(record_);
-
-  // Disable uploader.
-  scoped_feature_list_.InitFromCommandLine("", "ProvideUploader");
-
-  ::reporting::UploadEncryptedRecordResponse response;
-  CallRequestUploadEncryptedRecord(request, &response);
-  task_environment_.RunUntilIdle();
-
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(),
-              testing::IsEmpty());
-}
-
 }  // namespace
 }  // namespace ash

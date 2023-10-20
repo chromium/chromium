@@ -2095,6 +2095,7 @@ static_library("browser") {
     "//chrome/browser/persisted_state_db:persisted_state_db",
     "//chrome/browser/policy:path_parser",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/policy/messaging_layer/storage_selector",
     "//chrome/browser/privacy_budget",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -2364,11 +2365,7 @@ static_library("browser") {
     "//components/reporting/proto:status_proto",
     "//components/reporting/proto:upload_tracker_proto",
     "//components/reporting/resources:resource_manager",
-    "//components/reporting/storage:storage_configuration",
-    "//components/reporting/storage:storage_module",
     "//components/reporting/storage:storage_module_interface",
-    "//components/reporting/storage:storage_uploader_interface",
-    "//components/reporting/storage_selector",
     "//components/reporting/util:backoff_settings",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
@@ -2647,6 +2644,13 @@ static_library("browser") {
 
     if (is_chromeos_ash) {
       deps += [ "//chrome/browser/screen_ai:screen_ai_dlc_installer" ]
+    }
+
+    if (!is_chromeos) {
+      deps += [
+        "//components/reporting/storage:storage_configuration",
+        "//components/reporting/storage:storage_module",
+      ]
     }
   }
 
@@ -8308,8 +8312,7 @@ static_library("test_support") {
     "//components/reporting/proto:record_proto",
     "//components/reporting/proto:status_proto",
     "//components/reporting/proto:upload_tracker_proto",
-    "//components/reporting/storage:storage_module",
-    "//components/reporting/storage_selector",
+    "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:task_runner_context",
