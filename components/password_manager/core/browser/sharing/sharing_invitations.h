@@ -46,6 +46,7 @@ struct IncomingSharingInvitation {
   base::Time date_created;
   std::u16string sender_email;
   std::u16string sender_display_name;
+  GURL sender_profile_image_url;
 };
 
 PasswordForm IncomingSharingInvitationToPasswordForm(

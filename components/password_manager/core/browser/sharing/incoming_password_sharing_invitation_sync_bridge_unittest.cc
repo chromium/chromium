@@ -44,6 +44,7 @@ constexpr char kPasswordDisplayName[] = "password_display_name";
 constexpr char kPasswordAvatarUrl[] = "http://avatar.url/";
 constexpr char kSenderEmail[] = "sender@gmail.com";
 constexpr char kSenderDisplayName[] = "sender_display_name";
+constexpr char kSenderProfileImageUrl[] = "http://www.sender/profile_iamge";
 
 class MockPasswordReceiverService : public PasswordReceiverService {
  public:
@@ -64,6 +65,9 @@ sync_pb::IncomingPasswordSharingInvitationSpecifics MakeSpecifics() {
   specifics.mutable_sender_info()
       ->mutable_user_display_info()
       ->set_display_name(kSenderDisplayName);
+  specifics.mutable_sender_info()
+      ->mutable_user_display_info()
+      ->set_profile_image_url(kSenderProfileImageUrl);
 
   sync_pb::PasswordSharingInvitationData::PasswordData* mutable_password_data =
       specifics.mutable_client_only_unencrypted_data()->mutable_password_data();
@@ -206,6 +210,8 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
   EXPECT_EQ(base::UTF16ToUTF8(received_invitation.sender_email), kSenderEmail);
   EXPECT_EQ(base::UTF16ToUTF8(received_invitation.sender_display_name),
             kSenderDisplayName);
+  EXPECT_EQ(received_invitation.sender_profile_image_url,
+            GURL(kSenderProfileImageUrl));
 }
 
 TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,

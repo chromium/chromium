@@ -315,6 +315,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   // EXPECT_EQ(password_form.icon_url.spec(), kPasswordAvatarUrl);
   EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_email), kSenderEmail);
   EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_name), kSenderDisplayName);
+  EXPECT_EQ(password_form.sender_profile_image_url,
+            GURL(kSenderProfileImageUrl));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
