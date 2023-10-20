@@ -49,6 +49,7 @@ class TrackingProtectionOnboarding : public KeyedService {
     kMaxValue = kClosed,
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
   enum class NoticeType {
     kNone,
     // The notice in question is an Onboarding Notice.

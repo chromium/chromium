@@ -15,19 +15,23 @@ GetTrackingProtectionOnboardingService() {
 }
 }  // namespace
 
-static jboolean JNI_TrackingProtectionBridge_ShouldShowOnboardingNotice(
-    JNIEnv* env) {
+static jint JNI_TrackingProtectionBridge_GetRequiredNotice(JNIEnv* env) {
   return GetTrackingProtectionOnboardingService()->ShouldShowOnboardingNotice();
 }
 
-static void JNI_TrackingProtectionBridge_OnboardingNoticeShown(JNIEnv* env) {
-  return GetTrackingProtectionOnboardingService()->OnboardingNoticeShown();
+static void JNI_TrackingProtectionBridge_NoticeShown(JNIEnv* env,
+                                                     jint noticeType) {
+  return GetTrackingProtectionOnboardingService()->NoticeShown(
+      static_cast<privacy_sandbox::TrackingProtectionOnboarding::NoticeType>(
+          noticeType));
 }
 
-static void JNI_TrackingProtectionBridge_OnboardingNoticeActionTaken(
-    JNIEnv* env,
-    jint action) {
-  return GetTrackingProtectionOnboardingService()->OnboardingNoticeActionTaken(
+static void JNI_TrackingProtectionBridge_NoticeActionTaken(JNIEnv* env,
+                                                           jint noticeType,
+                                                           jint action) {
+  return GetTrackingProtectionOnboardingService()->NoticeActionTaken(
+      static_cast<privacy_sandbox::TrackingProtectionOnboarding::NoticeType>(
+          noticeType),
       static_cast<privacy_sandbox::TrackingProtectionOnboarding::NoticeAction>(
           action));
 }

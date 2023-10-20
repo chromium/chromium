@@ -8,24 +8,25 @@ import org.jni_zero.NativeMethods;
 
 /** Bridge, providing access to the native-side Tracking Protection configuration. */
 public class TrackingProtectionBridge {
-    public static boolean shouldShowOnboardingNotice() {
-        return TrackingProtectionBridgeJni.get().shouldShowOnboardingNotice();
+
+    public static @NoticeType int getRequiredNotice() {
+        return TrackingProtectionBridgeJni.get().getRequiredNotice();
     }
 
-    public static void onboardingNoticeActionTaken(@NoticeAction int action) {
-        TrackingProtectionBridgeJni.get().onboardingNoticeActionTaken(action);
+    public static void noticeActionTaken(@NoticeType int noticeType, @NoticeAction int action) {
+        TrackingProtectionBridgeJni.get().noticeActionTaken(noticeType, action);
     }
 
-    public static void onboardingNoticeShown() {
-        TrackingProtectionBridgeJni.get().onboardingNoticeShown();
+    public static void noticeShown(@NoticeType int noticeType) {
+        TrackingProtectionBridgeJni.get().noticeShown(noticeType);
     }
 
     @NativeMethods
     public interface Natives {
-        boolean shouldShowOnboardingNotice();
+        void noticeShown(int noticeType);
 
-        void onboardingNoticeShown();
+        void noticeActionTaken(int noticeType, int action);
 
-        void onboardingNoticeActionTaken(int action);
+        int getRequiredNotice();
     }
 }

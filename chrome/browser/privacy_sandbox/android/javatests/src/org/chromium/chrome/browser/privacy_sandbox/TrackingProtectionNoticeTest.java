@@ -32,6 +32,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -39,7 +44,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController.NoticeControllerEvent;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -51,9 +56,11 @@ import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class TrackingProtectionNoticeTest {
@@ -72,6 +79,16 @@ public final class TrackingProtectionNoticeTest {
 
     @Mock SecurityStateModel.Natives mSecurityStateModelNatives;
 
+    /** Parameter set controlling the notice type. */
+    public static class TPNoticeTestParams implements ParameterProvider {
+        @Override
+        public Iterable<ParameterSet> getParameters() {
+            return Arrays.asList(
+                    new ParameterSet().value(NoticeType.ONBOARDING).name("OnboardingNotice"),
+                    new ParameterSet().value(NoticeType.OFFBOARDING).name("OffboardingNotice"));
+        }
+    }
+
     @Before
     public void setUp() throws ExecutionException {
         MockitoAnnotations.openMocks(this);
@@ -85,13 +102,25 @@ public final class TrackingProtectionNoticeTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    public void testRenderNotice() {
-        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
+    public void testRenderOnboardingNotice() {
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
 
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
         sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
 
-        renderViewWithId(R.id.message_banner, "tracking_protection_notice");
+        renderViewWithId(R.id.message_banner, "tracking_protection_onboarding_notice");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderOffboardingNotice() {
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.OFFBOARDING);
+
+        setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
+        sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
+
+        renderViewWithId(R.id.message_banner, "tracking_protection_offboarding_notice");
     }
 
     @Test
@@ -107,7 +136,7 @@ public final class TrackingProtectionNoticeTest {
                                 NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN)
                         .build();
 
-        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
 
         sActivityTestRule.startMainActivityOnBlankPage();
         onView(withId(R.id.message_banner)).check(doesNotExist());
@@ -132,8 +161,8 @@ public final class TrackingProtectionNoticeTest {
 
     @Test
     @SmallTest
-    public void testNoticeNotShownWhenBridgeIsReturningFalse() {
-        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(false);
+    public void testNoticeNotShownWhenNotRequired() {
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.NONE);
 
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
         sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
@@ -153,7 +182,7 @@ public final class TrackingProtectionNoticeTest {
                                 NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN)
                         .build();
 
-        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
 
         sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
@@ -167,8 +196,9 @@ public final class TrackingProtectionNoticeTest {
 
     @Test
     @SmallTest
-    public void testNoticeDismissedWhenPrimaryButtonClicked() {
-        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
+    @ParameterAnnotations.UseMethodParameter(TPNoticeTestParams.class)
+    public void testNoticeDismissedWhenPrimaryButtonClicked(@NoticeType int noticeType) {
+        mFakeTrackingProtectionBridge.setRequiredNotice(noticeType);
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
 
         sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
@@ -182,8 +212,9 @@ public final class TrackingProtectionNoticeTest {
 
     @Test
     @SmallTest
-    public void testNoticeDismissedWhenSettingsClicked() {
-        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
+    @ParameterAnnotations.UseMethodParameter(TPNoticeTestParams.class)
+    public void testNoticeDismissedWhenSettingsClicked(@NoticeType int noticeType) {
+        mFakeTrackingProtectionBridge.setRequiredNotice(noticeType);
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
 
         // Show the notice.
@@ -205,7 +236,7 @@ public final class TrackingProtectionNoticeTest {
     @Test
     @SmallTest
     public void testNoticeDismissedWhenLearnMoreClicked() {
-        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.OFFBOARDING);
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
 
         // Show the notice.
@@ -224,8 +255,9 @@ public final class TrackingProtectionNoticeTest {
 
     @Test
     @SmallTest
-    public void testNoticeDismissedByUser() {
-        mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
+    @ParameterAnnotations.UseMethodParameter(TPNoticeTestParams.class)
+    public void testNoticeDismissedByUser(@NoticeType int noticeType) {
+        mFakeTrackingProtectionBridge.setRequiredNotice(noticeType);
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
 
         // Show the notice.
@@ -249,11 +281,11 @@ public final class TrackingProtectionNoticeTest {
         assertEquals(
                 "Last notice action",
                 action,
-                (int) mFakeTrackingProtectionBridge.getLastOnboardingNoticeAction());
+                (int) mFakeTrackingProtectionBridge.getLastNoticeAction());
     }
 
     private void assertNoticeShownActionIsRecorded() {
-        assertTrue(mFakeTrackingProtectionBridge.wasOnboardingNoticeShown());
+        assertTrue(mFakeTrackingProtectionBridge.wasNoticeShown());
     }
 
     private void setConnectionSecurityLevel(int connectionSecurityLevel) {
