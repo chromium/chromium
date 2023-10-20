@@ -21,10 +21,11 @@ SolidColorScrollbarLayerImpl::Create(LayerTreeImpl* tree_impl,
                                      ScrollbarOrientation orientation,
                                      int thumb_thickness,
                                      int track_start,
-                                     bool is_left_side_vertical_scrollbar) {
+                                     bool is_left_side_vertical_scrollbar,
+                                     absl::optional<SkColor4f> thumb_color) {
   return base::WrapUnique(new SolidColorScrollbarLayerImpl(
       tree_impl, id, orientation, thumb_thickness, track_start,
-      is_left_side_vertical_scrollbar));
+      is_left_side_vertical_scrollbar, thumb_color));
 }
 
 SolidColorScrollbarLayerImpl::~SolidColorScrollbarLayerImpl() = default;
@@ -33,7 +34,7 @@ std::unique_ptr<LayerImpl> SolidColorScrollbarLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return SolidColorScrollbarLayerImpl::Create(
       tree_impl, id(), orientation(), thumb_thickness_, track_start_,
-      is_left_side_vertical_scrollbar());
+      is_left_side_vertical_scrollbar(), thumb_color_);
 }
 
 SolidColorScrollbarLayerImpl::SolidColorScrollbarLayerImpl(
@@ -42,7 +43,8 @@ SolidColorScrollbarLayerImpl::SolidColorScrollbarLayerImpl(
     ScrollbarOrientation orientation,
     int thumb_thickness,
     int track_start,
-    bool is_left_side_vertical_scrollbar)
+    bool is_left_side_vertical_scrollbar,
+    absl::optional<SkColor4f> thumb_color)
     : ScrollbarLayerImplBase(tree_impl,
                              id,
                              orientation,
@@ -50,7 +52,8 @@ SolidColorScrollbarLayerImpl::SolidColorScrollbarLayerImpl(
                              /*is_overlay*/ true),
       thumb_thickness_(thumb_thickness),
       track_start_(track_start),
-      color_(tree_impl->settings().solid_color_scrollbar_color) {}
+      thumb_color_(thumb_color),
+      default_color_(tree_impl->settings().solid_color_scrollbar_color) {}
 
 void SolidColorScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   ScrollbarLayerImplBase::PushPropertiesTo(layer);
@@ -108,8 +111,8 @@ void SolidColorScrollbarLayerImpl::AppendQuads(
     return;
 
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  quad->SetNew(shared_quad_state, thumb_quad_rect, visible_quad_rect, color_,
-               false);
+  quad->SetNew(shared_quad_state, thumb_quad_rect, visible_quad_rect,
+               thumb_color_.value_or(default_color_), false);
 }
 
 const char* SolidColorScrollbarLayerImpl::LayerTypeAsString() const {

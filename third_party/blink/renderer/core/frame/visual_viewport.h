@@ -293,6 +293,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   void Paint(GraphicsContext&) const;
 
   void UsedColorSchemeChanged();
+  void ScrollbarColorChanged();
 
   // Returns whether this VisualViewport is "active", that is, whether it'll
   // affect paint property trees. If false, this renderer cannot be
@@ -309,6 +310,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
     overscroll_type_ = type;
     SetNeedsPaintPropertyUpdate();
   }
+  absl::optional<blink::Color> CSSScrollbarThumbColor() const;
 
  private:
   bool DidSetScaleOrLocation(float scale,

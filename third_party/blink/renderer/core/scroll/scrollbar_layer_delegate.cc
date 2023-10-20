@@ -104,6 +104,15 @@ bool ScrollbarLayerDelegate::IsOpaque() const {
   return scrollbar_->IsOpaque();
 }
 
+absl::optional<SkColor4f> ScrollbarLayerDelegate::ThumbColor() const {
+  absl::optional<blink::Color> thumb_color = scrollbar_->ScrollbarThumbColor();
+  if (thumb_color.has_value()) {
+    return thumb_color.value().toSkColor4f();
+  }
+
+  return absl::nullopt;
+}
+
 gfx::Rect ScrollbarLayerDelegate::BackButtonRect() const {
   gfx::Rect back_button_rect =
       scrollbar_->GetTheme().BackButtonRect(*scrollbar_);

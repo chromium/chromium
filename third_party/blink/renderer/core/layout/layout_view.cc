@@ -958,6 +958,10 @@ void LayoutView::StyleDidChange(StyleDifference diff,
                           visual_viewport.UsedColorSchemeScrollbars()) {
       visual_viewport.UsedColorSchemeChanged();
     }
+    if (old_style && old_style->ScrollbarThumbColorResolved() !=
+                         visual_viewport.CSSScrollbarThumbColor()) {
+      visual_viewport.ScrollbarColorChanged();
+    }
   }
 }
 

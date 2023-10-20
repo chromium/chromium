@@ -319,7 +319,7 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
   painted_overlay_scrollbar_layer->SetScrollElementId(layer_a->element_id());
   scoped_refptr<SolidColorScrollbarLayer> solid_color_scrollbar_layer =
       SolidColorScrollbarLayer::Create(ScrollbarOrientation::kVertical, 1, 1,
-                                       false);
+                                       false, absl::nullopt);
   solid_color_scrollbar_layer->SetScrollElementId(layer_a->element_id());
 
   layer_tree_host_->SetRootLayer(layer_tree_root);
@@ -621,7 +621,8 @@ TEST_F(ScrollbarLayerTest, SolidColorDrawQuads) {
     scoped_refptr<Layer> child = Layer::Create();
     scoped_refptr<ScrollbarLayerBase> scrollbar_layer =
         SolidColorScrollbarLayer::Create(ScrollbarOrientation::kHorizontal,
-                                         kThumbThickness, kTrackStart, false);
+                                         kThumbThickness, kTrackStart, false,
+                                         absl::nullopt);
     root->AddChild(child);
     root->AddChild(scrollbar_layer);
     layer_tree_host_->SetRootLayer(root);
@@ -690,9 +691,9 @@ TEST_F(ScrollbarLayerTest, LayerDrivenSolidColorDrawQuads) {
   scoped_refptr<Layer> child1 = Layer::Create();
   const bool kIsLeftSideVerticalScrollbar = false;
   scoped_refptr<SolidColorScrollbarLayer> child2 =
-      SolidColorScrollbarLayer::Create(ScrollbarOrientation::kHorizontal,
-                                       kThumbThickness, kTrackStart,
-                                       kIsLeftSideVerticalScrollbar);
+      SolidColorScrollbarLayer::Create(
+          ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
+          kIsLeftSideVerticalScrollbar, absl::nullopt);
   child2->SetScrollElementId(scroll_layer->element_id());
   scroll_layer->AddChild(child1);
   scroll_layer->InsertChild(child2, 1);
@@ -747,7 +748,7 @@ TEST_F(ScrollbarLayerTest, ScrollbarLayerOpacity) {
   const bool kIsLeftSideVerticalScrollbar = false;
   scrollbar_layer = SolidColorScrollbarLayer::Create(
       ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
-      kIsLeftSideVerticalScrollbar);
+      kIsLeftSideVerticalScrollbar, absl::nullopt);
   scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
   scrollbar_layer->SetElementId(ElementId(300));
   scroll_layer->AddChild(child1);
@@ -822,9 +823,9 @@ TEST_F(AuraScrollbarLayerTest, ScrollbarLayerPushProperties) {
   scoped_refptr<Layer> child1 = Layer::Create();
   const bool kIsLeftSideVerticalScrollbar = false;
   scoped_refptr<SolidColorScrollbarLayer> scrollbar_layer =
-      SolidColorScrollbarLayer::Create(ScrollbarOrientation::kHorizontal,
-                                       kThumbThickness, kTrackStart,
-                                       kIsLeftSideVerticalScrollbar);
+      SolidColorScrollbarLayer::Create(
+          ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
+          kIsLeftSideVerticalScrollbar, absl::nullopt);
   scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
   scroll_layer->AddChild(child1);
   scroll_layer->InsertChild(scrollbar_layer, 1);
@@ -869,7 +870,7 @@ TEST_F(ScrollbarLayerTest, SubPixelCanScrollOrientation) {
   SolidColorScrollbarLayerImpl* scrollbar_layer =
       impl.AddLayer<SolidColorScrollbarLayerImpl>(
           ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
-          kIsLeftSideVerticalScrollbar);
+          kIsLeftSideVerticalScrollbar, absl::nullopt);
 
   scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
   scroll_layer->SetBounds(gfx::Size(980, 980));
@@ -909,7 +910,7 @@ TEST_F(ScrollbarLayerTest, LayerChangesAffectingScrollbarGeometries) {
   SolidColorScrollbarLayerImpl* scrollbar_layer =
       impl.AddLayer<SolidColorScrollbarLayerImpl>(
           ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
-          kIsLeftSideVerticalScrollbar);
+          kIsLeftSideVerticalScrollbar, absl::nullopt);
   scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
   EXPECT_TRUE(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
   impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
@@ -1011,9 +1012,9 @@ TEST_F(AuraScrollbarLayerTest, ScrollbarLayerCreateAfterSetScrollable) {
   host_impl->ActivateSyncTree();
 
   scoped_refptr<SolidColorScrollbarLayer> scrollbar_layer =
-      SolidColorScrollbarLayer::Create(ScrollbarOrientation::kHorizontal,
-                                       kThumbThickness, kTrackStart,
-                                       kIsLeftSideVerticalScrollbar);
+      SolidColorScrollbarLayer::Create(
+          ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
+          kIsLeftSideVerticalScrollbar, absl::nullopt);
   scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
   scroll_layer->InsertChild(scrollbar_layer, 1);
 
@@ -1043,10 +1044,12 @@ class ScrollbarLayerSolidColorThumbTest : public testing::Test {
 
     horizontal_scrollbar_layer_ = SolidColorScrollbarLayerImpl::Create(
         host_impl_->active_tree(), 1, ScrollbarOrientation::kHorizontal,
-        kThumbThickness, kTrackStart, kIsLeftSideVerticalScrollbar);
+        kThumbThickness, kTrackStart, kIsLeftSideVerticalScrollbar,
+        absl::nullopt);
     vertical_scrollbar_layer_ = SolidColorScrollbarLayerImpl::Create(
         host_impl_->active_tree(), 2, ScrollbarOrientation::kVertical,
-        kThumbThickness, kTrackStart, kIsLeftSideVerticalScrollbar);
+        kThumbThickness, kTrackStart, kIsLeftSideVerticalScrollbar,
+        absl::nullopt);
   }
 
  protected:
@@ -1138,7 +1141,7 @@ class ScrollbarLayerTestResourceCreationAndRelease : public ScrollbarLayerTest {
       const bool kIsLeftSideVerticalScrollbar = false;
       scrollbar_layer = SolidColorScrollbarLayer::Create(
           ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
-          kIsLeftSideVerticalScrollbar);
+          kIsLeftSideVerticalScrollbar, absl::nullopt);
     } else {
       auto scrollbar = base::MakeRefCounted<FakeScrollbar>();
       scrollbar->set_has_thumb(true);

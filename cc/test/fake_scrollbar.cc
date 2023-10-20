@@ -120,4 +120,8 @@ bool FakeScrollbar::IsOpaque() const {
   return !is_overlay_ && is_opaque_;
 }
 
+absl::optional<SkColor4f> FakeScrollbar::ThumbColor() const {
+  return thumb_color_;
+}
+
 }  // namespace cc

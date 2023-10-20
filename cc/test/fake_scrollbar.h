@@ -46,6 +46,7 @@ class FakeScrollbar : public Scrollbar {
   gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
       gfx::Rect& rect) const override;
   bool IsOpaque() const override;
+  absl::optional<SkColor4f> ThumbColor() const override;
 
   void set_should_paint(bool b) { should_paint_ = b; }
   void set_has_thumb(bool b) { has_thumb_ = b; }
@@ -71,6 +72,9 @@ class FakeScrollbar : public Scrollbar {
     needs_repaint_track_ = needs_repaint;
   }
   void set_is_opaque(bool b) { is_opaque_ = b; }
+  void set_thumb_color(absl::optional<SkColor4f> thumb_color) {
+    thumb_color_ = thumb_color;
+  }
 
  protected:
   ~FakeScrollbar() override;
@@ -94,6 +98,7 @@ class FakeScrollbar : public Scrollbar {
   gfx::Rect forward_button_rect_;
   SkColor fill_color_ = SK_ColorGREEN;
   bool is_opaque_ = true;
+  absl::optional<SkColor4f> thumb_color_;
 };
 
 }  // namespace cc

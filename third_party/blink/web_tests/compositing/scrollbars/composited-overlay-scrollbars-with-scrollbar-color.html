@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<meta name=fuzzy content="maxDifference=0-1;totalPixels=0-500">
+<script>
+if (window.internals) {
+    internals.settings.setPreferCompositingToLCDTextEnabled(true);
+    internals.useMockOverlayScrollbars();
+}
+</script>
+<style>
+html, body { margin: 0; padding: 0; }
+html { scrollbar-color: red black }
+#outer {
+    width: 400px;
+    height: 300px;
+    overflow-y: scroll;
+    border: 1px solid green;
+}
+#inner {
+    width: 100px;
+    height: 100px;
+    overflow-y: scroll;
+    border: 1px solid blue;
+}
+.strut { height: 500px; }
+</style>
+
+<div id="outer">
+    <div class="strut"></div>
+    <div id="inner">
+        <div class="strut"></div>
+    </div>
+</div>
+
+<script>
+const outer = document.getElementById('outer');
+const inner = document.getElementById('inner');
+outer.scrollTop = outer.scrollHeight - outer.clientHeight;
+inner.scrollTop = inner.scrollHeight - inner.clientHeight;
+if (window.testRunner) {
+    testRunner.dumpAsTextWithPixelResults();
+    testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
+}
+
+</script>

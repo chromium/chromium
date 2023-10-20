@@ -75,9 +75,10 @@ void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
                            rect);
 
   const auto* box = scrollbar.GetScrollableArea()->GetLayoutBox();
+  Color color = scrollbar.ScrollbarThumbColor().value_or(color_);
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       box->StyleRef(), DarkModeFilter::ElementRole::kBackground));
-  context.FillRect(rect, color_, auto_dark_mode);
+  context.FillRect(rect, color, auto_dark_mode);
 }
 
 }  // namespace blink

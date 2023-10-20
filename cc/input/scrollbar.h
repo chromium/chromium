@@ -54,6 +54,7 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual bool SupportsDragSnapBack() const = 0;
   virtual bool JumpOnTrackClick() const = 0;
   virtual bool IsOpaque() const = 0;
+  virtual absl::optional<SkColor4f> ThumbColor() const = 0;
 
   // The following rects are all relative to the scrollbar's origin.
   // The location of ThumbRect reflects scroll offset, but cc will ignore it

@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -676,6 +677,17 @@ EScrollbarWidth VisualViewport::CSSScrollbarWidth() const {
   return EScrollbarWidth::kAuto;
 }
 
+absl::optional<blink::Color> VisualViewport::CSSScrollbarThumbColor() const {
+  DCHECK(IsActiveViewport());
+  if (Document* main_document = LocalMainFrame().GetDocument()) {
+    return main_document->GetLayoutView()
+        ->StyleRef()
+        .ScrollbarThumbColorResolved();
+  }
+
+  return absl::nullopt;
+}
+
 int VisualViewport::ScrollbarThickness() const {
   DCHECK(IsActiveViewport());
   return ScrollbarThemeOverlayMobile::GetInstance().ScrollbarThickness(
@@ -692,13 +704,18 @@ void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
     float scale = ScaleFromDIP();
     int thumb_thickness = theme.ThumbThickness(scale, CSSScrollbarWidth());
     int scrollbar_margin = theme.ScrollbarMargin(scale, CSSScrollbarWidth());
+    absl::optional<blink::Color> css_thumb_color = CSSScrollbarThumbColor();
+    absl::optional<SkColor4f> thumb_color = absl::nullopt;
+    if (css_thumb_color.has_value()) {
+      thumb_color = css_thumb_color.value().toSkColor4f();
+    }
     cc::ScrollbarOrientation cc_orientation =
         orientation == kHorizontalScrollbar
             ? cc::ScrollbarOrientation::kHorizontal
             : cc::ScrollbarOrientation::kVertical;
     scrollbar_layer = cc::SolidColorScrollbarLayer::Create(
         cc_orientation, thumb_thickness, scrollbar_margin,
-        /*is_left_side_vertical_scrollbar*/ false);
+        /*is_left_side_vertical_scrollbar*/ false, thumb_color);
     scrollbar_layer->SetElementId(GetScrollbarElementId(orientation));
     scrollbar_layer->SetScrollElementId(scroll_layer_->element_id());
     scrollbar_layer->SetIsDrawable(true);
@@ -1195,6 +1212,11 @@ void VisualViewport::UsedColorSchemeChanged() {
   DCHECK(IsActiveViewport());
   // The scrollbar overlay color theme depends on the used color scheme.
   RecalculateScrollbarOverlayColorTheme();
+}
+
+void VisualViewport::ScrollbarColorChanged() {
+  DCHECK(IsActiveViewport());
+  InitializeScrollbars();
 }
 
 }  // namespace blink

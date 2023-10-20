@@ -15,7 +15,7 @@ std::unique_ptr<LayerImpl> SolidColorScrollbarLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return SolidColorScrollbarLayerImpl::Create(
       tree_impl, id(), orientation(), thumb_thickness_, track_start_,
-      is_left_side_vertical_scrollbar());
+      is_left_side_vertical_scrollbar(), thumb_color_);
 }
 
 scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::CreateOrReuse(
@@ -29,11 +29,13 @@ scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::CreateOrReuse(
       is_horizontal ? thumb_rect.height() : thumb_rect.width();
   gfx::Rect track_rect = scrollbar->TrackRect();
   int track_start = is_horizontal ? track_rect.x() : track_rect.y();
+  absl::optional<SkColor4f> thumb_color = scrollbar->ThumbColor();
 
   if (existing_layer &&
       // We don't support change of these fields in a layer.
       existing_layer->thumb_thickness() == thumb_thickness &&
-      existing_layer->track_start() == track_start) {
+      existing_layer->track_start() == track_start &&
+      existing_layer->thumb_color() == thumb_color) {
     // These fields have been checked in ScrollbarLayerBase::CreateOrReuse().
     DCHECK_EQ(scrollbar->Orientation(), existing_layer->orientation());
     DCHECK_EQ(scrollbar->IsLeftSideVerticalScrollbar(),
@@ -42,27 +44,30 @@ scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::CreateOrReuse(
   }
 
   return Create(scrollbar->Orientation(), thumb_thickness, track_start,
-                scrollbar->IsLeftSideVerticalScrollbar());
+                scrollbar->IsLeftSideVerticalScrollbar(), thumb_color);
 }
 
 scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::Create(
     ScrollbarOrientation orientation,
     int thumb_thickness,
     int track_start,
-    bool is_left_side_vertical_scrollbar) {
-  return base::WrapRefCounted(
-      new SolidColorScrollbarLayer(orientation, thumb_thickness, track_start,
-                                   is_left_side_vertical_scrollbar));
+    bool is_left_side_vertical_scrollbar,
+    absl::optional<SkColor4f> thumb_color) {
+  return base::WrapRefCounted(new SolidColorScrollbarLayer(
+      orientation, thumb_thickness, track_start,
+      is_left_side_vertical_scrollbar, thumb_color));
 }
 
 SolidColorScrollbarLayer::SolidColorScrollbarLayer(
     ScrollbarOrientation orientation,
     int thumb_thickness,
     int track_start,
-    bool is_left_side_vertical_scrollbar)
+    bool is_left_side_vertical_scrollbar,
+    absl::optional<SkColor4f> thumb_color)
     : ScrollbarLayerBase(orientation, is_left_side_vertical_scrollbar),
       thumb_thickness_(thumb_thickness),
-      track_start_(track_start) {
+      track_start_(track_start),
+      thumb_color_(thumb_color) {
   Layer::SetOpacity(0.f);
 }
 
