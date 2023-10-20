@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -2708,16 +2709,24 @@ DeveloperPrivateRemoveMultipleExtensionsFunction::Run() {
   if (accept_bubble_for_testing_.has_value()) {
     if (*accept_bubble_for_testing_) {
       OnDialogAccepted();
-      return AlreadyResponded();
+    } else {
+      OnDialogCancelled();
     }
-    return RespondNow(NoArguments());
+    return AlreadyResponded();
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(GetSenderWebContents());
-  CHECK(browser);
+  gfx::NativeWindow parent;
+  if (!GetSenderWebContents()) {
+    CHECK_IS_TEST();
+    parent = nullptr;
+  } else {
+    parent = chrome::FindBrowserWithTab(GetSenderWebContents())
+                 ->window()
+                 ->GetNativeWindow();
+  }
 
   ShowExtensionMultipleUninstallDialog(
-      browser->profile(), browser->window()->GetNativeWindow(), extension_ids_,
+      profile_, parent, extension_ids_,
       base::BindOnce(
           &DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted,
           this),

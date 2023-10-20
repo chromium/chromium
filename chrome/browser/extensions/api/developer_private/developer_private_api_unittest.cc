@@ -2836,14 +2836,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRemoveMultipleExtensions) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_1->id()));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_2->id()));
 
-  base::Value::List extension_ids_entries;
-  extension_ids_entries.reserve(2u);
-  extension_ids_entries.Append(extension_1->id());
-  extension_ids_entries.Append(extension_2->id());
-  std::string extension_ids_arg;
-  EXPECT_TRUE(
-      base::JSONWriter::Write(extension_ids_entries, &extension_ids_arg));
-  std::string args = base::StringPrintf(R"([%s])", extension_ids_arg.c_str());
+  std::string args = base::StrCat(
+      {"[[\"", extension_1->id(), "\", \"", extension_2->id(), "\"]]"});
 
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateRemoveMultipleExtensionsFunction>();
@@ -2858,6 +2852,35 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRemoveMultipleExtensions) {
   EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_1->id()));
   EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_2->id()));
   EXPECT_EQ(registry()->enabled_extensions().size(), 0u);
+}
+
+// Test cancelling uninstall multiple extensions dialog.
+TEST_F(DeveloperPrivateApiUnitTest,
+       DeveloperPrivateCancelRemoveMultipleExtensions) {
+  scoped_refptr<const Extension> extension_1 =
+      ExtensionBuilder("test_1").Build();
+  scoped_refptr<const Extension> extension_2 =
+      ExtensionBuilder("test_2").Build();
+  service()->AddExtension(extension_1.get());
+  service()->AddExtension(extension_2.get());
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_1->id()));
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_2->id()));
+
+  std::string args = base::StrCat(
+      {"[[\"", extension_1->id(), "\", \"", extension_2->id(), "\"]]"});
+
+  auto function = base::MakeRefCounted<
+      api::DeveloperPrivateRemoveMultipleExtensionsFunction>();
+
+  // Cancel the multiple extension uninstallation bubble, the correct error
+  // message is shown and extensions are not removed.
+  function->accept_bubble_for_testing(false);
+  EXPECT_EQ("User cancelled uninstall",
+            api_test_utils::RunFunctionAndReturnError(function.get(), args,
+                                                      profile()));
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_1->id()));
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_2->id()));
+  EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
 }
 
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRemoveComponentExtensions) {
