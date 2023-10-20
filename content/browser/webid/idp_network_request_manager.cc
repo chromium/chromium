@@ -64,7 +64,6 @@ constexpr char kProviderUrlListKey[] = "provider_urls";
 constexpr char kIdAssertionEndpoint[] = "id_assertion_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kMetricsEndpoint[] = "metrics_endpoint";
-constexpr char kLoginUrlKeyDeprecated[] = "signin_url";
 
 // Shared between the well-known files and config files
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
@@ -516,12 +515,6 @@ void OnConfigParsed(const GURL& provider,
   }
   idp_metadata.idp_login_url =
       ExtractEndpoint(provider, response, kLoginUrlKey);
-  // TODO(cbiesinger): remove this fallback before 120
-  if (idp_metadata.idp_login_url.is_empty()) {
-    idp_metadata.idp_login_url =
-        ExtractEndpoint(provider, response, kLoginUrlKeyDeprecated);
-  }
-
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                           endpoints, std::move(idp_metadata));
 }
