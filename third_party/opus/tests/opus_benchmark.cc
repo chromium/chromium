@@ -24,7 +24,7 @@ constexpr int MAX_FRAME_SAMP = 5760;  // 120ms * 48kHz
 
 base::FilePath GetDataPath(const std::string& filename) {
   base::FilePath path;
-  DCHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+  DCHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
   return path.AppendASCII("third_party")
       .AppendASCII("opus")
       .AppendASCII("tests")
