@@ -3,20 +3,28 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
+#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
+#include "chrome/browser/tpcd/experiment/tpcd_pref_names.h"
+#include "chrome/browser/tpcd/experiment/tpcd_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/navigation_metrics/navigation_metrics.h"
+#include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace {
@@ -170,5 +178,124 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderPrerenderBrowserTest,
   EXPECT_TRUE(host_observer.was_activated());
   histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 2);
 }
+
+struct ExperimentVersusActualCookieStatusHistogramBrowserTestCase {
+  bool is_experiment_cookies_disabled = true;
+  bool is_third_party_cookies_allowed = true;
+  tpcd::experiment::utils::ExperimentState is_client_eligible =
+      tpcd::experiment::utils::ExperimentState::kEligible;
+  tpcd::experiment::utils::Experiment3PCBlockStatus expected_bucket;
+};
+
+const ExperimentVersusActualCookieStatusHistogramBrowserTestCase kTestCases[] =
+    {{
+         .expected_bucket = tpcd::experiment::utils::Experiment3PCBlockStatus::
+             kAllowedAndExperimentBlocked,
+     },
+     {
+         .is_experiment_cookies_disabled = false,
+         .is_client_eligible =
+             tpcd::experiment::utils::ExperimentState::kIneligible,
+         .expected_bucket = tpcd::experiment::utils::Experiment3PCBlockStatus::
+             kAllowedAndExperimentAllowed,
+     },
+     {
+         .is_third_party_cookies_allowed = false,
+         .expected_bucket = tpcd::experiment::utils::Experiment3PCBlockStatus::
+             kBlockedAndExperimentBlocked,
+     },
+     {
+         .is_experiment_cookies_disabled = false,
+         .is_third_party_cookies_allowed = false,
+         .is_client_eligible =
+             tpcd::experiment::utils::ExperimentState::kIneligible,
+         .expected_bucket = tpcd::experiment::utils::Experiment3PCBlockStatus::
+             kBlockedAndExperimentAllowed,
+     }};
+
+class
+    NavigationMetricsRecorder3pcdExperimentVersusActualCookieStatusHistogramBrowserTest
+    : public NavigationMetricsRecorderBrowserTest,
+      public testing::WithParamInterface<
+          ExperimentVersusActualCookieStatusHistogramBrowserTestCase> {
+ public:
+  NavigationMetricsRecorder3pcdExperimentVersusActualCookieStatusHistogramBrowserTest() {
+    // Experiment feature param requests 3PCs blocked.
+    tpcd_experiment_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kCookieDeprecationFacilitatedTesting,
+        {{tpcd::experiment::kDisable3PCookiesName,
+          test_case_.is_experiment_cookies_disabled ? "true" : "false"}});
+
+    // When features are disabled, IsForceThirdPartyCookieBlockingEnabled will
+    // return false, cookies are allowed.
+    if (test_case_.is_third_party_cookies_allowed) {
+      force_3pc_blocking_feature_list_.InitAndDisableFeature(
+          net::features::kForceThirdPartyCookieBlocking);
+      storage_partitioning_3pc_feature_list_.InitAndDisableFeature(
+          net::features::kThirdPartyStoragePartitioning);
+    } else {
+      force_3pc_blocking_feature_list_.InitAndEnableFeature(
+          net::features::kForceThirdPartyCookieBlocking);
+      storage_partitioning_3pc_feature_list_.InitAndEnableFeature(
+          net::features::kThirdPartyStoragePartitioning);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    NavigationMetricsRecorderBrowserTest::SetUpOnMainThread();
+  }
+
+  void Wait() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(),
+        tpcd::experiment::kDecisionDelayTime.Get());
+    run_loop.Run();
+  }
+
+ protected:
+  const ExperimentVersusActualCookieStatusHistogramBrowserTestCase test_case_ =
+      GetParam();
+  base::test::ScopedFeatureList tpcd_experiment_feature_list_;
+  base::test::ScopedFeatureList force_3pc_blocking_feature_list_;
+  base::test::ScopedFeatureList storage_partitioning_3pc_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    NavigationMetricsRecorder3pcdExperimentVersusActualCookieStatusHistogramBrowserTest,
+    ExperimentBlockingStatusCookieStatusComparisons) {
+  Wait();
+  // When TPCD Experiment Client State is eligible, experiment should be
+  // active on this client.
+  g_browser_process->local_state()->SetInteger(
+      tpcd::experiment::prefs::kTPCDExperimentClientState,
+      static_cast<int>(test_case_.is_client_eligible));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigationMetricsRecorder* recorder =
+      content::WebContentsUserData<NavigationMetricsRecorder>::FromWebContents(
+          web_contents);
+  ASSERT_TRUE(recorder);
+
+  const GURL url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
+  base::HistogramTester histograms;
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+
+  if (test_case_.is_third_party_cookies_allowed) {
+    histograms.ExpectBucketCount(
+        "Navigation.MainFrame.ThirdPartyCookieBlockingEnabled",
+        ThirdPartyCookieBlockState::kCookiesAllowed, 1);
+  }
+  histograms.ExpectBucketCount(
+      tpcd::experiment::utils::Experiment3pcBlockStatusHistogramName,
+      test_case_.expected_bucket, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ExperimentVersusActualCookiesAllowedHistogramBrowserTests,
+    NavigationMetricsRecorder3pcdExperimentVersusActualCookieStatusHistogramBrowserTest,
+    testing::ValuesIn(kTestCases));
 
 }  // namespace

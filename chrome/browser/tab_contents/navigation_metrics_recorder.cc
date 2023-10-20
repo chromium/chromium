@@ -4,11 +4,16 @@
 
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
+#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
+#include "chrome/browser/tpcd/experiment/tpcd_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -22,6 +27,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/common/content_features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -125,9 +131,44 @@ void NavigationMetricsRecorder::DidFinishNavigation(
     }
   }
   if (url.SchemeIsHTTPOrHTTPS() && !navigation_handle->IsDownload()) {
+    ThirdPartyCookieBlockState block_state = GetThirdPartyCookieBlockState(url);
     base::UmaHistogramEnumeration(
-        "Navigation.MainFrame.ThirdPartyCookieBlockingEnabled",
-        GetThirdPartyCookieBlockState(url));
+        "Navigation.MainFrame.ThirdPartyCookieBlockingEnabled", block_state);
+
+    if (!base::FeatureList::IsEnabled(
+            features::kCookieDeprecationFacilitatedTesting)) {
+      return;
+    }
+
+    bool is_client_state_eligible = false;
+    if (auto* experiment_manager =
+            tpcd::experiment::ExperimentManagerImpl::GetForProfile(profile)) {
+      is_client_state_eligible = experiment_manager->IsClientEligible() == true;
+    }
+
+    bool is_blocked_by_experiment =
+        is_client_state_eligible && tpcd::experiment::kDisable3PCookies.Get();
+    bool is_block_state_allowed =
+        block_state == ThirdPartyCookieBlockState::kCookiesAllowed;
+
+    tpcd::experiment::utils::Experiment3PCBlockStatus experiment_block_status;
+
+    if (is_block_state_allowed && is_blocked_by_experiment) {
+      experiment_block_status = tpcd::experiment::utils::
+          Experiment3PCBlockStatus::kAllowedAndExperimentBlocked;
+    } else if (is_block_state_allowed && !is_blocked_by_experiment) {
+      experiment_block_status = tpcd::experiment::utils::
+          Experiment3PCBlockStatus::kAllowedAndExperimentAllowed;
+    } else if (!is_block_state_allowed && is_blocked_by_experiment) {
+      experiment_block_status = tpcd::experiment::utils::
+          Experiment3PCBlockStatus::kBlockedAndExperimentBlocked;
+    } else {
+      experiment_block_status = tpcd::experiment::utils::
+          Experiment3PCBlockStatus::kBlockedAndExperimentAllowed;
+    }
+    base::UmaHistogramEnumeration(
+        tpcd::experiment::utils::Experiment3pcBlockStatusHistogramName,
+        experiment_block_status);
   }
 }
 

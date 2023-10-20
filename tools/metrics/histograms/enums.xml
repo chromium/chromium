@@ -35193,6 +35193,13 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Apple Calendar"/>
 </enum>
 
+<enum name="Experiment3pcBlockStatus">
+  <int value="0" label="kAllowedAndExperimentBlocked"/>
+  <int value="1" label="kAllowedAndExperimentAllowed"/>
+  <int value="2" label="kBlockedAndExperimentBlocked"/>
+  <int value="3" label="kBlockedAndExperimentAllowed"/>
+</enum>
+
 <!-- This must be kept current with
      //chrome/browser/android/explore_sites/catalog.proto's CategoryType. -->
 
