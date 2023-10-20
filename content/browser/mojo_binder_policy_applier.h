@@ -59,6 +59,12 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
       base::OnceCallback<void(const std::string& interface_name)>
           cancel_closure);
 
+  // Returns the instance used by BrowserInterfaceBrokerImpl for preview mode.
+  // This is used when a page is shown in preview mode.
+  static std::unique_ptr<MojoBinderPolicyApplier> CreateForPreview(
+      base::OnceCallback<void(const std::string& interface_name)>
+          cancel_closure);
+
   // Disallows copy and move operations.
   MojoBinderPolicyApplier(const MojoBinderPolicyApplier& other) = delete;
   MojoBinderPolicyApplier& operator=(const MojoBinderPolicyApplier& other) =

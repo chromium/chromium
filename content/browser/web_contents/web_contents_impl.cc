@@ -9843,6 +9843,13 @@ bool WebContentsImpl::IsInPreviewMode() const {
   return false;
 }
 
+void WebContentsImpl::CancelPreviewByMojoBinderPolicy(
+    const std::string& interface_name) {
+  if (delegate_) {
+    delegate_->CancelPreviewByMojoBinderPolicy(interface_name);
+  }
+}
+
 int WebContentsImpl::GetOuterDelegateFrameTreeNodeId() {
   return node_.outer_contents_frame_tree_node_id();
 }

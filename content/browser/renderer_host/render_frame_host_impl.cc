@@ -118,6 +118,7 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/page_factory.h"
 #include "content/browser/renderer_host/pending_beacon_host.h"
 #include "content/browser/renderer_host/pending_beacon_service.h"
@@ -1589,6 +1590,12 @@ RenderFrameHostImpl::RenderFrameHostImpl(
         MojoBinderPolicyApplier::CreateForSameOriginPrerendering(base::BindOnce(
             &RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy,
             base::Unretained(this)));
+    broker_.ApplyMojoBinderPolicies(mojo_binder_policy_applier_.get());
+  } else if (frame_tree_->page_delegate()->IsInPreviewMode()) {
+    // TODO(b:299240273): Relax the policy on the tab promotion.
+    mojo_binder_policy_applier_ = MojoBinderPolicyApplier::CreateForPreview(
+        base::BindOnce(&RenderFrameHostImpl::CancelPreviewByMojoBinderPolicy,
+                       base::Unretained(this)));
     broker_.ApplyMojoBinderPolicies(mojo_binder_policy_applier_.get());
   }
 
@@ -11753,6 +11760,11 @@ void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
   // prerendering, as it could mean an interface request is never resolved for
   // an active page.
   DCHECK(canceled);
+}
+
+void RenderFrameHostImpl::CancelPreviewByMojoBinderPolicy(
+    const std::string& interface_name) {
+  frame_tree_->page_delegate()->CancelPreviewByMojoBinderPolicy(interface_name);
 }
 
 void RenderFrameHostImpl::RendererWillActivateForPrerendering() {

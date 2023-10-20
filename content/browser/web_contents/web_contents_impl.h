@@ -1045,6 +1045,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void NotifyPageBecamePrimary(PageImpl& page) override;
 
   bool IsInPreviewMode() const override;
+  void CancelPreviewByMojoBinderPolicy(
+      const std::string& interface_name) override;
 
   // blink::mojom::ColorChooserFactory ---------------------------------------
   void OnColorChooserFactoryReceiver(

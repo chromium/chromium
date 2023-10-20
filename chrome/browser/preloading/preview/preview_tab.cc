@@ -121,3 +121,8 @@ content::PreloadingEligibility PreviewTab::IsPrerender2Supported(
 bool PreviewTab::IsInPreviewMode() const {
   return base::FeatureList::IsEnabled(blink::features::kLinkPreviewNavigation);
 }
+
+void PreviewTab::CancelPreviewByMojoBinderPolicy(
+    const std::string& interface_name) {
+  // TODO(b:299240273): Navigate to an error page.
+}

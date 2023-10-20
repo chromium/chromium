@@ -2148,8 +2148,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns true if a prerender was canceled. Does nothing and returns false if
   // `this` is not prerendered.
   bool CancelPrerendering(const PrerenderCancellationReason& reason);
-  // Called by MojoBinderPolicyApplier when it receives a kCancel interface.
+  // Called by MojoBinderPolicyApplier when it receives a kCancel interface
+  // while prerendering.
   void CancelPrerenderingByMojoBinderPolicy(const std::string& interface_name);
+
+  // LinkPreview:
+  // Called by MojoBinderPolicyApplier when it receives a kCancel interface in
+  // preview mode.
+  void CancelPreviewByMojoBinderPolicy(const std::string& interface_name);
 
   // Called when the Activate IPC is sent to the renderer. Puts the
   // MojoPolicyBinderApplier in "loose" mode via PrepareToGrantAll() until

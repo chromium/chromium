@@ -40,6 +40,8 @@ class PreviewTab final : public content::WebContentsDelegate {
   content::PreloadingEligibility IsPrerender2Supported(
       content::WebContents& web_contents) override;
   bool IsInPreviewMode() const override;
+  void CancelPreviewByMojoBinderPolicy(
+      const std::string& interface_name) override;
 
   std::unique_ptr<WebContentsObserver> observer_;
   std::unique_ptr<views::Widget> widget_;

@@ -777,8 +777,13 @@ class CONTENT_EXPORT WebContentsDelegate {
   // intercept.
   virtual void DidChangeCloseSignalInterceptStatus() {}
 
-  // Whether the WebContents is running in the Preview mode.
+  // Whether the WebContents is running in preview mode.
   virtual bool IsInPreviewMode() const;
+
+  // Notify the page uses a forbidden powerful API and cannot be shown in
+  // preview mode.
+  virtual void CancelPreviewByMojoBinderPolicy(
+      const std::string& interface_name) {}
 
  protected:
   virtual ~WebContentsDelegate();

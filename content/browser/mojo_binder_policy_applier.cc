@@ -45,6 +45,16 @@ MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
       std::move(cancel_callback));
 }
 
+// static
+std::unique_ptr<MojoBinderPolicyApplier>
+MojoBinderPolicyApplier::CreateForPreview(
+    base::OnceCallback<void(const std::string& interface_name)>
+        cancel_callback) {
+  return std::make_unique<MojoBinderPolicyApplier>(
+      MojoBinderPolicyMapImpl::GetInstanceForPreview(),
+      std::move(cancel_callback));
+}
+
 void MojoBinderPolicyApplier::ApplyPolicyToNonAssociatedBinder(
     const std::string& interface_name,
     base::OnceClosure binder_callback) {

@@ -43,8 +43,8 @@ BASE_FEATURE(kTextInputHostMojoCapabilityControlWorkaround,
 
 namespace {
 
-// Register policies for interfaces registered in `internal::PopulateBinderMap`
-// and `internal::PopulateBinderMapWithContext`.
+// Register same-origin prerendering policies for interfaces registered in
+// `internal::PopulateBinderMap` and `internal::PopulateBinderMapWithContext`.
 void RegisterNonAssociatedPoliciesForSameOriginPrerendering(
     MojoBinderPolicyMap& map) {
   // For Prerendering, kCancel is usually used for those interfaces that cannot
@@ -105,8 +105,8 @@ void RegisterNonAssociatedPoliciesForSameOriginPrerendering(
 #endif
 }
 
-// Register policies for channel-associated interfaces registered in
-// `RenderFrameHostImpl::SetUpMojoIfNeeded()`.
+// Register same-origin prerendering policies for channel-associated interfaces
+// registered in `RenderFrameHostImpl::SetUpMojoIfNeeded()`.
 void RegisterChannelAssociatedPoliciesForSameOriginPrerendering(
     MojoBinderPolicyMap& map) {
   // Basic skeleton. All of them are critical to load a page so their policies
@@ -158,12 +158,34 @@ void RegisterChannelAssociatedPoliciesForSameOriginPrerendering(
       MojoBinderAssociatedPolicy::kGrant);
 }
 
+// Register preview policies for interfaces registered in
+// `internal::PopulateBinderMap` and `internal::PopulateBinderMapWithContext`.
+void RegisterNonAssociatedPoliciesForPreview(MojoBinderPolicyMap& map) {
+  // Inherits the policies for same-origin prerendering.
+  // TODO(b:299240273): Adjust policies for preview.
+  RegisterNonAssociatedPoliciesForSameOriginPrerendering(map);
+}
+
+// Register preview policies for channel-associated interfaces registered in
+// `RenderFrameHostImpl::SetUpMojoIfNeeded()`.
+void RegisterChannelAssociatedPoliciesForPreview(MojoBinderPolicyMap& map) {
+  // Inherits the policies for same-origin prerendering.
+  // TODO(b:299240273): Adjust policies for preview.
+  RegisterChannelAssociatedPoliciesForSameOriginPrerendering(map);
+}
+
 // Register mojo binder policies for same-origin prerendering for content/
 // interfaces.
 void RegisterContentBinderPoliciesForSameOriginPrerendering(
     MojoBinderPolicyMap& map) {
   RegisterNonAssociatedPoliciesForSameOriginPrerendering(map);
   RegisterChannelAssociatedPoliciesForSameOriginPrerendering(map);
+}
+
+// Register mojo binder policies for preview mode for content/ interfaces.
+void RegisterContentBinderPoliciesForPreview(MojoBinderPolicyMap& map) {
+  RegisterNonAssociatedPoliciesForPreview(map);
+  RegisterChannelAssociatedPoliciesForPreview(map);
 }
 
 // A singleton class that stores the `MojoBinderPolicyMap` of interfaces which
@@ -177,6 +199,10 @@ class BrowserInterfaceBrokerMojoBinderPolicyMapHolder {
     GetContentClient()
         ->browser()
         ->RegisterMojoBinderPoliciesForSameOriginPrerendering(same_origin_map_);
+
+    RegisterContentBinderPoliciesForPreview(preview_map_);
+    GetContentClient()->browser()->RegisterMojoBinderPoliciesForPreview(
+        preview_map_);
   }
 
   ~BrowserInterfaceBrokerMojoBinderPolicyMapHolder() = default;
@@ -194,11 +220,16 @@ class BrowserInterfaceBrokerMojoBinderPolicyMapHolder {
   const MojoBinderPolicyMapImpl* GetSameOriginPolicyMap() const {
     return &same_origin_map_;
   }
+  const MojoBinderPolicyMapImpl* GetPreviewPolicyMap() const {
+    return &preview_map_;
+  }
 
  private:
   // TODO(https://crbug.com/1145976): Set default policy map for content/.
   // Changes to `same_origin_map_` require security review.
   MojoBinderPolicyMapImpl same_origin_map_;
+
+  MojoBinderPolicyMapImpl preview_map_;
 };
 
 }  // namespace
@@ -218,6 +249,15 @@ MojoBinderPolicyMapImpl::GetInstanceForSameOriginPrerendering() {
       map;
 
   return map->GetSameOriginPolicyMap();
+}
+
+const MojoBinderPolicyMapImpl*
+MojoBinderPolicyMapImpl::GetInstanceForPreview() {
+  static const base::NoDestructor<
+      BrowserInterfaceBrokerMojoBinderPolicyMapHolder>
+      map;
+
+  return map->GetPreviewPolicyMap();
 }
 
 MojoBinderNonAssociatedPolicy
