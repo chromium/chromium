@@ -319,6 +319,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_RequestDesktopSiteOptIn"
       summary="the in product help message to let users turn on the desktop
                site global settings"/>
+  <variant name="IPH_RequestDesktopSiteWindowSetting"
+      summary="educating users about using the desktop site window setting"/>
   <variant name="IPH_RestoreTabsOnFRE"
       summary="the in product help sheet to let users know they can restore
                tabs from other synced devices on a fresh Chrome install"/>

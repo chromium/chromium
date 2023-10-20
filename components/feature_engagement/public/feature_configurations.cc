@@ -1381,6 +1381,21 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHRequestDesktopSiteWindowSettingFeature.name == feature->name) {
+    // A config that allows the RDS window setting IPH to be shown at most once
+    // in 3 years per device.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->used = EventConfig("request_desktop_site_window_setting_iph_shown",
+                               Comparator(EQUAL, 0), 1080, 1080);
+    config->trigger =
+        EventConfig("request_desktop_site_window_setting_iph_trigger",
+                    Comparator(EQUAL, 0), 1080, 1080);
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

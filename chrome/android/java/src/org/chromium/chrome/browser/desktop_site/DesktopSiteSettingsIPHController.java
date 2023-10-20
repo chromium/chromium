@@ -14,24 +14,36 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageScopeType;
+import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /**
@@ -43,15 +55,16 @@ public class DesktopSiteSettingsIPHController {
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;
     private final ActivityTabProvider mActivityTabProvider;
+    private final MessageDispatcher mMessageDispatcher;
     private final WebsitePreferenceBridge mWebsitePreferenceBridge;
     private ActivityTabTabObserver mActivityTabTabObserver;
+    private final Context mContext;
 
     /**
-     * Creates and initializes the controller.
-     * Registers an {@link ActivityTabTabObserver} that will attempt to show the desktop site
-     * per-site settings IPH on an eligible tab in one of the following cases:
-     * 1. On a specific site included in a pre-defined list (arm 1).
-     * 2. On any site on a tablet device (arm 2).
+     * Creates and initializes the controller. Registers an {@link ActivityTabTabObserver} that
+     * attempts to show the following IPHs:
+     * 1. The desktop site per-site settings IPH on an eligible tab on any site on a tablet device.
+     * 2. The desktop site window setting IPH on a mobile site with an active window setting.
      *
      * @param activity The current activity.
      * @param windowAndroid The window associated with the activity.
@@ -60,27 +73,43 @@ public class DesktopSiteSettingsIPHController {
      * @param toolbarMenuButton The toolbar menu button to which the IPH will be anchored.
      * @param appMenuHandler The app menu handler.
      */
-    public static DesktopSiteSettingsIPHController create(Activity activity,
-            WindowAndroid windowAndroid, ActivityTabProvider activityTabProvider, Profile profile,
-            View toolbarMenuButton, AppMenuHandler appMenuHandler) {
-        return new DesktopSiteSettingsIPHController(windowAndroid, activityTabProvider, profile,
-                toolbarMenuButton, appMenuHandler,
+    public static DesktopSiteSettingsIPHController create(
+            Activity activity,
+            WindowAndroid windowAndroid,
+            ActivityTabProvider activityTabProvider,
+            Profile profile,
+            View toolbarMenuButton,
+            AppMenuHandler appMenuHandler) {
+        return new DesktopSiteSettingsIPHController(
+                windowAndroid,
+                activityTabProvider,
+                profile,
+                toolbarMenuButton,
+                appMenuHandler,
                 new UserEducationHelper(activity, new Handler(Looper.getMainLooper())),
-                new WebsitePreferenceBridge());
+                new WebsitePreferenceBridge(),
+                MessageDispatcherProvider.from(windowAndroid));
     }
 
-    DesktopSiteSettingsIPHController(WindowAndroid windowAndroid,
-            ActivityTabProvider activityTabProvider, Profile profile, View toolbarMenuButton,
-            AppMenuHandler appMenuHandler, UserEducationHelper userEducationHelper,
-            WebsitePreferenceBridge websitePreferenceBridge) {
+    DesktopSiteSettingsIPHController(
+            WindowAndroid windowAndroid,
+            ActivityTabProvider activityTabProvider,
+            Profile profile,
+            View toolbarMenuButton,
+            AppMenuHandler appMenuHandler,
+            UserEducationHelper userEducationHelper,
+            WebsitePreferenceBridge websitePreferenceBridge,
+            MessageDispatcher messageDispatcher) {
         mWindowAndroid = windowAndroid;
         mToolbarMenuButton = toolbarMenuButton;
+        mContext = mToolbarMenuButton.getContext();
         mAppMenuHandler = appMenuHandler;
         mUserEducationHelper = userEducationHelper;
         mActivityTabProvider = activityTabProvider;
         mWebsitePreferenceBridge = websitePreferenceBridge;
+        mMessageDispatcher = messageDispatcher;
 
-        maybeCreateTabObserverForPerSiteIPH(profile);
+        createActivityTabTabObserver(profile);
     }
 
     public void destroy() {
@@ -117,9 +146,10 @@ public class DesktopSiteSettingsIPHController {
         return mActivityTabTabObserver;
     }
 
-    // Run pre-checks common to both per-site settings IPHs.
     @VisibleForTesting
     boolean perSiteIPHPreChecksFailed(@NonNull Tab tab, Tracker tracker, String featureName) {
+        if (!DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) return true;
+
         // Return early when the IPH triggering criteria is not satisfied.
         if (!tracker.wouldTriggerHelpUI(featureName)) {
             return true;
@@ -135,51 +165,108 @@ public class DesktopSiteSettingsIPHController {
         return UrlUtilities.isInternalScheme(url) || tab.getWebContents() == null;
     }
 
-    // Placeholder method to utilize the strings; so that we could start the translation early.
-    // TODO(crbug.com/1486668): Implement the message for window setting IPH.
-    void showWindowSettingIPH(Context context) {
-        Resources resources = context.getResources();
-        String title = resources.getString(R.string.rds_window_setting_message_title);
-        String button = resources.getString(R.string.rds_window_setting_message_button);
+    @VisibleForTesting
+    boolean showWindowSettingIPH(@NonNull Tab tab, Profile profile) {
+        if (mMessageDispatcher == null) return false;
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
+            return false;
+        }
+
+        // Return early when the IPH triggering criteria is not satisfied.
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        String featureName = FeatureConstants.REQUEST_DESKTOP_SITE_WINDOW_SETTING_FEATURE;
+        if (!tracker.wouldTriggerHelpUI(featureName)) return false;
+
+        Resources resources = mContext.getResources();
+        String titleText = resources.getString(R.string.rds_window_setting_message_title);
+        String buttonText = resources.getString(R.string.rds_window_setting_message_button);
+
+        // Check whether the site is currently using the desktop UA.
+        boolean desktopUserAgentInUse =
+                tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
+        // Check whether desktop UA is globally enabled.
+        boolean desktopSiteGloballyUsed =
+                WebsitePreferenceBridge.isCategoryEnabled(
+                        profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
+        // Check whether the site has a site-level exception.
+        boolean siteExceptionExists =
+                TabUtils.isDesktopSiteEnabled(profile, tab.getUrl()) != desktopSiteGloballyUsed;
+
+        // Show the message only when the site uses the mobile UA without a desktop site exception,
+        // and desktop site is globally enabled, indicating that the window setting is in use.
+        if (desktopUserAgentInUse || siteExceptionExists || !desktopSiteGloballyUsed) {
+            return false;
+        }
+
+        // Build and show the message.
+        PropertyModel message =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.DESKTOP_SITE_WINDOW_SETTING)
+                        .with(MessageBannerProperties.TITLE, titleText)
+                        .with(
+                                MessageBannerProperties.ICON_RESOURCE_ID,
+                                R.drawable.ic_desktop_windows)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, buttonText)
+                        .with(
+                                MessageBannerProperties.ON_PRIMARY_ACTION,
+                                () -> {
+                                    SiteSettingsHelper.showCategorySettings(
+                                            mContext,
+                                            profile,
+                                            SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
+                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                                })
+                        .build();
+
+        mMessageDispatcher.enqueueMessage(
+                message, tab.getWebContents(), MessageScopeType.ORIGIN, false);
+        TrackerFactory.getTrackerForProfile(profile)
+                .notifyEvent(EventConstants.REQUEST_DESKTOP_SITE_WINDOW_SETTING_IPH_SHOWN);
+        return true;
     }
 
     private void requestShowPerSiteIPH(String featureName, int textId, Object[] textArgs) {
         mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mToolbarMenuButton.getContext().getResources(), featureName,
-                        textId, textArgs, textId, textArgs)
+                new IPHCommandBuilder(
+                                mContext.getResources(),
+                                featureName,
+                                textId,
+                                textArgs,
+                                textId,
+                                textArgs)
                         .setAnchorView(mToolbarMenuButton)
                         .setOnShowCallback(
                                 () -> turnOnHighlightForMenuItem(R.id.request_desktop_site_id))
-                        .setOnDismissCallback(() -> {
-                            turnOffHighlightForMenuItem();
-                            RecordHistogram.recordBooleanHistogram(
-                                    "Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened",
-                                    mAppMenuHandler.isAppMenuShowing());
-                        })
+                        .setOnDismissCallback(
+                                () -> {
+                                    turnOffHighlightForMenuItem();
+                                    RecordHistogram.recordBooleanHistogram(
+                                            "Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened",
+                                            mAppMenuHandler.isAppMenuShowing());
+                                })
                         .build());
     }
 
-    private void maybeCreateTabObserverForPerSiteIPH(Profile profile) {
-        if (!DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) {
-            return;
-        }
-        createActivityTabTabObserver(tab -> showGenericIPH(tab, profile));
-    }
+    private void createActivityTabTabObserver(Profile profile) {
+        mActivityTabTabObserver =
+                new ActivityTabTabObserver(mActivityTabProvider) {
+                    @Override
+                    protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                        if (tab == null) return;
+                        showGenericIPH(tab, profile);
+                    }
 
-    private void createActivityTabTabObserver(Callback<Tab> showIPHCallback) {
-        mActivityTabTabObserver = new ActivityTabTabObserver(mActivityTabProvider) {
-            @Override
-            protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                if (tab == null) return;
-                showIPHCallback.onResult(tab);
-            }
-
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                if (tab == null) return;
-                showIPHCallback.onResult(tab);
-            }
-        };
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        if (tab == null) return;
+                        boolean windowSettingIphShown = showWindowSettingIPH(tab, profile);
+                        if (!windowSettingIphShown) {
+                            showGenericIPH(tab, profile);
+                        }
+                    }
+                };
     }
 
     private void turnOnHighlightForMenuItem(int highlightMenuItemId) {
