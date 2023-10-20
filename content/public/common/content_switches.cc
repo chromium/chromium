@@ -813,6 +813,8 @@ const char kUseFakeUIForFedCM[] = "use-fake-ui-for-fedcm";
 
 // Bypass the media stream infobar by selecting the default device for media
 // streams (e.g. WebRTC). Works with --use-fake-device-for-media-stream.
+// Prefer --auto-accept-camera-and-microphone-capture which does not interact
+// with screen/tab capture.
 const char kUseFakeUIForMediaStream[]     = "use-fake-ui-for-media-stream";
 
 // Texture target for CHROMIUM_image backed video frame textures.
