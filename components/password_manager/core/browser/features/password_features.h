@@ -51,7 +51,12 @@ BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 BASE_DECLARE_FEATURE(kUseServerPredictionsOnSaveParsing);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowHonorAutocomplete);
+
 BASE_DECLARE_FEATURE(kUsernameFirstFlowStoreSeveralValues);
+// If |kUsernameFirstFlowWithIntermediateValues| is enabled, the size of LRU
+// cache that stores all username candidates outside the form.
+extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore;
+
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValues);
 
 // All features parameters in alphabetical order.

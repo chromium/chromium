@@ -4445,6 +4445,68 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
                                ElementsAre(FormMatches(saved_form)))));
 }
 
+// Tests that Password Manager's behavior on usernames outside of the password
+// form can be controlled by Finch config param. Modifies LRU cache's size that
+// stores possible single usernames by a finch param. Then, single username
+// override will not be considered as a candidate for password form with
+// username and password fields.
+TEST_F(PasswordManagerTest, UsernameFirstFlowCacheSizeFromFinchParam) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(test_form_url_))
+      .WillRepeatedly(Return(true));
+  base::test::ScopedFeatureList features;
+  base::FieldTrialParams feature_parameters{
+      {features::kMaxSingleUsernameFieldsToStore.name, "1"}};
+  features.InitAndEnableFeatureWithParameters(
+      features::kUsernameFirstFlowStoreSeveralValues, feature_parameters);
+  // Reinitialize `PasswordManager` class, so that cache size is picked from the
+  // finch feature param.
+  manager_ = std::make_unique<PasswordManager>(&client_);
+  manager_->set_leak_factory(
+      std::make_unique<testing::NiceMock<MockLeakDetectionCheckFactory>>());
+
+  // Simulate the user typed in a username form.
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
+  const std::u16string username = u"newusername@gmail.com";
+  EXPECT_CALL(driver_, GetLastCommittedURL())
+      .WillRepeatedly(ReturnRef(username_form.url));
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/username,
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+  manager()->ProcessAutofillPredictions(
+      &driver_, username_form.form_data,
+      CreateServerPredictions(username_form.form_data,
+                              {{0, ServerFieldType::SINGLE_USERNAME}},
+                              /*is_override=*/true));
+
+  // Simulate that a form which contains username and password fields is added
+  // to the page.
+  PasswordForm password_form(MakeSimpleForm());
+  manager()->OnPasswordFormsParsed(&driver_, {password_form.form_data});
+  manager()->OnPasswordFormsRendered(
+      &driver_, /*visible_forms_data=*/{password_form.form_data});
+
+  // Simulate user modifying the text fields inside password form.
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, password_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/password_form.form_data.fields[0].value,
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+
+  std::unique_ptr<PasswordFormManagerForUI> form_manager;
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&form_manager, false));
+  task_environment_.RunUntilIdle();
+  OnPasswordFormSubmitted(password_form.form_data);
+  manager()->OnPasswordFormsRendered(&driver_, /*visible_forms_data=*/{});
+  ASSERT_TRUE(form_manager);
+  // Even though there was a text field with single username override, it
+  // wasn't picked since the LRU cache size is limited to 1.
+  EXPECT_THAT(form_manager->GetPendingCredentials(),
+              FormMatches(password_form));
+}
+
 // Tests submitting an OTP password form after a single username form.
 // `OnLoginSuccessful` doesn't get called, so `possible_usernames_` are not
 // cleared, and the potential single username value is proposed in the manual

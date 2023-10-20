@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace password_manager::features {
 
@@ -165,6 +166,9 @@ BASE_FEATURE(kUsernameFirstFlowHonorAutocomplete,
 BASE_FEATURE(kUsernameFirstFlowStoreSeveralValues,
              "UsernameFirstFlowStoreSeveralValues",
              base::FEATURE_ENABLED_BY_DEFAULT);
+extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore{
+    &kUsernameFirstFlowStoreSeveralValues, /*name=*/"max_elements",
+    /*default_value=*/10};
 
 // Enables tolerating intermediate fields like OTP or CAPTCHA
 // between username and password fields in Username First Flow.
