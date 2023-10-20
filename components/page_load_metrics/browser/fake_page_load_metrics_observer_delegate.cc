@@ -9,11 +9,16 @@
 
 namespace page_load_metrics {
 
+namespace {
+static int g_next_navigation_id_ = 1;
+}
+
 FakePageLoadMetricsObserverDelegate::FakePageLoadMetricsObserverDelegate()
     : user_initiated_info_(UserInitiatedInfo::NotUserInitiated()),
       page_end_user_initiated_info_(UserInitiatedInfo::NotUserInitiated()),
       visibility_tracker_(base::DefaultTickClock::GetInstance(),
                           /*is_shown=*/true),
+      navigation_id_(g_next_navigation_id_++),
       navigation_start_(base::TimeTicks::Now()) {}
 FakePageLoadMetricsObserverDelegate::~FakePageLoadMetricsObserverDelegate() =
     default;
@@ -217,6 +222,10 @@ bool FakePageLoadMetricsObserverDelegate::IsOriginVisit() const {
 
 bool FakePageLoadMetricsObserverDelegate::IsTerminalVisit() const {
   return false;
+}
+
+int64_t FakePageLoadMetricsObserverDelegate::GetNavigationId() const {
+  return navigation_id_;
 }
 
 void FakePageLoadMetricsObserverDelegate::AddBackForwardCacheRestore(

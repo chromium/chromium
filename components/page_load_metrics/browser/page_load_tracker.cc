@@ -296,6 +296,7 @@ PageLoadTracker::PageLoadTracker(
     ukm::SourceId source_id,
     base::WeakPtr<PageLoadTracker> parent_tracker)
     : did_stop_tracking_(false),
+      navigation_id_(navigation_handle->GetNavigationId()),
       navigation_start_(navigation_handle->NavigationStart()),
       url_(navigation_handle->GetURL()),
       start_url_(navigation_handle->GetURL()),
@@ -1381,6 +1382,10 @@ bool PageLoadTracker::IsOriginVisit() const {
 
 bool PageLoadTracker::IsTerminalVisit() const {
   return is_terminal_visit_;
+}
+
+int64_t PageLoadTracker::GetNavigationId() const {
+  return navigation_id_;
 }
 
 void PageLoadTracker::RecordLinkNavigation() {

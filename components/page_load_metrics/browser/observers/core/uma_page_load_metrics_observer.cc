@@ -15,6 +15,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_data_validation.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
@@ -27,6 +29,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/events/blink/blink_features.h"
 
@@ -419,6 +422,8 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   DCHECK(timing.paint_timing->first_contentful_paint);
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.paint_timing->first_contentful_paint, GetDelegate())) {
+    EmitFCPTraceEvent(GetDelegate().GetNavigationStart(),
+                      timing.paint_timing->first_contentful_paint.value());
     PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstContentfulPaint,
                         timing.paint_timing->first_contentful_paint.value());
     PAGE_LOAD_HISTOGRAM(internal::kHistogramParseStartToFirstContentfulPaint,
@@ -443,20 +448,6 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
           navigation_start);
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
           "latency", "Long Navigation to First Contentful Paint", trace_id,
-          navigation_start +
-              timing.paint_timing->first_contentful_paint.value());
-    }
-    {
-      auto trace_id = TRACE_ID_WITH_SCOPE(
-          "UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage",
-          TRACE_ID_LOCAL(this));
-      base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-          "loading", "PageLoadMetrics.NavigationToFirstContentfulPaint",
-          trace_id, navigation_start, "URL", GetDelegate().GetUrl());
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-          "loading", "PageLoadMetrics.NavigationToFirstContentfulPaint",
-          trace_id,
           navigation_start +
               timing.paint_timing->first_contentful_paint.value());
     }
@@ -899,6 +890,8 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
   if (all_frames_largest_contentful_paint.ContainsValidTime() &&
       WasStartedInForegroundOptionalEventInForeground(
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
+    EmitLCPTraceEvent(GetDelegate().GetNavigationStart(),
+                      all_frames_largest_contentful_paint.Time().value());
     PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestContentfulPaint,
                         all_frames_largest_contentful_paint.Time().value());
     // The pseudo metric of |kHistogramLargestContentfulPaint|. Only used to
@@ -915,18 +908,6 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
         GetDelegate().GetNavigationStart() +
             all_frames_largest_contentful_paint.Time().value(),
         "data", all_frames_largest_contentful_paint.DataAsTraceValue());
-
-    auto trace_id = TRACE_ID_WITH_SCOPE(
-        "UmaPageLoadMetricsObserver::RecordTimingHistograms",
-        TRACE_ID_LOCAL(this));
-    base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "loading", "PageLoadMetrics.NavigationToLargestContentfulPaint",
-        trace_id, navigation_start, "URL", GetDelegate().GetUrl());
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "loading", "PageLoadMetrics.NavigationToLargestContentfulPaint",
-        trace_id,
-        navigation_start + all_frames_largest_contentful_paint.Time().value());
   }
 
   if (main_frame_timing.interactive_timing->longest_input_timestamp) {
@@ -1085,4 +1066,51 @@ void UmaPageLoadMetricsObserver::RecordV8MemoryHistograms() {
 void UmaPageLoadMetricsObserver::MemoryUsage::UpdateUsage(int64_t delta_bytes) {
   current_bytes_used_ += delta_bytes;
   max_bytes_used_ = std::max(max_bytes_used_, current_bytes_used_);
+}
+
+// Perfetto trace events for page load events need to be in sync with UMA
+// histogram data for metric accuracy; they are recorded together accordingly.
+// Navigation ID is used to join all related trace events.
+void UmaPageLoadMetricsObserver::EmitFCPTraceEvent(
+    base::TimeTicks navigation_start,
+    base::TimeDelta first_contentful_paint_timing) {
+  const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
+                              perfetto::ProcessTrack::Current());
+
+  TRACE_EVENT_BEGIN(
+      "loading,interactions",
+      "PageLoadMetrics.NavigationToFirstContentfulPaint", track,
+      navigation_start, [&](perfetto::EventContext& ctx) {
+        auto* page_load_proto =
+            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_page_load();
+        page_load_proto->set_url(
+            GetDelegate().GetUrl().possibly_invalid_spec());
+        page_load_proto->set_navigation_id(GetDelegate().GetNavigationId());
+      });
+
+  TRACE_EVENT_END("loading,interactions", track,
+                  navigation_start + first_contentful_paint_timing);
+}
+
+void UmaPageLoadMetricsObserver::EmitLCPTraceEvent(
+    base::TimeTicks navigation_start,
+    base::TimeDelta largest_contentful_paint_timing) {
+  const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
+                              perfetto::ProcessTrack::Current());
+  TRACE_EVENT_BEGIN(
+      "loading,interactions",
+      "PageLoadMetrics.NavigationToLargestContentfulPaint", track,
+      navigation_start, [&](perfetto::EventContext& ctx) {
+        auto* page_load_proto =
+            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_page_load();
+        page_load_proto->set_navigation_id(GetDelegate().GetNavigationId());
+
+        // URL is not needed here, as it will already be recorded in the FCP
+        // trace event. We can join the events using the navigation id.
+      });
+
+  TRACE_EVENT_END("loading,interactions", track,
+                  navigation_start + largest_contentful_paint_timing);
 }

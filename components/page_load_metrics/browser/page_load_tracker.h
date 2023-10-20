@@ -309,6 +309,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   bool IsFirstNavigationInWebContents() const override;
   bool IsOriginVisit() const override;
   bool IsTerminalVisit() const override;
+  int64_t GetNavigationId() const override;
 
   void Redirect(content::NavigationHandle* navigation_handle);
   void WillProcessNavigationResponse(
@@ -499,6 +500,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // stop tracking a navigation if it doesn't meet the criteria for tracking
   // metrics in DidFinishNavigation.
   bool did_stop_tracking_;
+
+  int64_t navigation_id_;
 
   // The navigation start in TimeTicks, not the wall time reported by Blink.
   const base::TimeTicks navigation_start_;

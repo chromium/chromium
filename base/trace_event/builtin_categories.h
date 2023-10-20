@@ -70,6 +70,7 @@
   X("compositor")                                                        \
   X("content")                                                           \
   X("content_capture")                                                   \
+  X("interactions")                                                      \
   X("delegated_ink_trails")                                              \
   X("device")                                                            \
   X("devtools")                                                          \
@@ -356,6 +357,7 @@
   X("ipc,security")                                                           \
   X("ipc,toplevel")                                                           \
   X("Java,devtools," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))          \
+  X("loading,interactions")                                                   \
   X("loading,rail")                                                           \
   X("loading,rail,devtools.timeline")                                         \
   X("media,gpu")                                                              \

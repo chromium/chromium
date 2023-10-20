@@ -1449,9 +1449,14 @@ message ScrollPredictorMetrics {
   optional bool is_slow_scroll = 6;
 };
 
+message PageLoad {
+  optional int64 navigation_id = 1;
+  optional string url = 2;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1056
+  // Next ID: 1057
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1569,5 +1574,7 @@ message ChromeTrackEvent {
     optional LibunwindstackUnwinder libunwindstack_unwinder = 1054;
 
     optional ScrollPredictorMetrics scroll_predictor_metrics = 1055;
+
+    optional PageLoad page_load = 1056;
   }
 }

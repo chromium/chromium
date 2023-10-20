@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_trace_processor.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
@@ -17,7 +18,9 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,11 +48,18 @@ const char kDefaultTestUrl2[] = "https://whatever.com";
 
 class UmaPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverContentTestHarness,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<bool>,
+      public content::WebContentsObserver {
  public:
+  using page_load_metrics::PageLoadMetricsObserverContentTestHarness::
+      web_contents;
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
   }
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  ::base::test::TracingEnvironment tracing_environment_;
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
  protected:
   bool WithFencedFrames() { return GetParam(); }
@@ -80,6 +90,7 @@ class UmaPageLoadMetricsObserverTest
         features::kV8PerFrameMemoryMonitoring);
     page_load_metrics::PageLoadMetricsObserverContentTestHarness::SetUp();
     page_load_metrics::LargestContentfulPaintHandler::SetTestMode(true);
+    WebContentsObserver::Observe(web_contents());
   }
 
   void OnCpuTimingUpdate(RenderFrameHost* render_frame_host,
@@ -150,6 +161,13 @@ class UmaPageLoadMetricsObserverTest
                               int64_t delta_bytes) {
     tester()->SimulateMemoryUpdate(render_frame_host, delta_bytes);
   }
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    last_navigation_id_ = navigation_handle->GetNavigationId();
+  }
+
+  int64_t last_navigation_id_ = -1;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1423,3 +1441,97 @@ TEST_P(UmaPageLoadMetricsObserverTest,
   // Make sure subframe LCP from same-site is ignored
   TestCrossSiteSubFrameLCP(4780);
 }
+
+// The following tests are ensure that Page Load metrics are recorded in a
+// trace. Currently enabled only for platforms where USE_PERFETTO_CLIENT_LIBRARY
+// is true (Android, Linux) as test infra (TestTraceProcessor) requires it.
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+TEST_F(UmaPageLoadMetricsObserverTest, TestTracingFirstContentfulPaint) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("interactions");
+
+  base::TimeDelta parse_start = base::Milliseconds(1);
+  base::TimeDelta response = base::Milliseconds(1);
+  base::TimeDelta first_image_paint = base::Milliseconds(30);
+  base::TimeDelta first_contentful_paint = first_image_paint;
+  base::TimeDelta dom_content = base::Milliseconds(40);
+  base::TimeDelta load = base::Milliseconds(100);
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.response_start = response;
+  timing.parse_timing->parse_start = parse_start;
+  timing.paint_timing->first_image_paint = first_image_paint;
+  timing.paint_timing->first_contentful_paint = first_contentful_paint;
+  timing.document_timing->dom_content_loaded_event_start = dom_content;
+  timing.document_timing->load_event_start = load;
+  PopulateRequiredTimingFields(&timing);
+
+  GURL url(kDefaultTestUrl);
+  NavigateAndCommit(url);
+  tester()->SimulateTimingUpdate(timing);
+
+  // Ensure that the "PageLoadMetrics.NavigationToFirstContentfulPaint" trace
+  // event is emitted.
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  std::string query = R"(
+    SELECT
+      EXTRACT_ARG(arg_set_id, 'page_load.url') AS url,
+      EXTRACT_ARG(arg_set_id, 'page_load.navigation_id')
+        AS navigation_id
+    FROM slice
+    WHERE name = 'PageLoadMetrics.NavigationToFirstContentfulPaint'
+  )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(
+      result.value(),
+      ::testing::ElementsAre(
+          std::vector<std::string>{"url", "navigation_id"},
+          std::vector<std::string>{url.possibly_invalid_spec(),
+                                   base::NumberToString(last_navigation_id_)}));
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest, TestTracingLargestContentfulPaint) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("interactions");
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::Milliseconds(4780);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 10;
+  // Pick a value that lines up with a histogram bucket.
+  timing.paint_timing->largest_contentful_paint->largest_text_paint =
+      base::Milliseconds(990);
+  timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 100;
+  PopulateRequiredTimingFields(&timing);
+
+  GURL url(kDefaultTestUrl);
+  NavigateAndCommit(url);
+  tester()->SimulateTimingUpdate(timing);
+  int64_t navigation_id = last_navigation_id_;
+  // Navigate again to force histogram recording. This also increments the
+  // navigation id.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  std::string query = R"(
+    SELECT
+      EXTRACT_ARG(arg_set_id, 'page_load.navigation_id')
+        AS navigation_id
+    FROM slice
+    WHERE name = 'PageLoadMetrics.NavigationToLargestContentfulPaint'
+  )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"navigation_id"},
+                                     std::vector<std::string>{
+                                         base::NumberToString(navigation_id)}));
+}
+#endif
