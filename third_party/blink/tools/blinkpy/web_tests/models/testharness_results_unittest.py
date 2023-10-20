@@ -2,9 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import textwrap
 import unittest
 
 from blinkpy.web_tests.models import testharness_results
+from blinkpy.web_tests.models.testharness_results import (
+    TestharnessLine,
+    LineType,
+    Status,
+)
 
 
 class TestHarnessResultCheckerTest(unittest.TestCase):
@@ -233,3 +239,51 @@ class TestHarnessResultCheckerTest(unittest.TestCase):
             testharness_results.has_other_useful_output('Not a CONFRIM'))
         self.assertFalse(
             testharness_results.has_other_useful_output('Not a PROMPT'))
+
+    def test_parse_testharness_baseline(self):
+        results = testharness_results.parse_testharness_baseline(
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: ShadowRealm is not defined
+                [PASS] Query "geolocation" permission
+                [ FAIL, TIMEOUT ] Window interface: attribute\\n\\0\\revent
+                  assert_true: property should be enumerable\\n\\0\\r  expected true got false
+
+                CONSOLE ERROR: Console error
+                Harness: the test ran to completion.
+                """))
+        self.assertEqual(len(results), 6)
+
+        self.assertIs(results[0].line_type, LineType.HEADER)
+        self.assertEqual(results[0].statuses, frozenset())
+        self.assertIsNone(results[0].subtest)
+        self.assertIsNone(results[0].message)
+
+        self.assertIs(results[1].line_type, LineType.HARNESS_ERROR)
+        self.assertEqual(results[1].statuses, {Status.ERROR})
+        self.assertIsNone(results[1].subtest)
+        self.assertEqual(results[1].message,
+                         'ReferenceError: ShadowRealm is not defined')
+
+        self.assertIs(results[2].line_type, LineType.SUBTEST)
+        self.assertEqual(results[2].statuses, {Status.PASS})
+        self.assertEqual(results[2].subtest, 'Query "geolocation" permission')
+        self.assertIsNone(results[2].message)
+
+        self.assertIs(results[3].line_type, LineType.SUBTEST)
+        self.assertEqual(results[3].statuses, {Status.FAIL, Status.TIMEOUT})
+        self.assertEqual(results[3].subtest,
+                         'Window interface: attribute\n\0\revent')
+        self.assertEqual(
+            results[3].message, 'assert_true: property should be enumerable'
+            '\n\0\r  expected true got false')
+
+        self.assertIs(results[4].line_type, LineType.CONSOLE_ERROR)
+        self.assertEqual(results[4].statuses, frozenset())
+        self.assertIsNone(results[4].subtest)
+        self.assertEqual(results[4].message, 'Console error')
+
+        self.assertIs(results[5].line_type, LineType.FOOTER)
+        self.assertEqual(results[5].statuses, frozenset())
+        self.assertIsNone(results[5].subtest)
+        self.assertIsNone(results[5].message)
