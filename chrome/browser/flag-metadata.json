@@ -3891,11 +3891,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "experimental-web-app-profile-isolation",
-    "owners": [ "lxj@google.com", "glenrob@chromium.org", "chromeos-web-apps-platform-syd@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "experimental-web-app-storage-partition-isolation",
     "owners": [ "lxj@google.com", "glenrob@chromium.org", "chromeos-web-apps-platform-syd@google.com"],
     "expiry_milestone": 130

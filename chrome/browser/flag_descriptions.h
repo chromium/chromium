@@ -4105,9 +4105,6 @@ extern const char kLacrosSharedComponentsDirDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-extern const char kExperimentalWebAppProfileIsolationName[];
-extern const char kExperimentalWebAppProfileIsolationDescription[];
-
 extern const char kExperimentalWebAppStoragePartitionIsolationName[];
 extern const char kExperimentalWebAppStoragePartitionIsolationDescription[];
 
