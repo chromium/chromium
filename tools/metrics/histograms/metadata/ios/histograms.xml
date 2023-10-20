@@ -2899,10 +2899,11 @@ chromium-metrics-reviews@google.com.
   <owner>qpubert@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
-    Logged when the Photos service starts, if and only if the Save to Photos
-    settings are accessible from Settings. It gives information about the state
-    of the Save to Photos &quot;default account&quot; settings i.e. whether the
-    user opted-in to skip the account picker.
+    Logged when the Photos service starts. It gives information about the state
+    of the Save to Photos settings i.e. (a) if a default account has been set,
+    and if so, if the account still exists on the device; (b) if the user did
+    opt-in to skip the account picker by disabling the &quot;Ask which account
+    to use every time&quot; switch.
   </summary>
 </histogram>
 
