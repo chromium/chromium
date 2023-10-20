@@ -509,6 +509,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.Dawn.InfoCollectionTimeMS" units="ms"
+    expires_after="2024-02-25">
+  <owner>enga@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Measures the time to collect Dawn information during GPU info collection.
+  </summary>
+</histogram>
+
 <histogram name="GPU.DirectComposition.ApprovedPresentDuration" units="ms"
     expires_after="2022-01-03">
   <owner>sunnyps@chromium.org</owner>

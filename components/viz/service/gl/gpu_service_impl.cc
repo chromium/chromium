@@ -1686,12 +1686,50 @@ void GpuServiceImpl::GetDawnInfo(bool collect_metrics,
                      collect_metrics, std::move(callback)));
 }
 
+BASE_FEATURE(kPauseWatchdogDuringDawnInfoCollection,
+             "PauseWatchdogDuringDawnInfoCollection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableDawnInfoCollectionWatchdogReportOnlyMode,
+             "EnableDawnInfoCollectionWatchdogReportOnlyMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 void GpuServiceImpl::GetDawnInfoOnMain(bool collect_metrics,
                                        GetDawnInfoCallback callback) {
   DCHECK(main_runner_->BelongsToCurrentThread());
+  static const bool pause_watchdog =
+      base::FeatureList::IsEnabled(kPauseWatchdogDuringDawnInfoCollection);
+  static const bool report_only_mode = base::FeatureList::IsEnabled(
+      kEnableDawnInfoCollectionWatchdogReportOnlyMode);
 
   std::vector<std::string> dawn_info_list;
-  gpu::CollectDawnInfo(gpu_preferences_, collect_metrics, &dawn_info_list);
+  // Pause the watchdog around Dawn info collection since it is known to be
+  // slow loading GPU drivers.
+  if (watchdog_thread_ && pause_watchdog) {
+    if (report_only_mode) {
+      watchdog_thread_->EnableReportOnlyMode();
+    } else {
+      watchdog_thread_->PauseWatchdog();
+    }
+  }
+
+  if (report_only_mode) {
+    SCOPED_UMA_HISTOGRAM_TIMER("GPU.Dawn.InfoCollectionTimeMS");
+    gpu::CollectDawnInfo(gpu_preferences_, collect_metrics, &dawn_info_list);
+  } else {
+    // Don't collect metrics if not in report only mode. Otherwise fast timings
+    // will be recorded, and very-slow timings will crash and not record,
+    // skewing the results.
+    gpu::CollectDawnInfo(gpu_preferences_, collect_metrics, &dawn_info_list);
+  }
+
+  if (watchdog_thread_ && pause_watchdog) {
+    if (report_only_mode) {
+      watchdog_thread_->DisableReportOnlyMode();
+    } else {
+      watchdog_thread_->ResumeWatchdog();
+    }
+  }
 
   io_runner_->PostTask(FROM_HERE,
                        base::BindOnce(std::move(callback), dawn_info_list));
