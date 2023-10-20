@@ -11,7 +11,6 @@ mojom("mojom") {
   sources = [ "app_notification_handler.mojom" ]
 
   webui_module_path = "/"
-  use_typescript_sources = true
 
   public_deps = [
     "//mojo/public/mojom/base",

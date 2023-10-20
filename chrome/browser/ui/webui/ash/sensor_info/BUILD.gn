@@ -10,5 +10,4 @@ assert(is_chromeos_ash, "Sensor Info is ash-chrome only.")
 mojom("mojo_bindings") {
   sources = [ "sensor.mojom" ]
   webui_module_path = "/"
-  use_typescript_sources = true
 }

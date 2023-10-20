@@ -10,5 +10,4 @@ assert(is_chromeos_ash)
 mojom("mojo_bindings") {
   webui_module_path = "/"
   sources = [ "add_supervision.mojom" ]
-  use_typescript_sources = true
 }

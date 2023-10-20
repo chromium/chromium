@@ -8,5 +8,4 @@ mojom("mojo_bindings") {
   sources = [ "location_internals.mojom" ]
   deps = [ "//services/device/public/mojom:geolocation_internals" ]
   webui_module_path = "/"
-  use_typescript_sources = true
 }

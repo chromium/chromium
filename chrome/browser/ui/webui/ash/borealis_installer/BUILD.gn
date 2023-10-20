@@ -11,5 +11,4 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
   public_deps =
       [ "//chrome/browser/ash/borealis:borealis_installer_types_mojom" ]
-  use_typescript_sources = true
 }
