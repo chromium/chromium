@@ -58,7 +58,7 @@ constexpr FileHandlerConfig kFileHandlers[] = {
     // unknown mime types.
     {"video/ogg", ".ogv,.ogx,.ogm"},
     {"video/webm", ".webm"},
-    {"video/mpeg", ".3gp,.avi,.m4v,.mkv,.mov,.mp4,.mpeg,.mpeg4,.mpg,.mpg4"},
+    {"video/mpeg", ".3gp,.m4v,.mkv,.mov,.mp4,.mpeg,.mpeg4,.mpg,.mpg4"},
 
     // More image formats. These are needed because MIME types are not always
     // available, even for known extensions. E.g. filesystem providers may
