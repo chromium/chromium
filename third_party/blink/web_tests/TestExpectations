@@ -7028,6 +7028,9 @@ crbug.com/1493342 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamu
 crbug.com/1493342 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-video.html [ Failure ]
 crbug.com/1493455 external/wpt/pointerevents/pointerevent_pointerrawupdate.html [ Failure ]
 
+# Gardener 2023-10-19
+crbug.com/1494133 media/controls/video-overlay-cast-light-rendering.html [ Pass Failure ]
+
 # Gardener 2023-10-20
 crbug.com/1494242 [ Mac ] external/wpt/background-fetch/fetch.https.window.html [ Failure Timeout ]
 crbug.com/1494265 [ Mac10.15 ] external/wpt/intersection-observer/padding-clip.html [ Failure ]
