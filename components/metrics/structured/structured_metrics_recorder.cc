@@ -450,11 +450,10 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
     event_sequence_metadata->set_event_unique_id(
         base::HashMetricName(event.event_sequence_metadata().event_unique_id));
 
-    int days_since_rotation =
-        profile_key_data->LastKeyRotation(project_validator->project_hash())
+    const int rotation_age =
+        profile_key_data->GetKeyAgeInWeeks(project_validator->project_hash())
             .value_or(0);
-    event_sequence_metadata->set_client_id_rotation_weeks(days_since_rotation /
-                                                          7);
+    event_sequence_metadata->set_client_id_rotation_weeks(rotation_age);
 
     event_proto->set_device_project_id(
         device_key_data->Id(project_validator->project_hash(),

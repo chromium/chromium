@@ -195,6 +195,11 @@ class StructuredMetricsRecorderTest : public testing::Test {
     key_three.set_last_rotation(today);
     key_three.set_rotation_period(90);
 
+    KeyProto& cros_events = (*proto.mutable_keys())[kCrOSEventsProjectHash];
+    cros_events.set_key("cccccccccccccccccccccccccccccccc");
+    cros_events.set_last_rotation(today);
+    cros_events.set_rotation_period(90);
+
     base::CreateDirectory(ProfileKeyFilePath().DirName());
     ASSERT_TRUE(
         base::WriteFile(ProfileKeyFilePath(), proto.SerializeAsString()));
@@ -1086,6 +1091,27 @@ TEST_F(StructuredMetricsRecorderTest, DisallowedProjectAreDropped) {
   const auto data = GetEventMetrics();
   ASSERT_EQ(data.events_size(), 1);
   ASSERT_EQ(data.events(0).project_name_hash(), kProjectTwoHash);
+}
+
+TEST_F(StructuredMetricsRecorderTest, CorrectClientAge) {
+  WriteTestingProfileKeys();
+
+  Init();
+
+  const int advance_days = 30;
+  const uint32_t expected_client_age_weeks = advance_days / 7;
+
+  // Advance clock by 30 days.
+  task_environment_.AdvanceClock(base::Days(advance_days));
+
+  events::v2::cr_os_events::NoMetricsEvent test_event;
+  test_event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
+  test_event.Record();
+
+  const auto data = GetEventMetrics();
+  ASSERT_EQ(data.events_size(), 1);
+  ASSERT_EQ(data.events(0).event_sequence_metadata().client_id_rotation_weeks(),
+            expected_client_age_weeks);
 }
 
 class TestProcessor : public EventsProcessorInterface {
