@@ -68,14 +68,14 @@ void PrefNotifierImpl::AddPrefObserver(const std::string& path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Get the pref observer list associated with the path.
-  PrefObserverList* observer_list = nullptr;
   auto observer_iterator = pref_observers_.find(path);
   if (observer_iterator == pref_observers_.end()) {
-    observer_list = new PrefObserverList;
-    pref_observers_[path] = base::WrapUnique(observer_list);
-  } else {
-    observer_list = observer_iterator->second.get();
+    observer_iterator =
+        pref_observers_.emplace(path, std::make_unique<PrefObserverList>())
+            .first;
   }
+
+  PrefObserverList* observer_list = observer_iterator->second.get();
 
   // Add the pref observer. ObserverList will DCHECK if it already is
   // in the list.
