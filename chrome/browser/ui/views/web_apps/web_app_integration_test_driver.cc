@@ -25,8 +25,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -63,7 +61,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
-#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -145,10 +142,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/events/event.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -742,25 +736,6 @@ void ReinitializeAppService(Profile* profile) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-class IntentChipVisibilityObserver : public OmniboxChipButton::Observer {
- public:
-  explicit IntentChipVisibilityObserver(IntentChipButton* intent_chip) {
-    observation_.Observe(intent_chip);
-  }
-
-  void WaitForChipToBeVisible() { run_loop_.Run(); }
-  void OnChipVisibilityChanged(bool is_visible) override {
-    if (is_visible) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::ScopedObservation<IntentChipButton, OmniboxChipButton::Observer>
-      observation_{this};
-  base::RunLoop run_loop_;
-};
 
 }  // anonymous namespace
 
@@ -1677,14 +1652,20 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
 
   NavigateTabbedBrowserToSite(GetInScopeURL(site), NavigationMode::kNewTab);
 
+  ASSERT_TRUE(intent_picker_view()->GetVisible());
   BrowserAddedWaiter browser_added_waiter;
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-  views::test::ButtonTestApi test_api(intent_picker_view());
-  test_api.NotifyClick(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  waiter.WaitIfNeededAndGet();
+
+  if (IntentPickerBubbleView::intent_picker_bubble()) {
+    // This means that the intent_picker_bubble has shown up before the scoped
+    // response was provided. Manually accept the bubble.
+    IntentPickerBubbleView::intent_picker_bubble()->AcceptDialog();
+  } else {
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        IntentPickerBubbleView::kViewClassName);
+    intent_picker_view()->ExecuteForTesting();
+    waiter.WaitIfNeededAndGet();
+  }
 
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
@@ -4016,7 +3997,13 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
       bool launch_icon_shown = false;
       bool is_app_browser = AppBrowserController::IsWebApp(browser);
       if (!is_app_browser && active_tab != nullptr) {
-        AwaitIntentPickerIconInit();
+        auto* tab_helper = IntentPickerTabHelper::FromWebContents(active_tab);
+        base::RunLoop run_loop;
+        tab_helper->SetIconUpdateCallbackForTesting(
+            run_loop.QuitClosure(),
+            /*include_latest_navigation*/ true);
+        run_loop.Run();
+
         launch_icon_shown = intent_picker_view()->GetVisible();
       }
       webapps::AppId app_id;
@@ -4557,71 +4544,13 @@ PageActionIconView* WebAppIntegrationTestDriver::pwa_install_view() {
   return pwa_install_view;
 }
 
-views::Button* WebAppIntegrationTestDriver::intent_picker_view() {
-  views::Button* intent_picker_view = nullptr;
-  if (apps::features::LinkCapturingUiUpdateEnabled()) {
-    intent_picker_view = BrowserView::GetBrowserViewForBrowser(browser())
-                             ->toolbar_button_provider()
-                             ->GetIntentChipButton();
-  } else {
-    intent_picker_view =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetPageActionIconView(PageActionIconType::kIntentPicker);
-  }
+PageActionIconView* WebAppIntegrationTestDriver::intent_picker_view() {
+  PageActionIconView* intent_picker_view =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->toolbar_button_provider()
+          ->GetPageActionIconView(PageActionIconType::kIntentPicker);
   CHECK(intent_picker_view);
   return intent_picker_view;
-}
-
-testing::AssertionResult
-WebAppIntegrationTestDriver::AwaitIntentPickerIconInit() {
-  base::test::TestFuture<bool> future;
-  auto* tab_helper = IntentPickerTabHelper::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  tab_helper->SetIconUpdateCallbackForTesting(
-      future.GetCallback(), /*include_latest_navigation=*/true);
-  if (!future.Wait()) {
-    return testing::AssertionFailure()
-           << "Intent picker app did not resolve an applicable app.";
-  }
-
-  views::Button* intent_picker_icon = intent_picker_view();
-  if (!intent_picker_icon) {
-    return testing::AssertionFailure() << "Intent picker icon does not exist.";
-  }
-
-  // The callback from IntentPickerTabHelper returning true is an indication
-  // that app icons have been loaded and an asynchronous wait might be needed
-  // for the intent picker to load.
-  if (future.Get()) {
-    testing::AssertionResult intent_visible_result =
-        WaitForIntentPickerIconToBeVisible();
-    if (!intent_visible_result) {
-      return intent_visible_result;
-    }
-  }
-
-  return testing::AssertionSuccess();
-}
-
-testing::AssertionResult
-WebAppIntegrationTestDriver::WaitForIntentPickerIconToBeVisible() {
-  views::Button* intent_picker_view_button = intent_picker_view();
-  if (!intent_picker_view_button->GetVisible() &&
-      apps::features::LinkCapturingUiUpdateEnabled()) {
-    // The views::Button element can only be static casted to an
-    // IntentChipButton if the link capturing flag is switched on, otherwise, it
-    // is a PageActionIconView and cannot be static casted.
-    IntentChipVisibilityObserver intent_chip_observer(
-        static_cast<IntentChipButton*>(intent_picker_view_button));
-    intent_chip_observer.WaitForChipToBeVisible();
-    if (!intent_picker_view_button->GetVisible()) {
-      return testing::AssertionFailure()
-             << "Intent picker chip never became visible.";
-    }
-  }
-
-  return testing::AssertionSuccess();
 }
 
 const net::EmbeddedTestServer&
@@ -4654,11 +4583,10 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
   base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1462253): Solve flakiness issues with ChromeOS Lacros.
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/1357905): Update test driver to work with new UI.
   disabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 

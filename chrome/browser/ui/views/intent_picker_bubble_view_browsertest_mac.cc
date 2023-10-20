@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/test/test_future.h"
 #include "chrome/browser/apps/link_capturing/mac_intent_picker_helpers.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -37,11 +36,11 @@ class IntentPickerBubbleViewBrowserTestMac : public InProcessBrowserTest {
 
   template <typename Action>
   void DoAndWaitForIntentPickerIconUpdate(Action action) {
-    base::test::TestFuture<bool> test_future;
+    base::RunLoop run_loop;
     auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
-    tab_helper->SetIconUpdateCallbackForTesting(test_future.GetCallback());
+    tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
     action();
-    EXPECT_TRUE(test_future.Wait()) << " intent picker icon did not update";
+    run_loop.Run();
   }
 
   size_t GetItemContainerSize(IntentPickerBubbleView* bubble) {
