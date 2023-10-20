@@ -609,7 +609,7 @@ TEST_F(StyleResolverTest, NoFetchForAtPage) {
     </style>
   )HTML");
 
-  GetDocument().GetStyleEngine().UpdateActiveStyle();
+  UpdateAllLifecyclePhasesForTest();
   const ComputedStyle* page_style =
       GetDocument().GetStyleResolver().StyleForPage(0, g_empty_atom);
   ASSERT_TRUE(page_style);

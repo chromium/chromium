@@ -1728,20 +1728,21 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
 const ComputedStyle* StyleResolver::StyleForPage(
     uint32_t page_index,
     const AtomicString& page_name) {
-  const ComputedStyle* initial_style = InitialStyleForElement();
-  if (!GetDocument().documentElement()) {
-    return initial_style;
+  // The page context inherits from the root element.
+  Element* root_element = GetDocument().documentElement();
+  if (!root_element) {
+    return InitialStyleForElement();
   }
-
-  const ComputedStyle* document_style = GetDocument().GetComputedStyle();
-  StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
+  DCHECK(!GetDocument().NeedsLayoutTreeUpdateForNode(*root_element));
+  const ComputedStyle* parent_style = root_element->EnsureComputedStyle();
+  StyleResolverState state(GetDocument(), *root_element,
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial_style));
-  state.CreateNewStyle(*initial_style, *document_style);
+                           StyleRequest(parent_style));
+  state.CreateNewStyle(*parent_style, *parent_style);
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
-  PageRuleCollector collector(document_style, page_index, page_name,
+  PageRuleCollector collector(parent_style, page_index, page_name,
                               cascade.MutableMatchResult());
 
   collector.MatchPageRules(
