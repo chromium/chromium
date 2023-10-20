@@ -58,10 +58,10 @@ class MockResourceRequestSender : public ResourceRequestSender {
     }
   }
 
-  void OnReceivedResponse(
-      network::mojom::URLResponseHeadPtr head,
-      base::TimeTicks response_arrival_time,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
+                          mojo::ScopedDataPipeConsumerHandle body,
+                          absl::optional<mojo_base::BigBuffer> cached_metadata,
+                          base::TimeTicks response_arrival_time) override {
     EXPECT_FALSE(context_->cancelled);
     EXPECT_FALSE(context_->received_response);
     EXPECT_FALSE(context_->complete);
@@ -70,16 +70,10 @@ class MockResourceRequestSender : public ResourceRequestSender {
     if (cached_metadata) {
       context_->cached_metadata = std::move(*cached_metadata);
     }
-    if (context_->cancel_on_receive_response)
+    if (context_->cancel_on_receive_response) {
       context_->cancelled = true;
-  }
-
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    if (context_->cancelled)
       return;
-    EXPECT_TRUE(context_->received_response);
-    EXPECT_FALSE(context_->complete);
+    }
     context_->body_handle = std::move(body);
   }
 

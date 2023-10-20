@@ -213,14 +213,16 @@ void SyncLoadContext::CancelRedirect() {
 
 void SyncLoadContext::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr head,
-    base::TimeTicks response_arrival_at_renderer,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata,
+    base::TimeTicks response_arrival_at_renderer) {
   DCHECK(!Completed());
   response_->head = std::move(head);
-}
 
-void SyncLoadContext::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
+  if (!body) {
+    return;
+  }
+
   if (mode_ == Mode::kBlob) {
     DCHECK(download_to_blob_registry_);
     DCHECK(!blob_response_started_);

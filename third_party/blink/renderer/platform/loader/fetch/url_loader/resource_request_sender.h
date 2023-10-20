@@ -141,19 +141,16 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
 
   // Called when response headers are available.
   virtual void OnReceivedResponse(
-      network::mojom::URLResponseHeadPtr,
-      base::TimeTicks response_arrival_timing_at_renderer,
-      absl::optional<mojo_base::BigBuffer> cached_metadata);
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata,
+      base::TimeTicks response_arrival_timing_at_renderer);
 
   // Called when a redirect occurs.
   virtual void OnReceivedRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
-
-  // Called when the response body becomes available.
-  virtual void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body);
 
   // Called when the response is complete.
   virtual void OnRequestComplete(

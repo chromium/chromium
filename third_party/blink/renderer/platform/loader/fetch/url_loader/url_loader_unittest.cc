@@ -233,6 +233,7 @@ class TestURLLoaderClient : public URLLoaderClient {
 
   void DidReceiveResponse(
       const WebURLResponse& response,
+      mojo::ScopedDataPipeConsumerHandle body,
       absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     EXPECT_TRUE(loader_);
     EXPECT_FALSE(did_receive_response_);
@@ -241,14 +242,12 @@ class TestURLLoaderClient : public URLLoaderClient {
     response_ = response;
     if (delete_on_receive_response_) {
       loader_.reset();
+      return;
     }
-  }
-
-  void DidStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle response_body) override {
     DCHECK(!response_body_);
-    DCHECK(response_body);
-    response_body_ = std::move(response_body);
+    if (body) {
+      response_body_ = std::move(body);
+    }
   }
 
   void DidReceiveData(const char* data, size_t dataLength) override {
@@ -367,19 +366,16 @@ class URLLoaderTest : public testing::Test {
 
   void DoReceiveResponse() {
     EXPECT_FALSE(client()->did_receive_response());
-    resource_request_client()->OnReceivedResponse(
-        network::mojom::URLResponseHead::New(),
-        /*response_arrival_at_renderer=*/base::TimeTicks::Now(),
-        /*cached_metadata=*/absl::nullopt);
-    EXPECT_TRUE(client()->did_receive_response());
-  }
 
-  void DoStartLoadingResponseBody() {
     mojo::ScopedDataPipeConsumerHandle handle_to_pass;
     MojoResult rv = mojo::CreateDataPipe(nullptr, body_handle_, handle_to_pass);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
-    resource_request_client()->OnStartLoadingResponseBody(
-        std::move(handle_to_pass));
+
+    resource_request_client()->OnReceivedResponse(
+        network::mojom::URLResponseHead::New(), std::move(handle_to_pass),
+        /*cached_metadata=*/absl::nullopt,
+        /*response_arrival_at_renderer=*/base::TimeTicks::Now());
+    EXPECT_TRUE(client()->did_receive_response());
   }
 
   void DoCompleteRequest() {
@@ -428,7 +424,6 @@ class URLLoaderTest : public testing::Test {
 TEST_F(URLLoaderTest, Success) {
   DoStartAsyncRequest();
   DoReceiveResponse();
-  DoStartLoadingResponseBody();
   DoCompleteRequest();
   EXPECT_FALSE(sender()->canceled());
   EXPECT_TRUE(client()->did_receive_response_body());
@@ -438,7 +433,6 @@ TEST_F(URLLoaderTest, Redirect) {
   DoStartAsyncRequest();
   DoReceiveRedirect();
   DoReceiveResponse();
-  DoStartLoadingResponseBody();
   DoCompleteRequest();
   EXPECT_FALSE(sender()->canceled());
   EXPECT_TRUE(client()->did_receive_response_body());
@@ -447,7 +441,6 @@ TEST_F(URLLoaderTest, Redirect) {
 TEST_F(URLLoaderTest, Failure) {
   DoStartAsyncRequest();
   DoReceiveResponse();
-  DoStartLoadingResponseBody();
   DoFailRequest();
   EXPECT_FALSE(sender()->canceled());
 }
@@ -470,7 +463,6 @@ TEST_F(URLLoaderTest, DeleteOnFinish) {
   client()->set_delete_on_finish();
   DoStartAsyncRequest();
   DoReceiveResponse();
-  DoStartLoadingResponseBody();
   DoCompleteRequest();
 }
 
@@ -478,7 +470,6 @@ TEST_F(URLLoaderTest, DeleteOnFail) {
   client()->set_delete_on_fail();
   DoStartAsyncRequest();
   DoReceiveResponse();
-  DoStartLoadingResponseBody();
   DoFailRequest();
 }
 

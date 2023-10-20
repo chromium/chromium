@@ -81,15 +81,11 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
   virtual void DidSendData(uint64_t bytes_sent,
                            uint64_t total_bytes_to_be_sent) {}
 
-  // Called when response headers are received.
+  // Called when response are received.
   virtual void DidReceiveResponse(
       const WebURLResponse&,
+      mojo::ScopedDataPipeConsumerHandle body,
       absl::optional<mojo_base::BigBuffer> cached_metadata) {}
-
-  // Called when the response body becomes available. This method is only called
-  // if the request's PassResponsePipeToClient flag was set to true.
-  virtual void DidStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) {}
 
   // Called when a chunk of response data is received. |data_length| is the
   // number of bytes pointed to by |data|.

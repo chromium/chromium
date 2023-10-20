@@ -54,12 +54,9 @@ class BLINK_PLATFORM_EXPORT ResourceRequestClient
   // response arrived at the renderer.
   virtual void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr head,
-      base::TimeTicks response_arrival_at_renderer,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) = 0;
-
-  // Called when the response body becomes available.
-  virtual void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) = 0;
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata,
+      base::TimeTicks response_arrival_at_renderer) = 0;
 
   // Called when the transfer size is updated. This method may be called
   // multiple times or not at all. The transfer size is the length of the

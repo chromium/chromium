@@ -683,8 +683,9 @@ void ResourceRequestSender::OnUploadProgress(int64_t position, int64_t size) {
 
 void ResourceRequestSender::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr response_head,
-    base::TimeTicks response_arrival,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata,
+    base::TimeTicks response_arrival) {
   if (code_cache_fetcher_ && cached_metadata) {
     code_cache_fetcher_->DidReceiveCachedMetadataFromUrlLoader();
     code_cache_fetcher_.reset();
@@ -692,10 +693,10 @@ void ResourceRequestSender::OnReceivedResponse(
   }
 
   if (ShouldDeferTask()) {
-    pending_tasks_.push_back(
-        WTF::BindOnce(&ResourceRequestSender::OnReceivedResponse,
-                      weak_factory_.GetWeakPtr(), std::move(response_head),
-                      response_arrival, std::move(cached_metadata)));
+    pending_tasks_.push_back(WTF::BindOnce(
+        &ResourceRequestSender::OnReceivedResponse, weak_factory_.GetWeakPtr(),
+        std::move(response_head), std::move(body), std::move(cached_metadata),
+        response_arrival));
     return;
   }
   TRACE_EVENT0("loading", "ResourceRequestSender::OnReceivedResponse");
@@ -723,7 +724,8 @@ void ResourceRequestSender::OnReceivedResponse(
   }
 
   request_info_->client->OnReceivedResponse(
-      response_head.Clone(), response_arrival, std::move(cached_metadata));
+      response_head.Clone(), std::move(body), std::move(cached_metadata),
+      response_arrival);
   if (!request_info_) {
     return;
   }
@@ -799,22 +801,6 @@ void ResourceRequestSender::OnFollowRedirectCallback(
   if (request_info_->freeze_mode == LoaderFreezeMode::kNone) {
     FollowPendingRedirect(request_info_.get());
   }
-}
-
-void ResourceRequestSender::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  if (ShouldDeferTask()) {
-    pending_tasks_.emplace_back(
-        WTF::BindOnce(&ResourceRequestSender::OnStartLoadingResponseBody,
-                      weak_factory_.GetWeakPtr(), std::move(body)));
-    return;
-  }
-  TRACE_EVENT0("loading", "ResourceRequestSender::OnStartLoadingResponseBody");
-
-  if (!request_info_) {
-    return;
-  }
-  request_info_->client->OnStartLoadingResponseBody(std::move(body));
 }
 
 void ResourceRequestSender::OnRequestComplete(

@@ -162,8 +162,8 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
   ASSERT_EQ(result, MOJO_RESULT_OK);
 
   loader->DidReceiveResponse(WrappedResourceResponse(response),
+                             std::move(consumer),
                              /*cached_metadata=*/absl::nullopt);
-  loader->DidStartLoadingResponseBody(std::move(consumer));
   loader->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
 
   uint32_t num_bytes = 2;
@@ -553,6 +553,7 @@ class ResourceLoaderSubresourceFilterCnameAliasTest
   void GiveResponseToLoader(ResourceResponse response, ResourceLoader* loader) {
     CreateMojoDataPipe();
     loader->DidReceiveResponse(WrappedResourceResponse(response),
+                               /*body=*/mojo::ScopedDataPipeConsumerHandle(),
                                /*cached_metadata=*/absl::nullopt);
   }
 

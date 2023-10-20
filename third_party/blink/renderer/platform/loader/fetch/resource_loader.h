@@ -132,8 +132,7 @@ class PLATFORM_EXPORT ResourceLoader final
   // 0+  WillFollowRedirect()
   // 0+  DidSendData()
   // 1   DidReceiveResponse()
-  // 0-1 DidReceiveCachedMetadata()
-  // 0+  DidReceiveData() or DidDownloadData(), but never both
+  // 0+  DidReceiveTransferSizeUpdate()
   // 1   DidFinishLoading()
   // A failed load is indicated by 1 DidFail(), which can occur at any time
   // before DidFinishLoading(), including synchronous inside one of the other
@@ -151,11 +150,10 @@ class PLATFORM_EXPORT ResourceLoader final
                    uint64_t total_bytes_to_be_sent) override;
   void DidReceiveResponse(
       const WebURLResponse&,
+      mojo::ScopedDataPipeConsumerHandle body,
       absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void DidReceiveData(const char*, size_t) override;
   void DidReceiveTransferSizeUpdate(int transfer_size_diff) override;
-  void DidStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void DidFinishLoading(base::TimeTicks response_end_time,
                         int64_t encoded_data_length,
                         uint64_t encoded_body_length,
@@ -181,8 +179,6 @@ class PLATFORM_EXPORT ResourceLoader final
   friend class SubresourceIntegrityTest;
   friend class ResourceLoaderIsolatedCodeCacheTest;
   friend class ResourceLoaderSubresourceFilterCnameAliasTest;
-
-  void DidStartLoadingResponseBodyInternal(BytesConsumer& bytes_consumer);
 
   // ResourceLoadSchedulerClient.
   void Run() override;
@@ -222,6 +218,8 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidReceiveResponseInternal(
       const ResourceResponse&,
       absl::optional<mojo_base::BigBuffer> cached_metadata);
+
+  void DidStartLoadingResponseBodyInternal(BytesConsumer& bytes_consumer);
 
   void CancelTimerFired(TimerBase*);
 

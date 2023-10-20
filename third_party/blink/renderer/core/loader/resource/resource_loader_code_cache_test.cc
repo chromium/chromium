@@ -147,6 +147,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheEmptyCachedMetadataInfo) {
   CommonSetup();
 
   loader_->DidReceiveResponse(WrappedResourceResponse(response_),
+                              /*body=*/mojo::ScopedDataPipeConsumerHandle(),
                               /*cached_metadata=*/absl::nullopt);
 
   // No code cache data was present.
@@ -158,6 +159,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullResponse) {
   std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
   loader_->DidReceiveResponse(
       WrappedResourceResponse(response_),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
       mojo_base::BigBuffer(MakeSerializedCodeCacheDataWithHash(cache_data)));
 
   // Code cache data was present.
@@ -171,6 +173,7 @@ TEST_F(ResourceLoaderCodeCacheTest, CodeCacheFullHttpsScheme) {
   std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
   loader_->DidReceiveResponse(
       WrappedResourceResponse(response_),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
       mojo_base::BigBuffer(MakeSerializedCodeCacheData(cache_data)));
 
   // Code cache data was present.
@@ -184,6 +187,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheInvalidOuterType) {
   std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
   loader_->DidReceiveResponse(
       WrappedResourceResponse(response_),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
       mojo_base::BigBuffer(MakeSerializedCodeCacheData(cache_data)));
 
   // The serialized metadata was rejected due to an invalid outer type.
@@ -198,6 +202,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckSuccess) {
 
   loader_->DidReceiveResponse(
       WrappedResourceResponse(response_),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
       mojo_base::BigBuffer(
           MakeSerializedCodeCacheDataWithHash(cache_data, source_text)));
 
@@ -227,6 +232,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckFailure) {
   String source_text("alert('hello world');");
   loader_->DidReceiveResponse(
       WrappedResourceResponse(response_),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
       mojo_base::BigBuffer(
           MakeSerializedCodeCacheDataWithHash(cache_data, source_text)));
 

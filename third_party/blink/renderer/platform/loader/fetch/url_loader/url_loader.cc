@@ -116,10 +116,9 @@ class URLLoader::Context : public ResourceRequestClient {
       FollowRedirectCallback follow_redirect_callback) override;
   void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr head,
-      base::TimeTicks response_arrival_at_renderer,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata,
+      base::TimeTicks response_arrival_at_renderer) override;
   void OnTransferSizeUpdated(int transfer_size_diff) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
@@ -344,8 +343,9 @@ void URLLoader::Context::OnReceivedRedirect(
 
 void URLLoader::Context::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr head,
-    base::TimeTicks response_arrival_at_renderer,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata,
+    base::TimeTicks response_arrival_at_renderer) {
   if (!client_) {
     return;
   }
@@ -364,24 +364,8 @@ void URLLoader::Context::OnReceivedResponse(
       url_, *head, has_devtools_request_id_, request_id_);
   response.SetArrivalTimeAtRenderer(response_arrival_at_renderer);
 
-  client_->DidReceiveResponse(response, std::move(cached_metadata));
-
-  // DidReceiveResponse() may have triggered a cancel, causing the |client_| to
-  // go away.
-  if (!client_) {
-    return;
-  }
-}
-
-void URLLoader::Context::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  if (client_) {
-    client_->DidStartLoadingResponseBody(std::move(body));
-  }
-
-  TRACE_EVENT_WITH_FLOW0("loading",
-                         "URLLoader::Context::OnStartLoadingResponseBody", this,
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  client_->DidReceiveResponse(response, std::move(body),
+                              std::move(cached_metadata));
 }
 
 void URLLoader::Context::OnTransferSizeUpdated(int transfer_size_diff) {

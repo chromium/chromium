@@ -85,7 +85,9 @@ class FakeURLLoader final : public URLLoader {
       WebURLResponse response;
       response.SetMimeType("text/javascript");
       response.SetHttpStatusCode(404);
-      client->DidReceiveResponse(response, /*cached_metadata=*/absl::nullopt);
+      client->DidReceiveResponse(response,
+                                 /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+                                 /*cached_metadata=*/absl::nullopt);
       client->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
       return;
     }

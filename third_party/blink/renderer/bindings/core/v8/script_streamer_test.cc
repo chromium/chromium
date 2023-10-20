@@ -170,9 +170,8 @@ class ScriptStreamingTest : public testing::Test {
     resource_->SetResponse(response);
 
     resource_->Loader()->DidReceiveResponse(WrappedResourceResponse(response),
+                                            std::move(consumer_handle_),
                                             /*cached_metadata=*/absl::nullopt);
-    resource_->Loader()->DidStartLoadingResponseBody(
-        std::move(consumer_handle_));
   }
 
   ClassicScript* CreateClassicScript() const {
