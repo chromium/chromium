@@ -114,9 +114,7 @@ void EditorMenuTextfieldView::InitLayout() {
           weak_factory_.GetWeakPtr()),
       vector_icons::kForwardArrowIcon,
       l10n_util::GetStringUTF16(
-          editor_menu_mode_ == EditorMenuMode::kWrite
-              ? IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER
-              : IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER)));
+          IDS_EDITOR_MENU_FREEFORM_TEXTFIELD_ARROW_BUTTON_TOOLTIP)));
   arrow_button_->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   arrow_button_->SetImageVerticalAlignment(
