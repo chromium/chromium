@@ -331,13 +331,13 @@
         Writing help
       </message>
       <message name="IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode." translateable="false">
-        What's your writing goal?
+        For example, "write a thank you note"
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in rewrite mode." translateable="false">
         Rewrite
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode." translateable="false">
-        Custom (e.g. sound more confident)
+        Custom (for example, "sound more confident")
       </message>
       <message name="IDS_EDITOR_MENU_SETTINGS_TOOLTIP" desc="Tooltip text for the settings button in the Editor Menu." translateable="false">
         Settings
