@@ -104,7 +104,8 @@ class AutofillBottomSheetTabHelper
       bool must_be_empty);
 
   // Detach listeners, which will deactivate the associated bottom sheet.
-  void DetachListenersForAllFrames(
+  void DetachListenersForFrame(
+      const std::string& frame_id,
       const std::set<autofill::FieldRendererId>& renderer_ids,
       bool must_be_empty,
       bool refocus);
@@ -136,16 +137,15 @@ class AutofillBottomSheetTabHelper
                                      autofill::AutofillManager::Observer>
       autofill_manager_observations_{this};
 
-  // List of password bottom sheet related renderer ids.
+  // List of password bottom sheet related renderer ids, mapped to a frame id.
   // TODO(crbug.com/1441921): Maybe migrate to FieldGlobalIds.
-  std::set<autofill::FieldRendererId> registered_password_renderer_ids_;
+  std::map<std::string, std::set<autofill::FieldRendererId>>
+      registered_password_renderer_ids_;
 
-  // List of payments bottom sheet related renderer ids.
+  // List of payments bottom sheet related renderer ids, mapped to a frame id.
   // TODO(crbug.com/1441921): Migrate to FieldGlobalIds.
-  std::set<autofill::FieldRendererId> registered_payments_renderer_ids_;
-
-  // List of frames on which listeners have been attached.
-  std::set<std::string> web_frames_ids_;
+  std::map<std::string, std::set<autofill::FieldRendererId>>
+      registered_payments_renderer_ids_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
