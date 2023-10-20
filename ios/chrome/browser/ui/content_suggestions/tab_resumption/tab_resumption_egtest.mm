@@ -125,6 +125,8 @@ NSString* HostnameFromGURL(GURL URL) {
   [ChromeEarlGrey clearSyncServerData];
   [ChromeEarlGrey resetDataForLocalStatePref:tab_resumption_prefs::
                                                  kTabResumptioDisabledPref];
+  [ChromeEarlGrey resetDataForLocalStatePref:
+                      tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref];
   [super tearDown];
 }
 

@@ -347,8 +347,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                 self, sessionSyncService);
       }
 
-      _tabResumptionHelper =
-          std::make_unique<TabResumptionHelper>(TabResumptionHelper(browser));
+      _tabResumptionHelper = std::make_unique<TabResumptionHelper>(browser);
     }
 
     SceneState* sceneState =
@@ -701,28 +700,27 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }
 
 - (void)openTabResumptionItem {
-  switch (_tabResumptionItem.itemType) {
-    case TabResumptionItemType::kLastSyncedTab:
-      [self.NTPMetricsDelegate distantTabResumptionOpened];
-      // TODO(crbug.com/1478156): Derank or hide the tile.
-      break;
-    case TabResumptionItemType::kMostRecentTab: {
-      [self.NTPMetricsDelegate recentTabTileOpened];
-      break;
-    }
-  }
   [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
   tab_resumption_prefs::SetTabResumptionLastOpenedTabURL(
       _tabResumptionItem.tabURL, _localState);
   [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                            kTabResumption];
 
-  web::NavigationManager::WebLoadParams webLoadParams =
-      web::NavigationManager::WebLoadParams(_tabResumptionItem.tabURL);
-  UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);
-  params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-
+  switch (_tabResumptionItem.itemType) {
+    case TabResumptionItemType::kLastSyncedTab:
+      [self.NTPMetricsDelegate distantTabResumptionOpened];
+      _tabResumptionHelper->OpenDistantTab();
+      break;
+    case TabResumptionItemType::kMostRecentTab: {
+      [self.NTPMetricsDelegate recentTabTileOpened];
+      web::NavigationManager::WebLoadParams webLoadParams =
+          web::NavigationManager::WebLoadParams(_tabResumptionItem.tabURL);
+      UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);
+      params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+      UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+      break;
+    }
+  }
   [self hideTabResumption];
 }
 
