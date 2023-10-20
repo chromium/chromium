@@ -18,12 +18,8 @@ sync_integration_tests). It is not used by unit test targets.
 > Note: Non-developer builds of Chromium (for example, non-Chrome browsers,
 > or Chromium builds provided by Linux distros) should disable the testing
 > config by either (1) specifying the GN flag `disable_fieldtrial_testing_config=true`,
-> (2) specifying the `--disable-field-trial-config` switch, (3) specifying field
-> trials using the `--force-fieldtrials` switch, or (4) specifying a custom
-> variations server URL using the `--variations-server-url` switch. In order to
-> apply the testing configuration as well as specify additional field trials
-> (using `--force-fieldtrials`), the `--enable-field-trial-config` switch can be
-> used.
+> (2) specifying the `--disable-field-trial-config` switch or (3) specifying a
+> custom variations server URL using the `--variations-server-url` switch.
 
 > Note: An experiment in the testing configuration file that enables/disables a
 > feature that is explicitly overridden (e.g. using the `--enable-features` or

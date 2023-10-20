@@ -560,7 +560,17 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
-IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class PendingBeaconBackgroundTimeoutBrowserTestNoTestingConfig
+    : public PendingBeaconBackgroundTimeoutBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PendingBeaconBackgroundTimeoutBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTestNoTestingConfig,
                        SendMultipleOnBackgroundTimeout) {
   const size_t total_beacon = 5;
   RegisterBeaconRequestMonitor(total_beacon);

@@ -45,6 +45,8 @@ std::string GetVariationsCommandLine() {
       GenerateParam(switches::kForceFieldTrialParams, field_trial_params));
   output.append(GenerateParam(::switches::kEnableFeatures, enable_features));
   output.append(GenerateParam(::switches::kDisableFeatures, disable_features));
+  output.append(" --");
+  output.append(switches::kDisableFieldTrialTestingConfig);
   return output;
 }
 
