@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_OS_SETTINGS_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_OS_SETTINGS_UI_H_
 
 #include <memory>
 
@@ -216,4 +216,4 @@ class OSSettingsUI : public ui::MojoWebUIController {
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_OS_SETTINGS_UI_H_

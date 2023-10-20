@@ -13,8 +13,8 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_identifier.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_identifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {

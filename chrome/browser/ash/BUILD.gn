@@ -4928,6 +4928,7 @@ source_set("unit_tests") {
 
     # TODO(crbug.com/1442928): Move to under `enable_screen_ai_service`
     # when PDF OCR becomes available on windows, macOS, and linux.
+    "../ui/webui/ash/settings/os_settings_features_util_unittest.cc",
     "../ui/webui/ash/settings/pages/a11y/pdf_ocr_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/about/device_name_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/apps/app_notification_handler_unittest.cc",
@@ -4957,7 +4958,6 @@ source_set("unit_tests") {
     "../ui/webui/ash/settings/services/settings_manager/os_settings_manager_unittest.cc",
     "../ui/webui/settings/about_handler_unittest.cc",
     "../ui/webui/settings/ash/display_settings/display_settings_provider_unittest.cc",
-    "../ui/webui/settings/ash/os_settings_features_util_unittest.cc",
     "accessibility/pumpkin_installer_unittest.cc",
     "account_manager/account_apps_availability_unittest.cc",
     "account_manager/account_manager_edu_coexistence_controller_unittest.cc",

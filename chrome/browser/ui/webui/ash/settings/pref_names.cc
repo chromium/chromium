@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/pref_names.h"
+#include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 
 namespace ash::settings::prefs {
 
