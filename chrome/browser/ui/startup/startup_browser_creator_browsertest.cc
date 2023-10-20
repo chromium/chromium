@@ -1198,7 +1198,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ValidNotificationLaunchId) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchNative(
       switches::kNotificationLaunchId,
-      L"1|1|0|Default|0|https://example.com/|notification_id");
+      L"1|1|0|Default|aumi|0|https://example.com/|notification_id");
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,

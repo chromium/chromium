@@ -37,7 +37,7 @@ using message_center::Notification;
 namespace {
 
 constexpr char kLaunchId[] =
-    "0|0|Default|0|https://example.com/|notification_id";
+    "0|0|Default|aumi|0|https://example.com/|notification_id";
 constexpr char kOrigin[] = "https://www.google.com/";
 constexpr char kNotificationId[] = "id";
 constexpr char kProfileId[] = "Default";

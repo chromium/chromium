@@ -32,10 +32,13 @@
 #include "chrome/browser/notifications/win/notification_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/notifications/notification_operation.h"
+#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/shell_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -45,11 +48,12 @@ namespace winui = ABI::Windows::UI;
 
 namespace {
 
-const char kLaunchId[] = "0|0|Default|0|https://example.com/|notification_id";
+const char kLaunchId[] =
+    "0|0|Default|aumi|0|https://example.com/|notification_id";
 const char kLaunchIdButtonClick[] =
-    "1|0|0|Default|0|https://example.com/|notification_id";
+    "1|0|0|Default|aumi|0|https://example.com/|notification_id";
 const char kLaunchIdSettings[] =
-    "2|0|Default|0|https://example.com/|notification_id";
+    "2|0|Default|aumi|0|https://example.com/|notification_id";
 
 Profile* CreateTestingProfile(const base::FilePath& path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -75,12 +79,16 @@ Profile* CreateTestingProfile(const std::string& profile_name) {
   return CreateTestingProfile(path);
 }
 
+std::wstring GetAppId() {
+  return ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall());
+}
+
 std::wstring GetToastString(const std::wstring& notification_id,
                             const std::wstring& profile_id,
                             bool incognito) {
-  return base::StrCat({L"<toast launch=\"0|0|", profile_id, L"|",
-                       base::NumberToWString(incognito), L"|https://foo.com/|",
-                       notification_id, L"\"></toast>"});
+  return base::StrCat({L"<toast launch=\"0|0|", profile_id, L"|", GetAppId(),
+                       L"|", base::NumberToWString(incognito),
+                       L"|https://foo.com/|", notification_id, L"\"></toast>"});
 }
 
 }  // namespace
@@ -219,7 +227,7 @@ class FakeIToastActivatedEventArgs
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleEvent) {
   const wchar_t kXmlDoc[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -234,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleEvent) {
 
   FakeIToastNotification toast(kXmlDoc, L"tag");
   FakeIToastActivatedEventArgs args(
-      L"1|1|0|Default|0|https://example.com/|notification_id");
+      L"1|1|0|Default|aumi|0|https://example.com/|notification_id");
 
   base::RunLoop run_loop;
   display_service_tester_->SetProcessNotificationOperationDelegate(
@@ -268,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleActivation) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchNative(
       switches::kNotificationLaunchId,
-      L"1|1|0|Default|0|https://example.com/|notification_id");
+      L"1|1|0|Default|aumi|0|https://example.com/|notification_id");
   NotificationPlatformBridgeWin::HandleActivation(command_line);
   run_loop.Run();
 
@@ -284,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleActivation) {
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleSettings) {
   const wchar_t kXmlDoc[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -299,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleSettings) {
 
   FakeIToastNotification toast(kXmlDoc, L"tag");
   FakeIToastActivatedEventArgs args(
-      L"2|0|Default|0|https://example.com/|notification_id");
+      L"2|0|Default|aumi|0|https://example.com/|notification_id");
 
   base::RunLoop run_loop;
   display_service_tester_->SetProcessNotificationOperationDelegate(
@@ -333,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleClose) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchNative(
       switches::kNotificationLaunchId,
-      L"3|0|Default|0|https://example.com/|notification_id");
+      L"3|0|Default|aumi|0|https://example.com/|notification_id");
   NotificationPlatformBridgeWin::HandleActivation(command_line);
   run_loop.Run();
 
@@ -550,7 +558,9 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, DisplayWithFakeAC) {
   FakeIToastNotifier notifier;
   bridge->SetNotifierForTesting(&notifier);
 
-  std::string launch_id_value = "0|0|P1|0|https://example.com/|notification_id";
+  std::string launch_id_value = "0|0|P1|" +
+                                base::WideToUTF8(GetAppId().c_str()) +
+                                "|0|https://example.com/|notification_id";
   NotificationLaunchId launch_id(launch_id_value);
   ASSERT_TRUE(launch_id.is_valid());
 

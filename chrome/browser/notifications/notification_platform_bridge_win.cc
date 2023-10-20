@@ -369,7 +369,7 @@ class NotificationPlatformBridgeWinImpl
     }
 
     NotificationLaunchId launch_id(notification_type, notification->id(),
-                                   profile_id, incognito,
+                                   profile_id, GetAppId(), incognito,
                                    notification->origin_url());
     std::wstring xml_template = BuildNotificationTemplate(
         image_retainer_.get(), launch_id, *notification);
