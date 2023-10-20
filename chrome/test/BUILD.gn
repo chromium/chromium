@@ -8321,6 +8321,7 @@ test("unit_tests") {
       "//chrome/browser/nearby_sharing/certificates:unit_tests",
       "//chrome/browser/nearby_sharing/client:unit_tests",
       "//chrome/browser/nearby_sharing/common",
+      "//chrome/browser/nearby_sharing/common:unit_tests",
       "//chrome/browser/nearby_sharing/contacts",
       "//chrome/browser/nearby_sharing/contacts:test_support",
       "//chrome/browser/nearby_sharing/contacts:unit_tests",

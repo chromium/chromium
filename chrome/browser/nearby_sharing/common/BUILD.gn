@@ -12,6 +12,10 @@ source_set("common") {
     "nearby_share_prefs.cc",
     "nearby_share_prefs.h",
     "nearby_share_profile_info_provider.h",
+    "nearby_share_resource_getter.cc",
+    "nearby_share_resource_getter.h",
+    "nearby_share_resource_utils.cc",
+    "nearby_share_resource_utils.h",
     "nearby_share_switches.cc",
     "nearby_share_switches.h",
   ]
@@ -19,12 +23,14 @@ source_set("common") {
   public_deps = [ "//base" ]
 
   deps = [
+    "//chrome/app:generated_resources",
     "//chromeos/ash/services/nearby/public/mojom",
     "//components/pref_registry",
     "//components/prefs",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//ui/base",
   ]
 }
 
@@ -37,4 +43,18 @@ source_set("test_support") {
   ]
 
   deps = [ ":common" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "nearby_share_resource_getter_unittest.cc" ]
+
+  deps = [
+    ":common",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+  ]
 }
