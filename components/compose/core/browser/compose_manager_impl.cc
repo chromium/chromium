@@ -54,17 +54,8 @@ void ComposeManagerImpl::OpenCompose(
     std::optional<PopupScreenLocation> popup_screen_location,
     ComposeCallback callback) {
   CHECK(IsEnabled());
-  // TODO(b/301609035): Either pass a weak pointer or make sure that
-  // the dialog never outlives the tab. (Should be a given once the
-  // bubble destroys itself prior to WebContents destruction.)
   client_->ShowComposeDialog(ui_entry_point, trigger_field,
-                             popup_screen_location,
-                             base::BindOnce(
-                                 [](ComposeCallback callback,
-                                    const ComposeClient::QueryParams& params) {
-                                   std::move(callback).Run(params.query);
-                                 },
-                                 std::move(callback)));
+                             popup_screen_location, std::move(callback));
 }
 
 void ComposeManagerImpl::OpenComposeFromContextMenuCallback(

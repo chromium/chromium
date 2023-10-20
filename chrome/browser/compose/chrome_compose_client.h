@@ -46,7 +46,7 @@ class ChromeComposeClient
       const autofill::FormFieldData& trigger_field,
       std::optional<autofill::AutofillClient::PopupScreenLocation>
           popup_screen_location,
-      ComposeDialogCallback callback) override;
+      ComposeCallback callback) override;
 
   void BindComposeDialog(
       mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
@@ -74,7 +74,8 @@ class ChromeComposeClient
 
   // Creates a compose state for `field_id` if it does not exist.
   void SaveFieldAndCreateComposeStateIfEmpty(
-      const autofill::FieldGlobalId& field_id);
+      const autofill::FieldGlobalId& field_id,
+      ComposeCallback callback);
 
   compose::ComposeManagerImpl manager_;
 

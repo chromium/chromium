@@ -87,6 +87,10 @@ interface ComposeDialogPageHandler {
   // unsafe to parse in the browser process.
   SaveWebUIState(string webui_state);
 
+  // Inform the Browser that the response has been accepted by the user.
+  // Should only be called if the ComposeResponse received is valid.
+  AcceptComposeResult();
+
   // Asks the native handler for state information needed for opening the
   // compose dialog for the last field the user selected compose on.
   RequestInitialState() => (OpenMetadata initial_state);

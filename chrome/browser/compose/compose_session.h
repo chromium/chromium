@@ -36,8 +36,13 @@ class WebContents;
 //  constructor, and the `executor` MUST outlive that WebContents.
 class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
  public:
+  // The callback to Autofill. When run, it fills the passed string into the
+  // form field on which it was triggered.
+  using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;
+
   ComposeSession(content::WebContents* web_contents,
-                 optimization_guide::OptimizationGuideModelExecutor* executor);
+                 optimization_guide::OptimizationGuideModelExecutor* executor,
+                 ComposeCallback callback = base::NullCallback());
   ~ComposeSession() override;
 
   // Binds this to a Compose webui.
@@ -61,6 +66,15 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
   // disk or processed by the Browser Process at all.
   void SaveWebUIState(const std::string& webui_state) override;
 
+  // Indicates that the compose result should be accepted by Autofill.
+  void AcceptComposeResult() override;
+
+  // Non-ComposeDialogPageHandler Methods
+
+  void SetComposeResultCallback(ComposeCallback callback) {
+    callback_ = std::move(callback);
+  }
+
  private:
   void ProcessError(const std::string& message);
   void SaveNewComposeRequest(compose::mojom::StyleModifiersPtr style);
@@ -80,6 +94,9 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
   // ComposeSession is owned by WebContentsUserData, so `web_contents_` outlives
   // `this`.
   raw_ptr<content::WebContents> web_contents_;
+
+  // A callback to Autofill that triggers filling the field.
+  ComposeCallback callback_;
 
   base::WeakPtrFactory<ComposeSession> weak_ptr_factory_;
 };

@@ -82,8 +82,9 @@ void ChromeComposeClient::ShowComposeDialog(
     const autofill::FormFieldData& trigger_field,
     std::optional<autofill::AutofillClient::PopupScreenLocation>
         popup_screen_location,
-    ComposeDialogCallback callback) {
-  SaveFieldAndCreateComposeStateIfEmpty(trigger_field.global_id());
+    ComposeCallback callback) {
+  SaveFieldAndCreateComposeStateIfEmpty(trigger_field.global_id(),
+                                        std::move(callback));
   if (!skip_show_dialog_for_test_) {
     // The bounds given by autofill are relative to the top level frame. Here we
     // offset by the WebContents container to make up for that.
@@ -96,17 +97,21 @@ void ChromeComposeClient::ShowComposeDialog(
 }
 
 void ChromeComposeClient::SaveFieldAndCreateComposeStateIfEmpty(
-    const autofill::FieldGlobalId& field_id) {
+    const autofill::FieldGlobalId& field_id,
+    ComposeCallback callback) {
   last_compose_field_id_ = field_id;
   auto it = sessions_.find(last_compose_field_id_);
   if (it != sessions_.end()) {
-    // Already have a session for this field ID.
+    // Update existing session
+    auto& existing_session = *it->second;
+    existing_session.SetComposeResultCallback(std::move(callback));
     return;
   }
 
   sessions_.emplace(
       last_compose_field_id_,
-      std::make_unique<ComposeSession>(&GetWebContents(), GetModelExecutor()));
+      std::make_unique<ComposeSession>(&GetWebContents(), GetModelExecutor(),
+                                       std::move(callback)));
 }
 
 compose::ComposeManager& ChromeComposeClient::GetManager() {

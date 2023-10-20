@@ -37,6 +37,8 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   setComposeOutput(output: string) {
     this.composeOutput_ = output;
   }
+
+  acceptComposeResult() {}
 }
 
 suite('ComposeApp', () => {

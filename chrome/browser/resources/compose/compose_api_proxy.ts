@@ -8,6 +8,7 @@ import {ComposeDialogCallbackRouter, ComposeDialogPageHandlerFactory, ComposeDia
 export interface ComposeApiProxy {
   compose(style: StyleModifiers, input: string): void;
   getRouter(): ComposeDialogCallbackRouter;
+  acceptComposeResult(): void;
 }
 
 export class ComposeApiProxyImpl implements ComposeApiProxy {
@@ -42,5 +43,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
   /** @override */
   getRouter() {
     return this.router;
+  }
+
+  /** @override */
+  acceptComposeResult() {
+    this.composeDialogPageHandler.acceptComposeResult();
   }
 }

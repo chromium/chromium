@@ -31,11 +31,13 @@
 
 ComposeSession::ComposeSession(
     content::WebContents* web_contents,
-    optimization_guide::OptimizationGuideModelExecutor* executor)
+    optimization_guide::OptimizationGuideModelExecutor* executor,
+    ComposeCallback callback)
     : executor_(executor),
       handler_receiver_(this),
       web_contents_(web_contents),
       weak_ptr_factory_(this) {
+  callback_ = std::move(callback);
   state_ = compose::mojom::ComposeState::New();
   state_->style = compose::mojom::StyleModifiers::New();
 }
@@ -134,4 +136,10 @@ void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
 
 void ComposeSession::SaveWebUIState(const std::string& webui_state) {
   state_->webui_state = webui_state;
+}
+
+void ComposeSession::AcceptComposeResult() {
+  CHECK(state_->response->status != compose::mojom::ComposeStatus::kOk);
+  std::move(callback_).Run(base::UTF8ToUTF16(state_->response->result));
+  // TODO(b/301370241): Make sure the WebUI or browser calls CloseUI.
 }
