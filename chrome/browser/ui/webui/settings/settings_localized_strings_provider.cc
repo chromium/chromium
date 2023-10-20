@@ -1230,6 +1230,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("syncDecoupleAddressPaymentSettings",
                           base::FeatureList::IsEnabled(
                               syncer::kSyncDecoupleAddressPaymentSettings));
+
+  html_source->AddBoolean(
+      "updateChromeSettingsLinkToGPayWebEnabled",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillUpdateChromeSettingsLinkToGPayWeb));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

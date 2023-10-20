@@ -47,9 +47,15 @@ type DotsCardMenuiClickEvent = CustomEvent<{
   anchorElement: HTMLElement,
 }>;
 
+type RemoteCardMenuClickEvent = CustomEvent<{
+  creditCard: chrome.autofillPrivate.CreditCardEntry,
+  anchorElement: HTMLElement,
+}>;
+
 declare global {
   interface HTMLElementEventMap {
     'dots-card-menu-click': DotsCardMenuiClickEvent;
+    'remote-card-menu-click': RemoteCardMenuClickEvent;
   }
 }
 
@@ -125,6 +131,19 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
+       * GPay-related links direct to the newer GPay Web site instead of
+       * the legacy Payments Center.
+       */
+      updateChromeSettingsLinkToGPayWebEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'updateChromeSettingsLinkToGPayWebEnabled');
+        },
+        readOnly: true,
+      },
+
+      /**
        * The model for any credit card-related action menus or dialogs.
        */
       activeCreditCard_: Object,
@@ -193,6 +212,7 @@ export class SettingsPaymentsSectionElement extends
   ibans: chrome.autofillPrivate.IbanEntry[];
   private showIbanSettingsEnabled_: boolean;
   private userIsFidoVerifiable_: boolean;
+  private updateChromeSettingsLinkToGPayWebEnabled_: boolean;
   private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|null;
   private activeIban_: chrome.autofillPrivate.IbanEntry|null;
   private showCreditCardDialog_: boolean;
@@ -369,16 +389,26 @@ export class SettingsPaymentsSectionElement extends
       this.showCreditCardDialog_ =
           await this.paymentsManager_.authenticateUserToEditLocalCard();
     } else {
-      this.onRemoteEditCreditCardClick_();
+      this.onRemoteCreditCardUrlClick_();
     }
 
     this.$.creditCardSharedMenu.close();
   }
 
-  private onRemoteEditCreditCardClick_() {
+  private onRemoteEditCreditCardClick_(e: RemoteCardMenuClickEvent) {
+    this.activeCreditCard_ = e.detail.creditCard;
+    this.onRemoteCreditCardUrlClick_();
+  }
+
+  private onRemoteCreditCardUrlClick_() {
     this.paymentsManager_.logServerCardLinkClicked();
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('managePaymentMethodsUrl'));
+    const url = new URL(loadTimeData.getString('managePaymentMethodsUrl'));
+    assert(this.activeCreditCard_);
+    if (this.updateChromeSettingsLinkToGPayWebEnabled_ &&
+        this.activeCreditCard_.instrumentId) {
+      url.searchParams.append('id', this.activeCreditCard_.instrumentId);
+    }
+    OpenWindowProxyImpl.getInstance().openUrl(url.toString());
   }
 
   private onRemoteEditIbanMenuClick_() {

@@ -67,6 +67,10 @@ export class SettingsCreditCardListEntryElement extends
     this.dispatchEvent(new CustomEvent('remote-card-menu-click', {
       bubbles: true,
       composed: true,
+      detail: {
+        creditCard: this.creditCard,
+        anchorElement: this.shadowRoot!.querySelector('#creditCardMenu'),
+      },
     }));
   }
 

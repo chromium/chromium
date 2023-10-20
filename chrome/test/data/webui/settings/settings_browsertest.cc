@@ -214,7 +214,13 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionCardDialogs) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionCardRows) {
-  RunTest("settings/payments_section_card_rows_test.js", "mocha.run()");
+  RunTest("settings/payments_section_card_rows_test.js",
+          "runMochaSuite('PaymentsSectionCardRows')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionEditCreditCardLink) {
+  RunTest("settings/payments_section_card_rows_test.js",
+          "runMochaSuite('PaymentsSectionEditCreditCardLink')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionIban) {

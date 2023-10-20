@@ -5,12 +5,14 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import {loadTimeData} from 'chrome://settings/settings.js';
+import {loadTimeData, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {createCreditCardEntry, STUB_USER_ACCOUNT_INFO, TestPaymentsManager} from './autofill_fake_data.js';
 import {createPaymentsSection, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot} from './payments_section_utils.js';
 
+import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('PaymentsSectionCardRows', function() {
@@ -480,5 +482,128 @@ suite('PaymentsSectionCardRows', function() {
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>(
                     '#summarySublabel')!.textContent!.trim());
+      });
+});
+
+suite('PaymentsSectionEditCreditCardLink', function() {
+  let openWindowProxy: TestOpenWindowProxy;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      managePaymentMethodsUrl: 'http://dummy.url/?',
+      migrationEnabled: true,
+      showIbansSettings: true,
+      updateChromeSettingsLinkToGPayWebEnabled: true,
+    });
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+  });
+
+  test('verifyServerCardLinkToGPayAppendsInstrumentId', async function() {
+    const creditCard = createCreditCardEntry();
+
+    creditCard.metadata!.isLocal = false;
+    creditCard.instrumentId = '123';
+
+    const section = await createPaymentsSection(
+        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
+    assertFalse(!!menuButton);
+
+    const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
+        'cr-icon-button.icon-external');
+    assertTrue(!!outlinkButton);
+    outlinkButton!.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(
+        loadTimeData.getString('managePaymentMethodsUrl') +
+            'id=' + creditCard.instrumentId,
+        url);
+  });
+
+  test(
+      'verifyServerCardLinkToGPayDoesNotAppendInstrumentIdIfEmpty',
+      async function() {
+        const creditCard = createCreditCardEntry();
+
+        creditCard.metadata!.isLocal = false;
+        creditCard.instrumentId = '';
+
+        const section = await createPaymentsSection(
+            [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+
+        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
+        assertFalse(!!menuButton);
+
+        const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
+            'cr-icon-button.icon-external');
+        assertTrue(!!outlinkButton);
+        outlinkButton!.click();
+
+        const url = await openWindowProxy.whenCalled('openUrl');
+        assertEquals(loadTimeData.getString('managePaymentMethodsUrl'), url);
+      });
+
+  test(
+      'verifyServerCardLinkToGPayDoesNotAppendInstrumentId_FlagDisabled',
+      async function() {
+        loadTimeData.overrideValues({
+          updateChromeSettingsLinkToGPayWebEnabled: false,
+        });
+        const creditCard = createCreditCardEntry();
+
+        creditCard.metadata!.isLocal = false;
+        creditCard.instrumentId = '123';
+
+        const section = await createPaymentsSection(
+            [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+
+        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
+        assertFalse(!!menuButton);
+
+        const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
+            'cr-icon-button.icon-external');
+        assertTrue(!!outlinkButton);
+        outlinkButton!.click();
+
+        const url = await openWindowProxy.whenCalled('openUrl');
+        assertEquals(loadTimeData.getString('managePaymentMethodsUrl'), url);
+      });
+
+  test(
+      'verifyVirtualCardEligibleLinkToGPayAppendsInstrumentId',
+      async function() {
+        const creditCard = createCreditCardEntry();
+
+        creditCard.metadata!.isLocal = false;
+        creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
+        creditCard.metadata!.isVirtualCardEnrolled = false;
+        creditCard.instrumentId = '123';
+
+        const section = await createPaymentsSection(
+            [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+
+        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
+        const menuButton =
+            rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
+        assertTrue(!!menuButton);
+        menuButton.click();
+        flush();
+
+        assertTrue(isVisible(section.$.menuEditCreditCard));
+        section.$.menuEditCreditCard.click();
+
+        const url = await openWindowProxy.whenCalled('openUrl');
+        assertEquals(
+            loadTimeData.getString('managePaymentMethodsUrl') +
+                'id=' + creditCard.instrumentId,
+            url);
       });
 });
