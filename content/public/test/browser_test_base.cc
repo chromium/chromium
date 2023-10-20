@@ -966,14 +966,28 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 }
 
 void BrowserTestBase::SetAllowNetworkAccessToHostResolutions() {
-  const char kManualTestPrefix[] = "MANUAL_";
   // Must be called before Setup() to take effect. This mode can only be
   // used in manual tests to prevent flakiness in tryjobs due to the
   // dependency on network access.
   CHECK(!set_up_called_);
+
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // External network access is only allowed for ChromeOS integration tests
+  // running on real devices or VMs.
+  CHECK(base::SysInfo::IsRunningOnChromeOS())
+      << "External network access is only allowed for on device ChromeOS "
+         "integration tests";
+#else
+  const char kManualTestPrefix[] = "MANUAL_";
   CHECK(base::StartsWith(
       testing::UnitTest::GetInstance()->current_test_info()->name(),
       kManualTestPrefix, base::CompareCase::SENSITIVE));
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
+
+  LOG(WARNING) << "External network access is allowed. "
+               << "This could lead to DoS on web sites and is normally only "
+               << "allowed for manual tests and ChromeOS integration tests on "
+               << "devices.";
   allow_network_access_to_host_resolutions_ = true;
 }
 
