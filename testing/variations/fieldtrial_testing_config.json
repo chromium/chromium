@@ -17915,6 +17915,26 @@
             ]
         }
     ],
+    "TheoraVideoCodec": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "TheoraVideoCodec"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThreadCacheMinCachedMemoryForPurging": [
         {
             "platforms": [
