@@ -267,8 +267,6 @@ static_library("test_support") {
 
   if (is_chromeos && is_chromeos_device) {
     sources += [
-      "base/chromeos/crosier/chromeos_integration_login_mixin.cc",
-      "base/chromeos/crosier/chromeos_integration_login_mixin.h",
       "base/chromeos/crosier/chromeos_integration_test_mixin.cc",
       "base/chromeos/crosier/chromeos_integration_test_mixin.h",
       "base/chromeos/crosier/chromeos_test_launcher.cc",
@@ -1045,7 +1043,6 @@ if (is_chromeos && is_chromeos_device) {
         "../browser/ash/external_metrics_integration_test.cc",
         "../browser/ash/featured_integration_test.cc",
         "../browser/ash/login/lock/lock_screen_integration_test.cc",
-        "../browser/ash/login/login_integration_test.cc",
         "../browser/ash/ml_integration_test.cc",
         "../browser/ash/screenshot_integration_test.cc",
         "../browser/ui/ash/app_list/app_list_integration_test.cc",
@@ -1066,7 +1063,6 @@ if (is_chromeos && is_chromeos_device) {
       }
 
       deps += [
-        "//chrome/browser/ash:test_support",
         "//chrome/test/base/chromeos/crosier:proto",
         "//chrome/test/base/chromeos/crosier/helper:common",
         "//chromeos/ash/components/standalone_browser",

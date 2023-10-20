@@ -21,14 +21,58 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
+#include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "ui/aura/test/find_window.h"
 #include "url/gurl.h"
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+class FakeSessionManagerClientBrowserHelper
+    : public ash::DBusHelperObserverForTest {
+ public:
+  FakeSessionManagerClientBrowserHelper() {
+    ash::DBusHelperObserverForTest::Set(this);
+  }
+  FakeSessionManagerClientBrowserHelper(
+      const FakeSessionManagerClientBrowserHelper&) = delete;
+  FakeSessionManagerClientBrowserHelper& operator=(
+      const FakeSessionManagerClientBrowserHelper&) = delete;
+  ~FakeSessionManagerClientBrowserHelper() override {
+    ash::DBusHelperObserverForTest::Set(nullptr);
+  }
+
+  // ash::DBusHelperObserverForTest:
+  void PostInitializeDBus() override {
+    // Create FakeSessionManageClient after real SessionManagerClient is created
+    // and before it is referenced.
+    scoped_fake_session_manager_client_.emplace();
+    ash::FakeSessionManagerClient::Get()->set_stop_session_callback(
+        base::BindOnce(&chrome::ExitIgnoreUnloadHandlers));
+  }
+
+  void PreShutdownDBus() override {
+    // Release FakeSessionManagerClient shutting down dbus clients.
+    scoped_fake_session_manager_client_.reset();
+  }
+
+ private:
+  // Optionally, use FakeSessionManagerClient if a test only needs the stub
+  // user session.
+  absl::optional<ash::ScopedFakeSessionManagerClient>
+      scoped_fake_session_manager_client_;
+};
+#endif
+
+}  // namespace
 
 using InteractiveMixinBasedBrowserTest =
     InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>;
@@ -46,6 +90,13 @@ InteractiveAshTest::InteractiveAshTest() {
       base::BindRepeating([](views::Widget* widget) {
         return ui::ElementContext(ash::Shell::GetPrimaryRootWindow());
       }));
+
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  if (!use_real_session_manager_) {
+    fake_session_manager_client_helper_ =
+        std::make_unique<FakeSessionManagerClientBrowserHelper>();
+  }
+#endif
 }
 
 InteractiveAshTest::~InteractiveAshTest() {

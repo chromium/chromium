@@ -16,7 +16,6 @@
 #include "ui/base/interaction/interaction_sequence.h"
 
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
-#include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 #endif
 
@@ -29,6 +28,10 @@ class CommandLine;
 
 namespace content {
 class NavigationHandle;
+}
+
+namespace {
+class FakeSessionManagerClientBrowserHelper;
 }
 
 // Base class for tests of ash-chrome integration with the ChromeOS platform,
@@ -111,21 +114,22 @@ class InteractiveAshTest
   WaitForElementDoesNotExist(const ui::ElementIdentifier& element_id,
                              const DeepQuery& query);
 
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-  ChromeOSIntegrationLoginMixin& login_mixin() { return login_mixin_; }
-#endif
-
  private:
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
   // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in
   // chromeos_integration_tests.
   ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
 
-  // Login support.
-  ChromeOSIntegrationLoginMixin login_mixin_{&mixin_host_};
+  // Whether to use real session manager client for tests that needs real
+  // user session.
+  bool use_real_session_manager_ = false;
+
+  std::unique_ptr<FakeSessionManagerClientBrowserHelper>
+      fake_session_manager_client_helper_;
 #endif
 
   // Directory used by Wayland/Lacros in environment variable XDG_RUNTIME_DIR.
   base::ScopedTempDir scoped_temp_dir_xdg_;
 };
+
 #endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_INTERACTIVE_ASH_TEST_H_
