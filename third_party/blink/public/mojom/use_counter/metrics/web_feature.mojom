@@ -4027,6 +4027,7 @@ enum WebFeature {
   kParseHTMLUnsafe = 4687,
   kSetHTMLUnsafe = 4688,
   kWebAssemblyModuleCompilation = 4689,
+  kV8MediaStreamTrack_Stats_AttributeGetter = 4690,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
