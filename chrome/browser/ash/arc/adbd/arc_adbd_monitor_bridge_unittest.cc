@@ -13,8 +13,8 @@
 #include "ash/components/arc/test/fake_adbd_monitor_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -87,18 +87,13 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
 // Testing bridge constructor/destructor in setup/teardown.
 TEST_F(ArcAdbdMonitorBridgeTest, TestConstructDestruct) {}
 
-// Testing bridge start arcvm-adbd successfully
+// Tests that the bridge stops and starts arcvm-adbd when adbd is started.
 TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdSuccess) {
   ash::FakeUpstartClient::Get()->StartRecordingUpstartOperations();
   arc_adbd_monitor_bridge()->EnableAdbOverUsbForTesting();
-  base::RunLoop run_loop;
-  arc_adbd_monitor_bridge()->OnStartArcVmAdbdTesting(base::BindOnce(
-      [](base::RunLoop* loop, bool result) {
-        EXPECT_EQ(result, true);
-        loop->Quit();
-      },
-      &run_loop));
-  run_loop.Run();
+  base::test::TestFuture<bool> future;
+  arc_adbd_monitor_bridge()->OnAdbdStartedForTesting(future.GetCallback());
+  EXPECT_TRUE(future.Get());
 
   const auto& ops =
       ash::FakeUpstartClient::Get()->GetRecordedUpstartOperationsForJob(
@@ -108,20 +103,15 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdSuccess) {
   EXPECT_EQ(ops[1].type, ash::FakeUpstartClient::UpstartOperationType::START);
 }
 
-// Testing bridge start arcvm-adbd regardless stop failure.
+// Tests that the bridge starts arcvm-adbd regardless of stop failure.
 TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdFailure) {
   // Inject failure to FakeUpstartClient.
   InjectUpstartStopJobFailure(kArcVmAdbdJobName);
   ash::FakeUpstartClient::Get()->StartRecordingUpstartOperations();
   arc_adbd_monitor_bridge()->EnableAdbOverUsbForTesting();
-  base::RunLoop run_loop;
-  arc_adbd_monitor_bridge()->OnStartArcVmAdbdTesting(base::BindOnce(
-      [](base::RunLoop* loop, bool result) {
-        EXPECT_EQ(result, true);
-        loop->Quit();
-      },
-      &run_loop));
-  run_loop.Run();
+  base::test::TestFuture<bool> future;
+  arc_adbd_monitor_bridge()->OnAdbdStartedForTesting(future.GetCallback());
+  EXPECT_TRUE(future.Get());
 
   const auto& ops =
       ash::FakeUpstartClient::Get()->GetRecordedUpstartOperationsForJob(
@@ -131,18 +121,13 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdFailure) {
   EXPECT_EQ(ops[1].type, ash::FakeUpstartClient::UpstartOperationType::START);
 }
 
-// Testing bridge handle stop arcvm-adbd job failure well
+// Tests that bridge stops arcvm-adbd job when adbd is stopped.
 TEST_F(ArcAdbdMonitorBridgeTest, TestStopArcVmAdbdSuccess) {
   ash::FakeUpstartClient::Get()->StartRecordingUpstartOperations();
   arc_adbd_monitor_bridge()->EnableAdbOverUsbForTesting();
-  base::RunLoop run_loop;
-  arc_adbd_monitor_bridge()->OnStopArcVmAdbdTesting(base::BindOnce(
-      [](base::RunLoop* loop, bool result) {
-        EXPECT_EQ(result, true);
-        loop->Quit();
-      },
-      &run_loop));
-  run_loop.Run();
+  base::test::TestFuture<bool> future;
+  arc_adbd_monitor_bridge()->OnAdbdStoppedForTesting(future.GetCallback());
+  EXPECT_TRUE(future.Get());
 
   const auto& ops =
       ash::FakeUpstartClient::Get()->GetRecordedUpstartOperationsForJob(

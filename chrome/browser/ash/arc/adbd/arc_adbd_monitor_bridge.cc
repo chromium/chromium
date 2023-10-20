@@ -174,13 +174,12 @@ void ArcAdbdMonitorBridge::EnableAdbOverUsbForTesting() {
   g_enable_adb_over_usb_for_testing = true;
 }
 
-void ArcAdbdMonitorBridge::OnStartArcVmAdbdTesting(
+void ArcAdbdMonitorBridge::OnAdbdStartedForTesting(
     chromeos::VoidDBusMethodCallback callback) {
-  VLOG(1) << "Starting arcvm-adbd";
   StartArcVmAdbd(std::move(callback));
 }
 
-void ArcAdbdMonitorBridge::OnStopArcVmAdbdTesting(
+void ArcAdbdMonitorBridge::OnAdbdStoppedForTesting(
     chromeos::VoidDBusMethodCallback callback) {
   StopArcVmAdbd(std::move(callback));
 }
