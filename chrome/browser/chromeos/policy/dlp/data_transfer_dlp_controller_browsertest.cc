@@ -22,6 +22,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_rules_manager_test_utils.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -34,6 +35,7 @@
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/reporting/client/mock_report_queue.h"
+#include "components/reporting/storage/test_storage_module.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -203,6 +205,9 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    test_reporting_ =
+        ::reporting::ReportingClient::TestEnvironment::CreateWithStorageModule(
+            base::MakeRefCounted<::reporting::test::TestStorageModule>());
 
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
@@ -275,20 +280,22 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
   // Expects `event` to be reported then quits `run_loop`.
   void ExpectEventTobeReported(DlpPolicyEvent event, base::RunLoop& run_loop) {
     EXPECT_CALL(*reporting_queue_, AddRecord)
-        .WillOnce(
-            [&run_loop](base::StringPiece record, reporting::Priority priority,
-                        reporting::ReportQueue::EnqueueCallback callback) {
-              DlpPolicyEvent event;
-              ASSERT_TRUE(event.ParseFromString(std::string(record)));
-              EXPECT_THAT(event, IsDlpPolicyEvent(event));
-              std::move(callback).Run(reporting::Status::StatusOK());
-              run_loop.Quit();
-            });
+        .WillOnce([&run_loop](
+                      base::StringPiece record, ::reporting::Priority priority,
+                      ::reporting::ReportQueue::EnqueueCallback callback) {
+          DlpPolicyEvent event;
+          ASSERT_TRUE(event.ParseFromString(std::string(record)));
+          EXPECT_THAT(event, IsDlpPolicyEvent(event));
+          std::move(callback).Run(::reporting::Status::StatusOK());
+          run_loop.Quit();
+        });
   }
 
+  std::unique_ptr<::reporting::ReportingClient::TestEnvironment>
+      test_reporting_;
   raw_ptr<MockDlpRulesManager, DanglingUntriaged> rules_manager_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
-  raw_ptr<reporting::MockReportQueue> reporting_queue_;
+  raw_ptr<::reporting::MockReportQueue> reporting_queue_;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
@@ -544,21 +551,21 @@ class MAYBE_DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
   // Expects `event` to be reported then quits `run_loop`.
   void ExpectEventTobeReported(DlpPolicyEvent event, base::RunLoop& run_loop) {
     EXPECT_CALL(*reporting_queue_, AddRecord)
-        .WillOnce(
-            [&run_loop](base::StringPiece record, reporting::Priority priority,
-                        reporting::ReportQueue::EnqueueCallback callback) {
-              DlpPolicyEvent event;
-              ASSERT_TRUE(event.ParseFromString(std::string(record)));
-              EXPECT_THAT(event, IsDlpPolicyEvent(event));
-              std::move(callback).Run(reporting::Status::StatusOK());
-              run_loop.Quit();
-            });
+        .WillOnce([&run_loop](
+                      base::StringPiece record, ::reporting::Priority priority,
+                      ::reporting::ReportQueue::EnqueueCallback callback) {
+          DlpPolicyEvent event;
+          ASSERT_TRUE(event.ParseFromString(std::string(record)));
+          EXPECT_THAT(event, IsDlpPolicyEvent(event));
+          std::move(callback).Run(::reporting::Status::StatusOK());
+          run_loop.Quit();
+        });
   }
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<::testing::NiceMock<MockDlpRulesManager>> rules_manager_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
-  raw_ptr<reporting::MockReportQueue> reporting_queue_;
+  raw_ptr<::reporting::MockReportQueue> reporting_queue_;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;
 };

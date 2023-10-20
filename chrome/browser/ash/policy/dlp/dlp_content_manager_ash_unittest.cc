@@ -26,6 +26,7 @@
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -34,6 +35,7 @@
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
+#include "components/reporting/storage/test_storage_module.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -160,6 +162,10 @@ class DlpContentManagerAshTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
+    test_reporting_ =
+        ::reporting::ReportingClient::TestEnvironment::CreateWithStorageModule(
+            base::MakeRefCounted<::reporting::test::TestStorageModule>());
+
     ASSERT_TRUE(profile_manager_.SetUp());
     LoginFakeUser();
 
@@ -181,8 +187,8 @@ class DlpContentManagerAshTest : public testing::Test {
             base::ThreadPool::CreateSequencedTaskRunner({})));
     EXPECT_CALL(*report_queue.get(), AddRecord)
         .WillRepeatedly(
-            [this](base::StringPiece record, reporting::Priority priority,
-                   reporting::ReportQueue::EnqueueCallback callback) {
+            [this](base::StringPiece record, ::reporting::Priority priority,
+                   ::reporting::ReportQueue::EnqueueCallback callback) {
               DlpPolicyEvent event;
               event.ParseFromString(std::string(record));
               // Don't use this code in a multithreaded env as it can course
@@ -209,6 +215,8 @@ class DlpContentManagerAshTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<::reporting::ReportingClient::TestEnvironment>
+      test_reporting_;
   DlpContentManagerTestHelper helper_;
   base::HistogramTester histogram_tester_;
   std::vector<DlpPolicyEvent> events_;

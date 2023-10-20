@@ -12,10 +12,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "components/account_id/account_id.h"
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
+#include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,6 +54,9 @@ class DlpReportingManagerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
+    test_reporting_ =
+        ::reporting::ReportingClient::TestEnvironment::CreateWithStorageModule(
+            base::MakeRefCounted<::reporting::test::TestStorageModule>());
     SetReportQueueForReportingManager(
         &manager_, events_, base::ThreadPool::CreateSequencedTaskRunner({}));
   }
@@ -112,6 +118,9 @@ class DlpReportingManagerTest : public testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   content::BrowserTaskEnvironment task_environment_;
+
+  std::unique_ptr<::reporting::ReportingClient::TestEnvironment>
+      test_reporting_;
   DlpReportingManager manager_;
   std::vector<DlpPolicyEvent> events_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -203,7 +212,7 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
   histogram_tester.ExpectUniqueSample(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kReportedEventStatus,
-      reporting::error::Code::OK, 3);
+      ::reporting::error::Code::OK, 3);
   histogram_tester.ExpectUniqueSample(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kReportedBlockLevelRestriction,
@@ -344,7 +353,7 @@ TEST_F(DlpReportingManagerTest, Timestamp) {
 
 TEST_F(DlpReportingManagerTest, ReportEventError) {
   auto report_queue =
-      std::unique_ptr<reporting::ReportQueue, base::OnTaskRunnerDeleter>(
+      std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
                        base::ThreadPool::CreateSequencedTaskRunner({})));
   manager_.SetReportQueueForTest(std::move(report_queue));
@@ -359,16 +368,16 @@ TEST_F(DlpReportingManagerTest, OnEventEnqueuedError) {
   base::HistogramTester histogram_tester;
 
   auto report_queue =
-      std::unique_ptr<reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new reporting::MockReportQueue(),
+      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
+          new ::reporting::MockReportQueue(),
           base::OnTaskRunnerDeleter(
               base::ThreadPool::CreateSequencedTaskRunner({})));
 
   EXPECT_CALL(*report_queue.get(), AddRecord)
       .WillRepeatedly(testing::WithArgs<2>(
-          [](reporting::ReportQueue::EnqueueCallback callback) {
+          [](::reporting::ReportQueue::EnqueueCallback callback) {
             std::move(callback).Run(
-                reporting::Status(reporting::error::UNKNOWN, "mock"));
+                ::reporting::Status(::reporting::error::UNKNOWN, "mock"));
           }));
 
   manager_.SetReportQueueForTest(std::move(report_queue));
@@ -381,7 +390,7 @@ TEST_F(DlpReportingManagerTest, OnEventEnqueuedError) {
   histogram_tester.ExpectUniqueSample(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kReportedEventStatus,
-      reporting::error::UNKNOWN, 1);
+      ::reporting::error::UNKNOWN, 1);
 }
 
 }  // namespace policy

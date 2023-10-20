@@ -6310,6 +6310,7 @@ source_set("unit_tests") {
     "//components/reporting/proto:interface_proto",
     "//components/reporting/proto:metric_data_proto",
     "//components/reporting/proto:record_constants",
+    "//components/reporting/storage:test_support",
     "//components/reporting/util:rate_limiter_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:test_callbacks_support",

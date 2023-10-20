@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
@@ -134,6 +135,8 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  std::unique_ptr<::reporting::ReportingClient::TestEnvironment>
+      test_reporting_;
   std::unique_ptr<DlpContentManagerTestHelper> helper_;
   base::HistogramTester histogram_tester_;
   raw_ptr<MockDlpRulesManager, DanglingUntriaged> mock_rules_manager_;
@@ -341,18 +344,22 @@ class DlpContentManagerReportingBrowserTest
 
   // Sets up real report queue together with TestStorageModule
   void SetupReportQueue() {
-    const reporting::Destination destination_ =
-        reporting::Destination::UPLOAD_EVENTS;
+    const ::reporting::Destination destination_ =
+        ::reporting::Destination::UPLOAD_EVENTS;
 
     storage_module_ =
-        base::MakeRefCounted<reporting::test::TestStorageModule>();
+        base::MakeRefCounted<::reporting::test::TestStorageModule>();
+
+    test_reporting_ =
+        ::reporting::ReportingClient::TestEnvironment::CreateWithStorageModule(
+            test_storage_module());
 
     policy_check_callback_ =
-        base::BindRepeating(&testing::MockFunction<reporting::Status()>::Call,
+        base::BindRepeating(&testing::MockFunction<::reporting::Status()>::Call,
                             base::Unretained(&mocked_policy_check_));
 
     ON_CALL(mocked_policy_check_, Call())
-        .WillByDefault(testing::Return(reporting::Status::StatusOK()));
+        .WillByDefault(testing::Return(::reporting::Status::StatusOK()));
 
     auto config_result = ::reporting::ReportQueueConfiguration::Create(
         ::reporting::EventType::kDevice, destination_, policy_check_callback_);
@@ -362,12 +369,12 @@ class DlpContentManagerReportingBrowserTest
     // Create a report queue with the test storage module, and attach it
     // to an actual speculative report queue so we can override the one used in
     // |DlpReportingManager| by default.
-    reporting::test::TestEvent<
-        reporting::StatusOr<std::unique_ptr<reporting::ReportQueue>>>
+    ::reporting::test::TestEvent<
+        ::reporting::StatusOr<std::unique_ptr<::reporting::ReportQueue>>>
         report_queue_event;
-    reporting::ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
-                                       storage_module_,
-                                       report_queue_event.cb());
+    ::reporting::ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                                         storage_module_,
+                                         report_queue_event.cb());
     auto report_queue_result = report_queue_event.result();
 
     ASSERT_TRUE(report_queue_result.ok());
@@ -386,15 +393,15 @@ class DlpContentManagerReportingBrowserTest
     base::ThreadPoolInstance::Get()->FlushForTesting();
   }
 
-  reporting::test::TestStorageModule* test_storage_module() const {
-    reporting::test::TestStorageModule* test_storage_module =
-        google::protobuf::down_cast<reporting::test::TestStorageModule*>(
+  ::reporting::test::TestStorageModule* test_storage_module() const {
+    ::reporting::test::TestStorageModule* test_storage_module =
+        google::protobuf::down_cast<::reporting::test::TestStorageModule*>(
             storage_module_.get());
     DCHECK(test_storage_module);
     return test_storage_module;
   }
 
-  void CheckRecord(DlpPolicyEvent expectedEvent, reporting::Record record) {
+  void CheckRecord(DlpPolicyEvent expectedEvent, ::reporting::Record record) {
     DlpPolicyEvent event;
     EXPECT_TRUE(event.ParseFromString(record.data()));
     EXPECT_EQ(event.source().url(), kSrcPattern);
@@ -411,15 +418,15 @@ class DlpContentManagerReportingBrowserTest
     EXPECT_CALL(*test_storage_module(), AddRecord)
         .Times(times)
         .WillRepeatedly(testing::WithArgs<1, 2>(testing::Invoke(
-            [=](reporting::Record record,
-                base::OnceCallback<void(reporting::Status)> callback) {
+            [=](::reporting::Record record,
+                base::OnceCallback<void(::reporting::Status)> callback) {
               content::GetUIThreadTaskRunner({})->PostTask(
                   FROM_HERE,
                   base::BindOnce(
                       &DlpContentManagerReportingBrowserTest::CheckRecord,
                       base::Unretained(this), std::move(expectedEvent),
                       std::move(record)));
-              std::move(callback).Run(reporting::Status::StatusOK());
+              std::move(callback).Run(::reporting::Status::StatusOK());
             })));
   }
 
@@ -469,10 +476,10 @@ class DlpContentManagerReportingBrowserTest
     return MockPrintManager::FromWebContents(web_contents);
   }
 
-  scoped_refptr<reporting::StorageModuleInterface> storage_module_;
-  testing::NiceMock<testing::MockFunction<reporting::Status()>>
+  scoped_refptr<::reporting::StorageModuleInterface> storage_module_;
+  testing::NiceMock<testing::MockFunction<::reporting::Status()>>
       mocked_policy_check_;
-  reporting::ReportQueueConfiguration::PolicyCheckCallback
+  ::reporting::ReportQueueConfiguration::PolicyCheckCallback
       policy_check_callback_;
   std::unique_ptr<printing::TestPrintPreviewDialogClonedObserver>
       cloned_tab_observer_;
