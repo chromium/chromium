@@ -339,7 +339,7 @@ TEST_F(BinaryFCMServiceTest, UnregisterTwoTokensTwoCalls) {
 
   EXPECT_CALL(instance_id, DeleteToken)
       .Times(2)
-      .WillOnce(
+      .WillRepeatedly(
           Invoke([](const std::string&, const std::string&,
                     instance_id::InstanceID::DeleteTokenCallback callback) {
             std::move(callback).Run(instance_id::InstanceID::Result::SUCCESS);
