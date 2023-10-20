@@ -3951,7 +3951,7 @@ Press an assigned switch or key to remove assignment.
     Connect to mobile data to use hotspot. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_TOGGLE_A11Y_LABEL" desc="Accessibility label for Hotspot enable/disable toggle.">
-    Hotspot enable
+    Hotspot
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SUMMARY_STATE_ON" desc="Sublabel for Hotspot summary row, when Hotspot is on.">
     On
