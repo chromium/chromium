@@ -378,12 +378,12 @@ void PlusAddressClient::OnCreateOrReservePlusAddressComplete(
   // Parse the response & return it via callback.
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response,
-      base::BindOnce(&PlusAddressParser::ParsePlusAddressFromV1Create)
+      base::BindOnce(&PlusAddressParser::ParsePlusProfileFromV1Create)
           .Then(base::BindOnce(
               [](PlusAddressCallback callback,
-                 absl::optional<std::string> result) {
+                 absl::optional<PlusProfile> result) {
                 if (result.has_value()) {
-                  std::move(callback).Run(result.value());
+                  std::move(callback).Run(result->plus_address);
                 }
               },
               std::move(callback))));

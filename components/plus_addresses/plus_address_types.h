@@ -13,6 +13,12 @@
 // A common place for PlusAddress types to be defined.
 namespace plus_addresses {
 
+struct PlusProfile {
+  const std::string facet;
+  const std::string plus_address;
+  const bool is_confirmed;
+};
+
 typedef base::OnceCallback<void(const std::string&)> PlusAddressCallback;
 typedef std::unordered_map<std::string, std::string> PlusAddressMap;
 typedef base::OnceCallback<void(const PlusAddressMap&)> PlusAddressMapCallback;

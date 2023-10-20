@@ -82,6 +82,35 @@ class PlusAddressClientRequests : public ::testing::Test {
 
   base::Clock* test_clock() { return &clock_; }
 
+  std::string MakeCreateResponse(const std::string& facet,
+                                 const std::string& plus_address,
+                                 bool active) {
+    std::string json = base::ReplaceStringPlaceholders(
+        R"({
+          "plusProfile": $1
+       })",
+        {MakePlusProfile(facet, plus_address, active)}, nullptr);
+    DCHECK(base::JSONReader::Read(json));
+    return json;
+  }
+
+  std::string MakePlusProfile(const std::string& facet,
+                              const std::string& plus_address,
+                              bool active) {
+    std::string mode = active ? "anyMode" : "UNSPECIFIED";
+    return base::ReplaceStringPlaceholders(R"(
+                                              {
+                                                "facet": "$1",
+                                                "plusEmail": {
+                                                  "plusAddress": "$2",
+                                                  "plusMode": "$3"
+                                                }
+                                              }
+                                            )",
+                                           {facet, plus_address, mode},
+                                           nullptr);
+  }
+
   // Not used directly, but required for `IdentityTestEnvironment` to work.
   base::test::TaskEnvironment task_environment;
   std::string server_base_url = "https://enterprise.foo/";
@@ -166,19 +195,9 @@ TEST_F(PlusAddressClientRequests,
 
   // Unblock the pending request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
-  test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
-                                                            R"(
-    {
-      "plusProfile": {
-          "unwanted": 123,
-          "facet": "youtube.com",
-          "plusEmail" : {
-            "plusAddress": "plusone@plus.plus"
-          }
-        },
-      "unwanted": "abc"
-    }
-    )");
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      fullProfileEndpoint,
+      MakeCreateResponse(site, "unused+plus@plus.plus", true));
 }
 
 // For tests that cover successful but unexpected server responses, see the
@@ -188,27 +207,17 @@ TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_RunsCallbackOnSuccess) {
   client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.SetClockForTesting(test_clock());
   std::string site = "https://foobar.com";
+  std::string plus_address = "plusone@plus.plus";
 
-  base::MockOnceCallback<void(const std::string&)> on_response_parsed;
+  base::MockOnceCallback<void(const std::string&)> on_complete;
   // Initiate a request...
-  client.CreatePlusAddress(site, on_response_parsed.Get());
+  client.CreatePlusAddress(site, on_complete.Get());
   // Fulfill the request and the callback should be run
-  EXPECT_CALL(on_response_parsed, Run("plusone@plus.plus")).Times(1);
+  EXPECT_CALL(on_complete, Run(plus_address)).Times(1);
 
   base::TimeDelta latency = base::Milliseconds(2400);
   AdvanceTimeTo(start_time + latency);
-  const std::string json = R"(
-    {
-      "plusProfile": {
-          "unwanted": 123,
-          "facet": "youtube.com",
-          "plusEmail" : {
-            "plusAddress": "plusone@plus.plus"
-          }
-        },
-      "unwanted": "abc"
-    }
-    )";
+  const std::string json = MakeCreateResponse(site, plus_address, true);
   test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
                                                             json);
 
@@ -262,37 +271,25 @@ TEST_F(PlusAddressClientRequests,
 
   base::MockOnceCallback<void(const std::string&)> first_request;
   base::MockOnceCallback<void(const std::string&)> second_request;
+
+  std::string site_1 = "hulu.com";
+  std::string site_2 = "netflix.com";
+  std::string plus_address_1 = "plus1@plus.plus";
+  std::string plus_address_2 = "plus2@plus.plus";
+
   // Send two requests in quick succession
-  client.CreatePlusAddress("hulu.com", first_request.Get());
-  client.CreatePlusAddress("netflix.com", second_request.Get());
+  client.CreatePlusAddress(site_1, first_request.Get());
+  client.CreatePlusAddress(site_2, second_request.Get());
 
   // The first callback should be run once the server responds to its request.
   PlusAddressMap expected;
-  EXPECT_CALL(first_request, Run("plusthree@plus.plus")).Times(1);
-  test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
-                                                            R"(
-      {
-      "plusProfile": {
-          "facet": "hulu.com",
-          "plusEmail" : {
-            "plusAddress": "plusthree@plus.plus"
-          }
-        }
-    }
-    )");
+  EXPECT_CALL(first_request, Run(plus_address_1)).Times(1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      fullProfileEndpoint, MakeCreateResponse(site_1, plus_address_1, true));
   // Same for the second callback.
-  EXPECT_CALL(second_request, Run("plusfour@plus.plus")).Times(1);
-  test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
-                                                            R"(
-      {
-      "plusProfile": {
-          "facet": "netflix.com",
-          "plusEmail" : {
-            "plusAddress": "plusfour@plus.plus"
-          }
-        }
-    }
-    )");
+  EXPECT_CALL(second_request, Run(plus_address_2)).Times(1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      fullProfileEndpoint, MakeCreateResponse(site_2, plus_address_2, true));
 }
 
 // Ensures the request sent by Chrome matches what we intended.
@@ -346,19 +343,9 @@ TEST_F(PlusAddressClientRequests,
 
   // Unblock the pending request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
-  test_url_loader_factory.SimulateResponseForPendingRequest(fullReserveEndpoint,
-                                                            R"(
-    {
-      "plusProfile": {
-          "unwanted": 123,
-          "facet": "youtube.com",
-          "plusEmail" : {
-            "plusAddress": "plusone@plus.plus"
-          }
-        },
-      "unwanted": "abc"
-    }
-    )");
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      fullReserveEndpoint,
+      MakeCreateResponse(site, "unused+plus@plus.plus", true));
 }
 
 // For tests that cover successful but unexpected server responses, see the
@@ -376,18 +363,7 @@ TEST_F(PlusAddressClientRequests, ReservePlusAddress_RunsCallbackOnSuccess) {
   EXPECT_CALL(on_response_parsed, Run("plusone@plus.plus")).Times(1);
   base::TimeDelta latency = base::Milliseconds(2400);
   AdvanceTimeTo(start_time + latency);
-  const std::string json = R"(
-    {
-      "plusProfile": {
-          "unwanted": 123,
-          "facet": "youtube.com",
-          "plusEmail" : {
-            "plusAddress": "plusone@plus.plus"
-          }
-        },
-      "unwanted": "abc"
-    }
-    )";
+  const std::string json = MakeCreateResponse(site, "plusone@plus.plus", true);
   test_url_loader_factory.SimulateResponseForPendingRequest(fullReserveEndpoint,
                                                             json);
 
@@ -481,19 +457,9 @@ TEST_F(PlusAddressClientRequests,
 
   // Unblock the pending request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
-  test_url_loader_factory.SimulateResponseForPendingRequest(fullConfirmEndpoint,
-                                                            R"(
-    {
-      "plusProfile": {
-          "unwanted": 123,
-          "facet": "youtube.com",
-          "plusEmail" : {
-            "plusAddress": "plusone@plus.plus"
-          }
-        },
-      "unwanted": "abc"
-    }
-    )");
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      fullConfirmEndpoint,
+      MakeCreateResponse(site, "plus+plus@plus.plus", true));
 }
 
 TEST_F(PlusAddressClientRequests, ConfirmPlusAddress_RunsCallbackOnSuccess) {
@@ -510,18 +476,7 @@ TEST_F(PlusAddressClientRequests, ConfirmPlusAddress_RunsCallbackOnSuccess) {
   EXPECT_CALL(on_response_parsed, Run(plus_address)).Times(1);
   base::TimeDelta latency = base::Milliseconds(2400);
   AdvanceTimeTo(start_time + latency);
-  const std::string json = R"(
-    {
-      "plusProfile": {
-          "unwanted": 123,
-          "facet": "youtube.com",
-          "plusEmail" : {
-            "plusAddress": "plus@plus.plus"
-          }
-        },
-      "unwanted": "abc"
-    }
-    )";
+  const std::string json = MakeCreateResponse(site, plus_address, true);
   test_url_loader_factory.SimulateResponseForPendingRequest(fullConfirmEndpoint,
                                                             json);
 
@@ -600,19 +555,9 @@ TEST_F(PlusAddressClientRequests,
   // Unblock the pending request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
   test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
-                                                            R"(
-    {
-      "plusProfiles": [
-          {
-            "unwanted": 123,
-            "facet": "youtube.com",
-            "plusEmail" : {
-              "plusAddress": "plusone@plus.plus"
-            }
-          }
-        ]
-    }
-    )");
+                                                            R"({
+      "plusProfiles": []
+    })");
 }
 
 // For tests that cover successful but unexpected server responses, see the
@@ -625,32 +570,29 @@ TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSuccess) {
   base::MockOnceCallback<void(const PlusAddressMap&)> on_response_parsed;
   // Initiate a request...
   client.GetAllPlusAddresses(on_response_parsed.Get());
-  PlusAddressMap expected({{"google.com", "plusone@plus.plus"},
-                           {"netflix.com", "plusplustwo@plus.plus"}});
+  std::string plus_address_1 = "plus1@plus.plus";
+  std::string plus_address_2 = "plus2@plus.plus";
+  std::string site_1 = "google.com";
+  std::string site_2 = "netflix.com";
+
+  PlusAddressMap expected({{site_1, plus_address_1}, {site_2, plus_address_2}});
   // Fulfill the request and the callback should be run
   EXPECT_CALL(on_response_parsed, Run(expected)).Times(1);
   base::TimeDelta latency = base::Milliseconds(2400);
   AdvanceTimeTo(start_time + latency);
-  const std::string json = R"(
+  const std::string json = base::ReplaceStringPlaceholders(
+      R"(
     {
       "plusProfiles": [
-        {
-          "unwanted": 123,
-          "facet": "google.com",
-          "plusEmail" : {
-            "plusAddress": "plusone@plus.plus"
-          }
-        },
-        {
-          "facet": "netflix.com",
-          "plusEmail" : {
-            "plusAddress": "plusplustwo@plus.plus"
-          }
-        }
+        $1,
+        $2
       ],
       "unwanted": "abc"
     }
-    )";
+    )",
+      {MakePlusProfile(site_1, plus_address_1, true),
+       MakePlusProfile(site_2, plus_address_2, true)},
+      /*offsets=*/nullptr);
   test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
                                                             json);
   // Verify expected metrics.

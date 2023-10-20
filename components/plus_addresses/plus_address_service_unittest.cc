@@ -4,6 +4,7 @@
 
 #include "components/plus_addresses/plus_address_service.h"
 
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -163,14 +164,27 @@ class PlusAddressServiceRequestsTest : public ::testing::Test {
  protected:
   std::string MakePlusProfileResponse(const std::string& facet,
                                       const std::string& plus_address) {
-    return base::ReplaceStringPlaceholders(R"({
-          "plusProfile":  {
+    std::string json = base::ReplaceStringPlaceholders(
+        R"({
+          "plusProfile": $1
+       })",
+        {MakePlusProfile(facet, plus_address)}, nullptr);
+    DCHECK(base::JSONReader::Read(json));
+    return json;
+  }
+
+  std::string MakePlusProfile(const std::string& facet,
+                              const std::string& plus_address) {
+    // TODO: crbug.com/1467623 - Variably set "plusMode" when tests require it.
+    return base::ReplaceStringPlaceholders(R"(
+          {
               "facet": "$1",
               "plusEmail": {
-                "plusAddress": "$2"
+                "plusAddress": "$2",
+                "plusMode": "anyMode"
               }
             }
-       })",
+       )",
                                            {facet, plus_address}, nullptr);
   }
 
@@ -390,12 +404,10 @@ class PlusAddressServicePolling : public PlusAddressServiceRequestsTest {
     base::Value::Dict response;
     base::Value::List list;
     for (const PlusProfile& profile : profiles) {
-      base::Value::Dict profile_dict;
-      profile_dict.Set("facet", profile.facet);
-      base::Value::Dict plus_email;
-      plus_email.Set("plusAddress", profile.plus_address);
-      profile_dict.Set("plusEmail", std::move(plus_email));
-      list.Append(std::move(profile_dict));
+      std::string json = MakePlusProfile(profile.facet, profile.plus_address);
+      absl::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(json);
+      DCHECK(dict.has_value());
+      list.Append(std::move(dict.value()));
     }
     response.Set("plusProfiles", std::move(list));
     absl::optional<std::string> json = base::WriteJson(response);
