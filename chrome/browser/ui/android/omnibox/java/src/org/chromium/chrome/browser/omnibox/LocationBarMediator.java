@@ -1573,7 +1573,12 @@ class LocationBarMediator
 
     /** Updates the tints of UI buttons. */
     public void updateButtonTints() {
-        ColorStateList tint = ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme);
+        boolean useColorfulButtonTint = mIsSurfacePolishOmniboxColorEnabled && !isUrlBarFocused();
+        ColorStateList tint =
+                useColorfulButtonTint
+                        ? AppCompatResources.getColorStateList(
+                                mContext, R.color.default_icon_color_accent1_container_tint_list)
+                        : ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme);
         mLocationBarLayout.setMicButtonTint(tint);
         mLocationBarLayout.setLensButtonTint(tint);
     }

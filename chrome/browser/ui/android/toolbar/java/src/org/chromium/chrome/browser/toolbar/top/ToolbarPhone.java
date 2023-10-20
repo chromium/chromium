@@ -2542,6 +2542,7 @@ public class ToolbarPhone extends ToolbarLayout
         }
         mLocationBar.setUrlBarTypeface(typeface);
         mLocationBar.setUrlBarHintTextColor(mIsStartOrNtpWithSurfacePolish);
+        mLocationBar.updateButtonTints();
         mLocationBar.updateUrlActionContainerEndMargin(urlActionContainerEndMargin);
     }
 
