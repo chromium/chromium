@@ -48,8 +48,9 @@ class NotificationCenterTrayPixelTest : public AshTestBase {
 // Tests the UI of the notification center tray when connecting a secondary
 // display while two notification icons are present. This was added for
 // b/284313750.
+// TODO(b/306483873): Disabled due to test flake.
 TEST_F(NotificationCenterTrayPixelTest,
-       NotificationTrayOnSecondaryDisplayWithTwoNotificationIcons) {
+       DISABLED_NotificationTrayOnSecondaryDisplayWithTwoNotificationIcons) {
   // Add two pinned notifications to make two notification icons show up in the
   // notification center tray.
   test_api()->AddPinnedNotification();
