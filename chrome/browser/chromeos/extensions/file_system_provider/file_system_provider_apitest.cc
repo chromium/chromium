@@ -328,7 +328,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, ExecuteAction) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unresponsive_Extension) {
+// TODO(b/255698656): Flaky test.
+IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest,
+                       DISABLED_Unresponsive_Extension) {
   AbortOnUnresponsivePerformer performer(browser()->profile());
   ASSERT_TRUE(RunExtensionTest("file_system_provider/unresponsive_extension",
                                {}, {.load_as_component = true}))
