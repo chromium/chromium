@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
 (async function() {
@@ -124,7 +125,7 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
     } else {
       selectionRange.selectNodeContents(proxyElement);
     }
-    var range = self.Platform.DOMUtilities.rangeOfWord(selectionRange.startContainer, selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
+    var range = Platform.DOMUtilities.rangeOfWord(selectionRange.startContainer, selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
     var prefix = range.toString();
     prompt.buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, force)
         .then(completions);

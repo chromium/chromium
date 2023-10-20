@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
@@ -49,7 +50,7 @@ import * as Console from 'devtools/panels/console/console.js';
           }
         }
         ConsoleTestRunner.addConsoleSniffer(messageAdded, false);
-        TestRunner.evaluateInPage(String.sprintf(`add${type}Messages(%d)`, count));
+        TestRunner.evaluateInPage(Platform.StringUtilities.sprintf(`add${type}Messages(%d)`, count));
       });
     }
 

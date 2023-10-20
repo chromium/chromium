@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {

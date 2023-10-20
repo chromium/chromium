@@ -1,6 +1,7 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 (async function() {
   TestRunner.addResult("This tests if the TabbedPane is keyboard navigable.");

@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
 (async function() {
@@ -65,7 +66,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
       if (node.nodeType === Node.TEXT_NODE)
         text += node.textContent;
       else
-        text += String.sprintf('[%s]', node.textContent);
+        text += Platform.StringUtilities.sprintf('[%s]', node.textContent);
     }
     return text;
   }

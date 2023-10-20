@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {AccessibilityTestRunner} from 'accessibility_test_runner';
+
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
@@ -56,7 +58,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
     } else {
       selectionRange.selectNodeContents(proxyElement);
     }
-    var range = self.Platform.DOMUtilities.rangeOfWord(selectionRange.startContainer, selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
+    var range = Platform.DOMUtilities.rangeOfWord(selectionRange.startContainer, selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
     var prefix = range.toString();
     prompt.buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, true)
         .then(completions);

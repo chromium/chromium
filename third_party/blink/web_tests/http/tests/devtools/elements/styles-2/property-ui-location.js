@@ -7,6 +7,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Bindings from 'devtools/models/bindings/bindings.js';
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
@@ -34,11 +35,11 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
         if (!property.range)
           continue;
         var uiLocation = Bindings.CSSWorkspaceBinding.CSSWorkspaceBinding.instance().propertyUILocation(property, true);
-        TestRunner.addResult(String.sprintf(
+        TestRunner.addResult(Platform.StringUtilities.sprintf(
             '%s -> %s:%d:%d', property.name, uiLocation.uiSourceCode.name(), uiLocation.lineNumber,
             uiLocation.columnNumber));
         var uiLocation = Bindings.CSSWorkspaceBinding.CSSWorkspaceBinding.instance().propertyUILocation(property, false);
-        TestRunner.addResult(String.sprintf(
+        TestRunner.addResult(Platform.StringUtilities.sprintf(
             '%s -> %s:%d:%d', property.value, uiLocation.uiSourceCode.name(), uiLocation.lineNumber,
             uiLocation.columnNumber));
       }

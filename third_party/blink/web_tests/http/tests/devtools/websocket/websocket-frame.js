@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
@@ -31,7 +32,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     var websocketFrames = request.frames();
     for (var i = 0; i < websocketFrames.length; i++) {
       var frame = websocketFrames[i];
-      frames[i] = String.sprintf('%d-%s: %s', (i + 1), frame.type, frame.text);
+      frames[i] = Platform.StringUtilities.sprintf('%d-%s: %s', (i + 1), frame.type, frame.text);
       if (frame.type !== SDK.NetworkRequest.WebSocketFrameType.Send && frame.text === 'exit')
         done = true;
     }
