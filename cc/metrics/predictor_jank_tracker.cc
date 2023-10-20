@@ -111,7 +111,7 @@ void PredictorJankTracker::ReportLatestScrollDelta(
                      contains_missed_vsyncs, slow_scroll, trace_id);
   }
 
-  if (total_frames_ >= 50) {
+  if (total_frames_ >= 64) {
     ReportJankyFramePercentage();
   }
 
@@ -216,7 +216,7 @@ void PredictorJankTracker::ResetCurrentScrollReporting() {
 
 void PredictorJankTracker::ReportJankyFramePercentage() {
   UMA_HISTOGRAM_PERCENTAGE(
-      "Event.Jank.PredictorJankyFramePercentage",
+      "Event.Jank.PredictorJankyFramePercentage2",
       static_cast<int>(100 * (janky_frames_ / total_frames_)));
   total_frames_ = 0;
   janky_frames_ = 0;

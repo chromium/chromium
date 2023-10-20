@@ -248,11 +248,30 @@ chromium-metrics-reviews@google.com.
   <owner>mekk@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
+    This metric is deprecated, please use
+    Event.Jank.PredictorJankyFramePercentage2.
+
     A frame is deemed janky if an irregular jump in screen displacement occured
     in consecutive frames, this metric is the percentage of those janky frames
     per 50 produced frames and is only emitted if a scroll has more than 50
-    frames in sa sequence. This metric is used to asses the scrolling prediction
+    frames in a sequence. This metric is used to asses the scrolling prediction
     performance as the scroll predictor should smooth out those irregular jumps.
+
+    For more details about this metric, please check
+    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY.
+  </summary>
+</histogram>
+
+<histogram name="Event.Jank.PredictorJankyFramePercentage2" units="%"
+    expires_after="2024-03-20">
+  <owner>mekk@google.com</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    A frame is deemed janky if an irregular jump in screen displacement occured
+    in consecutive frames, this metric is the percentage of those janky frames
+    per 64 produced frames and is only emitted if a scroll has 64 frames in a
+    sequence. This metric is used to asses the scrolling prediction performance
+    as the scroll predictor should smooth out those irregular jumps.
 
     For more details about this metric, please check
     http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY.

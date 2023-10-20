@@ -52,7 +52,7 @@ class PredictorJankTrackerTest : public testing::Test {
       "Event.Jank.ScrollUpdate.SlowScroll.NoMissedVsync."
       "FrameAboveJankyThreshold2";
   const char* janky_percentage_name =
-      "Event.Jank.PredictorJankyFramePercentage";
+      "Event.Jank.PredictorJankyFramePercentage2";
   constexpr static base::TimeDelta vsync_interval = base::Milliseconds(16);
 };
 
@@ -201,12 +201,12 @@ TEST_F(PredictorJankTrackerTest, JankyFramePercentageEmitted) {
   // of the frames were janky, and should be reported since frame count
   // is more than 50.
   double pattern[5] = {50, 50, 50, 50, 10};
-  for (int i = 1; i <= 50; i++, base_presentation_ts_ += vsync_interval) {
+  for (int i = 1; i <= 64; i++, base_presentation_ts_ += vsync_interval) {
     MockFrameProduction(pattern[i % 5], base_presentation_ts_);
   }
 
   histogram_tester_->ExpectTotalCount(janky_percentage_name, 1);
-  EXPECT_EQ(histogram_tester_->GetTotalSum(janky_percentage_name), 20);
+  EXPECT_EQ(histogram_tester_->GetTotalSum(janky_percentage_name), 18);
 }
 
 TEST_F(PredictorJankTrackerTest, JankyFramePercentageNotEmitted) {
@@ -214,7 +214,7 @@ TEST_F(PredictorJankTrackerTest, JankyFramePercentageNotEmitted) {
   // reported because we only report the percentage when more than 50 frames
   // exist in the sequence.
   double pattern[5] = {50, 50, 50, 50, 10};
-  for (int i = 1; i <= 49; i++, base_presentation_ts_ += vsync_interval) {
+  for (int i = 1; i <= 63; i++, base_presentation_ts_ += vsync_interval) {
     MockFrameProduction(pattern[i % 5], base_presentation_ts_);
   }
   histogram_tester_->ExpectTotalCount(janky_percentage_name, 0);
@@ -224,11 +224,11 @@ TEST_F(PredictorJankTrackerTest, JankyFramePercentageEmittedTwice) {
   // Janky frames percentage should be emitted twice, 20% each
   // since we have 100 frames with 20% jank in each scroll.
   double pattern[5] = {50, 50, 50, 50, 10};
-  for (int i = 1; i <= 100; i++, base_presentation_ts_ += vsync_interval) {
+  for (int i = 1; i <= 128; i++, base_presentation_ts_ += vsync_interval) {
     MockFrameProduction(pattern[i % 5], base_presentation_ts_);
   }
   histogram_tester_->ExpectTotalCount(janky_percentage_name, 2);
-  EXPECT_EQ(histogram_tester_->GetTotalSum(janky_percentage_name), 40);
+  EXPECT_EQ(histogram_tester_->GetTotalSum(janky_percentage_name), 38);
 }
 
 TEST_F(PredictorJankTrackerTest, JankyFramePercentageEmittedWhenReset) {
@@ -236,14 +236,14 @@ TEST_F(PredictorJankTrackerTest, JankyFramePercentageEmittedWhenReset) {
   // the scroll was reset to catch smaller scrolls and residue frames from
   // previous scrolls.
   double pattern[5] = {50, 50, 50, 50, 10};
-  for (int i = 1; i <= 50; i++, base_presentation_ts_ += vsync_interval) {
+  for (int i = 1; i <= 64; i++, base_presentation_ts_ += vsync_interval) {
     MockFrameProduction(pattern[i % 5], base_presentation_ts_);
     if (i == 25) {
       predictor_jank_tracker_->ResetCurrentScrollReporting();
     }
   }
   histogram_tester_->ExpectTotalCount(janky_percentage_name, 1);
-  EXPECT_EQ(histogram_tester_->GetTotalSum(janky_percentage_name), 20);
+  EXPECT_EQ(histogram_tester_->GetTotalSum(janky_percentage_name), 18);
 }
 
 }  // namespace cc
