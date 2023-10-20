@@ -2239,6 +2239,13 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     return;
   }
 
+  if (layer_count_ != 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "`putImageData()` cannot be called while layers are opened.");
+    return;
+  }
+
   bool hasResourceProvider = CanCreateCanvas2dResourceProvider();
   if (!hasResourceProvider)
     return;

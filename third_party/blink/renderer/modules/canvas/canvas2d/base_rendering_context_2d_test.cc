@@ -307,6 +307,26 @@ TEST(BaseRenderingContextLayerTests, BeginLayerThrowsOnInvalidFilterParam) {
   EXPECT_EQ(context->OpenedLayerCount(), 0);
 }
 
+TEST(BaseRenderingContextLayerTests, putImageDataThrowsInLayer) {
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  NonThrowableExceptionState no_exception;
+  ImageData* image =
+      context->createImageData(/*sw=*/10, /*sh=*/10, no_exception);
+  // `putImageData` shouldn't throw on it's own.
+  context->putImageData(image, /*dx=*/0, /*dy=*/0, no_exception);
+  // Make sure the exception isn't caused by calling the function twice.
+  context->putImageData(image, /*dx=*/0, /*dy=*/0, no_exception);
+  // Calling again inside a layer should throw.
+  context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
+                      no_exception);
+  context->putImageData(image, /*dx=*/0, /*dy=*/0, scope.GetExceptionState());
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+}
+
 TEST(BaseRenderingContextLayerGlobalStateTests, DefaultRenderingStates) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;

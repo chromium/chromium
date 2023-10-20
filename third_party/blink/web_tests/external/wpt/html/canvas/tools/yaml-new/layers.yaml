@@ -459,11 +459,6 @@
       test_type: "promise"
       flush_canvas: |-
         await new Promise(resolve => requestAnimationFrame(resolve));
-    putImageData:
-      flush_canvas: |-
-        const canvas2 = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
-        const ctx2 = canvas2.getContext('2d');
-        ctx.putImageData(ctx2.getImageData(0, 0, 1, 1), 0, 0);
     toBlob:
       test_type: "promise"
       canvasType: ['HTMLCanvas']
@@ -472,6 +467,20 @@
     toDataURL:
       canvasType: ['HTMLCanvas']
       flush_canvas: canvas.toDataURL();
+
+- name: 2d.layer.putImageData
+  desc: Check that calling putImageData in a layer throws an exception.
+  code: |
+    const canvas2 = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
+    const ctx2 = canvas2.getContext('2d')
+    const data = ctx2.getImageData(0, 0, 1, 1);
+    // `putImageData` shouldn't throw on it's own.
+    ctx.putImageData(data, 0, 0);
+    // Make sure the exception isn't caused by calling the function twice.
+    ctx.putImageData(data, 0, 0);
+    // Calling again inside a layer should throw.
+    ctx.beginLayer();
+    assert_throws_dom("InvalidStateError", () => ctx.putImageData(data, 0, 0));
 
 - name: 2d.layer.transferToImageBitmap
   desc: Check that calling transferToImageBitmap in a layer throws an exception.
