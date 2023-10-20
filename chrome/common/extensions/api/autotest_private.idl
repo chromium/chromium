@@ -819,6 +819,9 @@ namespace autotestPrivate {
   callback GetCurrentInputMethodDescriptorCallback = void
       (GetCurrentInputMethodDescriptorData data);
 
+  // Response callback to report if a field trial exists and has been activated.
+  callback IsFieldTrialActiveCallback = void(boolean active);
+
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
     static void initializeEvents();
@@ -1581,6 +1584,10 @@ namespace autotestPrivate {
     // |callback|: Called when the operation sent to ARC by mojo.
     [supportsPromises] static void setArcInteractiveState(
       boolean enabled, VoidCallback callback);
+
+    // Returns whether a field trial exists and has been activated.
+    [supportsPromises] static void isFieldTrialActive(DOMString feature_name,
+        IsFieldTrialActiveCallback callback);
   };
 
   interface Events {

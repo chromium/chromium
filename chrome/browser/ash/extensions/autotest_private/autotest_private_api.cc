@@ -62,6 +62,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -6737,6 +6738,26 @@ AutotestPrivateSetArcInteractiveStateFunction::Run() {
   power_instance->SetInteractive(params->enabled);
 
   return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateIsFieldTrialActiveFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateIsFieldTrialActiveFunction::
+    AutotestPrivateIsFieldTrialActiveFunction() = default;
+
+AutotestPrivateIsFieldTrialActiveFunction::
+    ~AutotestPrivateIsFieldTrialActiveFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateIsFieldTrialActiveFunction::Run() {
+  absl::optional<api::autotest_private::IsFieldTrialActive::Params> params =
+      api::autotest_private::IsFieldTrialActive::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  return RespondNow(
+      WithArguments(base::FieldTrialList::IsTrialActive(params->feature_name)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

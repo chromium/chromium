@@ -1818,6 +1818,17 @@ class AutotestPrivateSetArcInteractiveStateFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutotestPrivateIsFieldTrialActiveFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateIsFieldTrialActiveFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.isFieldTrialActive",
+                             AUTOTESTPRIVATE_ISFIELDTRIALACTIVE)
+
+ private:
+  ~AutotestPrivateIsFieldTrialActiveFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(

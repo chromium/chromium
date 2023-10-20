@@ -642,4 +642,19 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
       << message_;
 }
 
+class AutotestPrivateIsFieldTrialActiveApiTest : public AutotestPrivateApiTest {
+ public:
+  AutotestPrivateIsFieldTrialActiveApiTest() {
+    base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
+        "ActiveTrialForTest", "GroupForTest");
+    trial->Activate();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AutotestPrivateIsFieldTrialActiveApiTest,
+                       IsFieldTrialActive) {
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("isFieldTrialActive"))
+      << message_;
+}
+
 }  // namespace extensions
