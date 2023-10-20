@@ -70,21 +70,6 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // screen bounds.
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen;
 
-// Returns YES if the window is in fullscreen mode.
-- (BOOL)isFullScreen;
-
-// Defers the removal of `childWindow` until the window is the active window
-// or ordered out, to avoid triggering a space change.
-- (void)removeChildWindowOnActivation:(NSWindow*)childWindow;
-
-// Returns YES if `aWindow` is a child window that will be removed when the
-// window activates or orders out.
-- (BOOL)willRemoveChildWindowOnActivation:(NSWindow*)aWindow;
-
-- (BOOL)hasDeferredChildWindowRemovalsForTesting;
-
-- (BOOL)hasDeferredChildWindowOrderingCommandsForTesting;
-
 // Identifier for the NativeWidgetMac from which this window was created. This
 // may be used to look up the NativeWidgetMacNSWindowHost in the browser process
 // or the NativeWidgetNSWindowBridge in a display process.
@@ -106,7 +91,7 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // Called whenever a child window is added to the receiver.
 @property(nonatomic, copy) void (^childWindowAddedHandler)(NSWindow* child);
 
-// Called whenever a child window is removed from the receiver.
+// Called whenever a child window is removed to the receiver.
 @property(nonatomic, copy) void (^childWindowRemovedHandler)(NSWindow* child);
 
 // Window to dispatch commands to. Needed for situations where the window that
