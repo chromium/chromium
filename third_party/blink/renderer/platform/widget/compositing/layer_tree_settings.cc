@@ -690,7 +690,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       cmd.HasSwitch(::switches::kDisableFrameRateLimit);
 
   settings.enable_variable_refresh_rate =
-      ::features::IsVariableRefreshRateEnabled();
+      ::features::IsVariableRefreshRateAlwaysOn();
 
   std::tie(settings.tiling_interest_area_padding,
            settings.skewport_extrapolation_limit_in_screen_pixels) =
