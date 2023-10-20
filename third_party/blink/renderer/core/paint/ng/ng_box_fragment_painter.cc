@@ -573,8 +573,8 @@ bool NGBoxFragmentPainter::ShouldRecordHitTestData(
     const PaintInfo& paint_info) {
   // Some conditions are checked in ObjectPainter::RecordHitTestData().
   // Table rows/sections do not participate in hit testing.
-  return !PhysicalFragment().IsTableNGRow() &&
-         !PhysicalFragment().IsTableNGSection();
+  return !PhysicalFragment().IsTableRow() &&
+         !PhysicalFragment().IsTableSection();
 }
 
 void NGBoxFragmentPainter::PaintObject(
@@ -661,7 +661,7 @@ void NGBoxFragmentPainter::PaintObject(
     return;
 
   // Collapsed borders paint *after* children have painted their backgrounds.
-  if (box_fragment_.IsTableNG() &&
+  if (box_fragment_.IsTable() &&
       paint_phase == PaintPhase::kDescendantBlockBackgroundsOnly) {
     NGTablePainter(box_fragment_)
         .PaintCollapsedBorders(paint_info, paint_offset,
@@ -1081,7 +1081,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRect(
     const DisplayItemClient& background_client) {
   BoxDecorationData box_decoration_data(paint_info, box_fragment_);
   if (!box_decoration_data.ShouldPaint() &&
-      (!box_fragment_.IsTableNG() ||
+      (!box_fragment_.IsTable() ||
        !NGTablePainter(box_fragment_).WillCheckColumnBackgrounds())) {
     return;
   }
@@ -1166,21 +1166,21 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithDecorationData(
     NGFieldsetPainter(box_fragment_)
         .PaintBoxDecorationBackground(paint_info, paint_rect,
                                       box_decoration_data);
-  } else if (PhysicalFragment().IsTableNGPart()) {
-    if (box_fragment_.IsTableNGCell()) {
+  } else if (PhysicalFragment().IsTablePart()) {
+    if (box_fragment_.IsTableCell()) {
       NGTableCellPainter(box_fragment_)
           .PaintBoxDecorationBackground(paint_info, paint_rect,
                                         box_decoration_data);
-    } else if (box_fragment_.IsTableNGRow()) {
+    } else if (box_fragment_.IsTableRow()) {
       NGTableRowPainter(box_fragment_)
           .PaintBoxDecorationBackground(paint_info, paint_rect,
                                         box_decoration_data);
-    } else if (box_fragment_.IsTableNGSection()) {
+    } else if (box_fragment_.IsTableSection()) {
       NGTableSectionPainter(box_fragment_)
           .PaintBoxDecorationBackground(paint_info, paint_rect,
                                         box_decoration_data);
     } else {
-      DCHECK(box_fragment_.IsTableNG());
+      DCHECK(box_fragment_.IsTable());
       NGTablePainter(box_fragment_)
           .PaintBoxDecorationBackground(paint_info, paint_rect,
                                         box_decoration_data);
@@ -1992,8 +1992,8 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   if (hit_test_self) {
     // Table row and table section are never a hit target.
     // SVG <text> is not a hit target except if 'pointer-events: bounding-box'.
-    if (PhysicalFragment().IsTableNGRow() ||
-        PhysicalFragment().IsTableNGSection()) {
+    if (PhysicalFragment().IsTableRow() ||
+        PhysicalFragment().IsTableSection()) {
       hit_test_self = false;
     } else if (fragment.IsSvgText()) {
       pointer_events_bounding_box =

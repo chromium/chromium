@@ -235,22 +235,20 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsSvg() const { return layout_object_->IsSVG(); }
   bool IsSvgText() const { return layout_object_->IsSVGText(); }
 
-  bool IsTableNGPart() const { return is_table_ng_part_; }
+  bool IsTablePart() const { return is_table_part_; }
 
-  bool IsTableNG() const {
-    return IsTableNGPart() && layout_object_->IsTable();
+  bool IsTable() const { return IsTablePart() && layout_object_->IsTable(); }
+
+  bool IsTableRow() const {
+    return IsTablePart() && layout_object_->IsTableRow();
   }
 
-  bool IsTableNGRow() const {
-    return IsTableNGPart() && layout_object_->IsTableRow();
+  bool IsTableSection() const {
+    return IsTablePart() && layout_object_->IsTableSection();
   }
 
-  bool IsTableNGSection() const {
-    return IsTableNGPart() && layout_object_->IsTableSection();
-  }
-
-  bool IsTableNGCell() const {
-    return IsTableNGPart() && layout_object_->IsTableCell();
+  bool IsTableCell() const {
+    return IsTablePart() && layout_object_->IsTableCell();
   }
 
   bool IsGridNG() const { return layout_object_->IsLayoutNGGrid(); }
@@ -805,7 +803,7 @@ class CORE_EXPORT NGPhysicalFragment
   // The following are only used by NGPhysicalBoxFragment but are initialized
   // for all types to allow methods using them to be inlined.
   uint8_t is_fieldset_container_ : 1;                           // NOLINT
-  uint8_t is_table_ng_part_ : 1;                                // NOLINT
+  uint8_t is_table_part_ : 1;                                   // NOLINT
   uint8_t is_painted_atomically_ : 1;                           // NOLINT
   uint8_t has_collapsed_borders_ : 1;                           // NOLINT
   uint8_t has_first_baseline_ : 1;                              // NOLINT

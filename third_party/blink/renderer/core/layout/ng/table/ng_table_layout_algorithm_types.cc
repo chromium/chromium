@@ -79,11 +79,11 @@ inline void InlineSizesFromStyle(
 
 }  // namespace
 
-constexpr LayoutUnit NGTableTypes::kTableMaxInlineSize;
+constexpr LayoutUnit TableTypes::kTableMaxInlineSize;
 
 // Implements https://www.w3.org/TR/css-tables-3/#computing-cell-measures
 // "outer min-content and outer max-content widths for colgroups"
-NGTableTypes::Column NGTableTypes::CreateColumn(
+TableTypes::Column TableTypes::CreateColumn(
     const ComputedStyle& style,
     absl::optional<LayoutUnit> default_inline_size,
     bool is_table_fixed) {
@@ -118,7 +118,7 @@ NGTableTypes::Column NGTableTypes::CreateColumn(
 // Implements https://www.w3.org/TR/css-tables-3/#computing-cell-measures
 // "outer min-content and outer max-content widths for table cells"
 // Note: this method calls NGBlockNode::ComputeMinMaxSizes.
-NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
+TableTypes::CellInlineConstraint TableTypes::CreateCellInlineConstraint(
     const NGBlockNode& node,
     WritingDirectionMode table_writing_direction,
     bool is_fixed_layout,
@@ -207,17 +207,16 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     percent_border_padding = (cell_border + cell_padding).InlineSum();
 
   DCHECK_GE(resolved_max_inline_size, percent_border_padding);
-  return NGTableTypes::CellInlineConstraint{
+  return TableTypes::CellInlineConstraint{
       resolved_min_inline_size, resolved_max_inline_size,
       css_percentage_inline_size, percent_border_padding, is_constrained};
 }
 
-NGTableTypes::Section NGTableTypes::CreateSection(
-    const NGLayoutInputNode& section,
-    wtf_size_t start_row,
-    wtf_size_t row_count,
-    LayoutUnit block_size,
-    bool treat_as_tbody) {
+TableTypes::Section TableTypes::CreateSection(const NGLayoutInputNode& section,
+                                              wtf_size_t start_row,
+                                              wtf_size_t row_count,
+                                              LayoutUnit block_size,
+                                              bool treat_as_tbody) {
   const Length& section_css_block_size = section.Style().LogicalHeight();
   // TODO(crbug.com/1105272): Decide what to do with |Length::IsCalculated()|.
   bool is_constrained =
@@ -234,8 +233,8 @@ NGTableTypes::Section NGTableTypes::CreateSection(
                  /* needs_redistribution */ false};
 }
 
-void NGTableTypes::CellInlineConstraint::Encompass(
-    const NGTableTypes::CellInlineConstraint& other) {
+void TableTypes::CellInlineConstraint::Encompass(
+    const TableTypes::CellInlineConstraint& other) {
   // Standard says:
   // "A column is constrained if any of the cells spanning only that column has
   // a computed width that is not "auto", and is not a percentage. This means
@@ -258,8 +257,8 @@ void NGTableTypes::CellInlineConstraint::Encompass(
   }
 }
 
-void NGTableTypes::Column::Encompass(
-    const absl::optional<NGTableTypes::CellInlineConstraint>& cell) {
+void TableTypes::Column::Encompass(
+    const absl::optional<TableTypes::CellInlineConstraint>& cell) {
   if (!cell)
     return;
 
@@ -296,7 +295,7 @@ void NGTableTypes::Column::Encompass(
   is_constrained |= cell->is_constrained;
 }
 
-NGTableGroupedChildren::NGTableGroupedChildren(const NGBlockNode& table)
+TableGroupedChildren::TableGroupedChildren(const NGBlockNode& table)
     : header(NGBlockNode(nullptr)), footer(NGBlockNode(nullptr)) {
   for (NGLayoutInputNode child = table.FirstChild(); child;
        child = child.NextSibling()) {
@@ -331,7 +330,7 @@ NGTableGroupedChildren::NGTableGroupedChildren(const NGBlockNode& table)
   }
 }
 
-void NGTableGroupedChildren::Trace(Visitor* visitor) const {
+void TableGroupedChildren::Trace(Visitor* visitor) const {
   visitor->Trace(captions);
   visitor->Trace(columns);
   visitor->Trace(header);
@@ -339,16 +338,16 @@ void NGTableGroupedChildren::Trace(Visitor* visitor) const {
   visitor->Trace(footer);
 }
 
-NGTableGroupedChildrenIterator NGTableGroupedChildren::begin() const {
-  return NGTableGroupedChildrenIterator(*this);
+TableGroupedChildrenIterator TableGroupedChildren::begin() const {
+  return TableGroupedChildrenIterator(*this);
 }
 
-NGTableGroupedChildrenIterator NGTableGroupedChildren::end() const {
-  return NGTableGroupedChildrenIterator(*this, /* is_end */ true);
+TableGroupedChildrenIterator TableGroupedChildren::end() const {
+  return TableGroupedChildrenIterator(*this, /* is_end */ true);
 }
 
-NGTableGroupedChildrenIterator::NGTableGroupedChildrenIterator(
-    const NGTableGroupedChildren& grouped_children,
+TableGroupedChildrenIterator::TableGroupedChildrenIterator(
+    const TableGroupedChildren& grouped_children,
     bool is_end)
     : grouped_children_(grouped_children) {
   if (is_end) {
@@ -359,7 +358,7 @@ NGTableGroupedChildrenIterator::NGTableGroupedChildrenIterator(
   AdvanceForwardToNonEmptySection();
 }
 
-NGTableGroupedChildrenIterator& NGTableGroupedChildrenIterator::operator++() {
+TableGroupedChildrenIterator& TableGroupedChildrenIterator::operator++() {
   switch (current_section_) {
     case kHead:
     case kFoot:
@@ -379,7 +378,7 @@ NGTableGroupedChildrenIterator& NGTableGroupedChildrenIterator::operator++() {
   return *this;
 }
 
-NGTableGroupedChildrenIterator& NGTableGroupedChildrenIterator::operator--() {
+TableGroupedChildrenIterator& TableGroupedChildrenIterator::operator--() {
   switch (current_section_) {
     case kHead:
     case kFoot:
@@ -401,7 +400,7 @@ NGTableGroupedChildrenIterator& NGTableGroupedChildrenIterator::operator--() {
   return *this;
 }
 
-NGBlockNode NGTableGroupedChildrenIterator::operator*() const {
+NGBlockNode TableGroupedChildrenIterator::operator*() const {
   switch (current_section_) {
     case kHead:
       return grouped_children_.header;
@@ -416,8 +415,8 @@ NGBlockNode NGTableGroupedChildrenIterator::operator*() const {
   }
 }
 
-bool NGTableGroupedChildrenIterator::operator==(
-    const NGTableGroupedChildrenIterator& rhs) const {
+bool TableGroupedChildrenIterator::operator==(
+    const TableGroupedChildrenIterator& rhs) const {
   if (current_section_ != rhs.current_section_)
     return false;
   if (current_section_ == kBody)
@@ -425,12 +424,12 @@ bool NGTableGroupedChildrenIterator::operator==(
   return true;
 }
 
-bool NGTableGroupedChildrenIterator::operator!=(
-    const NGTableGroupedChildrenIterator& rhs) const {
+bool TableGroupedChildrenIterator::operator!=(
+    const TableGroupedChildrenIterator& rhs) const {
   return !(*this == rhs);
 }
 
-void NGTableGroupedChildrenIterator::AdvanceForwardToNonEmptySection() {
+void TableGroupedChildrenIterator::AdvanceForwardToNonEmptySection() {
   switch (current_section_) {
     case kNone:
       current_section_ = kHead;
@@ -458,7 +457,7 @@ void NGTableGroupedChildrenIterator::AdvanceForwardToNonEmptySection() {
   }
 }
 
-void NGTableGroupedChildrenIterator::AdvanceBackwardToNonEmptySection() {
+void TableGroupedChildrenIterator::AdvanceBackwardToNonEmptySection() {
   switch (current_section_) {
     case kNone:
       NOTREACHED();

@@ -21,11 +21,11 @@ class NGBlockBreakToken;
 // child layout order (i.e. in this order: top captions, table header, table
 // bodies, table footer, bottom captions). If there are child break tokens,
 // though, their nodes will be processed first, in break token order.
-class CORE_EXPORT NGTableChildIterator {
+class CORE_EXPORT TableChildIterator {
   STACK_ALLOCATED();
 
  public:
-  NGTableChildIterator(const NGTableGroupedChildren&, const NGBlockBreakToken*);
+  TableChildIterator(const TableGroupedChildren&, const NGBlockBreakToken*);
 
   class Entry {
     STACK_ALLOCATED();
@@ -58,14 +58,14 @@ class CORE_EXPORT NGTableChildIterator {
   NGBlockNode CurrentChild() const;
   void AdvanceChild();
 
-  const NGTableGroupedChildren* grouped_children_;
+  const TableGroupedChildren* grouped_children_;
   const NGBlockBreakToken* break_token_;
 
   // The sections iterator is used to walk through the table sections in layout
   // order, i.e. table header, table bodies, table footer. If it is unset, it
   // means that we're processing top captions. If it's at end(), it means that
   // we should look for bottom captions.
-  absl::optional<NGTableGroupedChildrenIterator> section_iterator_;
+  absl::optional<TableGroupedChildrenIterator> section_iterator_;
 
   // An index into break_token_'s ChildBreakTokens() vector. Used for keeping
   // track of the next child break token to inspect.

@@ -14,18 +14,18 @@
 namespace blink {
 
 // Table specific extensions to NGBlockNode.
-class CORE_EXPORT NGTableNode final : public NGBlockNode {
+class CORE_EXPORT TableNode final : public NGBlockNode {
  public:
-  explicit NGTableNode(LayoutBox* box) : NGBlockNode(box) {}
+  explicit TableNode(LayoutBox* box) : NGBlockNode(box) {}
 
   const BoxStrut& GetTableBordersStrut() const;
 
-  const NGTableBorders* GetTableBorders() const;
+  const TableBorders* GetTableBorders() const;
 
   LayoutUnit ComputeCaptionBlockSize(const NGConstraintSpace& space) const;
 
-  scoped_refptr<const NGTableTypes::Columns> GetColumnConstraints(
-      const NGTableGroupedChildren&,
+  scoped_refptr<const TableTypes::Columns> GetColumnConstraints(
+      const TableGroupedChildren&,
       const BoxStrut& border_padding) const;
 
   LayoutUnit ComputeTableInlineSize(const NGConstraintSpace&,
@@ -43,7 +43,7 @@ class CORE_EXPORT NGTableNode final : public NGBlockNode {
 };
 
 template <>
-struct DowncastTraits<NGTableNode> {
+struct DowncastTraits<TableNode> {
   static bool AllowFrom(const NGLayoutInputNode& node) {
     return node.IsTable();
   }

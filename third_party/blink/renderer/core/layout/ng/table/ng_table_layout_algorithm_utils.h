@@ -16,10 +16,10 @@ class NGBlockNode;
 class NGBoxFragment;
 class NGBoxFragmentBuilder;
 class NGConstraintSpaceBuilder;
-class NGTableBorders;
-class NGTableNode;
+class TableBorders;
+class TableNode;
 enum class NGCacheSlot;
-struct NGTableColumnLocation;
+struct TableColumnLocation;
 
 // Table size distribution algorithms.
 
@@ -30,8 +30,8 @@ struct CellBlockSizeData {
   bool is_initial_block_size_indefinite;
 };
 CellBlockSizeData ComputeCellBlockSize(
-    const NGTableTypes::CellBlockConstraint& cell_block_constraint,
-    const NGTableTypes::Rows& rows,
+    const TableTypes::CellBlockConstraint& cell_block_constraint,
+    const TableTypes::Rows& rows,
     wtf_size_t row_index,
     const LogicalSize& border_spacing,
     bool is_table_block_size_specified);
@@ -44,7 +44,7 @@ void SetupTableCellConstraintSpaceBuilder(
     const WritingDirectionMode table_writing_direction,
     const NGBlockNode cell,
     const BoxStrut& cell_borders,
-    const Vector<NGTableColumnLocation>& column_locations,
+    const Vector<TableColumnLocation>& column_locations,
     LayoutUnit cell_block_size,
     LayoutUnit percentage_inline_size,
     absl::optional<LayoutUnit> alignment_baseline,
@@ -59,34 +59,34 @@ wtf_size_t ComputeMaximumNonMergeableColumnCount(
     const HeapVector<NGBlockNode>& columns,
     bool is_fixed_layout);
 
-scoped_refptr<NGTableTypes::Columns> ComputeColumnConstraints(
+scoped_refptr<TableTypes::Columns> ComputeColumnConstraints(
     const NGBlockNode& table,
-    const NGTableGroupedChildren&,
-    const NGTableBorders& table_borders,
+    const TableGroupedChildren&,
+    const TableBorders& table_borders,
     const BoxStrut& border_padding);
 
 void ComputeSectionMinimumRowBlockSizes(
     const NGBlockNode& section,
     const LayoutUnit cell_percentage_resolution_inline_size,
     const bool is_table_block_size_specified,
-    const Vector<NGTableColumnLocation>& column_locations,
-    const NGTableBorders& table_borders,
+    const Vector<TableColumnLocation>& column_locations,
+    const TableBorders& table_borders,
     const LayoutUnit block_border_spacing,
     wtf_size_t section_index,
     bool treat_section_as_tbody,
-    NGTableTypes::Sections* sections,
-    NGTableTypes::Rows* rows,
-    NGTableTypes::CellBlockConstraints* cell_block_constraints);
+    TableTypes::Sections* sections,
+    TableTypes::Rows* rows,
+    TableTypes::CellBlockConstraints* cell_block_constraints);
 
 // Performs any final adjustments for table-cells at the end of layout.
 void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
                              NGBoxFragmentBuilder*);
 
-// NGColspanCellTabulator keeps track of columns occupied by colspanned cells
+// ColspanCellTabulator keeps track of columns occupied by colspanned cells
 // when traversing rows in a section. It is used to compute cell's actual
 // column.
 // Usage:
-//   NGColspanCellTabulator colspan_cell_tabulator;
+//   ColspanCellTabulator colspan_cell_tabulator;
 //   for (Row r : section.rows) {
 //      colspan_cell_tabulator.StartRow();
 //      for (Cell c : row.cells) {
@@ -96,7 +96,7 @@ void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
 //      }
 //      colspan_cell_tabulator.EndRow();
 //   }
-class NGColspanCellTabulator {
+class ColspanCellTabulator {
  public:
   unsigned CurrentColumn() { return current_column_; }
   void StartRow();
@@ -119,11 +119,11 @@ class NGColspanCellTabulator {
   Vector<Cell> colspanned_cells_;
 };
 
-// NGRowBaselineTabulator computes baseline information for row.
+// RowBaselineTabulator computes baseline information for row.
 // Standard: https://www.w3.org/TR/css-tables-3/#row-layout
 // Baseline is either max-baseline of baseline-aligned cells,
 // or bottom content edge of non-baseline-aligned cells.
-class NGRowBaselineTabulator {
+class RowBaselineTabulator {
  public:
   void ProcessCell(const NGBoxFragment& fragment,
                    EVerticalAlign align,
@@ -163,27 +163,27 @@ constexpr wtf_size_t ComputeMaxColumn(wtf_size_t current_column,
 // |undistributable_space| is size of space not occupied by cells
 // (borders, border spacing).
 CORE_EXPORT MinMaxSizes
-ComputeGridInlineMinMax(const NGTableNode& node,
-                        const NGTableTypes::Columns& column_constraints,
+ComputeGridInlineMinMax(const TableNode& node,
+                        const TableTypes::Columns& column_constraints,
                         LayoutUnit undistributable_space,
                         bool is_fixed_layout,
                         bool is_layout_pass);
 
 CORE_EXPORT void DistributeColspanCellsToColumns(
-    const NGTableTypes::ColspanCells& colspan_cells,
+    const TableTypes::ColspanCells& colspan_cells,
     LayoutUnit inline_border_spacing,
     bool is_fixed_layout,
-    NGTableTypes::Columns* column_constraints);
+    TableTypes::Columns* column_constraints);
 
 CORE_EXPORT Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
     LayoutUnit assignable_table_inline_size,
     bool is_fixed_layout,
-    const NGTableTypes::Columns& column_constraints);
+    const TableTypes::Columns& column_constraints);
 
 CORE_EXPORT void DistributeRowspanCellToRows(
-    const NGTableTypes::RowspanCell& rowspan_cell,
+    const TableTypes::RowspanCell& rowspan_cell,
     LayoutUnit border_block_spacing,
-    NGTableTypes::Rows* rows);
+    TableTypes::Rows* rows);
 
 CORE_EXPORT void DistributeSectionFixedBlockSizeToRows(
     const wtf_size_t start_row,
@@ -191,17 +191,17 @@ CORE_EXPORT void DistributeSectionFixedBlockSizeToRows(
     LayoutUnit section_fixed_block_size,
     LayoutUnit border_block_spacing,
     LayoutUnit percentage_resolution_block_size,
-    NGTableTypes::Rows* rows);
+    TableTypes::Rows* rows);
 
 CORE_EXPORT void DistributeTableBlockSizeToSections(
     LayoutUnit border_block_spacing,
     LayoutUnit table_block_size,
-    NGTableTypes::Sections* sections,
-    NGTableTypes::Rows* rows);
+    TableTypes::Sections* sections,
+    TableTypes::Rows* rows);
 
 }  // namespace blink
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::NGColspanCellTabulator::Cell)
+    blink::ColspanCellTabulator::Cell)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_UTILS_H_

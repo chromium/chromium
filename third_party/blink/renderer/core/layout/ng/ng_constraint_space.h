@@ -329,7 +329,7 @@ class CORE_EXPORT NGConstraintSpace final {
                          : false;
   }
 
-  const NGTableConstraintSpaceData* TableData() const {
+  const TableConstraintSpaceData* TableData() const {
     return HasRareData() ? rare_data_->TableData() : nullptr;
   }
 
@@ -836,7 +836,7 @@ class CORE_EXPORT NGConstraintSpace final {
     return true;
   }
 
-  void ReplaceTableRowData(const NGTableConstraintSpaceData& table_data,
+  void ReplaceTableRowData(const TableConstraintSpaceData& table_data,
                            const wtf_size_t row_index) {
     DCHECK(HasRareData());
     rare_data_->ReplaceTableRowData(table_data, row_index);
@@ -1204,20 +1204,20 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     void SetTableRowData(
-        scoped_refptr<const NGTableConstraintSpaceData> table_data,
+        scoped_refptr<const TableConstraintSpaceData> table_data,
         wtf_size_t row_index) {
       EnsureTableRowData()->table_data = std::move(table_data);
       EnsureTableRowData()->row_index = row_index;
     }
 
     void SetTableSectionData(
-        scoped_refptr<const NGTableConstraintSpaceData> table_data,
+        scoped_refptr<const TableConstraintSpaceData> table_data,
         wtf_size_t section_index) {
       EnsureTableSectionData()->table_data = std::move(table_data);
       EnsureTableSectionData()->section_index = section_index;
     }
 
-    void ReplaceTableRowData(const NGTableConstraintSpaceData& table_data,
+    void ReplaceTableRowData(const TableConstraintSpaceData& table_data,
                              wtf_size_t row_index) {
       DCHECK_EQ(GetDataUnionType(), DataUnionType::kTableRowData);
       DCHECK(
@@ -1228,7 +1228,7 @@ class CORE_EXPORT NGConstraintSpace final {
       table_row_data_.row_index = row_index;
     }
 
-    const NGTableConstraintSpaceData* TableData() {
+    const TableConstraintSpaceData* TableData() {
       if (GetDataUnionType() == DataUnionType::kTableRowData)
         return table_row_data_.table_data.get();
       if (GetDataUnionType() == DataUnionType::kTableSectionData)
@@ -1381,7 +1381,7 @@ class CORE_EXPORT NGConstraintSpace final {
         return !table_data && row_index == kNotFound;
       }
 
-      scoped_refptr<const NGTableConstraintSpaceData> table_data;
+      scoped_refptr<const TableConstraintSpaceData> table_data;
       wtf_size_t row_index = kNotFound;
     };
 
@@ -1395,7 +1395,7 @@ class CORE_EXPORT NGConstraintSpace final {
         return !table_data && section_index == kNotFound;
       }
 
-      scoped_refptr<const NGTableConstraintSpaceData> table_data;
+      scoped_refptr<const TableConstraintSpaceData> table_data;
       wtf_size_t section_index = kNotFound;
     };
 

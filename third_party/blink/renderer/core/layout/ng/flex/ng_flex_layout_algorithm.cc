@@ -884,7 +884,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         flex_base_border_box = ResolveMainBlockLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
             flex_basis_length, IntrinsicBlockSizeFunc);
-        if (const NGTableNode* table_child = DynamicTo<NGTableNode>(&child)) {
+        if (const auto* table_child = DynamicTo<TableNode>(&child)) {
           // (1) A table interprets forced block size as the height of its
           // captions + rows.
           // (2) The specified height of a table only applies to the rows.

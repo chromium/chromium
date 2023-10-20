@@ -339,7 +339,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGFragmentBuilder* builder,
       may_have_descendant_above_block_start_(
           builder->may_have_descendant_above_block_start_),
       is_fieldset_container_(false),
-      is_table_ng_part_(false),
+      is_table_part_(false),
       is_painted_atomically_(false),
       has_collapsed_borders_(builder->has_collapsed_borders_),
       has_first_baseline_(false),
@@ -441,7 +441,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       may_have_descendant_above_block_start_(
           other.may_have_descendant_above_block_start_),
       is_fieldset_container_(other.is_fieldset_container_),
-      is_table_ng_part_(other.is_table_ng_part_),
+      is_table_part_(other.is_table_part_),
       is_painted_atomically_(other.is_painted_atomically_),
       has_collapsed_borders_(other.has_collapsed_borders_),
       has_first_baseline_(other.has_first_baseline_),

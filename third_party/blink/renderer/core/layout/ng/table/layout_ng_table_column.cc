@@ -37,11 +37,10 @@ void LayoutTableColumn::StyleDidChange(StyleDifference diff,
       if (diff.NeedsLayout()) {
         table->SetIntrinsicLogicalWidthsDirty();
         if (old_style &&
-            NGTableTypes::CreateColumn(
-                *old_style,
-                /* default_inline_size */ absl::nullopt,
-                table->StyleRef().IsFixedTableLayout()) !=
-                NGTableTypes::CreateColumn(
+            TableTypes::CreateColumn(*old_style,
+                                     /* default_inline_size */ absl::nullopt,
+                                     table->StyleRef().IsFixedTableLayout()) !=
+                TableTypes::CreateColumn(
                     StyleRef(), /* default_inline_size */ absl::nullopt,
                     table->StyleRef().IsFixedTableLayout())) {
           table->GridBordersChanged();

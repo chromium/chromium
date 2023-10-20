@@ -346,7 +346,7 @@ BackgroundImageGeometry::BackgroundImageGeometry(
           To<LayoutBoxModelObject>(fragment.GetLayoutObject())) {
   DCHECK(box_->IsBox());
 
-  if (fragment.IsTableNG()) {
+  if (fragment.IsTable()) {
     auto stitched_background_rect = ComputeStitchedTableGridRect(fragment);
     positioning_size_override_ = stitched_background_rect.size;
     element_positioning_area_offset_ = -stitched_background_rect.offset;

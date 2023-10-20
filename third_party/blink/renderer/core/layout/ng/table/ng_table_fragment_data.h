@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class NGTableFragmentData {
+class TableFragmentData {
  public:
   // COLGROUP/COL geometry information. Used for painting column backgrounds.
   // Only present if column has a background.
@@ -60,6 +60,6 @@ class NGTableFragmentData {
 }  // namespace blink
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::NGTableFragmentData::ColumnGeometry)
+    blink::TableFragmentData::ColumnGeometry)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_FRAGMENT_DATA_H_

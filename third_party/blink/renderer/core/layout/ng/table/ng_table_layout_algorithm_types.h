@@ -22,8 +22,8 @@ class ComputedStyle;
 class NGBlockNode;
 class NGLayoutInputNode;
 
-// Define constraint classes for NGTableLayoutAlgorithm.
-class CORE_EXPORT NGTableTypes {
+// Define constraint classes for TableLayoutAlgorithm.
+class CORE_EXPORT TableTypes {
  public:
   static constexpr LayoutUnit kTableMaxInlineSize =
       LayoutUnit(static_cast<uint64_t>(1000000));
@@ -102,7 +102,7 @@ class CORE_EXPORT NGTableTypes {
     bool is_table_fixed = false;
     bool is_mergeable = false;
 
-    void Encompass(const absl::optional<NGTableTypes::CellInlineConstraint>&);
+    void Encompass(const absl::optional<TableTypes::CellInlineConstraint>&);
     LayoutUnit ResolvePercentInlineSize(
         LayoutUnit percentage_resolution_inline_size) const {
       return std::max(
@@ -155,11 +155,11 @@ class CORE_EXPORT NGTableTypes {
 
     // Original Legacy sorting criteria from
     // CompareRowspanCellsInHeightDistributionOrder
-    bool operator<(const NGTableTypes::RowspanCell& rhs) const {
+    bool operator<(const TableTypes::RowspanCell& rhs) const {
       // Returns true if a |RowspanCell| is completely contained within another
       // |RowspanCell|.
-      auto IsEnclosed = [](const NGTableTypes::RowspanCell& c1,
-                           const NGTableTypes::RowspanCell& c2) {
+      auto IsEnclosed = [](const TableTypes::RowspanCell& c1,
+                           const TableTypes::RowspanCell& c2) {
         return (c1.start_row >= c2.start_row) &&
                (c1.start_row + c1.effective_rowspan) <=
                    (c2.start_row + c2.effective_rowspan);
@@ -235,16 +235,16 @@ class CORE_EXPORT NGTableTypes {
   using Sections = Vector<Section>;
 };
 
-class NGTableGroupedChildrenIterator;
+class TableGroupedChildrenIterator;
 
 // Table's children grouped by type.
 // When iterating through members, make sure to handle out_of_flows correctly.
-struct NGTableGroupedChildren {
+struct TableGroupedChildren {
   DISALLOW_NEW();
 
  public:
-  explicit NGTableGroupedChildren(const NGBlockNode& table);
-  ~NGTableGroupedChildren() {
+  explicit TableGroupedChildren(const NGBlockNode& table);
+  ~TableGroupedChildren() {
     captions.clear();
     columns.clear();
     bodies.clear();
@@ -258,40 +258,40 @@ struct NGTableGroupedChildren {
   NGBlockNode header;          // first THEAD
 
   // These cannot be modified except in ctor to ensure
-  // NGTableGroupedChildrenIterator works correctly.
+  // TableGroupedChildrenIterator works correctly.
   HeapVector<NGBlockNode> bodies;  // TBODY/multiple THEAD/TFOOT
 
   NGBlockNode footer;          // first TFOOT
 
   // Default iterators iterate over tbody-like (THEAD/TBODY/TFOOT) elements.
-  NGTableGroupedChildrenIterator begin() const;
-  NGTableGroupedChildrenIterator end() const;
+  TableGroupedChildrenIterator begin() const;
+  TableGroupedChildrenIterator end() const;
 };
 
 // Iterates table's sections in order:
 // thead, tbody, tfoot
-class NGTableGroupedChildrenIterator {
+class TableGroupedChildrenIterator {
   STACK_ALLOCATED();
 
   enum CurrentSection { kNone, kHead, kBody, kFoot, kEnd };
 
  public:
-  explicit NGTableGroupedChildrenIterator(
-      const NGTableGroupedChildren& grouped_children,
+  explicit TableGroupedChildrenIterator(
+      const TableGroupedChildren& grouped_children,
       bool is_end = false);
 
-  NGTableGroupedChildrenIterator& operator++();
-  NGTableGroupedChildrenIterator& operator--();
+  TableGroupedChildrenIterator& operator++();
+  TableGroupedChildrenIterator& operator--();
   NGBlockNode operator*() const;
-  bool operator==(const NGTableGroupedChildrenIterator& rhs) const;
-  bool operator!=(const NGTableGroupedChildrenIterator& rhs) const;
+  bool operator==(const TableGroupedChildrenIterator& rhs) const;
+  bool operator!=(const TableGroupedChildrenIterator& rhs) const;
   // True if section should be treated as tbody
   bool TreatAsTBody() const { return current_section_ == kBody; }
 
  private:
   void AdvanceForwardToNonEmptySection();
   void AdvanceBackwardToNonEmptySection();
-  const NGTableGroupedChildren& grouped_children_;
+  const TableGroupedChildren& grouped_children_;
   CurrentSection current_section_{kNone};
 
   // |body_vector_| can be modified only in ctor and
@@ -303,15 +303,15 @@ class NGTableGroupedChildrenIterator {
 }  // namespace blink
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::NGTableTypes::CellInlineConstraint)
+    blink::TableTypes::CellInlineConstraint)
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::NGTableTypes::ColspanCell)
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGTableTypes::Column)
+    blink::TableTypes::ColspanCell)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::TableTypes::Column)
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::NGTableTypes::CellBlockConstraint)
+    blink::TableTypes::CellBlockConstraint)
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::NGTableTypes::RowspanCell)
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGTableTypes::Row)
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGTableTypes::Section)
+    blink::TableTypes::RowspanCell)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::TableTypes::Row)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::TableTypes::Section)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_TYPES_H_

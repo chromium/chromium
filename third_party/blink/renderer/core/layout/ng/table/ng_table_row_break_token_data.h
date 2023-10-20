@@ -9,9 +9,9 @@
 
 namespace blink {
 
-struct NGTableRowBreakTokenData final : NGBlockBreakTokenData {
-  NGTableRowBreakTokenData(const NGBlockBreakTokenData* break_token_data,
-                           LayoutUnit previous_consumed_row_block_size)
+struct TableRowBreakTokenData final : NGBlockBreakTokenData {
+  TableRowBreakTokenData(const NGBlockBreakTokenData* break_token_data,
+                         LayoutUnit previous_consumed_row_block_size)
       : NGBlockBreakTokenData(kTableRowBreakTokenData, break_token_data),
         previous_consumed_row_block_size(previous_consumed_row_block_size) {}
 
@@ -22,7 +22,7 @@ struct NGTableRowBreakTokenData final : NGBlockBreakTokenData {
 };
 
 template <>
-struct DowncastTraits<NGTableRowBreakTokenData> {
+struct DowncastTraits<TableRowBreakTokenData> {
   static bool AllowFrom(const NGBlockBreakTokenData& token_data) {
     return token_data.IsTableRowType();
   }

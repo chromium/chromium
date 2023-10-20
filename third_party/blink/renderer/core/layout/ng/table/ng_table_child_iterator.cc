@@ -8,8 +8,8 @@
 
 namespace blink {
 
-NGTableChildIterator::NGTableChildIterator(
-    const NGTableGroupedChildren& grouped_children,
+TableChildIterator::TableChildIterator(
+    const TableGroupedChildren& grouped_children,
     const NGBlockBreakToken* break_token)
     : grouped_children_(&grouped_children), break_token_(break_token) {
   if (break_token_) {
@@ -46,7 +46,7 @@ NGTableChildIterator::NGTableChildIterator(
   section_iterator_.emplace(grouped_children_->begin());
 }
 
-NGTableChildIterator::Entry NGTableChildIterator::NextChild() {
+TableChildIterator::Entry TableChildIterator::NextChild() {
   const NGBlockBreakToken* current_child_break_token = nullptr;
   NGBlockNode current_child(nullptr);
 
@@ -86,7 +86,7 @@ NGTableChildIterator::Entry NGTableChildIterator::NextChild() {
   return Entry(current_child, current_child_break_token, current_section_idx);
 }
 
-NGBlockNode NGTableChildIterator::CurrentChild() const {
+NGBlockNode TableChildIterator::CurrentChild() const {
   if (!grouped_children_)
     return NGBlockNode(nullptr);  // We have nothing.
 
@@ -113,7 +113,7 @@ NGBlockNode NGTableChildIterator::CurrentChild() const {
   return NGBlockNode(nullptr);
 }
 
-void NGTableChildIterator::AdvanceChild() {
+void TableChildIterator::AdvanceChild() {
   if (!grouped_children_)
     return;
   if (!section_iterator_) {

@@ -30,18 +30,18 @@ struct ResultWithOffset {
   void Trace(Visitor* visitor) const { visitor->Trace(result); }
 };
 
-NGTableRowLayoutAlgorithm::NGTableRowLayoutAlgorithm(
+TableRowLayoutAlgorithm::TableRowLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {}
 
-const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
-  const NGTableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
+const NGLayoutResult* TableRowLayoutAlgorithm::Layout() {
+  const TableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
   const auto& row = table_data.rows[ConstraintSpace().TableRowIndex()];
 
   auto CreateCellConstraintSpace =
       [this, &table_data](
           NGBlockNode cell, const NGBlockBreakToken* cell_break_token,
-          const NGTableConstraintSpaceData::Cell& cell_data,
+          const TableConstraintSpaceData::Cell& cell_data,
           LayoutUnit row_block_size, absl::optional<LayoutUnit> row_baseline,
           bool min_block_size_should_encompass_intrinsic_size) {
         bool has_rowspan = cell_data.rowspan_block_size != kIndefiniteSize;
@@ -94,7 +94,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
 
   auto MinBlockSizeShouldEncompassIntrinsicSize =
       [&](const NGBlockNode& cell,
-          const NGTableConstraintSpaceData::Cell& cell_data) -> bool {
+          const TableConstraintSpaceData::Cell& cell_data) -> bool {
     if (!has_block_fragmentation)
       return false;
 
@@ -123,7 +123,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   LayoutUnit max_cell_block_size;
   EBreakBetween row_break_before;
   EBreakBetween row_break_after;
-  NGRowBaselineTabulator row_baseline_tabulator;
+  RowBaselineTabulator row_baseline_tabulator;
   HeapVector<ResultWithOffset> results;
   bool has_inflow_break_inside = false;
   auto PlaceCells = [&](LayoutUnit row_block_size,
@@ -132,7 +132,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
     max_cell_block_size = LayoutUnit();
     row_break_before = EBreakBetween::kAuto;
     row_break_after = EBreakBetween::kAuto;
-    row_baseline_tabulator = NGRowBaselineTabulator();
+    row_baseline_tabulator = RowBaselineTabulator();
     results.clear();
     has_inflow_break_inside = false;
 
@@ -144,7 +144,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
       const auto* cell_break_token = To<NGBlockBreakToken>(entry.token);
       const auto& cell_style = cell.Style();
       const wtf_size_t cell_index = row.start_cell_index + *entry.index;
-      const NGTableConstraintSpaceData::Cell& cell_data =
+      const TableConstraintSpaceData::Cell& cell_data =
           table_data.cells[cell_index];
 
       bool min_block_size_should_encompass_intrinsic_size =
@@ -217,7 +217,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   LayoutUnit previous_consumed_row_block_size;
   if (IsBreakInside(BreakToken())) {
     const auto* table_row_data =
-        To<NGTableRowBreakTokenData>(BreakToken()->TokenData());
+        To<TableRowBreakTokenData>(BreakToken()->TokenData());
     previous_consumed_row_block_size =
         table_row_data->previous_consumed_row_block_size;
   }
@@ -249,7 +249,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   container_builder_.SetFragmentsTotalBlockSize(row_block_size);
   if (row.is_collapsed)
     container_builder_.SetIsHiddenForPaint(true);
-  container_builder_.SetIsTableNGPart();
+  container_builder_.SetIsTablePart();
 
   if (should_propagate_child_break_values) {
     container_builder_.SetInitialBreakBefore(row_break_before);
@@ -265,7 +265,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
     DCHECK_EQ(status, NGBreakStatus::kContinue);
 
     container_builder_.SetBreakTokenData(
-        MakeGarbageCollected<NGTableRowBreakTokenData>(
+        MakeGarbageCollected<TableRowBreakTokenData>(
             container_builder_.GetBreakTokenData(),
             previous_consumed_row_block_size +
                 container_builder_.FragmentBlockSize()));

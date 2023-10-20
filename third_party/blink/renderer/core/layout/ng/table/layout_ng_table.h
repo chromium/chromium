@@ -15,7 +15,7 @@ namespace blink {
 
 class LayoutTableSection;
 class LayoutTableCell;
-class NGTableBorders;
+class TableBorders;
 
 enum SkipEmptySectionsValue { kDoNotSkipEmptySections, kSkipEmptySections };
 
@@ -84,9 +84,9 @@ enum SkipEmptySectionsValue { kDoNotSkipEmptySections, kSkipEmptySections };
 // Invalidation: LayoutTable differences from block invalidation:
 //
 // Cached collapsed borders:
-// Table caches collapsed borders as NGTableBorders.
-// NGTableBorders are stored on Table fragment for painting.
-// If NGTableBorders change, table fragment must be regenerated.
+// Table caches collapsed borders as TableBorders.
+// TableBorders are stored on Table fragment for painting.
+// If TableBorders change, table fragment must be regenerated.
 // Any table part that contributes to collapsed borders must invalidate
 // cached borders on border change by calling GridBordersChanged.
 //
@@ -116,17 +116,17 @@ class CORE_EXPORT LayoutTable : public LayoutBlock {
 
   wtf_size_t ColumnCount() const;
 
-  const NGTableBorders* GetCachedTableBorders() const {
+  const TableBorders* GetCachedTableBorders() const {
     NOT_DESTROYED();
     return cached_table_borders_.Get();
   }
 
-  void SetCachedTableBorders(const NGTableBorders*);
+  void SetCachedTableBorders(const TableBorders*);
 
-  const NGTableTypes::Columns* GetCachedTableColumnConstraints();
+  const TableTypes::Columns* GetCachedTableColumnConstraints();
 
   void SetCachedTableColumnConstraints(
-      scoped_refptr<const NGTableTypes::Columns>);
+      scoped_refptr<const TableTypes::Columns>);
 
   // Any borders in table grid have changed.
   void GridBordersChanged();
@@ -219,11 +219,11 @@ class CORE_EXPORT LayoutTable : public LayoutBlock {
   void InvalidateCachedTableBorders();
 
   // Table borders are cached because computing collapsed borders is expensive.
-  Member<const NGTableBorders> cached_table_borders_;
+  Member<const TableBorders> cached_table_borders_;
 
   // Table columns do not depend on any outside data (e.g. NGConstraintSpace).
   // They are cached because computing them is expensive.
-  scoped_refptr<const NGTableTypes::Columns> cached_table_columns_;
+  scoped_refptr<const TableTypes::Columns> cached_table_columns_;
 };
 
 // wtf/casting.h helper.

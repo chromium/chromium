@@ -72,7 +72,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   table_collapsed_borders_ = builder.table_collapsed_borders_;
   if (!builder.table_column_geometries_.empty()) {
     table_column_geometries_ =
-        MakeGarbageCollected<NGTableFragmentData::ColumnGeometries>(
+        MakeGarbageCollected<TableFragmentData::ColumnGeometries>(
             builder.table_column_geometries_);
   }
 

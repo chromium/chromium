@@ -14,7 +14,7 @@
 
 namespace blink {
 
-NGTableSectionLayoutAlgorithm::NGTableSectionLayoutAlgorithm(
+TableSectionLayoutAlgorithm::TableSectionLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {}
 
@@ -30,8 +30,8 @@ NGTableSectionLayoutAlgorithm::NGTableSectionLayoutAlgorithm(
 // |  +--------------------+  |
 // |       vspacing           |
 // +--------------------------+
-const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
-  const NGTableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
+const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
+  const TableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
   const auto& section =
       table_data.sections[ConstraintSpace().TableSectionIndex()];
   const wtf_size_t start_row_index = section.start_row_index;
@@ -95,7 +95,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
           ConstraintSpace(), row, *row_result, fragmentainer_block_offset,
           !is_first_non_collapsed_row, &container_builder_);
       if (break_status == NGBreakStatus::kNeedsEarlierBreak) {
-        return RelayoutAndBreakEarlier<NGTableSectionLayoutAlgorithm>(
+        return RelayoutAndBreakEarlier<TableSectionLayoutAlgorithm>(
             container_builder_.EarlyBreak());
       }
       if (break_status == NGBreakStatus::kBrokeBefore)
@@ -151,7 +151,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
     container_builder_.SetFirstBaseline(*first_baseline);
   if (last_baseline)
     container_builder_.SetLastBaseline(*last_baseline);
-  container_builder_.SetIsTableNGPart();
+  container_builder_.SetIsTablePart();
 
   // Store the collapsed-borders row geometry on this section fragment.
   if (table_data.has_collapsed_borders && row_offsets.size() > 1u) {

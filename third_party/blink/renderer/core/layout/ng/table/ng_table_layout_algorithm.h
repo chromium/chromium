@@ -15,20 +15,20 @@
 namespace blink {
 
 class NGBlockBreakToken;
-class NGTableBorders;
+class TableBorders;
 
-class CORE_EXPORT NGTableLayoutAlgorithm
-    : public NGLayoutAlgorithm<NGTableNode,
+class CORE_EXPORT TableLayoutAlgorithm
+    : public NGLayoutAlgorithm<TableNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  explicit NGTableLayoutAlgorithm(const NGLayoutAlgorithmParams& params)
+  explicit TableLayoutAlgorithm(const NGLayoutAlgorithmParams& params)
       : NGLayoutAlgorithm(params) {}
   const NGLayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
-  static LayoutUnit ComputeTableInlineSize(const NGTableNode& node,
+  static LayoutUnit ComputeTableInlineSize(const TableNode& node,
                                            const NGConstraintSpace& space,
                                            const BoxStrut& border_padding);
 
@@ -58,35 +58,35 @@ class CORE_EXPORT NGTableLayoutAlgorithm
   const NGLayoutResult* RelayoutAsLastTableBox();
 
   void ComputeRows(const LayoutUnit table_grid_inline_size,
-                   const NGTableGroupedChildren& grouped_children,
-                   const Vector<NGTableColumnLocation>& column_locations,
-                   const NGTableBorders& table_borders,
+                   const TableGroupedChildren& grouped_children,
+                   const Vector<TableColumnLocation>& column_locations,
+                   const TableBorders& table_borders,
                    const LogicalSize& border_spacing,
                    const BoxStrut& table_border_padding,
                    const LayoutUnit captions_block_size,
-                   NGTableTypes::Rows* rows,
-                   NGTableTypes::CellBlockConstraints* cell_block_constraints,
-                   NGTableTypes::Sections* sections,
+                   TableTypes::Rows* rows,
+                   TableTypes::CellBlockConstraints* cell_block_constraints,
+                   TableTypes::Sections* sections,
                    LayoutUnit* minimal_table_grid_block_size);
 
   void ComputeTableSpecificFragmentData(
-      const NGTableGroupedChildren& grouped_children,
-      const Vector<NGTableColumnLocation>& column_locations,
-      const NGTableTypes::Rows& rows,
-      const NGTableBorders& table_borders,
+      const TableGroupedChildren& grouped_children,
+      const Vector<TableColumnLocation>& column_locations,
+      const TableTypes::Rows& rows,
+      const TableBorders& table_borders,
       const LogicalRect& table_grid_rect,
       LayoutUnit table_grid_block_size);
 
   const NGLayoutResult* GenerateFragment(
       LayoutUnit table_inline_size,
       LayoutUnit minimal_table_grid_block_size,
-      const NGTableGroupedChildren& grouped_children,
-      const Vector<NGTableColumnLocation>& column_locations,
-      const NGTableTypes::Rows& rows,
-      const NGTableTypes::CellBlockConstraints& cell_block_constraints,
-      const NGTableTypes::Sections& sections,
+      const TableGroupedChildren& grouped_children,
+      const Vector<TableColumnLocation>& column_locations,
+      const TableTypes::Rows& rows,
+      const TableTypes::CellBlockConstraints& cell_block_constraints,
+      const TableTypes::Sections& sections,
       const HeapVector<CaptionResult>& captions,
-      const NGTableBorders& table_borders,
+      const TableBorders& table_borders,
       const LogicalSize& border_spacing);
 
   LayoutUnit total_table_min_block_size_;
@@ -99,6 +99,6 @@ class CORE_EXPORT NGTableLayoutAlgorithm
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGTableLayoutAlgorithm::CaptionResult)
+    blink::TableLayoutAlgorithm::CaptionResult)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_H_

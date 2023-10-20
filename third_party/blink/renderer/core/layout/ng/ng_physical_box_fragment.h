@@ -165,15 +165,15 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return rare_data_->GetField(FieldId::kTableGridRect)->table_grid_rect;
   }
 
-  const NGTableFragmentData::ColumnGeometries* TableColumnGeometries() const {
+  const TableFragmentData::ColumnGeometries* TableColumnGeometries() const {
     return rare_data_->table_column_geometries_.Get();
   }
 
-  const NGTableBorders* TableCollapsedBorders() const {
+  const TableBorders* TableCollapsedBorders() const {
     return rare_data_ ? rare_data_->table_collapsed_borders_ : nullptr;
   }
 
-  const NGTableFragmentData::CollapsedBordersGeometry*
+  const TableFragmentData::CollapsedBordersGeometry*
   TableCollapsedBordersGeometry() const {
     if (const auto* field =
             GetRareField(FieldId::kTableCollapsedBordersGeometry)) {
@@ -188,7 +188,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   absl::optional<wtf_size_t> TableSectionStartRowIndex() const {
-    DCHECK(IsTableNGSection());
+    DCHECK(IsTableSection());
     if (const auto* field = GetRareField(FieldId::kTableSectionStartRowIndex)) {
       return field->table_section_start_row_index;
     }
@@ -196,7 +196,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   const Vector<LayoutUnit>* TableSectionRowOffsets() const {
-    DCHECK(IsTableNGSection());
+    DCHECK(IsTableSection());
     if (const auto* field = GetRareField(FieldId::kTableSectionRowOffsets)) {
       return &field->table_section_row_offsets;
     }
@@ -401,7 +401,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   bool IsOnlyForNode() const { return IsFirstForNode() && !BreakToken(); }
 
   bool HasDescendantsForTablePart() const {
-    DCHECK(IsTableNGPart() || IsTableNGCell());
+    DCHECK(IsTablePart() || IsTableCell());
     return bit_field_.get<HasDescendantsForTablePartFlag>();
   }
 

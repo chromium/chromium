@@ -24,7 +24,7 @@ class NGTablePainter {
  public:
   explicit NGTablePainter(const NGPhysicalBoxFragment& table_wrapper_fragment)
       : fragment_(table_wrapper_fragment) {
-    DCHECK(fragment_.IsTableNG());
+    DCHECK(fragment_.IsTable());
   }
 
   bool WillCheckColumnBackgrounds();
@@ -48,7 +48,7 @@ class NGTableSectionPainter {
   explicit NGTableSectionPainter(
       const NGPhysicalBoxFragment& table_section_fragment)
       : fragment_(table_section_fragment) {
-    DCHECK(fragment_.IsTableNGSection());
+    DCHECK(fragment_.IsTableSection());
   }
 
   void PaintBoxDecorationBackground(const PaintInfo&,
@@ -58,7 +58,7 @@ class NGTableSectionPainter {
   void PaintColumnsBackground(const PaintInfo&,
                               const PhysicalOffset& section_paint_offset,
                               const PhysicalRect& columns_paint_rect,
-                              const NGTableFragmentData::ColumnGeometries&);
+                              const TableFragmentData::ColumnGeometries&);
 
  private:
   const NGPhysicalBoxFragment& fragment_;
@@ -70,7 +70,7 @@ class NGTableRowPainter {
  public:
   explicit NGTableRowPainter(const NGPhysicalBoxFragment& table_row_fragment)
       : fragment_(table_row_fragment) {
-    DCHECK(fragment_.IsTableNGRow());
+    DCHECK(fragment_.IsTableRow());
   }
 
   void PaintBoxDecorationBackground(const PaintInfo&,
@@ -86,7 +86,7 @@ class NGTableRowPainter {
   void PaintColumnsBackground(const PaintInfo&,
                               const PhysicalOffset& row_paint_offset,
                               const PhysicalRect& columns_paint_rect,
-                              const NGTableFragmentData::ColumnGeometries&);
+                              const TableFragmentData::ColumnGeometries&);
 
  private:
   const NGPhysicalBoxFragment& fragment_;

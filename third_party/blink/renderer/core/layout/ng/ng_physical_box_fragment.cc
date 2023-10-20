@@ -365,7 +365,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
 
   bit_field_.set<IsFirstForNodeFlag>(builder->is_first_for_node_);
   is_fieldset_container_ = builder->is_fieldset_container_;
-  is_table_ng_part_ = builder->is_table_ng_part_;
+  is_table_part_ = builder->is_table_part_;
   is_painted_atomically_ = builder->space_.IsPaintedAtomically();
   PhysicalBoxSides sides_to_include(builder->sides_to_include_,
                                     builder->GetWritingMode());
@@ -1208,13 +1208,14 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   const ComputedStyle& style = Style();
 
   PhysicalRect ink_overflow(LocalRect());
-  if (UNLIKELY(IsTableNGRow())) {
+  if (UNLIKELY(IsTableRow())) {
     // This is necessary because table-rows paints beyond border box if it
     // contains rowspanned cells.
     for (const NGLink& child : PostLayoutChildren()) {
       const auto& child_fragment = To<NGPhysicalBoxFragment>(*child);
-      if (!child_fragment.IsTableNGCell())
+      if (!child_fragment.IsTableCell()) {
         continue;
+      }
       const auto* child_layout_object =
           To<LayoutTableCell>(child_fragment.GetLayoutObject());
       if (child_layout_object->ComputedRowSpan() == 1)
@@ -1739,7 +1740,7 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   DCHECK_EQ(IsFragmentationContextRoot(), other.IsFragmentationContextRoot());
 
   DCHECK_EQ(is_fieldset_container_, other.is_fieldset_container_);
-  DCHECK_EQ(is_table_ng_part_, other.is_table_ng_part_);
+  DCHECK_EQ(is_table_part_, other.is_table_part_);
   DCHECK_EQ(is_painted_atomically_, other.is_painted_atomically_);
   DCHECK_EQ(has_collapsed_borders_, other.has_collapsed_borders_);
 
@@ -1757,7 +1758,7 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   DCHECK(FirstBaseline() == other.FirstBaseline());
   DCHECK(LastBaseline() == other.LastBaseline());
 
-  if (IsTableNG()) {
+  if (IsTable()) {
     DCHECK_EQ(TableGridRect(), other.TableGridRect());
 
     if (TableColumnGeometries()) {
@@ -1778,8 +1779,9 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
     }
   }
 
-  if (IsTableNGCell())
+  if (IsTableCell()) {
     DCHECK_EQ(TableCellColumnIndex(), other.TableCellColumnIndex());
+  }
 
   DCHECK(Borders() == other.Borders());
   DCHECK(Padding() == other.Padding());

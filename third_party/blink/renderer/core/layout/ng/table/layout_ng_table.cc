@@ -67,7 +67,7 @@ bool LayoutTable::IsFirstCell(const LayoutTableCell& cell) const {
   if (section->FirstRow() != row) {
     return false;
   }
-  NGTableGroupedChildren grouped_children(
+  TableGroupedChildren grouped_children(
       NGBlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   return first_section != grouped_children.end() &&
@@ -76,7 +76,7 @@ bool LayoutTable::IsFirstCell(const LayoutTableCell& cell) const {
 
 LayoutTableSection* LayoutTable::FirstSection() const {
   NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
+  TableGroupedChildren grouped_children(
       NGBlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   if (first_section != grouped_children.end()) {
@@ -87,7 +87,7 @@ LayoutTableSection* LayoutTable::FirstSection() const {
 
 LayoutTableSection* LayoutTable::FirstNonEmptySection() const {
   NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
+  TableGroupedChildren grouped_children(
       NGBlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   if (first_section != grouped_children.end()) {
@@ -103,7 +103,7 @@ LayoutTableSection* LayoutTable::FirstNonEmptySection() const {
 
 LayoutTableSection* LayoutTable::LastNonEmptySection() const {
   NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
+  TableGroupedChildren grouped_children(
       NGBlockNode(const_cast<LayoutTable*>(this)));
   auto last_section = --grouped_children.end();
   if (last_section != grouped_children.end()) {
@@ -121,7 +121,7 @@ LayoutTableSection* LayoutTable::NextSection(
     const LayoutTableSection* current,
     SkipEmptySectionsValue skip) const {
   NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
+  TableGroupedChildren grouped_children(
       NGBlockNode(const_cast<LayoutTable*>(this)));
   bool found = false;
   for (NGBlockNode section : grouped_children) {
@@ -140,7 +140,7 @@ LayoutTableSection* LayoutTable::PreviousSection(
     const LayoutTableSection* current,
     SkipEmptySectionsValue skip) const {
   NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
+  TableGroupedChildren grouped_children(
       NGBlockNode(const_cast<LayoutTable*>(this)));
   auto stop = --grouped_children.begin();
   bool found = false;
@@ -165,7 +165,7 @@ wtf_size_t LayoutTable::ColumnCount() const {
   return cached_layout_result->TableColumnCount();
 }
 
-void LayoutTable::SetCachedTableBorders(const NGTableBorders* table_borders) {
+void LayoutTable::SetCachedTableBorders(const TableBorders* table_borders) {
   NOT_DESTROYED();
   cached_table_borders_ = table_borders;
 }
@@ -178,7 +178,7 @@ void LayoutTable::InvalidateCachedTableBorders() {
   cached_table_borders_ = nullptr;
 }
 
-const NGTableTypes::Columns* LayoutTable::GetCachedTableColumnConstraints() {
+const TableTypes::Columns* LayoutTable::GetCachedTableColumnConstraints() {
   NOT_DESTROYED();
   if (IsTableColumnsConstraintsDirty())
     cached_table_columns_.reset();
@@ -186,7 +186,7 @@ const NGTableTypes::Columns* LayoutTable::GetCachedTableColumnConstraints() {
 }
 
 void LayoutTable::SetCachedTableColumnConstraints(
-    scoped_refptr<const NGTableTypes::Columns> columns) {
+    scoped_refptr<const TableTypes::Columns> columns) {
   NOT_DESTROYED();
   cached_table_columns_ = std::move(columns);
   SetTableColumnConstraintDirty(false);
@@ -217,7 +217,7 @@ bool LayoutTable::HasBackgroundForPaint() const {
   if (StyleRef().HasBackground())
     return true;
   DCHECK_GT(PhysicalFragmentCount(), 0u);
-  const NGTableFragmentData::ColumnGeometries* column_geometries =
+  const TableFragmentData::ColumnGeometries* column_geometries =
       GetPhysicalFragment(0)->TableColumnGeometries();
   if (column_geometries) {
     for (const auto& column_geometry : *column_geometries) {

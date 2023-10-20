@@ -2990,7 +2990,7 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
 
   // When computing baselines for an inline-block, table's don't contribute any
   // baselines.
-  if (child.IsTableNG() &&
+  if (child.IsTable() &&
       baseline_algorithm == NGBaselineAlgorithmType::kInlineBlock) {
     return;
   }

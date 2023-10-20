@@ -12,10 +12,10 @@ namespace blink {
 
 class TableLayoutUtilsTest : public RenderingTest {
  public:
-  NGTableTypes::Column MakeColumn(int min_width,
-                                  int max_width,
-                                  absl::optional<float> percent = absl::nullopt,
-                                  bool is_constrained = false) {
+  TableTypes::Column MakeColumn(int min_width,
+                                int max_width,
+                                absl::optional<float> percent = absl::nullopt,
+                                bool is_constrained = false) {
     return {LayoutUnit(min_width),
             LayoutUnit(max_width),
             percent,
@@ -26,17 +26,17 @@ class TableLayoutUtilsTest : public RenderingTest {
             /* is_mergeable */ false};
   }
 
-  NGTableTypes::Row MakeRow(int block_size,
-                            bool is_constrained = false,
-                            bool has_rowspan_start = false,
-                            absl::optional<float> percent = absl::nullopt) {
+  TableTypes::Row MakeRow(int block_size,
+                          bool is_constrained = false,
+                          bool has_rowspan_start = false,
+                          absl::optional<float> percent = absl::nullopt) {
     return {LayoutUnit(block_size), 0,       0,
             absl::nullopt,          percent, is_constrained,
             has_rowspan_start,      false};
   }
 
-  NGTableTypes::Section MakeSection(
-      NGTableTypes::Rows* rows,
+  TableTypes::Section MakeSection(
+      TableTypes::Rows* rows,
       int block_size,
       wtf_size_t rowspan = 1,
       absl::optional<float> percent = absl::nullopt) {
@@ -45,23 +45,23 @@ class TableLayoutUtilsTest : public RenderingTest {
       rows->push_back(MakeRow(10));
     bool is_constrained = percent || block_size != 0;
     bool is_tbody = true;
-    return NGTableTypes::Section{
+    return TableTypes::Section{
         start_row, rowspan, LayoutUnit(block_size), percent, is_constrained,
         is_tbody,  false};
   }
 };
 
 TEST_F(TableLayoutUtilsTest, DistributeColspanAutoPercent) {
-  NGTableTypes::ColspanCell colspan_cell(NGTableTypes::CellInlineConstraint(),
-                                         0, 3);
+  TableTypes::ColspanCell colspan_cell(TableTypes::CellInlineConstraint(), 0,
+                                       3);
   colspan_cell.start_column = 0;
   colspan_cell.span = 3;
 
-  scoped_refptr<NGTableTypes::Columns> column_constraints =
-      base::MakeRefCounted<NGTableTypes::Columns>();
+  scoped_refptr<TableTypes::Columns> column_constraints =
+      base::MakeRefCounted<TableTypes::Columns>();
 
   colspan_cell.cell_inline_constraint.percent = 60.0f;
-  NGTableTypes::ColspanCells colspan_cells;
+  TableTypes::ColspanCells colspan_cells;
   colspan_cells.push_back(colspan_cell);
 
   // Distribute over non-percent columns proportial to max size.
@@ -90,18 +90,18 @@ TEST_F(TableLayoutUtilsTest, DistributeColspanAutoPercent) {
 }
 
 TEST_F(TableLayoutUtilsTest, DistributeColspanAutoSizeUnconstrained) {
-  NGTableTypes::ColspanCell colspan_cell(NGTableTypes::CellInlineConstraint(),
-                                         0, 3);
+  TableTypes::ColspanCell colspan_cell(TableTypes::CellInlineConstraint(), 0,
+                                       3);
   colspan_cell.start_column = 0;
   colspan_cell.span = 3;
 
-  scoped_refptr<NGTableTypes::Columns> column_constraints =
-      base::MakeRefCounted<NGTableTypes::Columns>();
+  scoped_refptr<TableTypes::Columns> column_constraints =
+      base::MakeRefCounted<TableTypes::Columns>();
 
   // Columns distributing over auto columns.
   colspan_cell.cell_inline_constraint.min_inline_size = LayoutUnit(100);
   colspan_cell.cell_inline_constraint.max_inline_size = LayoutUnit(100);
-  NGTableTypes::ColspanCells colspan_cells;
+  TableTypes::ColspanCells colspan_cells;
   colspan_cells.push_back(colspan_cell);
   // Distribute over non-percent columns proportial to max size.
   // Columns min/max: 0/10, 0/10, 0/20
@@ -118,18 +118,18 @@ TEST_F(TableLayoutUtilsTest, DistributeColspanAutoSizeUnconstrained) {
 }
 
 TEST_F(TableLayoutUtilsTest, DistributeColspanAutoSizeConstrained) {
-  NGTableTypes::ColspanCell colspan_cell(NGTableTypes::CellInlineConstraint(),
-                                         0, 3);
+  TableTypes::ColspanCell colspan_cell(TableTypes::CellInlineConstraint(), 0,
+                                       3);
   colspan_cell.start_column = 0;
   colspan_cell.span = 3;
 
-  scoped_refptr<NGTableTypes::Columns> column_constraints =
-      base::MakeRefCounted<NGTableTypes::Columns>();
+  scoped_refptr<TableTypes::Columns> column_constraints =
+      base::MakeRefCounted<TableTypes::Columns>();
 
   // Columns distributing over auto columns.
   colspan_cell.cell_inline_constraint.min_inline_size = LayoutUnit(100);
   colspan_cell.cell_inline_constraint.max_inline_size = LayoutUnit(100);
-  NGTableTypes::ColspanCells colspan_cells;
+  TableTypes::ColspanCells colspan_cells;
   colspan_cells.push_back(colspan_cell);
   // Distribute over fixed columns proportial to:
   // Columns min/max: 0/10, 0/10, 0/20
@@ -152,21 +152,21 @@ TEST_F(TableLayoutUtilsTest, DistributeColspanAutoExactMaxSize) {
   // change due to floating point rounding.
   LayoutUnit column_widths[] = {LayoutUnit(0.1), LayoutUnit(22.123456),
                                 LayoutUnit(33.789012), LayoutUnit(2000.345678)};
-  scoped_refptr<NGTableTypes::Columns> column_constraints =
-      base::MakeRefCounted<NGTableTypes::Columns>();
+  scoped_refptr<TableTypes::Columns> column_constraints =
+      base::MakeRefCounted<TableTypes::Columns>();
   column_constraints->data.Shrink(0);
   column_constraints->data.push_back(
-      NGTableTypes::Column{LayoutUnit(0), column_widths[0], absl::nullopt,
-                           LayoutUnit(), false, false, false, false});
+      TableTypes::Column{LayoutUnit(0), column_widths[0], absl::nullopt,
+                         LayoutUnit(), false, false, false, false});
   column_constraints->data.push_back(
-      NGTableTypes::Column{LayoutUnit(3.33333), column_widths[1], absl::nullopt,
-                           LayoutUnit(), false, false, false, false});
+      TableTypes::Column{LayoutUnit(3.33333), column_widths[1], absl::nullopt,
+                         LayoutUnit(), false, false, false, false});
   column_constraints->data.push_back(
-      NGTableTypes::Column{LayoutUnit(3.33333), column_widths[2], absl::nullopt,
-                           LayoutUnit(), false, false, false, false});
+      TableTypes::Column{LayoutUnit(3.33333), column_widths[2], absl::nullopt,
+                         LayoutUnit(), false, false, false, false});
   column_constraints->data.push_back(
-      NGTableTypes::Column{LayoutUnit(0), column_widths[3], absl::nullopt,
-                           LayoutUnit(), false, false, false, false});
+      TableTypes::Column{LayoutUnit(0), column_widths[3], absl::nullopt,
+                         LayoutUnit(), false, false, false, false});
 
   LayoutUnit assignable_table_inline_size =
       column_widths[0] + column_widths[1] + column_widths[2] + column_widths[3];
@@ -185,10 +185,10 @@ TEST_F(TableLayoutUtilsTest, ComputeGridInlineMinMax) {
       <table id=target></table>
     <div>
   )HTML");
-  NGTableNode node(To<LayoutBox>(GetLayoutObjectByElementId("target")));
+  TableNode node(To<LayoutBox>(GetLayoutObjectByElementId("target")));
 
-  scoped_refptr<NGTableTypes::Columns> column_constraints =
-      base::MakeRefCounted<NGTableTypes::Columns>();
+  scoped_refptr<TableTypes::Columns> column_constraints =
+      base::MakeRefCounted<TableTypes::Columns>();
 
   LayoutUnit undistributable_space;
   bool is_fixed_layout = false;
@@ -239,8 +239,8 @@ TEST_F(TableLayoutUtilsTest, ComputeGridInlineMinMax) {
 }
 
 TEST_F(TableLayoutUtilsTest, DistributeRowspanCellToRows) {
-  NGTableTypes::RowspanCell rowspan_cell = {0, 3, LayoutUnit(300)};
-  NGTableTypes::Rows rows;
+  TableTypes::RowspanCell rowspan_cell = {0, 3, LayoutUnit(300)};
+  TableTypes::Rows rows;
 
   // Distribute to regular rows, rows grow in proportion to size.
   rows.push_back(MakeRow(10));
@@ -273,7 +273,7 @@ TEST_F(TableLayoutUtilsTest, DistributeRowspanCellToRows) {
 }
 
 TEST_F(TableLayoutUtilsTest, DistributeSectionFixedBlockSizeToRows) {
-  NGTableTypes::Rows rows;
+  TableTypes::Rows rows;
 
   // Percentage rows get percentage, rest is distributed evenly.
   rows.push_back(MakeRow(100));
@@ -287,8 +287,8 @@ TEST_F(TableLayoutUtilsTest, DistributeSectionFixedBlockSizeToRows) {
 }
 
 TEST_F(TableLayoutUtilsTest, DistributeTableBlockSizeToSections) {
-  NGTableTypes::Sections sections;
-  NGTableTypes::Rows rows;
+  TableTypes::Sections sections;
+  TableTypes::Rows rows;
 
   // Empty sections only grow if there are no other growable sections.
   sections.push_back(MakeSection(&rows, 0));
@@ -326,7 +326,7 @@ TEST_F(TableLayoutUtilsTest, DistributeTableBlockSizeToSections) {
   // unconstrained section grows.
   sections.Shrink(0);
   rows.Shrink(0);
-  NGTableTypes::Section section(MakeSection(&rows, 100));
+  TableTypes::Section section(MakeSection(&rows, 100));
   section.is_constrained = false;
   sections.push_back(section);
   sections.push_back(MakeSection(&rows, 100));

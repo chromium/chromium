@@ -441,7 +441,7 @@ LayoutUnit ComputeInlineSizeForFragment(
   }
 
   if (node.IsTable()) {
-    return To<NGTableNode>(node).ComputeTableInlineSize(space, border_padding);
+    return To<TableNode>(node).ComputeTableInlineSize(space, border_padding);
   }
 
   return ComputeInlineSizeForFragmentInternal(space, node, border_padding,

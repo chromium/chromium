@@ -167,11 +167,11 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
   if (box.IsLayoutNGFlexibleBox()) {
     CreateAlgorithmAndRun<NGFlexLayoutAlgorithm>(params, callback);
   } else if (box.IsTable()) {
-    CreateAlgorithmAndRun<NGTableLayoutAlgorithm>(params, callback);
+    CreateAlgorithmAndRun<TableLayoutAlgorithm>(params, callback);
   } else if (box.IsTableRow()) {
-    CreateAlgorithmAndRun<NGTableRowLayoutAlgorithm>(params, callback);
+    CreateAlgorithmAndRun<TableRowLayoutAlgorithm>(params, callback);
   } else if (box.IsTableSection()) {
-    CreateAlgorithmAndRun<NGTableSectionLayoutAlgorithm>(params, callback);
+    CreateAlgorithmAndRun<TableSectionLayoutAlgorithm>(params, callback);
   } else if (box.IsLayoutCustom()) {
     CreateAlgorithmAndRun<CustomLayoutAlgorithm>(params, callback);
   } else if (box.IsMathML()) {
@@ -246,9 +246,9 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
     return false;
   }
 
-  if (node.IsNGTableCell() && To<LayoutTableCell>(node.GetLayoutBox())
-                                      ->IntrinsicLogicalWidthsBorderSizes() !=
-                                  constraint_space.TableCellBorders()) {
+  if (node.IsTableCell() && To<LayoutTableCell>(node.GetLayoutBox())
+                                    ->IntrinsicLogicalWidthsBorderSizes() !=
+                                constraint_space.TableCellBorders()) {
     return false;
   }
 
@@ -1034,7 +1034,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       /* child_depends_on_block_constraints */
       result.depends_on_block_constraints, result.sizes);
 
-  if (IsNGTableCell()) {
+  if (IsTableCell()) {
     To<LayoutTableCell>(box_.Get())
         ->SetIntrinsicLogicalWidthsBorderSizes(
             constraint_space.TableCellBorders());

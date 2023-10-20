@@ -449,7 +449,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   }
 
   void SetIsFieldsetContainer() { is_fieldset_container_ = true; }
-  void SetIsTableNGPart() { is_table_ng_part_ = true; }
+  void SetIsTablePart() { is_table_part_ = true; }
 
   void SetIsInlineFormattingContext(bool is_inline_formatting_context) {
     is_inline_formatting_context_ = is_inline_formatting_context;
@@ -530,16 +530,16 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   }
 
   void SetTableColumnGeometries(
-      const NGTableFragmentData::ColumnGeometries& table_column_geometries) {
+      const TableFragmentData::ColumnGeometries& table_column_geometries) {
     table_column_geometries_ = table_column_geometries;
   }
 
-  void SetTableCollapsedBorders(const NGTableBorders& table_collapsed_borders) {
+  void SetTableCollapsedBorders(const TableBorders& table_collapsed_borders) {
     table_collapsed_borders_ = &table_collapsed_borders;
   }
 
   void SetTableCollapsedBordersGeometry(
-      std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
+      std::unique_ptr<TableFragmentData::CollapsedBordersGeometry>
           table_collapsed_borders_geometry) {
     table_collapsed_borders_geometry_ =
         std::move(table_collapsed_borders_geometry);
@@ -650,7 +650,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   absl::optional<LogicalRect> inflow_bounds_;
 
   bool is_fieldset_container_ = false;
-  bool is_table_ng_part_ = false;
+  bool is_table_part_ = false;
   bool is_initial_block_size_indefinite_ = false;
   bool is_inline_formatting_context_;
   bool is_known_to_fit_in_fragmentainer_ = false;
@@ -687,9 +687,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
 
   // Table specific types.
   absl::optional<LogicalRect> table_grid_rect_;
-  NGTableFragmentData::ColumnGeometries table_column_geometries_;
-  const NGTableBorders* table_collapsed_borders_ = nullptr;
-  std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
+  TableFragmentData::ColumnGeometries table_column_geometries_;
+  const TableBorders* table_collapsed_borders_ = nullptr;
+  std::unique_ptr<TableFragmentData::CollapsedBordersGeometry>
       table_collapsed_borders_geometry_;
   absl::optional<wtf_size_t> table_column_count_;
 

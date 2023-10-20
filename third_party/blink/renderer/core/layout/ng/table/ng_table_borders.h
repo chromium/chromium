@@ -25,14 +25,14 @@ struct BoxStrut;
 
 // When table has collapsed borders, computing borders for table parts is
 // complex, and costly.
-// NGTableBorders precomputes collapsed borders. It exposes the API for
+// TableBorders precomputes collapsed borders. It exposes the API for
 // border access. If borders are not collapsed, the API returns regular
 // borders.
 //
-// NGTableBorders methods often take rowspan/colspan arguments.
+// TableBorders methods often take rowspan/colspan arguments.
 // Rowspan must never be taller than the section.
 // Colspan must never be wider than the table.
-// To enforce this, NGTableBorders keeps track of section dimensions,
+// To enforce this, TableBorders keeps track of section dimensions,
 // and table's last column.
 //
 // Collapsed borders are stored as edges.
@@ -59,18 +59,18 @@ struct BoxStrut;
 //   |   |   |    |
 //   |9  |11 |13  |15
 
-class NGTableBorders : public GarbageCollected<NGTableBorders> {
+class TableBorders : public GarbageCollected<TableBorders> {
  public:
-  static const NGTableBorders* ComputeTableBorders(const NGBlockNode&);
+  static const TableBorders* ComputeTableBorders(const NGBlockNode&);
 
-  NGTableBorders(const BoxStrut& table_border, const bool is_collapsed);
+  TableBorders(const BoxStrut& table_border, const bool is_collapsed);
 
   void Trace(Visitor* visitor) const { visitor->Trace(edges_); }
 
 #if DCHECK_IS_ON()
   String DumpEdges();
   void ShowEdges();
-  bool operator==(const NGTableBorders& other) const;
+  bool operator==(const TableBorders& other) const;
 #endif
 
   enum class EdgeSource { kNone, kCell, kRow, kSection, kColumn, kTable };
@@ -315,8 +315,7 @@ class NGTableBorders : public GarbageCollected<NGTableBorders> {
 
 }  // namespace blink
 
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGTableBorders::Edge)
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::NGTableBorders::Section)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::TableBorders::Edge)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::TableBorders::Section)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_BORDERS_H_

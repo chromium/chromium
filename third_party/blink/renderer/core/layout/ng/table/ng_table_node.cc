@@ -10,31 +10,31 @@
 
 namespace blink {
 
-const NGTableBorders* NGTableNode::GetTableBorders() const {
+const TableBorders* TableNode::GetTableBorders() const {
   auto* layout_table = To<LayoutTable>(box_.Get());
-  const NGTableBorders* table_borders = layout_table->GetCachedTableBorders();
+  const TableBorders* table_borders = layout_table->GetCachedTableBorders();
   if (!table_borders) {
-    table_borders = NGTableBorders::ComputeTableBorders(*this);
+    table_borders = TableBorders::ComputeTableBorders(*this);
     layout_table->SetCachedTableBorders(table_borders);
   } else {
 #if DCHECK_IS_ON()
     // TODO(crbug.com/1191742) remove these DCHECKs as soon as bug is found.
-    auto* duplicate_table_borders = NGTableBorders::ComputeTableBorders(*this);
+    auto* duplicate_table_borders = TableBorders::ComputeTableBorders(*this);
     DCHECK(*duplicate_table_borders == *table_borders);
 #endif
   }
   return table_borders;
 }
 
-const BoxStrut& NGTableNode::GetTableBordersStrut() const {
+const BoxStrut& TableNode::GetTableBordersStrut() const {
   return GetTableBorders()->TableBorder();
 }
 
-scoped_refptr<const NGTableTypes::Columns> NGTableNode::GetColumnConstraints(
-    const NGTableGroupedChildren& grouped_children,
+scoped_refptr<const TableTypes::Columns> TableNode::GetColumnConstraints(
+    const TableGroupedChildren& grouped_children,
     const BoxStrut& border_padding) const {
   auto* layout_table = To<LayoutTable>(box_.Get());
-  scoped_refptr<const NGTableTypes::Columns> column_constraints =
+  scoped_refptr<const TableTypes::Columns> column_constraints =
       layout_table->GetCachedTableColumnConstraints();
   if (!column_constraints) {
     column_constraints = ComputeColumnConstraints(
@@ -44,23 +44,23 @@ scoped_refptr<const NGTableTypes::Columns> NGTableNode::GetColumnConstraints(
   return column_constraints;
 }
 
-LayoutUnit NGTableNode::ComputeTableInlineSize(
+LayoutUnit TableNode::ComputeTableInlineSize(
     const NGConstraintSpace& space,
     const BoxStrut& border_padding) const {
-  return NGTableLayoutAlgorithm::ComputeTableInlineSize(*this, space,
-                                                        border_padding);
+  return TableLayoutAlgorithm::ComputeTableInlineSize(*this, space,
+                                                      border_padding);
 }
 
-LayoutUnit NGTableNode::ComputeCaptionBlockSize(
+LayoutUnit TableNode::ComputeCaptionBlockSize(
     const NGConstraintSpace& space) const {
   FragmentGeometry geometry =
       CalculateInitialFragmentGeometry(space, *this, /* break_token */ nullptr);
   NGLayoutAlgorithmParams params(*this, geometry, space);
-  NGTableLayoutAlgorithm algorithm(params);
+  TableLayoutAlgorithm algorithm(params);
   return algorithm.ComputeCaptionBlockSize();
 }
 
-bool NGTableNode::AllowColumnPercentages(bool is_layout_pass) const {
+bool TableNode::AllowColumnPercentages(bool is_layout_pass) const {
   if (Style().LogicalWidth().IsMaxContent())
     return false;
   if (is_layout_pass)

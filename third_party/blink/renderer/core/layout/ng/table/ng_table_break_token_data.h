@@ -10,12 +10,12 @@
 
 namespace blink {
 
-struct NGTableBreakTokenData final : NGBlockBreakTokenData {
-  NGTableBreakTokenData(
+struct TableBreakTokenData final : NGBlockBreakTokenData {
+  TableBreakTokenData(
       const NGBlockBreakTokenData* break_token_data,
-      const NGTableTypes::Rows& rows,
-      const NGTableTypes::CellBlockConstraints& cell_block_constraints,
-      const NGTableTypes::Sections& sections,
+      const TableTypes::Rows& rows,
+      const TableTypes::CellBlockConstraints& cell_block_constraints,
+      const TableTypes::Sections& sections,
       LayoutUnit total_table_min_block_size,
       LayoutUnit consumed_table_box_block_size,
       bool has_entered_table_box,
@@ -30,9 +30,9 @@ struct NGTableBreakTokenData final : NGBlockBreakTokenData {
         is_past_table_box(is_past_table_box) {}
   // Table layout information that will be the same for all fragments to be
   // generated (but potentially very expensive to calculate).
-  NGTableTypes::Rows rows;
-  NGTableTypes::CellBlockConstraints cell_block_constraints;
-  NGTableTypes::Sections sections;
+  TableTypes::Rows rows;
+  TableTypes::CellBlockConstraints cell_block_constraints;
+  TableTypes::Sections sections;
   LayoutUnit total_table_min_block_size;
 
   // Similar to |consumed_block_size|, but it only counts space consumed by the
@@ -49,7 +49,7 @@ struct NGTableBreakTokenData final : NGBlockBreakTokenData {
 };
 
 template <>
-struct DowncastTraits<NGTableBreakTokenData> {
+struct DowncastTraits<TableBreakTokenData> {
   static bool AllowFrom(const NGBlockBreakTokenData& token_data) {
     return token_data.IsTableType();
   }

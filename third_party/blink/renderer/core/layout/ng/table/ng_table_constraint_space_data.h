@@ -15,12 +15,11 @@
 
 namespace blink {
 
-// The same NGTableConstraintSpaceData object gets passed on the constraint
+// The same TableConstraintSpaceData object gets passed on the constraint
 // space to all rows and sections within a single table. It contains all the
 // geometry information needed to layout sections/rows/cells. This is different
 // from most other algorithms, where the constraint space data is not shared.
-class NGTableConstraintSpaceData
-    : public RefCounted<NGTableConstraintSpaceData> {
+class TableConstraintSpaceData : public RefCounted<TableConstraintSpaceData> {
  public:
   // |Section| holds the row index information used to map between table and
   // section row indexes.
@@ -97,7 +96,7 @@ class NGTableConstraintSpaceData
     const bool has_descendant_that_depends_on_percentage_block_size;
   };
 
-  bool IsTableSpecificDataEqual(const NGTableConstraintSpaceData& other) const {
+  bool IsTableSpecificDataEqual(const TableConstraintSpaceData& other) const {
     return column_locations == other.column_locations &&
            table_writing_direction == other.table_writing_direction &&
            table_border_spacing == other.table_border_spacing &&
@@ -106,7 +105,7 @@ class NGTableConstraintSpaceData
            has_collapsed_borders == other.has_collapsed_borders;
   }
 
-  bool MaySkipRowLayout(const NGTableConstraintSpaceData& other,
+  bool MaySkipRowLayout(const TableConstraintSpaceData& other,
                         wtf_size_t new_row_index,
                         wtf_size_t old_row_index) const {
     DCHECK_LT(new_row_index, rows.size());
@@ -139,7 +138,7 @@ class NGTableConstraintSpaceData
     return true;
   }
 
-  bool MaySkipSectionLayout(const NGTableConstraintSpaceData& other,
+  bool MaySkipSectionLayout(const TableConstraintSpaceData& other,
                             wtf_size_t new_section_index,
                             wtf_size_t old_section_index) const {
     DCHECK_LE(new_section_index, sections.size());
@@ -176,7 +175,7 @@ class NGTableConstraintSpaceData
     return true;
   }
 
-  Vector<NGTableColumnLocation> column_locations;
+  Vector<TableColumnLocation> column_locations;
   Vector<Section> sections;
   Vector<Row> rows;
   Vector<Cell> cells;
@@ -192,10 +191,9 @@ class NGTableConstraintSpaceData
 }  // namespace blink
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::NGTableConstraintSpaceData::Section)
+    blink::TableConstraintSpaceData::Section)
+WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::TableConstraintSpaceData::Row)
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(
-    blink::NGTableConstraintSpaceData::Row)
-WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(
-    blink::NGTableConstraintSpaceData::Cell)
+    blink::TableConstraintSpaceData::Cell)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_CONSTRAINT_SPACE_DATA_H_

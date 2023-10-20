@@ -16,12 +16,12 @@ namespace blink {
 class NGBlockNode;
 class NGBlockBreakToken;
 
-class CORE_EXPORT NGTableSectionLayoutAlgorithm
+class CORE_EXPORT TableSectionLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  explicit NGTableSectionLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit TableSectionLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
   const NGLayoutResult* Layout() override;
 

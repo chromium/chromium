@@ -1172,7 +1172,7 @@ BoxStrut ComputeBorders(const NGConstraintSpace& constraint_space,
     return constraint_space.TableCellBorders();
 
   if (node.IsTable()) {
-    return To<NGTableNode>(node).GetTableBorders()->TableBorder();
+    return To<TableNode>(node).GetTableBorders()->TableBorder();
   }
 
   return ComputeBordersInternal(node.Style());

@@ -113,7 +113,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     container_builder_.SetCustomLayoutData(result.CustomLayoutData());
   }
 
-  if (physical_fragment.IsTableNG()) {
+  if (physical_fragment.IsTable()) {
     container_builder_.SetTableColumnCount(result.TableColumnCount());
     container_builder_.SetTableGridRect(physical_fragment.TableGridRect());
 
@@ -131,10 +131,10 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     if (const auto* table_collapsed_borders_geometry =
             physical_fragment.TableCollapsedBordersGeometry()) {
       container_builder_.SetTableCollapsedBordersGeometry(
-          std::make_unique<NGTableFragmentData::CollapsedBordersGeometry>(
+          std::make_unique<TableFragmentData::CollapsedBordersGeometry>(
               *table_collapsed_borders_geometry));
     }
-  } else if (physical_fragment.IsTableNGSection()) {
+  } else if (physical_fragment.IsTableSection()) {
     if (const auto section_start_row_index =
             physical_fragment.TableSectionStartRowIndex()) {
       Vector<LayoutUnit> section_row_offsets =
@@ -162,8 +162,9 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     container_builder_.SetLastBaseline(*last_baseline);
   if (physical_fragment.UseLastBaselineForInlineBaseline())
     container_builder_.SetUseLastBaselineForInlineBaseline();
-  if (physical_fragment.IsTableNGPart())
-    container_builder_.SetIsTableNGPart();
+  if (physical_fragment.IsTablePart()) {
+    container_builder_.SetIsTablePart();
+  }
 
   if (keep_old_size) {
     LayoutUnit old_block_size =
@@ -188,10 +189,10 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
           NGFragment(writing_direction_, physical_fragment).BlockSize();
 #if DCHECK_IS_ON()
       // Tables, sections, rows don't respect the typical block-sizing rules.
-      if (!physical_fragment.IsTableNG() &&
-          !physical_fragment.IsTableNGSection() &&
-          !physical_fragment.IsTableNGRow())
+      if (!physical_fragment.IsTable() && !physical_fragment.IsTableSection() &&
+          !physical_fragment.IsTableRow()) {
         DCHECK_EQ(old_block_size, ComputeNewBlockSize());
+      }
 #endif
       container_builder_.SetFragmentBlockSize(old_block_size);
     }

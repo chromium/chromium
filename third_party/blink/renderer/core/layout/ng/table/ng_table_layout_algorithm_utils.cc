@@ -60,19 +60,18 @@ namespace {
 //
 // If all columns spanned actually collapse, the first column will be marked as
 // non-meargeable.
-void EnsureDistributableColumnExists(
-    wtf_size_t start_column_index,
-    wtf_size_t span,
-    NGTableTypes::Columns* column_constraints) {
+void EnsureDistributableColumnExists(wtf_size_t start_column_index,
+                                     wtf_size_t span,
+                                     TableTypes::Columns* column_constraints) {
   DCHECK_LT(start_column_index, column_constraints->data.size());
   DCHECK_GT(span, 1u);
 
   wtf_size_t effective_span =
       std::min(span, column_constraints->data.size() - start_column_index);
-  NGTableTypes::Column* start_column =
+  TableTypes::Column* start_column =
       &column_constraints->data[start_column_index];
-  NGTableTypes::Column* end_column = start_column + effective_span;
-  for (NGTableTypes::Column* column = start_column; column != end_column;
+  TableTypes::Column* end_column = start_column + effective_span;
+  for (TableTypes::Column* column = start_column; column != end_column;
        ++column) {
     if (!column->is_collapsed) {
       column->is_mergeable = false;
@@ -87,16 +86,16 @@ void EnsureDistributableColumnExists(
 // Applies cell/wide cell constraints to columns.
 // Guarantees columns min/max widths have non-empty values.
 void ApplyCellConstraintsToColumnConstraints(
-    const NGTableTypes::CellInlineConstraints& cell_constraints,
+    const TableTypes::CellInlineConstraints& cell_constraints,
     LayoutUnit inline_border_spacing,
     bool is_fixed_layout,
-    NGTableTypes::ColspanCells* colspan_cell_constraints,
-    NGTableTypes::Columns* column_constraints) {
+    TableTypes::ColspanCells* colspan_cell_constraints,
+    TableTypes::Columns* column_constraints) {
   // Satisfy prerequisites for cell merging:
 
   if (column_constraints->data.size() < cell_constraints.size()) {
     // Column constraint must exist for each cell.
-    NGTableTypes::Column default_column;
+    TableTypes::Column default_column;
     default_column.is_table_fixed = is_fixed_layout;
     default_column.is_mergeable = !is_fixed_layout;
     wtf_size_t column_count =
@@ -117,7 +116,7 @@ void ApplyCellConstraintsToColumnConstraints(
     DCHECK_GE(column_constraints->data.size(), cell_constraints.size());
   }
   // Make sure there exists a non-mergeable column for each colspanned cell.
-  for (const NGTableTypes::ColspanCell& colspan_cell :
+  for (const TableTypes::ColspanCell& colspan_cell :
        *colspan_cell_constraints) {
     EnsureDistributableColumnExists(colspan_cell.start_column,
                                     colspan_cell.span, column_constraints);
@@ -129,8 +128,8 @@ void ApplyCellConstraintsToColumnConstraints(
   }
 
   // Wide cell constraints are sorted by span length/starting column.
-  auto colspan_cell_less_than = [](const NGTableTypes::ColspanCell& lhs,
-                                   const NGTableTypes::ColspanCell& rhs) {
+  auto colspan_cell_less_than = [](const TableTypes::ColspanCell& lhs,
+                                   const TableTypes::ColspanCell& rhs) {
     if (lhs.span == rhs.span)
       return lhs.start_column < rhs.start_column;
     return lhs.span < rhs.span;
@@ -148,7 +147,7 @@ void ApplyCellConstraintsToColumnConstraints(
   // Fixed tables: scale all percentage columns so that total percentage
   //   is 100%.
   float total_percentage = 0;
-  for (NGTableTypes::Column& column : column_constraints->data) {
+  for (TableTypes::Column& column : column_constraints->data) {
     if (column.percent) {
       if (!is_fixed_layout && (*column.percent + total_percentage > 100.0))
         column.percent = 100 - total_percentage;
@@ -161,7 +160,7 @@ void ApplyCellConstraintsToColumnConstraints(
   }
 
   if (is_fixed_layout && total_percentage > 100.0) {
-    for (NGTableTypes::Column& column : column_constraints->data) {
+    for (TableTypes::Column& column : column_constraints->data) {
       if (column.percent)
         column.percent = *column.percent * 100 / total_percentage;
     }
@@ -169,20 +168,20 @@ void ApplyCellConstraintsToColumnConstraints(
 }
 
 template <typename RowCountFunc>
-NGTableTypes::Row ComputeMinimumRowBlockSize(
+TableTypes::Row ComputeMinimumRowBlockSize(
     const RowCountFunc& row_count_func,
     const NGBlockNode& row,
     const LayoutUnit cell_percentage_inline_size,
     const bool is_table_block_size_specified,
-    const Vector<NGTableColumnLocation>& column_locations,
-    const NGTableBorders& table_borders,
+    const Vector<TableColumnLocation>& column_locations,
+    const TableBorders& table_borders,
     wtf_size_t start_row_index,
     wtf_size_t row_index,
     wtf_size_t section_index,
     bool is_section_collapsed,
-    NGTableTypes::CellBlockConstraints* cell_block_constraints,
-    NGTableTypes::RowspanCells* rowspan_cells,
-    NGColspanCellTabulator* colspan_cell_tabulator) {
+    TableTypes::CellBlockConstraints* cell_block_constraints,
+    TableTypes::RowspanCells* rowspan_cells,
+    ColspanCellTabulator* colspan_cell_tabulator) {
   const WritingDirectionMode table_writing_direction =
       row.Style().GetWritingDirection();
   const bool has_collapsed_borders = table_borders.IsCollapsed();
@@ -196,7 +195,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
   bool is_constrained = false;
   bool has_rowspan_start = false;
   wtf_size_t start_cell_index = cell_block_constraints->size();
-  NGRowBaselineTabulator row_baseline_tabulator;
+  RowBaselineTabulator row_baseline_tabulator;
 
   // Gather block sizes of all cells.
   for (NGBlockNode cell = To<NGBlockNode>(row.FirstChild()); cell;
@@ -246,7 +245,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
         layout_result->HasDescendantThatDependsOnPercentageBlockSize();
     bool has_effective_rowspan = effective_rowspan > 1;
 
-    NGTableTypes::CellBlockConstraint cell_block_constraint = {
+    TableTypes::CellBlockConstraint cell_block_constraint = {
         fragment.BlockSize(),
         cell_borders,
         colspan_cell_tabulator->CurrentColumn(),
@@ -299,7 +298,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
       LayoutUnit min_block_size = cell_block_constraint.min_block_size;
       if (cell_css_block_size)
         min_block_size = std::max(min_block_size, *cell_css_block_size);
-      rowspan_cells->push_back(NGTableTypes::RowspanCell{
+      rowspan_cells->push_back(TableTypes::RowspanCell{
           row_index, effective_rowspan, min_block_size});
     }
   }
@@ -322,7 +321,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
   if (!row_baseline_tabulator.BaselineDependsOnPercentageBlockDescendant())
     row_baseline = row_baseline_tabulator.ComputeBaseline(row_block_size);
 
-  return NGTableTypes::Row{
+  return TableTypes::Row{
       row_block_size,
       start_cell_index,
       cell_block_constraints->size() - start_cell_index,
@@ -342,12 +341,12 @@ class ColumnConstraintsBuilder {
                 wtf_size_t span) {
     // COL creates SPAN constraints. Its width is col css width, or enclosing
     // colgroup css width.
-    NGTableTypes::Column col_constraint =
-        NGTableTypes::CreateColumn(column.Style(),
-                                   !is_fixed_layout_ && colgroup_constraint_
-                                       ? colgroup_constraint_->max_inline_size
-                                       : absl::nullopt,
-                                   is_fixed_layout_);
+    TableTypes::Column col_constraint =
+        TableTypes::CreateColumn(column.Style(),
+                                 !is_fixed_layout_ && colgroup_constraint_
+                                     ? colgroup_constraint_->max_inline_size
+                                     : absl::nullopt,
+                                 is_fixed_layout_);
     for (wtf_size_t i = 0; i < span; ++i)
       column_constraints_->data.push_back(col_constraint);
     column.GetLayoutBox()->ClearNeedsLayout();
@@ -355,7 +354,7 @@ class ColumnConstraintsBuilder {
 
   void EnterColgroup(const NGLayoutInputNode& colgroup,
                      wtf_size_t start_column_index) {
-    colgroup_constraint_ = NGTableTypes::CreateColumn(
+    colgroup_constraint_ = TableTypes::CreateColumn(
         colgroup.Style(), absl::nullopt, is_fixed_layout_);
   }
 
@@ -373,22 +372,21 @@ class ColumnConstraintsBuilder {
         ->ClearNeedsLayoutForChildren();
   }
 
-  ColumnConstraintsBuilder(NGTableTypes::Columns* column_constraints,
+  ColumnConstraintsBuilder(TableTypes::Columns* column_constraints,
                            bool is_fixed_layout)
       : column_constraints_(column_constraints),
         is_fixed_layout_(is_fixed_layout) {}
 
  private:
-  NGTableTypes::Columns* column_constraints_;
+  TableTypes::Columns* column_constraints_;
   bool is_fixed_layout_;
-  absl::optional<NGTableTypes::Column> colgroup_constraint_;
+  absl::optional<TableTypes::Column> colgroup_constraint_;
 };
 
 // Computes constraints specified on column elements.
-void ComputeColumnElementConstraints(
-    const HeapVector<NGBlockNode>& columns,
-    bool is_fixed_layout,
-    NGTableTypes::Columns* column_constraints) {
+void ComputeColumnElementConstraints(const HeapVector<NGBlockNode>& columns,
+                                     bool is_fixed_layout,
+                                     TableTypes::Columns* column_constraints) {
   ColumnConstraintsBuilder constraints_builder(column_constraints,
                                                is_fixed_layout);
   // |table_column_count| is UINT_MAX because columns will get trimmed later.
@@ -400,12 +398,12 @@ void ComputeSectionInlineConstraints(
     bool is_fixed_layout,
     bool is_first_section,
     WritingDirectionMode table_writing_direction,
-    const NGTableBorders& table_borders,
+    const TableBorders& table_borders,
     wtf_size_t section_index,
     wtf_size_t* row_index,
-    NGTableTypes::CellInlineConstraints* cell_inline_constraints,
-    NGTableTypes::ColspanCells* colspan_cell_inline_constraints) {
-  NGColspanCellTabulator colspan_cell_tabulator;
+    TableTypes::CellInlineConstraints* cell_inline_constraints,
+    TableTypes::ColspanCells* colspan_cell_inline_constraints) {
+  ColspanCellTabulator colspan_cell_tabulator;
   bool is_first_row = true;
   for (NGBlockNode row = To<NGBlockNode>(section.FirstChild()); row;
        row = To<NGBlockNode>(row.NextSibling())) {
@@ -431,12 +429,12 @@ void ComputeSectionInlineConstraints(
             section_index, table_writing_direction);
         BoxStrut cell_padding = table_borders.CellPaddingForMeasure(
             cell.Style(), table_writing_direction);
-        NGTableTypes::CellInlineConstraint cell_constraint =
-            NGTableTypes::CreateCellInlineConstraint(
+        TableTypes::CellInlineConstraint cell_constraint =
+            TableTypes::CreateCellInlineConstraint(
                 cell, table_writing_direction, is_fixed_layout, cell_border,
                 cell_padding);
         if (colspan == 1) {
-          absl::optional<NGTableTypes::CellInlineConstraint>& constraint =
+          absl::optional<TableTypes::CellInlineConstraint>& constraint =
               (*cell_inline_constraints)[colspan_cell_tabulator
                                              .CurrentColumn()];
           // Standard cell, update final column inline size values.
@@ -474,8 +472,8 @@ bool IsBaseline(EVerticalAlign align) {
 // specified size.
 Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     LayoutUnit target_inline_size,
-    const NGTableTypes::Column* start_column,
-    const NGTableTypes::Column* end_column,
+    const TableTypes::Column* start_column,
+    const TableTypes::Column* end_column,
     const bool treat_target_size_as_constrained) {
   unsigned all_columns_count = 0;
   unsigned percent_columns_count = 0;
@@ -491,7 +489,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
   LayoutUnit total_auto_max_inline_size;
   LayoutUnit total_fixed_max_inline_size;
 
-  for (const NGTableTypes::Column* column = start_column; column != end_column;
+  for (const TableTypes::Column* column = start_column; column != end_column;
        ++column) {
     all_columns_count++;
     DCHECK(column->min_inline_size);
@@ -555,7 +553,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     case kMinGuess: {
       // All columns are their min inline-size.
       LayoutUnit* computed_size = computed_sizes.begin();
-      for (const NGTableTypes::Column* column = start_column;
+      for (const TableTypes::Column* column = start_column;
            column != end_column; ++column, ++computed_size) {
         if (column->is_mergeable) {
           continue;
@@ -573,7 +571,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       LayoutUnit remaining_deficit = distributable_inline_size;
       LayoutUnit* computed_size = computed_sizes.begin();
       LayoutUnit* last_computed_size = nullptr;
-      for (const NGTableTypes::Column* column = start_column;
+      for (const TableTypes::Column* column = start_column;
            column != end_column; ++column, ++computed_size) {
         if (column->is_mergeable) {
           continue;
@@ -612,7 +610,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       LayoutUnit remaining_deficit = distributable_inline_size;
       LayoutUnit* last_computed_size = nullptr;
       LayoutUnit* computed_size = computed_sizes.begin();
-      for (const NGTableTypes::Column* column = start_column;
+      for (const TableTypes::Column* column = start_column;
            column != end_column; ++column, ++computed_size) {
         if (column->is_mergeable) {
           continue;
@@ -658,7 +656,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
           is_exact_match ? LayoutUnit() : distributable_inline_size;
       LayoutUnit* last_computed_size = nullptr;
       LayoutUnit* computed_size = computed_sizes.begin();
-      for (const NGTableTypes::Column* column = start_column;
+      for (const TableTypes::Column* column = start_column;
            column != end_column; ++column, ++computed_size) {
         if (column->is_mergeable) {
           continue;
@@ -695,7 +693,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
         LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
         LayoutUnit* computed_size = computed_sizes.begin();
-        for (const NGTableTypes::Column* column = start_column;
+        for (const TableTypes::Column* column = start_column;
              column != end_column; ++column, ++computed_size) {
           if (column->is_mergeable) {
             continue;
@@ -727,7 +725,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
         LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
         LayoutUnit* computed_size = computed_sizes.begin();
-        for (const NGTableTypes::Column* column = start_column;
+        for (const TableTypes::Column* column = start_column;
              column != end_column; ++column, ++computed_size) {
           if (column->is_mergeable) {
             continue;
@@ -761,7 +759,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
         LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
         LayoutUnit* computed_size = computed_sizes.begin();
-        for (const NGTableTypes::Column* column = start_column;
+        for (const TableTypes::Column* column = start_column;
              column != end_column; ++column, ++computed_size) {
           if (column->is_mergeable || !column->percent) {
             continue;
@@ -790,19 +788,19 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
 
 Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
     LayoutUnit target_inline_size,
-    const NGTableTypes::Columns& column_constraints) {
+    const TableTypes::Columns& column_constraints) {
   unsigned all_columns_count = 0;
   unsigned percent_columns_count = 0;
   unsigned auto_columns_count = 0;
   unsigned fixed_columns_count = 0;
   unsigned zero_inline_size_constrained_colums_count = 0;
 
-  auto TreatAsFixed = [](const NGTableTypes::Column& column) {
+  auto TreatAsFixed = [](const TableTypes::Column& column) {
     // Columns of width 0 are treated as auto by all browsers.
     return column.IsFixed() && column.max_inline_size != LayoutUnit();
   };
 
-  auto IsZeroInlineSizeConstrained = [](const NGTableTypes::Column& column) {
+  auto IsZeroInlineSizeConstrained = [](const TableTypes::Column& column) {
     // Columns of width 0 are treated as auto by all browsers.
     return column.is_constrained && column.max_inline_size == LayoutUnit();
   };
@@ -813,7 +811,7 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
   LayoutUnit assigned_inline_size;
   Vector<LayoutUnit> column_sizes;
   column_sizes.resize(column_constraints.data.size());
-  for (const NGTableTypes::Column& column : column_constraints.data) {
+  for (const TableTypes::Column& column : column_constraints.data) {
     all_columns_count++;
     if (column.percent) {
       percent_columns_count++;
@@ -851,7 +849,7 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
       }
     }
     LayoutUnit* column_size = column_sizes.begin();
-    for (const NGTableTypes::Column* column = column_constraints.data.begin();
+    for (const TableTypes::Column* column = column_constraints.data.begin();
          column != column_constraints.data.end(); ++column, ++column_size) {
       if (!TreatAsFixed(*column)) {
         continue;
@@ -890,7 +888,7 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
       }
     }
     LayoutUnit* column_size = column_sizes.begin();
-    for (const NGTableTypes::Column* column = column_constraints.data.begin();
+    for (const TableTypes::Column* column = column_constraints.data.begin();
          column != column_constraints.data.end(); ++column, ++column_size) {
       if (!column->percent) {
         continue;
@@ -915,7 +913,7 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
   bool distribute_zero_inline_size =
       zero_inline_size_constrained_colums_count == all_columns_count;
 
-  for (const NGTableTypes::Column* column = column_constraints.data.begin();
+  for (const TableTypes::Column* column = column_constraints.data.begin();
        column != column_constraints.data.end(); ++column, ++column_size) {
     if (column->percent || TreatAsFixed(*column)) {
       continue;
@@ -941,22 +939,22 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
 }
 
 void DistributeColspanCellToColumnsFixed(
-    const NGTableTypes::ColspanCell& colspan_cell,
+    const TableTypes::ColspanCell& colspan_cell,
     LayoutUnit inline_border_spacing,
-    NGTableTypes::Columns* column_constraints) {
+    TableTypes::Columns* column_constraints) {
   // Fixed layout does not merge columns.
   DCHECK_LE(colspan_cell.span,
             column_constraints->data.size() - colspan_cell.start_column);
-  NGTableTypes::Column* start_column =
+  TableTypes::Column* start_column =
       &column_constraints->data[colspan_cell.start_column];
-  NGTableTypes::Column* end_column = start_column + colspan_cell.span;
+  TableTypes::Column* end_column = start_column + colspan_cell.span;
   DCHECK_NE(start_column, end_column);
 
   // Inline sizes for redistribution exclude border spacing.
   LayoutUnit total_inner_border_spacing;
   unsigned effective_span = 0;
   bool is_first_column = true;
-  for (NGTableTypes::Column* column = start_column; column != end_column;
+  for (TableTypes::Column* column = start_column; column != end_column;
        ++column) {
     if (column->is_mergeable) {
       continue;
@@ -995,8 +993,8 @@ void DistributeColspanCellToColumnsFixed(
     new_percent = *colspan_cell.cell_inline_constraint.percent / effective_span;
   }
 
-  NGTableTypes::Column* last_column = nullptr;
-  for (NGTableTypes::Column* column = start_column; column < end_column;
+  TableTypes::Column* last_column = nullptr;
+  for (TableTypes::Column* column = start_column; column < end_column;
        ++column) {
     if (column->is_mergeable) {
       continue;
@@ -1028,23 +1026,23 @@ void DistributeColspanCellToColumnsFixed(
 }
 
 void DistributeColspanCellToColumnsAuto(
-    const NGTableTypes::ColspanCell& colspan_cell,
+    const TableTypes::ColspanCell& colspan_cell,
     LayoutUnit inline_border_spacing,
-    NGTableTypes::Columns* column_constraints) {
+    TableTypes::Columns* column_constraints) {
   if (column_constraints->data.empty()) {
     return;
   }
   unsigned effective_span =
       std::min(colspan_cell.span,
                column_constraints->data.size() - colspan_cell.start_column);
-  NGTableTypes::Column* start_column =
+  TableTypes::Column* start_column =
       &column_constraints->data[colspan_cell.start_column];
-  NGTableTypes::Column* end_column = start_column + effective_span;
+  TableTypes::Column* end_column = start_column + effective_span;
 
   // Inline sizes for redistribution exclude border spacing.
   LayoutUnit total_inner_border_spacing;
   bool is_first_column = true;
-  for (NGTableTypes::Column* column = start_column; column != end_column;
+  for (TableTypes::Column* column = start_column; column != end_column;
        ++column) {
     if (!column->is_mergeable) {
       if (!is_first_column) {
@@ -1072,7 +1070,7 @@ void DistributeColspanCellToColumnsAuto(
     unsigned percent_columns_count = 0;
     unsigned nonpercent_columns_count = 0;
     LayoutUnit nonpercent_columns_max_inline_size;
-    for (NGTableTypes::Column* column = start_column; column != end_column;
+    for (TableTypes::Column* column = start_column; column != end_column;
          ++column) {
       if (!column->max_inline_size) {
         column->max_inline_size = LayoutUnit();
@@ -1096,7 +1094,7 @@ void DistributeColspanCellToColumnsAuto(
     if (surplus_percent > 0.0f && all_columns_count > percent_columns_count) {
       // Distribute surplus percent to non-percent columns in proportion to
       // max_inline_size.
-      for (NGTableTypes::Column* column = start_column; column != end_column;
+      for (TableTypes::Column* column = start_column; column != end_column;
            ++column) {
         if (column->percent || column->is_mergeable) {
           continue;
@@ -1121,7 +1119,7 @@ void DistributeColspanCellToColumnsAuto(
   // TODO(atotic) See crbug.com/531752 for discussion about differences
   // between FF/Chrome.
   // Minimum inline size gets distributed with standard distribution algorithm.
-  for (NGTableTypes::Column* column = start_column; column != end_column;
+  for (TableTypes::Column* column = start_column; column != end_column;
        ++column) {
     if (!column->min_inline_size) {
       column->min_inline_size = LayoutUnit();
@@ -1134,7 +1132,7 @@ void DistributeColspanCellToColumnsAuto(
       DistributeInlineSizeToComputedInlineSizeAuto(
           colspan_cell_min_inline_size, start_column, end_column, true);
   LayoutUnit* computed_size = computed_sizes.begin();
-  for (NGTableTypes::Column* column = start_column; column != end_column;
+  for (TableTypes::Column* column = start_column; column != end_column;
        ++column, ++computed_size) {
     column->min_inline_size =
         std::max(*column->min_inline_size, *computed_size);
@@ -1144,7 +1142,7 @@ void DistributeColspanCellToColumnsAuto(
       end_column, /* treat_target_size_as_constrained */
       colspan_cell.cell_inline_constraint.is_constrained);
   computed_size = computed_sizes.begin();
-  for (NGTableTypes::Column* column = start_column; column != end_column;
+  for (TableTypes::Column* column = start_column; column != end_column;
        ++column, ++computed_size) {
     column->max_inline_size =
         std::max(std::max(*column->min_inline_size, *column->max_inline_size),
@@ -1163,7 +1161,7 @@ void DistributeExcessBlockSizeToRows(
     bool is_rowspan_distribution,
     LayoutUnit border_block_spacing,
     LayoutUnit percentage_resolution_block_size,
-    NGTableTypes::Rows* rows) {
+    TableTypes::Rows* rows) {
   DCHECK_GE(desired_block_size, LayoutUnit());
   // This algorithm has not been defined by the standard in 2019.
   // Discussion at https://github.com/w3c/csswg-drafts/issues/4418
@@ -1175,7 +1173,7 @@ void DistributeExcessBlockSizeToRows(
   DCHECK_LE(end_row_index, rows->size());
 
   auto RowBlockSizeDeficit = [&percentage_resolution_block_size](
-                                 const NGTableTypes::Row& row) {
+                                 const TableTypes::Row& row) {
     DCHECK_NE(percentage_resolution_block_size, kIndefiniteSize);
     DCHECK(row.percent);
     return (LayoutUnit(*row.percent * percentage_resolution_block_size / 100) -
@@ -1363,8 +1361,8 @@ void DistributeExcessBlockSizeToRows(
 }  // namespace
 
 CellBlockSizeData ComputeCellBlockSize(
-    const NGTableTypes::CellBlockConstraint& cell_block_constraint,
-    const NGTableTypes::Rows& rows,
+    const TableTypes::CellBlockConstraint& cell_block_constraint,
+    const TableTypes::Rows& rows,
     wtf_size_t row_index,
     const LogicalSize& border_spacing,
     bool is_table_block_size_specified) {
@@ -1396,7 +1394,7 @@ void SetupTableCellConstraintSpaceBuilder(
     const WritingDirectionMode table_writing_direction,
     const NGBlockNode cell,
     const BoxStrut& cell_borders,
-    const Vector<NGTableColumnLocation>& column_locations,
+    const Vector<TableColumnLocation>& column_locations,
     LayoutUnit cell_block_size,
     LayoutUnit percentage_inline_size,
     absl::optional<LayoutUnit> alignment_baseline,
@@ -1461,8 +1459,8 @@ wtf_size_t ComputeMaximumNonMergeableColumnCount(
     const HeapVector<NGBlockNode>& columns,
     bool is_fixed_layout) {
   // Build column constraints.
-  scoped_refptr<NGTableTypes::Columns> column_constraints =
-      base::MakeRefCounted<NGTableTypes::Columns>();
+  scoped_refptr<TableTypes::Columns> column_constraints =
+      base::MakeRefCounted<TableTypes::Columns>();
   ColumnConstraintsBuilder constraints_builder(column_constraints.get(),
                                                is_fixed_layout);
   VisitLayoutTableColumn(columns, UINT_MAX, &constraints_builder);
@@ -1479,19 +1477,19 @@ wtf_size_t ComputeMaximumNonMergeableColumnCount(
   return column_index + 1;
 }
 
-scoped_refptr<NGTableTypes::Columns> ComputeColumnConstraints(
+scoped_refptr<TableTypes::Columns> ComputeColumnConstraints(
     const NGBlockNode& table,
-    const NGTableGroupedChildren& grouped_children,
-    const NGTableBorders& table_borders,
+    const TableGroupedChildren& grouped_children,
+    const TableBorders& table_borders,
     const BoxStrut& border_padding) {
   const auto& table_style = table.Style();
   bool is_fixed_layout = table_style.IsFixedTableLayout();
 
-  NGTableTypes::CellInlineConstraints cell_inline_constraints;
-  NGTableTypes::ColspanCells colspan_cell_constraints;
+  TableTypes::CellInlineConstraints cell_inline_constraints;
+  TableTypes::ColspanCells colspan_cell_constraints;
 
-  scoped_refptr<NGTableTypes::Columns> column_constraints =
-      base::MakeRefCounted<NGTableTypes::Columns>();
+  scoped_refptr<TableTypes::Columns> column_constraints =
+      base::MakeRefCounted<TableTypes::Columns>();
   ComputeColumnElementConstraints(grouped_children.columns, is_fixed_layout,
                                   column_constraints.get());
 
@@ -1520,14 +1518,14 @@ void ComputeSectionMinimumRowBlockSizes(
     const NGBlockNode& section,
     const LayoutUnit cell_percentage_inline_size,
     const bool is_table_block_size_specified,
-    const Vector<NGTableColumnLocation>& column_locations,
-    const NGTableBorders& table_borders,
+    const Vector<TableColumnLocation>& column_locations,
+    const TableBorders& table_borders,
     const LayoutUnit block_border_spacing,
     wtf_size_t section_index,
     bool treat_section_as_tbody,
-    NGTableTypes::Sections* sections,
-    NGTableTypes::Rows* rows,
-    NGTableTypes::CellBlockConstraints* cell_block_constraints) {
+    TableTypes::Sections* sections,
+    TableTypes::Rows* rows,
+    TableTypes::CellBlockConstraints* cell_block_constraints) {
   // In rare circumstances we need to know the total row count before we've
   // visited all them (for computing effective rowspans). We don't want to
   // perform this unnecessarily.
@@ -1546,17 +1544,17 @@ void ComputeSectionMinimumRowBlockSizes(
 
   wtf_size_t start_row = rows->size();
   wtf_size_t current_row = start_row;
-  NGTableTypes::RowspanCells rowspan_cells;
+  TableTypes::RowspanCells rowspan_cells;
   LayoutUnit section_block_size;
   // Used to compute column index.
-  NGColspanCellTabulator colspan_cell_tabulator;
+  ColspanCellTabulator colspan_cell_tabulator;
   // total_row_percent must be under 100%
   float total_row_percent = 0;
   // Get minimum block size of each row.
   for (NGBlockNode row = To<NGBlockNode>(section.FirstChild()); row;
        row = To<NGBlockNode>(row.NextSibling())) {
     colspan_cell_tabulator.StartRow();
-    NGTableTypes::Row row_constraint = ComputeMinimumRowBlockSize(
+    TableTypes::Row row_constraint = ComputeMinimumRowBlockSize(
         RowCountFunc, row, cell_percentage_inline_size,
         is_table_block_size_specified, column_locations, table_borders,
         start_row, current_row++, section_index,
@@ -1600,8 +1598,8 @@ void ComputeSectionMinimumRowBlockSizes(
     }
   }
   sections->push_back(
-      NGTableTypes::CreateSection(section, start_row, current_row - start_row,
-                                  section_block_size, treat_section_as_tbody));
+      TableTypes::CreateSection(section, start_row, current_row - start_row,
+                                section_block_size, treat_section_as_tbody));
 }
 
 void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
@@ -1617,7 +1615,7 @@ void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
       space.IsTableCellHiddenForPaint() ||
       (space.HideTableCellIfEmpty() && !has_inflow_children));
   builder->SetHasCollapsedBorders(space.IsTableCellWithCollapsedBorders());
-  builder->SetIsTableNGPart();
+  builder->SetIsTablePart();
   builder->SetTableCellColumnIndex(space.TableCellColumnIndex());
 
   // If we're resuming after a break, there'll be no alignment, since the
@@ -1667,12 +1665,12 @@ void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
   };
 }
 
-void NGColspanCellTabulator::StartRow() {
+void ColspanCellTabulator::StartRow() {
   current_column_ = 0;
 }
 
 // Remove colspanned cells that are not spanning any more rows.
-void NGColspanCellTabulator::EndRow() {
+void ColspanCellTabulator::EndRow() {
   for (wtf_size_t i = 0; i < colspanned_cells_.size();) {
     colspanned_cells_[i].remaining_rows--;
     if (colspanned_cells_[i].remaining_rows == 0)
@@ -1681,14 +1679,14 @@ void NGColspanCellTabulator::EndRow() {
       ++i;
   }
   std::sort(colspanned_cells_.begin(), colspanned_cells_.end(),
-            [](const NGColspanCellTabulator::Cell& a,
-               const NGColspanCellTabulator::Cell& b) {
+            [](const ColspanCellTabulator::Cell& a,
+               const ColspanCellTabulator::Cell& b) {
               return a.column_start < b.column_start;
             });
 }
 
 // Advance current column to position not occupied by colspanned cells.
-void NGColspanCellTabulator::FindNextFreeColumn() {
+void ColspanCellTabulator::FindNextFreeColumn() {
   for (const Cell& colspanned_cell : colspanned_cells_) {
     if (colspanned_cell.column_start <= current_column_ &&
         colspanned_cell.column_start + colspanned_cell.span > current_column_) {
@@ -1697,7 +1695,7 @@ void NGColspanCellTabulator::FindNextFreeColumn() {
   }
 }
 
-void NGColspanCellTabulator::ProcessCell(const NGBlockNode& cell) {
+void ColspanCellTabulator::ProcessCell(const NGBlockNode& cell) {
   wtf_size_t colspan = cell.TableCellColspan();
   wtf_size_t rowspan = cell.TableCellRowspan();
   if (rowspan > 1)
@@ -1705,7 +1703,7 @@ void NGColspanCellTabulator::ProcessCell(const NGBlockNode& cell) {
   current_column_ += colspan;
 }
 
-void NGRowBaselineTabulator::ProcessCell(
+void RowBaselineTabulator::ProcessCell(
     const NGBoxFragment& fragment,
     EVerticalAlign align,
     const bool is_rowspanned,
@@ -1741,7 +1739,7 @@ void NGRowBaselineTabulator::ProcessCell(
   }
 }
 
-LayoutUnit NGRowBaselineTabulator::ComputeRowBlockSize(
+LayoutUnit RowBaselineTabulator::ComputeRowBlockSize(
     const LayoutUnit max_cell_block_size) {
   if (max_cell_ascent_) {
     return std::max(max_cell_block_size,
@@ -1750,7 +1748,7 @@ LayoutUnit NGRowBaselineTabulator::ComputeRowBlockSize(
   return max_cell_block_size;
 }
 
-LayoutUnit NGRowBaselineTabulator::ComputeBaseline(
+LayoutUnit RowBaselineTabulator::ComputeBaseline(
     const LayoutUnit row_block_size) {
   if (max_cell_ascent_)
     return *max_cell_ascent_;
@@ -1760,7 +1758,7 @@ LayoutUnit NGRowBaselineTabulator::ComputeBaseline(
   return LayoutUnit();
 }
 
-bool NGRowBaselineTabulator::BaselineDependsOnPercentageBlockDescendant() {
+bool RowBaselineTabulator::BaselineDependsOnPercentageBlockDescendant() {
   if (max_cell_ascent_)
     return max_cell_baseline_depends_on_percentage_block_descendant_;
   if (fallback_cell_descent_)
@@ -1769,8 +1767,8 @@ bool NGRowBaselineTabulator::BaselineDependsOnPercentageBlockDescendant() {
 }
 
 MinMaxSizes ComputeGridInlineMinMax(
-    const NGTableNode& node,
-    const NGTableTypes::Columns& column_constraints,
+    const TableNode& node,
+    const TableTypes::Columns& column_constraints,
     LayoutUnit undistributable_space,
     bool is_fixed_layout,
     bool is_layout_pass) {
@@ -1797,7 +1795,7 @@ MinMaxSizes ComputeGridInlineMinMax(
   // Sum of max_inline_sizes of non-percentage columns.
   LayoutUnit non_percent_max_size_sum;
   float percent_sum = 0;
-  for (const NGTableTypes::Column& column : column_constraints.data) {
+  for (const TableTypes::Column& column : column_constraints.data) {
     if (column.min_inline_size) {
       // In fixed layout, constrained cells minimum inline size is their
       // maximum.
@@ -1836,7 +1834,7 @@ MinMaxSizes ComputeGridInlineMinMax(
     DCHECK_GE(percent_sum, 0.0f);
     if (non_percent_max_size_sum != LayoutUnit()) {
       if (percent_sum == 100.0f) {
-        size_from_percent_and_fixed = NGTableTypes::kTableMaxInlineSize;
+        size_from_percent_and_fixed = TableTypes::kTableMaxInlineSize;
       } else {
         size_from_percent_and_fixed =
             LayoutUnit((100 / (100 - percent_sum)) * non_percent_max_size_sum);
@@ -1852,11 +1850,11 @@ MinMaxSizes ComputeGridInlineMinMax(
 }
 
 void DistributeColspanCellsToColumns(
-    const NGTableTypes::ColspanCells& colspan_cells,
+    const TableTypes::ColspanCells& colspan_cells,
     LayoutUnit inline_border_spacing,
     bool is_fixed_layout,
-    NGTableTypes::Columns* column_constraints) {
-  for (const NGTableTypes::ColspanCell& colspan_cell : colspan_cells) {
+    TableTypes::Columns* column_constraints) {
+  for (const TableTypes::ColspanCell& colspan_cell : colspan_cells) {
     // Clipped colspanned cells can end up having a span of 1 (which is not
     // wide).
     DCHECK_GT(colspan_cell.span, 1u);
@@ -1877,7 +1875,7 @@ void DistributeColspanCellsToColumns(
 Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
     LayoutUnit assignable_table_inline_size,
     bool is_fixed_layout,
-    const NGTableTypes::Columns& column_constraints) {
+    const TableTypes::Columns& column_constraints) {
   if (column_constraints.data.empty()) {
     return Vector<LayoutUnit>();
   }
@@ -1885,8 +1883,8 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
     return SynchronizeAssignableTableInlineSizeAndColumnsFixed(
         assignable_table_inline_size, column_constraints);
   } else {
-    const NGTableTypes::Column* start_column = &column_constraints.data[0];
-    const NGTableTypes::Column* end_column =
+    const TableTypes::Column* start_column = &column_constraints.data[0];
+    const TableTypes::Column* end_column =
         start_column + column_constraints.data.size();
     return DistributeInlineSizeToComputedInlineSizeAuto(
         assignable_table_inline_size, start_column, end_column,
@@ -1894,9 +1892,9 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
   }
 }
 
-void DistributeRowspanCellToRows(const NGTableTypes::RowspanCell& rowspan_cell,
+void DistributeRowspanCellToRows(const TableTypes::RowspanCell& rowspan_cell,
                                  LayoutUnit border_block_spacing,
-                                 NGTableTypes::Rows* rows) {
+                                 TableTypes::Rows* rows) {
   DCHECK_GT(rowspan_cell.effective_rowspan, 1u);
   DistributeExcessBlockSizeToRows(rowspan_cell.start_row,
                                   rowspan_cell.effective_rowspan,
@@ -1912,7 +1910,7 @@ void DistributeSectionFixedBlockSizeToRows(
     LayoutUnit section_fixed_block_size,
     LayoutUnit border_block_spacing,
     LayoutUnit percentage_resolution_block_size,
-    NGTableTypes::Rows* rows) {
+    TableTypes::Rows* rows) {
   DistributeExcessBlockSizeToRows(start_row, rowspan, section_fixed_block_size,
                                   /* is_rowspan_distribution */ false,
                                   border_block_spacing,
@@ -1921,8 +1919,8 @@ void DistributeSectionFixedBlockSizeToRows(
 
 void DistributeTableBlockSizeToSections(LayoutUnit border_block_spacing,
                                         LayoutUnit table_block_size,
-                                        NGTableTypes::Sections* sections,
-                                        NGTableTypes::Rows* rows) {
+                                        TableTypes::Sections* sections,
+                                        TableTypes::Rows* rows) {
   if (sections->empty()) {
     return;
   }
@@ -2100,7 +2098,7 @@ void DistributeTableBlockSizeToSections(LayoutUnit border_block_spacing,
   }
 
   // Propagate new section sizes to rows.
-  for (NGTableTypes::Section& section : *sections) {
+  for (TableTypes::Section& section : *sections) {
     if (!section.needs_redistribution) {
       continue;
     }

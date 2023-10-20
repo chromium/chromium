@@ -9,7 +9,7 @@
 
 namespace blink {
 
-struct NGTableColumnLocation {
+struct TableColumnLocation {
   DISALLOW_NEW();
   LayoutUnit offset;
   LayoutUnit size;
@@ -18,6 +18,6 @@ struct NGTableColumnLocation {
 
 }  // namespace blink
 
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGTableColumnLocation)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::TableColumnLocation)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_TYPES_H_
