@@ -14,7 +14,6 @@ PaintRenderingContext2D::PaintRenderingContext2D(
     const gfx::Size& container_size,
     const PaintRenderingContext2DSettings* context_settings,
     float zoom,
-    float device_scale_factor,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     PaintWorkletGlobalScope* global_scope)
     : BaseRenderingContext2D(std::move(task_runner)),

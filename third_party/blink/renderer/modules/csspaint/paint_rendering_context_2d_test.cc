@@ -20,10 +20,11 @@ using ::blink_testing::RecordedOpsAre;
 using ::cc::ConcatOp;
 using ::cc::DrawColorOp;
 using ::cc::PaintOpEq;
+using ::cc::ScaleOp;
+using ::cc::SetMatrixOp;
 
 static const int kWidth = 50;
 static const int kHeight = 75;
-static const float kZoom = 1.0;
 
 void TrySettingStrokeStyle(V8TestingScope& v8_testing_scope,
                            PaintRenderingContext2D* ctx,
@@ -41,8 +42,7 @@ TEST(PaintRenderingContext2DTest, testParseColorOrCurrentColor) {
       PaintRenderingContext2DSettings::Create();
   context_settings->setAlpha(false);
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
-      gfx::Size(kWidth, kHeight), context_settings, kZoom,
-      1.0 /* device_scale_factor */,
+      gfx::Size(kWidth, kHeight), context_settings, /*zoom=*/1,
       scheduler::GetSingleThreadTaskRunnerForTesting());
   TrySettingStrokeStyle(v8_testing_scope, ctx, "#0000ff", "blue");
   TrySettingStrokeStyle(v8_testing_scope, ctx, "#000000", "currentColor");
@@ -52,8 +52,7 @@ TEST(PaintRenderingContext2DTest, testWidthAndHeight) {
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
-      gfx::Size(kWidth, kHeight), context_settings, kZoom,
-      1.0 /* device_scale_factor */,
+      gfx::Size(kWidth, kHeight), context_settings, /*zoom=*/1,
       scheduler::GetSingleThreadTaskRunnerForTesting());
   EXPECT_EQ(kWidth, ctx->Width());
   EXPECT_EQ(kHeight, ctx->Height());
@@ -63,8 +62,7 @@ TEST(PaintRenderingContext2DTest, testBasicState) {
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
-      gfx::Size(kWidth, kHeight), context_settings, kZoom,
-      1.0 /* device_scale_factor */,
+      gfx::Size(kWidth, kHeight), context_settings, /*zoom=*/1,
       scheduler::GetSingleThreadTaskRunnerForTesting());
 
   const double kShadowBlurBefore = 2;
@@ -95,9 +93,9 @@ TEST(PaintRenderingContext2DTest, testBasicState) {
 TEST(PaintRenderingContext2DTest, setTransformWithDeviceScaleFactor) {
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
-  float device_scale_factor = 1.23;
+  float zoom = 1.23;
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
-      gfx::Size(kWidth, kHeight), context_settings, kZoom, device_scale_factor,
+      gfx::Size(kWidth, kHeight), context_settings, zoom,
       scheduler::GetSingleThreadTaskRunnerForTesting());
   DOMMatrix* matrix = ctx->getTransform();
   EXPECT_TRUE(matrix->isIdentity());
@@ -111,8 +109,17 @@ TEST(PaintRenderingContext2DTest, setTransformWithDeviceScaleFactor) {
   EXPECT_FLOAT_EQ(matrix->f(), 50);
 
   EXPECT_THAT(ctx->GetRecord(),
-              RecordedOpsAre(PaintOpEq<DrawColorOp>(SkColors::kTransparent,
+              RecordedOpsAre(PaintOpEq<ScaleOp>(1.23, 1.23),
+                             PaintOpEq<DrawColorOp>(SkColors::kTransparent,
                                                     SkBlendMode::kSrc),
+                             PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                                          0, 1, 0, 0,  //
+                                                          0, 0, 1, 0,  //
+                                                          0, 0, 0, 1)),
+                             PaintOpEq<ConcatOp>(SkM44(zoom, 0, 0, 0,  //
+                                                       0, zoom, 0, 0,  //
+                                                       0, 0, 1, 0,     //
+                                                       0, 0, 0, 1)),
                              PaintOpEq<ConcatOp>(SkM44(2.1, 1.4, 0, 20,  //
                                                        2.5, 2.3, 0, 50,  //
                                                        0, 0, 1, 0,       //
@@ -123,8 +130,7 @@ TEST(PaintRenderingContext2DTest, setTransformWithDefaultDeviceScaleFactor) {
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
-      gfx::Size(kWidth, kHeight), context_settings, kZoom,
-      1.0 /* device_scale_factor */,
+      gfx::Size(kWidth, kHeight), context_settings, /*zoom=*/1,
       scheduler::GetSingleThreadTaskRunnerForTesting());
   DOMMatrix* matrix = ctx->getTransform();
   EXPECT_TRUE(matrix->isIdentity());

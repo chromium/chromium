@@ -33,7 +33,6 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
       const gfx::Size& container_size,
       const PaintRenderingContext2DSettings*,
       float zoom,
-      float device_scale_factor,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       PaintWorkletGlobalScope* global_scope = nullptr);
 
