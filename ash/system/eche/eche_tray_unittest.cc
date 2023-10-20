@@ -484,14 +484,14 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_C) {
 
   EXPECT_TRUE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
-  EXPECT_FALSE(toast_manager()->IsRunning(
+  EXPECT_FALSE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 
   // Now press the ctrl+w that closes the bubble.
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_C, ui::EF_CONTROL_DOWN);
 
   // Check to see if a toast is shown
-  EXPECT_TRUE(toast_manager()->IsRunning(
+  EXPECT_TRUE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 }
 
@@ -504,14 +504,14 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_V) {
 
   EXPECT_TRUE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
-  EXPECT_FALSE(toast_manager()->IsRunning(
+  EXPECT_FALSE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 
   // Now press the ctrl+w that closes the bubble.
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_V, ui::EF_CONTROL_DOWN);
 
   // Check to see if a toast is shown
-  EXPECT_TRUE(toast_manager()->IsRunning(
+  EXPECT_TRUE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 }
 
@@ -524,14 +524,14 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_X) {
 
   EXPECT_TRUE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
-  EXPECT_FALSE(toast_manager()->IsRunning(
+  EXPECT_FALSE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 
   // Now press the ctrl+w that closes the bubble.
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_X, ui::EF_CONTROL_DOWN);
 
   // Check to see if a toast is shown
-  EXPECT_TRUE(toast_manager()->IsRunning(
+  EXPECT_TRUE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 }
 

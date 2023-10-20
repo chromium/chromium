@@ -111,7 +111,7 @@ ToastManagerImpl::~ToastManagerImpl() {
 }
 
 void ToastManagerImpl::Show(ToastData data) {
-  const std::string& id = data.id;
+  std::string_view id = data.id;
   DCHECK(!id.empty());
 
   // If `pause_counter_` is greater than 0, no toasts should be shown.
@@ -128,7 +128,7 @@ void ToastManagerImpl::Show(ToastData data) {
     *existing_toast = std::move(data);
     existing_toast->time_created = old_time_created;
   } else {
-    if (IsRunning(id)) {
+    if (IsToastShown(id)) {
       // Replace the visible toast by adding the new toast data to the front of
       // the queue and hiding the visible toast. Once the visible toast finishes
       // hiding, the new toast will be displayed.
@@ -146,8 +146,8 @@ void ToastManagerImpl::Show(ToastData data) {
     ShowLatest();
 }
 
-void ToastManagerImpl::Cancel(const std::string& id) {
-  if (IsRunning(id)) {
+void ToastManagerImpl::Cancel(std::string_view id) {
+  if (IsToastShown(id)) {
     CloseAllToastsWithAnimation();
     return;
   }
@@ -158,8 +158,8 @@ void ToastManagerImpl::Cancel(const std::string& id) {
 }
 
 bool ToastManagerImpl::MaybeToggleA11yHighlightOnActiveToastDismissButton(
-    const std::string& id) {
-  DCHECK(IsRunning(id));
+    std::string_view id) {
+  DCHECK(IsToastShown(id));
   for (auto& [_, overlay] : root_window_to_overlay_) {
     if (overlay && overlay->MaybeToggleA11yHighlightOnDismissButton()) {
       return true;
@@ -170,8 +170,8 @@ bool ToastManagerImpl::MaybeToggleA11yHighlightOnActiveToastDismissButton(
 }
 
 bool ToastManagerImpl::MaybeActivateHighlightedDismissButtonOnActiveToast(
-    const std::string& id) {
-  DCHECK(IsRunning(id));
+    std::string_view id) {
+  DCHECK(IsToastShown(id));
   for (auto& [_, overlay] : root_window_to_overlay_) {
     if (overlay && overlay->MaybeActivateHighlightedDismissButton()) {
       return true;
@@ -181,17 +181,14 @@ bool ToastManagerImpl::MaybeActivateHighlightedDismissButtonOnActiveToast(
   return false;
 }
 
-bool ToastManagerImpl::IsRunning(std::string_view id) const {
+bool ToastManagerImpl::IsToastShown(std::string_view id) const {
   return HasActiveToasts() && current_toast_data_ &&
          current_toast_data_->id == id;
 }
 
-std::unique_ptr<ScopedToastPause> ToastManagerImpl::CreateScopedPause() {
-  return std::make_unique<ScopedToastPause>();
-}
-
-bool ToastManagerImpl::IsHighlighted(std::string_view id) const {
-  if (!IsRunning(id)) {
+bool ToastManagerImpl::IsToastDismissButtonHighlighted(
+    std::string_view id) const {
+  if (!IsToastShown(id)) {
     return false;
   }
 
@@ -202,6 +199,10 @@ bool ToastManagerImpl::IsHighlighted(std::string_view id) const {
   }
 
   return false;
+}
+
+std::unique_ptr<ScopedToastPause> ToastManagerImpl::CreateScopedPause() {
+  return std::make_unique<ScopedToastPause>();
 }
 
 void ToastManagerImpl::CloseToast() {
@@ -252,11 +253,6 @@ void ToastManagerImpl::OnSessionStateChanged(
     // Try to reshow a queued toast from a previous OnSessionStateChanged.
     ShowLatest();
   }
-}
-
-const ToastData& ToastManagerImpl::GetCurrentToastDataForTesting() const {
-  DCHECK(current_toast_data_);
-  return current_toast_data_.value();
 }
 
 void ToastManagerImpl::ShowLatest() {

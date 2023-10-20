@@ -26,22 +26,24 @@ class FakeToastManager : public ash::ToastManager {
 
   // ToastManager overrides:
   void Show(ash::ToastData data) override { called_show_ = true; }
-  void Cancel(const std::string& id) override { called_cancel_ = true; }
+  void Cancel(std::string_view id) override { called_cancel_ = true; }
   bool MaybeToggleA11yHighlightOnActiveToastDismissButton(
-      const std::string& id) override {
+      std::string_view id) override {
     return false;
   }
   bool MaybeActivateHighlightedDismissButtonOnActiveToast(
-      const std::string& id) override {
+      std::string_view id) override {
     return false;
   }
-  bool IsRunning(std::string_view id) const override { return false; }
+  bool IsToastShown(std::string_view id) const override { return false; }
+  bool IsToastDismissButtonHighlighted(std::string_view id) const override {
+    return false;
+  }
   std::unique_ptr<ash::ScopedToastPause> CreateScopedPause() override {
     return nullptr;
   }
   void Pause() override {}
   void Resume() override {}
-  bool IsHighlighted(std::string_view id) const override { return false; }
 
   void ResetState() {
     called_show_ = false;

@@ -3037,7 +3037,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
   // Spin in case we need to wait for the toast to appear.
   SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(
       base::Seconds(45),
-      ash::ToastManager::Get()->IsRunning(
+      ash::ToastManager::Get()->IsToastShown(
           chrome_desks_util::kAppNotAvailableTemplateToastName));
 }
 
@@ -3087,7 +3087,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
   // Spin in case we need to wait for the toast to appear.
   SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(
       base::Seconds(45),
-      ash::ToastManager::Get()->IsRunning(
+      ash::ToastManager::Get()->IsToastShown(
           chrome_desks_util::kAppNotAvailableTemplateToastName));
 }
 

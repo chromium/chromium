@@ -87,8 +87,7 @@ AnchoredNudge* GetShownNudge(const std::string& id) {
 }
 
 bool IsToastShown(const std::string& id) {
-  return Shell::Get()->toast_manager()->GetCurrentToastDataForTesting().id ==
-         id;
+  return Shell::Get()->toast_manager()->IsToastShown(id);
 }
 
 }  // namespace

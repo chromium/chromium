@@ -1509,7 +1509,7 @@ void DesksController::MaybeDismissPersistentDeskRemovalToast() {
 
 bool DesksController::MaybeToggleA11yHighlightOnUndoDeskRemovalToast() {
   if (!temporary_removed_desk_ ||
-      !ToastManager::Get()->IsRunning(temporary_removed_desk_->toast_id())) {
+      !ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id())) {
     return false;
   }
 
@@ -1520,7 +1520,7 @@ bool DesksController::MaybeToggleA11yHighlightOnUndoDeskRemovalToast() {
 
 bool DesksController::MaybeActivateDeskRemovalUndoButtonOnHighlightedToast() {
   if (!temporary_removed_desk_ ||
-      !ToastManager::Get()->IsRunning(temporary_removed_desk_->toast_id())) {
+      !ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id())) {
     return false;
   }
 
@@ -2197,8 +2197,9 @@ void DesksController::MaybeCommitPendingDeskRemoval(
 }
 
 bool DesksController::IsUndoToastHighlighted() const {
-  return temporary_removed_desk_ && ToastManager::Get()->IsHighlighted(
-                                        temporary_removed_desk_->toast_id());
+  return temporary_removed_desk_ &&
+         ToastManager::Get()->IsToastDismissButtonHighlighted(
+             temporary_removed_desk_->toast_id());
 }
 
 void DesksController::CleanUpClosedAppWindowsTask(
