@@ -535,4 +535,152 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, CENCDecryptConfigWithPattern) {
   ASSERT_FALSE(stable::mojom::DecryptConfig::Deserialize(
       serialized_decrypt_config, &deserialized_decrypt_config));
 }
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, EmptyVideoFrameMetadata) {
+  stable::mojom::VideoFrameMetadataPtr mojom_video_frame_metadata =
+      stable::mojom::VideoFrameMetadata::New();
+
+  std::vector<uint8_t> serialized_video_frame_metadata =
+      stable::mojom::VideoFrameMetadata::Serialize(&mojom_video_frame_metadata);
+
+  VideoFrameMetadata deserialized_video_frame_metadata;
+  ASSERT_TRUE(stable::mojom::VideoFrameMetadata::Deserialize(
+      serialized_video_frame_metadata, &deserialized_video_frame_metadata));
+
+  EXPECT_FALSE(deserialized_video_frame_metadata.capture_counter.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.capture_update_rect.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.transformation.has_value());
+  EXPECT_TRUE(deserialized_video_frame_metadata.allow_overlay);
+  EXPECT_FALSE(deserialized_video_frame_metadata.copy_required);
+  EXPECT_FALSE(deserialized_video_frame_metadata.end_of_stream);
+  EXPECT_FALSE(deserialized_video_frame_metadata.texture_owner);
+  EXPECT_FALSE(deserialized_video_frame_metadata.wants_promotion_hint);
+  EXPECT_FALSE(deserialized_video_frame_metadata.protected_video);
+  EXPECT_FALSE(deserialized_video_frame_metadata.hw_protected);
+  EXPECT_FALSE(deserialized_video_frame_metadata.is_webgpu_compatible);
+  EXPECT_TRUE(deserialized_video_frame_metadata.power_efficient);
+  EXPECT_TRUE(deserialized_video_frame_metadata.read_lock_fences_enabled);
+  EXPECT_FALSE(deserialized_video_frame_metadata.interactive_content);
+  EXPECT_FALSE(deserialized_video_frame_metadata.overlay_plane_id.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.device_scale_factor.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.page_scale_factor.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.root_scroll_offset_x.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.root_scroll_offset_y.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.top_controls_visible_height
+                   .has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.frame_rate.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.rtp_timestamp.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.receive_time.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.capture_begin_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.capture_end_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.decode_begin_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.decode_end_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.reference_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.processing_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.frame_duration.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.wallclock_frame_duration.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.source_size.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.region_capture_rect.has_value());
+  EXPECT_EQ(0u, deserialized_video_frame_metadata.crop_version);
+  EXPECT_FALSE(deserialized_video_frame_metadata.dcomp_surface);
+#if BUILDFLAG(USE_VAAPI)
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.hw_va_protected_session_id.has_value());
+#endif
+  EXPECT_TRUE(deserialized_video_frame_metadata.texture_origin_is_top_left);
+  EXPECT_FALSE(deserialized_video_frame_metadata
+                   .maximum_composition_delay_in_frames.has_value());
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, ValidVideoFrameMetadata) {
+  stable::mojom::VideoFrameMetadataPtr mojom_video_frame_metadata =
+      stable::mojom::VideoFrameMetadata::New();
+
+  mojom_video_frame_metadata->protected_video = true;
+  mojom_video_frame_metadata->hw_protected = true;
+
+  std::vector<uint8_t> serialized_video_frame_metadata =
+      stable::mojom::VideoFrameMetadata::Serialize(&mojom_video_frame_metadata);
+
+  VideoFrameMetadata deserialized_video_frame_metadata;
+  ASSERT_TRUE(stable::mojom::VideoFrameMetadata::Deserialize(
+      serialized_video_frame_metadata, &deserialized_video_frame_metadata));
+
+  EXPECT_EQ(mojom_video_frame_metadata->protected_video,
+            deserialized_video_frame_metadata.protected_video);
+  EXPECT_EQ(mojom_video_frame_metadata->hw_protected,
+            deserialized_video_frame_metadata.hw_protected);
+
+  EXPECT_FALSE(deserialized_video_frame_metadata.capture_counter.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.capture_update_rect.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.transformation.has_value());
+  EXPECT_TRUE(deserialized_video_frame_metadata.allow_overlay);
+  EXPECT_FALSE(deserialized_video_frame_metadata.copy_required);
+  EXPECT_FALSE(deserialized_video_frame_metadata.end_of_stream);
+  EXPECT_FALSE(deserialized_video_frame_metadata.texture_owner);
+  EXPECT_FALSE(deserialized_video_frame_metadata.wants_promotion_hint);
+  EXPECT_FALSE(deserialized_video_frame_metadata.is_webgpu_compatible);
+  EXPECT_TRUE(deserialized_video_frame_metadata.power_efficient);
+  EXPECT_TRUE(deserialized_video_frame_metadata.read_lock_fences_enabled);
+  EXPECT_FALSE(deserialized_video_frame_metadata.interactive_content);
+  EXPECT_FALSE(deserialized_video_frame_metadata.overlay_plane_id.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.device_scale_factor.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.page_scale_factor.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.root_scroll_offset_x.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.root_scroll_offset_y.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.top_controls_visible_height
+                   .has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.frame_rate.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.rtp_timestamp.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.receive_time.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.capture_begin_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.capture_end_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.decode_begin_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.decode_end_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.reference_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.processing_time.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.frame_duration.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.wallclock_frame_duration.has_value());
+  EXPECT_FALSE(deserialized_video_frame_metadata.source_size.has_value());
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.region_capture_rect.has_value());
+  EXPECT_EQ(0u, deserialized_video_frame_metadata.crop_version);
+  EXPECT_FALSE(deserialized_video_frame_metadata.dcomp_surface);
+#if BUILDFLAG(USE_VAAPI)
+  EXPECT_FALSE(
+      deserialized_video_frame_metadata.hw_va_protected_session_id.has_value());
+#endif
+  EXPECT_TRUE(deserialized_video_frame_metadata.texture_origin_is_top_left);
+  EXPECT_FALSE(deserialized_video_frame_metadata
+                   .maximum_composition_delay_in_frames.has_value());
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     VideoFrameMetadataWithInconsistentProtectedContentFields) {
+  stable::mojom::VideoFrameMetadataPtr mojom_video_frame_metadata =
+      stable::mojom::VideoFrameMetadata::New();
+
+  mojom_video_frame_metadata->protected_video = false;
+  mojom_video_frame_metadata->hw_protected = true;
+
+  std::vector<uint8_t> serialized_video_frame_metadata =
+      stable::mojom::VideoFrameMetadata::Serialize(&mojom_video_frame_metadata);
+
+  VideoFrameMetadata deserialized_video_frame_metadata;
+  ASSERT_FALSE(stable::mojom::VideoFrameMetadata::Deserialize(
+      serialized_video_frame_metadata, &deserialized_video_frame_metadata));
+}
 }  // namespace media
