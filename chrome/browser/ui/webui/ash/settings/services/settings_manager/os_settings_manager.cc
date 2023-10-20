@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
+#include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"

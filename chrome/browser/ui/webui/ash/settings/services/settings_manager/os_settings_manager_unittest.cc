@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
+#include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/webui/ash/settings/constants/constants_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
 #include "chrome/browser/ui/webui/ash/settings/search/hierarchy.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_manager_factory.h"
+#include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
