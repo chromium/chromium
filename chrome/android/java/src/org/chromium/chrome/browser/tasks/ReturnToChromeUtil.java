@@ -535,8 +535,9 @@ public final class ReturnToChromeUtil {
         // When creating initial tab, i.e. cold start without restored tabs, we should only show
         // StartSurface as the HomePage if Single Pane is enabled, HomePage is not customized, not
         // on tablet, accessibility is not enabled or the tab group continuation feature is enabled.
-        return (!DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled()
-                       || DseNewTabUrlManager.isDefaultSearchEngineGoogle())
+        return (!ChromeFeatureList.sShowNtpAtStartupAndroid.isEnabled())
+                && (!DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled()
+                        || DseNewTabUrlManager.isDefaultSearchEngineGoogle())
                 && StartSurfaceConfiguration.isStartSurfaceFlagEnabled()
                 && !shouldHideStartSurfaceWithAccessibilityOn(context)
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
@@ -635,7 +636,8 @@ public final class ReturnToChromeUtil {
     public static boolean shouldShowNtpAsHomeSurfaceAtStartup(boolean isTablet, Intent intent,
             Bundle bundle, TabModelSelector tabModelSelector,
             ChromeInactivityTracker inactivityTracker) {
-        // If "Start surface on tablet" isn't enabled, return false.
+        // If "Start surface on tablet" isn't enabled, or
+        // ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID isn't enabled, return false.
         if (!StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet)) return false;
 
         // If the current session is recreated due to a transition from the phone mode to the tablet
@@ -746,7 +748,7 @@ public final class ReturnToChromeUtil {
      * @param tabCreator The {@link TabCreator} object.
      * @param homeSurfaceTracker The {@link HomeSurfaceTracker} object.
      */
-    public static void setInitialOverviewStateOnResumeOnTablet(boolean isIncognito,
+    public static void setInitialOverviewStateOnResumeWithNtp(boolean isIncognito,
             boolean shouldShowNtpHomeSurfaceOnStartup, TabModel currentTabModel,
             TabCreator tabCreator, HomeSurfaceTracker homeSurfaceTracker) {
         if (isIncognito || !shouldShowNtpHomeSurfaceOnStartup) {

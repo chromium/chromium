@@ -73,11 +73,11 @@ import java.util.concurrent.TimeoutException;
 /** Integration tests of showing a NTP with Start surface UI at startup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction({
-    UiRestriction.RESTRICTION_TYPE_TABLET,
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
 })
 @EnableFeatures({
     ChromeFeatureList.START_SURFACE_ON_TABLET,
+    ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID,
     ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study"
 })
 @CommandLineFlags.Add({
@@ -85,7 +85,7 @@ import java.util.concurrent.TimeoutException;
     "force-fieldtrials=Study/Group"
 })
 @DoNotBatch(reason = "This test suite tests startup behaviors.")
-public class StartSurfaceOnTabletTest {
+public class ShowNtpAtStartupTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -95,9 +95,10 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     @DisableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
-    public void testStartSurfaceOnTabletDisabled() throws IOException {
+    public void testShowNtpAtStartupDisabled_tablets() throws IOException {
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
@@ -109,8 +110,23 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
-    public void testStartSurfaceOnTablet() throws IOException {
+    @DisableFeatures(ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID)
+    public void testShowNtpAtStartupDisabled_phones() throws IOException {
+        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
+
+        verifyTabCountAndActiveTabUrl(
+            mActivityTestRule.getActivity(), 1, TAB_URL, /* expectHomeSurfaceUiShown */null);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
+    public void testShowNtpAtStartup() throws IOException {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)
@@ -133,7 +149,7 @@ public class StartSurfaceOnTabletTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
-    public void testStartSurfaceOnTabletWithNtpExist() throws IOException {
+    public void testShowNtpAtStartupWithNtpExist() throws IOException {
         // The existing NTP isn't the last active Tab.
         String modifiedNtpUrl = UrlConstants.NTP_URL + "/1";
         Assert.assertTrue(UrlUtilities.isNTPUrl(modifiedNtpUrl));
@@ -161,7 +177,7 @@ public class StartSurfaceOnTabletTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
-    public void testStartSurfaceOnTabletWithActiveNtpExist() throws IOException {
+    public void testShowNtpAtStartupWithActiveNtpExist() throws IOException {
         // The existing NTP is set as the last active Tab.
         String modifiedNtpUrl = UrlConstants.NTP_URL + "/1";
         Assert.assertTrue(UrlUtilities.isNTPUrl(modifiedNtpUrl));
@@ -189,6 +205,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @EnableFeatures(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     public void testScrollableMvTilesEnabledOnTablet() throws IOException {
@@ -211,6 +228,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @EnableFeatures(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
     @DisableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testScrollableMvTilesDefaultDisabledOnTablet() {
@@ -302,6 +320,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @EnableFeatures({
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
         ChromeFeatureList.START_SURFACE_ON_TABLET
@@ -336,6 +355,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @DisableFeatures({
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
         ChromeFeatureList.SURFACE_POLISH
@@ -368,6 +388,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testLogoSizeShrink() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
@@ -395,6 +416,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @DisableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testDefaultLogoSize() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
@@ -420,6 +442,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     @EnableFeatures({
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
@@ -485,6 +508,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @EnableFeatures({
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
         ChromeFeatureList.START_SURFACE_ON_TABLET
@@ -509,6 +533,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     @DisableFeatures(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
@@ -639,12 +664,8 @@ public class StartSurfaceOnTabletTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
         NewTabPageTestUtils.waitForNtpLoaded(ntpTab);
-        try {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> cta.findViewById(R.id.tab_switcher_button).performClick());
-        } catch (ExecutionException e) {
-            fail("Failed to tap 'more tabs' " + e.toString());
-        }
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> cta.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
         NewTabPageTestUtils.waitForNtpLoaded(ntpTab);
@@ -657,6 +678,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @EnableFeatures({
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
         ChromeFeatureList.START_SURFACE_ON_TABLET,
@@ -688,6 +710,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     @EnableFeatures({
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,

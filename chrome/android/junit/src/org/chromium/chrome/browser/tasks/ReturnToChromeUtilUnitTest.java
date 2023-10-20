@@ -590,6 +590,14 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
+    public void testStartSurfaceIsDisabledWithShowNtpAtStartup() {
+        Assert.assertTrue(ChromeFeatureList.sShowNtpAtStartupAndroid.isEnabled());
+        Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
     public void testStartSurfaceMayBeDisabledWithNewTabSearchEngineUrlEnabled() {
         Assert.assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
@@ -741,7 +749,7 @@ public class ReturnToChromeUtilUnitTest {
                         .expectIntRecords(HOME_SURFACE_SHOWN_UMA, 1)
                         .build();
 
-        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeWithNtp(
                 false,
                 /* shouldShowNtpHomeSurfaceOnStartup= */ true,
                 mCurrentTabModel,
@@ -761,7 +769,7 @@ public class ReturnToChromeUtilUnitTest {
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)
                         .expectIntRecords(HOME_SURFACE_SHOWN_UMA, 1)
                         .build();
-        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeWithNtp(
                 false,
                 /* shouldShowNtpHomeSurfaceOnStartup= */ true,
                 mCurrentTabModel,
@@ -781,7 +789,7 @@ public class ReturnToChromeUtilUnitTest {
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)
                         .expectIntRecords(HOME_SURFACE_SHOWN_UMA, 1)
                         .build();
-        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeWithNtp(
                 false,
                 /* shouldShowNtpHomeSurfaceOnStartup= */ true,
                 mCurrentTabModel,
@@ -805,7 +813,7 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
 
         // Verifies that if the return time doesn't arrive, there isn't a new NTP is created.
-        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeWithNtp(
                 false,
                 /* shouldShowNtpHomeSurfaceOnStartup= */ false,
                 mCurrentTabModel,
@@ -828,7 +836,7 @@ public class ReturnToChromeUtilUnitTest {
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_UMA, true)
                         .build();
-        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeWithNtp(
                 false,
                 /* shouldShowNtpHomeSurfaceOnStartup= */ true,
                 mCurrentTabModel,
@@ -875,7 +883,7 @@ public class ReturnToChromeUtilUnitTest {
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_UMA, true)
                         .build();
         // Verifies the active NTP will be shown with its home surface UI, not the first found NTP.
-        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeWithNtp(
                 false,
                 /* shouldShowNtpHomeSurfaceOnStartup= */ true,
                 mCurrentTabModel,
@@ -894,7 +902,7 @@ public class ReturnToChromeUtilUnitTest {
                         .build();
         // Verifies the active NTP will be shown as it is now, i.e., an empty NTP, not the first
         // found NTP.
-        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeWithNtp(
                 false,
                 /* shouldShowNtpHomeSurfaceOnStartup= */ true,
                 mCurrentTabModel,
@@ -914,7 +922,7 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(0).when(mCurrentTabModel).getCount();
 
         // Verifies that if there isn't any existing Tab, we don't create a home surface NTP.
-        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeWithNtp(
                 false,
                 /* shouldShowNtpHomeSurfaceOnStartup= */ true,
                 mCurrentTabModel,

@@ -1213,9 +1213,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void setInitialOverviewState(boolean shouldShowOverviewPageOnStart) {
-        if (isTablet()) {
+        if (StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet())) {
             if (mFromResumption) {
-                setInitialOverviewStateOnTablets();
+                setInitialOverviewStateWithNtp();
             }
             return;
         }
@@ -1256,11 +1256,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     /**
-     * Called on warm startup on tablets to show a home surface instead of the last active Tab if
-     * the user has left Chrome for a while.
+     * Called on warm startup to show a home surface NTP instead of the last active Tab if the user
+     * has left Chrome for a while.
      */
-    private void setInitialOverviewStateOnTablets() {
-        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+    private void setInitialOverviewStateWithNtp() {
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeWithNtp(
                 mTabModelSelector.isIncognitoSelected(), shouldShowNtpHomeSurfaceOnStartup(),
                 getCurrentTabModel(), getTabCreator(false), mHomeSurfaceTracker);
     }
@@ -1324,7 +1324,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             boolean noRestoreState =
                     CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_RESTORE_STATE);
-            boolean shouldShowHomeSurfaceAtStartupOnTablet = false;
+            boolean shouldShowNtpAsHomeSurfaceAtStartup = false;
             final AtomicBoolean isActiveUrlNTP = new AtomicBoolean(false);
             if (noRestoreState) {
                 // Clear the state files because they are inconsistent and useless from now on.
@@ -1340,12 +1340,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // If the Start surface should be shown on startup, check if the active tab restored
                 // from disk is an NTP that can be reused for Start.
                 Callback<String> onStandardActiveIndexRead = null;
-                shouldShowHomeSurfaceAtStartupOnTablet = shouldShowNtpHomeSurfaceOnStartup();
+                shouldShowNtpAsHomeSurfaceAtStartup = shouldShowNtpHomeSurfaceOnStartup();
                 boolean skipSavingNonActiveNtps = skipSavingNonActiveNtps();
                 if (skipSavingNonActiveNtps) {
                     mHomeSurfaceTracker = new HomeSurfaceTracker();
                 }
-                if (shouldShowHomeSurfaceAtStartupOnTablet) {
+                if (shouldShowNtpAsHomeSurfaceAtStartup) {
                     onStandardActiveIndexRead = url -> {
                         mLastActiveTabUrl = url;
                         if (UrlUtilities.isNTPUrl(url)) {
@@ -1397,7 +1397,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     || (shouldShowOverviewPageOnStart()
                             && !mTabModelSelector.isIncognitoSelected());
 
-            if (shouldShowHomeSurfaceAtStartupOnTablet && !isIntentWithEffect
+            if (shouldShowNtpAsHomeSurfaceAtStartup && !isIntentWithEffect
                     && !hasTabWaitingForReparenting) {
                 // If a home surface should be shown at startup on tablets and the last active Tab
                 // is a NTP, we will reuse it to show the home surface UI. Otherwise, we'll create
