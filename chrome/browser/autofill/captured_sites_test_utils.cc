@@ -44,6 +44,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -939,6 +940,10 @@ void TestRecipeReplayer::SetUpCommandLine(base::CommandLine* command_line) {
       network::switches::kIgnoreCertificateErrorsSPKIList,
       kWebPageReplayCertSPKI);
   command_line->AppendSwitch(switches::kStartMaximized);
+  // Since we are adding via ScopedFeatureList for test features required, we
+  // need to explicitly also enable field trials.
+  command_line->AppendSwitch(
+      variations::switches::kEnableFieldTrialTestingConfig);
 }
 
 TestRecipeReplayChromeFeatureActionExecutor*
