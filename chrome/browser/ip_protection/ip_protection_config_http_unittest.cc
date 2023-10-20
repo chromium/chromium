@@ -179,6 +179,11 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigSuccess) {
   ip_protection::GetProxyConfigResponse response_proto;
   response_proto.add_first_hop_hostnames("host1");
   response_proto.add_first_hop_hostnames("host2");
+
+  ip_protection::GetProxyConfigResponse_ProxyChain* proxyChain =
+      response_proto.add_proxy_chain();
+  proxyChain->set_proxy_a("proxyA");
+  proxyChain->set_proxy_b("proxyB");
   std::string response_str = response_proto.SerializeAsString();
 
   auto head = network::mojom::URLResponseHead::New();
@@ -197,6 +202,8 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigSuccess) {
   EXPECT_EQ(2, result->first_hop_hostnames_size());
   EXPECT_EQ("host1", result->first_hop_hostnames(0));
   EXPECT_EQ("host2", result->first_hop_hostnames(1));
+  EXPECT_EQ("proxyA", result->proxy_chain().at(0).proxy_a());
+  EXPECT_EQ("proxyB", result->proxy_chain().at(0).proxy_b());
 }
 
 TEST_F(IpProtectionConfigHttpTest, GetProxyConfigEmpty) {
@@ -217,6 +224,7 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigEmpty) {
 
   ASSERT_TRUE(result.ok());
   EXPECT_EQ(0, result->first_hop_hostnames_size());
+  EXPECT_EQ(0, result->proxy_chain_size());
 }
 
 TEST_F(IpProtectionConfigHttpTest, GetProxyConfigFails) {
