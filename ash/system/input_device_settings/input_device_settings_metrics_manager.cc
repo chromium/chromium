@@ -371,7 +371,9 @@ void RecordCurrentButtonRemappingAction(
       {"ChromeOS.Settings.Device.", peripheral_kind, ".ButtonRemapping."});
   switch (button_remapping->remapping_action->which()) {
     case mojom::RemappingAction::Tag::kAcceleratorAction:
-      // TODO(cambickel): Add metric recording for AcceleratorAction.
+      base::UmaHistogramSparse(
+          base::StrCat({metric_name_prefix, "AcceleratorAction.Initial"}),
+          button_remapping->remapping_action->get_accelerator_action());
       break;
     case mojom::RemappingAction::Tag::kStaticShortcutAction:
       base::UmaHistogramEnumeration(
