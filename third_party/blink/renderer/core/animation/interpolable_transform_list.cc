@@ -11,11 +11,14 @@ namespace blink {
 
 // static
 std::unique_ptr<InterpolableTransformList>
-InterpolableTransformList::ConvertCSSValue(const CSSValue& css_value,
-                                           const StyleResolverState* state) {
-  TransformOperations transform = TransformBuilder::CreateTransformOperations(
-      css_value, state->CssToLengthConversionData());
-  return std::make_unique<InterpolableTransformList>(std::move(transform));
+InterpolableTransformList::ConvertCSSValue(
+    const CSSValue& css_value,
+    const CSSToLengthConversionData& conversion_data,
+    TransformOperations::BoxSizeDependentMatrixBlending box_size_dependent) {
+  TransformOperations transform =
+      TransformBuilder::CreateTransformOperations(css_value, conversion_data);
+  return std::make_unique<InterpolableTransformList>(std::move(transform),
+                                                     box_size_dependent);
 }
 
 void InterpolableTransformList::PreConcat(
@@ -36,8 +39,8 @@ void InterpolableTransformList::Interpolate(const InterpolableValue& to,
                                             const double progress,
                                             InterpolableValue& result) const {
   To<InterpolableTransformList>(result).operations_ =
-      To<InterpolableTransformList>(to).operations_.Blend(operations_,
-                                                          progress);
+      To<InterpolableTransformList>(to).operations_.Blend(operations_, progress,
+                                                          box_size_dependent_);
 }
 
 void InterpolableTransformList::AssertCanInterpolateWith(
