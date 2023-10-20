@@ -40,6 +40,9 @@ class ExtensionPrefsObserver {
   virtual void OnExtensionStateChanged(const std::string& extension_id,
                                        bool state) {}
 
+  // Called when an extension's pref has been updated or changed.
+  virtual void OnExtensionPrefsUpdated(const std::string& extension_id) {}
+
   // Called when the runtime permissions for an extension are changed.
   // TODO(devlin): This is a bit out of place here, and may be better suited on
   // a general "extension permissions" observer, if/when we have one. See
