@@ -397,6 +397,9 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
  private:
   void ChunkStepsBody(ScriptState* script_state,
                       DOMArrayBufferView* chunk) const {
+    // This is called in a microtask, the ScriptState needs to be put back
+    // in scope.
+    ScriptState::Scope scope(script_state);
     // 1. Set readAgainForBranch1 to false.
     engine_->read_again_for_branch_[0] = false;
     // 2. Set readAgainForBranch2 to false.
