@@ -416,6 +416,54 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.Android.UpdateAccessibilityServices.DidPoll"
+    units="BooleanHit" expires_after="2024-02-25">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Recorded every time the AccessibilityState.updateAccessibilityServices
+    method hit the criteria to poll. Lower number of hits is better.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.UpdateAccessibilityServices.PollCount"
+    units="count" expires_after="2024-02-25">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the number of times this sequence of calls to
+    AccessibilityState.updateAccessibilityServices required polling to get
+    consistent enabled and running services. Lower count is better.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.UpdateAccessibilityServices.PollTimeout"
+    units="BooleanHit" expires_after="2024-02-25">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the number of times the
+    AccessibilityState.updateAccessibilityServices did not complete polling
+    before the max timeout. This should be rare. Any instances of this are bad.
+    Lower number of hits is better, should (almost always) be zero.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.UpdateAccessibilityServices.Runtime"
+    units="microseconds" expires_after="2024-02-25">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the amount of time the AccessibilityState.updateAccessibilityServices
+    method took from start to finish (not counting async wait time). Lower time
+    is better.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Android.Usage.A11yAlwaysOn" units="ms"
     expires_after="2024-02-20">
   <owner>mschillaci@google.com</owner>
