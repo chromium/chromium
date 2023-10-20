@@ -194,9 +194,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   AttributionConfig::DestinationRateLimit GetDestinationRateLimit() const;
 
-  uint64_t TriggerDataCardinality(
-      attribution_reporting::mojom::SourceType) const;
-
   // Returns zero or more null aggregatable reports for the given trigger.
   virtual std::vector<NullAggregatableReport> GetNullAggregatableReports(
       const AttributionTrigger&,

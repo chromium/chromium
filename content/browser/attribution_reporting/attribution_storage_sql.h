@@ -387,10 +387,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                                      const AttributionTrigger&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  uint64_t SanitizeTriggerData(uint64_t trigger_data,
-                               attribution_reporting::mojom::SourceType)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   // If set, database errors will not crash the client when run in debug mode.
   bool ignore_errors_for_testing_ = false;
 

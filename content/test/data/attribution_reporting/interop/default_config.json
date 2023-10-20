@@ -53,14 +53,6 @@
   // string.
   "rate_limit_origins_per_site_window_in_days": "1",
 
-  // Positive integer that controls the valid range of trigger data for triggers
-  // that are attributed to a navigation source. Formatted as a base-10 string.
-  "navigation_source_trigger_data_cardinality": "8",
-
-  // Positive integer that controls the valid range of trigger data for triggers
-  // that are attributed to an event source. Formatted as a base-10 string.
-  "event_source_trigger_data_cardinality": "2",
-
   // A string that encodes either "inf" or a double greater than or equal to 0.
   // This controls the randomized response mechanism for event-level reports by
   // adjusting the flip probability.

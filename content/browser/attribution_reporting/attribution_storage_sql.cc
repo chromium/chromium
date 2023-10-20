@@ -490,6 +490,11 @@ int64_t StorageFileSizeKB(const base::FilePath& path_to_database) {
   return file_size;
 }
 
+uint64_t SanitizeTriggerData(uint64_t trigger_data, SourceType source_type) {
+  return trigger_data %
+         attribution_reporting::DefaultTriggerDataCardinality(source_type);
+}
+
 }  // namespace
 
 struct AttributionStorageSql::StoredSourceData {
@@ -3336,13 +3341,6 @@ void AttributionStorageSql::SetDelegate(
   DCHECK(delegate);
   rate_limit_table_.SetDelegate(*delegate);
   delegate_ = std::move(delegate);
-}
-
-uint64_t AttributionStorageSql::SanitizeTriggerData(uint64_t trigger_data,
-                                                    SourceType source_type) {
-  uint64_t cardinality = delegate_->TriggerDataCardinality(source_type);
-  CHECK_NE(cardinality, 0u);
-  return trigger_data % cardinality;
 }
 
 }  // namespace content

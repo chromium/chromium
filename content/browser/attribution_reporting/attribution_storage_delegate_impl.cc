@@ -221,7 +221,8 @@ int64_t AttributionStorageDelegateImpl::GetNumStates(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetNumberOfStarsAndBarsSequences(
       /*num_stars=*/max_event_level_reports,
-      /*num_bars=*/TriggerDataCardinality(source_type) *
+      /*num_bars=*/attribution_reporting::DefaultTriggerDataCardinality(
+          source_type) *
           event_report_windows.end_times().size());
 }
 
@@ -292,7 +293,8 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
 
-  const int trigger_data_cardinality = TriggerDataCardinality(source_type);
+  const int trigger_data_cardinality =
+      attribution_reporting::DefaultTriggerDataCardinality(source_type);
 
   const std::vector<int> bars_preceding_each_star =
       GetBarsPrecedingEachStar(GetStarIndices(

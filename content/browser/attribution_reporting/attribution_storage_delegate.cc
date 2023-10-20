@@ -4,8 +4,6 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 
-#include <stdint.h>
-
 #include <utility>
 #include <vector>
 
@@ -107,18 +105,6 @@ AttributionConfig::DestinationRateLimit
 AttributionStorageDelegate::GetDestinationRateLimit() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.destination_rate_limit;
-}
-
-uint64_t AttributionStorageDelegate::TriggerDataCardinality(
-    SourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (source_type) {
-    case SourceType::kNavigation:
-      return config_.event_level_limit
-          .navigation_source_trigger_data_cardinality;
-    case SourceType::kEvent:
-      return config_.event_level_limit.event_source_trigger_data_cardinality;
-  }
 }
 
 }  // namespace content

@@ -5187,7 +5187,6 @@ data/attribution_reporting/interop/aggregatable_with_event_disabled.json
 data/attribution_reporting/interop/basic.json
 data/attribution_reporting/interop/basic_aggregatable.json
 data/attribution_reporting/interop/channel_capacity.json
-data/attribution_reporting/interop/config_trigger_data_cardinality.json
 data/attribution_reporting/interop/dedup_key.json
 data/attribution_reporting/interop/deduplication_sequence.json
 data/attribution_reporting/interop/default_config.json
@@ -5223,6 +5222,7 @@ data/attribution_reporting/interop/source_storage_limit.json
 data/attribution_reporting/interop/success_debug_aggregatable.json
 data/attribution_reporting/interop/success_debug_event_level.json
 data/attribution_reporting/interop/top_level_filter_data.json
+data/attribution_reporting/interop/trigger_data_sanitization.json
 data/attribution_reporting/interop/verbose_debug_report_multiple_data.json
 data/attribution_reporting/page_with_ads_apis_ot.html
 data/attribution_reporting/page_with_conversion_measurement_disabled.html
