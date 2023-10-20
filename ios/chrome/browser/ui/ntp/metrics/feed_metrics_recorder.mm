@@ -197,12 +197,11 @@ using feed::FeedUserActionType;
           base::Time::FromNSDate(lastInteractionTimeForGoodVisitsDate);
     }
 
-    NSDate* lastInteractionTimeForDiscoverGoodVisitsDate =
-        base::apple::ObjCCast<NSDate>(
-            [defaults objectForKey:kLastInteractionTimeForDiscoverGoodVisits]);
-    if (lastInteractionTimeForDiscoverGoodVisitsDate != nil) {
+    base::Time lastInteractionTimeForDiscoverGoodVisitsDate =
+        self.prefService->GetTime(kLastInteractionTimeForDiscoverGoodVisits);
+    if (lastInteractionTimeForDiscoverGoodVisitsDate != base::Time()) {
       self.lastInteractionTimeForDiscoverGoodVisits =
-          base::Time::FromNSDate(lastInteractionTimeForDiscoverGoodVisitsDate);
+          lastInteractionTimeForDiscoverGoodVisitsDate;
     }
 
     base::Time lastInteractionTimeForFollowingGoodVisitsDate =
@@ -1340,8 +1339,7 @@ using feed::FeedUserActionType;
   if (feedType == FeedTypeDiscover) {
     [defaults setDouble:0 forKey:kLongDiscoverFeedVisitTimeAggregateKey];
     self.lastInteractionTimeForDiscoverGoodVisits = now;
-    [defaults setObject:now.ToNSDate()
-                 forKey:kLastInteractionTimeForDiscoverGoodVisits];
+    self.prefService->SetTime(kLastInteractionTimeForDiscoverGoodVisits, now);
     self.discoverPreviousTimeInFeedGV = 0;
     self.goodVisitReportedDiscover = NO;
   }

@@ -615,6 +615,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(kLastDayTimeInFeedReportedKey, base::Time());
   registry->RegisterTimePref(kLastInteractionTimeForFollowingGoodVisits,
                              base::Time());
+  registry->RegisterTimePref(kLastInteractionTimeForDiscoverGoodVisits,
+                             base::Time());
 
   registry->RegisterBooleanPref(kSyncRequested, false);
 }
@@ -772,6 +774,10 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   // Added 10/2023.
   MigrateNSDatePreferenceFromUserDefaults(
       kLastInteractionTimeForFollowingGoodVisits, prefs, defaults);
+
+  // Added 10/2023.
+  MigrateNSDatePreferenceFromUserDefaults(
+      kLastInteractionTimeForDiscoverGoodVisits, prefs, defaults);
 }
 
 void MigrateObsoleteUserDefault(void) {
