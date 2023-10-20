@@ -988,25 +988,22 @@ struct GemmTester {
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_generic_operator(), true);
-    auto& generic_operator = operation->get_generic_operator();
-    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kGemm);
-    auto& gemm_attributes = generic_operator->attributes->get_gemm();
-    ASSERT_EQ(gemm_attributes.is_null(), false);
+    EXPECT_EQ(operation->is_gemm(), true);
+    auto& gemm_mojo = operation->get_gemm();
     if (options.c) {
-      auto c_operand_iter = graph_info->id_to_operand_map.find(
-          gemm_attributes->c_operand_id.value());
+      auto c_operand_iter =
+          graph_info->id_to_operand_map.find(gemm_mojo->c_operand_id.value());
       ASSERT_TRUE(c_operand_iter != graph_info->id_to_operand_map.end());
       EXPECT_EQ(c_operand_iter->value->data_type, expected_attributes.c->type);
       EXPECT_EQ(c_operand_iter->value->dimensions,
                 expected_attributes.c->dimensions);
     } else {
-      EXPECT_EQ(gemm_attributes->c_operand_id, absl::nullopt);
+      EXPECT_EQ(gemm_mojo->c_operand_id, absl::nullopt);
     }
-    EXPECT_EQ(gemm_attributes->alpha, expected_attributes.alpha);
-    EXPECT_EQ(gemm_attributes->beta, expected_attributes.beta);
-    EXPECT_EQ(gemm_attributes->a_transpose, expected_attributes.a_transpose);
-    EXPECT_EQ(gemm_attributes->b_transpose, expected_attributes.b_transpose);
+    EXPECT_EQ(gemm_mojo->alpha, expected_attributes.alpha);
+    EXPECT_EQ(gemm_mojo->beta, expected_attributes.beta);
+    EXPECT_EQ(gemm_mojo->a_transpose, expected_attributes.a_transpose);
+    EXPECT_EQ(gemm_mojo->b_transpose, expected_attributes.b_transpose);
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =
@@ -1909,9 +1906,7 @@ struct ReshapeTester {
     // Verify the graph information of mojo are as expected.
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
-    EXPECT_EQ(operation->is_generic_operator(), true);
-    auto& generic_operator = operation->get_generic_operator();
-    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kReshape);
+    EXPECT_EQ(operation->is_reshape(), true);
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =

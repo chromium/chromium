@@ -234,9 +234,21 @@ struct Slice {
   array<StartAndSize> starts_and_sizes;
 };
 
-// Contains the attributes of gemm operator.
-struct GemmAttributes {
-  // The optional third tensor in expression alpha * A * B + beta * C.
+// Represents general matrix multiplication (gemm) operation in the expression
+// `alpha * A * B + beta * C`.
+struct Gemm {
+  // The id of `A` operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 a_operand_id;
+  // The id of `B` operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 b_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
+  // The id of optional `C` operand is used to get the `Operand` description
+  // from `GraphInfo.id_to_operand_map`.
   uint64? c_operand_id;
   // A float scalar multiplier for the `A * B`.
   float alpha = 1.0;
@@ -265,6 +277,18 @@ struct Prelu {
 // Corresponds to `MLOperand relu(MLOperand x)` that compute the rectified
 // linear function of the input tensor.
 struct Relu {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
+// Alters the shape of input operand to the output operand. This operation does
+// not copy or change the content of the input, it just changes the tensor’s
+// logical dimensions.
+struct Reshape {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 input_operand_id;
@@ -318,11 +342,6 @@ struct Transpose {
   array<uint32> permutation;
 };
 
-// Holds one of operator attributes.
-union OperatorAttributes {
-  GemmAttributes gemm;
-};
-
 // Resample the tensor values from the source to the destination spatial
 // dimensions.
 struct Resample2d {
@@ -339,26 +358,6 @@ struct Resample2d {
   InterpolationMode mode;
 };
 
-// Represents the operations defined in `MLGraphBuilder` that describes the
-// functional semantics.
-struct Operator {
-  enum Kind {
-    kGemm,
-    kReshape,
-  };
-
-  // The kind of this `Operator`.
-  Kind kind;
-  // The id array from the `GraphInfo.operands` will be used to map the input
-  // operands of `Operator`.
-  array<uint64> input_operands;
-  // The id array from the `GraphInfo.operands` will be used to map the output
-  // operands of `Operator`.
-  array<uint64> output_operands;
-  // The attributes of `Operator`.
-  OperatorAttributes? attributes;
-};
-
 // Holds one of operator.
 union Operation {
   // Keep the order as the same as build methods of `MLGraphBuilder`.
@@ -366,18 +365,17 @@ union Operation {
   Concat concat;
   Conv2d conv2d;
   ElementWiseBinary element_wise_binary;
+  Gemm gemm;
   Pad pad;
   Pool2d pool2d;
   Prelu prelu;
   Relu relu;
   Resample2d resample2d;
+  Reshape reshape;
   Slice slice;
   Softmax softmax;
   Split split;
   Transpose transpose;
-
-  // TODO(crbug.com/1273291): The `generic_operator` will be removed.
-  Operator generic_operator;
 };
 
 // Describes an entire WebNN graph information.

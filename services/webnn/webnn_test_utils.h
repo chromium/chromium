@@ -39,12 +39,6 @@ class GraphInfoBuilder final {
                        const std::vector<uint32_t>& dimensions,
                        mojom::Operand::DataType type);
 
-  void BuildOperator(
-      mojom::Operator::Kind kind,
-      const std::vector<uint64_t>& inputs,
-      const std::vector<uint64_t>& outputs,
-      mojom::OperatorAttributesPtr operator_attributes = nullptr);
-
   void BuildClamp(uint64_t input_operand_id,
                   uint64_t output_operand_id,
                   float min_value,
@@ -121,6 +115,34 @@ class GraphInfoBuilder final {
                               uint64_t rhs_operand,
                               uint64_t output_operand);
 
+  // A `GemmAttributes` type should have the following members:
+  // struct GemmAttributes {
+  //   absl::optional<uint64_t> c_operand_id,
+  //   float alpha = 1.0;
+  //   float beta = 1.0;
+  //   bool a_transpose = false;
+  //   bool b_transpose = false;
+  // };
+  template <typename GemmAttributes>
+  void BuildGemm(uint64_t a_operand_id,
+                 uint64_t b_operand_id,
+                 uint64_t output_operand_id,
+                 const GemmAttributes& attributes) {
+    mojom::GemmPtr gemm = mojom::Gemm::New();
+    gemm->a_operand_id = a_operand_id;
+    gemm->b_operand_id = b_operand_id;
+    gemm->output_operand_id = output_operand_id;
+
+    gemm->c_operand_id = attributes.c_operand_id;
+    gemm->alpha = attributes.alpha;
+    gemm->beta = attributes.beta;
+    gemm->a_transpose = attributes.a_transpose;
+    gemm->b_transpose = attributes.b_transpose;
+
+    graph_info_->operations.push_back(
+        mojom::Operation::NewGemm(std::move(gemm)));
+  }
+
   void BuildPad(uint64_t input_operand_id,
                 uint64_t output_operand_id,
                 const std::vector<uint32_t>& beginning_padding,
@@ -185,6 +207,8 @@ class GraphInfoBuilder final {
     graph_info_->operations.push_back(
         mojom::Operation::NewResample2d(std::move(resample2d)));
   }
+
+  void BuildReshape(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildSoftmax(uint64_t input_operand_id, uint64_t output_operand_id);
 

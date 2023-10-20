@@ -767,8 +767,9 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
 struct GemmTester {
   OperandInfo a;
   OperandInfo b;
+  absl::optional<OperandInfo> c;
   struct GemmAttributes {
-    absl::optional<OperandInfo> c;
+    absl::optional<uint64_t> c_operand_id;
     float alpha = 1.0;
     float beta = 1.0;
     bool a_transpose = false;
@@ -785,19 +786,12 @@ struct GemmTester {
     uint64_t b_operand_id = builder.BuildInput("b", b.dimensions, b.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    mojom::GemmAttributesPtr mojo_attributes = mojom::GemmAttributes::New();
-    if (attributes.c) {
-      mojo_attributes->c_operand_id =
-          builder.BuildInput("c", attributes.c->dimensions, attributes.c->type);
+
+    if (c) {
+      attributes.c_operand_id = builder.BuildInput("c", c->dimensions, c->type);
     }
-    mojo_attributes->alpha = attributes.alpha;
-    mojo_attributes->beta = attributes.beta;
-    mojo_attributes->a_transpose = attributes.a_transpose;
-    mojo_attributes->b_transpose = attributes.b_transpose;
-    builder.BuildOperator(
-        mojom::Operator::Kind::kGemm, {a_operand_id, b_operand_id},
-        {output_operand_id},
-        mojom::OperatorAttributes::NewGemm(std::move(mojo_attributes)));
+    builder.BuildGemm(a_operand_id, b_operand_id, output_operand_id,
+                      std::move(attributes));
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
@@ -846,9 +840,8 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
     GemmTester{
         .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
         .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
-        .attributes = {.c = OperandInfo{.type =
-                                            mojom::Operand::DataType::kFloat32,
-                                        .dimensions = {4}}},
+        .c = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {4}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2, 4}},
         .expected = true}
@@ -872,9 +865,8 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
     GemmTester{
         .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
         .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
-        .attributes = {.c = OperandInfo{.type =
-                                            mojom::Operand::DataType::kFloat32,
-                                        .dimensions = {2, 3}}},
+        .c = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {2, 3}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2, 4}},
         .expected = false}
@@ -887,11 +879,9 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
     GemmTester{
         .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 2}},
         .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4, 3}},
-        .attributes = {.c =
-                           OperandInfo{.type = mojom::Operand::DataType::kInt32,
-                                       .dimensions = {2, 4}},
-                       .a_transpose = true,
-                       .b_transpose = true},
+        .c = OperandInfo{.type = mojom::Operand::DataType::kInt32,
+                         .dimensions = {2, 4}},
+        .attributes = {.a_transpose = true, .b_transpose = true},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2, 4}},
         .expected = false}
@@ -1421,8 +1411,7 @@ struct ReshapeTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    builder.BuildOperator(mojom::Operator::Kind::kReshape, {input_operand_id},
-                          {output_operand_id});
+    builder.BuildReshape(input_operand_id, output_operand_id);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
@@ -1976,10 +1965,8 @@ TEST_F(WebNNGraphImplTest, BuildMultipleInputsAppendingConstants) {
                       constant_data.size() * sizeof(float)));
   uint64_t intermediate_1_operand_id = builder.BuildIntermediateOperand(
       {2, 2}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(
-      mojom::Operator::Kind::kGemm, {input_a_operand_id, constant_a_operand_id},
-      {intermediate_1_operand_id},
-      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+  builder.BuildGemm(input_a_operand_id, constant_a_operand_id,
+                    intermediate_1_operand_id, GemmTester::GemmAttributes());
 
   uint64_t input_b_operand_id =
       builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat32);
@@ -1989,15 +1976,10 @@ TEST_F(WebNNGraphImplTest, BuildMultipleInputsAppendingConstants) {
                       constant_data.size() * sizeof(float)));
   uint64_t intermediate_2_operand_id = builder.BuildIntermediateOperand(
       {2, 2}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(
-      mojom::Operator::Kind::kGemm, {input_b_operand_id, constant_b_operand_id},
-      {intermediate_2_operand_id},
-      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
-  builder.BuildOperator(
-      mojom::Operator::Kind::kGemm,
-      {intermediate_1_operand_id, intermediate_2_operand_id},
-      {output_operand_id},
-      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+  builder.BuildGemm(input_b_operand_id, constant_b_operand_id,
+                    intermediate_2_operand_id, GemmTester::GemmAttributes());
+  builder.BuildGemm(intermediate_1_operand_id, intermediate_2_operand_id,
+                    output_operand_id, GemmTester::GemmAttributes());
   EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), true);
 }
 
@@ -2023,10 +2005,8 @@ TEST_F(WebNNGraphImplTest, BuildMultipleConstantsAppendingInputs) {
       builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat32);
   uint64_t intermediate_1_operand_id = builder.BuildIntermediateOperand(
       {2, 2}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(
-      mojom::Operator::Kind::kGemm, {constant_a_operand_id, input_a_operand_id},
-      {intermediate_1_operand_id},
-      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+  builder.BuildGemm(constant_a_operand_id, input_a_operand_id,
+                    intermediate_1_operand_id, GemmTester::GemmAttributes());
 
   uint64_t input_b_operand_id =
       builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat32);
@@ -2036,16 +2016,11 @@ TEST_F(WebNNGraphImplTest, BuildMultipleConstantsAppendingInputs) {
                       constant_data.size() * sizeof(float)));
   uint64_t intermediate_2_operand_id = builder.BuildIntermediateOperand(
       {2, 2}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(
-      mojom::Operator::Kind::kGemm, {constant_b_operand_id, input_b_operand_id},
-      {intermediate_2_operand_id},
-      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+  builder.BuildGemm(constant_b_operand_id, input_b_operand_id,
+                    intermediate_2_operand_id, GemmTester::GemmAttributes());
 
-  builder.BuildOperator(
-      mojom::Operator::Kind::kGemm,
-      {intermediate_1_operand_id, intermediate_2_operand_id},
-      {output_operand_id},
-      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+  builder.BuildGemm(intermediate_1_operand_id, intermediate_2_operand_id,
+                    output_operand_id, GemmTester::GemmAttributes());
   EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), true);
 }
 

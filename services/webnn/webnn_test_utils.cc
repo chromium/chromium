@@ -110,20 +110,6 @@ void GraphInfoBuilder::BuildSplit(
       mojom::Operation::NewSplit(std::move(split)));
 }
 
-void GraphInfoBuilder::BuildOperator(
-    mojom::Operator::Kind kind,
-    const std::vector<uint64_t>& inputs,
-    const std::vector<uint64_t>& outputs,
-    mojom::OperatorAttributesPtr operator_attributes) {
-  mojom::OperatorPtr operation = mojom::Operator::New();
-  operation->kind = kind;
-  operation->input_operands = inputs;
-  operation->output_operands = outputs;
-  operation->attributes = std::move(operator_attributes);
-  graph_info_->operations.push_back(
-      mojom::Operation::NewGenericOperator(std::move(operation)));
-}
-
 void GraphInfoBuilder::BuildClamp(uint64_t input_operand_id,
                                   uint64_t output_operand_id,
                                   float min_value,
@@ -179,6 +165,15 @@ void GraphInfoBuilder::BuildRelu(uint64_t input_operand_id,
   relu->input_operand_id = input_operand_id;
   relu->output_operand_id = output_operand_id;
   graph_info_->operations.push_back(mojom::Operation::NewRelu(std::move(relu)));
+}
+
+void GraphInfoBuilder::BuildReshape(uint64_t input_operand_id,
+                                    uint64_t output_operand_id) {
+  mojom::ReshapePtr reshape = mojom::Reshape::New();
+  reshape->input_operand_id = input_operand_id;
+  reshape->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewReshape(std::move(reshape)));
 }
 
 void GraphInfoBuilder::BuildSoftmax(uint64_t input_operand_id,

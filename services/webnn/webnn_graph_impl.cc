@@ -174,33 +174,20 @@ webnn::Pool2dAttributes ConvertToPool2dAttributes(
   return component_attributes;
 }
 
-absl::optional<webnn::GemmAttributes> ConvertToGemmAttributes(
+webnn::GemmAttributes ConvertToGemmAttributes(
     const IdToOperandMap& id_to_operand_map,
-    const webnn::mojom::OperatorAttributesPtr& attributes) {
-  if (!attributes->is_gemm()) {
-    // The type of attribute is not gemm.
-    return absl::nullopt;
-  }
-  auto& mojo_attributes = attributes->get_gemm();
-  if (!mojo_attributes) {
-    // The attributes of gemm were not configured.
-    return absl::nullopt;
-  }
+    const mojom::GemmPtr& gemm) {
   webnn::GemmAttributes component_attributes;
-  auto& c_operand_id = mojo_attributes->c_operand_id;
+  auto& c_operand_id = gemm->c_operand_id;
   if (c_operand_id) {
-    if (!id_to_operand_map.contains(c_operand_id.value())) {
-      // The third operand is invalid.
-      return absl::nullopt;
-    }
     const mojom::OperandPtr& c_operand =
         id_to_operand_map.at(c_operand_id.value());
     component_attributes.c_operand = ConvertToComponentOperand(c_operand.get());
   }
-  component_attributes.alpha = mojo_attributes->alpha;
-  component_attributes.beta = mojo_attributes->beta;
-  component_attributes.a_transpose = mojo_attributes->a_transpose;
-  component_attributes.b_transpose = mojo_attributes->b_transpose;
+  component_attributes.alpha = gemm->alpha;
+  component_attributes.beta = gemm->beta;
+  component_attributes.a_transpose = gemm->a_transpose;
+  component_attributes.b_transpose = gemm->b_transpose;
   return component_attributes;
 }
 
@@ -214,23 +201,6 @@ webnn::SliceAttributes ConvertToSliceAttributes(
     component_attributes.sizes.push_back(start_and_size->size);
   }
   return component_attributes;
-}
-
-// TODO(crbug.com/1273291): This function will replaced by `operation`
-const mojom::Operand* GetMojoOperand(
-    const IdToOperandMap& id_to_operand_map,
-    const std::vector<uint64_t>& operand_id_array,
-    size_t index = 0) {
-  if (index >= operand_id_array.size()) {
-    // Index out of range.
-    return nullptr;
-  }
-  uint64_t operand_id = operand_id_array[index];
-  if (!id_to_operand_map.contains(operand_id)) {
-    // There is no operand for the id.
-    return nullptr;
-  }
-  return id_to_operand_map.at(operand_id).get();
 }
 
 const mojom::Operand* GetMojoOperand(const IdToOperandMap& id_to_operand_map,
@@ -358,23 +328,22 @@ bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
 }
 
 bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
-                  const mojom::OperatorPtr& operation) {
-  auto* a = GetMojoOperand(id_to_operand_map, operation->input_operands, 0);
-  auto* b = GetMojoOperand(id_to_operand_map, operation->input_operands, 1);
-  auto* output = GetMojoOperand(id_to_operand_map, operation->output_operands);
-  if (!a || !b || !output || output == a || output == b ||
-      !operation->attributes) {
+                  const mojom::GemmPtr& gemm) {
+  auto* a = GetMojoOperand(id_to_operand_map, gemm->a_operand_id);
+  auto* b = GetMojoOperand(id_to_operand_map, gemm->b_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, gemm->output_operand_id);
+  if (!a || !b || !output || output == a || output == b) {
     // The gemm operator is invalid.
     return false;
   }
-  auto component_attributes =
-      ConvertToGemmAttributes(id_to_operand_map, operation->attributes);
-  if (!component_attributes) {
+  auto& c_operand_id = gemm->c_operand_id;
+  if (c_operand_id && !id_to_operand_map.contains(c_operand_id.value())) {
+    // The third operand is invalid.
     return false;
   }
   auto validated_output = ValidateGemmAndInferOutput(
       ConvertToComponentOperand(a), ConvertToComponentOperand(b),
-      component_attributes.value());
+      ConvertToGemmAttributes(id_to_operand_map, gemm));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -493,9 +462,9 @@ bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
 }
 
 bool ValidateReshape(const IdToOperandMap& id_to_operand_map,
-                     const mojom::OperatorPtr& operation) {
-  auto* input = GetMojoOperand(id_to_operand_map, operation->input_operands);
-  auto* output = GetMojoOperand(id_to_operand_map, operation->output_operands);
+                     const mojom::ReshapePtr& reshape) {
+  auto* input = GetMojoOperand(id_to_operand_map, reshape->input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, reshape->output_operand_id);
   if (!input || !output || output == input) {
     // The reshape operator is invalid.
     return false;
@@ -629,17 +598,6 @@ bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateGenericOperator(const IdToOperandMap& id_to_operand_map,
-                             const mojom::OperatorPtr& operation) {
-  switch (operation->kind) {
-    case mojom::Operator::Kind::kGemm:
-      return ValidateGemm(id_to_operand_map, operation);
-    case mojom::Operator::Kind::kReshape:
-      return ValidateReshape(id_to_operand_map, operation);
-  }
-  NOTREACHED_NORETURN();
-}
-
 base::flat_map<std::string, size_t> CreateByteLengthMap(
     const std::vector<uint64_t>& operand_ids,
     const base::flat_map<uint64_t, mojom::OperandPtr>& id_to_operand_map) {
@@ -672,6 +630,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kElementWiseBinary:
       return ValidateElementWiseBinary(id_to_operand_map,
                                        operation->get_element_wise_binary());
+    case mojom::Operation::Tag::kGemm:
+      return ValidateGemm(id_to_operand_map, operation->get_gemm());
     case mojom::Operation::Tag::kPad:
       return ValidatePad(id_to_operand_map, operation->get_pad());
     case mojom::Operation::Tag::kPool2d:
@@ -680,6 +640,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidatePrelu(id_to_operand_map, operation->get_prelu());
     case mojom::Operation::Tag::kResample2d:
       return ValidateResample2d(id_to_operand_map, operation->get_resample2d());
+    case mojom::Operation::Tag::kReshape:
+      return ValidateReshape(id_to_operand_map, operation->get_reshape());
     case mojom::Operation::Tag::kRelu:
       return ValidateRelu(id_to_operand_map, operation->get_relu());
     case mojom::Operation::Tag::kSlice:
@@ -690,9 +652,6 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateSplit(id_to_operand_map, operation->get_split());
     case mojom::Operation::Tag::kTranspose:
       return ValidateTranspose(id_to_operand_map, operation->get_transpose());
-    case mojom::Operation::Tag::kGenericOperator:
-      return ValidateGenericOperator(id_to_operand_map,
-                                     operation->get_generic_operator());
   }
   NOTREACHED_NORETURN();
 }
