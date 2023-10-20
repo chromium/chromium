@@ -300,6 +300,24 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
                      })) {
       return false;
     }
+
+#if !BUILDFLAG(ENABLE_LIBAOM)
+    // The software encoder is unable to process the kAV1 codec if
+    // ENABLE_LIBAOM is not defined. It verifies hardware encoding supports is
+    // doable.
+    if (codec_string == "av01" || codec_string == "av1") {
+      if (!VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
+              // The CanUseAcceleratedEncoder function requires a frame size for
+              // validation. However, at this point, we don’t have the frame
+              // size available. We’re making an assumption that it exceeds the
+              // minimum size.
+              VideoStringToCodecProfile(codec_string).codec_id,
+              video_track_recorder::kVEAEncoderMinResolutionWidth,
+              video_track_recorder::kVEAEncoderMinResolutionHeight)) {
+        return false;
+      }
+    }
+#endif
   }
   return true;
 }

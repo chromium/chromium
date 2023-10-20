@@ -326,6 +326,14 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
 #endif
   }
 
+  bool IsAv1CodecSupported(const String codecs) {
+#if BUILDFLAG(ENABLE_LIBAOM)
+    return true;
+#else
+    return codecs.Find("av1") != kNotFound && codecs.Find("av01") != kNotFound;
+#endif
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -540,6 +548,10 @@ TEST_P(MediaRecorderHandlerTest, SupportsBitrateMode) {
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
 
+  if (!IsAv1CodecSupported(codecs)) {
+    return;
+  }
+
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
@@ -562,6 +574,10 @@ TEST_P(MediaRecorderHandlerTest, InitializeFailedWhenMP4MuxerFeatureDisabled) {
   const String codecs(GetParam().codecs);
 
   if (IsAacCodecInUnSupportedPlatform(codecs)) {
+    return;
+  }
+
+  if (!IsAv1CodecSupported(codecs)) {
     return;
   }
 
@@ -828,6 +844,11 @@ TEST_P(MediaRecorderHandlerTest, ActualMimeType) {
 
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
+
+  if (!IsAv1CodecSupported(codecs)) {
+    return;
+  }
+
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
@@ -871,6 +892,10 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
 
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
+
+  if (!IsAv1CodecSupported(codecs)) {
+    return;
+  }
 
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
@@ -920,6 +945,10 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
 
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
+
+  if (!IsAv1CodecSupported(codecs)) {
+    return;
+  }
 
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
