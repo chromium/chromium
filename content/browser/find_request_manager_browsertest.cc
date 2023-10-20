@@ -78,6 +78,7 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
   void TearDownOnMainThread() override {
     // Swap the WebContents's delegate back to its usual delegate.
     contents()->SetDelegate(normal_delegate_);
+    normal_delegate_ = nullptr;
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -161,7 +162,7 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
   }
 
   FindTestWebContentsDelegate test_delegate_;
-  raw_ptr<WebContentsDelegate, DanglingUntriaged> normal_delegate_;
+  raw_ptr<WebContentsDelegate> normal_delegate_;
 
   // The ID of the last find request requested.
   int last_request_id_;
