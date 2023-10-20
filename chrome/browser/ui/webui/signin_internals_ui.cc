@@ -169,6 +169,18 @@ void SignInInternalsHandler::HandleGetSignInInfo(
 
 void SignInInternalsHandler::OnSigninStateChanged(
     const base::Value::Dict& info) {
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  Profile* profile = Profile::FromWebUI(web_ui());
+  if (profile && switches::IsBoundSessionCredentialsEnabled()) {
+    base::Value::Dict signin_status = info.Clone();
+    AppendBoundSessionInfo(
+        signin_status,
+        BoundSessionCookieRefreshServiceFactory::GetForProfile(profile));
+    FireWebUIListener("signin-info-changed", signin_status);
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   FireWebUIListener("signin-info-changed", info);
 }
 
