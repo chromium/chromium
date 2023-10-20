@@ -39,7 +39,7 @@ extern NSString* const kLongFollowingFeedVisitTimeAggregateKey;
 extern NSString* const kLongDiscoverFeedVisitTimeAggregateKey;
 extern NSString* const kLastUsedFeedForGoodVisitsKey;
 // Stores the last interaction time for Good Visits (NSDate).
-extern NSString* const kLastInteractionTimeForGoodVisits;
+extern const char kLastInteractionTimeForGoodVisits[];
 extern const char kLastInteractionTimeForDiscoverGoodVisits[];
 extern const char kLastInteractionTimeForFollowingGoodVisits[];
 // Stores the last day the Time in Feed was reported on UMA. It stores the

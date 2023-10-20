@@ -189,12 +189,11 @@ using feed::FeedUserActionType;
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   if (visible) {
-    NSDate* lastInteractionTimeForGoodVisitsDate =
-        base::apple::ObjCCast<NSDate>(
-            [defaults objectForKey:kLastInteractionTimeForGoodVisits]);
-    if (lastInteractionTimeForGoodVisitsDate != nil) {
+    base::Time lastInteractionTimeForGoodVisitsDate =
+        self.prefService->GetTime(kLastInteractionTimeForGoodVisits);
+    if (lastInteractionTimeForGoodVisitsDate != base::Time()) {
       self.lastInteractionTimeForGoodVisits =
-          base::Time::FromNSDate(lastInteractionTimeForGoodVisitsDate);
+          lastInteractionTimeForGoodVisitsDate;
     }
 
     base::Time lastInteractionTimeForDiscoverGoodVisitsDate =
@@ -1319,8 +1318,7 @@ using feed::FeedUserActionType;
   base::Time now = base::Time::Now();
 
   self.lastInteractionTimeForGoodVisits = now;
-  [defaults setObject:now.ToNSDate() forKey:kLastInteractionTimeForGoodVisits];
-
+  self.prefService->SetTime(kLastInteractionTimeForGoodVisits, now);
   self.feedBecameVisibleTime = now;
 
   self.goodVisitScroll = NO;

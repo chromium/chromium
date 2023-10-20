@@ -18,8 +18,8 @@ NSString* const kLongDiscoverFeedVisitTimeAggregateKey =
 NSString* const kLongFollowingFeedVisitTimeAggregateKey =
     @"LongFollowingFeedInteractionTimeDelta";
 NSString* const kLastUsedFeedForGoodVisitsKey = @"LastUsedFeedForGoodVisits";
-NSString* const kLastInteractionTimeForGoodVisits =
-    @"LastInteractionTimeForGoodVisits";
+const char kLastInteractionTimeForGoodVisits[] =
+    "LastInteractionTimeForGoodVisits";
 const char kLastInteractionTimeForDiscoverGoodVisits[] =
     "LastInteractionTimeForGoodVisitsDiscover";
 const char kLastInteractionTimeForFollowingGoodVisits[] =
