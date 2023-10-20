@@ -43,15 +43,6 @@ class StackedNotificationBar : public views::View,
               int pinned_notification_count,
               std::vector<message_center::Notification*> stacked_notifications);
 
-  // Sets the current animation state.
-  void SetAnimationState(NotificationCenterAnimationState animation_state);
-
-  // Set notification bar state to collapsed.
-  void SetCollapsed();
-
-  // Set notification bar state to expanded.
-  void SetExpanded();
-
   // views::View:
   const char* GetClassName() const override;
 
@@ -98,16 +89,12 @@ class StackedNotificationBar : public views::View,
   int pinned_notification_count_ = 0;
   int stacked_notification_count_ = 0;
 
-  NotificationCenterAnimationState animation_state_ =
-      NotificationCenterAnimationState::kIdle;
-
   const raw_ptr<NotificationCenterView, ExperimentalAsh>
       notification_center_view_;
   raw_ptr<views::View, ExperimentalAsh> notification_icons_container_;
   const raw_ptr<views::Label, ExperimentalAsh> count_label_;
   const raw_ptr<views::View, ExperimentalAsh> spacer_;
   const raw_ptr<views::Button, ExperimentalAsh> clear_all_button_;
-  const raw_ptr<views::Button, ExperimentalAsh> expand_all_button_;
   const raw_ptr<views::BoxLayout, ExperimentalAsh> layout_manager_;
 
   base::WeakPtrFactory<StackedNotificationBar> weak_ptr_factory_{this};

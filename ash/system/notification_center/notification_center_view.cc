@@ -161,7 +161,6 @@ void NotificationCenterView::SetExpanded() {
   }
 
   collapsed_ = false;
-  notification_bar_->SetExpanded();
   scroller_->SetVisible(true);
 }
 
@@ -175,7 +174,6 @@ void NotificationCenterView::SetCollapsed(bool animate) {
     StartCollapseAnimation();
   } else {
     scroller_->SetVisible(false);
-    notification_bar_->SetCollapsed();
   }
 }
 
@@ -323,7 +321,6 @@ void NotificationCenterView::AnimationEnded(const gfx::Animation* animation) {
   PreferredSizeChanged();
 
   animation_state_ = NotificationCenterAnimationState::kIdle;
-  notification_bar_->SetAnimationState(animation_state_);
   UpdateVisibility();
 }
 
@@ -335,7 +332,6 @@ void NotificationCenterView::AnimationProgressed(
   if (collapsed_ && scroller_->GetVisible() &&
       animation_->GetCurrentValue() >= 0.5) {
     scroller_->SetVisible(false);
-    notification_bar_->SetCollapsed();
   }
   PreferredSizeChanged();
 }
@@ -352,7 +348,6 @@ void NotificationCenterView::OnContentsScrolled() {
 void NotificationCenterView::StartHideStackingBarAnimation() {
   animation_->End();
   animation_state_ = NotificationCenterAnimationState::kHideStackingBar;
-  notification_bar_->SetAnimationState(animation_state_);
   animation_->SetDuration(kHideStackingBarAnimationDuration);
   animation_->Start();
 }
@@ -360,7 +355,6 @@ void NotificationCenterView::StartHideStackingBarAnimation() {
 void NotificationCenterView::StartCollapseAnimation() {
   animation_->End();
   animation_state_ = NotificationCenterAnimationState::kCollapse;
-  notification_bar_->SetAnimationState(animation_state_);
   animation_->SetDuration(kCollapseAnimationDuration);
   animation_->Start();
 }

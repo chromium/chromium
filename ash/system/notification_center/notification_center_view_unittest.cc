@@ -159,10 +159,6 @@ class NotificationCenterViewTest : public AshTestBase,
     return notification_center_view()->notification_bar_->clear_all_button_;
   }
 
-  views::View* GetNotificationBarExpandAllButton() {
-    return notification_center_view()->notification_bar_->expand_all_button_;
-  }
-
   int total_notification_count() {
     return GetNotificationBar()->total_notification_count_;
   }
@@ -648,18 +644,14 @@ TEST_P(NotificationCenterViewTest, CollapseAndExpand_NonAnimated) {
   test_api()->ToggleBubble();
   EXPECT_TRUE(GetScroller()->GetVisible());
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
-  EXPECT_FALSE(GetNotificationBarExpandAllButton()->GetVisible());
 
   // Set to collapsed state.
   notification_center_view()->SetCollapsed(false /* animate */);
   EXPECT_FALSE(GetScroller()->GetVisible());
   EXPECT_TRUE(GetNotificationBar()->GetVisible());
-  EXPECT_TRUE(GetNotificationBarExpandAllButton()->GetVisible());
-  EXPECT_FALSE(GetNotificationBarClearAllButton()->GetVisible());
 
   // Set back to expanded state.
   notification_center_view()->SetExpanded();
-  EXPECT_FALSE(GetNotificationBarExpandAllButton()->GetVisible());
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
   EXPECT_TRUE(GetScroller()->GetVisible());
 }
@@ -683,12 +675,9 @@ TEST_P(NotificationCenterViewTest, CollapseAndExpand_Animated) {
 
   collapse_animation->End();
   AnimateNotificationListToEnd();
-  EXPECT_TRUE(GetNotificationBarExpandAllButton()->GetVisible());
-  EXPECT_FALSE(GetNotificationBarClearAllButton()->GetVisible());
 
   // Set back to expanded state.
   notification_center_view()->SetExpanded();
-  EXPECT_FALSE(GetNotificationBarExpandAllButton()->GetVisible());
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
   EXPECT_TRUE(GetScroller()->GetVisible());
 }
