@@ -16,6 +16,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class GPUDevice;
 class GPUCanvasConfiguration;
 class GPUSwapChain;
@@ -91,7 +92,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
   // contents of the front buffer. This is done without any pixel copies. The
   // texture in the ImageBitmap is from the active ContextProvider on the
   // WebGPUSwapBufferProvider.
-  ImageBitmap* TransferToImageBitmap(ScriptState*) final;
+  ImageBitmap* TransferToImageBitmap(ScriptState*, ExceptionState&) final;
 
   bool IsOffscreenCanvas() const {
     if (Host())

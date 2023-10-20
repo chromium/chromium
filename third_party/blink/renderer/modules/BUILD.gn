@@ -412,6 +412,7 @@ source_set("unit_tests") {
     "canvas/htmlcanvas/html_canvas_element_module_test.cc",
     "canvas/offscreencanvas/offscreen_canvas_rendering_api_ukm_metrics_test.cc",
     "canvas/offscreencanvas/offscreen_canvas_test.cc",
+    "canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d_test.cc",
     "content_index/content_description_type_converter_test.cc",
     "credentialmanagement/credential_manager_type_converters_unittest.cc",
     "credentialmanagement/credentials_container_test.cc",

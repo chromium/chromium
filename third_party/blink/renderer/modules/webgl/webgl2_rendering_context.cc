@@ -61,6 +61,8 @@
 
 namespace blink {
 
+class ExceptionState;
+
 // An helper function for the two create() methods. The return value is an
 // indicate of whether the create() should return nullptr or not.
 static bool ShouldCreateContext(WebGraphicsContext3DProvider* context_provider,
@@ -157,7 +159,8 @@ WebGL2RenderingContext::AsV8OffscreenRenderingContext() {
 }
 
 ImageBitmap* WebGL2RenderingContext::TransferToImageBitmap(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return TransferToImageBitmapBase(script_state);
 }
 

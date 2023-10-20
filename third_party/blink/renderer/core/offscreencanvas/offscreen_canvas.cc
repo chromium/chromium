@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -223,7 +224,12 @@ ImageBitmap* OffscreenCanvas::transferToImageBitmap(
     return nullptr;
   }
 
-  ImageBitmap* image = context_->TransferToImageBitmap(script_state);
+  ImageBitmap* image =
+      context_->TransferToImageBitmap(script_state, exception_state);
+  if (UNLIKELY(exception_state.HadException())) {
+    return nullptr;
+  }
+
   if (!image) {
     // Undocumented exception (not in spec).
     exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 
@@ -47,7 +48,9 @@ void ImageBitmapRenderingContext::transferFromImageBitmap(
   SetImage(image_bitmap);
 }
 
-ImageBitmap* ImageBitmapRenderingContext::TransferToImageBitmap(ScriptState*) {
+ImageBitmap* ImageBitmapRenderingContext::TransferToImageBitmap(
+    ScriptState*,
+    ExceptionState&) {
   scoped_refptr<StaticBitmapImage> image = GetImageAndResetInternal();
   if (!image)
     return nullptr;

@@ -36,6 +36,7 @@ namespace blink {
 
 class ANGLEInstancedArrays;
 class CanvasContextCreationAttributesCore;
+class ExceptionState;
 class EXTBlendFuncExtended;
 class EXTBlendMinMax;
 class EXTClipControl;
@@ -94,7 +95,7 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
                         const Platform::GraphicsInfo&,
                         const CanvasContextCreationAttributesCore&);
 
-  ImageBitmap* TransferToImageBitmap(ScriptState*) final;
+  ImageBitmap* TransferToImageBitmap(ScriptState*, ExceptionState&) final;
   String ContextName() const override { return "WebGLRenderingContext"; }
   void RegisterContextExtensions() override;
   V8RenderingContext* AsV8RenderingContext() final;

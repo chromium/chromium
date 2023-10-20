@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -237,9 +238,17 @@ ExecutionContext* OffscreenCanvasRenderingContext2D::GetTopExecutionContext()
 }
 
 ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   WebFeature feature = WebFeature::kOffscreenCanvasTransferToImageBitmap2D;
   UseCounter::Count(ExecutionContext::From(script_state), feature);
+
+  if (layer_count_ != 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "`transferToImageBitmap()` cannot be called while layers are opened.");
+    return nullptr;
+  }
 
   if (!GetOrCreateCanvasResourceProvider())
     return nullptr;

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -242,7 +243,8 @@ bool GPUCanvasContext::PushFrame() {
 }
 
 ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   auto MakeFallbackImageBitmap =
       [this](V8GPUCanvasAlphaMode::Enum alpha_mode) -> ImageBitmap* {
     // It is not possible to create an empty image bitmap, return null in that
