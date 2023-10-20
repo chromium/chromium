@@ -47,6 +47,7 @@ public class PageInsightsCoordinator {
      * Constructor.
      *
      * @param context The associated {@link Context}.
+     * @param layoutView the top-level view for the Window
      * @param tabProvider Provider of the current activity tab.
      * @param shareDelegateSupplier Supplier of {@link ShareDelegate}.
      * @param profileSupplier Supplier of {@link Profile}.
@@ -60,6 +61,7 @@ public class PageInsightsCoordinator {
      */
     public PageInsightsCoordinator(
             Context context,
+            View layoutView,
             ObservableSupplier<Tab> tabProvider,
             Supplier<ShareDelegate> shareDelegateSupplier,
             Supplier<Profile> profileSupplier,
@@ -80,6 +82,7 @@ public class PageInsightsCoordinator {
         mMediator =
                 new PageInsightsMediator(
                         mContext,
+                        layoutView,
                         mTabProvider,
                         shareDelegateSupplier,
                         profileSupplier,

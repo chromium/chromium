@@ -99,7 +99,10 @@ public class PageInsightsSheetContentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetContent =
-                            new PageInsightsSheetContent(sTestRule.getActivity(), view -> {});
+                            new PageInsightsSheetContent(
+                                    sTestRule.getActivity(),
+                                    new View(sTestRule.getActivity()),
+                                    view -> {});
                     mBottomSheetController.requestShowContent(mSheetContent, false);
                     mFullHeight =
                             sTestRule.getActivity().getResources().getDisplayMetrics().heightPixels;
@@ -196,7 +199,18 @@ public class PageInsightsSheetContentTest {
                                     .getContentView()
                                     .findViewById(R.id.page_insights_feed_content);
 
-                    assertEquals(feedView.getChildAt(0), testView);
+                    assertEquals(testView, feedView.getChildAt(0));
+                    int expectedHeight =
+                            (int) (mFullHeight * PageInsightsSheetContent.FULL_HEIGHT_RATIO)
+                                    - sTestRule
+                                            .getActivity()
+                                            .getResources()
+                                            .getDimensionPixelSize(
+                                                    R.dimen.page_insights_toolbar_height);
+                    assertEquals(
+                            expectedHeight,
+                            getContentViewById(R.id.page_insights_content_container).getHeight());
+                    assertEquals(expectedHeight, feedView.getHeight());
                 });
     }
 
@@ -281,6 +295,19 @@ public class PageInsightsSheetContentTest {
                     assertEquals(
                             View.VISIBLE,
                             getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
+
+                    int expectedFullContentHeight =
+                            (int) (mFullHeight * PageInsightsSheetContent.FULL_HEIGHT_RATIO)
+                                    - sTestRule
+                                            .getActivity()
+                                            .getResources()
+                                            .getDimensionPixelSize(
+                                                    R.dimen.page_insights_toolbar_height);
+                    assertEquals(
+                            expectedFullContentHeight
+                                    - getContentViewById(R.id.page_insights_privacy_notice)
+                                            .getHeight(),
+                            getContentViewById(R.id.page_insights_feed_content).getHeight());
                 });
     }
 
@@ -289,6 +316,7 @@ public class PageInsightsSheetContentTest {
     public void privacyNoticeCloseButtonPressed() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mSheetContent.initContent(new View(sTestRule.getActivity()));
                     mSheetContent.showFeedPage();
                     getContentViewById(R.id.page_insights_privacy_notice_close_button)
                             .performClick();
@@ -311,6 +339,7 @@ public class PageInsightsSheetContentTest {
                 () -> {
                     setPrivacyNoticePreferences(
                             true, System.currentTimeMillis() - MILLIS_IN_ONE_DAY, 1);
+                    mSheetContent.initContent(new View(sTestRule.getActivity()));
                     mSheetContent.showFeedPage();
                     float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
                     assertEquals(

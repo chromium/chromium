@@ -313,6 +313,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mPageInsightsCoordinator =
                 new PageInsightsCoordinator(
                         mActivity,
+                        mActivity.getWindow().getDecorView(),
                         mActivityTabProvider,
                         mShareDelegateSupplier,
                         mProfileSupplier,
