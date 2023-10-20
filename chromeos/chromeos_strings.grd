@@ -2530,13 +2530,13 @@
           While charging, show screen saver for
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_MINUTES" desc="Label for the screen saver duration option in minutes.">
-          <ph name="MINUTES">$1<ex>10</ex></ph> mins
+          <ph name="MINUTES">$1<ex>10</ex></ph> minutes
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_ONE_HOUR" desc="Label for the screen saver duration option 1 hour.">
-          1 hr
+          1 hour
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_FOREVER" desc="Label for the screen saver duration option forever.">
-          Forever
+          forever
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_TITLE" desc="Label for the radio button group of ambient mode topic source, where the screen contents come from.">
           Image source
