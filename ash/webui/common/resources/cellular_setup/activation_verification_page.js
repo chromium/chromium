@@ -9,7 +9,7 @@
 import './base_page.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import '//resources/cr_elements/cr_lottie/cr_lottie.js';
+import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -21,25 +21,4 @@ Polymer({
   is: 'activation-verification-page',
 
   behaviors: [I18nBehavior],
-
-  properties: {
-    /**
-     * @type {boolean}
-     * @private
-     */
-    isDarkModeActive_: {
-      type: Boolean,
-      value: false,
-    },
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getAnimationUrl_() {
-    return this.isDarkModeActive_ ?
-        'chrome://resources/ash/common/cellular_setup/spinner_dark.json' :
-        'chrome://resources/ash/common/cellular_setup/spinner.json';
-  },
 });

@@ -294,7 +294,6 @@ generate_grd("build_grd") {
     "cellular_setup/default_esim_profile.svg",
     "cellular_setup/default_esim_profile_dark.svg",
     "cellular_setup/spinner.json",
-    "cellular_setup/spinner_dark.json",
     "hotspot/hotspot_dot.svg",
     "hotspot/hotspot_inner.svg",
     "hotspot/hotspot-off.svg",

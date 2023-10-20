@@ -9,7 +9,7 @@
 import './base_page.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '//resources/cr_elements/cr_lottie/cr_lottie.js';
+import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
@@ -49,23 +49,5 @@ Polymer({
       value: false,
     },
 
-    /**
-     * @type {boolean}
-     * @private
-     */
-    isDarkModeActive_: {
-      type: Boolean,
-      value: false,
-    },
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getAnimationUrl_() {
-    return this.isDarkModeActive_ ?
-        'chrome://resources/ash/common/cellular_setup/spinner_dark.json' :
-        'chrome://resources/ash/common/cellular_setup/spinner.json';
   },
 });
