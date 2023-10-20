@@ -10,17 +10,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
-#include "base/task/bind_post_task.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
-#include "chrome/browser/policy/messaging_layer/storage_selector/storage_selector.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"
 
 namespace reporting {
 
-#if !BUILDFLAG(IS_CHROMEOS)
 // static
 std::unique_ptr<ReportingClient::TestEnvironment>
 ReportingClient::TestEnvironment::CreateWithLocalStorage(
@@ -32,7 +27,7 @@ ReportingClient::TestEnvironment::CreateWithLocalStorage(
          base::OnceCallback<void(
              StatusOr<scoped_refptr<StorageModuleInterface>>)>
              storage_created_cb) {
-        StorageSelector::CreateLocalStorageModule(
+        ReportingClient::CreateLocalStorageModule(
             reporting_path, verification_key,
             CompressionInformation::COMPRESSION_SNAPPY,
             base::BindRepeating(&ReportingClient::AsyncStartUploader),
@@ -40,7 +35,6 @@ ReportingClient::TestEnvironment::CreateWithLocalStorage(
       },
       reporting_path, verification_key)));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 std::unique_ptr<ReportingClient::TestEnvironment>

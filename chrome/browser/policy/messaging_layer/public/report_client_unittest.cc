@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 
 #include <memory>
 #include <string>
@@ -13,18 +14,20 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
+#include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/reporting/client/dm_token_retriever.h"
 #include "components/reporting/client/mock_dm_token_retriever.h"
@@ -35,7 +38,6 @@
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/testing_primitives.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -51,6 +53,9 @@ using ::testing::StrEq;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
 
+using ::policy::CloudPolicyClient;
+using ::policy::MockCloudPolicyClient;
+
 namespace reporting {
 namespace {
 
@@ -59,6 +64,7 @@ constexpr char kDMToken[] = "TOKEN";
 class ReportClientTest : public ::testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
+    ASSERT_TRUE(location_.CreateUniqueTempDir());
 
     // Encryption is enabled by default.
     ASSERT_TRUE(EncryptionModuleInterface::is_enabled());
@@ -72,23 +78,21 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
       decryptor_ = std::move(decryptor_result.ValueOrDie());
       // Prepare the key.
       signed_encryption_key_ = GenerateAndSignKey();
+      // Disable connection to daemon.
+      scoped_feature_list_.InitFromCommandLine("ProvideUploader",
+                                               "ConnectMissiveDaemon");
     } else {
-      // Disable encryption.
-      scoped_feature_list_.InitFromCommandLine("", "EncryptedReporting");
+      // Disable connection to daemon and encryption.
+      scoped_feature_list_.InitFromCommandLine(
+          "ProvideUploader", "ConnectMissiveDaemon,EncryptedReporting");
     }
 
     // Provide client test environment with local storage.
-#if BUILDFLAG(IS_CHROMEOS)
-    test_reporting_ = ReportingClient::TestEnvironment::CreateWithStorageModule(
-        base::MakeRefCounted<test::TestStorageModule>());
-#else
-    ASSERT_TRUE(location_.CreateUniqueTempDir());
     test_reporting_ = ReportingClient::TestEnvironment::CreateWithLocalStorage(
-        location_.GetPath(),
+        base::FilePath(location_.GetPath()),
         std::string_view(
             reinterpret_cast<const char*>(signature_verification_public_key_),
             kKeySize));
-#endif
 
     // Use MockDMTokenRetriever and configure it to always return the test DM
     // token by default
@@ -262,8 +266,6 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   // tasks.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  ReportingServerConnector::TestEnvironment test_env_;
   FileUploadJob::TestEnvironment manager_test_env_;
   std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
 
@@ -274,6 +276,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   scoped_refptr<test::Decryptor> decryptor_;
   SignedEncryptionInfo signed_encryption_key_;
 
+  ReportingServerConnector::TestEnvironment test_env_;
   raw_ptr<ReportQueueConfiguration, DanglingUntriaged> report_queue_config_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
@@ -344,10 +347,6 @@ TEST_P(ReportClientTest, CreatesTwoDifferentReportQueues) {
   EXPECT_NE(report_queue_1.get(), report_queue_2.get());
 }
 
-// Remaining tests are only available with local storage option that does not
-// exist on ChromeOS configuration.
-
-#if !BUILDFLAG(IS_CHROMEOS)
 // Creates queue, enqueues message and verifies it is uploaded.
 TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
   // Create queue.
@@ -411,7 +410,6 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
   VerifyDataUpload(std::move(request_body));
   test_env_.SimulateResponseForRequest(0);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(ReportClientTestSuite,
                          ReportClientTest,
