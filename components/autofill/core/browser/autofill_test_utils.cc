@@ -968,6 +968,20 @@ std::vector<FormSignature> GetEncodedSignatures(
   return all_signatures;
 }
 
+std::vector<FormSignature> GetEncodedAlternativeSignatures(
+    const FormStructure& form) {
+  return std::vector<FormSignature>{form.alternative_form_signature()};
+}
+
+std::vector<FormSignature> GetEncodedAlternativeSignatures(
+    const std::vector<FormStructure*>& forms) {
+  std::vector<FormSignature> all_signatures;
+  for (const FormStructure* form : forms) {
+    all_signatures.push_back(form->alternative_form_signature());
+  }
+  return all_signatures;
+}
+
 FieldPrediction CreateFieldPrediction(ServerFieldType type,
                                       FieldPrediction::Source source) {
   FieldPrediction field_prediction;

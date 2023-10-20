@@ -5961,6 +5961,124 @@ TEST_F(FormStructureTestImpl,
               ElementsAre(EqualsPrediction(
                   COMPANY_NAME, FieldPrediction::SOURCE_MANUAL_OVERRIDE)));
 }
+
+// Tests that manually specified (i.e. passed as a feature parameter)
+// alternative_form_signature based field type predictions override
+// alternative_form_signature server predictions.
+TEST_F(FormStructureTestImpl,
+       ParseApiQueryResponseOverridesAlternativeFormSignature) {
+  // Make form.
+  FormFieldData field1 =
+      CreateTestFormField("name", "name", "", FormControlType::kInputText);
+  FormFieldData field2 = CreateTestFormField("password", "password", "",
+                                             FormControlType::kInputText);
+  FormData form;
+  form.fields = {field1, field2};
+  form.url = GURL("http://foo.com");
+  FormStructure form_structure(form);
+  std::vector<FormStructure*> forms{&form_structure};
+
+  // The feature is only initialized here because the parameters contain the
+  // form and field signatures.
+  // Only the prediction for the first field is overridden.
+  base::test::ScopedFeatureList features;
+  base::FieldTrialParams feature_parameters{
+      {features::
+           kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification
+               .name,
+       CreateManualOverridePrediction({{CalculateAlternativeFormSignature(form),
+                                        CalculateFieldSignatureForField(field1),
+                                        {USERNAME}}})}};
+  features.InitAndEnableFeatureWithParameters(
+      features::kAutofillOverridePredictions, feature_parameters);
+
+  // Make serialized API response.
+  AutofillQueryResponse api_response;
+  auto* form_suggestion = api_response.add_form_suggestions();
+  AddFieldPredictionsToForm(
+      form.fields[0],
+      {CreateFieldPrediction(EMAIL_ADDRESS, FieldPrediction::SOURCE_OVERRIDE)},
+      form_suggestion);
+  AddFieldPredictionsToForm(
+      form.fields[1],
+      {CreateFieldPrediction(PASSWORD, FieldPrediction::SOURCE_OVERRIDE)},
+      form_suggestion);
+
+  FormStructure::ParseApiQueryResponse(
+      SerializeAndEncode(api_response), forms,
+      test::GetEncodedAlternativeSignatures(forms), nullptr, nullptr);
+
+  ASSERT_EQ(forms[0]->field_count(), 2u);
+
+  // The prediction for the first field comes from the manual override, while
+  // the server prediction is used for the second field because no manual
+  // override is configured.
+  EXPECT_THAT(forms[0]->field(0)->server_predictions(),
+              ElementsAre(EqualsPrediction(
+                  USERNAME, FieldPrediction::SOURCE_MANUAL_OVERRIDE)));
+  EXPECT_THAT(forms[0]->field(1)->server_predictions(),
+              ElementsAre(EqualsPrediction(PASSWORD,
+                                           FieldPrediction::SOURCE_OVERRIDE)));
+}
+
+// Tests that manually specified (i.e. passed as a feature parameter)
+// alternative_form_signature based field type predictions override
+// form_signature server predictions.
+TEST_F(FormStructureTestImpl,
+       ParseApiQueryResponseServerOverridesAlternativeFormSignature) {
+  // Make form.
+  FormFieldData field1 =
+      CreateTestFormField("name", "name", "", FormControlType::kInputText);
+  FormFieldData field2 = CreateTestFormField("password", "password", "",
+                                             FormControlType::kInputText);
+  FormData form;
+  form.fields = {field1, field2};
+  form.url = GURL("http://foo.com");
+  FormStructure form_structure(form);
+  std::vector<FormStructure*> forms{&form_structure};
+
+  // The feature is only initialized here because the parameters contain the
+  // form and field signatures.
+  // Only the prediction for the first field is overridden.
+  base::test::ScopedFeatureList features;
+  base::FieldTrialParams feature_parameters{
+      {features::
+           kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification
+               .name,
+       CreateManualOverridePrediction({{CalculateAlternativeFormSignature(form),
+                                        CalculateFieldSignatureForField(field1),
+                                        {USERNAME}}})}};
+  features.InitAndEnableFeatureWithParameters(
+      features::kAutofillOverridePredictions, feature_parameters);
+
+  // Make serialized API response.
+  AutofillQueryResponse api_response;
+  auto* form_suggestion = api_response.add_form_suggestions();
+  AddFieldPredictionsToForm(
+      form.fields[0],
+      {CreateFieldPrediction(EMAIL_ADDRESS,
+                             FieldPrediction::SOURCE_PASSWORDS_DEFAULT)},
+      form_suggestion);
+  AddFieldPredictionsToForm(
+      form.fields[1],
+      {CreateFieldPrediction(PASSWORD,
+                             FieldPrediction::SOURCE_PASSWORDS_DEFAULT)},
+      form_suggestion);
+
+  FormStructure::ParseApiQueryResponse(SerializeAndEncode(api_response), forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
+
+  ASSERT_EQ(forms[0]->field_count(), 2u);
+
+  // The prediction for the first field comes from the server override.
+  EXPECT_THAT(forms[0]->field(0)->server_predictions(),
+              ElementsAre(EqualsPrediction(
+                  USERNAME, FieldPrediction::SOURCE_MANUAL_OVERRIDE)));
+  EXPECT_THAT(forms[0]->field(1)->server_predictions(),
+              ElementsAre(EqualsPrediction(
+                  PASSWORD, FieldPrediction::SOURCE_PASSWORDS_DEFAULT)));
+}
 #endif
 
 // Tests ParseApiQueryResponse when the payload cannot be parsed to an

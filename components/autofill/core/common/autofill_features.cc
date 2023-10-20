@@ -457,6 +457,11 @@ BASE_FEATURE(kAutofillOverridePredictions,
 const base::FeatureParam<std::string> kAutofillOverridePredictionsSpecification{
     &kAutofillOverridePredictions, "spec", "[]"};
 
+// The override specification using alternative_form_signature in string form.
+const base::FeatureParam<std::string>
+    kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification{
+        &kAutofillOverridePredictions, "alternative_signature_spec", "[]"};
+
 // If enabled, Autofill will first look at field labels and then at field
 // attributes when classifying address fields in Mexico.
 BASE_FEATURE(kAutofillPreferLabelsInSomeCountries,

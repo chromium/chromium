@@ -345,6 +345,25 @@ void PopulateRandomizedFieldMetadata(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Applies manual overrides from |parsed_overrides| to |field_types|.
+void InsertParsedOverrides(
+    base::expected<ServerPredictionOverrides, std::string> parsed_overrides,
+    std::map<std::pair<FormSignature, FieldSignature>,
+             std::deque<FieldSuggestion>>& field_types) {
+  if (!parsed_overrides.has_value()) {
+    LOG(ERROR) << parsed_overrides.error();
+    return;
+  }
+  for (auto& [key, value] : parsed_overrides.value()) {
+    field_types.insert_or_assign(
+        key,
+        MergeManualAndServerOverrides(/*manual_overrides=*/std::move(value),
+                                      /*server_overrides=*/field_types[key]));
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 FormStructure::FormStructure(const FormData& form)
@@ -673,18 +692,16 @@ void FormStructure::ProcessQueryResponse(
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(features::kAutofillOverridePredictions)) {
-    auto parsed_overrides = ParseServerPredictionOverrides(
-        features::kAutofillOverridePredictionsSpecification.Get());
-
-    if (parsed_overrides.has_value()) {
-      for (auto& [key, value] : parsed_overrides.value()) {
-        field_types.insert_or_assign(
-            key,
-            MergeManualAndServerOverrides(std::move(value), field_types[key]));
-      }
-    } else {
-      LOG(ERROR) << parsed_overrides.error();
-    }
+    InsertParsedOverrides(
+        ParseServerPredictionOverrides(
+            features::kAutofillOverridePredictionsSpecification.Get()),
+        field_types);
+    InsertParsedOverrides(
+        ParseServerPredictionOverrides(
+            features::
+                kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification
+                    .Get()),
+        field_types);
   }
 #endif
 
@@ -736,9 +753,21 @@ void FormStructure::ProcessQueryResponse(
           current_field = *alternative_field;
         }
       }
-      if (!current_field)
+      if (form->alternative_form_signature() && !is_override(current_field)) {
+        absl::optional<FieldSuggestion> alternative_field = GetPrediction(
+            form->alternative_form_signature(), field->GetFieldSignature());
+        if (alternative_field &&
+            (!current_field || is_override(alternative_field) ||
+             base::ranges::all_of(current_field->predictions(),
+                                  [](const auto& prediction) {
+                                    return prediction.type() == NO_SERVER_DATA;
+                                  }))) {
+          current_field = *alternative_field;
+        }
+      }
+      if (!current_field) {
         continue;
-
+      }
       ServerFieldType heuristic_type = field->heuristic_type();
       if (heuristic_type != UNKNOWN_TYPE)
         heuristics_detected_fillable_field = true;

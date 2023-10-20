@@ -26,9 +26,15 @@ using ServerPredictionOverrides = base::flat_map<
 // `ServerPredictionOverrides`.
 //
 // These overrides can be specified as follows:
-// chrome --enable-features=AutofillOverridePredictions:spec/SPECIFICATION
 //
-// Here SPECIFICATION is a string of the following format:
+//   chrome --enable-features=AutofillOverridePredictions:spec/SPECIFICATION
+//
+// or, if you also want to specify alternative signature overrides, as:
+//
+//   chrome --enable-features=AutofillOverridePredictions:\
+//   spec/SPECIFICATION/alternative_signature_spec/SPECIFICATION2
+//
+// Here SPECIFICATION AND SPECIFICATION2 are strings of the following format:
 // override1-override2-override3-...
 // where each override has the following structure:
 // formsignature_fieldsignature_typeprediction1_typeprediction2_...
@@ -101,6 +107,14 @@ using ServerPredictionOverrides = base::flat_map<
 //   10011880710453506489 has its type specification manually overridden to 3.
 //   The second field and all other fields that follow will have whatever type
 //   the server (or the local heuristics) prescribe.
+// Example 6: Overriding formsignatures and alternativeformsignatures at the
+// same time:
+// --enable-features=AutofillOverridePredictions:spec/
+//     10011880710453506489_1654523497_3/alternative_signature_spec/
+//     10488510731126445485_4130863203_100
+// Will override field 1654523497 in the form with formsignature
+// 10011880710453506489 to 3 and field 4130863203 in the form with
+// alternativeformsignature 10488510731126445485 to 100.
 base::expected<ServerPredictionOverrides, std::string>
 ParseServerPredictionOverrides(std::string_view specification);
 
