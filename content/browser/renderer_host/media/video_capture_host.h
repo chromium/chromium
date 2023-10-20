@@ -51,13 +51,13 @@ class CONTENT_EXPORT VideoCaptureHost
       mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver);
 
   // Interface for notifying RenderProcessHost instance about active video
-  // capture stream changes and getting the `content::BrowserContext`.
+  // capture stream changes and getting its ID.
   class CONTENT_EXPORT RenderProcessHostDelegate {
    public:
     virtual ~RenderProcessHostDelegate();
     virtual void NotifyStreamAdded() = 0;
     virtual void NotifyStreamRemoved() = 0;
-    virtual content::BrowserContext* GetBrowserContext() = 0;
+    virtual uint32_t GetRenderProcessId() const = 0;
   };
 
  private:

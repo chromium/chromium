@@ -84,7 +84,7 @@ class MockRenderProcessHostDelegate
  public:
   MOCK_METHOD0(NotifyStreamAdded, void());
   MOCK_METHOD0(NotifyStreamRemoved, void());
-  MOCK_METHOD0(GetBrowserContext, content::BrowserContext*());
+  MOCK_CONST_METHOD0(GetRenderProcessId, uint32_t());
 };
 
 // This is an integration test of VideoCaptureHost in conjunction with
@@ -127,9 +127,7 @@ class VideoCaptureTest : public testing::Test,
 
     CloseSession();
 
-    // Release the reference to the mock object. The object will be destructed
-    // on the current message loop.
-    host_ = nullptr;
+    host_.reset();
   }
 
   void OpenSession() {
