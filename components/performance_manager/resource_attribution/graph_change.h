@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -95,4 +95,4 @@ using GraphChange = absl::variant<NoGraphChange,
 
 }  // namespace performance_manager::resource_attribution
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_

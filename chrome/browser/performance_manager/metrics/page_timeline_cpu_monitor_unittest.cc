@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
@@ -20,6 +19,7 @@
 #include "base/test/test_waitable_event.h"
 #include "base/time/time.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -124,6 +124,9 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness,
   }
 
   void SetUp() override {
+    if (features::kUseResourceAttributionCPUMonitor.Get()) {
+      GetGraphFeatures().EnableResourceAttributionScheduler();
+    }
     Super::SetUp();
 
     mock_graph_ =
@@ -135,7 +138,7 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness,
                                       /*launch_time=*/base::TimeTicks::Now());
 
     cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
-        delegate_factory_.GetFactoryCallback());
+        graph(), delegate_factory_.GetFactoryCallback());
   }
 
   // Creates a renderer process containing a single page and frame, for simple
@@ -553,6 +556,9 @@ class PageTimelineCPUMonitorTimingTest
 
   void SetUp() override {
     Super::SetUp();
+    if (features::kUseResourceAttributionCPUMonitor.Get()) {
+      pm_helper_.GetGraphFeatures().EnableResourceAttributionScheduler();
+    }
     pm_helper_.SetUp();
     RunInGraph([&](Graph* graph) {
       cpu_monitor_ = std::make_unique<PageTimelineCPUMonitor>();

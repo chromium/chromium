@@ -11,8 +11,9 @@
 #include "base/time/time.h"
 
 namespace performance_manager {
+class Graph;
 class ProcessNode;
-}
+}  // namespace performance_manager
 
 namespace performance_manager::resource_attribution {
 
@@ -25,6 +26,11 @@ class CPUMeasurementDelegate {
   using FactoryCallback =
       base::RepeatingCallback<std::unique_ptr<CPUMeasurementDelegate>(
           const ProcessNode*)>;
+
+  // The given `factory_callback` will be called to create a
+  // CPUMeasurementDelegate for each ProcessNode in `graph` to be measured.
+  static void SetDelegateFactoryForTesting(Graph* graph,
+                                           FactoryCallback factory_callback);
 
   CPUMeasurementDelegate() = default;
   virtual ~CPUMeasurementDelegate() = default;

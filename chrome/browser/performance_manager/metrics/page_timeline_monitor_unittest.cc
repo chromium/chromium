@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
+#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/features.h"
@@ -70,7 +71,7 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     monitor_->SetShouldCollectSliceCallbackForTesting(
         base::BindRepeating([]() { return true; }));
     monitor_->cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
-        cpu_delegate_factory_.GetFactoryCallback());
+        graph(), cpu_delegate_factory_.GetFactoryCallback());
     graph()->PassToGraph(std::move(monitor));
     ResetUkmRecorder();
   }
@@ -145,6 +146,13 @@ class PageTimelineMonitorWithFeatureTest
              {{"threshold_chrome_cpu_percent", "50"}}},
         },
         {});
+  }
+
+  void SetUp() override {
+    if (features::kUseResourceAttributionCPUMonitor.Get()) {
+      GetGraphFeatures().EnableResourceAttributionScheduler();
+    }
+    PageTimelineMonitorUnitTest::SetUp();
   }
 
   void TearDown() override {

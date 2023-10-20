@@ -12,9 +12,9 @@
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
-#include "components/performance_manager/public/resource_attribution/cpu_measurement_monitor.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/public/resource_attribution/scoped_cpu_query.h"
 
 namespace performance_manager {
 
@@ -53,8 +53,9 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   PageTimelineCPUMonitor& operator=(const PageTimelineCPUMonitor&) = delete;
 
   // The given `factory_callback` will be called to create a
-  // CPUMeasurementDelegate for each ProcessNode to be measured.
+  // CPUMeasurementDelegate for each ProcessNode in `graph` to be measured.
   void SetCPUMeasurementDelegateFactoryForTesting(
+      Graph* graph,
       CPUMeasurementDelegate::FactoryCallback factory_callback);
 
   // Starts monitoring CPU usage for all renderer ProcessNode's in `graph`.
@@ -145,7 +146,7 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // If the kUseResourceAttributionCPUMonitor feature parameter is enabled,
   // PageTimelineCPUMonitor will get CPU measurements from this, otherwise it
   // will perform its own measurements.
-  resource_attribution::CPUMeasurementMonitor cpu_measurement_monitor_
+  std::unique_ptr<resource_attribution::ScopedCPUQuery> cpu_query_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // If the kUseResourceAttributionCPUMonitor feature parameter is enabled, this

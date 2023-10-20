@@ -82,12 +82,12 @@ PageTimelineCPUMonitor::PageTimelineCPUMonitor()
 PageTimelineCPUMonitor::~PageTimelineCPUMonitor() = default;
 
 void PageTimelineCPUMonitor::SetCPUMeasurementDelegateFactoryForTesting(
+    Graph* graph,
     CPUMeasurementDelegate::FactoryCallback factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
-    cpu_measurement_monitor_
-        .SetCPUMeasurementDelegateFactoryForTesting(  // IN_TEST
-            std::move(factory));
+    CPUMeasurementDelegate::SetDelegateFactoryForTesting(  // IN_TEST
+        graph, std::move(factory));
     return;
   }
   // Ensure that all CPU measurements use the same delegate.
@@ -108,7 +108,7 @@ void PageTimelineCPUMonitor::StartMonitoring(Graph* graph) {
 
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
     CHECK(cached_cpu_measurements_.empty());
-    cpu_measurement_monitor_.StartMonitoring(graph);
+    cpu_query_ = std::make_unique<resource_attribution::ScopedCPUQuery>(graph);
     return;
   }
 
@@ -130,7 +130,7 @@ void PageTimelineCPUMonitor::StopMonitoring(Graph* graph) {
   last_measurement_time_ = base::TimeTicks();
 
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
-    cpu_measurement_monitor_.StopMonitoring();
+    cpu_query_.reset();
     cached_cpu_measurements_.clear();
   } else {
     cpu_measurement_map_.clear();
@@ -250,10 +250,10 @@ PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements(
 
   // Swap a new measurement into `cached_cpu_measurements_`, storing the
   // previous contents in `previous_measurements`.
+  CHECK(cpu_query_);
   std::map<ResourceContext, resource_attribution::CPUTimeResult>
       previous_measurements =
-          std::exchange(cached_cpu_measurements_,
-                        cpu_measurement_monitor_.UpdateAndGetCPUMeasurements());
+          std::exchange(cached_cpu_measurements_, cpu_query_->QueryOnce());
 
   CPUUsageMap cpu_usage_map;
   for (const auto& [context, result] : cached_cpu_measurements_) {

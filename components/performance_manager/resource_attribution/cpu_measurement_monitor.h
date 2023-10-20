@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
 
 #include <map>
 #include <memory>
@@ -17,9 +17,9 @@
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
-#include "components/performance_manager/public/resource_attribution/graph_change.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/resource_attribution/graph_change.h"
 
 namespace performance_manager {
 class Graph;
@@ -33,9 +33,6 @@ namespace performance_manager::resource_attribution {
 // measurement for a node may not arrive until after it's removed from the
 // graph. So this is not a decorator as defined in
 // components/performance_manager/README.md
-//
-// TODO(crbug.com/1471683): This should be private and accessed the the
-// Resource Attribution query API.
 class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
                               public ProcessNode::ObserverDefaultImpl,
                               public WorkerNode::ObserverDefaultImpl {
@@ -56,6 +53,9 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
 
   // Stops monitoring the graph.
   void StopMonitoring();
+
+  // Returns true if currently monitoring.
+  bool IsMonitoring() const;
 
   // Updates the CPU measurements for each ProcessNode being tracked and returns
   // the estimated CPU usage of each frame and worker in those processes, and
@@ -175,4 +175,4 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
 
 }  // namespace performance_manager::resource_attribution
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
