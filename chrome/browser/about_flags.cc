@@ -11003,6 +11003,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kAppInstallServiceUri)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+    {"theora-video-codec", flag_descriptions::kTheoraVideoCodecName,
+     flag_descriptions::kTheoraVideoCodecDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kTheoraVideoCodec)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

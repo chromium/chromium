@@ -4451,6 +4451,11 @@ extern const char kEnableBoundSessionCredentialsName[];
 extern const char kEnableBoundSessionCredentialsDescription[];
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+extern const char kTheoraVideoCodecName[];
+extern const char kTheoraVideoCodecDescription[];
+#endif
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order. See top instructions for more.

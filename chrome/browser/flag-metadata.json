@@ -7501,6 +7501,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "theora-video-codec",
+    "owners": ["dalecurtis@chromium.org"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "third-party-profile-management",
     "owners": [ "igorruvinov@chromium.org", "ydago@chromium.org", "zmin@chromium.org" ],
     "expiry_milestone": 125

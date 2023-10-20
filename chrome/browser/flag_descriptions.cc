@@ -7674,6 +7674,12 @@ const char kEnableBoundSessionCredentialsDescription[] =
     "prevent the usage of bound credentials outside of the user device.";
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+const char kTheoraVideoCodecName[] = "Theora video codec support";
+const char kTheoraVideoCodecDescription[] =
+    "Controls support for the Theora video codec.";
+#endif
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.
