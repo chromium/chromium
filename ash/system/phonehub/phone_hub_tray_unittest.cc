@@ -18,6 +18,7 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -43,6 +44,8 @@ using AccessProhibitedReason =
     phonehub::MultideviceFeatureAccessManager::AccessProhibitedReason;
 
 constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
+constexpr char kTrayBackgroundViewHistogramName[] =
+    "Ash.StatusArea.TrayBackgroundView.Pressed";
 const std::string kPhoneHubNudgeId = "PhoneHubNudge";
 
 // A mock implementation of |NewWindowDelegate| for use in tests.
@@ -138,6 +141,8 @@ class PhoneHubTrayTest : public AshTestBase {
   views::View* content_view() {
     return phone_hub_tray_->content_view_for_testing();
   }
+
+  PhoneHubTray* phone_hub_tray() { return phone_hub_tray_; }
 
   MultideviceFeatureOptInView* multidevice_feature_opt_in_view() {
     return static_cast<MultideviceFeatureOptInView*>(bubble_view()->GetViewByID(
@@ -849,6 +854,21 @@ TEST_F(PhoneHubTrayTest, ShowAndHideNudge) {
   EXPECT_TRUE(GetOnboardingUiTracker()->is_icon_clicked_when_nudge_visible());
   EXPECT_FALSE(
       Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kPhoneHubNudgeId));
+}
+
+// Makes sure metrics are recorded for the phone hub tray or any nested button
+// being pressed.
+TEST_F(PhoneHubTrayTest, TrayPressedMetrics) {
+  base::HistogramTester histogram_tester;
+
+  LeftClickOn(phone_hub_tray());
+  histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 1);
+
+  LeftClickOn(phone_hub_tray()->icon_);
+  histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 2);
+
+  LeftClickOn(phone_hub_tray()->eche_icon_);
+  histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 3);
 }
 
 }  // namespace ash
