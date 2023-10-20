@@ -15,7 +15,6 @@ import {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radi
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
@@ -57,30 +56,15 @@ export class SpeedPageElement extends SpeedPageElementBase {
     super.ready();
 
     CrSettingsPrefs.initialized.then(() => {
-      // Expand initial pref value manually because automatic
-      // expanding is disabled.
       const prefValue = this.getPref<NetworkPredictionOptions>(
                                 'net.network_prediction_options')
                             .value;
-      switch (prefValue) {
-        case NetworkPredictionOptions.EXTENDED:
-          this.$.preloadingExtended.expanded = true;
-          return;
-        case NetworkPredictionOptions.STANDARD:
-          this.$.preloadingStandard.expanded = true;
-          return;
-        case NetworkPredictionOptions.WIFI_ONLY_DEPRECATED:
-          // The default pref value is deprecated, and is treated the same as
-          // STANDARD. See chrome/browser/preloading/preloading_prefs.h.
-          this.setPrefValue(
-              'net.network_prediction_options',
-              NetworkPredictionOptions.STANDARD);
-          this.$.preloadingStandard.expanded = true;
-          return;
-        case NetworkPredictionOptions.DISABLED:
-          return;
-        default:
-          assertNotReached();
+      if (prefValue === NetworkPredictionOptions.WIFI_ONLY_DEPRECATED) {
+        // The default pref value is deprecated, and is treated the same as
+        // STANDARD. See chrome/browser/preloading/preloading_prefs.h.
+        this.setPrefValue(
+            'net.network_prediction_options',
+            NetworkPredictionOptions.STANDARD);
       }
     });
   }
@@ -89,10 +73,12 @@ export class SpeedPageElement extends SpeedPageElementBase {
     return value !== NetworkPredictionOptions.DISABLED;
   }
 
-  private onPreloadingRadioChange_() {
+  private onPreloadingStateChange_() {
+    // Automatic expanding is disabled so that the radio buttons are collapsed
+    // initially. Because of this, radio buttons' expanded states need to be
+    // updated manually.
     this.$.preloadingExtended.updateCollapsed();
     this.$.preloadingStandard.updateCollapsed();
-    this.$.preloadingRadioGroup.sendPrefChange();
   }
 }
 

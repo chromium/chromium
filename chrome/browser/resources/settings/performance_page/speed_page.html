@@ -17,16 +17,16 @@
     sub-label="$i18n{preloadingToggleSummary}"
     numeric-unchecked-value="[[networkPredictionOptionsEnum_.DISABLED]]"
     numeric-checked-value="[[networkPredictionOptionsEnum_.STANDARD]]"
-    on-change="onPreloadingRadioChange_">
+    on-change="onPreloadingStateChange_">
 </settings-toggle-button>
 <iron-collapse
     opened="[[isPreloadingEnabled_(
         prefs.net.network_prediction_options.value)]]">
   <div class="cr-row continuation settings-section-bottom-padding">
-    <settings-radio-group id="preloadingRadioGroup" no-set-pref
+    <settings-radio-group id="preloadingRadioGroup"
         pref="{{prefs.net.network_prediction_options}}"
         selectable-elements="settings-collapse-radio-button"
-        on-change="onPreloadingRadioChange_">
+        on-change="onPreloadingStateChange_">
       <settings-collapse-radio-button id="preloadingExtended"
           name="[[networkPredictionOptionsEnum_.EXTENDED]]"
           pref="[[prefs.net.network_prediction_options]]"
