@@ -47,8 +47,10 @@ import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1076,15 +1078,33 @@ public class StartSurfaceCoordinator implements StartSurface {
         int fakeEndPadding = mIsSurfacePolishEnabled
                 ? getPixelSize(R.dimen.fake_search_box_end_padding)
                 : getPixelSize(R.dimen.search_box_end_padding);
-        // realEndPadding is 0;
+        // realEndPadding is 0 when surface is not polished;
+        int realEndPadding =
+            mIsSurfacePolishEnabled
+                ? getPixelSize(R.dimen.location_bar_end_padding)
+                + getPixelSize(R.dimen.location_bar_url_action_offset_polish)
+                : 0;
+        int endPaddingDiff = fakeEndPadding - realEndPadding;
 
         // fakeTranslationX is 0;
-        int realTranslationX = getPixelSize(R.dimen.location_bar_status_icon_width)
-                + getPixelSize(R.dimen.location_bar_icon_end_padding_focused)
-                + (getPixelSize(R.dimen.fake_search_box_lateral_padding)
-                        - (mIsSurfacePolishEnabled
-                                        ? getPixelSize(R.dimen.fake_search_box_start_padding)
-                                        : getPixelSize(R.dimen.search_box_start_padding)));
+        int realTranslationX;
+        if (mIsSurfacePolishEnabled) {
+            realTranslationX =
+                OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(mActivity)
+                    + getPixelSize(R.dimen.status_view_highlight_size)
+                    + getPixelSize(
+                    OmniboxFeatures.shouldShowModernizeVisualUpdate(mActivity)
+                        && OmniboxFeatures.shouldShowSmallBottomMargin()
+                        ? R.dimen.location_bar_icon_end_padding_focused_smaller
+                        : R.dimen.location_bar_icon_end_padding_focused)
+                    - getPixelSize(R.dimen.fake_search_box_start_padding);
+        } else {
+            realTranslationX =
+                getPixelSize(R.dimen.location_bar_status_icon_width)
+                    + getPixelSize(R.dimen.location_bar_icon_end_padding_focused)
+                    + (getPixelSize(R.dimen.fake_search_box_lateral_padding)
+                    - (getPixelSize(R.dimen.search_box_start_padding)));
+        }
 
         int fakeButtonSize = mIsSurfacePolishEnabled
                 ? getPixelSize(R.dimen.location_bar_action_icon_width)
@@ -1151,7 +1171,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             // StartSurfaceToolbarMediator#updateTranslationY, which scroll up the start surface
             // toolbar together with the header.
             tasksView.updateFakeSearchBox(fakeHeight - reducedHeight, reducedHeight,
-                    (int) (fakeEndPadding * (1 - expansionFraction)),
+                    (int) (endPaddingDiff * (1 - expansionFraction) + realEndPadding),
                     SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(false)
                             ? realTranslationX * expansionFraction
                             : 0,
