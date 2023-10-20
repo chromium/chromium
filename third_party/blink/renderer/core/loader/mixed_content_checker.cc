@@ -535,12 +535,16 @@ bool MixedContentChecker::ShouldBlockFetch(
   };
 
   // Skip mixed content check for private and local targets.
+  // `target_address_space` here is private/local only when resource request
+  // has explicitly set `targetAddressSpace` fetch option.
   // TODO(lyf): check the IP address space for initiator, only skip when the
   // initiator is more public.
   if (RuntimeEnabledFeatures::PrivateNetworkAccessPermissionPromptEnabled()) {
     if (target_address_space ==
             network::mojom::blink::IPAddressSpace::kPrivate ||
         target_address_space == network::mojom::blink::IPAddressSpace::kLocal) {
+      UseCounter::Count(frame->GetDocument(),
+                        WebFeature::kPrivateNetworkAccessPermissionPrompt);
       allowed = true;
     }
   }
