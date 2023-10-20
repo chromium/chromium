@@ -53,7 +53,7 @@ class IbanSaveManager {
 
   void OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIbanOfferUserDecision user_decision,
-      const absl::optional<std::u16string>& nickname = absl::nullopt) {
+      std::optional<std::u16string> nickname = absl::nullopt) {
     OnUserDidDecideOnLocalSave(user_decision, nickname);
   }
 
@@ -88,7 +88,7 @@ class IbanSaveManager {
   // only be provided in the kAccepted case if the user entered a nickname.
   void OnUserDidDecideOnLocalSave(
       AutofillClient::SaveIbanOfferUserDecision user_decision,
-      const absl::optional<std::u16string>& nickname = absl::nullopt);
+      std::optional<std::u16string> nickname = absl::nullopt);
 
   // The IBAN to be saved if local IBAN save is accepted. It will be set if
   // imported IBAN is not empty. The record type of this IBAN candidate is

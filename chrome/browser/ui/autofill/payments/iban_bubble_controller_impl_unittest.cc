@@ -73,7 +73,7 @@ class IbanBubbleControllerImplTest : public BrowserWithTestWindowTest {
  private:
   void LocalSaveIbanCallback(
       AutofillClient::SaveIbanOfferUserDecision user_decision,
-      const absl::optional<std::u16string>& nickname) {
+      std::optional<std::u16string> nickname) {
     saved_nickname_ = nickname.value_or(u"");
   }
 

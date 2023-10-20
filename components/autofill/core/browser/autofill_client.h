@@ -376,7 +376,7 @@ class AutofillClient : public RiskDataLoader {
   // or upload save is offered, and can be nullopt.
   using SaveIbanPromptCallback =
       base::OnceCallback<void(SaveIbanOfferUserDecision user_decision,
-                              const absl::optional<std::u16string>& nickname)>;
+                              std::optional<std::u16string> nickname)>;
 
   // Callback to run if the OK button or the cancel button in a
   // Webauthn dialog is clicked.

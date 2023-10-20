@@ -140,7 +140,7 @@ IbanSaveStrikeDatabase* IbanSaveManager::GetIbanSaveStrikeDatabase() {
 
 void IbanSaveManager::OnUserDidDecideOnLocalSave(
     AutofillClient::SaveIbanOfferUserDecision user_decision,
-    const absl::optional<std::u16string>& nickname) {
+    std::optional<std::u16string> nickname) {
   if (nickname.has_value()) {
     std::u16string trimmed_nickname;
     base::TrimWhitespace(nickname.value(), base::TRIM_ALL, &trimmed_nickname);
