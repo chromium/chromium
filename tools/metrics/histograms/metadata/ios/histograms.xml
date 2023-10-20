@@ -2490,10 +2490,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Reauth.Address.Autofill" enum="ReauthenticationEvent"
+    expires_after="2024-10-19">
+  <owner>sugoi@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Tracks the results and attempts of reauthentication when using address
+    Autofill suggestions.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Reauth.CreditCard.Autofill" enum="ReauthenticationEvent"
+    expires_after="2024-10-19">
+  <owner>sugoi@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Tracks the results and attempts of reauthentication when using credit card
+    Autofill suggestions.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Reauth.Password.Autofill" enum="ReauthenticationEvent"
-    expires_after="2022-05-01">
-  <owner>sarraf@google.com</owner>
-  <owner>djean@chromium.org</owner>
+    expires_after="2024-10-19">
+  <owner>sugoi@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
   <summary>
     Tracks the results and attempts of reauthentication when using password
     Autofill suggestions.
