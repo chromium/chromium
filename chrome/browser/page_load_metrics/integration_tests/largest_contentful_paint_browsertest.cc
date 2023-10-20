@@ -1208,14 +1208,9 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_NativeLazyLoadingImage) {
   Validate();
 }
 
-// TODO(https://crbug.com/1487837): This test is failing on Linux CFI, Chrome
-// OS (Both Lacros and ASH) and Windows.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_ManualLazyLoadingImage DISABLED_ManualLazyLoadingImage
-#else
-#define MAYBE_ManualLazyLoadingImage ManualLazyLoadingImage
-#endif
-IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_ManualLazyLoadingImage) {
+// TODO(https://crbug.com/1487837): This test is flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest,
+                       DISABLED_ManualLazyLoadingImage) {
   std::string test_url =
       "/lcp_breakdown_timings_manual_lazy_loading_images.html";
   std::string resource = "lcp-16x16.png";
