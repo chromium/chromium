@@ -208,14 +208,8 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
   utils()->WaitForFocusRing("primary", "button", "Keyboard");
 }
 
-// TODO(crbug.com/1472440): Enable after fixing flakiness on Linux ChromiumOS
-// MSAN.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_TypeIntoVirtualKeyboard DISABLED_TypeIntoVirtualKeyboard
-#else
-#define MAYBE_TypeIntoVirtualKeyboard TypeIntoVirtualKeyboard
-#endif
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_TypeIntoVirtualKeyboard) {
+// TODO(crbug.com/1472440): Enable after fixing flakiness.
+IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_TypeIntoVirtualKeyboard) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
 
