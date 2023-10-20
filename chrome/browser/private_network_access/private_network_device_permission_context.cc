@@ -4,6 +4,7 @@
 
 #include "chrome/browser/private_network_access/private_network_device_permission_context.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -65,8 +66,13 @@ void PrivateNetworkDevicePermissionContext::GrantDevicePermission(
   // Store ephemeral permission with IP address.
   if (!is_device_valid) {
     ephemeral_devices_[origin].insert(device.ip_address);
+    base::UmaHistogramEnumeration(
+        kUserAcceptedPrivateNetworkDeviceHistogramName,
+        NewAcceptedDeviceType::kEphemeralDevice);
     return;
   }
+  base::UmaHistogramEnumeration(kUserAcceptedPrivateNetworkDeviceHistogramName,
+                                NewAcceptedDeviceType::kValidDevice);
   GrantObjectPermission(origin, DeviceInfoToValue(device));
 }
 
@@ -82,6 +88,9 @@ bool PrivateNetworkDevicePermissionContext::HasDevicePermission(
       DCHECK(IsValidObject(value));
       DCHECK(device.id.has_value());
       if (*value.FindString(kDeviceIdKey) == device.id.value()) {
+        base::UmaHistogramEnumeration(
+            kPrivateNetworkDeviceValidityHistogramName,
+            PrivateNetworkDeviceValidity::kExistingDevice);
         return true;
       }
     }

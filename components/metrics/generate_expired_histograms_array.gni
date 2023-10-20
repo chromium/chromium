@@ -151,6 +151,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/scanning/histograms.xml",
       "//tools/metrics/histograms/metadata/scheduler/histograms.xml",
       "//tools/metrics/histograms/metadata/search/histograms.xml",
+      "//tools/metrics/histograms/metadata/security/enums.xml",
       "//tools/metrics/histograms/metadata/security/histograms.xml",
       "//tools/metrics/histograms/metadata/segmentation_platform/histograms.xml",
       "//tools/metrics/histograms/metadata/service/histograms.xml",

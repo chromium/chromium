@@ -4,6 +4,7 @@
 
 #include "chrome/browser/private_network_access/chrome_private_network_device_delegate.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -72,6 +73,10 @@ bool ChromePrivateNetworkDeviceDelegate::CheckDevice(
     content::RenderFrameHost& frame) {
   // Check if `Private-Network-Access-ID` is valid.
   if (!device.id.has_value() || !IsMacAddress(device.id.value())) {
+    base::UmaHistogramEnumeration(
+        kPrivateNetworkDeviceValidityHistogramName,
+        device.id.has_value() ? PrivateNetworkDeviceValidity::kDeviceIDInvalid
+                              : PrivateNetworkDeviceValidity::kDeviceIDMissing);
     frame.AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
                               "`Private-Network-Access-ID` is invalid. Please "
                               "use device's Mac Address.");
@@ -82,6 +87,11 @@ bool ChromePrivateNetworkDeviceDelegate::CheckDevice(
   const re2::RE2 pattern("^[a-zA-Z0-9_-.]+$");
   if (!device.name.has_value() || device.name.value().length() > 248 ||
       !re2::RE2::FullMatch(device.name.value(), pattern)) {
+    base::UmaHistogramEnumeration(
+        kPrivateNetworkDeviceValidityHistogramName,
+        device.name.has_value()
+            ? PrivateNetworkDeviceValidity::kDeviceNameInvalid
+            : PrivateNetworkDeviceValidity::kDeviceNameMissing);
     frame.AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
                               "`Private-Network-Access-Name` is invalid. "
                               "A valid name is a string that matches the "
