@@ -259,6 +259,7 @@ source_set("policy_specific_browser_tests") {
       "test/web_rtc_local_ips_allowed_urls_policy_browsertest.cc",
       "test/web_rtc_text_log_collection_allowed_policy_browsertest.cc",
       "test/window_management_policy_browsertest.cc",
+      "test/zstd_content_encoding_policy_browsertest.cc",
     ]
 
     deps += [

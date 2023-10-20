@@ -672,6 +672,8 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_LINUX)
   registry->RegisterBooleanPref(prefs::kReceivedHttpAuthNegotiateHeader, false);
 #endif  // BUILDFLAG(IS_LINUX)
+
+  registry->RegisterBooleanPref(prefs::kZstdContentEncodingEnabled, true);
 }
 
 // static
@@ -822,7 +824,8 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   network_context_params->enable_brotli = true;
 
   network_context_params->enable_zstd =
-      base::FeatureList::IsEnabled(net::features::kZstdContentEncoding);
+      base::FeatureList::IsEnabled(net::features::kZstdContentEncoding) &&
+      local_state_->GetBoolean(prefs::kZstdContentEncodingEnabled);
 
   network_context_params->user_agent = embedder_support::GetUserAgent();
 

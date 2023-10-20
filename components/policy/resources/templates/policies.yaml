@@ -1165,6 +1165,7 @@ policies:
   1164: ProfileReauthPrompt
   1165: RelatedWebsiteSetsEnabled
   1166: DeviceExtendedFkeysModifier
+  1167: ZstdContentEncodingEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

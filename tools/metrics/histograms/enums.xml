@@ -33982,6 +33982,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1164" label="ProfileReauthPrompt"/>
   <int value="1165" label="RelatedWebsiteSetsEnabled"/>
   <int value="1166" label="DeviceExtendedFkeysModifier"/>
+  <int value="1167" label="ZstdContentEncodingEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
