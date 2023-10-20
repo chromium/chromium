@@ -236,8 +236,7 @@ public class ImprovedBookmarkRowTest {
     public void testStartImageVisibility() {
         mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
         Assert.assertEquals(
-                View.VISIBLE,
-                mImprovedBookmarkRow.findViewById(R.id.start_image_container).getVisibility());
+                View.VISIBLE, mImprovedBookmarkRow.findViewById(R.id.start_image).getVisibility());
         Assert.assertEquals(
                 View.GONE, mImprovedBookmarkRow.findViewById(R.id.folder_view).getVisibility());
 
@@ -245,8 +244,7 @@ public class ImprovedBookmarkRowTest {
                 ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
                 ImageVisibility.FOLDER_DRAWABLE);
         Assert.assertEquals(
-                View.GONE,
-                mImprovedBookmarkRow.findViewById(R.id.start_image_container).getVisibility());
+                View.GONE, mImprovedBookmarkRow.findViewById(R.id.start_image).getVisibility());
         Assert.assertEquals(
                 View.VISIBLE, mImprovedBookmarkRow.findViewById(R.id.folder_view).getVisibility());
     }

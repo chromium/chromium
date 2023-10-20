@@ -41,7 +41,6 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     private ViewGroup mContainer;
     // The start image view which is shows the favicon.
     private ImageView mStartImageView;
-    private View mStartImageContainer;
     private ImprovedBookmarkFolderView mFolderIconView;
     // Displays the title of the bookmark.
     private TextView mTitleView;
@@ -114,7 +113,6 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         mContainer = findViewById(R.id.container);
 
         mStartImageView = findViewById(R.id.start_image);
-        mStartImageContainer = findViewById(R.id.start_image_container);
         mFolderIconView = findViewById(R.id.folder_view);
 
         mTitleView = findViewById(R.id.title);
@@ -142,7 +140,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     }
 
     void setStartImageVisible(boolean visible) {
-        mStartImageContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mStartImageView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     void setFolderViewVisible(boolean visible) {
