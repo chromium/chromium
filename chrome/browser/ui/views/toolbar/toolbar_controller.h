@@ -107,9 +107,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   // toolbar elements.
   bool ShouldShowOverflowButton();
 
-  void SetOverflowButtonVisible(bool should_show) {
-    overflow_button_->SetVisible(should_show);
-  }
+  views::View* overflow_button() { return overflow_button_; }
 
   const base::flat_map<ui::ElementIdentifier, std::unique_ptr<PopOutState>>&
   pop_out_state_for_testing() const {

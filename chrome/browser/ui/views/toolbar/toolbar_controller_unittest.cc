@@ -224,6 +224,10 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
+  void SetOverflowButtonVisible(bool visible) {
+    toolbar_controller()->overflow_button()->SetVisible(visible);
+  }
+
   views::Widget* widget() { return widget_.get(); }
   ToolbarController* toolbar_controller() { return toolbar_controller_.get(); }
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
@@ -254,24 +258,21 @@ TEST_F(ToolbarControllerUnitTest, OverflowButtonVisibility) {
   widget()->SetSize(gfx::Size(kButtonSize.width() * test_buttons().size(),
                               kButtonSize.height()));
   EXPECT_EQ(GetOverflowedElements().size(), size_t(0));
-  toolbar_controller()->SetOverflowButtonVisible(
-      toolbar_controller()->ShouldShowOverflowButton());
+  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
   EXPECT_FALSE(overflow_button()->GetVisible());
 
   // Shrink widget width with one button width smaller.
   widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
                               kButtonSize.height()));
   EXPECT_EQ(GetOverflowedElements().size(), size_t(1));
-  toolbar_controller()->SetOverflowButtonVisible(
-      toolbar_controller()->ShouldShowOverflowButton());
+  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
   EXPECT_TRUE(overflow_button()->GetVisible());
 }
 
 TEST_F(ToolbarControllerUnitTest, OverflowedButtonsMatchMenu) {
   widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
                               kButtonSize.height()));
-  toolbar_controller()->SetOverflowButtonVisible(
-      toolbar_controller()->ShouldShowOverflowButton());
+  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
   EXPECT_TRUE(overflow_button()->GetVisible());
 
   widget()->LayoutRootViewIfNecessary();

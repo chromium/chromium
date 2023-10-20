@@ -795,8 +795,10 @@ void ToolbarView::Layout() {
   // indicator of overflow not the cause. (See crbug.com/1484294)
   // In the first pass turn off overflow button right before each layout.
   // TODO(pengchaocai): Explore possible optimizations.
+  views::ManualLayoutUtil manual_layout_util(layout_manager_);
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
-    toolbar_controller_->SetOverflowButtonVisible(false);
+    manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
+                                     true);
   }
 
   // Call super implementation to ensure layout manager and child layouts
@@ -806,7 +808,8 @@ void ToolbarView::Layout() {
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar) &&
       toolbar_controller_->ShouldShowOverflowButton()) {
     // This is the second pass layout that shows overflow button if necessary.
-    toolbar_controller_->SetOverflowButtonVisible(true);
+    manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
+                                     false);
     AccessiblePaneView::Layout();
   }
 }
@@ -1004,7 +1007,8 @@ void ToolbarView::LayoutCommon() {
       extend_buttons_to_edge ? interior_margin.right() : 0);
 
   if (toolbar_divider_ && extensions_container_) {
-    toolbar_divider_->SetVisible(extensions_container_->GetVisible());
+    views::ManualLayoutUtil(layout_manager_)
+        .SetViewHidden(toolbar_divider_, !extensions_container_->GetVisible());
     const SkColor toolbar_extension_separator_color =
         GetColorProvider()->GetColor(kColorToolbarExtensionSeparatorEnabled);
     toolbar_divider_->SetBackground(views::CreateRoundedRectBackground(
