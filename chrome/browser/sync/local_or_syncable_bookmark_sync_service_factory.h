@@ -14,8 +14,8 @@ namespace sync_bookmarks {
 class BookmarkSyncService;
 }  // namespace sync_bookmarks
 
-// Singleton that builds BookmarkSyncService instances and associates them with
-// BrowserContexts.
+// Singleton that builds BookmarkSyncService instances dealing with users that
+// enable sync-the-feature (syncable profile bookmarks).
 class LocalOrSyncableBookmarkSyncServiceFactory
     : public ProfileKeyedServiceFactory {
  public:

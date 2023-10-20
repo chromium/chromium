@@ -33,6 +33,7 @@
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
+#include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/chrome_sync_client.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
@@ -229,6 +230,7 @@ SyncServiceFactory::SyncServiceFactory()
   // destruction order. Note that some of the dependencies are listed here but
   // actually plumbed in ChromeSyncClient, which this factory constructs.
   DependsOn(AboutSigninInternalsFactory::GetInstance());
+  DependsOn(AccountBookmarkSyncServiceFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(BookmarkUndoServiceFactory::GetInstance());

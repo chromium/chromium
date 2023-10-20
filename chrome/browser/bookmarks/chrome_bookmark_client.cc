@@ -68,11 +68,15 @@ class ShoppingCollectionProvider
 ChromeBookmarkClient::ChromeBookmarkClient(
     Profile* profile,
     bookmarks::ManagedBookmarkService* managed_bookmark_service,
-    sync_bookmarks::BookmarkSyncService* bookmark_sync_service,
+    sync_bookmarks::BookmarkSyncService*
+        local_or_syncable_bookmark_sync_service,
+    sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
     BookmarkUndoService* bookmark_undo_service)
     : profile_(profile),
       managed_bookmark_service_(managed_bookmark_service),
-      bookmark_sync_service_(bookmark_sync_service),
+      local_or_syncable_bookmark_sync_service_(
+          local_or_syncable_bookmark_sync_service),
+      account_bookmark_sync_service_(account_bookmark_sync_service),
       bookmark_undo_service_(bookmark_undo_service) {}
 
 ChromeBookmarkClient::~ChromeBookmarkClient() {
@@ -175,9 +179,16 @@ ChromeBookmarkClient::GetLoadManagedNodeCallback() {
 
 bookmarks::metrics::StorageStateForUma
 ChromeBookmarkClient::GetStorageStateForUma() {
-  return bookmark_sync_service_->IsTrackingMetadata()
-             ? bookmarks::metrics::StorageStateForUma::kSyncEnabled
-             : bookmarks::metrics::StorageStateForUma::kLocalOnly;
+  if (local_or_syncable_bookmark_sync_service_->IsTrackingMetadata()) {
+    return bookmarks::metrics::StorageStateForUma::kSyncEnabled;
+  }
+
+  if (account_bookmark_sync_service_ &&
+      account_bookmark_sync_service_->IsTrackingMetadata()) {
+    return bookmarks::metrics::StorageStateForUma::kAccount;
+  }
+
+  return bookmarks::metrics::StorageStateForUma::kLocalOnly;
 }
 
 bool ChromeBookmarkClient::CanSetPermanentNodeTitle(
@@ -192,14 +203,22 @@ bool ChromeBookmarkClient::IsNodeManaged(const bookmarks::BookmarkNode* node) {
 }
 
 std::string ChromeBookmarkClient::EncodeBookmarkSyncMetadata() {
-  return bookmark_sync_service_->EncodeBookmarkSyncMetadata();
+  // TODO(crbug.com/1494120): Also encode metadata produced by
+  // `account_bookmark_sync_service_` once BookmarkClient API allows it.
+  return local_or_syncable_bookmark_sync_service_->EncodeBookmarkSyncMetadata();
 }
 
 void ChromeBookmarkClient::DecodeBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {
-  bookmark_sync_service_->DecodeBookmarkSyncMetadata(
+  local_or_syncable_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
       metadata_str, schedule_save_closure, model_);
+  // TODO(crbug.com/1494120): Pass along sync metadata once BookmarkClient API
+  // is capable of reading it from BookmarkModel.
+  if (account_bookmark_sync_service_) {
+    account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
+        std::string(), schedule_save_closure, model_);
+  }
 }
 
 void ChromeBookmarkClient::OnBookmarkNodeRemovedUndoable(
