@@ -833,10 +833,15 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 }
 
 - (void)hideTabResumption {
+  if (!_tabResumptionModuleContainer) {
+    return;
+  }
+
   NSUInteger moduleIndex = [self
       indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
   [_tabResumptionModuleContainer removeFromSuperview];
   [_magicStackModuleOrder removeObjectAtIndex:moduleIndex];
+  _tabResumptionModuleContainer = nil;
 }
 
 - (void)showParcelTrackingItems:(NSArray<ParcelTrackingItem*>*)items {

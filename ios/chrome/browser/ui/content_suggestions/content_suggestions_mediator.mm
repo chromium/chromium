@@ -38,6 +38,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -237,7 +239,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // Used by the Safety Check (Magic Stack) module for the current Safety Check
   // state.
   SafetyCheckState* _safetyCheckState;
-  // Used by SetUpList to observe changes to signed-in status.
+  // Observes changes to signed-in status.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
   // Observer for sync service status changes.
@@ -307,16 +309,21 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     _authenticationService = authenticationService;
     _syncService = syncService;
     _shoppingService = shoppingService;
-    if (IsIOSSetUpListEnabled() &&
-        set_up_list_utils::IsSetUpListActive(_localState)) {
-      _authServiceObserverBridge =
-          std::make_unique<AuthenticationServiceObserverBridge>(
-              _authenticationService, self);
+
+    BOOL isSetupListEnabled = IsIOSSetUpListEnabled() &&
+                              set_up_list_utils::IsSetUpListActive(_localState);
+    if (IsTabResumptionEnabled() || isSetupListEnabled) {
       _syncObserverBridge =
           std::make_unique<SyncObserverBridge>(self, _syncService);
       _identityObserverBridge =
           std::make_unique<signin::IdentityManagerObserverBridge>(
               identityManager, self);
+    }
+
+    if (isSetupListEnabled) {
+      _authServiceObserverBridge =
+          std::make_unique<AuthenticationServiceObserverBridge>(
+              _authenticationService, self);
       _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
       _prefChangeRegistrar.Init(_localState);
       _prefObserverBridge->ObserveChangesForPreference(
@@ -603,7 +610,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
             base::Seconds(0.5));
       }
       break;
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared: {
+      if (IsTabResumptionEnabled()) {
+        // If the user is signed out, remove the tab resumption tile.
+        [self hideTabResumption];
+      }
+      break;
+    }
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
@@ -1828,16 +1841,22 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  if (!_setUpList) {
-    return;
+  if (_setUpList) {
+    if (_syncService->HasDisableReason(
+            syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+        HasManagedSyncDataType(_syncService)) {
+      // Sync is now disabled, so mark the SetUpList item complete so that it
+      // cannot be used again.
+      set_up_list_prefs::MarkItemComplete(_localState,
+                                          SetUpListItemType::kSignInSync);
+    }
   }
-  if (_syncService->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-      HasManagedSyncDataType(_syncService)) {
-    // Sync is now disabled, so mark the SetUpList item complete so that it
-    // cannot be used again.
-    set_up_list_prefs::MarkItemComplete(_localState,
-                                        SetUpListItemType::kSignInSync);
+  if (IsTabResumptionEnabled()) {
+    // If tabs are not synced, hide the tab resumption tile.
+    if (!_syncService->GetUserSettings()->GetSelectedTypes().Has(
+            syncer::UserSelectableType::kTabs)) {
+      [self hideTabResumption];
+    }
   }
 }
 
