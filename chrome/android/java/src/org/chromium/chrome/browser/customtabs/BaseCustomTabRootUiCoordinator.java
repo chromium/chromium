@@ -411,19 +411,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 != null : "IntentDataProvider needs to be non-null after preInflationStartup";
 
         mCustomTabHeightStrategy = CustomTabHeightStrategy.createStrategy(mActivity,
-                intentDataProvider.getInitialActivityHeight(),
-                intentDataProvider.getInitialActivityWidth(),
-                intentDataProvider.getActivityBreakPoint(),
-                intentDataProvider.isPartialCustomTabFixedHeight(),
-                CustomTabsConnection.getInstance(), intentDataProvider.getSession(),
-                mActivityLifecycleDispatcher, mFullscreenManager,
-                DeviceFormFactor.isWindowOnTablet(mWindowAndroid),
-                intentDataProvider.canInteractWithBackground(),
-                intentDataProvider.showSideSheetMaximizeButton(),
-                intentDataProvider.getActivitySideSheetDecorationType(),
-                intentDataProvider.getSideSheetPosition(),
-                intentDataProvider.getSideSheetSlideInBehavior(),
-                intentDataProvider.getActivitySideSheetRoundedCornersPosition());
+                intentDataProvider,
+                CustomTabsConnection.getInstance(),
+                mActivityLifecycleDispatcher,
+                mFullscreenManager,
+                DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
 
         if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity)) {
             // The method above already checks for the minimum API level.

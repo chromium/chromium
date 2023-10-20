@@ -32,6 +32,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -131,15 +132,15 @@ public abstract class PartialCustomTabBaseStrategy
         int COUNT = 4;
     }
 
-    public PartialCustomTabBaseStrategy(Activity activity, OnResizedCallback onResizedCallback,
+    public PartialCustomTabBaseStrategy(Activity activity,
+            BrowserServicesIntentDataProvider intentData, OnResizedCallback onResizedCallback,
             OnActivityLayoutCallback onActivityLayoutCallback, FullscreenManager fullscreenManager,
-            boolean isTablet, boolean interactWithBackground,
-            PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
+            boolean isTablet, PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
         mActivity = activity;
         mOnResizedCallback = onResizedCallback;
         mOnActivityLayoutCallback = onActivityLayoutCallback;
         mIsTablet = isTablet;
-        mInteractWithBackground = interactWithBackground;
+        mInteractWithBackground = intentData.canInteractWithBackground();
 
         mVersionCompat = PartialCustomTabVersionCompat.create(mActivity, this::updatePosition);
         mDisplayHeight = mVersionCompat.getDisplayHeight();

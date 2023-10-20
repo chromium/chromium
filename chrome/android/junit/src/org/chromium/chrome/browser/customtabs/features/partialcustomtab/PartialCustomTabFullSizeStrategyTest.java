@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
@@ -24,6 +25,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.util.browser.Features;
@@ -42,14 +44,16 @@ public class PartialCustomTabFullSizeStrategyTest {
     @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     private PartialCustomTabFullSizeStrategy createPcctFullSizeStrategy() {
+        BrowserServicesIntentDataProvider intentData = mPCCTTestRule.mIntentData;
+        when(intentData.canInteractWithBackground()).thenReturn(true);
         PartialCustomTabFullSizeStrategy pcct =
                 new PartialCustomTabFullSizeStrategy(
                         mPCCTTestRule.mActivity,
+                        mPCCTTestRule.mIntentData,
                         mPCCTTestRule.mOnResizedCallback,
                         mPCCTTestRule.mOnActivityLayoutCallback,
                         mPCCTTestRule.mFullscreenManager,
-                        false,
-                        true,
+                        /* isTablet= */ false,
                         mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(
                 mPCCTTestRule.mCoordinatorLayout,

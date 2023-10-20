@@ -55,6 +55,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -104,6 +105,7 @@ public class PartialCustomTabTestRule implements TestRule {
     @Mock View mDecorView;
     @Mock View mRootView;
     @Mock Display mDisplay;
+    @Mock BrowserServicesIntentDataProvider mIntentData;
     @Mock CustomTabHeightStrategy.OnResizedCallback mOnResizedCallback;
     @Mock CustomTabHeightStrategy.OnActivityLayoutCallback mOnActivityLayoutCallback;
     @Mock ViewGroup mCoordinatorLayout;

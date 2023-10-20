@@ -82,30 +82,33 @@ public class PartialCustomTabDisplayManagerTest {
 
     private PartialCustomTabDisplayManager createPcctDisplayManager(
             @Px int heightPx, @Px int widthPx, int breakPointDp, int decorationType) {
+        BrowserServicesIntentDataProvider intentData = mPCCTTestRule.mIntentData;
+        when(intentData.getInitialActivityHeight()).thenReturn(heightPx);
+        when(intentData.getInitialActivityWidth()).thenReturn(widthPx);
+        when(intentData.getActivityBreakPoint()).thenReturn(breakPointDp);
+        when(intentData.canInteractWithBackground()).thenReturn(true);
+        when(intentData.showSideSheetMaximizeButton()).thenReturn(true);
+        when(intentData.getActivitySideSheetDecorationType()).thenReturn(decorationType);
+        when(intentData.getSideSheetPosition()).thenReturn(ACTIVITY_SIDE_SHEET_POSITION_END);
+        when(intentData.getSideSheetSlideInBehavior())
+                .thenReturn(ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE);
+        when(intentData.getActivitySideSheetRoundedCornersPosition())
+                .thenReturn(ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
         PartialCustomTabDisplayManager displayManager =
                 new PartialCustomTabDisplayManager(
                         mPCCTTestRule.mActivity,
-                        heightPx,
-                        widthPx,
-                        breakPointDp,
-                        false,
+                        mPCCTTestRule.mIntentData,
                         mPCCTTestRule.mOnResizedCallback,
                         mPCCTTestRule.mOnActivityLayoutCallback,
                         mPCCTTestRule.mActivityLifecycleDispatcher,
                         mPCCTTestRule.mFullscreenManager,
-                        false,
-                        true,
-                        /* showMaximizeButton= */ true,
-                        decorationType,
-                        ACTIVITY_SIDE_SHEET_POSITION_END,
-                        ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
-                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+                        /* isTablet= */ false);
         var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
         SizeStrategyCreator testSizeStrategyCreator =
-                (type, maximized, sideSheetPosition, sideSheetAnimation) -> {
+                (type, intentData0, maximized) -> {
                     var strategy =
                             sizeStrategyCreator.createForType(
-                                    type, maximized, sideSheetPosition, sideSheetAnimation);
+                                    type, intentData0, maximized);
                     strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
                     strategy.setMockViewForTesting(
                             mPCCTTestRule.mCoordinatorLayout,

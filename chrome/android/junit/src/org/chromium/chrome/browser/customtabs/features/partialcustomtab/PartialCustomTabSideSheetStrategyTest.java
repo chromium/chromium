@@ -15,6 +15,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
@@ -54,6 +55,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.ResizeType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
@@ -110,22 +112,26 @@ public class PartialCustomTabSideSheetStrategyTest {
 
     private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(
             @Px int widthPx, int position, int decorationType, int roundedCornersPosition) {
+        BrowserServicesIntentDataProvider intentData = mPCCTTestRule.mIntentData;
+        when(intentData.getInitialActivityWidth()).thenReturn(widthPx);
+        when(intentData.showSideSheetMaximizeButton()).thenReturn(true);
+        when(intentData.canInteractWithBackground()).thenReturn(true);
+        when(intentData.getSideSheetPosition()).thenReturn(position);
+        when(intentData.getSideSheetSlideInBehavior())
+                .thenReturn(ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE);
+        when(intentData.getActivitySideSheetDecorationType()).thenReturn(decorationType);
+        when(intentData.getActivitySideSheetRoundedCornersPosition())
+                .thenReturn(roundedCornersPosition);
         PartialCustomTabSideSheetStrategy pcct =
                 new PartialCustomTabSideSheetStrategy(
                         mPCCTTestRule.mActivity,
-                        widthPx,
+                        mPCCTTestRule.mIntentData,
                         mPCCTTestRule.mOnResizedCallback,
                         mPCCTTestRule.mOnActivityLayoutCallback,
                         mPCCTTestRule.mFullscreenManager,
-                        false,
-                        true,
-                        /* showMaximizedButton= */ true,
+                        /* isTablet= */ false,
                         /* startMaximized= */ false,
-                        position,
-                        ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
-                        mPCCTTestRule.mHandleStrategyFactory,
-                        decorationType,
-                        roundedCornersPosition);
+                        mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(
                 mPCCTTestRule.mCoordinatorLayout,
                 mPCCTTestRule.mToolbarView,

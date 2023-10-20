@@ -57,6 +57,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.ResizeType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.HandleStrategy;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -88,17 +89,17 @@ public class PartialCustomTabBottomSheetStrategyTest {
     private boolean mFullscreen;
 
     private PartialCustomTabBottomSheetStrategy createPcctBackgroundDisabled() {
+        BrowserServicesIntentDataProvider intentData = mPCCTTestRule.mIntentData;
+        when(intentData.getInitialActivityHeight()).thenReturn(500);
         PartialCustomTabBottomSheetStrategy pcct =
                 new PartialCustomTabBottomSheetStrategy(
                         mPCCTTestRule.mActivity,
-                        500,
-                        false,
+                        mPCCTTestRule.mIntentData,
                         mPCCTTestRule.mOnResizedCallback,
                         mPCCTTestRule.mOnActivityLayoutCallback,
                         mPCCTTestRule.mActivityLifecycleDispatcher,
                         mPCCTTestRule.mFullscreenManager,
-                        false,
-                        false,
+                        /* isTablet= */ false,
                         /* startMaximized= */ false,
                         mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(
@@ -117,17 +118,19 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     private PartialCustomTabBottomSheetStrategy createPcctAtHeight(
             int heightPx, boolean isFixedHeight) {
+        BrowserServicesIntentDataProvider intentData = mPCCTTestRule.mIntentData;
+        when(intentData.getInitialActivityHeight()).thenReturn(heightPx);
+        when(intentData.isPartialCustomTabFixedHeight()).thenReturn(isFixedHeight);
+        when(intentData.canInteractWithBackground()).thenReturn(true);
         PartialCustomTabBottomSheetStrategy pcct =
                 new PartialCustomTabBottomSheetStrategy(
                         mPCCTTestRule.mActivity,
-                        heightPx,
-                        isFixedHeight,
+                        mPCCTTestRule.mIntentData,
                         mPCCTTestRule.mOnResizedCallback,
                         mPCCTTestRule.mOnActivityLayoutCallback,
                         mPCCTTestRule.mActivityLifecycleDispatcher,
                         mPCCTTestRule.mFullscreenManager,
-                        false,
-                        true,
+                        /* isTablet= */ false,
                         /* startMaxmized= */ false,
                         mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(
