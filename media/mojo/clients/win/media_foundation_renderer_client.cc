@@ -379,6 +379,11 @@ void MediaFoundationRendererClient::OnFrameAvailable(
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapVideoFrame(
       texture_pool_video_frame, texture_pool_video_frame->format(),
       gfx::Rect(size), size);
+  if (!frame) {
+    MEDIA_LOG(WARNING, media_log_)
+        << "OnFrameAvailable failed to wrap a VideoFrame";
+    return;
+  }
   frame->metadata().wants_promotion_hint = true;
   frame->metadata().allow_overlay = true;
   frame->AddDestructionObserver(base::BindPostTask(
