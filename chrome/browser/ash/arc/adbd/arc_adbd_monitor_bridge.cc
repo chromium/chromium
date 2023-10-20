@@ -22,6 +22,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -93,7 +95,14 @@ bool IsAdbOverUsbEnabled() {
 
 // Returns cid from vm info. Otherwise, return nullopt.
 absl::optional<int64_t> GetCid() {
-  const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
+  Profile* const profile = arc::ArcSessionManager::Get()->profile();
+  if (!profile) {
+    LOG(ERROR) << "Profile is not ready";
+    return absl::nullopt;
+  }
+  const auto& vm_info =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
+          kArcVmName);
   if (!vm_info) {
     LOG(ERROR) << "ARCVM is NOT ready";
     return absl::nullopt;

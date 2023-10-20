@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -233,10 +234,11 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
                          const std::vector<base::FilePath>& paths_to_share) {
   DCHECK(arc::IsArcVmEnabled() || paths_to_share.empty());
   std::vector<base::FilePath> path_list;
+  Profile* const profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(profile);
   for (const auto& path : paths_to_share) {
-    if (!guest_os::GuestOsSharePath::GetForProfile(
-             ProfileManager::GetPrimaryUserProfile())
-             ->IsPathShared(arc::kArcVmName, path)) {
+    if (!guest_os::GuestOsSharePath::GetForProfile(profile)->IsPathShared(
+            kArcVmName, path)) {
       path_list.push_back(path);
     }
   }
@@ -245,29 +247,29 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
     return;
   }
 
-  const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
+  const auto& vm_info =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
+          kArcVmName);
   if (!vm_info) {
     LOG(WARNING) << "ARCVM not running, cannot share paths";
     std::move(callback).Run(std::vector<GURL>());
     return;
   }
-  guest_os::GuestOsSharePath::GetForProfile(
-      ProfileManager::GetPrimaryUserProfile())
-      ->SharePaths(arc::kArcVmName, vm_info->seneschal_server_handle(),
-                   path_list,
-                   base::BindOnce(
-                       [](ConvertToContentUrlsAndShareCallback callback,
-                          const std::vector<GURL>& content_urls, bool success,
-                          const std::string& failure_reason) {
-                         if (success) {
-                           std::move(callback).Run(content_urls);
-                         } else {
-                           LOG(ERROR) << "Error sharing ARC content URLs: "
-                                      << failure_reason;
-                           std::move(callback).Run(std::vector<GURL>());
-                         }
-                       },
-                       std::move(callback), content_urls));
+  guest_os::GuestOsSharePath::GetForProfile(profile)->SharePaths(
+      kArcVmName, vm_info->seneschal_server_handle(), path_list,
+      base::BindOnce(
+          [](ConvertToContentUrlsAndShareCallback callback,
+             const std::vector<GURL>& content_urls, bool success,
+             const std::string& failure_reason) {
+            if (success) {
+              std::move(callback).Run(content_urls);
+            } else {
+              LOG(ERROR) << "Error sharing ARC content URLs: "
+                         << failure_reason;
+              std::move(callback).Run(std::vector<GURL>());
+            }
+          },
+          std::move(callback), content_urls));
 }
 
 }  // namespace

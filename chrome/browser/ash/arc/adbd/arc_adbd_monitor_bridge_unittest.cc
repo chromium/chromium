@@ -16,8 +16,8 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
@@ -84,12 +84,10 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
     WaitForInstanceReady(
         ArcServiceManager::Get()->arc_bridge_service()->adbd_monitor());
 
-    // Send a fake VmStarted signal for ARCVM to notify Chrome of ARCVM's CID.
-    vm_tools::concierge::VmStartedSignal signal;
-    signal.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile));
-    signal.set_name(kArcVmName);
-    signal.mutable_vm_info()->set_cid(kArcVmCidForTesting);
-    ash::FakeConciergeClient::Get()->NotifyVmStarted(signal);
+    const guest_os::GuestId arcvm_id(guest_os::VmType::ARCVM, kArcVmName, "");
+    guest_os::GuestOsSessionTracker::GetForProfile(profile)->AddGuestForTesting(
+        arcvm_id,
+        guest_os::GuestInfo{arcvm_id, kArcVmCidForTesting, {}, {}, {}, {}});
   }
 
   void TearDown() override {

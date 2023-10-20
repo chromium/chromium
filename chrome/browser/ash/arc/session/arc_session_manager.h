@@ -349,10 +349,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void OnVmStopped(
       const vm_tools::concierge::VmStoppedSignal& vm_signal) override;
 
-  // Getter for |vm_info_|.
-  // If ARCVM is not running, return absl::nullopt.
-  const absl::optional<vm_tools::concierge::VmInfo>& GetVmInfo() const;
-
   // Getter for |serialno|.
   std::string GetSerialNumber() const;
 
@@ -529,8 +525,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   absl::optional<std::string> arc_salt_on_disk_;
 
   absl::optional<bool> property_files_expansion_result_;
-
-  absl::optional<vm_tools::concierge::VmInfo> vm_info_;
 
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 
