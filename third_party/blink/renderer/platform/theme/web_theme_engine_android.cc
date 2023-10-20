@@ -108,6 +108,11 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
           absl::get<WebThemeEngine::InnerSpinButtonExtraParams>(*extra_params);
       native_inner_spin.spin_up = inner_spin.spin_up;
       native_inner_spin.read_only = inner_spin.read_only;
+      //  Need to explicit cast so we can assign enum to enum.
+      ui::NativeTheme::SpinArrowsDirection dir =
+          ui::NativeTheme::SpinArrowsDirection(
+              inner_spin.spin_arrows_direction);
+      native_inner_spin.spin_arrows_direction = dir;
       return ui::NativeTheme::ExtraParams(native_inner_spin);
     }
     case WebThemeEngine::kPartProgressBar: {

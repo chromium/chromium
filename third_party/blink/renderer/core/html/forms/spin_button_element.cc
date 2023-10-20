@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/forms/spin_button_element.h"
 
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
@@ -233,7 +234,13 @@ void SpinButtonElement::CalculateUpDownStateByMouseLocation(Event& event) {
   gfx::Point local = gfx::ToRoundedPoint(
       box->AbsoluteToLocalPoint(mouse_event->AbsoluteLocation()));
   UpDownState old_up_down_state = up_down_state_;
-  up_down_state_ = (local.y() < box->Size().height / 2) ? kUp : kDown;
+  bool is_horizontal =
+      GetComputedStyle() ? GetComputedStyle()->IsHorizontalWritingMode() : true;
+  if (is_horizontal) {
+    up_down_state_ = (local.y() < box->Size().height / 2) ? kUp : kDown;
+  } else {
+    up_down_state_ = (local.x() < box->Size().width / 2) ? kDown : kUp;
+  }
   if (up_down_state_ != old_up_down_state)
     GetLayoutObject()->SetShouldDoFullPaintInvalidation();
 }

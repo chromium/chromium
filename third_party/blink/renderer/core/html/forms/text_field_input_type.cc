@@ -33,6 +33,7 @@
 
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/events/before_text_inserted_event.h"
@@ -231,12 +232,21 @@ void TextFieldInputType::HandleKeydownEventForSpinButton(KeyboardEvent& event) {
   if (GetElement().IsDisabledOrReadOnly())
     return;
   const String& key = event.key();
-  if (key == "ArrowUp")
+  bool is_horizontal =
+      GetElement().GetComputedStyle()
+          ? GetElement().GetComputedStyle()->IsHorizontalWritingMode()
+          : true;
+
+  if ((is_horizontal && key == "ArrowUp") ||
+      (!is_horizontal && key == "ArrowRight")) {
     SpinButtonStepUp();
-  else if (key == "ArrowDown" && !event.altKey())
+  } else if (((is_horizontal && key == "ArrowDown") ||
+              (!is_horizontal && key == "ArrowLeft")) &&
+             !event.altKey()) {
     SpinButtonStepDown();
-  else
+  } else {
     return;
+  }
   GetElement().DispatchFormControlChangeEvent();
   event.SetDefaultHandled();
 }

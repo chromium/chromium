@@ -166,10 +166,16 @@ class WebThemeEngine {
     bool right_to_left = false;
   };
 
+  enum class SpinArrowsDirection : int {
+    kLeftRight,
+    kUpDown,
+  };
+
   // Extra parameters for PartInnerSpinButton
   struct InnerSpinButtonExtraParams {
     bool spin_up = false;
     bool read_only = false;
+    SpinArrowsDirection spin_arrows_direction = SpinArrowsDirection::kUpDown;
   };
 
   // Extra parameters for PartProgressBar

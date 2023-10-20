@@ -190,9 +190,15 @@ class NATIVE_THEME_EXPORT NativeTheme {
     SkColor default_background_color = gfx::kPlaceholderColor;
   };
 
+  enum class SpinArrowsDirection : int {
+    kLeftRight,
+    kUpDown,
+  };
+
   struct InnerSpinButtonExtraParams {
     bool spin_up = false;
     bool read_only = false;
+    SpinArrowsDirection spin_arrows_direction = SpinArrowsDirection::kUpDown;
     int classic_state = 0;  // Used on Windows when uxtheme is not available.
   };
 
