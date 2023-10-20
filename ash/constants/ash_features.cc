@@ -2236,7 +2236,7 @@ BASE_FEATURE(kProjectorMuting,
 // Controls whether higher version transcripts should be redirected to PWA.
 BASE_FEATURE(kProjectorRedirectToPwa,
              "ProjectorRedirectToPwa",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether projector V2 is enabled.
 BASE_FEATURE(kProjectorV2, "ProjectorV2", base::FEATURE_DISABLED_BY_DEFAULT);
