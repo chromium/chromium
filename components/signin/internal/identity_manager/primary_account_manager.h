@@ -129,6 +129,9 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
  private:
   class ScopedPrefCommit;
 
+  // Prepares the primary account and consented preferences before loading them.
+  void PrepareToLoadPrefs();
+
   // Sets the primary account id, when the user has consented to sync.
   // If the user has consented for sync with the same account, then this method
   // is a no-op.

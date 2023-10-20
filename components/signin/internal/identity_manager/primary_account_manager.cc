@@ -159,34 +159,32 @@ void PrimaryAccountManager::RegisterPrefs(PrefRegistrySimple* registry) {
                                std::string());
 }
 
-void PrimaryAccountManager::Initialize() {
-  // Should never call Initialize() twice.
-  CHECK(!IsInitialized());
-  initialized_ = true;
+void PrimaryAccountManager::PrepareToLoadPrefs() {
+  PrefService* prefs = client_->GetPrefs();
 
   // If the user is clearing the token service from the command line, then
   // clear their login info also (not valid to be logged in without any
   // tokens).
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
-                                      /*commit_on_destroy*/ false);
-  if (cmd_line->HasSwitch(switches::kClearTokenService))
-    SetPrimaryAccountInternal(CoreAccountInfo(), false, scoped_pref_commit);
+  if (cmd_line->HasSwitch(switches::kClearTokenService)) {
+    prefs->SetString(prefs::kGoogleServicesAccountId, "");
+    prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
+  }
 
   std::string pref_account_id =
-      client_->GetPrefs()->GetString(prefs::kGoogleServicesAccountId);
+      prefs->GetString(prefs::kGoogleServicesAccountId);
 
   // Initial value for the kGoogleServicesConsentedToSync preference if it is
   // missing.
   const PrefService::Preference* consented_pref =
-      client_->GetPrefs()->FindPreference(
-          prefs::kGoogleServicesConsentedToSync);
+      prefs->FindPreference(prefs::kGoogleServicesConsentedToSync);
   if (consented_pref->IsDefaultValue()) {
-    client_->GetPrefs()->SetBoolean(prefs::kGoogleServicesConsentedToSync,
-                                    !pref_account_id.empty());
+    prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync,
+                      !pref_account_id.empty());
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Migrate primary account ID from email to Gaia ID if needed.
   if (!pref_account_id.empty()) {
     if (account_tracker_service_->GetMigrationState() ==
         AccountTrackerService::MIGRATION_IN_PROGRESS) {
@@ -195,18 +193,30 @@ void PrimaryAccountManager::Initialize() {
       // |account_info.gaia| could be empty if |account_id| is already gaia id.
       if (!account_info.gaia.empty()) {
         pref_account_id = account_info.gaia;
-        client_->GetPrefs()->SetString(prefs::kGoogleServicesAccountId,
-                                       account_info.gaia);
+        prefs->SetString(prefs::kGoogleServicesAccountId, account_info.gaia);
       }
     }
   }
 #endif
+}
 
+void PrimaryAccountManager::Initialize() {
+  // Should never call Initialize() twice.
+  CHECK(!IsInitialized());
+  initialized_ = true;
+
+  // Prepare prefs before loading them.
+  PrepareToLoadPrefs();
+
+  std::string pref_account_id =
+      client_->GetPrefs()->GetString(prefs::kGoogleServicesAccountId);
   bool consented =
       client_->GetPrefs()->GetBoolean(prefs::kGoogleServicesConsentedToSync);
   CoreAccountId account_id = CoreAccountId::FromString(pref_account_id);
   CoreAccountInfo account_info =
       account_tracker_service_->GetAccountInfo(account_id);
+  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
+                                      /*commit_on_destroy*/ false);
   if (consented) {
     DCHECK(!account_info.account_id.empty());
     // First reset the state, because SetSyncPrimaryAccountInternal() can
