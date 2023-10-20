@@ -17,8 +17,10 @@ import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
+import '../site_favicon.js';
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -53,6 +55,25 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
         },
       },
 
+      // Whether the `kSearchEngineChoiceSettingsUi` feature is enabled or not.
+      searchEngineChoiceSettingsUi_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('searchEngineChoiceSettingsUi');
+        },
+      },
+
+      // The selected default search engine.
+      // This depends on `prefs.default_search_provider_data.template_url_data`
+      // because we want to update the `defaultSearchEngine_` variable every
+      // time the default search provider is updated in the pref.
+      defaultSearchEngine_: {
+        type: Object,
+        computed: 'computeDefaultSearchEngine_(' +
+            'prefs.default_search_provider_data.template_url_data, ' +
+            'searchEngines_)',
+      },
+
       /** Filter applied to search engines. */
       searchEnginesFilter_: String,
 
@@ -64,6 +85,8 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   prefs: Object;
   private searchEngines_: SearchEngine[];
   private searchEnginesFilter_: string;
+  private searchEngineChoiceSettingsUi_: boolean;
+  private defaultSearchEngine_: SearchEngine|null;
   private focusConfig_: Map<string, string>|null;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
@@ -112,6 +135,12 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private isDefaultSearchEngineEnforced_(
       pref: chrome.settingsPrivate.PrefObject): boolean {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  }
+
+  private computeDefaultSearchEngine_(): SearchEngine|null {
+    return this.searchEngines_.length ?
+        this.searchEngines_.find(searchEngine => searchEngine.default)! :
+        null;
   }
 }
 

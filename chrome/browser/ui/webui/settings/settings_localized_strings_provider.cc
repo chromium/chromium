@@ -2413,13 +2413,19 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
 
 void AddSearchStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"searchEnginesManage", IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES},
-      {"searchEnginesManageSiteSearch",
-       IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH},
-      {"searchPageTitle", IDS_SETTINGS_SEARCH},
-      {"searchExplanation", IDS_SETTINGS_SEARCH_EXPLANATION},
-      {"searchExplanationLearnMoreA11yLabel",
-       IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL},
+    {"searchEnginesManage", IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES},
+    {"searchEnginesManageSiteSearch",
+     IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH},
+    {"searchPageTitle", IDS_SETTINGS_SEARCH},
+    {"searchExplanation", IDS_SETTINGS_SEARCH_EXPLANATION},
+    {"searchExplanationLearnMoreA11yLabel",
+     IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL},
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+    {"searchEngineChoiceEntryPointSubtitle",
+     IDS_SEARCH_ENGINE_CHOICE_SETTINGS_ENTRY_POINT_SUBTITLE},
+    {"searchEnginesChange",
+     IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CHANGE_DEFAULT_ENGINE},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
