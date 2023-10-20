@@ -27514,6 +27514,7 @@ Called by update_debug_scenarios.py.-->
   <int value="110"
       label="Override Content Context Menu Redirect To Deployed File"/>
   <int value="111" label="Add a new style rule in the styles pane"/>
+  <int value="112" label="Expand a console stack trace"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
