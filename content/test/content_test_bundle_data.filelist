@@ -5859,6 +5859,7 @@ data/gpu/pixel_repeated_webgl_to_2d.html
 data/gpu/pixel_scissor.html
 data/gpu/pixel_scissor_expectations.json
 data/gpu/pixel_svg_huge.html
+data/gpu/pixel_test_page.html
 data/gpu/pixel_video_av1.html
 data/gpu/pixel_video_backdrop_filter.html
 data/gpu/pixel_video_context_loss.html

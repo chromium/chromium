@@ -546,7 +546,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # on a dual-GPU Mac, while the user has allocated multisampled
     # renderbuffers via the WebGL 2.0 API, causes the context to be
     # lost.
-    if not self._IsDualGPUMacLaptop():
+    if not self.IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
       self.skipTest('Not running on dual-GPU Mac laptop')
     # Start with a browser with clean GPU process state.
@@ -568,7 +568,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Verifies that switching from the low-power to the high-power GPU
     # on a dual-GPU Mac, while the user has allocated multisampled
     # renderbuffers via the WebGL 2.0 API, does not crash.
-    if not self._IsDualGPUMacLaptop():
+    if not self.IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
       self.skipTest('Not running on dual-GPU Mac laptop')
     # Start with a browser with clean GPU process state.
@@ -591,7 +591,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # on a dual-GPU Mac, while the user has allocated multisampled
     # renderbuffers via the WebGL 2.0 API, and calling
     # CopyTexSubImage2D all the while, does not crash.
-    if not self._IsDualGPUMacLaptop():
+    if not self.IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
       self.skipTest('Not running on dual-GPU Mac laptop')
     # Start with a browser with clean GPU process state.
@@ -613,7 +613,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Verifies that switching from the low-power to the high-power GPU on a
     # dual-GPU Mac, when the user specified preserveDrawingBuffer:true, causes
     # the context to be lost.
-    if not self._IsDualGPUMacLaptop():
+    if not self.IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
       self.skipTest('Not running on dual-GPU Mac laptop')
     # Start with a browser with clean GPU process state.
@@ -662,7 +662,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # the latest active GPU before the crash, after gpu process crashes three
     # times and falls back to SwiftShader.
     # Currently the test only works on Mac dual GPU bots.
-    if not self._IsDualGPUMacLaptop():
+    if not self.IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
       self.skipTest('Not running on dual-GPU Mac laptop')
     self.RestartBrowserIfNecessaryWithArgs(

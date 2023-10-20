@@ -723,7 +723,7 @@ class GpuIntegrationTest(
     # GPU devices list is the active GPU.
     return gpu_helper.IsIntel(gpu.devices[0].vendor_id)
 
-  def _IsDualGPUMacLaptop(self) -> bool:
+  def IsDualGPUMacLaptop(self) -> bool:
     if sys.platform != 'darwin':
       return False
     system_info = self.browser.GetSystemInfo()
@@ -741,6 +741,16 @@ class GpuIntegrationTest(
         and gpu_helper.IsIntel(gpu.devices[1].vendor_id)):
       return True
     return False
+
+  def AssertLowPowerGPU(self) -> None:
+    if self.IsDualGPUMacLaptop():
+      if not self._IsIntelGPUActive():
+        self.fail("Low power GPU should have been active but wasn't")
+
+  def AssertHighPerformanceGPU(self) -> None:
+    if self.IsDualGPUMacLaptop():
+      if self._IsIntelGPUActive():
+        self.fail("High performance GPU should have been active but wasn't")
 
   # pylint: disable=too-many-return-statements
   def _ClearExpectedCrashes(self, expected_crashes: Dict[str, int]) -> bool:

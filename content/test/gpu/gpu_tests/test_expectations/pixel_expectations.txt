@@ -288,6 +288,17 @@ crbug.com/1353952 [ chromeos cros-chrome chromeos-board-kevin ] Pixel_WebGLConte
 # Flakily causes subsequent tests to fail.
 crbug.com/1488026 [ android android-nexus-5x ] Pixel_Video_HEVC [ Skip ]
 
+###############################
+# Permanent Slow Expectations #
+###############################
+
+# Test is slow enough on some Android devices to hit heartbeat timeouts.
+[ android android-pixel-2 ] Pixel_SVGHuge [ Slow ]
+[ android android-pixel-4 ] Pixel_SVGHuge [ Slow ]
+[ android android-shield-android-tv ] Pixel_SVGHuge [ Slow ]
+[ android android-sm-a135m ] Pixel_SVGHuge [ Slow ]
+[ android android-sm-a235m ] Pixel_SVGHuge [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################
