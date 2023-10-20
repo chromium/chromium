@@ -807,6 +807,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
                          chrome::kHighEfficiencyModeLearnMoreUrl);
   html_source->AddString("batterySaverLearnMoreUrl",
                          chrome::kBatterySaverModeLearnMoreUrl);
+  html_source->AddString("preloadingLearnMoreUrl",
+                         chrome::kPreloadingLearnMoreUrl);
 
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(

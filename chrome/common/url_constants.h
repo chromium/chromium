@@ -391,6 +391,10 @@ inline constexpr char kAddressesAndPaymentMethodsLearnMoreURL[] =
     "https://support.google.com/chrome?p=settings_autofill";
 #endif
 
+// "Learn more" URL for the preloading section in Performance settings.
+inline constexpr char kPreloadingLearnMoreUrl[] =
+    "https://support.google.com/chrome/?p=performance_preload_pages";
+
 // "Learn more" URL for the Privacy section under Options.
 inline constexpr char kPrivacyLearnMoreURL[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
