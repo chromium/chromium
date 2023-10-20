@@ -215,6 +215,8 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   absl::optional<blink::Color> ScrollbarThumbColor() const;
   absl::optional<blink::Color> ScrollbarTrackColor() const;
 
+  virtual bool IsOpaque() const;
+
   // The LayoutObject that supplies our style information. If the scrollbar is
   // for a document, this is:
   // 1. the LayoutView (with some scrollbar related styles propagated from the

@@ -2995,7 +2995,6 @@ crbug.com/626703 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.fontVar
 crbug.com/626703 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.fontVariantCaps3.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.fontVariantCaps4.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.fontVariantCaps4.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-overflow/scrollbar-gutter-dynamic-003.html [ Failure ]
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/scroll-timelines/effect-updateTiming.html [ Timeout ]

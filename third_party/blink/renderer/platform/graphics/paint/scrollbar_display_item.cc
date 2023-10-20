@@ -110,8 +110,8 @@ scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
 
 bool ScrollbarDisplayItem::IsOpaque() const {
   DCHECK(!IsTombstone());
-  // The native themes should ensure opaqueness of non-overlay scrollbars.
-  return !data_->scrollbar_->IsOverlay();
+
+  return data_->scrollbar_->IsOpaque();
 }
 
 bool ScrollbarDisplayItem::EqualsForUnderInvalidationImpl(

@@ -116,4 +116,8 @@ gfx::Rect FakeScrollbar::NinePatchThumbAperture() const {
   return uses_nine_patch_thumb_resource_ ? gfx::Rect(0, 0, 5, 5) : gfx::Rect();
 }
 
+bool FakeScrollbar::IsOpaque() const {
+  return !is_overlay_ && is_opaque_;
+}
+
 }  // namespace cc

@@ -4126,16 +4126,18 @@ static bool HasInsetBoxShadow(const ComputedStyle& style) {
 // If all borders and scrollbars are opaque, then background-clip: border-box
 // is equivalent to background-clip: padding-box.
 bool LayoutBox::BackgroundClipBorderBoxIsEquivalentToPaddingBox() const {
-  // Custom scrollbars may be translucent.
-  // TODO(flackr): Detect opaque custom scrollbars which would cover up a
-  // border-box background.
   const auto* scrollable_area = GetScrollableArea();
-  if (scrollable_area &&
-      ((scrollable_area->HorizontalScrollbar() &&
-        scrollable_area->HorizontalScrollbar()->IsCustomScrollbar()) ||
-       (scrollable_area->VerticalScrollbar() &&
-        scrollable_area->VerticalScrollbar()->IsCustomScrollbar()))) {
-    return false;
+  if (scrollable_area) {
+    if (auto* scrollbar = scrollable_area->HorizontalScrollbar()) {
+      if (!scrollbar->IsOverlayScrollbar() && !scrollbar->IsOpaque()) {
+        return false;
+      }
+    }
+    if (auto* scrollbar = scrollable_area->VerticalScrollbar()) {
+      if (!scrollbar->IsOverlayScrollbar() && !scrollbar->IsOpaque()) {
+        return false;
+      }
+    }
   }
 
   if (StyleRef().BorderTopWidth() &&
@@ -4156,6 +4158,10 @@ bool LayoutBox::BackgroundClipBorderBoxIsEquivalentToPaddingBox() const {
   if (StyleRef().BorderLeftWidth() &&
       (!ResolveColor(GetCSSPropertyBorderLeftColor()).IsOpaque() ||
        StyleRef().BorderLeftStyle() != EBorderStyle::kSolid)) {
+    return false;
+  }
+
+  if (!StyleRef().IsScrollbarGutterAuto()) {
     return false;
   }
 

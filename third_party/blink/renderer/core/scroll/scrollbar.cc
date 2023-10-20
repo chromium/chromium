@@ -935,6 +935,19 @@ absl::optional<blink::Color> Scrollbar::ScrollbarTrackColor() const {
   return absl::nullopt;
 }
 
+bool Scrollbar::IsOpaque() const {
+  if (IsOverlayScrollbar()) {
+    return false;
+  }
+
+  absl::optional<blink::Color> track_color = ScrollbarTrackColor();
+  if (!track_color) {
+    // The native themes should ensure opaqueness of non-overlay scrollbars.
+    return true;
+  }
+  return track_color->IsOpaque();
+}
+
 mojom::blink::ColorScheme Scrollbar::UsedColorScheme() const {
   return scrollable_area_->UsedColorSchemeScrollbars();
 }

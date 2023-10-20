@@ -31,6 +31,7 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
   bool IsFluentOverlayScrollbarMinimalMode() const override;
   bool SupportsDragSnapBack() const override;
   bool JumpOnTrackClick() const override;
+  bool IsOpaque() const override;
 
   // The following rects are all relative to the scrollbar's origin.
   gfx::Rect ThumbRect() const override;
