@@ -6276,29 +6276,15 @@ TEST_P(KeyEventRemappedToSixPackKeyTest, KeyEventRemappedTest) {
 
 class EventRewriterRemapToRightClickTest
     : public EventRewriterTest,
-      public ui::EventRewriterAsh::Delegate {
+      public message_center::MessageCenterObserver {
  public:
   void SetUp() override {
-    EventRewriterTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
         {features::kInputDeviceSettingsSplit,
          features::kAltClickAndSixPackCustomization},
         /*disabled_features=*/{});
-    auto deprecation_controller =
-        std::make_unique<DeprecationNotificationController>(&message_center_);
-    deprecation_controller_ = deprecation_controller.get();
-    auto input_device_settings_notification_controller =
-        std::make_unique<InputDeviceSettingsNotificationController>(
-            &message_center_);
-    input_device_settings_notification_controller_ =
-        input_device_settings_notification_controller.get();
-    delegate_ = std::make_unique<EventRewriterDelegateImpl>(
-        nullptr, std::move(deprecation_controller),
-        std::move(input_device_settings_notification_controller),
-        input_device_settings_controller_mock_.get());
-    rewriter_ = std::make_unique<ui::EventRewriterAsh>(
-        this, Shell::Get()->keyboard_capability(), nullptr, false,
-        &fake_ime_keyboard_);
+    EventRewriterTest::SetUp();
+
     Preferences::RegisterProfilePrefs(prefs()->registry());
     ui::DeviceDataManager* device_data_manager =
         ui::DeviceDataManager::GetInstance();
@@ -6306,88 +6292,37 @@ class EventRewriterRemapToRightClickTest
     touchpad_devices[0].id = kTouchpadId1;
     static_cast<ui::DeviceHotplugEventObserver*>(device_data_manager)
         ->OnTouchpadDevicesUpdated(touchpad_devices);
+
+    EXPECT_CALL(*input_device_settings_controller_mock_,
+                GetTouchpadSettings(kTouchpadId1))
+        .WillRepeatedly(testing::Return(&settings_));
+
+    observation_.Observe(&message_center_);
+  }
+
+  void TearDown() override {
+    observation_.Reset();
+    EventRewriterTest::TearDown();
+  }
+
+  // message_center::MessageCenterObserver:
+  void OnNotificationAdded(const std::string& notification_id) override {
+    ++notification_count_;
   }
 
   void SetSimulateRightClickSetting(
       ui::mojom::SimulateRightClickModifier modifier) {
     settings_.simulate_right_click = modifier;
-    right_click_remapping_[kTouchpadId1] = modifier;
   }
 
-  int notification_count() {
-    return blocked_right_click_rewrite_notification_count_;
-  }
-
- protected:
-  ui::mojom::SimulateRightClickModifier simulate_right_click_modifier_;
-  int flag_masks_;
-  mojom::TouchpadSettings settings_;
-  int blocked_right_click_rewrite_notification_count_ = 0;
-  std::map<int, ui::mojom::SimulateRightClickModifier> right_click_remapping_;
+  int notification_count() { return notification_count_; }
 
  private:
-  // ui::EventRewriterAsh::Delegate:
-  bool RewriteModifierKeys() override { return true; }
-  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
-    return true;
-  }
-
-  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
-      int device_id,
-      ui::mojom::ModifierKey modifier_key,
-      const std::string& pref_name) const override {
-    return absl::nullopt;
-  }
-
-  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
-
-  bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
-                                    int flags) const override {
-    return false;
-  }
-
-  bool IsSearchKeyAcceleratorReserved() const override { return false; }
-  bool NotifyDeprecatedRightClickRewrite() override { return false; }
-  bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
-    return false;
-  }
-  void SuppressModifierKeyRewrites(bool should_suppress) override {}
-  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-  void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
-  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
-                                 bool alt_based) override {}
-  absl::optional<ui::mojom::SimulateRightClickModifier>
-  GetRemapRightClickModifier(int device_id) override {
-    auto it = right_click_remapping_.find(device_id);
-    if (it == right_click_remapping_.end()) {
-      return absl::nullopt;
-    }
-    return it->second;
-  }
-
-  absl::optional<ui::mojom::SixPackShortcutModifier>
-  GetShortcutModifierForSixPackKey(int device_id,
-                                   ui::KeyboardCode key_code) override {
-    return absl::nullopt;
-  }
-
-  void NotifyRightClickRewriteBlockedBySetting(
-      ui::mojom::SimulateRightClickModifier blocked_modifier,
-      ui::mojom::SimulateRightClickModifier active_modifier) override {
-    blocked_right_click_rewrite_notification_count_++;
-  }
-
-  void NotifySixPackRewriteBlockedBySetting(
-      ui::KeyboardCode key_code,
-      ui::mojom::SixPackShortcutModifier blocked_modifier,
-      ui::mojom::SixPackShortcutModifier active_modifier,
-      int device_id) override {}
-
-  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
-      int device_id,
-      ui::KeyboardCode key_code) override {
-    return absl::nullopt;
-  }
+  mojom::TouchpadSettings settings_;
+  int notification_count_ = 0;
+  base::ScopedObservation<message_center::MessageCenter,
+                          message_center::MessageCenterObserver>
+      observation_{this};
 };
 
 TEST_F(EventRewriterRemapToRightClickTest, AltClickRemappedToRightClick) {
@@ -6432,9 +6367,6 @@ TEST_F(EventRewriterRemapToRightClickTest, RemapToRightClickBlockedBySetting) {
   static_cast<ui::DeviceHotplugEventObserver*>(device_data_manager)
       ->OnTouchpadDevicesUpdated(touchpad_devices);
   SetSimulateRightClickSetting(ui::mojom::SimulateRightClickModifier::kAlt);
-  EXPECT_CALL(*input_device_settings_controller_mock_,
-              GetTouchpadSettings(kTouchpadId1))
-      .WillRepeatedly(testing::Return(&settings_));
 
   {
     ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -6471,9 +6403,6 @@ TEST_F(EventRewriterRemapToRightClickTest, RemapToRightClickIsDisabled) {
   static_cast<ui::DeviceHotplugEventObserver*>(device_data_manager)
       ->OnTouchpadDevicesUpdated(touchpad_devices);
   SetSimulateRightClickSetting(ui::mojom::SimulateRightClickModifier::kNone);
-  EXPECT_CALL(*input_device_settings_controller_mock_,
-              GetTouchpadSettings(kTouchpadId1))
-      .WillRepeatedly(testing::Return(&settings_));
 
   ui::MouseEvent press(
       ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
