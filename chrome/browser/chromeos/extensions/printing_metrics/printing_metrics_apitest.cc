@@ -27,9 +27,11 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/version.h"
 #include "chromeos/crosapi/mojom/printing_metrics.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/lacros/lacros_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace extensions {
@@ -154,7 +156,8 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
 
 IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!GetTestController()) {
+  if (!GetTestController() ||
+      !chromeos::IsAshVersionAtLeastForTesting(base::Version({120, 0, 6079}))) {
     GTEST_SKIP() << "Unsupported ash version.";
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
