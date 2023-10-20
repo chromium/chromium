@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -1134,7 +1135,7 @@ TEST_F(PaymentsClientTest, GetDetailsIncludesDetectedValuesInRequest) {
 
   // Verify that the detected values were included in the request.
   std::string detected_values_string =
-      "\"detected_values\":" + std::to_string(kAllDetectableValues);
+      "\"detected_values\":" + base::NumberToString(kAllDetectableValues);
   EXPECT_TRUE(GetUploadData().find(detected_values_string) !=
               std::string::npos);
 }
