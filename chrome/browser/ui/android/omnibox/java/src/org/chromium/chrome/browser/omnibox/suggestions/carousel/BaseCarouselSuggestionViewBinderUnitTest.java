@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.spy;
@@ -120,23 +122,67 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
      */
     @Test
     @Config(qualifiers = "sw480dp-port")
-    public void formFactor_itemSpacingPhone_computedPortrait() {
-        int displayWidth = mResources.getDisplayMetrics().widthPixels;
-        int tileViewWidth = mResources.getDimensionPixelSize(R.dimen.tile_view_width);
-        int tileViewPaddingEdgePortrait =
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
-        int tileViewPaddingMax = mResources.getDimensionPixelSize(R.dimen.tile_view_padding);
+    public void formFactor_itemSpacingPhone_computedPortrait_exactFit() {
+        int carouselWidth = mResources.getDisplayMetrics().widthPixels;
+        int initialPadding = 50;
+        int adjustedWidth = carouselWidth - initialPadding;
+        int baseSpacing = mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
 
-        final int expectedSpacingPx =
-                Integer.max(
-                        -tileViewPaddingMax,
-                        (int)
-                                ((displayWidth - tileViewPaddingEdgePortrait - tileViewWidth * 4.5)
-                                        / 4));
-        Assert.assertEquals(
-                expectedSpacingPx,
+        // Adjusted carousel size should be (displayWidth - initialPadding).
+        // Let's compute hypothetical tile size which would yield itemSpacing == baseSpacing
+        // if we were to show 4.5 of them.
+        int totalTileAreaSize = adjustedWidth - (4 * baseSpacing);
+        int singleTileSize = (int) (totalTileAreaSize / 4.5);
+
+        // Quickly verify our logic. We should not deviate by more than 4.5 pixels (rounding).
+        assertEquals((int) (singleTileSize * 4.5 + baseSpacing * 4), adjustedWidth, 4.5);
+
+        // Verify that logic returns baseSpacing as computed itemSpacing.
+        assertEquals(
+                baseSpacing,
                 BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.PHONE, tileViewWidth, mResources));
+                        FormFactor.PHONE, singleTileSize, initialPadding, mResources));
+    }
+
+    @Test
+    @Config(qualifiers = "sw480dp-port")
+    public void formFactor_itemSpacingPhone_computedPortrait_tightFit() {
+        int carouselWidth = mResources.getDisplayMetrics().widthPixels;
+        int initialPadding = 50;
+        int adjustedWidth = carouselWidth - initialPadding;
+        int baseSpacing = mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
+
+        // Adjusted carousel size should be (displayWidth - initialPadding).
+        // Let's compute hypothetical tile size which would yield itemSpacing < baseSpacing
+        // if we were to show 4.5 of them.
+        int totalTileAreaSize = adjustedWidth - (4 * baseSpacing);
+        int singleTileSize = (int) (totalTileAreaSize / 4.5) + 5;
+
+        // Quickly verify our logic. We should exceed the available space, forcing the algorithm to
+        // reduce number of visible items.
+        assertTrue((int) (singleTileSize * 4.5 + baseSpacing * 4) > adjustedWidth);
+        // Compute expected padding in that case.
+        int expectedPadding = (int) (adjustedWidth - 3.5 * singleTileSize) / 3;
+
+        // Verify that logic returns padding for 3.5 tiles.
+        assertEquals(
+                expectedPadding,
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
+                        FormFactor.PHONE, singleTileSize, initialPadding, mResources));
+    }
+
+    @Test
+    @Config(qualifiers = "sw480dp-port")
+    public void formFactor_itemSpacingPhone_computedPortrait_impossibleFit() {
+        int carouselWidth = mResources.getDisplayMetrics().widthPixels;
+        // No way to fit in 1.5 tiles on screen.
+        int singleTileSize = carouselWidth;
+        int baseSpacing = mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
+
+        assertEquals(
+                baseSpacing,
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
+                        FormFactor.PHONE, singleTileSize, 0, mResources));
     }
 
     @Test
@@ -145,7 +191,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait),
                 BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.TABLET, Integer.MAX_VALUE, mResources));
+                        FormFactor.TABLET, Integer.MAX_VALUE, Integer.MAX_VALUE, mResources));
     }
 
     @Test
@@ -158,7 +204,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         Assert.assertEquals(
                 spacingPx,
                 BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.TABLET, Integer.MAX_VALUE, mResources));
+                        FormFactor.TABLET, Integer.MAX_VALUE, Integer.MAX_VALUE, mResources));
 
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
         ArgumentCaptor<SpacingRecyclerViewItemDecoration> captor =
@@ -194,7 +240,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
                 BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.PHONE, Integer.MAX_VALUE, mResources));
+                        FormFactor.PHONE, Integer.MAX_VALUE, Integer.MAX_VALUE, mResources));
     }
 
     @Test
@@ -203,7 +249,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
                 BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.TABLET, Integer.MAX_VALUE, mResources));
+                        FormFactor.TABLET, Integer.MAX_VALUE, Integer.MAX_VALUE, mResources));
     }
 
     @Test
