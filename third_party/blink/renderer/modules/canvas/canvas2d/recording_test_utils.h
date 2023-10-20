@@ -32,6 +32,16 @@ class RecordedOpsView {
   cc::PaintOpBuffer::Iterator end_;
 };
 
+// A Google Test matcher that checks whether a `cc::PaintRecord` contains the
+// expected paint ops, ignoring the leading and trailing `cc::SaveOp` and
+// `cc::RestoreOp` that are present in every single Canvas 2D recordings.
+template <typename... Args>
+testing::Matcher<cc::PaintRecord> RecordedOpsAre(Args... args) {
+  return testing::ResultOf(
+      [](const cc::PaintRecord& record) { return RecordedOpsView(record); },
+      testing::ElementsAre(args...));
+}
+
 }  // namespace blink_testing
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_RECORDING_TEST_UTILS_H_
