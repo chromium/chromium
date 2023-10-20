@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/bookmark_sync_service_factory.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
@@ -10,21 +10,23 @@
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 
 // static
-sync_bookmarks::BookmarkSyncService* BookmarkSyncServiceFactory::GetForProfile(
-    Profile* profile) {
+sync_bookmarks::BookmarkSyncService*
+LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<sync_bookmarks::BookmarkSyncService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static
-BookmarkSyncServiceFactory* BookmarkSyncServiceFactory::GetInstance() {
-  static base::NoDestructor<BookmarkSyncServiceFactory> instance;
+LocalOrSyncableBookmarkSyncServiceFactory*
+LocalOrSyncableBookmarkSyncServiceFactory::GetInstance() {
+  static base::NoDestructor<LocalOrSyncableBookmarkSyncServiceFactory> instance;
   return instance.get();
 }
 
-BookmarkSyncServiceFactory::BookmarkSyncServiceFactory()
+LocalOrSyncableBookmarkSyncServiceFactory::
+    LocalOrSyncableBookmarkSyncServiceFactory()
     : ProfileKeyedServiceFactory(
-          "BookmarkSyncServiceFactory",
+          "LocalOrSyncableBookmarkSyncServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
               // Bookmarks can be enabled in Guest sessions under some
@@ -38,9 +40,11 @@ BookmarkSyncServiceFactory::BookmarkSyncServiceFactory()
   DependsOn(BookmarkUndoServiceFactory::GetInstance());
 }
 
-BookmarkSyncServiceFactory::~BookmarkSyncServiceFactory() = default;
+LocalOrSyncableBookmarkSyncServiceFactory::
+    ~LocalOrSyncableBookmarkSyncServiceFactory() = default;
 
-KeyedService* BookmarkSyncServiceFactory::BuildServiceInstanceFor(
+KeyedService*
+LocalOrSyncableBookmarkSyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return new sync_bookmarks::BookmarkSyncService(

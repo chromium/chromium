@@ -34,8 +34,8 @@
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
 #include "chrome/browser/sharing/sharing_message_model_type_controller.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
@@ -252,8 +252,8 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       web_data_service_thread_, profile_web_data_service_,
       account_web_data_service_, profile_password_store_,
       account_password_store_,
-      BookmarkSyncServiceFactory::GetForProfile(profile_), nullptr,
-      PowerBookmarkServiceFactory::GetForBrowserContext(profile_),
+      LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile_),
+      nullptr, PowerBookmarkServiceFactory::GetForBrowserContext(profile_),
       supervised_user_settings_service);
 }
 

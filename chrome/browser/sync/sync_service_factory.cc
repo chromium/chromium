@@ -33,9 +33,9 @@
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
-#include "chrome/browser/sync/bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/chrome_sync_client.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
@@ -231,7 +231,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(AboutSigninInternalsFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
-  DependsOn(BookmarkSyncServiceFactory::GetInstance());
   DependsOn(BookmarkUndoServiceFactory::GetInstance());
   DependsOn(browser_sync::UserEventServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
@@ -243,6 +242,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(GoogleGroupsUpdaterServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(PasskeyModelFactory::GetInstance());

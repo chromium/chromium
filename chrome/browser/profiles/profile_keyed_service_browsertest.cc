@@ -352,7 +352,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "BookmarkExpandedStateTracker",
 #endif
     "BookmarkModel",
-    "BookmarkSyncServiceFactory",
     "BookmarkUndoService",
     "BookmarksAPI",
     "BrailleDisplayPrivateAPI",
@@ -422,6 +421,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "ListFamilyMembersService",
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    "LocalOrSyncableBookmarkSyncServiceFactory",
     "LoginUIServiceFactory",
     "MDnsAPI",
     "ManagedBookmarkService",

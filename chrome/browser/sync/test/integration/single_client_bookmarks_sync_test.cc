@@ -18,8 +18,8 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
@@ -2043,7 +2043,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Set a limit of 4 bookmarks. This is to avoid erroring out when the fake
   // server sends an update of size 4.
-  BookmarkSyncServiceFactory::GetForProfile(GetProfile(kSingleProfileIndex))
+  LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
+      GetProfile(kSingleProfileIndex))
       ->SetBookmarksLimitForTesting(4);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -2083,7 +2084,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Set a limit of 4 bookmarks. This is to avoid erroring out when the fake
   // server sends an update of size 4.
-  BookmarkSyncServiceFactory::GetForProfile(GetProfile(kSingleProfileIndex))
+  LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
+      GetProfile(kSingleProfileIndex))
       ->SetBookmarksLimitForTesting(4);
 
   // Add 2 new bookmarks to exceed the limit.
@@ -2131,7 +2133,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Set a limit of 5 bookmarks. This is to avoid erroring out when the fake
   // server sends an update of size 5.
-  BookmarkSyncServiceFactory::GetForProfile(GetProfile(kSingleProfileIndex))
+  LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
+      GetProfile(kSingleProfileIndex))
       ->SetBookmarksLimitForTesting(5);
 
   // Set up 2 preexisting local bookmark under other node.
@@ -2173,7 +2176,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Set a limit of 4 bookmarks. This is to avoid erroring out when the fake
   // server sends an update of size 4.
-  BookmarkSyncServiceFactory::GetForProfile(GetProfile(kSingleProfileIndex))
+  LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
+      GetProfile(kSingleProfileIndex))
       ->SetBookmarksLimitForTesting(4);
 
   // Set up a preexisting local bookmark under other node.
@@ -2231,7 +2235,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Set a limit of 4 bookmarks. This should result in an error when we get an
   // update of size 5.
-  BookmarkSyncServiceFactory::GetForProfile(GetProfile(kSingleProfileIndex))
+  LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
+      GetProfile(kSingleProfileIndex))
       ->SetBookmarksLimitForTesting(4);
 
   ASSERT_FALSE(GetClient(kSingleProfileIndex)

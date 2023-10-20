@@ -21,7 +21,7 @@
 #include "chrome/browser/profiles/profile_statistics_aggregator.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "chrome/browser/profiles/profile_statistics_factory.h"
-#include "chrome/browser/sync/bookmark_sync_service_factory.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -47,7 +47,7 @@ std::unique_ptr<KeyedService> BuildBookmarkModelWithoutLoad(
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(
       new bookmarks::BookmarkModel(std::make_unique<ChromeBookmarkClient>(
           profile, ManagedBookmarkServiceFactory::GetForProfile(profile),
-          BookmarkSyncServiceFactory::GetForProfile(profile),
+          LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile),
           BookmarkUndoServiceFactory::GetForProfile(profile))));
   return std::move(bookmark_model);
 }
