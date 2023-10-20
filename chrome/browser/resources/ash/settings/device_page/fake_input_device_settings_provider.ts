@@ -150,6 +150,7 @@ export class FakeInputDeviceSettingsProvider implements
 
   setFakeGraphicsTablets(graphicsTablets: GraphicsTablet[]): void {
     this.methods.setResult('fakeGraphicsTablets', graphicsTablets);
+    this.notifyGraphicsTabletListUpdated();
   }
 
   getConnectedGraphicsTabletSettings(): Promise<GraphicsTablet[]> {

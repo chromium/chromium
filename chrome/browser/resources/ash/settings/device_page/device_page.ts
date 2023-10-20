@@ -208,6 +208,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       'mouseChanged_(mice)',
       'touchpadChanged_(touchpads)',
       'pointingStickChanged_(pointingSticks)',
+      'graphicsTabletChanged_(graphicsTablets)',
     ];
   }
 
@@ -559,6 +560,13 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     }
   }
 
+  private graphicsTabletChanged_(): void {
+    if ((!this.graphicsTablets || this.graphicsTablets.length === 0) &&
+        Router.getInstance().currentRoute === routes.GRAPHICS_TABLET) {
+      Router.getInstance().navigateTo(routes.DEVICE);
+    }
+  }
+
   private showPointersRow_(): boolean {
     return (this.hasMouse_ || this.hasTouchpad_ || this.hasPointingStick_) &&
         !this.isDeviceSettingsSplitEnabled_;
@@ -577,6 +585,11 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private showPerDevicePointingStickRow_(): boolean {
     return this.isDeviceSettingsSplitEnabled_ && this.pointingSticks &&
         this.pointingSticks.length !== 0;
+  }
+
+  private showGraphicsTabletRow_(): boolean {
+    return this.isPeripheralCustomizationEnabled && this.graphicsTablets &&
+        this.graphicsTablets.length !== 0;
   }
 
   protected restoreDefaults(): void {
