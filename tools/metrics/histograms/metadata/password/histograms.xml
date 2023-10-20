@@ -2468,7 +2468,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordNotesMigrationToOSCrypt.{Store}DeletedNotesCount"
-    units="count" expires_after="M120">
+    units="count" expires_after="2024-03-17">
   <owner>rgod@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2480,7 +2480,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordNotesMigrationToOSCrypt.{Store}KeychainRetrievalError"
-    enum="ErrSecOSStatus" expires_after="M120">
+    enum="ErrSecOSStatus" expires_after="2024-03-17">
   <owner>rgod@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2492,7 +2492,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordNotesMigrationToOSCrypt.{Store}MigratedNotesCount"
-    units="count" expires_after="M120">
+    units="count" expires_after="2024-03-17">
   <owner>rgod@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
