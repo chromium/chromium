@@ -1459,6 +1459,9 @@ extern const char kOptimizationGuideDebugLogsDescription[];
 extern const char kOptimizationGuideInstallWideModelStoreName[];
 extern const char kOptimizationGuideInstallWideModelStoreDescription[];
 
+extern const char kOptimizationGuideModelExecutionName[];
+extern const char kOptimizationGuideModelExecutionDescription[];
+
 extern const char kOptimizationGuidePushNotificationName[];
 extern const char kOptimizationGuidePushNotificationDescription[];
 

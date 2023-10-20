@@ -2533,6 +2533,11 @@ const char kOptimizationGuideInstallWideModelStoreDescription[] =
     "Enables the new model store that is per Chrome installation and can "
     "share models across user profiles.";
 
+const char kOptimizationGuideModelExecutionName[] =
+    "Enables optimization guide model execution";
+const char kOptimizationGuideModelExecutionDescription[] =
+    "Enables the optimization guide to execute models.";
+
 const char kOptimizationGuidePushNotificationName[] =
     "Enable optimization guide push notifications";
 const char kOptimizationGuidePushNotificationDescription[] =

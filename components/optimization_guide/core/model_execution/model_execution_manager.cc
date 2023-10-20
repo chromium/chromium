@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -14,16 +15,15 @@ namespace optimization_guide {
 
 namespace {
 
-// Returns the URL endpoint for the model execution service along with the
-// needed API key.
+// Returns the URL endpoint for the model execution service.
 GURL GetModelExecutionServiceURL() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  DCHECK(command_line->HasSwitch(
-      switches::kOptimizationGuideServiceModelExecutionURL));
-  GURL url(command_line->GetSwitchValueASCII(
-      switches::kOptimizationGuideServiceModelExecutionURL));
-  return net::AppendOrReplaceQueryParameter(
-      url, "key", features::GetOptimizationGuideServiceAPIKey());
+  if (command_line->HasSwitch(
+          switches::kOptimizationGuideServiceModelExecutionURL)) {
+    return GURL(command_line->GetSwitchValueASCII(
+        switches::kOptimizationGuideServiceModelExecutionURL));
+  }
+  return GURL(kOptimizationGuideServiceModelExecutionDefaultURL);
 }
 
 }  // namespace
@@ -33,7 +33,10 @@ ModelExecutionManager::ModelExecutionManager(
     signin::IdentityManager* identity_manager,
     OptimizationGuideLogger* optimization_guide_logger)
     : optimization_guide_logger_(optimization_guide_logger),
-      model_execution_service_url_(GetModelExecutionServiceURL()),
+      model_execution_service_url_(net::AppendOrReplaceQueryParameter(
+          GetModelExecutionServiceURL(),
+          "key",
+          features::GetOptimizationGuideServiceAPIKey())),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
       oauth_scopes_(features::GetOAuthScopesForModelExecution()) {}

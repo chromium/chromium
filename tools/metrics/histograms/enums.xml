@@ -62378,6 +62378,7 @@ from previous Chrome versions.
   <int value="-1469116522" label="Floss:disabled"/>
   <int value="-1468126425" label="ResourceLoadScheduler:disabled"/>
   <int value="-1467980330" label="enable-privacy-sandbox-ads-apis"/>
+  <int value="-1467877366" label="OptimizationGuideModelExecution:enabled"/>
   <int value="-1467856474" label="MaxUnthrottledTimeoutNestingLevel:disabled"/>
   <int value="-1467839547" label="ContextMenuShopWithGoogleLens:disabled"/>
   <int value="-1467642274" label="KeyboardShortcutViewer:disabled"/>
@@ -65916,6 +65917,7 @@ from previous Chrome versions.
   <int value="259021228" label="OffMainThreadFetch:disabled"/>
   <int value="259633436" label="AutofillDropdownLayout:disabled"/>
   <int value="259812169" label="OmniboxSuggestionsWrapAround:disabled"/>
+  <int value="260045929" label="OptimizationGuideModelExecution:disabled"/>
   <int value="260374622" label="BiometricAuthenticationForFilling:disabled"/>
   <int value="261245835" label="ContextualSearchLiteralTapSearch:disabled"/>
   <int value="261903398" label="CertificateTransparency2022Policy:disabled"/>

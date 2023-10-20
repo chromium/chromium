@@ -6298,6 +6298,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(optimization_guide::features::
                             kOptimizationGuideInstallWideModelStore)},
 
+    {"optimization-guide-model-execution",
+     flag_descriptions::kOptimizationGuideModelExecutionName,
+     flag_descriptions::kOptimizationGuideModelExecutionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         optimization_guide::features::kOptimizationGuideModelExecution)},
+
     {"organic-repeatable-queries",
      flag_descriptions::kOrganicRepeatableQueriesName,
      flag_descriptions::kOrganicRepeatableQueriesDescription,
