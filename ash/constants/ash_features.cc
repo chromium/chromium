@@ -104,7 +104,7 @@ BASE_FEATURE(kAllowScrollSettings,
 // Controls whether the support for suppressing text messages is enabled.
 BASE_FEATURE(kSuppressTextMessages,
              "SuppressTextMessages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAltClickAndSixPackCustomization,
              "AltClickAndSixPackCustomization",
