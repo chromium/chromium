@@ -237,8 +237,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   raw_ptr<NavigationURLLoaderDelegate, DanglingUntriaged> delegate_;
   raw_ptr<BrowserContext> browser_context_;
   raw_ptr<StoragePartitionImpl> storage_partition_;
-  raw_ptr<ServiceWorkerMainResourceHandle, AcrossTasksDanglingUntriaged>
-      service_worker_handle_;
+  raw_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
   std::unique_ptr<network::ResourceRequest> resource_request_;
   std::unique_ptr<NavigationRequestInfo> request_info_;

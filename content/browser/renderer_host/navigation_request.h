@@ -2065,6 +2065,12 @@ class CONTENT_EXPORT NavigationRequest
   NavigationState state_ = NOT_STARTED;
   bool is_navigation_started_ = false;
 
+  // Manages the lifetime of a pre-created ServiceWorkerContainerHost until a
+  // corresponding container is created in the renderer. This must be destroyed
+  // after `loader_` to avoid dangling pointers, since `loader_` can have a
+  // raw_ptr to this object.
+  std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
+
   std::unique_ptr<NavigationURLLoader> loader_;
 
   bool navigation_visible_to_embedder_ = false;
@@ -2283,10 +2289,6 @@ class CONTENT_EXPORT NavigationRequest
   const int64_t navigation_id_ = ++unique_id_counter_;
   // static member for generating the unique id above.
   static int64_t unique_id_counter_;
-
-  // Manages the lifetime of a pre-created ServiceWorkerContainerHost until a
-  // corresponding container is created in the renderer.
-  std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
   // Timer for detecting an unexpectedly long time to commit a navigation.
   base::OneShotTimer commit_timeout_timer_;
