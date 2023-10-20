@@ -154,13 +154,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Actions
 
 - (void)saveToPhotosAskEveryTimeSwitchAction:(UISwitch*)sender {
-  NSString* newSelectedIdentityGaiaID = nil;
-  if (!sender.isOn) {
-    newSelectedIdentityGaiaID =
-        self.saveToPhotosDefaultIdentityItem.identityGaiaID;
-  }
   [self.saveToPhotosSettingsMutator
-      setSelectedIdentityGaiaID:newSelectedIdentityGaiaID];
+      setAskWhichAccountToUseEveryTime:sender.isOn];
+  if (!sender.isOn) {
+    [self.saveToPhotosSettingsMutator
+        setSelectedIdentityGaiaID:self.saveToPhotosDefaultIdentityItem
+                                      .identityGaiaID];
+  }
 }
 
 - (void)saveToPhotosIdentityButtonAction:(IdentityButtonControl*)sender {

@@ -15,9 +15,12 @@
 // Delegate for the Save to Photos mediator.
 @protocol SaveToPhotosMediatorDelegate
 
-// Show and hide the account picker.
+// Show and hide the account picker with a given configuration. If the
+// `selectedIdentity` is not nil, it will override the value presented by the
+// account picker by default.
 - (void)showAccountPickerWithConfiguration:
-    (AccountPickerConfiguration*)configuration;
+            (AccountPickerConfiguration*)configuration
+                          selectedIdentity:(id<SystemIdentity>)selectedIdentity;
 - (void)hideAccountPicker;
 
 // Show and hide an alert with "Try Again" and "Cancel" options.

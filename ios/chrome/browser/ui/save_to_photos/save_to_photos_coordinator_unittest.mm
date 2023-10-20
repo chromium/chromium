@@ -358,7 +358,8 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAndHidesAccountPicker) {
       mock_account_picker_coordinator) start]);
 
   [static_cast<id<SaveToPhotosMediatorDelegate>>(coordinator)
-      showAccountPickerWithConfiguration:expected_configuration];
+      showAccountPickerWithConfiguration:expected_configuration
+                        selectedIdentity:nil];
   EXPECT_OCMOCK_VERIFY(mock_account_picker_coordinator);
 
   OCMExpect([base::apple::ObjCCast<AccountPickerCoordinator>(
