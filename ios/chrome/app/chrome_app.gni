@@ -5,6 +5,7 @@
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//ios/chrome/features.gni")
+import("//ios/features.gni")
 
 # Template used to create a Chrome-like app bundle. This is used to share
 # the logic required to support ios_use_chrome_main_module between Chrome
@@ -107,6 +108,11 @@ template("chrome_app") {
     if (!ios_use_chrome_main_module) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      if (ios_partition_alloc_enabled) {
+        frameworks = [ "EarlyMallocZoneRegistration.framework" ]
+        bundle_deps +=
+            [ "//ios/chrome/app:early_partition_alloc_framework+bundle" ]
+      }
     } else {
       forward_variables_from(invoker,
                              "*",

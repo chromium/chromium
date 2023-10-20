@@ -13,6 +13,7 @@ import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 import("//ios/chrome/app/chrome_app.gni")
 import("//ios/chrome/features.gni")
+import("//ios/features.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
 declare_args() {
@@ -637,6 +638,21 @@ source_set("multitasking_test_app_delegate") {
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/third_party/material_components_ios",
   ]
+}
+
+if (ios_partition_alloc_enabled) {
+  ios_framework_bundle("early_partition_alloc_framework") {
+    output_name = "EarlyMallocZoneRegistration"
+    sources = [ "early_pa_registration.cc" ]
+    info_plist = "//ios/chrome/app/resources/ChromeMainInfo.plist"
+    extra_substitutions =
+        [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
+
+    deps = [
+      "//base/allocator:early_zone_registration_apple",
+      "//base/allocator/partition_allocator:buildflags",
+    ]
+  }
 }
 
 chrome_app("chrome") {
