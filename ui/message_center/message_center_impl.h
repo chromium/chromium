@@ -99,7 +99,10 @@ class MessageCenterImpl : public MessageCenter,
   void ResetSinglePopup(const std::string& id) override;
   void DisplayedNotification(const std::string& id,
                              const DisplaySource source) override;
-  void SetQuietMode(bool in_quiet_mode) override;
+  void SetQuietMode(
+      bool in_quiet_mode,
+      QuietModeSourceType type = QuietModeSourceType::kUserAction) override;
+  QuietModeSourceType GetLastQuietModeChangeSourceType() const override;
   void SetSpokenFeedbackEnabled(bool enabled) override;
   void EnterQuietModeWithExpire(const base::TimeDelta& expires_in) override;
   void RestartPopupTimers() override;
@@ -141,6 +144,8 @@ class MessageCenterImpl : public MessageCenter,
   bool has_message_center_view_ = true;
   bool spoken_feedback_enabled_ = false;
   const bool notifications_grouping_enabled_;
+  QuietModeSourceType last_quiet_mode_change_source_type_ =
+      QuietModeSourceType::kUserAction;
 
   std::u16string system_notification_app_name_;
 

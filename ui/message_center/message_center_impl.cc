@@ -680,15 +680,22 @@ void MessageCenterImpl::DisplayedNotification(const std::string& id,
   }
 }
 
-void MessageCenterImpl::SetQuietMode(bool in_quiet_mode) {
+void MessageCenterImpl::SetQuietMode(bool in_quiet_mode,
+                                     QuietModeSourceType type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (in_quiet_mode != notification_list_->quiet_mode()) {
+    last_quiet_mode_change_source_type_ = type;
     notification_list_->SetQuietMode(in_quiet_mode);
     for (MessageCenterObserver& observer : observer_list_) {
       observer.OnQuietModeChanged(in_quiet_mode);
     }
   }
   quiet_mode_timer_.Stop();
+}
+
+QuietModeSourceType MessageCenterImpl::GetLastQuietModeChangeSourceType()
+    const {
+  return last_quiet_mode_change_source_type_;
 }
 
 void MessageCenterImpl::SetSpokenFeedbackEnabled(bool enabled) {
@@ -707,9 +714,10 @@ void MessageCenterImpl::EnterQuietModeWithExpire(
   }
 
   // This will restart the timer if it is already running.
-  quiet_mode_timer_.Start(FROM_HERE, expires_in,
-                          base::BindOnce(&MessageCenterImpl::SetQuietMode,
-                                         base::Unretained(this), false));
+  quiet_mode_timer_.Start(
+      FROM_HERE, expires_in,
+      base::BindOnce(&MessageCenterImpl::SetQuietMode, base::Unretained(this),
+                     false, QuietModeSourceType::kUserAction));
 }
 
 void MessageCenterImpl::RestartPopupTimers() {

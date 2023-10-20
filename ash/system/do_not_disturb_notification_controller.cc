@@ -39,9 +39,14 @@ const char kDoNotDisturbNotifierId[] =
 std::unique_ptr<message_center::Notification> CreateNotification() {
   auto* focus_mode_controller =
       features::IsFocusModeEnabled() ? FocusModeController::Get() : nullptr;
+
+  // `should_show_focus_text` is true only when the notification needs to be
+  // turned off when the focus session ends.
   const bool should_show_focus_text =
       focus_mode_controller && focus_mode_controller->in_focus_session() &&
-      !focus_mode_controller->previous_do_not_disturb_state();
+      message_center::MessageCenter::Get()
+              ->GetLastQuietModeChangeSourceType() ==
+          message_center::QuietModeSourceType::kFocusMode;
 
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons.emplace_back(

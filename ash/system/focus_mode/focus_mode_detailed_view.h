@@ -10,7 +10,6 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/message_center/message_center_observer.h"
 
 namespace views {
 class BoxLayoutView;
@@ -28,7 +27,6 @@ class SystemTextfield;
 // This view displays the focus panel settings that a user can set.
 class ASH_EXPORT FocusModeDetailedView
     : public TrayDetailedView,
-      public message_center::MessageCenterObserver,
       public FocusModeController::Observer {
  public:
   METADATA_HEADER(FocusModeDetailedView);
@@ -47,9 +45,6 @@ class ASH_EXPORT FocusModeDetailedView
   void HandleViewClicked(views::View* view) override {}
   void AddedToWidget() override;
 
-  // message_center::MessageCenterObserver:
-  void OnQuietModeChanged(bool in_quiet_mode) override;
-
   // FocusModeController::Observer:
   void OnFocusModeChanged(bool in_focus_session) override;
   void OnTimerTick() override;
@@ -65,7 +60,10 @@ class ASH_EXPORT FocusModeDetailedView
   // session based on whether focus is in session.
   void UpdateTimerView(bool in_focus_session);
 
-  // Creates the DND rounded container.
+  // Creates the DND rounded container. This view will be visible only when
+  // there is no active focus session. The toggle button in this view will
+  // represent if we should toggle on the system DND state for a new focus
+  // session.
   void CreateDoNotDisturbContainer();
 
   // Handles clicks on the do not disturb toggle button.

@@ -29,6 +29,13 @@ constexpr base::TimeDelta kDefaultSessionDuration = base::Minutes(25);
 // duration is extended during a currently active focus session.
 constexpr base::TimeDelta kExtendDuration = base::Minutes(10);
 
+bool IsQuietModeOnSetByFocusMode() {
+  auto* message_center = message_center::MessageCenter::Get();
+  return message_center->IsQuietMode() &&
+         message_center->GetLastQuietModeChangeSourceType() ==
+             message_center::QuietModeSourceType::kFocusMode;
+}
+
 }  // namespace
 
 FocusModeController::FocusModeController()
@@ -76,10 +83,35 @@ void FocusModeController::ToggleFocusMode() {
   auto* message_center = message_center::MessageCenter::Get();
   CHECK(message_center);
 
+  in_focus_session_ = !in_focus_session_;
   if (in_focus_session_) {
+    SaveSettingsToUserPrefs();
+
+    // Start timer for the specified `session_duration_`. Set `end_time_` before
+    // `SetQuietMode` called, because we may indirectly use `end_time_` to
+    // create a notification.
+    end_time_ = base::Time::Now() + session_duration_;
+    timer_.Start(FROM_HERE, base::Seconds(1), this,
+                 &FocusModeController::OnTimerTick, base::TimeTicks::Now());
+
+    // Only for the case DND is not enabled before starting a session and
+    // `turn_on_do_not_disturb_` is true, we set `QuietModeSourceType` with
+    // `kFocusMode` type.
+    if (!message_center->IsQuietMode() && turn_on_do_not_disturb_) {
+      message_center->SetQuietMode(
+          true, message_center::QuietModeSourceType::kFocusMode);
+    }
+
+    SetFocusTrayVisibility(true);
+  } else {
     timer_.Stop();
 
     SetFocusTrayVisibility(false);
+
+    if (IsQuietModeOnSetByFocusMode()) {
+      message_center->SetQuietMode(
+          false, message_center::QuietModeSourceType::kFocusMode);
+    }
 
     // Reset the `session_duration_` as it may have been changed during the
     // focus session.
@@ -87,30 +119,7 @@ void FocusModeController::ToggleFocusMode() {
                             ->session_controller()
                             ->GetActivePrefService()
                             ->GetTimeDelta(prefs::kFocusModeSessionDuration);
-  } else {
-    SaveSettingsToUserPrefs();
-
-    // Update DND to the user selected state, and keep track of the state we
-    // want to revert back to after the Focus Mode session ends.
-    previous_do_not_disturb_state_ = message_center->IsQuietMode();
-
-    // Start timer for the specified `session_duration_`.
-    end_time_ = base::Time::Now() + session_duration_;
-    timer_.Start(FROM_HERE, base::Seconds(1), this,
-                 &FocusModeController::OnTimerTick, base::TimeTicks::Now());
-
-    SetFocusTrayVisibility(true);
   }
-
-  in_focus_session_ = !in_focus_session_;
-
-  // We'll update the DND notification according to if the DND is turned on in a
-  // focus session in `DoNotDisturbNotificationController::OnQuietModeChanged`,
-  // which is triggered by `SetQuietMode`. Thus, we need to call the function
-  // after `in_focus_session_` is updated.
-  message_center->SetQuietMode(in_focus_session_
-                                   ? turn_on_do_not_disturb_
-                                   : previous_do_not_disturb_state_);
 
   for (auto& observer : observers_) {
     observer.OnFocusModeChanged(in_focus_session_);
@@ -135,11 +144,8 @@ void FocusModeController::ExtendActiveSessionDuration() {
   // the next timer tick to update the UI.
   OnTimerTick();
 
-  // If `previous_do_not_disturb_state_` is true, that means we did not create a
-  // notification indicating when DND will end. Hence, we don't need to update
-  // the notification. Otherwise, we will update the notification according to
-  // the new `end_time_` of the focus session.
-  if (previous_do_not_disturb_state_) {
+  // Only update the notification if DND was turned on by the focus mode.
+  if (!IsQuietModeOnSetByFocusMode()) {
     return;
   }
 

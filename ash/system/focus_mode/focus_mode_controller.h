@@ -51,9 +51,6 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   void set_turn_on_do_not_disturb(bool turn_on) {
     turn_on_do_not_disturb_ = turn_on;
   }
-  bool previous_do_not_disturb_state() const {
-    return previous_do_not_disturb_state_;
-  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -104,10 +101,6 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // This will dictate whether DND will be turned on when a Focus Mode session
   // starts. Depends on previous session data (from user prefs) or user input.
   bool turn_on_do_not_disturb_ = true;
-
-  // When a Focus Mode session starts, the previous DND state is stored so that
-  // it can be restored when the session ends.
-  bool previous_do_not_disturb_state_ = false;
 
   base::ObserverList<Observer> observers_;
 };

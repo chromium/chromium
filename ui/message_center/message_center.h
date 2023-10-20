@@ -211,7 +211,10 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
                                      const DisplaySource source) = 0;
 
   // This can be called to change the quiet mode state (without a timeout).
-  virtual void SetQuietMode(bool in_quiet_mode) = 0;
+  virtual void SetQuietMode(
+      bool in_quiet_mode,
+      QuietModeSourceType type = QuietModeSourceType::kUserAction) = 0;
+  virtual QuietModeSourceType GetLastQuietModeChangeSourceType() const = 0;
 
   // Used to set the spoken feedback state.
   virtual void SetSpokenFeedbackEnabled(bool enabled) = 0;

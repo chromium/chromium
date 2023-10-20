@@ -283,21 +283,21 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
   scene_view_->SetBorderInsets(gfx::Insets::VH(100, 0));
   scene_view_->SetProperty(views::kMarginsKey, kContainerMargins);
 
+  FocusModeController* focus_mode_controller = FocusModeController::Get();
+  const bool in_focus_session = focus_mode_controller->in_focus_session();
+
   CreateDoNotDisturbContainer();
+  do_not_disturb_view_->SetVisible(!in_focus_session);
 
   scroll_content()->SizeToPreferredSize();
-
-  FocusModeController* focus_mode_controller = FocusModeController::Get();
-  if (!focus_mode_controller->in_focus_session()) {
+  if (!in_focus_session) {
     StartClockTimer();
   }
 
   focus_mode_controller->AddObserver(this);
-  message_center::MessageCenter::Get()->AddObserver(this);
 }
 
 FocusModeDetailedView::~FocusModeDetailedView() {
-  message_center::MessageCenter::Get()->RemoveObserver(this);
   FocusModeController::Get()->RemoveObserver(this);
 }
 
@@ -307,16 +307,6 @@ void FocusModeDetailedView::AddedToWidget() {
   // The `TrayBubbleView` may not exist in unit tests.
   if (views::WidgetDelegate* bubble_view = GetWidget()->widget_delegate()) {
     bubble_view->SetCanActivate(true);
-  }
-}
-
-void FocusModeDetailedView::OnQuietModeChanged(bool in_quiet_mode) {
-  // When focus mode is not in a session, the state of the
-  // `do_not_disturb_toggle_button_` will represent the initial state for the
-  // next focus session. Once the focus mode session begins, this button should
-  // be reflective of the actual system do not disturb state.
-  if (FocusModeController::Get()->in_focus_session()) {
-    do_not_disturb_toggle_button_->SetIsOn(in_quiet_mode);
   }
 }
 
@@ -340,14 +330,8 @@ void FocusModeDetailedView::OnFocusModeChanged(bool in_focus_session) {
 
   UpdateTimerView(in_focus_session);
 
-  if (in_focus_session) {
-    clock_timer_.Stop();
-  } else {
-    StartClockTimer();
-  }
-
-  do_not_disturb_toggle_button_->SetIsOn(
-      FocusModeController::Get()->turn_on_do_not_disturb());
+  StartClockTimer();
+  do_not_disturb_view_->SetVisible(true);
 }
 
 void FocusModeDetailedView::OnTimerTick() {
@@ -539,14 +523,7 @@ void FocusModeDetailedView::CreateDoNotDisturbContainer() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DO_NOT_DISTURB));
   auto* controller = FocusModeController::Get();
 
-  // The state of the toggle button is used for showing whether the
-  // do-not-disturb mode is on/off on the device while in a focus session.
-  // However, if there is no focus session running, it's used for representing
-  // if the user wants to turn on/off the do not disturb when the next focus
-  // session is started.
-  toggle->SetIsOn(controller->in_focus_session()
-                      ? message_center::MessageCenter::Get()->IsQuietMode()
-                      : controller->turn_on_do_not_disturb());
+  toggle->SetIsOn(controller->turn_on_do_not_disturb());
   do_not_disturb_toggle_button_ = toggle.get();
   toggle_row->AddRightView(toggle.release());
 
@@ -556,12 +533,10 @@ void FocusModeDetailedView::CreateDoNotDisturbContainer() {
 
 void FocusModeDetailedView::OnDoNotDisturbToggleClicked() {
   auto* controller = FocusModeController::Get();
-  const bool is_on = do_not_disturb_toggle_button_->GetIsOn();
-  if (controller->in_focus_session()) {
-    message_center::MessageCenter::Get()->SetQuietMode(is_on);
-  } else {
-    controller->set_turn_on_do_not_disturb(is_on);
-  }
+  CHECK(!controller->in_focus_session());
+
+  controller->set_turn_on_do_not_disturb(
+      do_not_disturb_toggle_button_->GetIsOn());
 }
 
 void FocusModeDetailedView::OnClockMinutePassed() {
