@@ -106,12 +106,10 @@ export class MenuManager {
     let brailleText;
     let gestureText;
     if (isTouchScreen) {
-      for (let i = 0, gesture; gesture = gestures[i]; i++) {
-        const data = GestureCommandData.GESTURE_COMMAND_MAP[gesture];
-        if (data && data.command === binding.command) {
-          gestureText = Msgs.getMsg(data.msgId);
-          break;
-        }
+      const gestureData = Object.values(GestureCommandData.GESTURE_COMMAND_MAP);
+      const data = gestureData.find(data => data.command === binding.command);
+      if (data) {
+        gestureText = Msgs.getMsg(data.msgId);
       }
     } else {
       keyText = binding.keySeq;
@@ -275,7 +273,7 @@ export class MenuManager {
   }
 
   /**
-   * @return {!Promise<Array<!KeyBinding>>}
+   * @return {!Promise<!Array<!KeyBinding>>}
    */
   async getSortedKeyBindings() {
     // TODO(accessibility): Commands should be based off of CommandStore and
