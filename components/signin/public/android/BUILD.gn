@@ -17,6 +17,7 @@ android_library("java") {
   srcjar_deps = [
     ":account_capabilities_constants_javagen",
     ":jni_headers",
+    ":signin_java_features_srcjar",
     ":tribool_javagen",
     "//components/signin/public/base:consent_level_enum_javagen",
     "//components/signin/public/base:signin_metrics_enum_javagen",
@@ -59,6 +60,13 @@ android_library("java") {
   # Add the actual implementation where necessary so that downstream targets
   # can provide their own implementations.
   jar_excluded_patterns = [ "*/AccountEmailDomainDisplayability.class" ]
+}
+
+# Expose Signin feature flags to Java code
+java_cpp_features("signin_java_features_srcjar") {
+  visibility = [ ":*" ]
+  sources = [ "//components/signin/public/base/signin_switches.cc" ]
+  template = "java/src/org/chromium/components/signin/SigninFeatures.java.tmpl"
 }
 
 android_library("account_email_domain_displayability_java") {
