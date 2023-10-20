@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_UTIL_H_
 
+#include "v8/include/v8-isolate.h"
+
 namespace WTF {
 class String;
 }
@@ -16,6 +18,11 @@ class ExceptionState;
 class ScriptState;
 class ScriptPromiseResolver;
 class SharedStorageRunOperationMethodOptions;
+
+// Helper method to convert v8 string to WTF::String.
+bool StringFromV8(v8::Isolate* isolate,
+                  v8::Local<v8::Value> val,
+                  WTF::String* out);
 
 // Return if there is a valid browsing context associated with `script_state`.
 // Throw an error via `exception_state` if invalid.

@@ -15,6 +15,8 @@
 namespace blink {
 
 class SharedStorage;
+class SharedStorageUrlWithMetadata;
+class SharedStorageRunOperationMethodOptions;
 
 // Implement the worklet attribute under window.sharedStorage.
 class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
@@ -32,17 +34,23 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
                           const String& module_url,
                           ExceptionState&);
 
-  // Returns the worklet host. Returns nullptr if addModule() hasn't been
-  // called, or has failed early renderer side checks.
-  mojom::blink::SharedStorageWorkletHost* GetWorkletHost() {
-    return worklet_host_.get();
-  }
+  ScriptPromise SelectURL(ScriptState*,
+                          const String& name,
+                          HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
+                          const SharedStorageRunOperationMethodOptions* options,
+                          ExceptionState&);
+  ScriptPromise Run(ScriptState*,
+                    const String& name,
+                    const SharedStorageRunOperationMethodOptions* options,
+                    ExceptionState&);
 
  private:
+  // Set when addModule() was called and passed early renderer checks.
   HeapMojoAssociatedRemote<mojom::blink::SharedStorageWorkletHost>
       worklet_host_{nullptr};
 
   Member<SharedStorage> shared_storage_;
+  bool keep_alive_after_operation_ = true;
 };
 
 }  // namespace blink

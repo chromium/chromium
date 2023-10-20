@@ -17,6 +17,24 @@
 
 namespace blink {
 
+bool StringFromV8(v8::Isolate* isolate, v8::Local<v8::Value> val, String* out) {
+  DCHECK(out);
+
+  if (!val->IsString()) {
+    return false;
+  }
+
+  v8::Local<v8::String> str = v8::Local<v8::String>::Cast(val);
+  wtf_size_t length = str->Utf8Length(isolate);
+  LChar* buffer;
+  *out = String::CreateUninitialized(length, buffer);
+
+  str->WriteUtf8(isolate, reinterpret_cast<char*>(buffer), length, nullptr,
+                 v8::String::NO_NULL_TERMINATION);
+
+  return true;
+}
+
 bool CheckBrowsingContextIsValid(ScriptState& script_state,
                                  ExceptionState& exception_state) {
   if (!script_state.ContextIsValid()) {
