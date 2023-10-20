@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 776 tests; 728 PASS, 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 792 tests; 744 PASS, 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] In <input type="text">, execCommand("getHTML", false, null), a[b]c): The command should not be supported
 [PASS] In <input type="text">, execCommand("getHTML", false, null), a[b]c): The command should not be enabled
 [PASS] In <input type="text">, execCommand("bold", false, bold), a[b]c): The command should be supported
@@ -266,6 +266,14 @@ Found 776 tests; 728 PASS, 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] In <input type="text">, execCommand("inserttext", false, **inserted**), a[b]c): beforeinput.target should be undefined
 [PASS] In <input type="text">, execCommand("inserttext", false, **inserted**), a[b]c): input.inputType should be insertText
 [PASS] In <input type="text">, execCommand("inserttext", false, **inserted**), a[b]c): input.target should be [object HTMLInputElement]
+[PASS] In <input type="text">, execCommand("inserttext", false, ), a[b]c): The command should be supported
+[PASS] In <input type="text">, execCommand("inserttext", false, ), a[b]c): The command should be enabled
+[PASS] In <input type="text">, execCommand("inserttext", false, ), a[b]c): execCommand() should return true
+[PASS] In <input type="text">, execCommand("inserttext", false, ), a[b]c): <input>.value should be "a[]c"
+[PASS] In <input type="text">, execCommand("inserttext", false, ), a[b]c): beforeinput.inputType should be undefined
+[PASS] In <input type="text">, execCommand("inserttext", false, ), a[b]c): beforeinput.target should be undefined
+[PASS] In <input type="text">, execCommand("inserttext", false, ), a[b]c): input.inputType should be insertText
+[PASS] In <input type="text">, execCommand("inserttext", false, ), a[b]c): input.target should be [object HTMLInputElement]
 [PASS] In <input type="text">, execCommand("justifyleft", false, null), a[b]c): The command should be supported
 [PASS] In <input type="text">, execCommand("justifyleft", false, null), a[b]c): The command should not be enabled
 [PASS] In <input type="text">, execCommand("justifyleft", false, null), a[b]c): execCommand() should return false
@@ -684,6 +692,14 @@ Found 776 tests; 728 PASS, 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] In <input type="text"> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): beforeinput.target should be undefined
 [PASS] In <input type="text"> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): input.inputType should be insertText
 [PASS] In <input type="text"> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): input.target should be [object HTMLInputElement]
+[PASS] In <input type="text"> in contenteditable, execCommand("inserttext", false, ), a[b]c): The command should be supported
+[PASS] In <input type="text"> in contenteditable, execCommand("inserttext", false, ), a[b]c): The command should be enabled
+[PASS] In <input type="text"> in contenteditable, execCommand("inserttext", false, ), a[b]c): execCommand() should return true
+[PASS] In <input type="text"> in contenteditable, execCommand("inserttext", false, ), a[b]c): <input>.value should be "a[]c"
+[PASS] In <input type="text"> in contenteditable, execCommand("inserttext", false, ), a[b]c): beforeinput.inputType should be undefined
+[PASS] In <input type="text"> in contenteditable, execCommand("inserttext", false, ), a[b]c): beforeinput.target should be undefined
+[PASS] In <input type="text"> in contenteditable, execCommand("inserttext", false, ), a[b]c): input.inputType should be insertText
+[PASS] In <input type="text"> in contenteditable, execCommand("inserttext", false, ), a[b]c): input.target should be [object HTMLInputElement]
 [PASS] In <input type="text"> in contenteditable, execCommand("justifyleft", false, null), a[b]c): The command should be supported
 [PASS] In <input type="text"> in contenteditable, execCommand("justifyleft", false, null), a[b]c): The command should not be enabled
 [PASS] In <input type="text"> in contenteditable, execCommand("justifyleft", false, null), a[b]c): execCommand() should return false

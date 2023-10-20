@@ -17352,7 +17352,7 @@
      ]
     ],
     "prompt-and-watch-availability-no-device-manual.html": [
-     "7d69f09afccf6d4f91c91a80fdf9092c6c13abd9",
+     "fb3e1231bd45fda02ea159d996fabac5796306e5",
      [
       null,
       {}
@@ -42850,6 +42850,19 @@
      "floats": {
       "adjoining-floats-dynamic.html": [
        "3446d972d72ec8832ab8ac320a84dff609676ae3",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "float-in-inline-anonymous-block-with-overflow-hidden.html": [
+       "948394e7f9b348c72a13cc64f4852a988b2fa59c",
        [
         null,
         [
@@ -109255,7 +109268,7 @@
        ]
       ],
       "content-visibility-024.html": [
-       "cf2faca345ede86b52b7199f167b661cbe49fdc7",
+       "2c8f59d745a72a994424ce0dd89d0fefd35eade8",
        [
         null,
         [
@@ -109264,7 +109277,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             5
+            ],
+            [
+             0,
+             100
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "content-visibility-025.html": [
@@ -179573,7 +179602,7 @@
        ]
       ],
       "replaced-element-003.html": [
-       "306976ac992245e1b3a88ca824ca597e25ad1f59",
+       "171d23543f51f482614c2c2802b484befe3696f1",
        [
         null,
         [
@@ -193567,6 +193596,99 @@
         [
          [
           "/css/css-text/text-spacing-trim/text-spacing-trim-narrow-001-ref.html?class=halt,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-spacing-trim-quote-001.html": [
+       "a8bc462bad44ca44b6c54072023e8c66d493556d",
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-quote-001.html?class=chws,htb&lang=zh-hans",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-quote-001-ref.html?class=chws,htb&lang=zh-hans",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-quote-001.html?class=chws,htb&lang=zh-hant",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-quote-001-ref.html?class=chws,htb&lang=zh-hant",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-quote-001.html?class=chws,vrl&lang=zh-hans",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-quote-001-ref.html?class=chws,vrl&lang=zh-hans",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-quote-001.html?class=chws,vrl&lang=zh-hant",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-quote-001-ref.html?class=chws,vrl&lang=zh-hant",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-quote-001.html?class=halt,htb&lang=ja",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-quote-001-ref.html?class=halt,htb&lang=ja",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-quote-001.html?class=halt,htb&lang=zh-hans",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-quote-001-ref.html?class=halt,htb&lang=zh-hans",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-quote-001.html?class=halt,htb&lang=zh-hant",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-quote-001-ref.html?class=halt,htb&lang=zh-hant",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-quote-001.html?class=halt,vrl&lang=zh-hans",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-quote-001-ref.html?class=halt,vrl&lang=zh-hans",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-quote-001.html?class=halt,vrl&lang=zh-hant",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-quote-001-ref.html?class=halt,vrl&lang=zh-hant",
           "=="
          ]
         ],
@@ -269984,7 +270106,7 @@
       },
       "the-video-element": {
        "video-poster-shown-preload-auto.html": [
-        "243924628c08f895ef5853ec42bdde3ac9544d9c",
+        "95e32bb77ce1f7642a881edc1c61ae4d6879cea2",
         [
          null,
          [
@@ -284576,11 +284698,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "c8543ae26ae75281036a1bc1c128b9b886df646f",
+     "46eba0fab5beda645a583bf2be3cea9bf2021124",
      []
     ],
     "mtime.json": [
-     "b33295864b59c087e3d5166a1181c75417671ba9",
+     "f64d601709d33011bbddcd325c17b4e1c931151b",
      []
     ]
    },
@@ -288770,7 +288892,7 @@
        ]
       },
       "video.py": [
-       "7cfbbfa68c8dc6ebba18308188e14000d28ab379",
+       "9db8e9fbb5ab1eb298a6fc86cdd43ac59fefcd3c",
        []
       ],
       "worker.py": [
@@ -336811,7 +336933,7 @@
      "text-spacing-trim": {
       "support": {
        "variant-class.js": [
-        "d1ca547cfd79bfa1dc1a8f64f62e63099b9c6cce",
+        "28cf85ff9f65b4b962250104080c9990382a28db",
         []
        ],
        "variant-feature.js": [
@@ -336897,6 +337019,10 @@
       ],
       "text-spacing-trim-narrow-001-ref.html": [
        "0aef32b55386fa803483fa4a394b08bf59a1bb81",
+       []
+      ],
+      "text-spacing-trim-quote-001-ref.html": [
+       "47f953cfcafc773853590d35bca5faa6c3d849e3",
        []
       ],
       "text-spacing-trim-space-all-001-ref.html": [
@@ -341638,14 +341764,6 @@
      ],
      "transform-translate-background-001-ref.html": [
       "495ba7a3c7ea3fec464d3ad0d4ba0add5b62afe6",
-      []
-     ],
-     "transform-translate-background-001.html.ini": [
-      "abb0cf515159f33e05f0b4dc30182f6336211812",
-      []
-     ],
-     "transform-translate-background-002.html.ini": [
-      "bd8e02d68f511b72341222dfe49e2d9e02284b49",
       []
      ],
      "transform-translate-ref.html": [
@@ -355285,15 +355403,15 @@
       []
      ],
      "exec-command-with-text-editor.tentative_type=password-expected.txt": [
-      "4b205ff0b476dea60dc65d532076f5694f117d8a",
+      "21b5757599f8ff27926dc167ba18449fde1b8aa0",
       []
      ],
      "exec-command-with-text-editor.tentative_type=text-expected.txt": [
-      "46084253f9dfe5a2e1952de02194e7495c64d7bd",
+      "be0e9f247591c5ea5ff4aa7ff3f3ddffa1afbcd3",
       []
      ],
      "exec-command-with-text-editor.tentative_type=textarea-expected.txt": [
-      "676df0e237da1736fa36ea8c799f69aed76cf332",
+      "481113d6809f57e41380661ab1d205a71d86239b",
       []
      ],
      "exec-command-without-editable-element.tentative-expected.txt": [
@@ -362449,7 +362567,7 @@
    "fledge": {
     "tentative": {
      "TODO": [
-      "8217bdc924ef1c14d7a1719516463c63e758cc51",
+      "2b6a1dc3c2d1cd64cbd84a629e0abd6148253b51",
       []
      ],
      "auction-config.https.window.js.ini": [
@@ -362490,7 +362608,7 @@
      ],
      "resources": {
       "bidding-logic.sub.py": [
-       "89707470d25a09f7d87f6f5f6349d7155af078f8",
+       "58fe220880a2ff054a6eabf02082a68702d6bc04",
        []
       ],
       "decision-logic.sub.py": [
@@ -362506,7 +362624,7 @@
        []
       ],
       "fledge-util.sub.js": [
-       "ffe7468c94854300d2b323bed4895d1549ec87cc",
+       "d500307a07939ece0c817daed5417f0cdbabcfd9",
        []
       ],
       "request-tracker.py": [
@@ -369384,10 +369502,6 @@
           "bfbba8b8e296fe354db953bc9888cd19888ca2d3",
           []
          ],
-         "pattern-srgb-fullcolor.ogv": [
-          "43a72bf271be679a932b69a5c2304d8fe547d22e",
-          []
-         ],
          "pattern-srgb-transparent.avif": [
           "c3890c5cf655552d750a0c6ff7f7398056628e29",
           []
@@ -370629,7 +370743,7 @@
         []
        ],
        "fill-and-stroke-styles.yaml": [
-        "19157d962b4cc0e38b3025225c0b491593ac4dc9",
+        "c992af6e7c14b14f89615aca17dc2e5694110dff",
         []
        ],
        "filters.yaml": [
@@ -376581,7 +376695,7 @@
           []
          ],
          "resolve-url.js": [
-          "1c4a77705e57fc6feb438e25acc21ee0384cea09",
+          "74c4c2e9975d00c881add3b7d7e306bc6bbf502f",
           []
          ],
          "resource.py": [
@@ -376598,7 +376712,7 @@
          []
         ],
         "utf-16be_include=loading-expected.txt": [
-         "a342a3d3e8f9fa0f411ccd40a399ea59c3f50ac3",
+         "0c61f7b9e6d304df8ac00e8a9d11fb6d98fe47f3",
          []
         ],
         "utf-16le.html.ini": [
@@ -376606,7 +376720,7 @@
          []
         ],
         "utf-16le_include=loading-expected.txt": [
-         "a342a3d3e8f9fa0f411ccd40a399ea59c3f50ac3",
+         "0c61f7b9e6d304df8ac00e8a9d11fb6d98fe47f3",
          []
         ],
         "utf-8.html.ini": [
@@ -376618,7 +376732,7 @@
          []
         ],
         "utf-8_include=loading-expected.txt": [
-         "a342a3d3e8f9fa0f411ccd40a399ea59c3f50ac3",
+         "0c61f7b9e6d304df8ac00e8a9d11fb6d98fe47f3",
          []
         ],
         "utf-8_include=workers-expected.txt": [
@@ -376642,7 +376756,7 @@
          []
         ],
         "windows-1251_include=loading-expected.txt": [
-         "52b4ab9ec089b8c82deb838fdc99e6a8302291c6",
+         "39686398f2bc9d6b3b84291ffa9c80abe9ee1290",
          []
         ],
         "windows-1251_include=scheme-expected.txt": [
@@ -376674,7 +376788,7 @@
          []
         ],
         "windows-1252_include=loading-expected.txt": [
-         "7f03343e5e937c721564978199f753023e9bf04b",
+         "1879b3933fef2bf3795357d7aab9f085255a9860",
          []
         ],
         "windows-1252_include=scheme-expected.txt": [
@@ -380475,7 +380589,7 @@
         []
        ],
        "video-poster-shown-preload-auto-ref.html": [
-        "efa75bb20a66029089d74d382ca35d3427dc68b7",
+        "66b42e40253f1a47c90ac781e9a13cc94996f52b",
         []
        ],
        "video_content-ref.htm": [
@@ -381604,6 +381718,14 @@
       "05fc82f767358a75cc2c536d3944f234f4a3532b",
       []
      ],
+     "invokers": {
+      "resources": {
+       "invoker-utils.js": [
+        "317945502d4dcbb2f7ec298872a01becd9d47ddb",
+        []
+       ]
+      }
+     },
      "links": {
       "META.yml": [
        "b2167370d148cb6516e0f2656e159a5ee06a4d1a",
@@ -386977,10 +387099,6 @@
      "c866bfedf912fcd3e77ed25974ba6aad7854f382",
      []
     ],
-    "pattern.ogv": [
-     "8e3a75982cce747f328d6c243c4d5a1e39334ed6",
-     []
-    ],
     "pattern.png": [
      "65ce5b44a6430d9c47b8edb45ff14cd9c19e91c1",
      []
@@ -388511,6 +388629,10 @@
     ],
     "intervention-reporting.idl": [
      "3c3b8001e740d21ca9d2f5cc2d6ba09ccf2eeb9c",
+     []
+    ],
+    "invokers.tentative.idl": [
+     "67e2eb4ce196362fba16c7ab56d1168504be49c8",
      []
     ],
     "is-input-pending.idl": [
@@ -391701,10 +391823,6 @@
     ],
     "2x2-green.mp4": [
      "157361c2ddc97fc1179006ab1dfa9639fe14950f",
-     []
-    ],
-    "2x2-green.ogv": [
-     "29903c0a817352ea3d3ad6abf188e5aec7470173",
      []
     ],
     "2x2-green.webm": [
@@ -399328,7 +399446,7 @@
      []
     ],
     "testdriver.js": [
-     "4b8656b276e6a6bec55f8d9aa4550805f9fda72c",
+     "50ee17a76070f856b8f669c7ac69bc038675d860",
      []
     ],
     "testdriver.js.headers": [
@@ -402224,7 +402342,7 @@
        []
       ],
       "fetch-access-control.py": [
-       "380a7d62225a1b0b473fdedf61d2ab565b7b2edf",
+       "67c837bca7de39c3041944af9308f74b553be750",
        []
       ],
       "fetch-canvas-tainting-double-write-worker.js": [
@@ -413512,7 +413630,7 @@
          []
         ],
         "invalid.py.ini": [
-         "50910639bf1449366529359a158c90f7299225fc",
+         "166cc298f1a2a61f6c3ea38676357e7d75f8b2c3",
          []
         ],
         "key.py.ini": [
@@ -501886,7 +502004,7 @@
       ]
      ],
      "exec-command-with-text-editor.tentative.html": [
-      "207e74aef2dd62ed5bf8eb6d975170d873dbed2d",
+      "e3b0931f1663741e8e794ce5c4b3dae12c80d17c",
       [
        "editing/other/exec-command-with-text-editor.tentative.html?type=password",
        {}
@@ -534516,6 +534634,33 @@
    },
    "fledge": {
     "tentative": {
+     "abort.https.window.js": [
+      "b99d60dd5282cd252b932f9d1ae1fe99230a5f8d",
+      [
+       "fledge/tentative/abort.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "auction-config.https.window.js": [
       "e4811b969651d129c2761a2e418c3ea97f574bb8",
       [
@@ -536927,6 +537072,33 @@
          [
           "variant",
           "?6-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "tie.https.window.js": [
+      "48d6e95e5c473f89093227e17cf0c549b783c87b",
+      [
+       "fledge/tentative/tie.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
          ]
         ],
         "timeout": "long"
@@ -550612,6 +550784,20 @@
          {}
         ]
        ],
+       "2d.fillStyle.colormix.currentcolor.html": [
+        "191395a20b0c11d721300d4327b064de39e41005",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.fillStyle.colormix.html": [
+        "1faa6c0a9f223a5a8bec144451362ef8cc265a2f",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.fillStyle.default.html": [
         "1bd3e2d4ad0f51d262bd4ad9ead975bc10d1baa5",
         [
@@ -552327,6 +552513,13 @@
          {}
         ]
        ],
+       "2d.strokeStyle.colormix.html": [
+        "c1971666e89d46b7f3e9380a4ed681280b55d0f0",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.strokeStyle.default.html": [
         "a432d74a428160d14ecc604ef305d6d990756379",
         [
@@ -552927,7 +553120,7 @@
          ]
         ],
         "canvas-createImageBitmap-video-resize.html": [
-         "c7555405a83e08d76ac3a6fb966b2fc696a77393",
+         "d48d9e80ca9ab00ecfa7f3221c2667ab7f4b85df",
          [
           null,
           {}
@@ -559518,6 +559711,20 @@
          {}
         ]
        ],
+       "2d.fillStyle.colormix.html": [
+        "059c551e466562e7e15de4d303c9197dabd20dd9",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.fillStyle.colormix.worker.js": [
+        "d015790ead7fdb307a6852acbccf8734c0dc75f7",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.fillStyle.colormix.worker.html",
+         {}
+        ]
+       ],
        "2d.fillStyle.default.html": [
         "58075168e8aab857a262858ecf2a778ee11aeffa",
         [
@@ -562623,6 +562830,13 @@
         "163951807fa4dab8c21bf23c0596625278ecf0f5",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.pattern.transform.invalid.worker.html",
+         {}
+        ]
+       ],
+       "2d.strokeStyle.colormix.html": [
+        "eba026619a8dd1e044603eb53c6fec82a19fc4f4",
+        [
+         null,
          {}
         ]
        ],
@@ -586781,6 +586995,49 @@
        {}
       ]
      ],
+     "invokers": {
+      "idlharness.tentative.html": [
+       "b215f65813a98f6af851c614174e35e6eea04fc6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "invokeelement-interface.tentative.html": [
+       "69cfd80fe56447dc1486134b3bc0b535bf1636c2",
+       [
+        null,
+        {}
+       ]
+      ],
+      "invokeevent-dispatch-shadow.tentative.html": [
+       "84337d57239b8696796c7073874316e917cd1c6c",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "invokeevent-interface.tentative.html": [
+       "007c97e6fe545a77f2e65cd026720304c24751cf",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "invoketarget-button-event-dispatch.tentative.html": [
+       "16922f97466b9e3c1b50b94e2a167cf6b27e620e",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ]
+     },
      "links": {
       "downloading-resources": {
        "header-origin-no-referrer-when-downgrade.html": [
@@ -600905,7 +601162,7 @@
      ]
     ],
     "video-data-uri.html": [
-     "a26ddd142045e480980bcf0baab171ae6f53625e",
+     "01d9aa692578f2a3a3499233b65eb2ac9639be3a",
      [
       null,
       {}
@@ -672761,7 +673018,7 @@
      ]
     ],
     "videoFrame-canvasImageSource.html": [
-     "a60040e56a8dcd8060e512c8240776b5cb723297",
+     "717a0a3643a6b20b3253dae8133a8d57c34b6841",
      [
       null,
       {}
