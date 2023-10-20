@@ -347,6 +347,9 @@ void RecordPromoStatsToUMAForAction(PromoStatistics* promo_stats,
 // Records given promo stats for "Appear" action into UMA histograms.
 void RecordPromoStatsToUMAForAppear(PromoStatistics* promo_stats);
 
+// Records stats related to promo display to UMA histograms.
+void RecordPromoDisplayStatsToUMA();
+
 // Logs browser launched for default browser promo trigger criteria experiment
 // stats to NSUserDefaults. `LogBrowserIndirectlylaunched` and
 // `LogBrowserLaunched` will have overlap.

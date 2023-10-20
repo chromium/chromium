@@ -529,6 +529,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserPromo.DaysSinceLastPromoInteraction"
+    units="count" expires_after="2024-02-04">
+  <owner>gayane@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Represents number of days since last default browser promo was displayed
+    within last 21 days periods. This includes full screen and non-modal promo
+    and default browser promo in FRE. Recorded before every full screen promo
+    displayed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserPromo.GenericPromoDisplayCount"
+    units="count" expires_after="2024-02-04">
+  <owner>gayane@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Represents number of generic default browser promos displayed to the user.
+    This includes all video promo options. Recorded before every full screen
+    promo displayed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserPromo.NonModal.OnScreenTime" units="ms"
     expires_after="2024-02-04">
   <owner>sebsg@chromium.org</owner>
@@ -592,6 +615,16 @@ chromium-metrics-reviews@google.com.
   <owner>gayane@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>The default browser promo type shown to the user.</summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserPromo.TailoredPromoDisplayCount"
+    units="count" expires_after="2024-02-04">
+  <owner>gayane@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Represents number of tailored default browser promos displayed to the user.
+    Recorded before every full screen promo displayed.
+  </summary>
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.{PromoAction}.{PromoStat}"

@@ -152,6 +152,9 @@ using l10n_util::GetNSString;
 
 // Records that a default browser promo has been shown.
 - (void)recordDefaultBrowserPromoShown {
+  // Record the current state before updating the local storage.
+  RecordPromoDisplayStatsToUMA();
+
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Appear"));
   base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
