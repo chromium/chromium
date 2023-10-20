@@ -133,7 +133,10 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
             /*report_id=*/
             base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
             /*reporting_origin=*/kExampleOrigin, api_identifier,
-            /*context_id=*/absl::nullopt, std::move(contributions));
+            /*context_id=*/absl::nullopt,
+            // TODO(alexmt): Generate golden reports for multiple coordinators.
+            /*aggregation_coordinator_origin=*/absl::nullopt,
+            std::move(contributions));
 
     base::RunLoop run_loop;
 

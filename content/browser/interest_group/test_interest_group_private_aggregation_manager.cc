@@ -45,12 +45,17 @@ bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     PrivateAggregationBudgetKey::Api api_for_budgeting,
     absl::optional<std::string> context_id,
     absl::optional<base::TimeDelta> timeout,
+    absl::optional<url::Origin> aggregation_coordinator_origin,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   EXPECT_EQ(expected_top_frame_origin_, top_frame_origin);
   EXPECT_EQ(PrivateAggregationBudgetKey::Api::kProtectedAudience,
             api_for_budgeting);
   EXPECT_FALSE(context_id.has_value());
+  EXPECT_FALSE(timeout.has_value());
+
+  // TODO(alexmt): Change once selecting the origin is possible.
+  EXPECT_FALSE(aggregation_coordinator_origin.has_value());
 
   receiver_set_.Add(this, std::move(pending_receiver), worklet_origin);
   return true;

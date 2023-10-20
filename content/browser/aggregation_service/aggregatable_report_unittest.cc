@@ -884,6 +884,85 @@ TEST_P(AggregatableReportTest, MaxContributionsAllowed) {
             20);
 }
 
+TEST_P(AggregatableReportTest, AggregationCoordinatorOrigin) {
+  const struct {
+    absl::optional<url::Origin> aggregation_coordinator_origin;
+    bool creation_should_succeed;
+    const char* description;
+  } kTestCases[] = {
+      {absl::nullopt, true, "default coordinator"},
+      {url::Origin::Create(GURL("https://aws.example.test")), true,
+       "valid coordinator"},
+      {url::Origin::Create(GURL("https://a.test")), false,
+       "invalid coordinator"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+    AggregatableReportRequest example_request =
+        aggregation_service::CreateExampleRequest();
+
+    AggregationServicePayloadContents payload_contents =
+        example_request.payload_contents();
+    payload_contents.aggregation_coordinator_origin =
+        test_case.aggregation_coordinator_origin;
+
+    absl::optional<AggregatableReportRequest> request =
+        AggregatableReportRequest::Create(
+            payload_contents, example_request.shared_info().Clone());
+
+    EXPECT_EQ(request.has_value(), test_case.creation_should_succeed);
+
+    if (!request.has_value()) {
+      continue;
+    }
+
+    // The coordinator origin is correctly serialized and deserialized
+    std::vector<uint8_t> proto = request->Serialize();
+    absl::optional<AggregatableReportRequest> parsed_request =
+        AggregatableReportRequest::Deserialize(proto);
+    EXPECT_EQ(parsed_request.value()
+                  .payload_contents()
+                  .aggregation_coordinator_origin,
+              test_case.aggregation_coordinator_origin);
+  }
+}
+
+TEST_P(AggregatableReportTest, AggregationCoordinatorOriginAllowlistChanged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
+      {{"aws_cloud", "https://aws.example.test"},
+       {"gcp_cloud", "https://gcp.example.test"}});
+
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  payload_contents.aggregation_coordinator_origin =
+      url::Origin::Create(GURL("https://aws.example.test"));
+
+  AggregatableReportRequest request =
+      AggregatableReportRequest::Create(payload_contents,
+                                        example_request.shared_info().Clone())
+          .value();
+
+  std::vector<uint8_t> proto = request.Serialize();
+
+  // Change the allowlist between serializing and deserializing
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
+      {{"aws_cloud", "https://aws2.example.test"},
+       {"gcp_cloud", "https://gcp2.example.test"}});
+
+  // Expect the report to fail to be recreated.
+  absl::optional<AggregatableReportRequest> parsed_request =
+      AggregatableReportRequest::Deserialize(proto);
+  EXPECT_FALSE(parsed_request.has_value());
+}
+
 TEST_P(AggregatableReportTest, ReportingPathEmpty_NotSetInRequest) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
@@ -1005,9 +1084,10 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
       deserialized_request.value(), expected_request));
 }
 
-TEST(AggregatableReportProtoMigrationTest, NoAdditionalFields_ParsesCorrectly) {
-  // An `AggregatableReport` serialized before `additional_fields` was added to
-  // the proto definition.
+TEST(AggregatableReportProtoMigrationTest,
+     NoAdditionalFieldsOrAggregationCoordinatorOrigin_ParsesCorrectly) {
+  // An `AggregatableReport` serialized before `additional_fields` and
+  // `aggregataion_coordinator_origin` were added to the proto definition.
   const char kHexEncodedOldProto[] =
       "0A071205107B18C803126208D0DA8693FDBECF17122431323334353637382D393061622D"
       "346364652D386631322D3334353637383930616263641A1368747470733A2F2F6578616D"

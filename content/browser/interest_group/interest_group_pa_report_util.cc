@@ -354,12 +354,16 @@ void SplitContributionsIntoBatchesThenSendToHost(
   for (auto& [debug_mode_details, contributions] : contributions_map) {
     mojo::Remote<blink::mojom::PrivateAggregationHost> remote_host;
 
+    // TODO(crbug.com/1481254): Allow specifying the
+    // `aggregation_coordinator_origin`.
     bool bound = pa_manager.BindNewReceiver(
         /*worklet_origin=*/reporting_origin,
         /*top_frame_origin=*/main_frame_origin,
         PrivateAggregationBudgetKey::Api::kProtectedAudience,
         /*context_id=*/absl::nullopt,
-        /*timeout=*/absl::nullopt, remote_host.BindNewPipeAndPassReceiver());
+        /*timeout=*/absl::nullopt,
+        /*aggregation_coordinator_origin=*/absl::nullopt,
+        remote_host.BindNewPipeAndPassReceiver());
 
     // The worklet origin should be potentially trustworthy (and no context ID
     // is set), so this should always succeed.

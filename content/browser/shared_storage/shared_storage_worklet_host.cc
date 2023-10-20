@@ -1128,10 +1128,13 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
           ? absl::optional<base::TimeDelta>(base::Seconds(5))
           : absl::nullopt;
 
+  // TODO(crbug.com/1481254): Allow specifying the
+  // `aggregation_coordinator_origin`.
   bool success = private_aggregation_manager->BindNewReceiver(
       shared_storage_origin_, main_frame_origin_,
       PrivateAggregationBudgetKey::Api::kSharedStorage, context_id,
       std::move(timeout),
+      /*aggregation_coordinator_origin=*/absl::nullopt,
       pending_pa_host_remote.InitWithNewPipeAndPassReceiver());
   CHECK(success);
 

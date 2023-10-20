@@ -80,6 +80,7 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
                PrivateAggregationBudgetKey::Api,
                absl::optional<std::string>,
                absl::optional<base::TimeDelta>,
+               absl::optional<url::Origin>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
@@ -107,6 +108,7 @@ class MockPrivateAggregationManagerImpl : public PrivateAggregationManagerImpl {
                PrivateAggregationBudgetKey::Api,
                absl::optional<std::string>,
                absl::optional<base::TimeDelta>,
+               absl::optional<url::Origin>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 

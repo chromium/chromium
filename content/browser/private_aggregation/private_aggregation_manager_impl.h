@@ -70,6 +70,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       PrivateAggregationBudgetKey::Api api_for_budgeting,
       absl::optional<std::string> context_id,
       absl::optional<base::TimeDelta> timeout,
+      absl::optional<url::Origin> aggregation_coordinator_origin,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) override;
   void ClearBudgetData(base::Time delete_begin,

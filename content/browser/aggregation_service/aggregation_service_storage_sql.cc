@@ -605,6 +605,11 @@ AggregationServiceStorageSql::GetRequestsReportingOnOrBefore(
   if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
     return {};
 
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return {};
+  }
+
   static constexpr char kGetRequestsSql[] =
       "SELECT request_id,report_time,request_proto FROM report_requests "
       "WHERE report_time<=? ORDER BY report_time LIMIT ?";
@@ -616,25 +621,40 @@ AggregationServiceStorageSql::GetRequestsReportingOnOrBefore(
   // See https://www.sqlite.org/lang_select.html.
   get_requests_statement.BindInt(1, limit.value_or(-1));
 
-  // Partial results are not returned in case of any error.
   // TODO(crbug.com/1340046): Limit the total number of results that can be
   // returned in one query.
   std::vector<AggregationServiceStorage::RequestAndId> result;
+  std::vector<AggregationServiceStorage::RequestId> failures;
   while (get_requests_statement.Step()) {
+    AggregationServiceStorage::RequestId request_id{
+        get_requests_statement.ColumnInt64(0)};
     absl::optional<AggregatableReportRequest> parsed_request =
         AggregatableReportRequest::Deserialize(
             get_requests_statement.ColumnBlob(2));
-    if (!parsed_request)
-      return {};
+    if (!parsed_request) {
+      failures.push_back(request_id);
+      continue;
+    }
 
     result.push_back(AggregationServiceStorage::RequestAndId{
-        .request = std::move(parsed_request.value()),
-        .id = AggregationServiceStorage::RequestId(
-            get_requests_statement.ColumnInt64(0))});
+        .request = std::move(parsed_request.value()), .id = request_id});
   }
 
   if (!get_requests_statement.Succeeded())
     return {};
+
+  // In case of deserialization failures, remove the request from storage. This
+  // could occur if the coordinator chosen is no longer on the allowlist. It is
+  // also possible in case of database corruption.
+  for (AggregationServiceStorage::RequestId request_id : failures) {
+    if (!DeleteRequestImpl(request_id)) {
+      return {};
+    }
+  }
+
+  if (!transaction.Commit()) {
+    return {};
+  }
 
   return result;
 }
