@@ -6,7 +6,6 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -27,11 +26,8 @@ using HighlightBorderFeatureKey = std::tuple<SkColor, SkColor, int>;
 // sources for highlight border.
 constexpr size_t kMaxImageSourceNum = 6;
 
-views::HighlightBorder::Type GetBorderType() {
-  return chromeos::features::IsJellyrollEnabled()
-             ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-             : views::HighlightBorder::Type::kHighlightBorder3;
-}
+constexpr views::HighlightBorder::Type kBorderType =
+    views::HighlightBorder::Type::kHighlightBorderOnShadow;
 
 // `ImageSource` generates an image painted with a highlight border.
 class ImageSource : public gfx::CanvasImageSource {
@@ -52,7 +48,7 @@ class ImageSource : public gfx::CanvasImageSource {
   void Draw(gfx::Canvas* canvas) override {
     views::HighlightBorder::PaintBorderToCanvas(
         canvas, highlight_color_, border_color_, gfx::Rect(size()),
-        gfx::RoundedCornersF(corner_radius_), GetBorderType());
+        gfx::RoundedCornersF(corner_radius_), kBorderType);
   }
 
  private:
@@ -178,9 +174,9 @@ void HighlightBorderOverlay::UpdateNinePatchLayer() {
   // Get the highlight border features.
   const views::View& view = *(widget_->GetContentsView());
   SkColor highlight_color =
-      views::HighlightBorder::GetHighlightColor(view, GetBorderType());
+      views::HighlightBorder::GetHighlightColor(view, kBorderType);
   SkColor border_color =
-      views::HighlightBorder::GetBorderColor(view, GetBorderType());
+      views::HighlightBorder::GetBorderColor(view, kBorderType);
   HighlightBorderFeatureKey key(highlight_color, border_color,
                                 rounded_corner_radius_);
 
