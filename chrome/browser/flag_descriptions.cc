@@ -4108,11 +4108,6 @@ const char kPasswordGenerationBottomSheetName[] =
 const char kPasswordGenerationBottomSheetDescription[] =
     "Enabled showing the password generation bottom sheet.";
 
-const char kPasswordsInCredManName[] = "Passwords in Credential Management API";
-const char kPasswordsInCredManDescription[] =
-    "Enable saving and logging in with passwords using Credential Management "
-    "API. Requires Android 14 or higher.";
-
 const char kQueryTilesName[] = "Show query tiles";
 const char kQueryTilesDescription[] = "Shows query tiles in Chrome";
 const char kQueryTilesNTPName[] = "Show query tiles in NTP";

@@ -10435,11 +10435,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(device::kWebAuthnAndroidCredMan,
                                     kWebAuthnAndroidCredManVariations,
                                     "WebAuthenticationAndroidCredMan")},
-
-    {"passwords-in-android-credential-management",
-     flag_descriptions::kPasswordsInCredManName,
-     flag_descriptions::kPasswordsInCredManDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(password_manager::features::kPasswordsInCredMan)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"permission-storage-access-api",

@@ -385,9 +385,7 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
         switch (WebAuthnCredManDelegate::CredManMode()) {
           case WebAuthnCredManDelegate::CredManEnabledMode::kAllCredMan:
             delegate->TriggerCredManUi(
-                WebAuthnCredManDelegate::RequestPasswords(
-                    base::FeatureList::IsEnabled(
-                        password_manager::features::kPasswordsInCredMan)));
+                WebAuthnCredManDelegate::RequestPasswords(true));
             return;
           case WebAuthnCredManDelegate::CredManEnabledMode::kNonGpmPasskeys:
             delegate->TriggerCredManUi(

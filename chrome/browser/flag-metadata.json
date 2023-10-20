@@ -6187,11 +6187,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "passwords-in-android-credential-management",
-    "owners": ["derinel@google.com", "fhorschig@chromium.org", "kenrb@chromium.org", "agl@chromium.org"],
-    "expiry_milestone": 124
-  },
-  {
     "name": "pcie-billboard-notification",
     "owners": [ "jimmyxgong@chromium.org", "cros-peripherals@google.com"],
     "expiry_milestone": 130
