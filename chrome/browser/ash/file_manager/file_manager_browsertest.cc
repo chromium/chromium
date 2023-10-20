@@ -893,6 +893,37 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DriveSpecific, /* drive_specific.js */
     FilesAppBrowserTest,
     ::testing::Values(
+        TestCase("driveOpenSidebarOffline")
+            .EnableGenericDocumentsProvider()
+            .NewDirectoryTree(),
+        TestCase("driveOpenSidebarSharedWithMe").NewDirectoryTree(),
+        TestCase("drivePinToggleUpdatesInFakeEntries").NewDirectoryTree(),
+        TestCase("drivePinToggleUpdatesInFakeEntries")
+            .EnableCrosComponents()
+            .NewDirectoryTree(),
+        TestCase("drivePressClearSearch").NewDirectoryTree(),
+        TestCase("driveAvailableOfflineActionBar").NewDirectoryTree(),
+        TestCase("driveAvailableOfflineActionBar")
+            .EnableCrosComponents()
+            .NewDirectoryTree(),
+        TestCase("driveWelcomeBanner").NewDirectoryTree(),
+        TestCase("driveWelcomeBanner")
+            .EnableCrosComponents()
+            .NewDirectoryTree(),
+        TestCase("driveOfflineInfoBanner").NewDirectoryTree(),
+        TestCase("driveInlineSyncStatusParentFolderProgressEvents")
+            .EnableInlineSyncStatusProgressEvents()
+            .NewDirectoryTree(),
+        TestCase("driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled")
+            .EnableBulkPinning()
+            .NewDirectoryTree(),
+        TestCase("drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled")
+            .EnableBulkPinning()
+            .NewDirectoryTree(),
+        TestCase("drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled")
+            .EnableBulkPinning()
+            .EnableCrosComponents()
+            .NewDirectoryTree(),
         TestCase("driveOpenSidebarOffline").EnableGenericDocumentsProvider(),
         TestCase("driveOpenSidebarSharedWithMe"),
         TestCase("drivePinMultiple"),
