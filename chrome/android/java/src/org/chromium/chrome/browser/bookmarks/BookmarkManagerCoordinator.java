@@ -243,7 +243,7 @@ public class BookmarkManagerCoordinator
                 mMediator.getDraggabilityProvider());
         dragReorderableRecyclerViewAdapter.registerDraggableType(
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
-                this::buildVisualImprovedBookmarkRow,
+                this::buildCompactImprovedBookmarkRow,
                 ImprovedBookmarkRowViewBinder::bind,
                 (viewHolder, itemTouchHelper) -> {},
                 mMediator.getDraggabilityProvider());
