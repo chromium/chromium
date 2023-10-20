@@ -85,7 +85,7 @@ export class SettingsSetLocalPasswordDialogElement extends PolymerElement {
       return;
     }
 
-    const {result} = await PasswordFactorEditor.getRemote().setLocalPassword(
+    const {result} = await PasswordFactorEditor.getRemote().updateLocalPassword(
         authToken, value);
     switch (result) {
       case ConfigureResult.kSuccess:
