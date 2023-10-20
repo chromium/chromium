@@ -684,13 +684,15 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     user_notes::UserNotesTabHelper::CreateForWebContents(web_contents);
   }
 
-  // TODO(1360846): Consider using the in-memory cache instead.
-  commerce::ShoppingListUiTabHelper::CreateForWebContents(
-      web_contents,
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
-      BookmarkModelFactory::GetForBrowserContext(profile),
-      ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
-          ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly));
+  if (!profile->IsIncognitoProfile()) {
+    // TODO(1360846): Consider using the in-memory cache instead.
+    commerce::ShoppingListUiTabHelper::CreateForWebContents(
+        web_contents,
+        commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+        BookmarkModelFactory::GetForBrowserContext(profile),
+        ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
+            ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly));
+  }
 #endif
 
 #if BUILDFLAG(IS_WIN)
