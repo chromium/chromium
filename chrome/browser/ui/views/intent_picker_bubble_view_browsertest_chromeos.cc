@@ -1,9 +1,6 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 
 #include <memory>
@@ -14,10 +11,13 @@
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
@@ -362,11 +362,11 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest,
 
   template <typename Action>
   void DoAndWaitForIntentPickerIconUpdate(Action action) {
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> test_future;
     auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
-    tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
+    tab_helper->SetIconUpdateCallbackForTesting(test_future.GetCallback());
     action();
-    run_loop.Run();
+    EXPECT_TRUE(test_future.Wait()) << " intent picker icon did not update";
   }
 
  private:

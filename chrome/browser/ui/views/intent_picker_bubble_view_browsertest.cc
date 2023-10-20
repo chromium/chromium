@@ -5,8 +5,8 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/ui/browser.h"
@@ -47,11 +47,11 @@ class IntentPickerBrowserTest
 
   template <typename Action>
   void DoAndWaitForIntentPickerIconUpdate(Action action) {
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> future;
     auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
-    tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
+    tab_helper->SetIconUpdateCallbackForTesting(future.GetCallback());
     action();
-    run_loop.Run();
+    EXPECT_TRUE(future.Wait()) << " intent picker icon did not update";
   }
 
   content::WebContents* OpenNewTab(const GURL& url,
@@ -161,12 +161,12 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
   NavigateToLaunchingPage(browser());
 
-  base::RunLoop run_loop;
-  tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
+  base::test::TestFuture<bool> future;
+  tab_helper->SetIconUpdateCallbackForTesting(future.GetCallback());
   TestTabActionDoesNotOpenAppWindow(
       in_scope_url, base::BindOnce(&ClickLinkAndWait, GetWebContents(),
                                    in_scope_url, LinkTarget::SELF, GetParam()));
-  run_loop.Run();
+  EXPECT_TRUE(future.Get());
 
   views::Button* intent_picker_icon = GetIntentPickerIcon();
   EXPECT_TRUE(intent_picker_icon->GetVisible());
