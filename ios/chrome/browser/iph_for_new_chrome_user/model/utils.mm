@@ -14,7 +14,7 @@
 
 namespace {
 
-base::TimeDelta new_user_first_run_recency = base::Days(60);
+constexpr base::TimeDelta kNewUserFirstRunRecency = base::Days(60);
 
 bool IsUserNewChromeUser(
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher) {
@@ -30,7 +30,7 @@ bool IsUserNewChromeUser(
     if (info.has_value()) {
       base::Time first_run_time = info.value().creation_time;
       bool is_first_run_recent =
-          base::Time::Now() - first_run_time < new_user_first_run_recency;
+          base::Time::Now() - first_run_time < kNewUserFirstRunRecency;
       if (!is_first_run_recent) {
         return false;
       }
