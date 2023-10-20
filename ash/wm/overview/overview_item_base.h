@@ -180,9 +180,9 @@ class ASH_EXPORT OverviewItemBase {
       const gfx::RectF& target_bounds) = 0;
 
   // Returns the union of the original target bounds of all transformed windows
-  // managed by `this`, i.e. all regular (normal or panel transient descendants
-  // of the window returned by `GetWindows()`).
-  virtual gfx::RectF GetTargetBoundsInScreen() const = 0;
+  // represented by `this`, i.e. all regular (normal or transient descendants of
+  // the windows returned by `GetWindows()`).
+  virtual gfx::RectF GetWindowsUnionScreenBounds() const = 0;
 
   // Returns the `target_bounds_` of the `this` with insets of the header.
   virtual gfx::RectF GetTargetBoundsWithInsets() const = 0;

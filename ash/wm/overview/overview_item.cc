@@ -426,7 +426,7 @@ gfx::Transform OverviewItem::ComputeTargetTransform(
     const gfx::RectF& target_bounds) {
   CHECK(!overview_grid_->IsDropTargetItem(this));
 
-  gfx::RectF screen_rect = gfx::RectF(GetTargetBoundsInScreen());
+  gfx::RectF screen_rect = gfx::RectF(GetWindowsUnionScreenBounds());
 
   // Avoid division by zero by ensuring screen bounds is not empty.
   gfx::SizeF screen_size(screen_rect.size());
@@ -512,8 +512,8 @@ void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
   FadeOutWidgetFromOverview(std::move(item_widget_), animation_type);
 }
 
-gfx::RectF OverviewItem::GetTargetBoundsInScreen() const {
-  return ash::GetTargetBoundsInScreen(transform_window_.window());
+gfx::RectF OverviewItem::GetWindowsUnionScreenBounds() const {
+  return GetUnionScreenBoundsForWindow(transform_window_.window());
 }
 
 gfx::RectF OverviewItem::GetTargetBoundsWithInsets() const {
@@ -528,7 +528,7 @@ gfx::RectF OverviewItem::GetTransformedBounds() const {
 
 float OverviewItem::GetItemScale(int height) {
   return ScopedOverviewTransformWindow::GetItemScale(
-      GetTargetBoundsInScreen().height(), height,
+      GetWindowsUnionScreenBounds().height(), height,
       transform_window_.GetTopInset(), kHeaderHeightDp);
 }
 

@@ -108,7 +108,7 @@ void OverviewItemBase::HandleMouseEvent(const ui::MouseEvent& event) {
   // search+space will select the item, leaving overview.
   const gfx::PointF screen_location =
       event.target() ? event.target()->GetScreenLocationF(event)
-                     : gfx::PointF(GetTargetBoundsInScreen().CenterPoint());
+                     : gfx::PointF(GetWindowsUnionScreenBounds().CenterPoint());
   switch (event.type()) {
     case ui::ET_MOUSE_PRESSED:
       HandlePressEvent(screen_location, /*from_touch_gesture=*/false);

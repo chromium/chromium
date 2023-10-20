@@ -49,7 +49,7 @@ class OverviewGroupItem : public OverviewItemBase,
                  OverviewAnimationType animation_type) override;
   gfx::Transform ComputeTargetTransform(
       const gfx::RectF& target_bounds) override;
-  gfx::RectF GetTargetBoundsInScreen() const override;
+  gfx::RectF GetWindowsUnionScreenBounds() const override;
   gfx::RectF GetTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
   float GetItemScale(int height) override;

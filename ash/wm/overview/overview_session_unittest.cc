@@ -6648,8 +6648,8 @@ TEST_F(TabletModeOverviewSessionTest, AvoidUaFOnCompleteDrag) {
   // Trigger `OverviewWindowDragController::CompleteDrag()` and verify that
   // there will be no crash.
   auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(gfx::ToRoundedPoint(
-      overview_item->GetTargetBoundsInScreen().CenterPoint()));
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint()));
   event_generator->ClickLeftButton();
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             window_state->GetStateType());

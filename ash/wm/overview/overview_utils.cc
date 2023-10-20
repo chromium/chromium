@@ -155,7 +155,7 @@ void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget) {
   widget.reset();
 }
 
-gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
+gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window) {
   gfx::RectF bounds;
   for (auto* window_iter :
        window_util::GetVisibleTransientTreeIterator(window)) {
@@ -166,7 +166,7 @@ gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
       continue;
     }
     gfx::RectF target_bounds(window_iter->GetTargetBounds());
-    ::wm::TranslateRectToScreen(window_iter->parent(), &target_bounds);
+    wm::TranslateRectToScreen(window_iter->parent(), &target_bounds);
     bounds.Union(target_bounds);
   }
 
@@ -174,7 +174,8 @@ gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
 }
 
 void SetTransform(aura::Window* window, const gfx::Transform& transform) {
-  const gfx::PointF target_origin(GetTargetBoundsInScreen(window).origin());
+  const gfx::PointF target_origin(
+      GetUnionScreenBoundsForWindow(window).origin());
   for (auto* window_iter :
        window_util::GetVisibleTransientTreeIterator(window)) {
     aura::Window* parent_window = window_iter->parent();

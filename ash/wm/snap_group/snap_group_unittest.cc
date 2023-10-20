@@ -1249,12 +1249,11 @@ TEST_F(SnapGroupEntryPointArm1Test, OverviewItemBoundsTest) {
   // widget target bounds.
   auto* overview_group_item =
       overview_session->GetOverviewItemForWindow(w1.get());
-  const gfx::RectF& group_item_bounds =
-      overview_group_item->GetTargetBoundsInScreen();
+  const gfx::RectF& group_item_bounds = overview_group_item->target_bounds();
   gfx::RectF cumulative_bounds;
   for (auto* window : overview_group_item->GetWindows()) {
     auto* overview_item = overview_session->GetOverviewItemForWindow(window);
-    cumulative_bounds.Union(overview_item->GetTargetBoundsInScreen());
+    cumulative_bounds.Union(overview_item->target_bounds());
     EXPECT_GT(cumulative_bounds.width(), 0u);
     EXPECT_TRUE(group_item_bounds.Contains(cumulative_bounds));
   }

@@ -468,7 +468,7 @@ gfx::SizeF GetTotalUnionSizeIncludingTransients(
     const aura::Window::Windows& windows) {
   gfx::RectF total_bounds;
   for (auto* win : windows) {
-    total_bounds.Union(GetTargetBoundsInScreen(win));
+    total_bounds.Union(GetUnionScreenBoundsForWindow(win));
   }
 
   gfx::SizeF total_size = total_bounds.size();
@@ -1751,13 +1751,13 @@ void OverviewGrid::EndScroll() {
 int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
     OverviewItemBase* item,
     int height) {
-  gfx::SizeF target_size = item->GetTargetBoundsInScreen().size();
+  gfx::SizeF target_size = item->GetWindowsUnionScreenBounds().size();
   float scale = item->GetItemScale(height);
   OverviewGridWindowFillMode grid_fill_mode = item->GetWindowDimensionsType();
 
   // The drop target, unlike the other windows has its bounds set directly, so
-  // `GetTargetBoundsInScreen()` won't return the value we want. Instead, get
-  // the scale from the window(s) it was meant to be a placeholder for.
+  // `GetWindowsUnionScreenBounds()` won't return the value we want. Instead,
+  // get the scale from the window(s) it was meant to be a placeholder for.
   if (IsDropTargetItem(item)) {
     auto* window_drag_controller = overview_session_->window_drag_controller();
     OverviewItemBase* grid_dragged_item =

@@ -2550,12 +2550,12 @@ void SplitViewController::SetTransformWithAnimation(
     aura::Window* window,
     const gfx::Transform& start_transform,
     const gfx::Transform& target_transform) {
-  const gfx::PointF target_origin = GetTargetBoundsInScreen(window).origin();
   for (auto* window_iter : GetTransientTreeIterator(window)) {
-    // Adjust |start_transform| and |target_transform| for the transient child.
-    aura::Window* parent_window = window_iter->parent();
+    // Adjust `start_transform` and `target_transform` for the transient child.
+    const gfx::PointF target_origin =
+        GetUnionScreenBoundsForWindow(window).origin();
     gfx::RectF original_bounds(window_iter->GetTargetBounds());
-    ::wm::TranslateRectToScreen(parent_window, &original_bounds);
+    wm::TranslateRectToScreen(window_iter->parent(), &original_bounds);
     const gfx::PointF pivot(target_origin.x() - original_bounds.x(),
                             target_origin.y() - original_bounds.y());
     const gfx::Transform new_start_transform =

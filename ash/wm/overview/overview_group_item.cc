@@ -155,10 +155,10 @@ gfx::Transform OverviewGroupItem::ComputeTargetTransform(
   return gfx::Transform();
 }
 
-gfx::RectF OverviewGroupItem::GetTargetBoundsInScreen() const {
+gfx::RectF OverviewGroupItem::GetWindowsUnionScreenBounds() const {
   gfx::RectF target_bounds;
   for (const auto& item : overview_items_) {
-    target_bounds.Union(item->GetTargetBoundsInScreen());
+    target_bounds.Union(item->GetWindowsUnionScreenBounds());
   }
 
   return target_bounds;
