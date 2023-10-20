@@ -27,7 +27,7 @@ fedcm_test(async t => {
 
 fedcm_test(async t => {
   await mark_signed_out(alt_manifest_origin);
-  // This should be ignored because it's a cross-origin fetch.
+  // The header should be ignored because it's a cross-origin iframe.
   let iframe = document.createElement("iframe");
   let iframe_load = new Promise(resolve => {iframe.onload = resolve;});
   iframe.src = url_prefix + "mark_signedin";
@@ -38,5 +38,20 @@ fedcm_test(async t => {
   const result = navigator.credentials.get(config);
   return promise_rejects_dom(t, 'NetworkError', result);
 }, 'Status header should be ignored from cross-origin iframe');
+
+fedcm_test(async t => {
+  await mark_signed_out(alt_manifest_origin);
+  // The header in the subresource should be ignored because the iframe is cross-origin.
+  let iframe = document.createElement("iframe");
+  let iframe_load = new Promise(resolve => {iframe.onload = resolve;});
+  iframe.src = url_prefix + "iframe-mark-signedin.html";
+  document.body.appendChild(iframe);
+  await iframe_load;
+
+  const config = alt_request_options_with_mediation_required();
+  const result = navigator.credentials.get(config);
+  return promise_rejects_dom(t, 'NetworkError', result);
+}, 'Status header should be ignored from cross-origin iframe that contains a subresource with the header');
+
 </script>
 

@@ -1014,12 +1014,21 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
 void FederatedAuthRequestImpl::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     blink::mojom::IdpSigninStatus status) {
+  if (render_frame_host().IsNestedWithinFencedFrame()) {
+    return;
+  }
   // We only allow setting the IDP signin status when the subresource is
   // loaded from the same origin as the document. This is to protect from
   // an RP embedding a tracker resource that would set this signin status
   // for the tracker, enabling the FedCM request.
   // This behavior may change in https://crbug.com/1382193
   if (!origin().IsSameOriginWith(idp_origin)) {
+    return;
+  }
+  // For the same reason, we only allow setting the status if we are
+  // same-origin with ancestors.
+  if (!webid::IsSameOriginWithAncestors(idp_origin,
+                                        render_frame_host().GetParent())) {
     return;
   }
   permission_delegate_->SetIdpSigninStatus(

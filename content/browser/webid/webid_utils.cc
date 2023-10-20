@@ -27,6 +27,17 @@ using blink::mojom::FederatedAuthRequestResult;
 
 namespace content::webid {
 
+bool IsSameOriginWithAncestors(const url::Origin& origin,
+                               RenderFrameHost* render_frame_host) {
+  while (render_frame_host) {
+    if (!origin.IsSameOriginWith(render_frame_host->GetLastCommittedOrigin())) {
+      return false;
+    }
+    render_frame_host = render_frame_host->GetParent();
+  }
+  return true;
+}
+
 void SetIdpSigninStatus(
     content::BrowserContext* context,
     absl::optional<base::SafeRef<FrameTreeNode>> frame_tree_node,
@@ -38,12 +49,8 @@ void SetIdpSigninStatus(
       return;
     }
 
-    RenderFrameHostImpl* parent = (*frame_tree_node)->parent();
-    while (parent) {
-      if (!origin.IsSameOriginWith(parent->GetLastCommittedOrigin())) {
-        return;
-      }
-      parent = parent->GetParent();
+    if (!IsSameOriginWithAncestors(origin, (*frame_tree_node)->parent())) {
+      return;
     }
   }
 
