@@ -545,13 +545,12 @@ class PaymentsClient {
  private:
   friend class PaymentsClientTest;
 
-  // Initiates a Payments request using the state in |request|. If
-  // |authenticate| is true, ensures that an OAuth token is avialble first.
-  // Takes ownership of |request|.
-  void IssueRequest(std::unique_ptr<PaymentsRequest> request,
-                    bool authenticate);
+  // Initiates a Payments request using the state in `request`, ensuring that an
+  // OAuth token is available first. Takes ownership of `request`.
+  void IssueRequest(std::unique_ptr<PaymentsRequest> request);
 
-  // Creates |resource_request_| to be used later in StartRequest().
+  // Creates `resource_request_` to be used later in
+  // SetOAuth2TokenAndStartRequest().
   void InitializeResourceRequest();
 
   // Callback from |simple_url_loader_|.
@@ -569,11 +568,8 @@ class PaymentsClient {
   // Initiates a new OAuth2 token request.
   void StartTokenFetch(bool invalidate_old);
 
-  // Adds the token to |simple_url_loader_| and starts the request.
+  // Creates `simple_url_loader_`, adds the token to it, and starts the request.
   void SetOAuth2TokenAndStartRequest();
-
-  // Creates |simple_url_loader_| and calls it to start the request.
-  void StartRequest();
 
   // The URL loader factory for the request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

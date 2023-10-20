@@ -276,23 +276,19 @@ void PaymentsClient::GetUnmaskDetails(
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             PaymentsClient::UnmaskDetails&)> callback,
     const std::string& app_locale) {
-  IssueRequest(
-      std::make_unique<GetUnmaskDetailsRequest>(
-          std::move(callback), app_locale,
-          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()),
-      /*authenticate=*/true);
+  IssueRequest(std::make_unique<GetUnmaskDetailsRequest>(
+      std::move(callback), app_locale,
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()));
 }
 
 void PaymentsClient::UnmaskCard(
     const PaymentsClient::UnmaskRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             PaymentsClient::UnmaskResponseDetails&)> callback) {
-  IssueRequest(
-      std::make_unique<UnmaskCardRequest>(
-          request_details,
-          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
-          std::move(callback)),
-      /*authenticate=*/true);
+  IssueRequest(std::make_unique<UnmaskCardRequest>(
+      request_details,
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
 }
 
 void PaymentsClient::OptChange(
@@ -300,11 +296,9 @@ void PaymentsClient::OptChange(
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             PaymentsClient::OptChangeResponseDetails&)>
         callback) {
-  IssueRequest(
-      std::make_unique<OptChangeRequest>(
-          request_details, std::move(callback),
-          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()),
-      /*authenticate=*/true);
+  IssueRequest(std::make_unique<OptChangeRequest>(
+      request_details, std::move(callback),
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()));
 }
 
 void PaymentsClient::GetUploadDetails(
@@ -319,25 +313,21 @@ void PaymentsClient::GetUploadDetails(
     const int billable_service_number,
     const int64_t billing_customer_number,
     UploadCardSource upload_card_source) {
-  IssueRequest(
-      std::make_unique<GetUploadDetailsRequest>(
-          addresses, detected_values, client_behavior_signals,
-          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
-          app_locale, std::move(callback), billable_service_number,
-          billing_customer_number, upload_card_source),
-      /*authenticate=*/true);
+  IssueRequest(std::make_unique<GetUploadDetailsRequest>(
+      addresses, detected_values, client_behavior_signals,
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      app_locale, std::move(callback), billable_service_number,
+      billing_customer_number, upload_card_source));
 }
 
 void PaymentsClient::UploadCard(
     const PaymentsClient::UploadRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const UploadCardResponseDetails&)> callback) {
-  IssueRequest(
-      std::make_unique<UploadCardRequest>(
-          request_details,
-          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
-          std::move(callback)),
-      /*authenticate=*/true);
+  IssueRequest(std::make_unique<UploadCardRequest>(
+      request_details,
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -345,12 +335,10 @@ void PaymentsClient::MigrateCards(
     const MigrationRequestDetails& request_details,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     MigrateCardsCallback callback) {
-  IssueRequest(
-      std::make_unique<MigrateCardsRequest>(
-          request_details, migratable_credit_cards,
-          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
-          std::move(callback)),
-      /*authenticate=*/true);
+  IssueRequest(std::make_unique<MigrateCardsRequest>(
+      request_details, migratable_credit_cards,
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -359,8 +347,7 @@ void PaymentsClient::SelectChallengeOption(
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const std::string&)> callback) {
   IssueRequest(std::make_unique<SelectChallengeOptionRequest>(
-                   request_details, std::move(callback)),
-               /*authenticate=*/true);
+      request_details, std::move(callback)));
 }
 
 void PaymentsClient::GetVirtualCardEnrollmentDetails(
@@ -370,16 +357,14 @@ void PaymentsClient::GetVirtualCardEnrollmentDetails(
                                 GetDetailsForEnrollmentResponseDetails&)>
         callback) {
   IssueRequest(std::make_unique<GetDetailsForEnrollmentRequest>(
-                   request_details, std::move(callback)),
-               /*authenticate=*/true);
+      request_details, std::move(callback)));
 }
 
 void PaymentsClient::UpdateVirtualCardEnrollment(
     const UpdateVirtualCardEnrollmentRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
   IssueRequest(std::make_unique<UpdateVirtualCardEnrollmentRequest>(
-                   request_details, std::move(callback)),
-               /*authenticate=*/true);
+      request_details, std::move(callback)));
 }
 
 void PaymentsClient::CancelRequest() {
@@ -400,16 +385,13 @@ void PaymentsClient::set_access_token_for_testing(std::string access_token) {
   access_token_ = access_token;
 }
 
-void PaymentsClient::IssueRequest(std::unique_ptr<PaymentsRequest> request,
-                                  bool authenticate) {
+void PaymentsClient::IssueRequest(std::unique_ptr<PaymentsRequest> request) {
   request_ = std::move(request);
   has_retried_authorization_ = false;
 
   InitializeResourceRequest();
 
-  if (!authenticate) {
-    StartRequest();
-  } else if (access_token_.empty()) {
+  if (access_token_.empty()) {
     StartTokenFetch(false);
   } else {
     SetOAuth2TokenAndStartRequest();
@@ -579,14 +561,12 @@ void PaymentsClient::StartTokenFetch(bool invalidate_old) {
 }
 
 void PaymentsClient::SetOAuth2TokenAndStartRequest() {
+  // Set OAuth2 token:
   DCHECK(resource_request_);
   resource_request_->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                        std::string("Bearer ") + access_token_);
-  StartRequest();
-}
 
-void PaymentsClient::StartRequest() {
-  DCHECK(resource_request_);
+  // Start request:
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("payments_sync_cards", R"(
         semantics {
