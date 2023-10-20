@@ -293,7 +293,7 @@
                 retVal = 'NOTRUN';
                 break;
         }
-        return '[' + retVal + ']'
+        return '[' + retVal + ']';
     }
 
     /**
