@@ -202,6 +202,7 @@ class StyleSheetHandler final : public CSSParserObserver {
 
   TextPosition GetTextPosition(unsigned start_offset);
   void AddNewRuleToSourceTree(CSSRuleSourceData*);
+  void RemoveLastRuleFromSourceTree();
   CSSRuleSourceData* PopRuleData();
   template <typename CharacterType>
   inline void SetRuleHeaderEnd(const CharacterType*, unsigned);
@@ -339,10 +340,19 @@ void StyleSheetHandler::AddNewRuleToSourceTree(CSSRuleSourceData* rule) {
     return;
   }
 
-  if (current_rule_data_stack_.empty())
+  if (current_rule_data_stack_.empty()) {
     result_->push_back(rule);
-  else
+  } else {
     current_rule_data_stack_.back()->child_rules.push_back(rule);
+  }
+}
+
+void StyleSheetHandler::RemoveLastRuleFromSourceTree() {
+  if (current_rule_data_stack_.empty()) {
+    result_->pop_back();
+  } else {
+    current_rule_data_stack_.back()->child_rules.pop_back();
+  }
 }
 
 CSSRuleSourceData* StyleSheetHandler::PopRuleData() {
@@ -493,15 +503,20 @@ void StyleSheetHandler::ObserveErroneousAtRule(
     }
     case CSSAtRuleID::kCSSAtRuleProperty: {
       if (invalid_properties.empty()) {
+        // Invoked from the prelude handling, which means the name is invalid.
         TextPosition start = GetTextPosition(start_offset);
         AuditsIssue::ReportPropertyRuleIssue(
             document_, issueReportingContext_->DocumentURL, start.line_,
             start.column_,
             protocol::Audits::PropertyRuleIssueReasonEnum::InvalidName, {});
-        break;
-      }
-      for (CSSPropertyID invalid_property : invalid_properties) {
-        ReportPropertyRuleFailure(start_offset, invalid_property);
+      } else {
+        // The rule is being dropped because it lacks required descriptors, or
+        // some descriptors have invalid values. The rule has already been
+        // committed and must be removed.
+        for (CSSPropertyID invalid_property : invalid_properties) {
+          ReportPropertyRuleFailure(start_offset, invalid_property);
+        }
+        RemoveLastRuleFromSourceTree();
       }
       break;
     }

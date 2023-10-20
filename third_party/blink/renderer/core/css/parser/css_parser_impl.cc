@@ -1516,30 +1516,37 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
   StyleRuleProperty* rule = MakeGarbageCollected<StyleRuleProperty>(
       name,
       CreateCSSPropertyValueSet(parsed_properties_, kCSSPropertyRuleMode));
-  if (observer_ && rule) {
+
+  absl::optional<CSSSyntaxDefinition> syntax =
+      PropertyRegistration::ConvertSyntax(rule->GetSyntax());
+  absl::optional<bool> inherits =
+      PropertyRegistration::ConvertInherits(rule->Inherits());
+  absl::optional<const CSSValue*> initial =
+      syntax.has_value() ? PropertyRegistration::ConvertInitial(
+                               rule->GetInitialValue(), *syntax, *context_)
+                         : absl::nullopt;
+
+  bool invalid_rule =
+      !syntax.has_value() || !inherits.has_value() || !initial.has_value();
+
+  if (observer_ && invalid_rule) {
     Vector<CSSPropertyID, 2> failed_properties;
-    absl::optional<CSSSyntaxDefinition> syntax =
-        PropertyRegistration::ConvertSyntax(rule->GetSyntax());
     if (!syntax.has_value()) {
       failed_properties.push_back(CSSPropertyID::kSyntax);
     }
-    absl::optional<bool> inherits =
-        PropertyRegistration::ConvertInherits(rule->Inherits());
     if (!inherits.has_value()) {
       failed_properties.push_back(CSSPropertyID::kInherits);
     }
-    absl::optional<const CSSValue*> initial =
-        syntax.has_value() ? PropertyRegistration::ConvertInitial(
-                                 rule->GetInitialValue(), *syntax, *context_)
-                           : absl::nullopt;
     if (!initial.has_value() && syntax.has_value()) {
       failed_properties.push_back(CSSPropertyID::kInitialValue);
     }
-    if (!failed_properties.empty()) {
-      observer_->ObserveErroneousAtRule(prelude_offset_start,
-                                        CSSAtRuleID::kCSSAtRuleProperty,
-                                        failed_properties);
-    }
+    DCHECK(!failed_properties.empty());
+    observer_->ObserveErroneousAtRule(prelude_offset_start,
+                                      CSSAtRuleID::kCSSAtRuleProperty,
+                                      failed_properties);
+  }
+  if (invalid_rule) {
+    return nullptr;
   }
   return rule;
 }
