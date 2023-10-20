@@ -45,8 +45,6 @@ constexpr const char kCrosUdcEnabled[] = "dev_enable_udc";
 constexpr const char kAdbdJson[] = "/etc/arc/adbd.json";
 
 bool g_enable_adb_over_usb_for_testing = false;
-constexpr const char kSerialNumberInTesting[] = "AAAABBBBCCCCDDDD1234";
-constexpr int64_t kCidInTesting = 123;
 
 // Singleton factory for ArcAdbdMonitorBridge.
 class ArcAdbdMonitorBridgeFactory
@@ -95,9 +93,6 @@ bool IsAdbOverUsbEnabled() {
 
 // Returns cid from vm info. Otherwise, return nullopt.
 absl::optional<int64_t> GetCid() {
-  if (g_enable_adb_over_usb_for_testing)
-    return kCidInTesting;
-
   const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
   if (!vm_info) {
     LOG(ERROR) << "ARCVM is NOT ready";
@@ -107,8 +102,6 @@ absl::optional<int64_t> GetCid() {
 }
 
 std::string GetSerialNumber() {
-  if (g_enable_adb_over_usb_for_testing)
-    return kSerialNumberInTesting;
   return arc::ArcSessionManager::Get()->GetSerialNumber();
 }
 
