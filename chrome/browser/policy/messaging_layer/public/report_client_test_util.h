@@ -5,21 +5,30 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_PUBLIC_REPORT_CLIENT_TEST_UTIL_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_PUBLIC_REPORT_CLIENT_TEST_UTIL_H_
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
+#include "components/reporting/storage/storage_module_interface.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
-#include "components/reporting/storage/storage_module_interface.h"
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace reporting {
 
 class ReportingClient::TestEnvironment {
  public:
+#if !BUILDFLAG(IS_CHROMEOS)
   // Factory method creates an environment with actual local storage at
   // `reporting_path` location and with encryption support included.
   static std::unique_ptr<TestEnvironment> CreateWithLocalStorage(
       const base::FilePath& reporting_path,
       std::string_view verification_key);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Factory method creates an environment with a given storage module
   // (usually it is `test::TestStorageModule`).
