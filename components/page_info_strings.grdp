@@ -780,8 +780,8 @@
   <message name="IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT" desc="The label of the count for sites with allowed cookies on the page. This text will be shown on the cookies dialog button.">
     {NUM_COOKIES, plural, =0 {No sites allowed} =1 {1 site allowed} other {# sites allowed}}
   </message>
-   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE" desc="The title on the button opening cookies in use dialog in cookies subpage.">
-    Manage cookies and site data
+   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE" desc="The title on the button opening on-device site data dialog.">
+    Manage on-device site data
   </message>
    <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_DIALOG_BUTTON_TITLE" desc="Title of the button on the Tracking Protection subpage that opens the 'Cookies and site data' dialog.">
     Manage on-device site data

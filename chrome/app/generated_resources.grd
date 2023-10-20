@@ -11336,24 +11336,31 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
 
       <!-- Page specific site data dialog (redesign of Collected cookies window) -->
-      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_TITLE" desc="The title of `Cookies and site data` dialog (previously 'Cookies in use' dialog). The dialog contains a list of sites that have access to storage or are blocked from accessing it. It also has controls for each site to allow access, block access or allow access for a session only.">
-        Cookies and site data
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_TITLE" desc="The title of `On-device site data` dialog (previously 'Cookies and site data' dialog). The dialog contains a list of sites that have access to storage or are blocked from accessing it. It also has controls for each site to allow access, block access or allow access for a session only.">
+        On-device site data
       </message>
 
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SUBTITLE" desc="The subtitle of `On-device site data` dialog that explains to users the data displayed in this dialog and allows users to manager their site data through a hyperlink to settings.">
+        To improve your visit, sites often save your activity – often to your device. <ph name="SETTINGS">$1<ex>Manage site data</ex></ph>
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SETTINGS_LINK" desc="This is a text label for a link to on-device site data settings page displayed as part of the on-device site data dialog subtitle.">
+        Manage site data
+      </message>
       <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_FIRST_PARTY_TITLE" desc="This is a title of a section that displayed a list of sites that have accessed storage and are considered first-party to the site the user is currently visiting. The label is shown in the `Cookies and site data` dialog.">
-        From the site you’re viewing
+        Data from the site you’re visiting
       </message>
 
       <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_FIRST_PARTY_SUBTITLE" desc="This is a subtitle of a section that displayed a list of sites that have accessed storage and are considered first-party to the site the user is currently visiting. It provides more information about what first party sites means. The label is shown in the `Cookies and site data` dialog.">
-        Including sites from the same domain, for example, google.com and mail.google.com. Sites you’re viewing can save data on your device.
+        A site might save your preferred language or items you want to buy. This info is avaiable to the site and its subdomains.
       </message>
 
       <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_THIRD_PARTY_TITLE" desc="This is a title of a section that displayed a list of sites that have accessed storage and are considered third-party to the site the user is currently visiting. The label is shown in the `Cookies and site data` dialog.">
-        From other sites
+        Data from embedded sites
       </message>
 
       <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_THIRD_PARTY_SUBTITLE" desc="This is a subtitle of a section that displayed a list of sites that have accessed storage and are considered third-party to the site the user is currently visiting. It provides more information about what third party sites means. The label is shown in the `Cookies and site data` dialog.">
-        A site you’re viewing can embed content from other sites, for example images, ads, and text. These embedded sites can save data on your device.
+        A site can also embed content from other sites, for example images, ads, and text. These other sites can also save data.
       </message>
 
       <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_EMPTY_STATE_LABEL" desc="The text used to explain to users that there are no cookies set and that this is the place where they will be shown. The label is shown in the `Cookies and site data` dialog.">

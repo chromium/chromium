@@ -15,6 +15,9 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
@@ -40,6 +43,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "url/origin.h"
@@ -324,6 +328,11 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     }
     RecordPageSpecificSiteDataDialogAction(
         GetDialogActionForContentSetting(setting));
+  }
+
+  void OnManageOnDeviceSiteDataClicked() {
+    Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
+    chrome::ShowSettingsSubPage(browser, chrome::kOnDeviceSiteDataSubpage);
   }
 
  private:
@@ -630,10 +639,23 @@ views::Widget* ShowPageSpecificSiteDataDialog(
   auto delegate_unique =
       std::make_unique<PageSpecificSiteDataDialogModelDelegate>(web_contents);
   PageSpecificSiteDataDialogModelDelegate* delegate = delegate_unique.get();
+
+  // Text replacement for on-device site data subtitle text which has an
+  // embedded link to on-device site data settings page.
+  ui::DialogModelLabel::TextReplacement settings_link =
+      ui::DialogModelLabel::CreateLink(
+          IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SETTINGS_LINK,
+          base::BindRepeating(&PageSpecificSiteDataDialogModelDelegate::
+                                  OnManageOnDeviceSiteDataClicked,
+                              base::Unretained(delegate)));
   auto builder = ui::DialogModel::Builder(std::move(delegate_unique));
   builder
       .SetTitle(
           l10n_util::GetStringUTF16(IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_TITLE))
+      .AddParagraph(
+          ui::DialogModelLabel::CreateWithReplacement(
+              IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SUBTITLE, settings_link)
+              .set_is_secondary())
       .SetInternalName("PageSpecificSiteDataDialog")
       .AddOkButton(
           base::BindRepeating(&PageSpecificSiteDataDialogModelDelegate::
