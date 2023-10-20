@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.init;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -74,6 +75,10 @@ public abstract class AsyncInitTaskRunner {
             }
             if (VersionInfo.isDevBuild()) {
                 return "dev";
+            }
+            // TODO(crbug.com/1493502): Remove this if block after automotive beta ends.
+            if (VersionInfo.isBetaBuild() && BuildInfo.getInstance().isAutomotive) {
+                return "stable";
             }
             if (VersionInfo.isBetaBuild()) {
                 return "beta";
