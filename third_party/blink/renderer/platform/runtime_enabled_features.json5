@@ -2188,7 +2188,7 @@
     {
       // If enabled, IntersectionObserverScrollMargin will be parsed.
       name: "IntersectionObserverScrollMargin",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "IntersectionOptimization",
