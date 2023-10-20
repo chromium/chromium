@@ -273,9 +273,9 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
       // force an update by clearing the existing permission views here.
       bubble_view->GetFocusManager()->SetFocusedView(nullptr);
 
-        auto* main_page = static_cast<PageInfoMainView*>(current_ui);
-        main_page->toggle_rows_.clear();
-        main_page->permissions_view_->RemoveAllChildViews();
+      auto* main_page = static_cast<PageInfoMainView*>(current_ui);
+      main_page->toggle_rows_.clear();
+      main_page->permissions_view_->RemoveAllChildViews();
 
       current_ui->SetPermissionInfo(permissions_list,
                                     std::move(chosen_object_list));
@@ -312,15 +312,17 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
   }
 
   bool VerifyUi() override {
-    if (!DialogBrowserTest::VerifyUi())
+    if (!DialogBrowserTest::VerifyUi()) {
       return false;
+    }
     // Check that each expected View is present in the Page Info bubble.
     views::View* page_info_bubble_view =
         PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetContentsView();
     for (auto id : expected_identifiers_) {
       views::View* view = GetView(browser(), id);
-      if (!page_info_bubble_view->Contains(view))
+      if (!page_info_bubble_view->Contains(view)) {
         return false;
+      }
     }
     return true;
   }
@@ -722,6 +724,12 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
                                                 disabled_features);
   }
 
+  static base::Time GetReferenceTime() {
+    base::Time time;
+    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2023 11:00:00 UTC", &time));
+    return time;
+  }
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name_with_param_suffix) override {
     // Bubble dialogs' bounds may exceed the display's work area.
@@ -768,8 +776,9 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
       cookie_info.fps_info = {PageInfoUI::CookiesFpsInfo(kSiteOrigin)};
 
       // Otherwise it's by default false
-      if (name == kCookiesSubpageFpsManaged3pcAllowed)
+      if (name == kCookiesSubpageFpsManaged3pcAllowed) {
         cookie_info.fps_info->is_managed = true;
+      }
 
     }  // Otherwise by default it's null
 
@@ -795,7 +804,7 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
     }
 
     if (GetParam() == UserBypassFeatureState::kOnTemporaryExceptions) {
-      cookie_info.expiration = base::Time::Now() + base::Days(30);
+      cookie_info.expiration = GetReferenceTime() + base::Days(30);
     }
     cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
 
@@ -844,6 +853,11 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
   }
 
  private:
+  // Overriding `base::Time::Now()` to obtain a consistent X days until
+  // exception expiration calculation regardless of the time the test runs.
+  base::subtle::ScopedTimeClockOverrides time_override_{
+      &PageInfoBubbleViewCookiesSubpageBrowserTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr};
   base::test::ScopedFeatureList feature_list_;
 };
 
