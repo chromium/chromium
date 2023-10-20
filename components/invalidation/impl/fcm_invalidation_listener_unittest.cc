@@ -13,9 +13,9 @@
 #include "base/test/task_environment.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
+#include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,14 +80,8 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
   InvalidatorState GetInvalidatorState() const { return state_; }
 
   // FCMInvalidationListener::Delegate implementation.
-  void OnInvalidate(const TopicInvalidationMap& invalidation_map) override {
-    TopicSet topics = invalidation_map.GetTopics();
-    for (const auto& topic : topics) {
-      const SingleTopicInvalidationSet& incoming =
-          invalidation_map.ForTopic(topic);
-      List& list = invalidations_[topic];
-      list.insert(list.end(), incoming.begin(), incoming.end());
-    }
+  void OnInvalidate(const Invalidation& invalidation) override {
+    invalidations_[invalidation.topic()].push_back(invalidation);
   }
 
   void OnInvalidatorStateChange(InvalidatorState state) override {

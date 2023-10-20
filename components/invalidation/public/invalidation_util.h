@@ -17,12 +17,6 @@
 
 namespace invalidation {
 
-class Invalidation;
-
-struct INVALIDATION_EXPORT InvalidationVersionLessThan {
-  bool operator()(const Invalidation& a, const Invalidation& b) const;
-};
-
 using Topic = std::string;
 // It should be std::set, since std::set_difference is used for it.
 using TopicSet = std::set<std::string>;

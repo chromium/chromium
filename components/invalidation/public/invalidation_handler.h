@@ -13,6 +13,8 @@
 
 namespace invalidation {
 
+class Invalidation;
+
 class INVALIDATION_EXPORT InvalidationHandler {
  public:
   InvalidationHandler() = default;

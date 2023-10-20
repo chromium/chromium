@@ -19,12 +19,8 @@ static_library("public") {
     "invalidation_util.h",
     "invalidator_state.cc",
     "invalidator_state.h",
-    "single_topic_invalidation_set.cc",
-    "single_topic_invalidation_set.h",
     "topic_data.cc",
     "topic_data.h",
-    "topic_invalidation_map.cc",
-    "topic_invalidation_map.h",
   ]
   public_deps = [ "//google_apis" ]
   deps = [

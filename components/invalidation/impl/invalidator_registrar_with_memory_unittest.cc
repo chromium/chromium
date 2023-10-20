@@ -14,7 +14,6 @@
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,9 +28,7 @@ namespace {
 
 template <class... Inv>
 void Dispatch(InvalidatorRegistrarWithMemory& registrar, Inv... inv) {
-  TopicInvalidationMap invalidation_map;
-  (invalidation_map.Insert(inv), ...);
-  registrar.DispatchInvalidationsToHandlers(invalidation_map);
+  (registrar.DispatchInvalidationToHandlers(inv), ...);
 }
 
 template <class... Inv>

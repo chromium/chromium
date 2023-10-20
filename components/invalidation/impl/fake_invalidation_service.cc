@@ -4,11 +4,9 @@
 
 #include "components/invalidation/impl/fake_invalidation_service.h"
 
-#include "base/functional/callback.h"
-#include "base/values.h"
 #include "components/invalidation/impl/invalidation_service_util.h"
+#include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 
 namespace invalidation {
 
@@ -76,9 +74,7 @@ void FakeInvalidationService::EmitInvalidationForTest(
   // Otherwise, register the invalidation with the fake_ack_handler_ and deliver
   // it to the appropriate consumer.
   fake_ack_handler_.RegisterInvalidation(&invalidation_copy);
-  TopicInvalidationMap invalidation_map;
-  invalidation_map.Insert(invalidation_copy);
-  invalidator_registrar_->DispatchInvalidationsToHandlers(invalidation_map);
+  invalidator_registrar_->DispatchInvalidationToHandlers(invalidation_copy);
 }
 
 FakeAckHandler* FakeInvalidationService::GetFakeAckHandler() {

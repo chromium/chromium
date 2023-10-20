@@ -7,12 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -27,7 +24,7 @@
 #include "components/invalidation/impl/invalidation_prefs.h"
 #include "components/invalidation/impl/invalidation_service_test_template.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
+#include "components/invalidation/public/invalidation.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -165,9 +162,8 @@ class FCMInvalidationServiceTestDelegate {
     fake_listener_->EmitStateChangeForTest(state);
   }
 
-  void TriggerOnIncomingInvalidation(
-      const TopicInvalidationMap& invalidation_map) {
-    fake_listener_->EmitSavedInvalidationsForTest(invalidation_map);
+  void TriggerOnIncomingInvalidation(const Invalidation& invalidation) {
+    fake_listener_->EmitSavedInvalidationForTest(invalidation);
   }
 
   base::test::TaskEnvironment task_environment_;

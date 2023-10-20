@@ -72,7 +72,7 @@ class FCMInvalidationServiceBase : public InvalidationService,
   std::string GetInvalidatorClientId() const override;
 
   // FCMInvalidationListener::Delegate implementation.
-  void OnInvalidate(const TopicInvalidationMap& invalidation_map) override;
+  void OnInvalidate(const Invalidation& invalidation) override;
   void OnInvalidatorStateChange(InvalidatorState state) override;
 
  protected:

@@ -14,7 +14,6 @@
 #include "components/invalidation/impl/invalidation_prefs.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/topic_data.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace invalidation {
@@ -122,8 +121,8 @@ std::string FCMInvalidationServiceBase::GetInvalidatorClientId() const {
 }
 
 void FCMInvalidationServiceBase::OnInvalidate(
-    const TopicInvalidationMap& invalidation_map) {
-  invalidator_registrar_.DispatchInvalidationsToHandlers(invalidation_map);
+    const Invalidation& invalidation) {
+  invalidator_registrar_.DispatchInvalidationToHandlers(invalidation);
 }
 
 void FCMInvalidationServiceBase::OnInvalidatorStateChange(

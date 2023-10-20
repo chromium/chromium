@@ -13,11 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/values.h"
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/topic_data.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -25,6 +23,8 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace invalidation {
+
+class Invalidation;
 
 BASE_DECLARE_FEATURE(kRestoreInterestingTopicsFeature);
 
@@ -88,12 +88,10 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // itself again yet).
   Topics GetAllSubscribedTopics() const;
 
-  // Sorts incoming invalidations into a bucket for each handler and then
-  // dispatches the batched invalidations to the corresponding handler.
-  // Invalidations for topics with no corresponding handler are dropped, as are
-  // invalidations for handlers that are not added.
-  void DispatchInvalidationsToHandlers(
-      const TopicInvalidationMap& invalidation_map);
+  // Dispatches incoming invalidation to the corresponding handler based on its
+  // topic.
+  // Invalidations for topics with no corresponding handler are dropped.
+  void DispatchInvalidationToHandlers(const Invalidation& invalidation);
 
   // Updates the invalidator state to the given one and then notifies
   // all handlers.  Note that the order is important; handlers that

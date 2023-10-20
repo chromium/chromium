@@ -69,20 +69,16 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ref.h"
 #include "components/invalidation/impl/fake_invalidation_handler.h"
-#include "components/invalidation/public/ack_handle.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace invalidation {
 
 template <class Delegate, class... Inv>
 void TriggerOnIncomingInvalidation(Delegate& delegate, Inv... inv) {
-  TopicInvalidationMap invalidation_map;
-  (invalidation_map.Insert(inv), ...);
-  delegate.TriggerOnIncomingInvalidation(invalidation_map);
+  (delegate.TriggerOnIncomingInvalidation(inv), ...);
 }
 
 template <class... Inv>

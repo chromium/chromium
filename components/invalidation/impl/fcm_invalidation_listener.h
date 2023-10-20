@@ -19,7 +19,7 @@
 
 namespace invalidation {
 
-class TopicInvalidationMap;
+class Invalidation;
 
 // Receives InstanceID tokens and actual invalidations from FCM via
 // FCMSyncNetworkChannel, and dispatches them to its delegate (in practice, the
@@ -38,7 +38,7 @@ class FCMInvalidationListener
    public:
     virtual ~Delegate() = default;
 
-    virtual void OnInvalidate(const TopicInvalidationMap& invalidations) = 0;
+    virtual void OnInvalidate(const Invalidation& invalidation) = 0;
 
     virtual void OnInvalidatorStateChange(InvalidatorState state) = 0;
   };
@@ -78,7 +78,7 @@ class FCMInvalidationListener
 
   void StartForTest(Delegate* delegate);
   void EmitStateChangeForTest(InvalidatorState state);
-  void EmitSavedInvalidationsForTest(const TopicInvalidationMap& to_emit);
+  void EmitSavedInvalidationForTest(const Invalidation& invalidation);
 
  private:
   // Callbacks for the |network_channel_|.
@@ -103,8 +103,8 @@ class FCMInvalidationListener
   // Cache `invalidation` and emit it to registered handlers (if any).
   void DispatchInvalidation(const Invalidation& invalidation);
 
-  // Emits previously saved invalidations to their registered observers.
-  void EmitSavedInvalidations(const TopicInvalidationMap& to_emit);
+  // Emits previously saved invalidation to their registered observers.
+  void EmitSavedInvalidation(const Invalidation& invalidation);
 
   std::unique_ptr<FCMSyncNetworkChannel> network_channel_;
   std::map<Topic, Invalidation> unacked_invalidations_map_;

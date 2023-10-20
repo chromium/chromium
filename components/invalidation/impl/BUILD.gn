@@ -99,14 +99,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (!is_android) {
-    # Non-Android tests.
-    sources += [
-      "single_topic_invalidation_set_unittest.cc",
-      "topic_invalidation_map_unittest.cc",
-    ]
-  }
 }
 
 static_library("test_support") {
