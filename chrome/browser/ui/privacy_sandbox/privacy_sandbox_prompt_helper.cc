@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
+#include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -172,9 +173,16 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   auto* browser =
       chrome::FindBrowserWithTab(navigation_handle->GetWebContents());
 
-  // If a sign-in dialog is being currently displayed, the prompt should
-  // not be shown to avoid conflict.
-  if (browser->signin_view_controller()->ShowsModalDialog()) {
+  // If a sign-in dialog is being currently displayed or is about to be
+  // displayed, the prompt should not be shown to avoid conflict.
+  bool signin_dialog_showing =
+      browser->signin_view_controller()->ShowsModalDialog();
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  signin_dialog_showing =
+      signin_dialog_showing ||
+      IsProfileCustomizationBubbleSyncControllerRunning(browser);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  if (signin_dialog_showing) {
     base::UmaHistogramEnumeration(
         kPrivacySandboxPromptHelperEventHistogram,
         SettingsPrivacySandboxPromptHelperEvent::kSigninDialogShown);
