@@ -1056,14 +1056,14 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   // Serialize and set result to later send to done_callback.
   std::string serialized_metadata;
   response.SerializeToString(&serialized_metadata);
-  auto result = absl::make_optional(optimization_guide::proto::Any());
-  result->set_value(serialized_metadata);
-  result->set_type_url("type.googleapis.com/" + response.GetTypeName());
+  optimization_guide::proto::Any result;
+  result.set_value(serialized_metadata);
+  result.set_type_url("type.googleapis.com/" + response.GetTypeName());
 
   std::vector<side_panel::mojom::WallpaperSearchResultPtr> images;
   EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
 
-  std::move(done_callback).Run(result);
+  std::move(done_callback).Run(base::ok(result));
 
   std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
   std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));
@@ -1142,7 +1142,12 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   std::vector<side_panel::mojom::WallpaperSearchResultPtr> images;
   EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
 
-  std::move(done_callback).Run(absl::nullopt);
+  std::move(done_callback)
+      .Run(base::unexpected(
+          optimization_guide::OptimizationGuideModelExecutionError::
+              FromModelExecutionError(
+                  optimization_guide::OptimizationGuideModelExecutionError::
+                      ModelExecutionError::kGenericFailure)));
 
   EXPECT_EQ(images.size(), 0u);
 }
@@ -1176,14 +1181,14 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
   std::string serialized_metadata;
   response.SerializeToString(&serialized_metadata);
-  auto result = absl::make_optional(optimization_guide::proto::Any());
-  result->set_value(serialized_metadata);
-  result->set_type_url("type.googleapis.com/" + response.GetTypeName());
+  optimization_guide::proto::Any result;
+  result.set_value(serialized_metadata);
+  result.set_type_url("type.googleapis.com/" + response.GetTypeName());
 
   std::vector<side_panel::mojom::WallpaperSearchResultPtr> images;
   EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
 
-  std::move(done_callback).Run(result);
+  std::move(done_callback).Run(base::ok(result));
 
   EXPECT_EQ(static_cast<int>(images.size()), response.images_size());
 }
@@ -1254,14 +1259,14 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   // Serialize and set result to later send to done_callback.
   std::string serialized_metadata;
   response.SerializeToString(&serialized_metadata);
-  auto result = absl::make_optional(optimization_guide::proto::Any());
-  result->set_value(serialized_metadata);
-  result->set_type_url("type.googleapis.com/" + response.GetTypeName());
+  optimization_guide::proto::Any result;
+  result.set_value(serialized_metadata);
+  result.set_type_url("type.googleapis.com/" + response.GetTypeName());
 
   std::vector<side_panel::mojom::WallpaperSearchResultPtr> images;
   EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
 
-  std::move(done_callback).Run(result);
+  std::move(done_callback).Run(base::ok(result));
 
   std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
   std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));

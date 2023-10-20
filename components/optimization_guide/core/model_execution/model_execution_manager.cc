@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "net/base/url_util.h"
@@ -27,6 +28,9 @@ GURL GetModelExecutionServiceURL() {
 }
 
 }  // namespace
+
+using ModelExecutionError =
+    OptimizationGuideModelExecutionError::ModelExecutionError;
 
 ModelExecutionManager::ModelExecutionManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -50,7 +54,9 @@ void ModelExecutionManager::ExecuteModel(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (active_model_execution_fetchers_.find(feature) !=
       active_model_execution_fetchers_.end()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(base::unexpected(
+        OptimizationGuideModelExecutionError::FromModelExecutionError(
+            ModelExecutionError::kGenericFailure)));
     return;
   }
 
@@ -68,21 +74,20 @@ void ModelExecutionManager::ExecuteModel(
 void ModelExecutionManager::OnModelExecuteResponse(
     proto::ModelExecutionFeature feature,
     OptimizationGuideModelExecutionResultCallback callback,
-    base::optional_ref<const proto::ExecuteResponse> execute_response) {
+    base::expected<const proto::ExecuteResponse,
+                   OptimizationGuideModelExecutionError> execute_response) {
   active_model_execution_fetchers_.erase(feature);
   if (!execute_response.has_value()) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  if (execute_response->has_error_message()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(base::unexpected(execute_response.error()));
     return;
   }
   if (!execute_response->has_response_metadata()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(base::unexpected(
+        OptimizationGuideModelExecutionError::FromModelExecutionError(
+            ModelExecutionError::kGenericFailure)));
     return;
   }
-  std::move(callback).Run(execute_response->response_metadata());
+  std::move(callback).Run(base::ok(execute_response->response_metadata()));
 }
 
 }  // namespace optimization_guide

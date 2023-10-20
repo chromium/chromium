@@ -273,7 +273,14 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
       .WillOnce(testing::WithArg<2>(testing::Invoke(
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  callback) { std::move(callback).Run(absl::nullopt); })));
+                  callback) {
+            std::move(callback).Run(base::unexpected(
+                optimization_guide::OptimizationGuideModelExecutionError::
+                    FromModelExecutionError(
+                        optimization_guide::
+                            OptimizationGuideModelExecutionError::
+                                ModelExecutionError::kGenericFailure)));
+          })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))

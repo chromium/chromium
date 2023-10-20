@@ -50,7 +50,8 @@ class ModelExecutionManager {
   void OnModelExecuteResponse(
       proto::ModelExecutionFeature feature,
       OptimizationGuideModelExecutionResultCallback callback,
-      base::optional_ref<const proto::ExecuteResponse> execute_response);
+      base::expected<const proto::ExecuteResponse,
+                     OptimizationGuideModelExecutionError> execute_response);
 
   // Owned by OptimizationGuideKeyedService and outlives `this`.
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;

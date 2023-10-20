@@ -13,7 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/types/optional_ref.h"
+#include "base/types/expected.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "url/gurl.h"
 
@@ -30,8 +31,9 @@ class IdentityManager;
 
 namespace optimization_guide {
 
-using ModelExecuteResponseCallback =
-    base::OnceCallback<void(base::optional_ref<const proto::ExecuteResponse>)>;
+using ModelExecuteResponseCallback = base::OnceCallback<void(
+    base::expected<const proto::ExecuteResponse,
+                   OptimizationGuideModelExecutionError>)>;
 
 class ModelExecutionFetcher {
  public:
