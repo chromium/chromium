@@ -120,6 +120,15 @@ const HatsConfig kHatsAudioSurvey = {
     prefs::kHatsAudioSurveyCycleEndTs,          // cycle_end_timestamp_pref_name
 };
 
+// Bluetooth Audio Survey -- shown after the user closed an audio stream
+// sent to a Bluetooth device after listening for more than one minute.
+const HatsConfig kHatsBluetoothAudioSurvey = {
+    ::features::kHappinessTrackingSystemBluetoothAudio,  // feature
+    base::Days(90),                                      // new_device_threshold
+    prefs::kHatsBluetoothAudioDeviceIsSelected,  // is_selected_pref_name
+    prefs::
+        kHatsBluetoothAudioSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
 // Personalization Avatar Survey -- shown 60 seconds after a user closes the
 // Avatar selection page of either OS Settings or Personalization Hub, depending
 // on whether PersonalizationHub feature is enabled.

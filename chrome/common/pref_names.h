@@ -784,6 +784,16 @@ inline constexpr char kHatsAudioDeviceIsSelected[] =
     "hats_audio_device_is_selected";
 
 // An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the most recent Bluetooth Audio survey cycle.
+inline constexpr char kHatsBluetoothAudioSurveyCycleEndTs[] =
+    "hats_bluetooth_audio_cycle_end_timestamp";
+
+// A boolean pref. Indicates if the device is selected for the Bluetooth Audio
+// survey
+inline constexpr char kHatsBluetoothAudioDeviceIsSelected[] =
+    "hats_bluetooth_audio_device_is_selected";
+
+// An int64 pref. This is the timestamp, microseconds after epoch, that
 // indicates the end of the most recent Personalization Avatar survey cycle.
 inline constexpr char kHatsPersonalizationAvatarSurveyCycleEndTs[] =
     "hats_personalization_avatar_cycle_end_timestamp";

@@ -66,6 +66,7 @@ extern const HatsConfig kHatsSmartLockSurvey;
 extern const HatsConfig kHatsUnlockSurvey;
 extern const HatsConfig kHatsArcGamesSurvey;
 extern const HatsConfig kHatsAudioSurvey;
+extern const HatsConfig kHatsBluetoothAudioSurvey;
 extern const HatsConfig kHatsPersonalizationAvatarSurvey;
 extern const HatsConfig kHatsPersonalizationScreensaverSurvey;
 extern const HatsConfig kHatsPersonalizationWallpaperSurvey;

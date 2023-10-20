@@ -444,6 +444,11 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsAudioDeviceIsSelected, false);
 
+  registry->RegisterInt64Pref(::prefs::kHatsBluetoothAudioSurveyCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(::prefs::kHatsBluetoothAudioDeviceIsSelected,
+                                false);
+
   registry->RegisterInt64Pref(::prefs::kHatsEntSurveyCycleEndTs, 0);
 
   registry->RegisterBooleanPref(::prefs::kHatsEntDeviceIsSelected, false);
