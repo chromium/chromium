@@ -102,29 +102,9 @@ targets.legacy_basic_suite(
                 "skia_gold_test",
                 "emulator-8-cores",  # Use 8-core to shorten test runtime.
             ],
-            # These tests launch external intent thus require playstore to be
-            # present. See crbug.com/1056330 for more details.
-            # Exclude them here since this test suite will run on emulator
-            # on images that do not have playstore.
-            # They will be ran in chrome_public_test_apk_with_playstore below.
-            args = [
-                "--gtest_filter=-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:org.chromium.shape_detection.*",
-            ],
             swarming = targets.swarming(
                 shards = 20,
             ),
-        ),
-        "chrome_public_test_apk_with_playstore": targets.legacy_test_config(
-            test = "chrome_public_test_apk",
-            mixins = [
-                "skia_gold_test",
-            ],
-            # These tests launch external intent thus require playstore to be
-            # present. See crbug.com/1056330 for more details.
-            # They should be ran in emulator on images that have playstore.
-            args = [
-                "--gtest_filter=org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:org.chromium.shape_detection.*",
-            ],
         ),
         "chrome_public_unit_test_apk": targets.legacy_test_config(
             mixins = [

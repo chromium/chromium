@@ -86,21 +86,9 @@
           'skia_gold_test',
           'emulator-8-cores',
         ],
-        'args': [
-          '--gtest_filter=-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:org.chromium.shape_detection.*',
-        ],
         'swarming': {
           'shards': 20,
         },
-      },
-      'chrome_public_test_apk_with_playstore': {
-        'test': 'chrome_public_test_apk',
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'args': [
-          '--gtest_filter=org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:org.chromium.shape_detection.*',
-        ],
       },
       'chrome_public_unit_test_apk': {
         'mixins': [
