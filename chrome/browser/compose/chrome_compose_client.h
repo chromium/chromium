@@ -81,10 +81,11 @@ class ChromeComposeClient
   explicit ChromeComposeClient(content::WebContents* web_contents);
   raw_ptr<Profile> profile_;
 
-  // Creates a compose state for `field_id` if it does not exist.
-  void SaveFieldAndCreateComposeStateIfEmpty(
-      const autofill::FieldGlobalId& field_id,
-      ComposeCallback callback);
+  // Creates a session for `trigger_field` and initializes it as necessary.
+  // `callback` is a callback to the renderer to insert the compose response
+  // into the compose field.
+  void CreateSessionIfNeeded(const autofill::FormFieldData& trigger_field,
+                             ComposeCallback callback);
 
   // Removes `last_compose_field_id_` from `sessions_` and resets
   // `last_compose_field_id_`.

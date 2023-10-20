@@ -70,6 +70,8 @@ struct ComposeState {
 // Information needed by the WebUI to show a new or restored
 // compose dialog.
 struct OpenMetadata {
+  // Renderer provided text selection.
+  string initial_input;
   ComposeState compose_state;
 };
 

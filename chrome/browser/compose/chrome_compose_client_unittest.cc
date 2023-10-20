@@ -112,12 +112,14 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     // Show the dialog.
     client().ShowComposeDialog(
         autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-        autofill::FormFieldData(), std::nullopt, base::NullCallback());
+        field_data_, std::nullopt, base::NullCallback());
 
     BindMojo();
   }
 
   void BindMojo() {
+    close_page_handler_.reset();
+    page_handler_.reset();
     // Setup Dialog Page Handler.
     mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
         close_page_handler_pending_receiver =
@@ -127,6 +129,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
             page_handler_.BindNewPipeAndPassReceiver();
 
     // Setup Compose Dialog.
+    callback_router_.reset();
     callback_router_ =
         std::make_unique<mojo::Receiver<compose::mojom::ComposeDialog>>(
             &compose_dialog());
@@ -144,6 +147,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   MockModelExecutor& model_executor() { return model_executor_; }
   MockOptimizationGuideDecider& opt_guide() { return opt_guide_; }
   MockComposeDialog& compose_dialog() { return compose_dialog_; }
+  autofill::FormFieldData& field_data() { return field_data_; }
 
   mojo::Remote<compose::mojom::ComposeDialogClosePageHandler>&
   close_page_handler() {
@@ -586,6 +590,38 @@ TEST_F(ChromeComposeClientTest, TestCloseUIAtChromeCompose) {
   // URL.
   BindMojo();
   close_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+}
+
+// Tests that opening the dialog with user selected text will return that text
+// when the WebUI requests initial state.
+TEST_F(ChromeComposeClientTest, TestOpenDialogWithSelectedText) {
+  field_data().value = u"user selected text";
+  field_data().selection_start = 0;
+  field_data().selection_end = 18;
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_EQ("user selected text", result->initial_input);
+}
+
+// Tests that opening the dialog with selected text clears existing state.
+TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
+  ShowDialogAndBindMojo();
+  page_handler()->SaveWebUIState("web ui state");
+
+  field_data().value = u"user selected text";
+  field_data().selection_start = 0;
+  field_data().selection_end = 18;
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_EQ("", result->compose_state->webui_state);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)

@@ -75,6 +75,9 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
     callback_ = std::move(callback);
   }
 
+  // Sets an initial input value for the session given by the renderer.
+  void set_initial_input(const std::string input) { initial_input_ = input; }
+
  private:
   void ProcessError(const std::string& message);
   void SaveNewComposeRequest(compose::mojom::StyleModifiersPtr style);
@@ -90,6 +93,9 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
   // Initialized during construction, and always remains valid during the
   // lifetime of ComposeSession.
   compose::mojom::ComposeStatePtr state_;
+
+  // Renderer provided text selection.
+  std::string initial_input_;
 
   // ComposeSession is owned by WebContentsUserData, so `web_contents_` outlives
   // `this`.

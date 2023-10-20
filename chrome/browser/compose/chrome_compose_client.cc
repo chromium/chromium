@@ -88,8 +88,7 @@ void ChromeComposeClient::ShowComposeDialog(
     std::optional<autofill::AutofillClient::PopupScreenLocation>
         popup_screen_location,
     ComposeCallback callback) {
-  SaveFieldAndCreateComposeStateIfEmpty(trigger_field.global_id(),
-                                        std::move(callback));
+  CreateSessionIfNeeded(trigger_field, std::move(callback));
   if (!skip_show_dialog_for_test_) {
     // The bounds given by autofill are relative to the top level frame. Here we
     // offset by the WebContents container to make up for that.
@@ -110,22 +109,35 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   // TODO(b/302748101) Call CloseDialog() on ComposeDialogController.
 }
 
-void ChromeComposeClient::SaveFieldAndCreateComposeStateIfEmpty(
-    const autofill::FieldGlobalId& field_id,
+void ChromeComposeClient::CreateSessionIfNeeded(
+    const autofill::FormFieldData& trigger_field,
     ComposeCallback callback) {
+  std::string selected_text = base::UTF16ToUTF8(trigger_field.GetSelection());
+  auto it = sessions_.find(trigger_field.global_id());
+  bool found = it != sessions_.end();
+  if (found && !selected_text.empty()) {
+    // If the user entered the compose dialog by selecting text, the existing
+    // state must be cleared and replaced with the selected text as the input.
+    RemoveActiveSession();
+  }
   last_compose_field_id_ =
-      std::make_optional<autofill::FieldGlobalId>(field_id);
-  auto it = sessions_.find(last_compose_field_id_.value());
-  if (it != sessions_.end()) {
-    // Update existing session
+      std::make_optional<autofill::FieldGlobalId>(trigger_field.global_id());
+  if (found && selected_text.empty()) {
+    // Update existing session (only if session was not removed earlier).
     auto& existing_session = *it->second;
     existing_session.SetComposeResultCallback(std::move(callback));
-    return;
+  } else {
+    // Insert new session.
+    sessions_.emplace(
+        last_compose_field_id_.value(),
+        std::make_unique<ComposeSession>(&GetWebContents(), GetModelExecutor(),
+                                         std::move(callback)));
   }
-  sessions_.emplace(
-      last_compose_field_id_.value(),
-      std::make_unique<ComposeSession>(&GetWebContents(), GetModelExecutor(),
-                                       std::move(callback)));
+  // Capture user-selected text as initial input.
+  if (!selected_text.empty()) {
+    auto& session = sessions_.at(last_compose_field_id_.value());
+    session->set_initial_input(selected_text);
+  }
 }
 
 void ChromeComposeClient::RemoveActiveSession() {

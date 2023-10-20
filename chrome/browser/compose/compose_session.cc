@@ -131,7 +131,8 @@ void ComposeSession::SaveNewComposeRequest(
 }
 
 void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
-  std::move(callback).Run(compose::mojom::OpenMetadata::New(state_->Clone()));
+  std::move(callback).Run(
+      compose::mojom::OpenMetadata::New(initial_input_, state_->Clone()));
 }
 
 void ComposeSession::SaveWebUIState(const std::string& webui_state) {
