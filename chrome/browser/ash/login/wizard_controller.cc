@@ -407,6 +407,16 @@ WizardController::~WizardController() {
 void WizardController::Init(OobeScreenId first_screen) {
   DCHECK(!is_initialized());
   is_initialized_ = true;
+  // `OobeUI` must exist during `WizardController` initialization.
+  CHECK(GetOobeUI());
+  // Once `Init` finish running mark `WizardController` as ready for testing.
+  base::ScopedClosureRunner mark_ready_for_testing;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableOobeTestAPI)) {
+    mark_ready_for_testing = base::ScopedClosureRunner(
+        base::BindOnce(&CoreOobe::SetWizardReadyForTesting,
+                       GetOobeUI()->GetCoreOobe()->GetWeakPtr()));
+  }
 
   prescribed_enrollment_config_ =
       policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
