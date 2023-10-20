@@ -23536,6 +23536,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileWebContextMenuImageWithSaveToPhotosImpression">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <description>
+    Recorded when user invokes context menu for web contents image, if Save to
+    Photos is available. When this is recorded,
+    MobileWebContextMenuImageImpression is recorded too. iOS only.
+  </description>
+</action>
+
 <action name="MobileWebContextMenuLinkImpression">
   <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
