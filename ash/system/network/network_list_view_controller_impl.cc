@@ -645,13 +645,10 @@ bool NetworkListViewControllerImpl::ShouldTetherHostsSectionBeShown() {
   const DeviceStateType tether_state =
       model()->GetDeviceState(NetworkType::kTether);
 
-  // Hide the section if Tether is UNAVAILABLE.
-  if (tether_state == DeviceStateType::kUnavailable) {
-    return false;
-  }
-
-  // Hide the section if Tether is PROHIBITED.
-  if (tether_state == DeviceStateType::kProhibited) {
+  // Hide the section if Tether is Unavailable, Prohibited, or Disabled.
+  if (tether_state == DeviceStateType::kUnavailable ||
+      tether_state == DeviceStateType::kProhibited ||
+      tether_state == DeviceStateType::kDisabled) {
     return false;
   }
 

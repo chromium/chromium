@@ -691,6 +691,18 @@ TEST_P(NetworkListViewControllerTest, TetherHostsSectionIsShown) {
   ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
   histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
                                      DetailedViewSection::kMobileSection, 1);
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kTetherHostsSection,
+                                     3);
+
+  // Disable tether and ensure that the section is not shown.
+  properties->device_state = DeviceStateType::kDisabled;
+  cros_network()->SetDeviceProperties(properties.Clone());
+
+  ASSERT_THAT(GetTetherHostsSubHeader(), IsNull());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kTetherHostsSection,
+                                     3);
 }
 
 TEST_P(NetworkListViewControllerTest, MobileDataSectionIsShown) {
