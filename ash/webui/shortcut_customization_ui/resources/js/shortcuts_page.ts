@@ -13,6 +13,7 @@ import {afterNextRender, microTask, PolymerElement} from 'chrome://resources/pol
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {AcceleratorRowElement} from './accelerator_row.js';
 import {AcceleratorSubsectionElement} from './accelerator_subsection.js';
+import {getShortcutProvider} from './mojo_interface_provider.js';
 import {RouteObserver, Router} from './router.js';
 import {AcceleratorCategory, AcceleratorSubcategory} from './shortcut_types';
 import {getTemplate} from './shortcuts_page.html.js';
@@ -108,6 +109,10 @@ export class ShortcutsPageElement extends PolymerElement implements
   onNavigationPageChanged({isActive}: {isActive: boolean}): void {
     if (isActive) {
       afterNextRender(this, () => {
+        if (this.initialData) {
+          getShortcutProvider().recordMainCategoryNavigation(
+              this.initialData.category);
+        }
         // Dispatch a custom event to inform the parent to scroll to the top
         // after active page changes.
         this.dispatchEvent(new CustomEvent('scroll-to-top', {

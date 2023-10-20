@@ -163,4 +163,7 @@ interface AcceleratorConfigurationProvider {
 
   // Records the specific user action histogram.
   RecordUserAction(UserAction user_action);
+
+  // Records the side panel category the user navigates to.
+  RecordMainCategoryNavigation(ash.mojom.AcceleratorCategory category);
 };

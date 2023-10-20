@@ -8,7 +8,7 @@ import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from './fake_data.js';
 import {FakeShortcutProvider} from './fake_shortcut_provider.js';
-import {Accelerator, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -144,6 +144,10 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
 
   recordUserAction(userAction: UserAction): void {
     this.remote.recordUserAction(userAction);
+  }
+
+  recordMainCategoryNavigation(category: AcceleratorCategory): void {
+    this.remote.recordMainCategoryNavigation(category);
   }
 }
 

@@ -269,6 +269,8 @@ suite('shortcutCustomizationAppTest', function() {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
+    assertEquals(undefined, provider.getLatestMainCategoryNavigated());
+
     const navPanel =
         getPage().shadowRoot!.querySelector('navigation-view-panel');
     const navSelector =
@@ -280,6 +282,10 @@ suite('shortcutCustomizationAppTest', function() {
     navMenuItems[1]!.click();
 
     await flushTasks();
+
+    assertEquals(
+        AcceleratorCategory.kBrowser,
+        provider.getLatestMainCategoryNavigated());
 
     const actualSubsections = getSubsections(AcceleratorCategory.kBrowser);
     const expectedLayouts =

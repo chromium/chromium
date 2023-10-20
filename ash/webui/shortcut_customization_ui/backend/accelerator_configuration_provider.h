@@ -128,6 +128,8 @@ class AcceleratorConfigurationProvider
   void RestoreAllDefaults(RestoreAllDefaultsCallback callback) override;
   void RecordUserAction(
       shortcut_customization::mojom::UserAction user_action) override;
+  void RecordMainCategoryNavigation(
+      mojom::AcceleratorCategory category) override;
 
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;

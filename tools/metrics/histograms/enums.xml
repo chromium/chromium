@@ -100057,6 +100057,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="ResetAll"/>
 </enum>
 
+<enum name="ShortcutCustomizationMainCategory">
+  <summary>
+    The categories that are present within the Key Shortcuts app.
+  </summary>
+  <int value="0" label="General"/>
+  <int value="1" label="Device"/>
+  <int value="2" label="Browser"/>
+  <int value="3" label="Text"/>
+  <int value="4" label="WindowsAndDesks"/>
+  <int value="5" label="Accessibility"/>
+  <int value="6" label="Debug"/>
+  <int value="7" label="Developer"/>
+</enum>
+
 <enum name="ShortcutsCreationResult">
   <summary>Result of creating shortcuts for PWA.</summary>
   <int value="0" label="Success"/>

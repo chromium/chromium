@@ -6294,6 +6294,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ShortcutCustomization.MainCategoryNavigation"
+    enum="ShortcutCustomizationMainCategory" expires_after="2024-08-17">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Tracks the number of times a user navigates to a main category in the side
+    panel of the Key Shortcuts app.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.ShortcutCustomization.RemoveDefaultAccelerator.{ActionName}"
     units="Shortcuts" expires_after="2024-08-17">

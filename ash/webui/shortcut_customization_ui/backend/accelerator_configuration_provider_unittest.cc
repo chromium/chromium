@@ -3171,6 +3171,26 @@ TEST_F(AcceleratorConfigurationProviderTest, UserActions) {
                    "ShortcutCustomization_SuccessfullyModified"));
 }
 
+TEST_F(AcceleratorConfigurationProviderTest, MainNavigationCategoryMetrics) {
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.MainCategoryNavigation",
+      mojom::AcceleratorCategory::kGeneral, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.MainCategoryNavigation",
+      mojom::AcceleratorCategory::kAccessibility, 0);
+
+  provider_->RecordMainCategoryNavigation(mojom::AcceleratorCategory::kGeneral);
+  provider_->RecordMainCategoryNavigation(
+      mojom::AcceleratorCategory::kAccessibility);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.MainCategoryNavigation",
+      mojom::AcceleratorCategory::kGeneral, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.MainCategoryNavigation",
+      mojom::AcceleratorCategory::kAccessibility, 1);
+}
+
 TEST_F(AcceleratorConfigurationProviderTest,
        VerifyAllAcceleratorsHaveKeyString) {
   // The following is a set of VKEYs that are ignored in this test. If there is

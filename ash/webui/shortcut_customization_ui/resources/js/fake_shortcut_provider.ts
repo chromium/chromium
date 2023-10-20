@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote, PolicyUpdatedObserverRemote, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
-import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 
 /**
@@ -34,6 +34,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   private addAcceleratorCallCount: number = 0;
   private removeAcceleratorCallCount: number = 0;
   private lastRecordedUserAction: UserAction;
+  private lastRecordedMainCategory: AcceleratorCategory;
 
   constructor() {
     this.methods = new FakeMethodResolver();
@@ -55,6 +56,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('getConflictAccelerator');
     this.methods.register('getDefaultAcceleratorsForId');
     this.methods.register('recordUserAction');
+    this.methods.register('recordMainCategoryNavigation');
     this.registerObservables();
   }
 
@@ -177,6 +179,14 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   getLatestRecordedAction(): UserAction {
     return this.lastRecordedUserAction;
+  }
+
+  recordMainCategoryNavigation(category: AcceleratorCategory): void {
+    this.lastRecordedMainCategory = category;
+  }
+
+  getLatestMainCategoryNavigated(): AcceleratorCategory {
+    return this.lastRecordedMainCategory;
   }
 
   preventProcessingAccelerators(_preventProcessingAccelerators: boolean):

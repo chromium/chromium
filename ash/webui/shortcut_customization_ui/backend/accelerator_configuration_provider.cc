@@ -1176,6 +1176,12 @@ void AcceleratorConfigurationProvider::RecordUserAction(
   }
 }
 
+void AcceleratorConfigurationProvider::RecordMainCategoryNavigation(
+    mojom::AcceleratorCategory category) {
+  base::UmaHistogramEnumeration(
+      "Ash.ShortcutCustomization.MainCategoryNavigation", category);
+}
+
 void AcceleratorConfigurationProvider::BindInterface(
     mojo::PendingReceiver<
         shortcut_customization::mojom::AcceleratorConfigurationProvider>
