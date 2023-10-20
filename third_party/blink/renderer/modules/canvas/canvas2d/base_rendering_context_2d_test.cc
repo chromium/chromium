@@ -7,8 +7,7 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
-#include "cc/paint/paint_op_buffer_iterator.h"
-#include "cc/paint/paint_recorder.h"
+#include "cc/paint/paint_record.h"
 #include "cc/test/paint_op_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_test_utils.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/recording_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -29,6 +29,7 @@ namespace blink {
 namespace {
 
 using ::blink_testing::ParseFilter;
+using ::blink_testing::RecordedOpsView;
 using ::cc::ClipPathOp;
 using ::cc::ClipRectOp;
 using ::cc::PaintOpEq;
@@ -43,40 +44,6 @@ using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointee;
-
-// A view of a `cc::PaintRecord` which drops the leading and trailing
-// `SaveOp` and `RestoreOp` that are present in every single recordings.
-class RecordedOpsView {
- public:
-  explicit RecordedOpsView(cc::PaintRecord record)
-      : record_(std::move(record)), begin_(record_.begin()), end_(begin_) {
-    CHECK_GE(record_.size(), 2u);
-
-    // The first `PaintOp` must be a `SaveOp`.
-    EXPECT_THAT(*begin_, PaintOpEq<SaveOp>());
-
-    // Move `begin_` to the second element, and `end_` to the last, so tthat
-    // iterating between `begin_` and `end_` will skip the last element.
-    ++begin_;
-    for (size_t i = 0; i < record_.size() - 1; ++i) {
-      ++end_;
-    }
-
-    // The last `PaintOp` must be a `RestoreOp`.
-    EXPECT_THAT(*end_, PaintOpEq<RestoreOp>());
-  }
-
-  using value_type = cc::PaintOp;
-  size_t size() const { return record_.size() - 2; }
-  bool empty() const { return size() == 0; }
-  cc::PaintOpBuffer::Iterator begin() const { return begin_; }
-  cc::PaintOpBuffer::Iterator end() const { return end_; }
-
- private:
-  cc::PaintRecord record_;
-  cc::PaintOpBuffer::Iterator begin_;
-  cc::PaintOpBuffer::Iterator end_;
-};
 
 // Test version of BaseRenderingContext2D. BaseRenderingContext2D can't be
 // tested directly because it's an abstract class. This test class essentially
