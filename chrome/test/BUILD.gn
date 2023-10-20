@@ -1847,9 +1847,9 @@ if (!is_android) {
       "//components/trusted_vault",
       "//components/ukm/content",
       "//components/unified_consent",
-      "//components/url_formatter/spoof_checks/top_domains:browsertest_top_bucket_domains",
-      "//components/url_formatter/spoof_checks/top_domains:browsertest_top_bucket_domains_header",
-      "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_browsertest_trie",
+      "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
+      "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains",
+      "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains_header",
       "//components/user_education/common",
       "//components/user_education/test",
       "//components/user_manager",
@@ -6007,8 +6007,6 @@ test("unit_tests") {
     "../browser/media/media_engagement_service_unittest.cc",
     "../browser/media/media_engagement_session_unittest.cc",
     "../browser/media/media_storage_id_salt_unittest.cc",
-    "../browser/top_level_storage_access_api/top_level_storage_access_permission_context_unittest.cc",
-    "../common/google_url_loader_throttle_unittest.cc",
 
     # TODO(crbug.com/1186446): move p_s_d_impl_unittest.cc to the same directory
     # as presentation_service_delegate_impl.* files.
@@ -6175,6 +6173,8 @@ test("unit_tests") {
     "../browser/segmentation_platform/segmentation_platform_service_factory_unittest.cc",
     "../browser/signin/e2e_tests/test_accounts_util_unittest.cc",
     "../browser/signin/header_modification_delegate_impl_unittest.cc",
+    "../browser/top_level_storage_access_api/top_level_storage_access_permission_context_unittest.cc",
+    "../common/google_url_loader_throttle_unittest.cc",
 
     # TODO(hashimoto): those tests should be componentized and moved to
     # //components:components_unittests, http://crbug.com/527882.
@@ -6777,6 +6777,9 @@ test("unit_tests") {
     "//components/unified_consent",
     "//components/url_formatter/spoof_checks/common_words:common",
     "//components/url_formatter/spoof_checks/common_words:common_words_dafsa",
+    "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
+    "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains",
+    "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains_header",
     "//components/user_education/common",
     "//components/user_education/test",
     "//components/user_manager",

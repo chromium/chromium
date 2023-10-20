@@ -13,5 +13,8 @@ google.com.tr
 # For edit distance test:
 academia.edu
 academic.ru
+# For target embedding test:
+google.co.uk
+office.com
 ###END_TOP_BUCKET###
 google.sk

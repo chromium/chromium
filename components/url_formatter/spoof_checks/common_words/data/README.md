@@ -9,6 +9,11 @@ This file contains a list of 10k most common English words, all of which are at
 least 3 characters long, and containing no brands from the current top domain
 list. This file is used to generate a DAFSA which is then embedded in Chrome.
 
+## `common_words_test.gperf`
+A version of `common_words.gperf` used in unit tests. Most (all?) lookalike
+tests use test versions of top domain list called `test_domains.list`.
+`common_words_test.gpref` should be kept in sync with the test domains file.
+
 ## `brands_in_common_words.list`
 This file contains a list of brands, where each brand is identified by
 manually looking through overlaps between brand names in `domains.list` and
