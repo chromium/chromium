@@ -7,7 +7,9 @@ component("cpp") {
   sources = [
     "features.cc",
     "features.h",
+    "model_assets.cc",
+    "model_assets.h",
   ]
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
   defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
 }

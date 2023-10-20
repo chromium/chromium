@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/on_device_model_service.h"
+#include "services/on_device_model/public/cpp/model_assets.h"
 #include "third_party/ml/public/chrome_ml.h"
 #include "third_party/ml/public/on_device_model_executor.h"
 
@@ -36,11 +37,12 @@ class OnDeviceModel : public mojom::OnDeviceModel {
 // static
 std::unique_ptr<mojom::OnDeviceModel> OnDeviceModelService::CreateModel(
     mojom::LoadModelParamsPtr params) {
-  auto chrome_ml = ml::ChromeML::Create(params->path);
+  auto chrome_ml = ml::ChromeML::Create();
   if (!chrome_ml) {
     return nullptr;
   }
-  auto executor = chrome_ml->CreateOnDeviceModelExecutor();
+  auto executor = ml::OnDeviceModelExecutor::Create(
+      *chrome_ml, LoadModelAssets(params->path));
   if (!executor) {
     return nullptr;
   }
