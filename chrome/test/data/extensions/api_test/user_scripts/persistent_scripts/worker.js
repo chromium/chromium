@@ -19,12 +19,14 @@ async function runFirstSession() {
     {
       id: 'us1',
       matches: ['*://*/*'],
+      excludeGlobs: ['*exclude_glob*'],
       js: [{file: 'user_script.js'}],
       runAt: 'document_end'
     },
     {
       id: 'us2',
       matches: ['*://*/*'],
+      includeGlobs: ['*include_glob*'],
       js: [{file: 'user_script_2.js'}],
       runAt: 'document_end'
     }
@@ -50,6 +52,7 @@ async function runSecondSession() {
     {
       id: 'us1',
       matches: ['*://*/*'],
+      excludeGlobs: ['*exclude_glob*'],
       js: [{file: 'user_script.js'}],
       allFrames: false,
       runAt: 'document_end',
@@ -58,6 +61,7 @@ async function runSecondSession() {
     {
       id: 'us2',
       matches: ['*://*/*'],
+      includeGlobs: ['*include_glob*'],
       js: [{file: 'user_script_2.js'}],
       allFrames: false,
       runAt: 'document_end',

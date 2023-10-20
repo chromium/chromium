@@ -140,6 +140,7 @@ api::user_scripts::RegisteredUserScript CreateRegisteredUserScriptInfo(
   script_info.all_frames = script.match_all_frames();
   script_info.run_at = ConvertRunLocationForAPI(script.run_location());
 
+  // Matches.
   script_info.matches.emplace();
   script_info.matches->reserve(script.url_patterns().size());
   for (const URLPattern& pattern : script.url_patterns()) {
@@ -151,6 +152,23 @@ api::user_scripts::RegisteredUserScript CreateRegisteredUserScriptInfo(
     script_info.exclude_matches->reserve(script.exclude_url_patterns().size());
     for (const URLPattern& pattern : script.exclude_url_patterns()) {
       script_info.exclude_matches->push_back(pattern.GetAsString());
+    }
+  }
+
+  // Globs.
+  if (!script.globs().empty()) {
+    script_info.include_globs.emplace();
+    script_info.include_globs->reserve(script.globs().size());
+    for (const std::string& pattern : script.globs()) {
+      script_info.include_globs->push_back(pattern);
+    }
+  }
+
+  if (!script.exclude_globs().empty()) {
+    script_info.exclude_globs.emplace();
+    script_info.exclude_globs->reserve(script.exclude_globs().size());
+    for (const std::string& pattern : script.exclude_globs()) {
+      script_info.exclude_globs->push_back(pattern);
     }
   }
 

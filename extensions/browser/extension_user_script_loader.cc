@@ -445,6 +445,10 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
       continue;
     }
 
+    script_parsing::ParseGlobs(
+        base::OptionalToPtr(content_script->include_globs),
+        base::OptionalToPtr(content_script->exclude_globs), script.get());
+
     if (!script_parsing::ParseFileSources(
             &extension, base::OptionalToPtr(content_script->js),
             base::OptionalToPtr(content_script->css),
@@ -494,6 +498,22 @@ api::content_scripts::ContentScript CreateContentScriptObject(
     content_script.css->reserve(script.css_scripts().size());
     for (const auto& css_script : script.css_scripts())
       content_script.css->push_back(css_script->relative_path().AsUTF8Unsafe());
+  }
+
+  if (!script.globs().empty()) {
+    content_script.include_globs.emplace();
+    content_script.include_globs->reserve(script.globs().size());
+    for (const std::string& glob : script.globs()) {
+      content_script.include_globs->push_back(glob);
+    }
+  }
+
+  if (!script.exclude_globs().empty()) {
+    content_script.exclude_globs.emplace();
+    content_script.exclude_globs->reserve(script.exclude_globs().size());
+    for (const std::string& exclude_glob : script.exclude_globs()) {
+      content_script.exclude_globs->push_back(exclude_glob);
+    }
   }
 
   content_script.all_frames = script.match_all_frames();
