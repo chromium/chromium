@@ -206,6 +206,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
   // Walk any missed children (i.e. those collected by CollectMissableChildren()
   // and not walked by Walk()) after child object traversal.
   void WalkMissedChildren(const NGPhysicalBoxFragment&,
+                          bool is_in_fragment_traversal,
                           const PrePaintTreeWalkContext&);
 
   void WalkFragmentationContextRootChildren(const LayoutObject&,

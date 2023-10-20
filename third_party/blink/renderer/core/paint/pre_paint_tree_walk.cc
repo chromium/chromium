@@ -704,6 +704,7 @@ PrePaintTreeWalk::RebuildContextForMissedDescendant(
 
 void PrePaintTreeWalk::WalkMissedChildren(
     const NGPhysicalBoxFragment& fragment,
+    bool is_in_fragment_traversal,
     const PrePaintTreeWalkContext& context) {
   if (pending_missables_.empty())
     return;
@@ -749,9 +750,13 @@ void PrePaintTreeWalk::WalkMissedChildren(
                                         descendant_context);
     }
 
-    NGPrePaintInfo pre_paint_info =
-        CreatePrePaintInfo(child, descendant_context);
-    Walk(descendant_object, descendant_context, &pre_paint_info);
+    if (is_in_fragment_traversal) {
+      NGPrePaintInfo pre_paint_info =
+          CreatePrePaintInfo(child, descendant_context);
+      Walk(descendant_object, descendant_context, &pre_paint_info);
+    } else {
+      Walk(descendant_object, descendant_context, /* pre_paint_info */ nullptr);
+    }
   }
 }
 
@@ -1199,7 +1204,7 @@ void PrePaintTreeWalk::WalkChildren(
   }
 
   if (has_missable_children) {
-    WalkMissedChildren(*fragment, context);
+    WalkMissedChildren(*fragment, !!traversable_fragment, context);
   }
 }
 
