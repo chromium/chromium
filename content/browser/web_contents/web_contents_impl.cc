@@ -6176,15 +6176,6 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
       NotifyTitleUpdateForEntry(entry);
     }
   }
-
-  // TODO(laurila, crbug.com/1466855): Either reset or restore the settings
-  // based on if the page we're navigating to has an existing can_resize value.
-  // Until then any navigation resets the modified `resizable` value.
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->HasCommitted()) {
-    GetContentClient()->browser()->SetCanResizeFromWebAPI(&GetPrimaryPage(),
-                                                          absl::nullopt);
-  }
 }
 
 void WebContentsImpl::DidFailLoadWithError(

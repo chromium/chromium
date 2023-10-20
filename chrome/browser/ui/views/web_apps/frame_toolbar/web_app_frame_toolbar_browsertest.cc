@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <string_view>
 #include <tuple>
 
 #include "base/memory/raw_ptr.h"
@@ -1678,8 +1679,11 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
   webapps::AppId InstallAndLaunchWebApp() {
     DCHECK(https_server()->Start());
 
-    GURL start_url = helper()->LoadTestPageWithDataAndGetURL(
+    const GURL start_url = helper()->LoadTestPageWithDataAndGetURL(
         embedded_test_server(), &temp_dir_, "");
+    second_page_url_ = helper()->LoadTestPageWithDataAndGetURL(
+        embedded_test_server(), &temp_dir_, "");
+
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -1714,9 +1718,12 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
     }
   }
 
+  GURL second_page_url() { return second_page_url_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
+  GURL second_page_url_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -1768,5 +1775,97 @@ IN_PROC_BROWSER_TEST_F(
 
   SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/false);
   CheckCanResize(false, true);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    NavigatingBetweenTwoPagesWithUnsetResizability) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+
+  // Navigates to the second page of the app.
+  std::ignore = ui_test_utils::NavigateToURL(
+      helper()->browser_view()->browser(), second_page_url());
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    NavigatingBetweenTwoPagesWithNonNullResizability) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  // Sets the resizability false for the main page.
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_FALSE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+
+  // Navigates to the second page of the app.
+  std::ignore = ui_test_utils::NavigateToURL(
+      helper()->browser_view()->browser(), second_page_url());
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+
+  // Sets the resizability true for the second page.
+  SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
+  EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+
+  // Returns back to the main page.
+  web_contents->GetController().GoBack();
+  content::WaitForLoadStop(web_contents);
+  // Reads the resizability from the BFCache if it's enabled. Otherwise null.
+  if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    EXPECT_FALSE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+  } else {
+    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
+              absl::nullopt);
+  }
+
+  // Navigates forward to the already visited second page.
+  web_contents->GetController().GoForward();
+  content::WaitForLoadStop(web_contents);
+  // Reads the resizability from the BFCache if it's enabled. Otherwise null.
+  if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+  } else {
+    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
+              absl::nullopt);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  // Sets the resizability true for the app.
+  SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
+  EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+
+  // Another URL where resizability is not set resets the web API overridden
+  // resizability.
+  std::ignore = ui_test_utils::NavigateToURL(
+      helper()->browser_view()->browser(), GURL("http://www.google.com/"));
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
+
+  // Returning to the original URL then reads the resizability from the BFCache
+  // if it's enabled.
+  web_contents->GetController().GoBack();
+  content::WaitForLoadStop(web_contents);
+  if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+  } else {
+    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
+              absl::nullopt);
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
