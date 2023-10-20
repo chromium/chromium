@@ -89,6 +89,7 @@ using ::autofill::test::CreateFieldPrediction;
 using base::ASCIIToUTF16;
 using base::Feature;
 using base::TestMockTimeTaskRunner;
+using base::test::FeatureRef;
 using testing::_;
 using testing::AllOf;
 using testing::AnyNumber;
@@ -3169,6 +3170,10 @@ TEST_F(PasswordManagerTest,
 // server predictions are not ignored and used for filling in case there are
 // multiple forms on a page, including forms that have UsernameFirstFlow votes.
 TEST_F(PasswordManagerTest, AutofillPredictionBeforeMultipleFormsParsed) {
+#if BUILDFLAG(IS_IOS)
+  feature_list_.InitAndEnableFeature(features::kIOSPasswordSignInUff);
+#endif  // BUIDFLAG(IS_IOS)
+
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
@@ -3761,10 +3766,12 @@ TEST_F(PasswordManagerTest, StartLeakDetection) {
   task_environment_.RunUntilIdle();
 }
 
-// Filling on username first flow is not supported on iOS.
-#if !BUILDFLAG(IS_IOS)
 // Check that a non-password form with SINGLE_USERNAME prediction is filled.
 TEST_F(PasswordManagerTest, FillSingleUsername) {
+#if BUILDFLAG(IS_IOS)
+  feature_list_.InitAndEnableFeature(features::kIOSPasswordSignInUff);
+#endif  // BUIDFLAG(IS_IOS)
+
   base::HistogramTester histogram_tester;
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
@@ -3798,8 +3805,13 @@ TEST_F(PasswordManagerTest, FillSingleUsername) {
 // Check that a non-password form with SINGLE_USERNAME_FORGOT_PASSWORD
 // prediction is filled.
 TEST_F(PasswordManagerTest, FillSingleUsernameForgotPassword) {
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kForgotPasswordFormSupport);
+  std::vector<FeatureRef> enabled_features = {
+      password_manager::features::kForgotPasswordFormSupport};
+#if BUILDFLAG(IS_IOS)
+  enabled_features.push_back(features::kIOSPasswordSignInUff);
+#endif  // BUIDFLAG(IS_IOS)
+  feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
+
   base::HistogramTester histogram_tester;
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
@@ -3829,7 +3841,6 @@ TEST_F(PasswordManagerTest, FillSingleUsernameForgotPassword) {
       "PasswordManager.SingleUsername.ForgotPasswordServerPredictionUsed", true,
       1);
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
 // Checks that a password form with a clear-text account creation field results
 // in marking the password field as eligible for password generation.

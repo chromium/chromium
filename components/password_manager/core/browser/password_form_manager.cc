@@ -1000,6 +1000,16 @@ void PasswordFormManager::FillNow() {
     });
   }
 
+#if BUILDFLAG(IS_IOS)
+  // On iOS, filling on username first flow is only supported when the feature
+  // is enabled.
+  if (observed_password_form->IsSingleUsername() &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kIOSPasswordSignInUff)) {
+    return;
+  }
+#endif
+
   SendFillInformationToRenderer(
       client_, driver_.get(), *observed_password_form.get(),
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),

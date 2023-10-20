@@ -7,6 +7,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/service/sync_prefs.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
@@ -87,6 +88,14 @@ constexpr char kFormZip[] = "form_zip";
   }
   if ([self isRunningTest:@selector(testFillCreditCardFieldsOnForm)]) {
     config.features_disabled.push_back(kIOSPaymentsBottomSheet);
+  }
+  if ([self isRunningTest:@selector(testFillFieldOnFormWithSingleUsername)] ||
+      [self isRunningTest:@selector(testFillFieldOnFormWithSinglePassword)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordSignInUff);
+  } else {
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordSignInUff);
   }
   return config;
 }
