@@ -17,9 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Unit tests for {@link KnownPreferenceKeyRegistries}.
- */
+/** Unit tests for {@link KnownPreferenceKeyRegistries}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class KnownPreferenceKeyRegistriesTest {
     private static final String KEY_1 = "Chrome.Feature.Key1";
@@ -92,8 +90,10 @@ public class KnownPreferenceKeyRegistriesTest {
     protected static void assertContains(String expectedSubstring, String actualString) {
         Assert.assertNotNull(actualString);
         if (!actualString.contains(expectedSubstring)) {
-            fail(String.format(
-                    "Substring <%s> not found in string <%s>", expectedSubstring, actualString));
+            fail(
+                    String.format(
+                            "Substring <%s> not found in string <%s>",
+                            expectedSubstring, actualString));
         }
     }
 }

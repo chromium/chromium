@@ -24,18 +24,14 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 
-/**
- *  Tests for JankReportingRunnable.
- */
+/** Tests for JankReportingRunnable. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class JankReportingRunnableTest {
     ShadowLooper mShadowLooper;
     Handler mHandler;
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    JankMetricUMARecorder.Natives mNativeMock;
+    @Mock JankMetricUMARecorder.Natives mNativeMock;
 
     @Before
     public void setUp() {
@@ -50,8 +46,13 @@ public class JankReportingRunnableTest {
         FrameMetricsStore metricsStore = Mockito.spy(new FrameMetricsStore());
         metricsStore.initialize();
 
-        JankReportingRunnable reportingRunnable = new JankReportingRunnable(metricsStore,
-                JankScenario.TAB_SWITCHER, /* isStartingTracking= */ true, mHandler, null);
+        JankReportingRunnable reportingRunnable =
+                new JankReportingRunnable(
+                        metricsStore,
+                        JankScenario.TAB_SWITCHER,
+                        /* isStartingTracking= */ true,
+                        mHandler,
+                        null);
         reportingRunnable.run();
 
         verify(metricsStore).initialize();
@@ -64,14 +65,24 @@ public class JankReportingRunnableTest {
         FrameMetricsStore metricsStore = Mockito.spy(new FrameMetricsStore());
         metricsStore.initialize();
 
-        JankReportingRunnable startReportingRunnable = new JankReportingRunnable(metricsStore,
-                JankScenario.TAB_SWITCHER, /* isStartingTracking= */ true, mHandler, null);
+        JankReportingRunnable startReportingRunnable =
+                new JankReportingRunnable(
+                        metricsStore,
+                        JankScenario.TAB_SWITCHER,
+                        /* isStartingTracking= */ true,
+                        mHandler,
+                        null);
         startReportingRunnable.run();
 
         metricsStore.addFrameMeasurement(1_000_000L, true, 1);
 
-        JankReportingRunnable stopReportingRunnable = new JankReportingRunnable(metricsStore,
-                JankScenario.TAB_SWITCHER, /* isStartingTracking= */ false, mHandler, null);
+        JankReportingRunnable stopReportingRunnable =
+                new JankReportingRunnable(
+                        metricsStore,
+                        JankScenario.TAB_SWITCHER,
+                        /* isStartingTracking= */ false,
+                        mHandler,
+                        null);
         stopReportingRunnable.run();
 
         verify(metricsStore).initialize();
@@ -79,7 +90,11 @@ public class JankReportingRunnableTest {
         verify(metricsStore).stopTrackingScenario(JankScenario.TAB_SWITCHER);
 
         verify(mNativeMock)
-                .recordJankMetrics(new long[] {1_000_000L}, new boolean[] {true}, 0L, 1L,
+                .recordJankMetrics(
+                        new long[] {1_000_000L},
+                        new boolean[] {true},
+                        0L,
+                        1L,
                         JankScenario.TAB_SWITCHER);
     }
 
@@ -94,16 +109,24 @@ public class JankReportingRunnableTest {
         Assert.assertEquals(endScenarioTime.endScenarioTimeNs, frameTime);
 
         JankReportingRunnable startReportingRunnable =
-                new JankReportingRunnable(metricsStore, JankScenario.TAB_SWITCHER,
-                        /* isStartingTracking= */ true, mHandler, endScenarioTime);
+                new JankReportingRunnable(
+                        metricsStore,
+                        JankScenario.TAB_SWITCHER,
+                        /* isStartingTracking= */ true,
+                        mHandler,
+                        endScenarioTime);
         startReportingRunnable.run();
 
         metricsStore.addFrameMeasurement(
                 1_000_000L, true, 1 * TimeUtils.NANOSECONDS_PER_MILLISECOND);
 
         JankReportingRunnable stopReportingRunnable =
-                new JankReportingRunnable(metricsStore, JankScenario.TAB_SWITCHER,
-                        /* isStartingTracking= */ false, mHandler, endScenarioTime);
+                new JankReportingRunnable(
+                        metricsStore,
+                        JankScenario.TAB_SWITCHER,
+                        /* isStartingTracking= */ false,
+                        mHandler,
+                        endScenarioTime);
         stopReportingRunnable.run();
 
         // Add two frames, one added before the frame time of 50ms above and one after. The first
@@ -120,8 +143,12 @@ public class JankReportingRunnableTest {
         verify(metricsStore).stopTrackingScenario(JankScenario.TAB_SWITCHER, frameTime);
 
         verify(mNativeMock)
-                .recordJankMetrics(new long[] {1_000_000L, 1_000_001L}, new boolean[] {true, false},
-                        1L, 5L, JankScenario.TAB_SWITCHER);
+                .recordJankMetrics(
+                        new long[] {1_000_000L, 1_000_001L},
+                        new boolean[] {true, false},
+                        1L,
+                        5L,
+                        JankScenario.TAB_SWITCHER);
     }
 
     @Test
@@ -130,12 +157,22 @@ public class JankReportingRunnableTest {
         FrameMetricsStore metricsStore = Mockito.spy(new FrameMetricsStore());
         metricsStore.initialize();
 
-        JankReportingRunnable startReportingRunnable = new JankReportingRunnable(metricsStore,
-                JankScenario.TAB_SWITCHER, /* isStartingTracking= */ true, mHandler, null);
+        JankReportingRunnable startReportingRunnable =
+                new JankReportingRunnable(
+                        metricsStore,
+                        JankScenario.TAB_SWITCHER,
+                        /* isStartingTracking= */ true,
+                        mHandler,
+                        null);
         startReportingRunnable.run();
 
-        JankReportingRunnable stopReportingRunnable = new JankReportingRunnable(metricsStore,
-                JankScenario.TAB_SWITCHER, /* isStartingTracking= */ false, mHandler, null);
+        JankReportingRunnable stopReportingRunnable =
+                new JankReportingRunnable(
+                        metricsStore,
+                        JankScenario.TAB_SWITCHER,
+                        /* isStartingTracking= */ false,
+                        mHandler,
+                        null);
         stopReportingRunnable.run();
 
         verify(metricsStore).initialize();

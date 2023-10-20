@@ -21,18 +21,16 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Test for verify the names and test method Description works properly
- */
+/** Test for verify the names and test method Description works properly */
 @RunWith(BlockJUnit4ClassRunner.class)
 public class ParameterizedTestNameTest {
     @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
     public static class TestClassWithClassParameterAppendName {
         @ClassParameter
-        static List<ParameterSet> sAllName = Arrays.asList(
-                new ParameterSet().value("hello").name("Hello"),
-                new ParameterSet().value("world").name("World")
-        );
+        static List<ParameterSet> sAllName =
+                Arrays.asList(
+                        new ParameterSet().value("hello").name("Hello"),
+                        new ParameterSet().value("world").name("World"));
 
         public TestClassWithClassParameterAppendName(String a) {}
 
@@ -43,10 +41,8 @@ public class ParameterizedTestNameTest {
     @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
     public static class TestClassWithClassParameterDefaultName {
         @ClassParameter
-        static List<ParameterSet> sAllName = Arrays.asList(
-                new ParameterSet().value("hello"),
-                new ParameterSet().value("world")
-        );
+        static List<ParameterSet> sAllName =
+                Arrays.asList(new ParameterSet().value("hello"), new ParameterSet().value("world"));
 
         public TestClassWithClassParameterDefaultName(String a) {}
 
@@ -61,8 +57,7 @@ public class ParameterizedTestNameTest {
             public Iterable<ParameterSet> getParameters() {
                 return Arrays.asList(
                         new ParameterSet().value("hello").name("Hello"),
-                        new ParameterSet().value("world").name("World")
-                );
+                        new ParameterSet().value("world").name("World"));
             }
         }
 
@@ -70,9 +65,7 @@ public class ParameterizedTestNameTest {
             @Override
             public Iterable<ParameterSet> getParameters() {
                 return Arrays.asList(
-                        new ParameterSet().value("hello"),
-                        new ParameterSet().value("world")
-                );
+                        new ParameterSet().value("hello"), new ParameterSet().value("world"));
             }
         }
 
@@ -88,18 +81,17 @@ public class ParameterizedTestNameTest {
     @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
     public static class TestClassWithMixedParameter {
         @ClassParameter
-        static List<ParameterSet> sAllName = Arrays.asList(
-                new ParameterSet().value("hello").name("Hello"),
-                new ParameterSet().value("world").name("World")
-        );
+        static List<ParameterSet> sAllName =
+                Arrays.asList(
+                        new ParameterSet().value("hello").name("Hello"),
+                        new ParameterSet().value("world").name("World"));
 
         static class AppendNameParams implements ParameterProvider {
             @Override
             public Iterable<ParameterSet> getParameters() {
                 return Arrays.asList(
                         new ParameterSet().value("1").name("A"),
-                        new ParameterSet().value("2").name("B")
-                );
+                        new ParameterSet().value("2").name("B"));
             }
         }
 
@@ -115,8 +107,9 @@ public class ParameterizedTestNameTest {
 
     @Test
     public void testClassParameterAppendName() throws Throwable {
-        List<Runner> runners = ParameterizedRunner.createRunners(
-                new TestClass(TestClassWithClassParameterAppendName.class));
+        List<Runner> runners =
+                ParameterizedRunner.createRunners(
+                        new TestClass(TestClassWithClassParameterAppendName.class));
         List<String> expectedTestNames =
                 new LinkedList<String>(Arrays.asList("test__Hello", "test__World"));
         List<String> computedMethodNames = new ArrayList<>();
@@ -124,7 +117,8 @@ public class ParameterizedTestNameTest {
             BlockJUnit4RunnerDelegate castedRunner = (BlockJUnit4RunnerDelegate) r;
             for (FrameworkMethod method : castedRunner.computeTestMethods()) {
                 computedMethodNames.add(method.getName());
-                Assert.assertTrue("This test name is not expected: " + method.getName(),
+                Assert.assertTrue(
+                        "This test name is not expected: " + method.getName(),
                         expectedTestNames.contains(method.getName()));
                 expectedTestNames.remove(method.getName());
                 method.getName();
@@ -140,40 +134,51 @@ public class ParameterizedTestNameTest {
 
     @Test
     public void testClassParameterDefaultName() throws Throwable {
-        List<Runner> runners = ParameterizedRunner.createRunners(
-                new TestClass(TestClassWithClassParameterDefaultName.class));
+        List<Runner> runners =
+                ParameterizedRunner.createRunners(
+                        new TestClass(TestClassWithClassParameterDefaultName.class));
         List<String> expectedTestNames = new LinkedList<String>(Arrays.asList("test", "test"));
         for (Runner r : runners) {
             @SuppressWarnings("unchecked")
             BlockJUnit4RunnerDelegate castedRunner = (BlockJUnit4RunnerDelegate) r;
             for (FrameworkMethod method : castedRunner.computeTestMethods()) {
-                Assert.assertTrue("This test name is not expected: " + method.getName(),
+                Assert.assertTrue(
+                        "This test name is not expected: " + method.getName(),
                         expectedTestNames.contains(method.getName()));
                 expectedTestNames.remove(method.getName());
                 method.getName();
             }
         }
-        Assert.assertTrue("These expected names are not found: "
+        Assert.assertTrue(
+                "These expected names are not found: "
                         + Arrays.toString(expectedTestNames.toArray()),
                 expectedTestNames.isEmpty());
     }
 
     @Test
     public void testMethodParameter() throws Throwable {
-        List<Runner> runners = ParameterizedRunner.createRunners(
-                new TestClass(TestClassWithMethodParameter.class));
-        List<String> expectedTestNames = new LinkedList<String>(
-                Arrays.asList("test__Hello", "test__World", "testDefaultName", "testDefaultName"));
+        List<Runner> runners =
+                ParameterizedRunner.createRunners(
+                        new TestClass(TestClassWithMethodParameter.class));
+        List<String> expectedTestNames =
+                new LinkedList<String>(
+                        Arrays.asList(
+                                "test__Hello",
+                                "test__World",
+                                "testDefaultName",
+                                "testDefaultName"));
         for (Runner r : runners) {
             BlockJUnit4RunnerDelegate castedRunner = (BlockJUnit4RunnerDelegate) r;
             for (FrameworkMethod method : castedRunner.computeTestMethods()) {
-                Assert.assertTrue("This test name is not expected: " + method.getName(),
+                Assert.assertTrue(
+                        "This test name is not expected: " + method.getName(),
                         expectedTestNames.contains(method.getName()));
                 expectedTestNames.remove(method.getName());
                 method.getName();
             }
         }
-        Assert.assertTrue("These expected names are not found: "
+        Assert.assertTrue(
+                "These expected names are not found: "
                         + Arrays.toString(expectedTestNames.toArray()),
                 expectedTestNames.isEmpty());
     }
@@ -183,18 +188,26 @@ public class ParameterizedTestNameTest {
         List<Runner> runners =
                 ParameterizedRunner.createRunners(new TestClass(TestClassWithMixedParameter.class));
         List<String> expectedTestNames =
-                new LinkedList<String>(Arrays.asList("testA__Hello_A", "testA__World_A",
-                        "testA__Hello_B", "testA__World_B", "test__Hello", "test__World"));
+                new LinkedList<String>(
+                        Arrays.asList(
+                                "testA__Hello_A",
+                                "testA__World_A",
+                                "testA__Hello_B",
+                                "testA__World_B",
+                                "test__Hello",
+                                "test__World"));
         for (Runner r : runners) {
             BlockJUnit4RunnerDelegate castedRunner = (BlockJUnit4RunnerDelegate) r;
             for (FrameworkMethod method : castedRunner.computeTestMethods()) {
-                Assert.assertTrue("This test name is not expected: " + method.getName(),
+                Assert.assertTrue(
+                        "This test name is not expected: " + method.getName(),
                         expectedTestNames.contains(method.getName()));
                 expectedTestNames.remove(method.getName());
                 method.getName();
             }
         }
-        Assert.assertTrue("These expected names are not found: "
+        Assert.assertTrue(
+                "These expected names are not found: "
                         + Arrays.toString(expectedTestNames.toArray()),
                 expectedTestNames.isEmpty());
     }

@@ -15,15 +15,12 @@ import org.chromium.base.test.params.ParameterizedRunner.IllegalParameterArgumen
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Test for org.chromium.base.test.params.ParameterizedRunner
- */
+/** Test for org.chromium.base.test.params.ParameterizedRunner */
 @RunWith(BlockJUnit4ClassRunner.class)
 public class ParameterizedRunnerTest {
     @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
     public static class BadTestClassWithMoreThanOneConstructor {
-        @ClassParameter
-        static List<ParameterSet> sClassParams = new ArrayList<>();
+        @ClassParameter static List<ParameterSet> sClassParams = new ArrayList<>();
 
         public BadTestClassWithMoreThanOneConstructor() {}
 
@@ -32,8 +29,7 @@ public class ParameterizedRunnerTest {
 
     @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
     public static class BadTestClassWithNonListParameters {
-        @ClassParameter
-        static String[] sMethodParamA = {"1", "2"};
+        @ClassParameter static String[] sMethodParamA = {"1", "2"};
 
         @Test
         public void test() {}
@@ -47,8 +43,7 @@ public class ParameterizedRunnerTest {
 
     @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
     public static class BadTestClassWithNonStaticParameterSetList {
-        @ClassParameter
-        public List<ParameterSet> mClassParams = new ArrayList<>();
+        @ClassParameter public List<ParameterSet> mClassParams = new ArrayList<>();
 
         @Test
         public void test() {}
@@ -56,11 +51,9 @@ public class ParameterizedRunnerTest {
 
     @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
     public static class BadTestClassWithMultipleClassParameter {
-        @ClassParameter
-        private static List<ParameterSet> sParamA = new ArrayList<>();
+        @ClassParameter private static List<ParameterSet> sParamA = new ArrayList<>();
 
-        @ClassParameter
-        private static List<ParameterSet> sParamB = new ArrayList<>();
+        @ClassParameter private static List<ParameterSet> sParamB = new ArrayList<>();
     }
 
     @Test(expected = ParameterizedRunner.IllegalParameterArgumentException.class)
@@ -91,7 +84,8 @@ public class ParameterizedRunnerTest {
     @Test(expected = IllegalArgumentException.class)
     @SuppressWarnings("ModifiedButNotUsed")
     public void testUnsupportedParameterType() throws Throwable {
-        class MyPair {};
+        class MyPair {}
+        ;
         List<ParameterSet> paramList = new ArrayList<>();
         paramList.add(new ParameterSet().value(new MyPair()));
     }

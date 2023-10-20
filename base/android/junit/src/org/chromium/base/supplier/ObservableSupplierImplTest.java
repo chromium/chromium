@@ -14,9 +14,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit tests for {@link ObservableSupplierImpl}.
- */
+/** Unit tests for {@link ObservableSupplierImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ObservableSupplierImplTest {
@@ -29,10 +27,11 @@ public class ObservableSupplierImplTest {
 
     @Test
     public void testObserverNotification_SetMultiple() {
-        Callback<String> supplierObserver = result -> {
-            mCallCount++;
-            mLastSuppliedString = result;
-        };
+        Callback<String> supplierObserver =
+                result -> {
+                    mCallCount++;
+                    mLastSuppliedString = result;
+                };
 
         mSupplier.addObserver(supplierObserver);
         checkState(0, null, null, "before setting first string.");
@@ -49,10 +48,11 @@ public class ObservableSupplierImplTest {
 
     @Test
     public void testObserverNotification_SetSame() {
-        Callback<String> supplierObserver = result -> {
-            mCallCount++;
-            mLastSuppliedString = result;
-        };
+        Callback<String> supplierObserver =
+                result -> {
+                    mCallCount++;
+                    mLastSuppliedString = result;
+                };
 
         mSupplier.addObserver(supplierObserver);
         checkState(0, null, null, "before setting first string.");
@@ -66,10 +66,11 @@ public class ObservableSupplierImplTest {
 
     @Test
     public void testObserverNotification_RemoveObserver() {
-        Callback<String> supplierObserver = result -> {
-            mCallCount++;
-            mLastSuppliedString = result;
-        };
+        Callback<String> supplierObserver =
+                result -> {
+                    mCallCount++;
+                    mLastSuppliedString = result;
+                };
 
         mSupplier.addObserver(supplierObserver);
         checkState(0, null, null, "before setting first string.");
@@ -86,22 +87,24 @@ public class ObservableSupplierImplTest {
     @Test
     public void testObserverNotification_RegisterObserverAfterSet() {
         Handler handler = new Handler();
-        handler.post(() -> {
-            mSupplier.set(TEST_STRING_1);
-            checkState(0, null, TEST_STRING_1, "after setting first string.");
+        handler.post(
+                () -> {
+                    mSupplier.set(TEST_STRING_1);
+                    checkState(0, null, TEST_STRING_1, "after setting first string.");
 
-            Callback<String> supplierObserver = new Callback<String>() {
-                @Override
-                public void onResult(String result) {
-                    mCallCount++;
-                    mLastSuppliedString = result;
-                }
-            };
+                    Callback<String> supplierObserver =
+                            new Callback<String>() {
+                                @Override
+                                public void onResult(String result) {
+                                    mCallCount++;
+                                    mLastSuppliedString = result;
+                                }
+                            };
 
-            mSupplier.addObserver(supplierObserver);
+                    mSupplier.addObserver(supplierObserver);
 
-            checkState(0, null, TEST_STRING_1, "after setting observer.");
-        });
+                    checkState(0, null, TEST_STRING_1, "after setting observer.");
+                });
 
         handler.post(() -> checkState(1, TEST_STRING_1, TEST_STRING_1, "in second message loop."));
     }
@@ -109,25 +112,27 @@ public class ObservableSupplierImplTest {
     @Test
     public void testObserverNotification_RegisterObserverAfterSetThenSetAgain() {
         Handler handler = new Handler();
-        handler.post(() -> {
-            mSupplier.set(TEST_STRING_1);
-            checkState(0, null, TEST_STRING_1, "after setting first string.");
+        handler.post(
+                () -> {
+                    mSupplier.set(TEST_STRING_1);
+                    checkState(0, null, TEST_STRING_1, "after setting first string.");
 
-            Callback<String> supplierObserver = new Callback<String>() {
-                @Override
-                public void onResult(String result) {
-                    mCallCount++;
-                    mLastSuppliedString = result;
-                }
-            };
+                    Callback<String> supplierObserver =
+                            new Callback<String>() {
+                                @Override
+                                public void onResult(String result) {
+                                    mCallCount++;
+                                    mLastSuppliedString = result;
+                                }
+                            };
 
-            mSupplier.addObserver(supplierObserver);
+                    mSupplier.addObserver(supplierObserver);
 
-            checkState(0, null, TEST_STRING_1, "after setting observer.");
+                    checkState(0, null, TEST_STRING_1, "after setting observer.");
 
-            mSupplier.set(TEST_STRING_2);
-            checkState(1, TEST_STRING_2, TEST_STRING_2, "after setting second string.");
-        });
+                    mSupplier.set(TEST_STRING_2);
+                    checkState(1, TEST_STRING_2, TEST_STRING_2, "after setting second string.");
+                });
 
         handler.post(() -> checkState(1, TEST_STRING_2, TEST_STRING_2, "in second message loop."));
     }
@@ -135,38 +140,41 @@ public class ObservableSupplierImplTest {
     @Test
     public void testObserverNotification_RegisterObserverAfterSetThenRemove() {
         Handler handler = new Handler();
-        handler.post(() -> {
-            mSupplier.set(TEST_STRING_1);
-            checkState(0, null, TEST_STRING_1, "after setting first string.");
+        handler.post(
+                () -> {
+                    mSupplier.set(TEST_STRING_1);
+                    checkState(0, null, TEST_STRING_1, "after setting first string.");
 
-            Callback<String> supplierObserver = new Callback<String>() {
-                @Override
-                public void onResult(String result) {
-                    mCallCount++;
-                    mLastSuppliedString = result;
-                }
-            };
+                    Callback<String> supplierObserver =
+                            new Callback<String>() {
+                                @Override
+                                public void onResult(String result) {
+                                    mCallCount++;
+                                    mLastSuppliedString = result;
+                                }
+                            };
 
-            mSupplier.addObserver(supplierObserver);
+                    mSupplier.addObserver(supplierObserver);
 
-            checkState(0, null, TEST_STRING_1, "after setting observer.");
+                    checkState(0, null, TEST_STRING_1, "after setting observer.");
 
-            mSupplier.removeObserver(supplierObserver);
-        });
+                    mSupplier.removeObserver(supplierObserver);
+                });
 
         handler.post(() -> checkState(0, null, TEST_STRING_1, "in second message loop."));
     }
 
     @Test
     public void testObserverNotification_RemoveObserverInsideCallback() {
-        Callback<String> supplierObserver = new Callback<String>() {
-            @Override
-            public void onResult(String result) {
-                mCallCount++;
-                mLastSuppliedString = result;
-                mSupplier.removeObserver(this);
-            }
-        };
+        Callback<String> supplierObserver =
+                new Callback<String>() {
+                    @Override
+                    public void onResult(String result) {
+                        mCallCount++;
+                        mLastSuppliedString = result;
+                        mSupplier.removeObserver(this);
+                    }
+                };
 
         mSupplier.addObserver(supplierObserver);
         checkState(0, null, null, "before setting first string.");
@@ -178,12 +186,17 @@ public class ObservableSupplierImplTest {
         checkState(1, TEST_STRING_1, TEST_STRING_2, "after setting second string.");
     }
 
-    private void checkState(int expectedCallCount, String expectedLastSuppliedString,
-            String expectedStringFromGet, String assertDescription) {
+    private void checkState(
+            int expectedCallCount,
+            String expectedLastSuppliedString,
+            String expectedStringFromGet,
+            String assertDescription) {
         Assert.assertEquals(
                 "Incorrect call count " + assertDescription, expectedCallCount, mCallCount);
-        Assert.assertEquals("Incorrect last supplied string " + assertDescription,
-                expectedLastSuppliedString, mLastSuppliedString);
+        Assert.assertEquals(
+                "Incorrect last supplied string " + assertDescription,
+                expectedLastSuppliedString,
+                mLastSuppliedString);
         Assert.assertEquals(
                 "Incorrect #get() " + assertDescription, expectedStringFromGet, mSupplier.get());
     }

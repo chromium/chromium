@@ -22,14 +22,16 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class CommandLineFlagsWithClassAnnotationCheckTest {
     @Test
     public void testOnlyClassAnnotation() throws Throwable {
-        Assert.assertTrue("some-switch should be appended by the class",
+        Assert.assertTrue(
+                "some-switch should be appended by the class",
                 CommandLine.getInstance().hasSwitch("some-switch"));
     }
 
     @Test
     @CommandLineFlags.Remove("some-switch")
     public void testRemoveSwitch_method() throws Throwable {
-        Assert.assertTrue("CommandLine switches should be removed by the method",
+        Assert.assertTrue(
+                "CommandLine switches should be removed by the method",
                 CommandLine.getInstance().getSwitches().isEmpty());
     }
 }

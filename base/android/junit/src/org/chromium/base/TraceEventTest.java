@@ -20,16 +20,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 
-/**
- * Tests for {@link TraceEvent}.
- */
+/** Tests for {@link TraceEvent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TraceEventTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    TraceEvent.Natives mNativeMock;
+    @Mock TraceEvent.Natives mNativeMock;
 
     @Before
     public void setUp() {
@@ -62,14 +58,17 @@ public class TraceEventTest {
 
         // Input string format:
         // ">>>>> Finished to (TARGET) {HASH_CODE} TARGET_NAME: WHAT"
-        String realEventName = ">>>>> Finished to (org.chromium.myClass.myMethod) "
-                + "{HASH_CODE} org.chromium.myOtherClass.instance: message";
+        String realEventName =
+                ">>>>> Finished to (org.chromium.myClass.myMethod) "
+                        + "{HASH_CODE} org.chromium.myOtherClass.instance: message";
 
         // Output string format:
         // "{TraceEvent.BasicLooperMonitor.LOOPER_TASK_PREFIX} TARGET(TARGET_NAME)"
-        String realEventNameExpected = TraceEvent.BasicLooperMonitor.LOOPER_TASK_PREFIX
-                + "org.chromium.myClass.myMethod(org.chromium.myOtherClass.instance)";
-        Assert.assertEquals(TraceEvent.BasicLooperMonitor.getTraceEventName(realEventName),
+        String realEventNameExpected =
+                TraceEvent.BasicLooperMonitor.LOOPER_TASK_PREFIX
+                        + "org.chromium.myClass.myMethod(org.chromium.myOtherClass.instance)";
+        Assert.assertEquals(
+                TraceEvent.BasicLooperMonitor.getTraceEventName(realEventName),
                 realEventNameExpected);
     }
 
@@ -80,9 +79,11 @@ public class TraceEventTest {
         TraceEvent.setEventNameFilteringEnabled(true);
         Assert.assertTrue(TraceEvent.eventNameFilteringEnabled());
 
-        String realEventName = TraceEvent.BasicLooperMonitor.LOOPER_TASK_PREFIX
-                + "org.chromium.myClass.myMethod(org.chromium.myOtherClass.instance)";
-        Assert.assertEquals(TraceEvent.BasicLooperMonitor.getTraceEventName(realEventName),
+        String realEventName =
+                TraceEvent.BasicLooperMonitor.LOOPER_TASK_PREFIX
+                        + "org.chromium.myClass.myMethod(org.chromium.myOtherClass.instance)";
+        Assert.assertEquals(
+                TraceEvent.BasicLooperMonitor.getTraceEventName(realEventName),
                 TraceEvent.BasicLooperMonitor.FILTERED_EVENT_NAME);
     }
 
@@ -92,8 +93,7 @@ public class TraceEventTest {
     public void testScopedTraceEventWithIntArg() {
         TraceEvent.setEnabled(true);
         // Only string literals are allowed in Java event names.
-        try (TraceEvent event = TraceEvent.scoped("TestEvent", 15)) {
-        }
+        try (TraceEvent event = TraceEvent.scoped("TestEvent", 15)) {}
         verify(mNativeMock).beginWithIntArg("TestEvent", 15);
         TraceEvent.setEnabled(false);
     }

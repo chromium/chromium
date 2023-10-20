@@ -17,9 +17,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- *  Tests for FrameMetricsListener.
- */
+/** Tests for FrameMetricsListener. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FrameMetricsListenerTest {
@@ -56,7 +54,8 @@ public class FrameMetricsListenerTest {
         metricsListener.setIsListenerRecording(true);
         metricsListener.onFrameMetricsAvailable(null, frameMetrics, 0);
 
-        Assert.assertArrayEquals(new long[] {10_000_000L},
+        Assert.assertArrayEquals(
+                new long[] {10_000_000L},
                 store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE).durationsNs);
     }
 }

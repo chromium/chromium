@@ -19,21 +19,21 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Example test that uses ParameterizedRunner
- */
+/** Example test that uses ParameterizedRunner */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
 public class ExampleParameterizedTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value("hello", "world").name("HelloWorld"),
+            Arrays.asList(
+                    new ParameterSet().value("hello", "world").name("HelloWorld"),
                     new ParameterSet().value("Xxxx", "Yyyy").name("XxxxYyyy"),
                     new ParameterSet().value("aa", "yy").name("AaYy"));
 
     public static class MethodParamsA implements ParameterProvider {
         private static List<ParameterSet> sMethodParamA =
-                Arrays.asList(new ParameterSet().value(1, 2).name("OneTwo"),
+                Arrays.asList(
+                        new ParameterSet().value(1, 2).name("OneTwo"),
                         new ParameterSet().value(2, 3).name("TwoThree"),
                         new ParameterSet().value(3, 4).name("ThreeFour"));
 
@@ -45,7 +45,8 @@ public class ExampleParameterizedTest {
 
     public static class MethodParamsB implements ParameterProvider {
         private static List<ParameterSet> sMethodParamB =
-                Arrays.asList(new ParameterSet().value("a", "b").name("Ab"),
+                Arrays.asList(
+                        new ParameterSet().value("a", "b").name("Ab"),
                         new ParameterSet().value("b", "c").name("Bc"),
                         new ParameterSet().value("c", "d").name("Cd"),
                         new ParameterSet().value("d", "e").name("De"));
@@ -70,8 +71,7 @@ public class ExampleParameterizedTest {
                 "A and B string length aren't equal", mStringA.length(), mStringB.length());
     }
 
-    @Rule
-    public MethodRule mMethodParamAnnotationProcessor = new MethodParamAnnotationRule();
+    @Rule public MethodRule mMethodParamAnnotationProcessor = new MethodParamAnnotationRule();
 
     private Integer mSum;
 

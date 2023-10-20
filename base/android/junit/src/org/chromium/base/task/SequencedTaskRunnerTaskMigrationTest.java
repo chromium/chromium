@@ -30,8 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SequencedTaskRunnerTaskMigrationTest {
-    @Rule
-    public JniMocker mMocker = new JniMocker();
+    @Rule public JniMocker mMocker = new JniMocker();
 
     // It might be tempting to use fake executor similar to Robolectric's scheduler that is driven
     // from the test's main thread. Unfortunately this approach means that only two states of the
@@ -54,7 +53,8 @@ public class SequencedTaskRunnerTaskMigrationTest {
         Assert.assertTrue("Some task is stuck in thread pool queue", queuedRunnables.isEmpty());
         // Termination will be immediate if tests aren't broken. Generous timeout prevents test
         // from being stuck forever.
-        Assert.assertTrue("Some task is stuck in thread pool",
+        Assert.assertTrue(
+                "Some task is stuck in thread pool",
                 mConcurrentExecutor.awaitTermination(10, TimeUnit.SECONDS));
     }
 
@@ -76,7 +76,8 @@ public class SequencedTaskRunnerTaskMigrationTest {
         preNativeTask.awaitTaskStarted();
         taskRunner.initNativeTaskRunner();
 
-        Assert.assertFalse("Native task should not start before java task completion",
+        Assert.assertFalse(
+                "Native task should not start before java task completion",
                 fakeTaskRunnerNatives.hasReceivedTasks());
     }
 
@@ -104,7 +105,8 @@ public class SequencedTaskRunnerTaskMigrationTest {
         // runner and checking the state of the latter in assertion below.
         nativeTask.awaitTaskStarted();
 
-        Assert.assertTrue("Second task should run on the native pool",
+        Assert.assertTrue(
+                "Second task should run on the native pool",
                 fakeTaskRunnerNatives.hasReceivedTasks());
     }
 
@@ -131,7 +133,8 @@ public class SequencedTaskRunnerTaskMigrationTest {
         try {
             // Generous timeout prevents test from being stuck forever. Actual delay is going to
             // be a few milliseconds.
-            Assert.assertTrue("Timed out waiting for latch to count down",
+            Assert.assertTrue(
+                    "Timed out waiting for latch to count down",
                     taskLatch.await(10, TimeUnit.SECONDS));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

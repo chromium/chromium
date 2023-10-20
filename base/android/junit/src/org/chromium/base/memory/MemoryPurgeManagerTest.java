@@ -28,18 +28,16 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for MemoryPurgeManager.
- */
+/** Tests for MemoryPurgeManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MemoryPurgeManagerTest {
-    @Rule
-    public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
-    private Callable<Integer> mGetCount = () -> {
-        return RecordHistogram.getHistogramTotalCountForTesting(
-                MemoryPurgeManager.BACKGROUND_DURATION_HISTOGRAM_NAME);
-    };
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    private Callable<Integer> mGetCount =
+            () -> {
+                return RecordHistogram.getHistogramTotalCountForTesting(
+                        MemoryPurgeManager.BACKGROUND_DURATION_HISTOGRAM_NAME);
+            };
 
     private class MemoryPurgeManagerForTest extends MemoryPurgeManager {
         public MemoryPurgeManagerForTest(int initialState) {

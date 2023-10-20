@@ -19,17 +19,13 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 
-/**
- *  Tests for JankMetricUMARecorder.
- */
+/** Tests for JankMetricUMARecorder. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class JankMetricUMARecorderTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    JankMetricUMARecorder.Natives mNativeMock;
+    @Mock JankMetricUMARecorder.Natives mNativeMock;
 
     @Before
     public void setUp() {
@@ -55,8 +51,11 @@ public class JankMetricUMARecorderTest {
     public void testRecordNullMetrics() {
         JankMetricUMARecorder.recordJankMetricsToUMA(null, 0, 0, 1);
         verify(mNativeMock, never())
-                .recordJankMetrics(ArgumentMatchers.any(), ArgumentMatchers.any(),
-                        ArgumentMatchers.anyLong(), ArgumentMatchers.anyLong(),
+                .recordJankMetrics(
+                        ArgumentMatchers.any(),
+                        ArgumentMatchers.any(),
+                        ArgumentMatchers.anyLong(),
+                        ArgumentMatchers.anyLong(),
                         ArgumentMatchers.anyInt());
     }
 }

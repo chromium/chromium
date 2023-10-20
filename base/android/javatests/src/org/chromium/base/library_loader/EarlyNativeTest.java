@@ -20,9 +20,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.build.BuildConfig;
 
-/**
- * Tests for early JNI initialization.
- */
+/** Tests for early JNI initialization. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @JNINamespace("base")
 @Batch(Batch.UNIT_TESTS)
@@ -50,6 +48,7 @@ public class EarlyNativeTest {
     @NativeMethods
     interface Natives {
         boolean isCommandLineInitialized();
+
         boolean isProcessNameEmpty();
     }
 

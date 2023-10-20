@@ -13,9 +13,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- *  Tests for FrameMetricsStore.
- */
+/** Tests for FrameMetricsStore. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FrameMetricsStoreTest {
@@ -34,7 +32,8 @@ public class FrameMetricsStoreTest {
 
         JankMetrics metrics = store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
 
-        assertArrayEquals(new long[] {10_000_000L, 12_000_000L, 20_000_000L, 8_000_000L},
+        assertArrayEquals(
+                new long[] {10_000_000L, 12_000_000L, 20_000_000L, 8_000_000L},
                 metrics.durationsNs);
         assertArrayEquals(new boolean[] {false, false, true, true}, metrics.isJanky);
 
@@ -75,7 +74,8 @@ public class FrameMetricsStoreTest {
         // FrameMetricsStore().
         JankMetrics metrics = store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
 
-        assertArrayEquals(new long[] {10_000_000L, 12_000_000L, 20_000_000L, 8_000_000L},
+        assertArrayEquals(
+                new long[] {10_000_000L, 12_000_000L, 20_000_000L, 8_000_000L},
                 metrics.durationsNs);
         assertArrayEquals(new boolean[] {false, false, true, true}, metrics.isJanky);
 

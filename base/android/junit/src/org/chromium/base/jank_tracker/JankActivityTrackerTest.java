@@ -25,22 +25,16 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- *  Tests for JankActivityTracker.
- */
+/** Tests for JankActivityTracker. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class JankActivityTrackerTest {
-    @Mock
-    private Activity mActivity;
+    @Mock private Activity mActivity;
 
-    @Mock
-    private Window mWindow;
+    @Mock private Window mWindow;
 
-    @Mock
-    private FrameMetricsListener mFrameMetricsListener;
+    @Mock private FrameMetricsListener mFrameMetricsListener;
 
-    @Mock
-    private JankReportingScheduler mJankReportingScheduler;
+    @Mock private JankReportingScheduler mJankReportingScheduler;
 
     JankActivityTracker createJankActivityTracker(Activity activity) {
         JankActivityTracker tracker =
@@ -117,7 +111,8 @@ public class JankActivityTrackerTest {
 
         // When an activity stops we stop reporting periodic metrics.
         InOrder schedulerOrderVerifier = Mockito.inOrder(mJankReportingScheduler);
-        schedulerOrderVerifier.verify(mJankReportingScheduler, atLeastOnce())
+        schedulerOrderVerifier
+                .verify(mJankReportingScheduler, atLeastOnce())
                 .startReportingPeriodicMetrics();
         schedulerOrderVerifier.verify(mJankReportingScheduler).stopReportingPeriodicMetrics();
     }

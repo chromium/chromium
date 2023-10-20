@@ -36,15 +36,17 @@ public class PostTaskTest {
         // This test should not timeout.
         final Object lock = new Object();
         final AtomicBoolean taskExecuted = new AtomicBoolean();
-        PostTask.postTask(TaskTraits.USER_BLOCKING, new Runnable() {
-            @Override
-            public void run() {
-                synchronized (lock) {
-                    taskExecuted.set(true);
-                    lock.notify();
-                }
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.USER_BLOCKING,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (lock) {
+                            taskExecuted.set(true);
+                            lock.notify();
+                        }
+                    }
+                });
         synchronized (lock) {
             try {
                 while (!taskExecuted.get()) {

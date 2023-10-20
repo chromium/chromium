@@ -27,11 +27,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OneShotCallbackTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    Callback<Integer> mCallbackMock;
+    @Mock Callback<Integer> mCallbackMock;
 
     @Test
     public void testNotCalledWithNoValue() {
@@ -40,7 +38,10 @@ public class OneShotCallbackTest {
 
         handler.post(() -> new OneShotCallback<>(supplier, mCallbackMock));
 
-        handler.post(() -> { verify(mCallbackMock, never()).onResult(any()); });
+        handler.post(
+                () -> {
+                    verify(mCallbackMock, never()).onResult(any());
+                });
     }
 
     @Test
@@ -49,9 +50,15 @@ public class OneShotCallbackTest {
         ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
         supplier.set(5);
 
-        handler.post(() -> { new OneShotCallback<>(supplier, mCallbackMock); });
+        handler.post(
+                () -> {
+                    new OneShotCallback<>(supplier, mCallbackMock);
+                });
 
-        handler.post(() -> { verify(mCallbackMock, times(1)).onResult(5); });
+        handler.post(
+                () -> {
+                    verify(mCallbackMock, times(1)).onResult(5);
+                });
     }
 
     @Test
@@ -60,10 +67,16 @@ public class OneShotCallbackTest {
         ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
 
         handler.post(() -> new OneShotCallback<>(supplier, mCallbackMock));
-        handler.post(() -> { verify(mCallbackMock, never()).onResult(any()); });
+        handler.post(
+                () -> {
+                    verify(mCallbackMock, never()).onResult(any());
+                });
 
         supplier.set(5);
-        handler.post(() -> { verify(mCallbackMock, times(1)).onResult(5); });
+        handler.post(
+                () -> {
+                    verify(mCallbackMock, times(1)).onResult(5);
+                });
     }
 
     @Test
@@ -73,9 +86,15 @@ public class OneShotCallbackTest {
         supplier.set(5);
         supplier.set(10);
 
-        handler.post(() -> { new OneShotCallback<>(supplier, mCallbackMock); });
+        handler.post(
+                () -> {
+                    new OneShotCallback<>(supplier, mCallbackMock);
+                });
 
-        handler.post(() -> { verify(mCallbackMock, times(1)).onResult(10); });
+        handler.post(
+                () -> {
+                    verify(mCallbackMock, times(1)).onResult(10);
+                });
     }
 
     @Test
@@ -84,10 +103,16 @@ public class OneShotCallbackTest {
         ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
 
         handler.post(() -> new OneShotCallback<>(supplier, mCallbackMock));
-        handler.post(() -> { verify(mCallbackMock, never()).onResult(any()); });
+        handler.post(
+                () -> {
+                    verify(mCallbackMock, never()).onResult(any());
+                });
 
         supplier.set(5);
-        handler.post(() -> { verify(mCallbackMock, times(1)).onResult(5); });
+        handler.post(
+                () -> {
+                    verify(mCallbackMock, times(1)).onResult(5);
+                });
 
         supplier.set(10);
         verifyNoMoreInteractions(mCallbackMock);
