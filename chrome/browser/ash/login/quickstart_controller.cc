@@ -189,6 +189,11 @@ void QuickStartController::OnStatusChanged(
           ->quick_start_wifi_credentials = status.wifi_credentials;
       UpdateUiState(UiState::WIFI_CREDENTIALS_RECEIVED);
       return;
+    case Step::REQUESTING_GOOGLE_ACCOUNT_INFO:
+      return;
+    case Step::GOOGLE_ACCOUNT_INFO_RECEIVED:
+      bootstrap_controller_->AttemptGoogleAccountTransfer();
+      return;
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
       // Intermediate state. Nothing to do.
       CHECK(controller_state_ ==
@@ -278,7 +283,7 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     CHECK(controller_state_ == ControllerState::CONNECTED);
     controller_state_ = ControllerState::CONTINUING_AFTER_ENROLLMENT_CHECKS;
 
-    bootstrap_controller_->AttemptGoogleAccountTransfer();
+    bootstrap_controller_->RequestGoogleAccountInfo();
     UpdateUiState(UiState::TRANSFERRING_GAIA_CREDENTIALS);
   }
 }

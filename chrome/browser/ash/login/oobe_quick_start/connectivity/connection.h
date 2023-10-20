@@ -108,12 +108,11 @@ class Connection
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
   using PayloadResponseCallback =
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
-  using BootstrapConfigurationsCallback =
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
 
   // TargetDeviceConnectionBroker::AuthenticatedConnection:
   void RequestWifiCredentials(RequestWifiCredentialsCallback callback) override;
   void NotifySourceOfUpdate(NotifySourceOfUpdateCallback callback) override;
+  void RequestAccountInfo(base::OnceClosure callback) override;
   void RequestAccountTransferAssertion(
       const Base64UrlString& challenge,
       RequestAccountTransferAssertionCallback callback) override;
@@ -149,10 +148,11 @@ class Connection
       absl::optional<::ash::quick_start::mojom::QuickStartDecoderError> error);
 
   void OnBootstrapConfigurationsResponse(
-      BootstrapConfigurationsCallback callback,
+      base::OnceClosure callback,
       absl::optional<std::vector<uint8_t>> response_bytes);
 
   void ParseBootstrapConfigurationsResponse(
+      base::OnceClosure callback,
       absl::optional<mojom::BootstrapConfigurations> bootstrap_configurations);
 
   void SendMessageAndReadResponse(

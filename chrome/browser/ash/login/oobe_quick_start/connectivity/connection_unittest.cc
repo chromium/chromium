@@ -149,9 +149,11 @@ class ConnectionTest : public testing::Test {
       absl::optional<std::string> instance_id) {
     if (instance_id.has_value()) {
       connection_->ParseBootstrapConfigurationsResponse(
+          base::DoNothing(),
           *mojom::BootstrapConfigurations::New(instance_id.value()));
     } else {
-      connection_->ParseBootstrapConfigurationsResponse(absl::nullopt);
+      connection_->ParseBootstrapConfigurationsResponse(base::DoNothing(),
+                                                        absl::nullopt);
     }
   }
 
@@ -383,15 +385,11 @@ TEST_F(ConnectionTest, RequestWifiCredentialsReturnsEmptyOnFailure) {
   EXPECT_FALSE(future.Get().has_value());
 }
 
-TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
+TEST_F(ConnectionTest, RequestAccountInfo) {
   MarkConnectionAuthenticated();
-  // Start the Quick Start account transfer flow by initially sending
-  // BootstrapOptions.
-  authenticated_connection_->RequestAccountTransferAssertion(
-      kChallenge_, base::BindOnce(&ConnectionTest::VerifyAssertionInfo,
-                                  base::Unretained(this)));
 
-  EXPECT_EQ(GetClientData()->GetChallengeBase64URLString(), kChallenge_);
+  base::test::TestFuture<void> future;
+  authenticated_connection_->RequestAccountInfo(future.GetCallback());
 
   std::vector<uint8_t> bootstrap_options_data =
       fake_nearby_connection_->GetWrittenData();
@@ -414,12 +412,23 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
       expected_instance_id, absl::nullopt);
   fake_nearby_connection_->AppendReadableData(kTestBytes);
 
+  ASSERT_TRUE(future.Wait());
+
   TestMessageMetrics(/*should_succeed=*/true, /*message_type=*/
                      quick_start_metrics::MessageType::kBootstrapConfigurations,
                      /*error_code=*/absl::nullopt);
+}
 
-  // OnBootstrapOptionsResponse should trigger a write of FIDO GetInfo
-  // request.
+TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
+  MarkConnectionAuthenticated();
+  // Start the Quick Start account transfer flow by initially sending
+  // a FIDO GetInfo request.
+  authenticated_connection_->RequestAccountTransferAssertion(
+      kChallenge_, base::BindOnce(&ConnectionTest::VerifyAssertionInfo,
+                                  base::Unretained(this)));
+
+  EXPECT_EQ(GetClientData()->GetChallengeBase64URLString(), kChallenge_);
+
   std::vector<uint8_t> fido_get_info_data =
       fake_nearby_connection_->GetWrittenData();
 

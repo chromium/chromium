@@ -508,6 +508,30 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
+       RequestGoogleAccountInfoStateUpdates) {
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
+  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
+      /*success=*/true);
+  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
+  fake_target_device_connection_broker_->AuthenticateConnection(
+      kSourceDeviceId);
+
+  bootstrap_controller_->RequestGoogleAccountInfo();
+
+  EXPECT_EQ(fake_observer_->last_status.step,
+            Step::REQUESTING_GOOGLE_ACCOUNT_INFO);
+  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+      fake_observer_->last_status.payload));
+
+  fake_target_device_connection_broker_->GetFakeConnection()->SendAccountInfo();
+
+  EXPECT_EQ(fake_observer_->last_status.step,
+            Step::GOOGLE_ACCOUNT_INFO_RECEIVED);
+  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+      fake_observer_->last_status.payload));
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest,
        TransferringGaiaAccountSendsChallengeBytesToAuthenticatedConnection) {
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(

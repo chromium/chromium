@@ -77,11 +77,13 @@ class TargetDeviceConnectionBroker {
     virtual void NotifySourceOfUpdate(
         NotifySourceOfUpdateCallback callback) = 0;
 
-    // Begin the account transfer process and retrieve
-    // an Assertion from the source device. The user will be asked to confirm
-    // their lock screen PIN/pattern/etc. on the source device.
-    // This object's client must provide a "challenge" to be sent to the remote
-    // source device.
+    // The first step in the account transfer process which involves retrieving
+    // GAIA account info from the source device.
+    virtual void RequestAccountInfo(base::OnceClosure callback) = 0;
+
+    // Begin the account transfer process and retrieve an Assertion from the
+    // source device. The caller must provide a "challenge" nonce to be sent to
+    // the remote source device.
     virtual void RequestAccountTransferAssertion(
         const Base64UrlString& challenge,
         RequestAccountTransferAssertionCallback callback) = 0;

@@ -143,10 +143,9 @@ void TargetDeviceBootstrapController::PrepareForUpdate() {
     return;
   }
 
-  authenticated_connection_->NotifySourceOfUpdate(
-      base::BindOnce(
-          &TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse,
-          weak_ptr_factory_.GetWeakPtr()));
+  authenticated_connection_->NotifySourceOfUpdate(base::BindOnce(
+      &TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TargetDeviceBootstrapController::OnPinVerificationRequested(
@@ -325,6 +324,24 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
   }
 }
 
+void TargetDeviceBootstrapController::RequestGoogleAccountInfo() {
+  CHECK(authenticated_connection_);
+
+  status_.step = Step::REQUESTING_GOOGLE_ACCOUNT_INFO;
+  status_.payload.emplace<absl::monostate>();
+  NotifyObservers();
+
+  authenticated_connection_->RequestAccountInfo(base::BindOnce(
+      &TargetDeviceBootstrapController::OnGoogleAccountInfoReceived,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TargetDeviceBootstrapController::OnGoogleAccountInfoReceived() {
+  status_.step = Step::GOOGLE_ACCOUNT_INFO_RECEIVED;
+  status_.payload.emplace<absl::monostate>();
+  NotifyObservers();
+}
+
 void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
   CHECK(authenticated_connection_);
 
@@ -416,6 +433,12 @@ std::ostream& operator<<(std::ostream& stream,
       break;
     case TargetDeviceBootstrapController::Step::WIFI_CREDENTIALS_RECEIVED:
       stream << "[wifi credentials received]";
+      break;
+    case TargetDeviceBootstrapController::Step::REQUESTING_GOOGLE_ACCOUNT_INFO:
+      stream << "[requesting google account info]";
+      break;
+    case TargetDeviceBootstrapController::Step::GOOGLE_ACCOUNT_INFO_RECEIVED:
+      stream << "[google account info received]";
       break;
     case TargetDeviceBootstrapController::Step::
         TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:

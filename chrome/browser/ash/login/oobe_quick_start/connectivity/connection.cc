@@ -121,6 +121,14 @@ void Connection::NotifySourceOfUpdate(NotifySourceOfUpdateCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void Connection::RequestAccountInfo(base::OnceClosure callback) {
+  SendMessageAndReadResponse(
+      requests::BuildBootstrapOptionsRequest(),
+      QuickStartResponseType::kBootstrapConfigurations,
+      base::BindOnce(&Connection::OnBootstrapConfigurationsResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void Connection::RequestAccountTransferAssertion(
     const Base64UrlString& challenge,
     RequestAccountTransferAssertionCallback callback) {
@@ -138,23 +146,9 @@ void Connection::RequestAccountTransferAssertion(
           QuickStartResponseType::kAssertion,
           std::move(parse_assertion_response), kDefaultRoundTripTimeout));
 
-  // Set up a callback to call GetInfo, calling back into RequestAssertion
-  // (and ignoring the results of GetInfo) after the call succeeds.
-  auto get_info = base::IgnoreArgs<absl::optional<std::vector<uint8_t>>>(
-      base::BindOnce(&Connection::SendMessageAndReadResponse,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     requests::BuildGetInfoRequestMessage(),
-                     QuickStartResponseType::kGetInfo,
-                     std::move(request_assertion), kDefaultRoundTripTimeout));
-
-  auto bootstrap_configurations_response =
-      base::BindOnce(&Connection::OnBootstrapConfigurationsResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(get_info));
-
-  // Call into SetBootstrapOptions, starting the chain of callbacks.
-  SendMessageAndReadResponse(requests::BuildBootstrapOptionsRequest(),
-                             QuickStartResponseType::kBootstrapConfigurations,
-                             std::move(bootstrap_configurations_response));
+  SendMessageAndReadResponse(requests::BuildGetInfoRequestMessage(),
+                             QuickStartResponseType::kGetInfo,
+                             std::move(request_assertion));
 }
 
 void Connection::OnNotifySourceOfUpdateResponse(
@@ -247,7 +241,7 @@ void Connection::GenerateFidoAssertionInfo(
 }
 
 void Connection::OnBootstrapConfigurationsResponse(
-    BootstrapConfigurationsCallback callback,
+    base::OnceClosure callback,
     absl::optional<std::vector<uint8_t>> response_bytes) {
   if (!response_bytes.has_value()) {
     return;
@@ -255,21 +249,21 @@ void Connection::OnBootstrapConfigurationsResponse(
 
   auto on_decoding_completed =
       base::BindOnce(&Connection::ParseBootstrapConfigurationsResponse,
-                     weak_ptr_factory_.GetWeakPtr());
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   DecodeData<mojom::BootstrapConfigurations>(
       &mojom::QuickStartDecoder::DecodeBootstrapConfigurations,
       std::move(on_decoding_completed), std::move(response_bytes));
-
-  std::move(callback).Run(absl::nullopt);
 }
 
 void Connection::ParseBootstrapConfigurationsResponse(
+    base::OnceClosure callback,
     absl::optional<mojom::BootstrapConfigurations> bootstrap_configurations) {
-  if (!bootstrap_configurations) {
-    return;
+  if (bootstrap_configurations) {
+    phone_instance_id_ = bootstrap_configurations->instance_id;
   }
-  phone_instance_id_ = bootstrap_configurations->instance_id;
+
+  std::move(callback).Run();
 }
 
 void Connection::SendMessageAndReadResponse(

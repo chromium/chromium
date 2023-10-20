@@ -41,6 +41,8 @@ class TargetDeviceBootstrapController
     CONNECTED,
     REQUESTING_WIFI_CREDENTIALS,
     WIFI_CREDENTIALS_RECEIVED,
+    REQUESTING_GOOGLE_ACCOUNT_INFO,
+    GOOGLE_ACCOUNT_INFO_RECEIVED,
     TRANSFERRING_GOOGLE_ACCOUNT_DETAILS,
     TRANSFERRED_GOOGLE_ACCOUNT_DETAILS,
   };
@@ -140,6 +142,14 @@ class TargetDeviceBootstrapController
 
   std::string GetDiscoverableName();
   void AttemptWifiCredentialTransfer();
+
+  // The first step in the account transfer is to request basic account info via
+  // the BootstrapConfigurations message, which will give us the account email
+  // address among other info.
+  void RequestGoogleAccountInfo();
+
+  // Initiates the actual account transfer via a cryptographic handshake between
+  // the two devices in conjunction with Google servers.
   void AttemptGoogleAccountTransfer();
 
  private:
@@ -162,6 +172,7 @@ class TargetDeviceBootstrapController
 
   void OnWifiCredentialsReceived(
       absl::optional<mojom::WifiCredentials> credentials);
+  void OnGoogleAccountInfoReceived();
   void OnFidoAssertionReceived(absl::optional<FidoAssertionInfo> assertion);
 
   void OnChallengeBytesReceived(
