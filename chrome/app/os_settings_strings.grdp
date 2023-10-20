@@ -3025,6 +3025,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SAVED_DEVICE_LIST_ITEM_BUTTON_A11Y_LABEL" desc="Accessibility label for button in a paired Bluetooth device list item that routes to the detail page for the device.">
     More actions for <ph name="DEVICE">$1<ex>Beats</ex></ph>
   </message>
+  <message name="IDS_OS_SETTINGS_BLUETOOTH_MENU_ITEM_DESCRIPTION_MULTIPLE_DEVICES_CONNECTED" desc="Description for the Bluetooth menu item in the left menu when there are 2 or more bluetooth devices connected.">
+    <ph name="NUM_DEVICES_CONNECTED">$1<ex>2</ex></ph> devices connected
+  </message>
 
   <!-- Parental Controls -->
   <message name="IDS_SETTINGS_PARENTAL_CONTROLS_PAGE_TITLE" desc="Name of the settings page which manages ChromeOS's parental controls.">

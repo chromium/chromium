@@ -11,9 +11,12 @@ import 'chrome://os-settings/os_settings.js';
 
 import {Account, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {createPageAvailabilityForTesting, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, MultiDeviceBrowserProxyImpl, MultiDevicePageContentData, MultiDeviceSettingsMode, OsSettingsMenuElement, OsSettingsMenuItemElement, routesMojom, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -247,6 +250,89 @@ suite('<os-settings-menu>', () => {
 
         assertEquals(fakeAccounts[0]!.email, accountsMenuItem.sublabel);
       });
+    });
+  });
+
+  suite('Bluetooth menu item', () => {
+    let bluetoothConfig: FakeBluetoothConfig;
+    const bluetoothMouse = createDefaultBluetoothDevice(
+        '111111',
+        /*publicName=*/ 'Bluetooth Mouse',
+        /*connectionState=*/ DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'My Bluetooth Mouse',
+        /*opt_audioCapability=*/ AudioOutputCapability.kNotCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse);
+    const bluetoothHeadphones = createDefaultBluetoothDevice(
+        '222222',
+        /*publicName=*/ 'Bluetooth Headphones',
+        /*connectionState=*/ DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'My Beats',
+        /*opt_audioCapability=*/ AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kHeadset);
+
+    function getBluetoothMenuItem(): OsSettingsMenuItemElement {
+      const bluetoothMenuItem =
+          queryMenuItemByPath(`/${routesMojom.BLUETOOTH_SECTION_PATH}`);
+      assertTrue(!!bluetoothMenuItem);
+      return bluetoothMenuItem;
+    }
+
+    setup(() => {
+      bluetoothConfig = new FakeBluetoothConfig();
+      setBluetoothConfigForTesting(bluetoothConfig);
+    });
+
+    test('Description is not shown when no devices are connected', async () => {
+      await createMenu();
+
+      const bluetoothMenuItem = getBluetoothMenuItem();
+      assertEquals('', bluetoothMenuItem.sublabel);
+    });
+
+    test(
+        'Description shows device name for a single connected device',
+        async () => {
+          bluetoothConfig.appendToPairedDeviceList([bluetoothMouse]);
+          await createMenu();
+
+          const bluetoothMenuItem = getBluetoothMenuItem();
+          assertEquals(bluetoothMouse.nickname, bluetoothMenuItem.sublabel);
+        });
+
+    test('Description shows that multiple devices are connected', async () => {
+      bluetoothConfig.appendToPairedDeviceList(
+          [bluetoothMouse, bluetoothHeadphones]);
+      await createMenu();
+
+      const bluetoothMenuItem = getBluetoothMenuItem();
+      assertEquals('2 devices connected', bluetoothMenuItem.sublabel);
+    });
+
+    test('Description updates when connected devices change', async () => {
+      await createMenu();
+
+      const bluetoothMenuItem = getBluetoothMenuItem();
+      assertEquals('', bluetoothMenuItem.sublabel);
+
+      // Connect a bluetooth mouse.
+      bluetoothConfig.appendToPairedDeviceList([bluetoothMouse]);
+      await flushTasks();
+      assertEquals(bluetoothMouse.nickname, bluetoothMenuItem.sublabel);
+
+      // Connect bluetooth headphones.
+      bluetoothConfig.appendToPairedDeviceList([bluetoothHeadphones]);
+      await flushTasks();
+      assertEquals('2 devices connected', bluetoothMenuItem.sublabel);
+
+      // Disconnect the bluetooth mouse.
+      bluetoothConfig.removePairedDevice(bluetoothMouse);
+      await flushTasks();
+      assertEquals(bluetoothHeadphones.nickname, bluetoothMenuItem.sublabel);
+
+      // Disconnect the bluetooth headphones.
+      bluetoothConfig.removePairedDevice(bluetoothHeadphones);
+      await flushTasks();
+      assertEquals('', bluetoothMenuItem.sublabel);
     });
   });
 
