@@ -191,27 +191,11 @@ bool IsLacrosDisallowedByCommand() {
          !cmdline->HasSwitch(ash::switches::kDisableDisallowLacros);
 }
 
-// Return true if the CPU of this system is capable to run Lacros.
-bool IsCPUSupported() {
-  if (g_cpu_override_for_test.has_value()) {
-    return g_cpu_override_for_test.value();
-  }
-#ifdef ARCH_CPU_X86_64
-  // Some very old Flex devices are not capable to support the -v2 instruction
-  // set. Those CPU's should not use Lacros as Lacros has only one binary
-  // for all intel platforms. As 'x86-64-v2' does not work on the build server,
-  // we check against SSE4.2 here which should be as as good.
-  return __builtin_cpu_supports("sse4.2");
-#else
-  return true;
-#endif
-}
-
 // Returns whether or not lacros is allowed for the Primary user,
 // with given LacrosAvailability policy.
 bool IsLacrosAllowedInternal(const User* user,
                              LacrosAvailability lacros_availability) {
-  if (IsLacrosDisallowedByCommand() || !IsCPUSupported()) {
+  if (IsLacrosDisallowedByCommand() || !IsCPUSupportedByLacros()) {
     // This happens when Ash is restarted in multi-user session, meaning there
     // are more than two users logged in to the device. This will not cause an
     // accidental removal of Lacros data because for the primary user, the fact
@@ -1098,6 +1082,22 @@ bool ShouldEnforceAshExtensionKeepList() {
 bool IsAshDevToolEnabled() {
   return IsAshWebBrowserEnabled() ||
          base::FeatureList::IsEnabled(ash::features::kAllowDevtoolsInSystemUI);
+}
+
+// Return true if the CPU of this system is capable to run Lacros.
+bool IsCPUSupportedByLacros() {
+  if (g_cpu_override_for_test.has_value()) {
+    return g_cpu_override_for_test.value();
+  }
+#ifdef ARCH_CPU_X86_64
+  // Some very old Flex devices are not capable to support the -v2 instruction
+  // set. Those CPU's should not use Lacros as Lacros has only one binary
+  // for all intel platforms. As 'x86-64-v2' does not work on the build server,
+  // we check against SSE4.2 here which should be as as good.
+  return __builtin_cpu_supports("sse4.2");
+#else
+  return true;
+#endif
 }
 
 void SetCpuAvailabilityForTesting(absl::optional<bool> value) {

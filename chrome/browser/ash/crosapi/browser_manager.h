@@ -454,6 +454,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Called when lacros-chrome is terminated and successfully wait(2)ed.
   void OnLacrosChromeTerminated();
 
+  // Called as soon as the login prompt is visible.
+  void OnLoginPromptVisible();
+
   // ID for the current Crosapi connection.
   // Available only when lacros-chrome is running.
   absl::optional<CrosapiId> crosapi_id_;
@@ -610,14 +613,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Reload and possibly relaunch Lacros.
   void HandleReload();
 
-  // Called as soon as the login prompt is visible.
-  void OnLoginPromptVisible();
-
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
-  // Pre-launch Lacros at login screen.
-  void PrelaunchAtLoginScreen();
+  // Pre-launch Lacros at login screen. (Can be overridden by tests).
+  virtual void PrelaunchAtLoginScreen();
 
   // Resume Lacros startup process after login.
   void ResumeLaunch();

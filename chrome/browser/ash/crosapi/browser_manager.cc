@@ -614,6 +614,7 @@ BrowserManager::BrowserManager(
           // user still "logged in" (UserManager::IsUserLoggedIn() == true).
           !base::CommandLine::ForCurrentProcess()->HasSwitch(
               ash::switches::kLoginUser) &&
+          crosapi::browser_util::IsCPUSupportedByLacros() &&
           base::FeatureList::IsEnabled(kLacrosLaunchAtLoginScreen)),
       disabled_for_testing_(g_disabled_for_testing),
       device_ownership_waiter_(std::make_unique<DeviceOwnershipWaiterImpl>()) {
