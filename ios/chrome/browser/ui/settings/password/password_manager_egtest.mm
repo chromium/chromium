@@ -2694,10 +2694,9 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       performAction:grey_tap()];
 }
 
-// Tests that the favicons for the password managers metrics are logged
-// properly when there are passwords with a favicon.
-// TODO(crbug.com/1348585): Fix to re-enable.
-- (void)testLogFaviconsForPasswordsMetrics {
+// Tests that the percentage of favicons for the password manager metric is
+// logged properly when there are passwords with a favicon.
+- (void)testLogFaviconsForPasswordsPercentageMetricWithPassword {
   // Sign-in and synced user.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
@@ -2725,40 +2724,9 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
       performAction:grey_tap()];
 
-  // Metric: Passwords in the password manager.
-  // Verify that histogram is called.
-  NSError* error = [MetricsAppInterface
-      expectTotalCount:1
-          forHistogram:@"IOS.PasswordManager.PasswordsWithFavicons.Count"];
-  if (error) {
-    GREYFail([error description]);
-  }
-  // Verify the logged value of the histogram.
-  error = [MetricsAppInterface
-         expectSum:2
-      forHistogram:@"IOS.PasswordManager.PasswordsWithFavicons.Count"];
-  if (error) {
-    GREYFail([error description]);
-  }
-
-  // Metric: Passwords with a favicon (image) in the password manager.
-  // Verify that histogram is called.
-  error = [MetricsAppInterface
-      expectTotalCount:1
-          forHistogram:@"IOS.PasswordManager.Favicons.Count"];
-  if (error) {
-    GREYFail([error description]);
-  }
-  // Verify the logged value of the histogram.
-  error = [MetricsAppInterface expectSum:0
-                            forHistogram:@"IOS.PasswordManager.Favicons.Count"];
-  if (error) {
-    GREYFail([error description]);
-  }
-
   // Metric: Percentage of favicons with image.
   // Verify that histogram is called.
-  error = [MetricsAppInterface
+  NSError* error = [MetricsAppInterface
       expectTotalCount:1
           forHistogram:@"IOS.PasswordManager.Favicons.Percentage"];
   if (error) {
@@ -2777,42 +2745,17 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       performAction:grey_tap()];
 }
 
-// Tests that the favicons for the password managers metrics are logged
-// properly when there are no password.
-- (void)testLogFaviconsForPasswordsMetricsNoPassword {
+// Tests that the percentage of favicons for the password manager metric is
+// logged properly when there are no password.
+- (void)testLogFaviconsForPasswordsPercentageMetricNoPassword {
   OpenPasswordManager();
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 
-  // Metric: Passwords in the password manager.
-  // Verify that histogram is called.
+  // Metric: Percentage of favicons with image.
+  // This histogram is not logged.
   NSError* error = [MetricsAppInterface
-      expectTotalCount:1
-          forHistogram:@"IOS.PasswordManager.PasswordsWithFavicons.Count"];
-  if (error) {
-    GREYFail([error description]);
-  }
-  // Verify the logged value of the histogram.
-  error = [MetricsAppInterface
-         expectSum:0
-      forHistogram:@"IOS.PasswordManager.PasswordsWithFavicons.Count"];
-  if (error) {
-    GREYFail([error description]);
-  }
-
-  // Metric: Percentage of favicons with image.
-  // This histogram is not logged.
-  error = [MetricsAppInterface
-      expectTotalCount:0
-          forHistogram:@"IOS.PasswordManager.Favicons.Count"];
-  if (error) {
-    GREYFail([error description]);
-  }
-
-  // Metric: Percentage of favicons with image.
-  // This histogram is not logged.
-  error = [MetricsAppInterface
       expectTotalCount:0
           forHistogram:@"IOS.PasswordManager.Favicons.Percentage"];
   if (error) {
