@@ -1157,7 +1157,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return;
   }
 
-  SetDataList(field.datalist_values, field.datalist_labels);
+  external_delegate_->SetCurrentDataListValues(field.datalist_options);
   external_delegate_->OnQuery(form, field, transformed_box);
 
   std::vector<Suggestion> suggestions;
@@ -1811,16 +1811,6 @@ void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,
 
 bool BrowserAutofillManager::ShouldClearPreviewedForm() {
   return credit_card_access_manager_->ShouldClearPreviewedForm();
-}
-
-void BrowserAutofillManager::SetDataList(
-    const std::vector<std::u16string>& values,
-    const std::vector<std::u16string>& labels) {
-  if (!IsValidString16Vector(values) || !IsValidString16Vector(labels) ||
-      values.size() != labels.size())
-    return;
-
-  external_delegate_->SetCurrentDataListValues(values, labels);
 }
 
 void BrowserAutofillManager::OnSelectOrSelectListFieldOptionsDidChangeImpl(

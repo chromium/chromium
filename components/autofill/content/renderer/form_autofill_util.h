@@ -126,8 +126,7 @@ bool IsDOMPredecessor(const blink::WebNode& x,
 // Gets up to kMaxListSize data list values (with corresponding label) for the
 // given element, each value and label have as far as kMaxDataLength.
 void GetDataListSuggestions(const blink::WebInputElement& element,
-                            std::vector<std::u16string>* values,
-                            std::vector<std::u16string>* labels);
+                            std::vector<SelectOption>* options);
 
 // Extract FormData from the form element and return whether the
 // operation was successful.

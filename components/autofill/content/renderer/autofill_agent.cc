@@ -1030,8 +1030,7 @@ void AutofillAgent::QueryAutofillSuggestions(
     const WebInputElement input_element = element.DynamicTo<WebInputElement>();
     if (!input_element.IsNull()) {
       // Find the datalist values and send them to the browser process.
-      form_util::GetDataListSuggestions(input_element, &field.datalist_values,
-                                        &field.datalist_labels);
+      form_util::GetDataListSuggestions(input_element, &field.datalist_options);
     }
   }
 

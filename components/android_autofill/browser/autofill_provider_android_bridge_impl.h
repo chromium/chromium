@@ -32,8 +32,7 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
                             const FieldInfo& field,
                             bool has_server_predictions) override;
   void OnServerPredictionQueryDone(bool success) override;
-  void ShowDatalistPopup(base::span<const std::u16string> values,
-                         base::span<const std::u16string> labels,
+  void ShowDatalistPopup(base::span<const SelectOption> options,
                          bool is_rtl) override;
   void HideDatalistPopup() override;
   void OnFocusChanged(const absl::optional<FieldInfo>& field) override;

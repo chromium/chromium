@@ -248,13 +248,9 @@ void AutofillExternalDelegate::OnAutofillAvailabilityEvent(
 }
 
 void AutofillExternalDelegate::SetCurrentDataListValues(
-    const std::vector<std::u16string>& data_list_values,
-    const std::vector<std::u16string>& data_list_labels) {
-  data_list_values_ = data_list_values;
-  data_list_labels_ = data_list_labels;
-
-  manager_->client().UpdateAutofillPopupDataListValues(data_list_values,
-                                                       data_list_labels);
+    std::vector<SelectOption> datalist) {
+  datalist_ = std::move(datalist);
+  manager_->client().UpdateAutofillPopupDataListValues(datalist_);
 }
 
 void AutofillExternalDelegate::OnPopupShown() {
@@ -811,16 +807,17 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
 
 void AutofillExternalDelegate::InsertDataListValues(
     std::vector<Suggestion>* suggestions) {
-  if (data_list_values_.empty())
+  if (datalist_.empty()) {
     return;
+  }
 
   // Go through the list of autocomplete values and remove them if they are in
   // the list of datalist values.
-  std::set<std::u16string> data_list_set(data_list_values_.begin(),
-                                         data_list_values_.end());
-  base::EraseIf(*suggestions, [&data_list_set](const Suggestion& suggestion) {
+  auto datalist_values = base::MakeFlatSet<std::u16string>(
+      datalist_, {}, [](const SelectOption& option) { return option.value; });
+  base::EraseIf(*suggestions, [&datalist_values](const Suggestion& suggestion) {
     return suggestion.popup_item_id == PopupItemId::kAutocompleteEntry &&
-           base::Contains(data_list_set, suggestion.main_text.value);
+           base::Contains(datalist_values, suggestion.main_text.value);
   });
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -833,12 +830,11 @@ void AutofillExternalDelegate::InsertDataListValues(
 #endif
 
   // Insert the datalist elements at the beginning.
-  suggestions->insert(suggestions->begin(), data_list_values_.size(),
-                      Suggestion());
-  for (size_t i = 0; i < data_list_values_.size(); i++) {
-    (*suggestions)[i].main_text = Suggestion::Text(
-        data_list_values_[i], Suggestion::Text::IsPrimary(true));
-    (*suggestions)[i].labels = {{Suggestion::Text(data_list_labels_[i])}};
+  suggestions->insert(suggestions->begin(), datalist_.size(), Suggestion());
+  for (size_t i = 0; i < datalist_.size(); i++) {
+    (*suggestions)[i].main_text =
+        Suggestion::Text(datalist_[i].value, Suggestion::Text::IsPrimary(true));
+    (*suggestions)[i].labels = {{Suggestion::Text(datalist_[i].content)}};
     (*suggestions)[i].popup_item_id = PopupItemId::kDatalistEntry;
   }
 }

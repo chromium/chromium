@@ -1687,20 +1687,6 @@ bool ScriptModifiedUsernameAcceptable(
   return field_data_manager->FindMachedValue(value);
 }
 
-// Trim the vector before sending it to the browser process to ensure we
-// don't send too much data through the IPC.
-void TrimStringVectorForIPC(std::vector<std::u16string>* strings) {
-  // Limit the size of the vector.
-  if (strings->size() > kMaxListSize)
-    strings->resize(kMaxListSize);
-
-  // Limit the size of the strings in the vector.
-  for (auto& string : *strings) {
-    if (string.length() > kMaxStringLength)
-      string.resize(kMaxStringLength);
-  }
-}
-
 // Build a map from entries in |form_control_renderer_ids| to their indices,
 // for more efficient lookup.
 base::flat_map<FieldRendererId, size_t> BuildRendererIdToIndex(
@@ -1860,17 +1846,20 @@ bool IsDOMPredecessor(const blink::WebNode& x,
 }
 
 void GetDataListSuggestions(const WebInputElement& element,
-                            std::vector<std::u16string>* values,
-                            std::vector<std::u16string>* labels) {
-  for (const auto& option : element.FilteredDataListOptions()) {
-    values->push_back(option.Value().Utf16());
-    if (option.Value() != option.Label())
-      labels->push_back(option.Label().Utf16());
-    else
-      labels->push_back(std::u16string());
+                            std::vector<SelectOption>* options) {
+  for (const auto& option_element : element.FilteredDataListOptions()) {
+    if (options->size() > kMaxListSize) {
+      break;
+    }
+    std::u16string value =
+        option_element.Value().Utf16().substr(0, kMaxStringLength);
+    std::u16string content =
+        option_element.Value() != option_element.Label()
+            ? option_element.Label().Utf16().substr(0, kMaxStringLength)
+            : std::u16string();
+    options->push_back(
+        {.value = std::move(value), .content = std::move(content)});
   }
-  TrimStringVectorForIPC(values);
-  TrimStringVectorForIPC(labels);
 }
 
 bool ExtractFormData(const WebFormElement& form_element,
@@ -2263,8 +2252,7 @@ void WebFormControlElementToFormField(
   if (extract_options.contains(ExtractOption::kDatalist)) {
     if (WebInputElement input = element.DynamicTo<WebInputElement>();
         !input.IsNull()) {
-      GetDataListSuggestions(input, &field->datalist_values,
-                             &field->datalist_labels);
+      GetDataListSuggestions(input, &field->datalist_options);
     }
   }
 

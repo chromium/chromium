@@ -795,8 +795,7 @@ class AutofillClient : public RiskDataLoader {
 
   // Update the data list values shown by the Autofill popup, if visible.
   virtual void UpdateAutofillPopupDataListValues(
-      const std::vector<std::u16string>& values,
-      const std::vector<std::u16string>& labels) = 0;
+      base::span<const SelectOption> datalist) = 0;
 
   // Informs the client that the popup needs to be kept alive. Call before
   // |UpdatePopup| to update the open popup in-place.

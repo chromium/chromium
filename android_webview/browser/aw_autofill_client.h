@@ -148,8 +148,7 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
       const autofill::AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override;
   void UpdateAutofillPopupDataListValues(
-      const std::vector<std::u16string>& values,
-      const std::vector<std::u16string>& labels) override;
+      base::span<const autofill::SelectOption> datalist) override;
   std::vector<autofill::Suggestion> GetPopupSuggestions() const override;
   void PinPopupView() override;
   autofill::AutofillClient::PopupOpenArgs GetReopenPopupArgs(

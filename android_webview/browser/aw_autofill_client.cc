@@ -284,8 +284,7 @@ void AwAutofillClient::ShowAutofillPopup(
 }
 
 void AwAutofillClient::UpdateAutofillPopupDataListValues(
-    const std::vector<std::u16string>& values,
-    const std::vector<std::u16string>& labels) {
+    base::span<const autofill::SelectOption> datalist) {
   // Leaving as an empty method since updating autofill popup window
   // dynamically does not seem to be a useful feature for android webview.
   // See crrev.com/18102002 if need to implement.

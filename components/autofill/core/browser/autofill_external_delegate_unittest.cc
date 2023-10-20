@@ -60,11 +60,14 @@ namespace autofill {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Matcher;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::SizeIs;
 using ::testing::StartsWith;
 
 constexpr auto kDefaultTriggerSource =
@@ -166,8 +169,7 @@ class MockAutofillClient : public TestAutofillClient {
               (override));
   MOCK_METHOD(void,
               UpdateAutofillPopupDataListValues,
-              (const std::vector<std::u16string>& values,
-               const std::vector<std::u16string>& labels),
+              (base::span<const SelectOption> options),
               (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
   MOCK_METHOD(void,
@@ -684,13 +686,11 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
   IssueOnQuery();
 
-  std::vector<std::u16string> data_list_items;
+  std::vector<SelectOption> data_list_items;
   data_list_items.emplace_back();
 
-  EXPECT_CALL(autofill_client_, UpdateAutofillPopupDataListValues(
-                                    data_list_items, data_list_items));
-  external_delegate_->SetCurrentDataListValues(data_list_items,
-                                               data_list_items);
+  EXPECT_CALL(autofill_client_, UpdateAutofillPopupDataListValues(SizeIs(1)));
+  external_delegate_->SetCurrentDataListValues(data_list_items);
 
   // This should call ShowAutofillPopup.
   const auto kExpectedSuggestions =
@@ -730,13 +730,11 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
 
   // Make sure just setting the data list values doesn't cause the popup to
   // appear.
-  std::vector<std::u16string> data_list_items;
+  std::vector<SelectOption> data_list_items;
   data_list_items.emplace_back();
 
-  EXPECT_CALL(autofill_client_, UpdateAutofillPopupDataListValues(
-                                    data_list_items, data_list_items));
-  external_delegate_->SetCurrentDataListValues(data_list_items,
-                                               data_list_items);
+  EXPECT_CALL(autofill_client_, UpdateAutofillPopupDataListValues(SizeIs(1)));
+  external_delegate_->SetCurrentDataListValues(data_list_items);
 
   // Ensure the popup is displayed.
   const auto kExpectedSuggestions =
@@ -764,10 +762,8 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
   // Update the current data list and ensure the popup is updated.
   data_list_items.emplace_back();
 
-  EXPECT_CALL(autofill_client_, UpdateAutofillPopupDataListValues(
-                                    data_list_items, data_list_items));
-  external_delegate_->SetCurrentDataListValues(data_list_items,
-                                               data_list_items);
+  EXPECT_CALL(autofill_client_, UpdateAutofillPopupDataListValues(SizeIs(2)));
+  external_delegate_->SetCurrentDataListValues(data_list_items);
 }
 
 // Test that we _don't_ de-dupe autofill values against datalist values. We
@@ -775,13 +771,16 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
 TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
   IssueOnQuery();
 
-  std::vector<std::u16string> data_list_values{u"Rick", u"Beyonce"};
-  std::vector<std::u16string> data_list_labels{u"Deckard", u"Knowles"};
-
-  EXPECT_CALL(autofill_client_, UpdateAutofillPopupDataListValues(
-                                    data_list_values, data_list_labels));
-  external_delegate_->SetCurrentDataListValues(data_list_values,
-                                               data_list_labels);
+  std::vector<SelectOption> datalist{
+      {.value = u"Rick", .content = u"Deckard"},
+      {.value = u"Beyonce", .content = u"Knowles"}};
+  EXPECT_CALL(autofill_client_,
+              UpdateAutofillPopupDataListValues(ElementsAre(
+                  AllOf(Field(&SelectOption::value, u"Rick"),
+                        Field(&SelectOption::content, u"Deckard")),
+                  AllOf(Field(&SelectOption::value, u"Beyonce"),
+                        Field(&SelectOption::content, u"Knowles")))));
+  external_delegate_->SetCurrentDataListValues(datalist);
 
   const auto kExpectedSuggestions = SuggestionVectorIdsAre(
       PopupItemId::kDatalistEntry, PopupItemId::kDatalistEntry,
@@ -812,13 +811,16 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
 TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
   IssueOnQuery();
 
-  std::vector<std::u16string> data_list_values{u"Rick", u"Beyonce"};
-  std::vector<std::u16string> data_list_labels{u"Deckard", u"Knowles"};
-
-  EXPECT_CALL(autofill_client_, UpdateAutofillPopupDataListValues(
-                                    data_list_values, data_list_labels));
-  external_delegate_->SetCurrentDataListValues(data_list_values,
-                                               data_list_labels);
+  std::vector<SelectOption> datalist{
+      {.value = u"Rick", .content = u"Deckard"},
+      {.value = u"Beyonce", .content = u"Knowles"}};
+  EXPECT_CALL(autofill_client_,
+              UpdateAutofillPopupDataListValues(ElementsAre(
+                  AllOf(Field(&SelectOption::value, u"Rick"),
+                        Field(&SelectOption::content, u"Deckard")),
+                  AllOf(Field(&SelectOption::value, u"Beyonce"),
+                        Field(&SelectOption::content, u"Knowles")))));
+  external_delegate_->SetCurrentDataListValues(datalist);
 
   const auto kExpectedSuggestions = SuggestionVectorIdsAre(
       // We are expecting only two data list entries.

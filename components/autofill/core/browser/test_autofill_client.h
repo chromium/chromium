@@ -443,8 +443,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   void UpdateAutofillPopupDataListValues(
-      const std::vector<std::u16string>& values,
-      const std::vector<std::u16string>& labels) override {}
+      base::span<const SelectOption> options) override {}
 
   std::vector<Suggestion> GetPopupSuggestions() const override { return {}; }
 

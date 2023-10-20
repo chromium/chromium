@@ -258,8 +258,7 @@ class MockAutofillClient : public autofill::AutofillClient {
               (override));
   MOCK_METHOD(void,
               UpdateAutofillPopupDataListValues,
-              (const std::vector<std::u16string>&,
-               const std::vector<std::u16string>&),
+              (base::span<const autofill::SelectOption>),
               (override));
   MOCK_METHOD(void, PinPopupView, (), (override));
   MOCK_METHOD(PopupOpenArgs,

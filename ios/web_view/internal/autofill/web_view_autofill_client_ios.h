@@ -118,8 +118,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
       const AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<AutofillPopupDelegate> delegate) override;
   void UpdateAutofillPopupDataListValues(
-      const std::vector<std::u16string>& values,
-      const std::vector<std::u16string>& labels) override;
+      base::span<const autofill::SelectOption> datalist) override;
   std::vector<Suggestion> GetPopupSuggestions() const override;
   void PinPopupView() override;
   AutofillClient::PopupOpenArgs GetReopenPopupArgs(

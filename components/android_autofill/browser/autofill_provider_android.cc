@@ -120,10 +120,10 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
     StartNewSession(manager, form, field, bounding_box);
   }
 
-  if (field.datalist_values.empty()) {
+  if (field.datalist_options.empty()) {
     return;
   }
-  bridge_->ShowDatalistPopup(field.datalist_values, field.datalist_labels,
+  bridge_->ShowDatalistPopup(field.datalist_options,
                              field.text_direction == base::i18n::RIGHT_TO_LEFT);
 }
 

@@ -243,10 +243,9 @@ bool StructTraits<
   if (!data.ReadBounds(&out->bounds))
     return false;
 
-  if (!data.ReadDatalistValues(&out->datalist_values))
+  if (!data.ReadDatalistOptions(&out->datalist_options)) {
     return false;
-  if (!data.ReadDatalistLabels(&out->datalist_labels))
-    return false;
+  }
 
   out->force_override = data.force_override();
 

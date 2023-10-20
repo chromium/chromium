@@ -981,15 +981,13 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
       "value='2'></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::vector<std::u16string> values;
-  std::vector<std::u16string> labels;
-  GetDataListSuggestions(web_control, &values, &labels);
-  ASSERT_EQ(values.size(), 2u);
-  ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], u"1");
-  EXPECT_EQ(values[1], u"2");
-  EXPECT_EQ(labels[0], u"");
-  EXPECT_EQ(labels[1], u"");
+  std::vector<SelectOption> options;
+  GetDataListSuggestions(web_control, &options);
+  ASSERT_EQ(options.size(), 2u);
+  EXPECT_EQ(options[0].value, u"1");
+  EXPECT_EQ(options[1].value, u"2");
+  EXPECT_EQ(options[0].content, u"");
+  EXPECT_EQ(options[1].content, u"");
 }
 
 TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
@@ -999,15 +997,13 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::vector<std::u16string> values;
-  std::vector<std::u16string> labels;
-  GetDataListSuggestions(web_control, &values, &labels);
-  ASSERT_EQ(values.size(), 2u);
-  ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], u"1");
-  EXPECT_EQ(values[1], u"2");
-  EXPECT_EQ(labels[0], u"one");
-  EXPECT_EQ(labels[1], u"two");
+  std::vector<SelectOption> options;
+  GetDataListSuggestions(web_control, &options);
+  ASSERT_EQ(options.size(), 2u);
+  EXPECT_EQ(options[0].value, u"1");
+  EXPECT_EQ(options[1].value, u"2");
+  EXPECT_EQ(options[0].content, u"one");
+  EXPECT_EQ(options[1].content, u"two");
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractDataList) {
@@ -1023,16 +1019,13 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
       web_control, /*field_data_manager=*/nullptr, {ExtractOption::kDatalist},
       &form_data, &form_field_data));
 
-  auto& values = form_data.fields.back().datalist_values;
-  auto& labels = form_data.fields.back().datalist_labels;
-  ASSERT_EQ(values.size(), 2u);
-  ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], u"1");
-  EXPECT_EQ(values[1], u"2");
-  EXPECT_EQ(labels[0], u"one");
-  EXPECT_EQ(labels[1], u"two");
-  EXPECT_EQ(form_field_data.datalist_values, values);
-  EXPECT_EQ(form_field_data.datalist_labels, labels);
+  auto& options = form_data.fields.back().datalist_options;
+  ASSERT_EQ(options.size(), 2u);
+  EXPECT_EQ(options[0].value, u"1");
+  EXPECT_EQ(options[1].value, u"2");
+  EXPECT_EQ(options[0].content, u"one");
+  EXPECT_EQ(options[1].content, u"two");
+  EXPECT_EQ(form_field_data.datalist_options.size(), options.size());
 }
 
 TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
@@ -1047,9 +1040,7 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
   ASSERT_TRUE(FindFormAndFieldForFormControlElement(
       web_control, /*field_data_manager=*/nullptr, /*extract_options=*/{},
       &form_data, &form_field_data));
-
-  EXPECT_TRUE(form_data.fields.back().datalist_values.empty());
-  EXPECT_TRUE(form_data.fields.back().datalist_labels.empty());
+  EXPECT_TRUE(form_data.fields.back().datalist_options.empty());
 }
 
 // Tests the visibility detection of iframes.

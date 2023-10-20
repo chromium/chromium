@@ -72,12 +72,11 @@ void AutofillPopupControllerImplMac::Show(
 }
 
 void AutofillPopupControllerImplMac::UpdateDataListValues(
-    const std::vector<std::u16string>& values,
-    const std::vector<std::u16string>& labels) {
+    base::span<const SelectOption> options) {
   if (touch_bar_controller_)
     [touch_bar_controller_ invalidateTouchBar];
 
-  AutofillPopupControllerImpl::UpdateDataListValues(values, labels);
+  AutofillPopupControllerImpl::UpdateDataListValues(options);
   // No code below this line!
   // |UpdateDataListValues| may hide the popup and destroy |this|, so
   // |UpdateDataListValues| should be the last line.

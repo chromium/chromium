@@ -440,8 +440,7 @@ ChromeAutofillClientIOS::GetPlusAddressService() {
 }
 
 void ChromeAutofillClientIOS::UpdateAutofillPopupDataListValues(
-    const std::vector<std::u16string>& values,
-    const std::vector<std::u16string>& labels) {
+    base::span<const autofill::SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.
 }
 

@@ -121,9 +121,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   virtual void OnAutofillAvailabilityEvent(const mojom::AutofillState state);
 
   // Set the data list value associated with the current field.
-  void SetCurrentDataListValues(
-      const std::vector<std::u16string>& data_list_values,
-      const std::vector<std::u16string>& data_list_labels);
+  void SetCurrentDataListValues(std::vector<SelectOption> datalist);
 
   // Inform the delegate that the text field editing has ended. This is
   // used to help record the metrics of when a new popup is shown.
@@ -225,8 +223,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   bool should_show_cards_from_account_option_ = false;
 
   // The current data list values.
-  std::vector<std::u16string> data_list_values_;
-  std::vector<std::u16string> data_list_labels_;
+  std::vector<SelectOption> datalist_;
 
   // If not null then it will be called in destructor.
   base::OnceClosure deletion_callback_;

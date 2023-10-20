@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -67,9 +68,9 @@ class AutofillProviderAndroidBridge {
   virtual void OnServerPredictionQueryDone(bool success) = 0;
 
   // Shows a Datalist popup.
-  virtual void ShowDatalistPopup(base::span<const std::u16string> values,
-                                 base::span<const std::u16string> labels,
-                                 bool is_rtl) = 0;
+  virtual void ShowDatalistPopup(
+      base::span<const autofill::SelectOption> options,
+      bool is_rtl) = 0;
 
   // Hides the Datalist popup, if any is showing.
   virtual void HideDatalistPopup() = 0;

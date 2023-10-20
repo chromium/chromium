@@ -94,8 +94,7 @@ class AutofillPopupControllerImpl
                     AutoselectFirstSuggestion autoselect_first_suggestion);
 
   // Updates the data list values currently shown with the popup.
-  virtual void UpdateDataListValues(const std::vector<std::u16string>& values,
-                                    const std::vector<std::u16string>& labels);
+  virtual void UpdateDataListValues(base::span<const SelectOption> options);
 
   // Informs the controller that the popup may not be hidden by stale data or
   // interactions with native Chrome UI. This state remains active until the

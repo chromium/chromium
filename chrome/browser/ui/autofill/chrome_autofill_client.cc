@@ -1044,10 +1044,9 @@ void ChromeAutofillClient::ShowAutofillPopup(
 }
 
 void ChromeAutofillClient::UpdateAutofillPopupDataListValues(
-    const std::vector<std::u16string>& values,
-    const std::vector<std::u16string>& labels) {
+    base::span<const SelectOption> options) {
   if (popup_controller_.get())
-    popup_controller_->UpdateDataListValues(values, labels);
+    popup_controller_->UpdateDataListValues(options);
 }
 
 std::vector<Suggestion> ChromeAutofillClient::GetPopupSuggestions() const {
