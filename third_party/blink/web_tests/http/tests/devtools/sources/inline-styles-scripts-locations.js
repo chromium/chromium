@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Bindings from 'devtools/models/bindings/bindings.js';
 import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
@@ -34,9 +35,9 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     }
     async function getLocations(line) {
       if (type === "css")
-        return Bindings.cssWorkspaceBinding.uiLocationToRawLocations(source.uiLocation(line, 0));
+        return Bindings.CSSWorkspaceBinding.CSSWorkspaceBinding.instance().uiLocationToRawLocations(source.uiLocation(line, 0));
       if (type === "script")
-        return await Bindings.debuggerWorkspaceBinding.uiLocationToRawLocations(source, line, 0);
+        return await Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().uiLocationToRawLocations(source, line, 0);
       return null;
     }
     async function checkValidity(location) {

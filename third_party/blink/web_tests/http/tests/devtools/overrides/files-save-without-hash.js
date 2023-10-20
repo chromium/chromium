@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as Host from 'devtools/core/host/host.js';
 import * as Persistence from 'devtools/models/persistence/persistence.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 

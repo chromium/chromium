@@ -6,7 +6,7 @@ import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
-import * as BindingsModule from 'devtools/models/bindings/bindings.js';
+import * as Bindings from 'devtools/models/bindings/bindings.js';
 import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
@@ -22,12 +22,12 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   headers.sort((a, b) => a.startLine - b.startLine);
   const styleSheets = headers.map(header => header.id);
   const scripts = TestRunner.debuggerModel.scriptsForSourceURL(uiSourceCode.url());
-  const locationPool = new BindingsModule.LiveLocation.LiveLocationPool();
+  const locationPool = new Bindings.LiveLocation.LiveLocationPool();
   let i = 0;
   const locationUpdates = new Map();
   for (const script of scripts) {
     const rawLocation = TestRunner.debuggerModel.createRawLocation(script, script.lineOffset, script.columnOffset);
-    await Bindings.debuggerWorkspaceBinding.createLiveLocation(
+    await Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().createLiveLocation(
       rawLocation, updateDelegate.bind(null, 'script' + i), locationPool);
     i++;
   }
@@ -36,7 +36,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   for (const styleSheetId of styleSheets) {
     const header = TestRunner.cssModel.styleSheetHeaderForId(styleSheetId);
     const rawLocation = new SDK.CSSModel.CSSLocation(header, header.startLine, header.startColumn);
-    await Bindings.cssWorkspaceBinding.createLiveLocation(
+    await Bindings.CSSWorkspaceBinding.CSSWorkspaceBinding.instance().createLiveLocation(
       rawLocation, updateDelegate.bind(null, 'style' + i), locationPool);
     i++;
   }

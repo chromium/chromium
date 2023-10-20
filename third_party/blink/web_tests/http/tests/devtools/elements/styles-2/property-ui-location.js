@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Bindings from 'devtools/models/bindings/bindings.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
@@ -32,11 +33,11 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       for (var property of properties) {
         if (!property.range)
           continue;
-        var uiLocation = Bindings.cssWorkspaceBinding.propertyUILocation(property, true);
+        var uiLocation = Bindings.CSSWorkspaceBinding.CSSWorkspaceBinding.instance().propertyUILocation(property, true);
         TestRunner.addResult(String.sprintf(
             '%s -> %s:%d:%d', property.name, uiLocation.uiSourceCode.name(), uiLocation.lineNumber,
             uiLocation.columnNumber));
-        var uiLocation = Bindings.cssWorkspaceBinding.propertyUILocation(property, false);
+        var uiLocation = Bindings.CSSWorkspaceBinding.CSSWorkspaceBinding.instance().propertyUILocation(property, false);
         TestRunner.addResult(String.sprintf(
             '%s -> %s:%d:%d', property.value, uiLocation.uiSourceCode.name(), uiLocation.lineNumber,
             uiLocation.columnNumber));

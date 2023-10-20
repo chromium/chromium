@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Bindings from 'devtools/models/bindings/bindings.js'
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
@@ -21,7 +22,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
 
   function uiLocation(script, line, column) {
     var location = script.debuggerModel.createRawLocation(script, line, column);
-    return Bindings.debuggerWorkspaceBinding.rawLocationToUILocation(location);
+    return Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().rawLocationToUILocation(location);
   }
 
   TestRunner.runTestSuite([
@@ -65,11 +66,11 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
         SourcesTestRunner.checkUILocation(originalUISourceCode, 1, 200, await uiLocation(script, 1, 200));
 
         SourcesTestRunner.checkRawLocation(
-            script, 0, 48, (await Bindings.debuggerWorkspaceBinding.uiLocationToRawLocations(uiSourceCode1, 3, 10))[0]);
+            script, 0, 48, (await Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().uiLocationToRawLocations(uiSourceCode1, 3, 10))[0]);
         SourcesTestRunner.checkRawLocation(
-            script, 1, 85, (await Bindings.debuggerWorkspaceBinding.uiLocationToRawLocations(uiSourceCode2, 1, 0))[0]);
+            script, 1, 85, (await Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().uiLocationToRawLocations(uiSourceCode2, 1, 0))[0]);
         SourcesTestRunner.checkRawLocation(
-            script, 1, 140, (await Bindings.debuggerWorkspaceBinding.uiLocationToRawLocations(uiSourceCode2, 5, 2))[0]);
+            script, 1, 140, (await Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().uiLocationToRawLocations(uiSourceCode2, 5, 2))[0]);
 
         TestRunner.addResult('Location checks passed. Requesting content');
         uiSourceCode1.requestContent().then(didRequestContent1);
@@ -121,7 +122,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
         TestRunner.addResult('source3.js UISourceCode arrived');
         SourcesTestRunner.checkUILocation(uiSourceCode, 2, 4, await uiLocation(script, 0, 18));
         SourcesTestRunner.checkRawLocation(
-            script, 0, 18, (await Bindings.debuggerWorkspaceBinding.uiLocationToRawLocations(uiSourceCode, 2, 4))[0]);
+            script, 0, 18, (await Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().uiLocationToRawLocations(uiSourceCode, 2, 4))[0]);
 
         TestRunner.addResult('Location checks passed. Requesting content');
         uiSourceCode.requestContent().then(didRequestContent);

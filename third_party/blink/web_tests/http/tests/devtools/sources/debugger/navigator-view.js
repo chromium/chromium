@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {SDKTestRunner} from 'sdk_test_runner';
 
+import * as Bindings from 'devtools/models/bindings/bindings.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
@@ -17,8 +18,8 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   await TestRunner.addIframe(
       'resources/post-message-listener.html', {name: 'childframe'});
 
-  Bindings.debuggerWorkspaceBinding.resetForTest(TestRunner.mainTarget);
-  Bindings.resourceMapping.resetForTest(TestRunner.mainTarget);
+  Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().resetForTest(TestRunner.mainTarget);
+  Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().resourceMapping.resetForTest(TestRunner.mainTarget);
 
   var subframe = TestRunner.mainFrame().childFrames[0];
 
@@ -157,7 +158,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   TestRunner.addResult('Removing all resources:');
   for (const target of SDK.TargetManager.TargetManager.instance().targets()) {
     if (target !== TestRunner.mainTarget)
-      Bindings.debuggerWorkspaceBinding.resetForTest(target);
+      Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().resetForTest(target);
   }
   SourcesTestRunner.dumpNavigatorViewInAllModes(sourcesNavigatorView);
   SourcesTestRunner.dumpNavigatorViewInAllModes(contentScriptsNavigatorView);
