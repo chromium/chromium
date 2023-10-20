@@ -163,8 +163,37 @@ export class NetworkProcessor {
     return {};
   }
 
-  provideResponse(_params: Network.ProvideResponseParameters): EmptyResult {
-    throw new UnknownCommandException('Not implemented yet.');
+  async provideResponse(
+    params: Network.ProvideResponseParameters
+  ): Promise<EmptyResult> {
+    const networkId = params.request;
+    const {request: fetchId} = this.#getBlockedRequest(networkId);
+
+    const {statusCode, reasonPhrase, headers, body} = params;
+
+    // TODO: Step 6
+    // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
+
+    const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
+      cdpFetchHeadersFromBidiNetworkHeaders(headers);
+
+    // TODO: Set / expand.
+    // ; Step 10. cookies
+    // ; Step 11. credentials
+    const request = this.#networkStorage.getRequest(networkId);
+    assert(request, `Network request with ID ${networkId} doesn't exist`);
+
+    await request.provideResponse(
+      fetchId,
+      statusCode ?? request.statusCode,
+      reasonPhrase,
+      responseHeaders,
+      body?.value // TODO: Differ base64 / string
+    );
+
+    this.#networkStorage.removeBlockedRequest(networkId);
+
+    return {};
   }
 
   async removeIntercept(

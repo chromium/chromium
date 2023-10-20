@@ -326,6 +326,25 @@ export class NetworkRequest {
     this.#interceptPhase = undefined;
   }
 
+  /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
+  async provideResponse(
+    cdpFetchRequestId: Protocol.Fetch.RequestId,
+    responseCode: JsUint,
+    responsePhrase?: string,
+    responseHeaders?: Protocol.Fetch.HeaderEntry[],
+    body?: string
+  ) {
+    await this.#cdpTarget.cdpClient.sendCommand('Fetch.fulfillRequest', {
+      requestId: cdpFetchRequestId,
+      responseCode,
+      responsePhrase,
+      responseHeaders,
+      ...(body ? {body: btoa(body)} : {}), // TODO: Double-check if btoa usage is correct.
+    });
+
+    this.#interceptPhase = undefined;
+  }
+
   dispose() {
     const result = {
       kind: 'error' as const,
@@ -337,6 +356,15 @@ export class NetworkRequest {
 
   get #context() {
     return this.#request.info?.frameId ?? null;
+  }
+
+  /** Returns the HTTP status code associated with this request if any. */
+  get statusCode(): number {
+    return (
+      this.#response.extraInfo?.statusCode ??
+      this.#response.info?.response.status ??
+      200 // TODO: Throw an exception or use some other status code?
+    );
   }
 
   #getBaseEventParams(phase?: Network.InterceptPhase): Network.BaseParameters {
@@ -486,9 +514,7 @@ export class NetworkRequest {
         response: {
           url: this.#response.info.response.url ?? NetworkRequest.#unknown,
           protocol: this.#response.info.response.protocol ?? '',
-          status:
-            this.#response.extraInfo?.statusCode ??
-            this.#response.info.response.status,
+          status: this.statusCode,
           statusText: this.#response.info.response.statusText,
           fromCache:
             this.#response.info.response.fromDiskCache ||

@@ -24,7 +24,7 @@ from . import create_blocked_request
 
 
 @pytest.mark.asyncio
-async def test_continue_response_non_existent_request(websocket):
+async def test_provide_response_non_existent_request(websocket):
     with pytest.raises(
             Exception,
             match=str({
@@ -33,7 +33,7 @@ async def test_continue_response_non_existent_request(websocket):
             })):
         await execute_command(
             websocket, {
-                "method": "network.continueResponse",
+                "method": "network.provideResponse",
                 "params": {
                     "request": '_UNKNOWN_',
                 },
@@ -41,31 +41,27 @@ async def test_continue_response_non_existent_request(websocket):
 
 
 @pytest.mark.asyncio
-async def test_continue_response_invalid_phase(websocket, context_id,
-                                               example_url):
+async def test_provide_response_beforeRequestSent_is_valid_phase(
+        websocket, context_id, example_url):
     network_id = await create_blocked_request(websocket,
                                               context_id,
                                               url=example_url,
                                               phases=["beforeRequestSent"])
 
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "invalid argument",
-                "message": f"Blocked request for network id '{network_id}' is in 'BeforeRequestSent' phase"
-            })):
-        await execute_command(
-            websocket, {
-                "method": "network.continueResponse",
-                "params": {
-                    "request": network_id
-                },
-            })
+    # No exception should be thrown.
+    await execute_command(
+        websocket, {
+            "method": "network.provideResponse",
+            "params": {
+                "request": network_id,
+                "statusCode": 200,
+            },
+        })
 
 
 @pytest.mark.asyncio
-async def test_continue_response_invalid_status_code(websocket, context_id,
-                                                     example_url):
+async def test_provide_response_invalid_status_code(websocket, context_id,
+                                                    example_url):
     network_id = await create_blocked_request(websocket,
                                               context_id,
                                               url=example_url,
@@ -80,7 +76,7 @@ async def test_continue_response_invalid_status_code(websocket, context_id,
                 }))):
         await execute_command(
             websocket, {
-                "method": "network.continueResponse",
+                "method": "network.provideResponse",
                 "params": {
                     "request": network_id,
                     "statusCode": -1,
@@ -89,8 +85,8 @@ async def test_continue_response_invalid_status_code(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_continue_response_invalid_reason_phrase(websocket, context_id,
-                                                       example_url):
+async def test_provide_response_invalid_reason_phrase(websocket, context_id,
+                                                      example_url):
     network_id = await create_blocked_request(websocket,
                                               context_id,
                                               url=example_url,
@@ -104,7 +100,7 @@ async def test_continue_response_invalid_reason_phrase(websocket, context_id,
             })):
         await execute_command(
             websocket, {
-                "method": "network.continueResponse",
+                "method": "network.provideResponse",
                 "params": {
                     "request": network_id,
                     "reasonPhrase": [],
@@ -113,8 +109,8 @@ async def test_continue_response_invalid_reason_phrase(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_continue_response_invalid_headers(websocket, context_id,
-                                                 example_url):
+async def test_provide_response_invalid_headers(websocket, context_id,
+                                                example_url):
     network_id = await create_blocked_request(websocket,
                                               context_id,
                                               url=example_url,
@@ -128,7 +124,7 @@ async def test_continue_response_invalid_headers(websocket, context_id,
             })):
         await execute_command(
             websocket, {
-                "method": "network.continueResponse",
+                "method": "network.provideResponse",
                 "params": {
                     "request": network_id,
                     "headers": "",
@@ -137,9 +133,35 @@ async def test_continue_response_invalid_headers(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_continue_response_non_blocked_request(websocket, context_id,
-                                                     assert_no_events_in_queue,
-                                                     hang_url):
+async def test_provide_response_invalid_body(websocket, context_id,
+                                             example_url):
+    network_id = await create_blocked_request(websocket,
+                                              context_id,
+                                              url=example_url,
+                                              phases=["responseStarted"])
+
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": 'Invalid input in "body".'
+                       })):
+        await execute_command(
+            websocket, {
+                "method": "network.provideResponse",
+                "params": {
+                    "request": network_id,
+                    "body": {
+                        "type": "string",
+                        "value": 42,
+                    },
+                },
+            })
+
+
+@pytest.mark.asyncio
+async def test_provide_response_non_blocked_request(websocket, context_id,
+                                                    assert_no_events_in_queue,
+                                                    hang_url):
     await subscribe(websocket, [
         "network.beforeRequestSent", "cdp.Network.responseReceived",
         "cdp.Network.loadingFailed"
@@ -175,80 +197,15 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
             })):
         await execute_command(
             websocket, {
-                "method": "network.continueResponse",
+                "method": "network.provideResponse",
                 "params": {
                     "request": network_id,
                 },
             })
 
 
-@pytest.mark.parametrize("continueResponseParams", [
-    {
-        "headers": [{
-            "name": "header1",
-            "value": {
-                "type": "string",
-                "value": "value1",
-            }
-        }]
-    },
-    {
-        "statusCode": 401,
-    },
-],
-                         ids=["headers-only", "statusCode-only"])
 @pytest.mark.asyncio
-async def test_continue_response_must_specify_both_status_and_headers(
-        websocket, context_id, example_url, continueResponseParams):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
-
-    await execute_command(
-        websocket, {
-            "method": "network.addIntercept",
-            "params": {
-                "phases": ["responseStarted"],
-                "urlPatterns": [{
-                    "type": "string",
-                    "pattern": example_url,
-                }, ],
-            },
-        })
-
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": example_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
-
-    event_response = await wait_for_event(websocket,
-                                          "network.beforeRequestSent")
-    network_id = event_response["params"]["request"]["request"]
-
-    await subscribe(websocket, ["network.responseCompleted"])
-
-    # TODO(https://github.com/w3c/webdriver-bidi/issues/572): Follow up with spec.
-    with pytest.raises(
-            Exception,
-            match=str({
-                "error": "unknown error",
-                "message": "Cannot override only status or headers, both should be provided"
-            })):
-        await execute_command(
-            websocket, {
-                "method": "network.continueResponse",
-                "params": {
-                    "request": network_id,
-                    "reasonPhrase": "Remember to drink water",
-                } | continueResponseParams,
-            })
-
-
-@pytest.mark.asyncio
-async def test_continue_response_completes_use_cdp_events(
+async def test_provide_response_completes_use_cdp_events(
         websocket, context_id, example_url):
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
@@ -278,7 +235,7 @@ async def test_continue_response_completes_use_cdp_events(
 
     await execute_command(
         websocket, {
-            "method": "network.continueResponse",
+            "method": "network.provideResponse",
             "params": {
                 "request": network_id,
                 "statusCode": 501,
@@ -290,6 +247,10 @@ async def test_continue_response_completes_use_cdp_events(
                         "value": "value1",
                     }
                 }],
+                "body": {
+                    "type": "string",
+                    "value": "my body",
+                },
             },
         })
 
@@ -322,7 +283,7 @@ async def test_continue_response_completes_use_cdp_events(
 
 
 @pytest.mark.asyncio
-async def test_continue_response_completes_use_bidi_events(
+async def test_provide_response_completes_use_bidi_events(
         websocket, context_id, example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
@@ -379,7 +340,7 @@ async def test_continue_response_completes_use_bidi_events(
 
     await execute_command(
         websocket, {
-            "method": "network.continueResponse",
+            "method": "network.provideResponse",
             "params": {
                 "request": network_id,
                 "statusCode": 501,
@@ -391,6 +352,10 @@ async def test_continue_response_completes_use_bidi_events(
                         "value": "value1",
                     }
                 }],
+                "body": {
+                    "type": "string",
+                    "value": "my body",
+                },
             },
         })
 
@@ -405,6 +370,7 @@ async def test_continue_response_completes_use_bidi_events(
             "redirectCount": 0,
             "request": ANY_DICT,
             "response": AnyExtending({
+                # TODO: Ensure body is "my body".
                 "headers": [{
                     "name": "header1",
                     "value": {
@@ -423,7 +389,7 @@ async def test_continue_response_completes_use_bidi_events(
 
 
 @pytest.mark.asyncio
-async def test_continue_response_twice(websocket, context_id, example_url):
+async def test_provide_response_twice(websocket, context_id, example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     await execute_command(
@@ -479,9 +445,10 @@ async def test_continue_response_twice(websocket, context_id, example_url):
 
     await execute_command(
         websocket, {
-            "method": "network.continueResponse",
+            "method": "network.provideResponse",
             "params": {
                 "request": network_id,
+                "statusCode": 200,
             },
         })
 
@@ -496,15 +463,16 @@ async def test_continue_response_twice(websocket, context_id, example_url):
             })):
         await execute_command(
             websocket, {
-                "method": "network.continueResponse",
+                "method": "network.provideResponse",
                 "params": {
                     "request": network_id,
+                    "statusCode": 200,
                 },
             })
 
 
 @pytest.mark.asyncio
-async def test_continue_response_remove_intercept_inflight_request(
+async def test_provide_response_remove_intercept_inflight_request(
         websocket, context_id, example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
@@ -531,7 +499,6 @@ async def test_continue_response_remove_intercept_inflight_request(
             "params": {
                 "url": example_url,
                 "context": context_id,
-                "wait": "complete",
             }
         })
 
@@ -576,9 +543,10 @@ async def test_continue_response_remove_intercept_inflight_request(
 
     await execute_command(
         websocket, {
-            "method": "network.continueResponse",
+            "method": "network.provideResponse",
             "params": {
                 "request": network_id,
+                "statusCode": 200,
             },
         })
 
