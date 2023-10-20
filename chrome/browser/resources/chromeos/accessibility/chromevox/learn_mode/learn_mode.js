@@ -45,8 +45,8 @@ export class LearnMode {
     chrome.accessibilityPrivate.onAccessibilityGesture.addListener(
         LearnMode.onAccessibilityGesture);
     chrome.accessibilityPrivate.setKeyboardListener(true, true);
-    BackgroundBridge.Braille.enableCommandHandler(false);
-    BackgroundBridge.GestureCommandHandler.setEnabled(false);
+    BackgroundBridge.Braille.setBypass(true);
+    BackgroundBridge.GestureCommandHandler.setBypass(true);
 
     ChromeVoxKbHandler.commandHandler = LearnMode.onCommand;
 
@@ -316,8 +316,8 @@ export class LearnMode {
     chrome.accessibilityPrivate.onAccessibilityGesture.removeListener(
         LearnMode.onAccessibilityGesture);
     chrome.accessibilityPrivate.setKeyboardListener(true, false);
-    BackgroundBridge.Braille.enableCommandHandler(true);
-    BackgroundBridge.GestureCommandHandler.setEnabled(true);
+    BackgroundBridge.Braille.setBypass(false);
+    BackgroundBridge.GestureCommandHandler.setBypass(false);
   }
 
   /** @private */

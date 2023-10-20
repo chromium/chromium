@@ -217,7 +217,7 @@ AX_TEST_F(
     'ChromeVoxLearnModeTest', 'CommandHandlersDisabled', async function() {
       const [mockFeedback, evt] = await this.runOnLearnModePage();
       await LearnModeBridge.ready();
-      assertFalse(BrailleCommandHandler.instance.enabled_);
-      assertFalse(GestureCommandHandler.instance.enabled_);
+      assertTrue(BrailleCommandHandler.instance.bypassed_);
+      assertTrue(GestureCommandHandler.instance.bypassed_);
       await mockFeedback.replay();
     });

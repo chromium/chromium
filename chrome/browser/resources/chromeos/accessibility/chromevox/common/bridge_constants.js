@@ -39,9 +39,9 @@ BridgeConstants.Braille = {
   TARGET: 'Braille',
   Action: {
     BACK_TRANSLATE: 'backTranslate',
-    ENABLE_COMMAND_HANDLER: 'enableCommandHandler',
     PAN_LEFT: 'panLeft',
     PAN_RIGHT: 'panRight',
+    SET_BYPASS: 'setBypass',
     WRITE: 'write',
   },
 };
@@ -102,7 +102,7 @@ BridgeConstants.EventStreamLogger = {
 BridgeConstants.GestureCommandHandler = {
   TARGET: 'GestureCommandHandler',
   Action: {
-    SET_ENABLED: 'setEnabled',
+    SET_BYPASS: 'setBypass',
   },
 };
 

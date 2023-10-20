@@ -28,7 +28,7 @@ export class GestureCommandHandler {
   /** @private */
   constructor() {
     /** @private {boolean} */
-    this.enabled_ = true;
+    this.bypassed_ = false;
     /** @private {GestureGranularity} */
     this.granularity_ = GestureGranularity.LINE;
     /** @private {!PointerHandler} */
@@ -51,18 +51,22 @@ export class GestureCommandHandler {
 
     BridgeHelper.registerHandler(
         BridgeConstants.GestureCommandHandler.TARGET,
-        BridgeConstants.GestureCommandHandler.Action.SET_ENABLED,
-        enabled => GestureCommandHandler.setEnabled(enabled));
+        BridgeConstants.GestureCommandHandler.Action.SET_BYPASS,
+        bypassed => GestureCommandHandler.setBypass(bypassed));
   }
 
   /** @return {boolean} */
   static getEnabled() {
-    return GestureCommandHandler.instance.enabled_;
+    return !GestureCommandHandler.instance.bypassed_;
   }
 
-  /** @param {boolean} state */
-  static setEnabled(state) {
-    GestureCommandHandler.instance.enabled_ = state;
+  /**
+   * Used by LearnMode to capture the events and prevent the standard behavior,
+   * in favor of reporting what that would behavior would be.
+   * @param {boolean} state
+   */
+  static setBypass(state) {
+    GestureCommandHandler.instance.bypassed_ = state;
   }
 
 
@@ -75,7 +79,7 @@ export class GestureCommandHandler {
    * @private
    */
   onAccessibilityGesture_(gesture, x, y) {
-    if (!this.enabled_) {
+    if (this.bypassed_) {
       return;
     }
 

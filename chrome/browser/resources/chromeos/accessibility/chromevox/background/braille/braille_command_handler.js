@@ -34,7 +34,7 @@ export class BrailleCommandHandler {
   /** @private */
   constructor() {
     /** @private {boolean} */
-    this.enabled_ = true;
+    this.bypassed_ = false;
   }
 
   static init() {
@@ -46,11 +46,14 @@ export class BrailleCommandHandler {
   }
 
   /**
-   * Global setting for the enabled state of this handler.
+   * Global setting for bypassing this handler.
+   *
+   * Used by LearnMode to capture the events and prevent the standard behavior,
+   * in favor of reporting what that behavior would be.
    * @param {boolean} state
    */
-  static setEnabled(state) {
-    BrailleCommandHandler.instance.enabled_ = state;
+  static setBypass(state) {
+    BrailleCommandHandler.instance.bypassed_ = state;
   }
 
   /**
@@ -60,7 +63,8 @@ export class BrailleCommandHandler {
    * @return {boolean} True if evt was processed.
    */
   static onBrailleKeyEvent(evt, content) {
-    if (!BrailleCommandHandler.instance.enabled_) {
+    if (BrailleCommandHandler.instance.bypassed_) {
+      // Prevent any handling of the event when bypassed.
       return true;
     }
 
