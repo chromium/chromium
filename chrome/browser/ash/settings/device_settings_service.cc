@@ -157,6 +157,11 @@ void DeviceSettingsService::LoadIfNotPresent() {
 }
 
 void DeviceSettingsService::LoadImmediately() {
+  if (session_stopping_) {
+    LOG(WARNING) << "Fail the blocking request when the session is stopping";
+    // No need to HandleCompletedOperation, as there's no callback waiting.
+    return;
+  }
   std::unique_ptr<SessionManagerOperation> operation(new LoadSettingsOperation(
       /*request_key_load=*/true, /*force_immediate_load=*/true,
       base::BindOnce(&DeviceSettingsService::HandleCompletedOperation,
@@ -276,6 +281,10 @@ void DeviceSettingsService::PropertyChangeComplete(bool success) {
       !will_establish_consumer_ownership_) {
     EnsureReload(false);
   }
+}
+
+void DeviceSettingsService::SessionStopping() {
+  session_stopping_ = true;
 }
 
 void DeviceSettingsService::Enqueue(

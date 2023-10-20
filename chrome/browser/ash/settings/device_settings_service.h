@@ -235,6 +235,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // SessionManagerClient::Observer:
   void OwnerKeySet(bool success) override;
   void PropertyChangeComplete(bool success) override;
+  void SessionStopping() override;
 
  private:
   friend class OwnerSettingsServiceAsh;
@@ -309,6 +310,9 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
 
   // Whether the device will be establishing consumer ownership.
   bool will_establish_consumer_ownership_ = false;
+
+  // Whether we received the signal that the session is stopping.
+  bool session_stopping_ = false;
 
   std::unique_ptr<policy::off_hours::DeviceOffHoursController>
       device_off_hours_controller_;

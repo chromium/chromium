@@ -863,6 +863,12 @@ bool FakeSessionManagerClient::GetFlagsForUser(
   return true;
 }
 
+void FakeSessionManagerClient::NotifySessionStopping() const {
+  for (auto& observer : observers_) {
+    observer.SessionStopping();
+  }
+}
+
 const std::string& FakeSessionManagerClient::device_policy() const {
   login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
       login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);

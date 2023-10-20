@@ -109,6 +109,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
 
     // Called when a powerwash is requested.
     virtual void PowerwashRequested(bool admin_requested) {}
+
+    // Called when session stopping signal is received
+    virtual void SessionStopping() {}
   };
 
   // Interface for performing actions on behalf of the stub implementation.

@@ -129,4 +129,8 @@ void DeviceSettingsTestBase::InitOwner(const AccountId& account_id,
     service->OnTPMTokenReady();
 }
 
+void DeviceSettingsTestBase::SetSessionStopping() {
+  session_manager_client_.NotifySessionStopping();
+}
+
 }  // namespace ash

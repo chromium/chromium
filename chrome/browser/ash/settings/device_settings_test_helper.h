@@ -71,6 +71,8 @@ class DeviceSettingsTestBase : public testing::Test {
 
   void InitOwner(const AccountId& account_id, bool tpm_is_ready);
 
+  void SetSessionStopping();
+
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<policy::DevicePolicyBuilder> device_policy_;

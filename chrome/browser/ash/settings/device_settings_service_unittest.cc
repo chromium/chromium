@@ -148,6 +148,13 @@ TEST_F(DeviceSettingsServiceTest, LoadSuccess) {
   CheckPolicy();
 }
 
+TEST_F(DeviceSettingsServiceTest, LoadAfterSessionStopping) {
+  SetSessionStopping();
+  device_settings_service_->LoadImmediately();
+  EXPECT_FALSE(device_settings_service_->policy_data());
+  EXPECT_FALSE(device_settings_service_->device_settings());
+}
+
 TEST_F(DeviceSettingsServiceTest, StoreFailure) {
   owner_key_util_->Clear();
   session_manager_client_.set_device_policy(std::string());
