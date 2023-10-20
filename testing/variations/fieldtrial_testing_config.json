@@ -2481,23 +2481,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "params": {
-                        "BottomOmniboxDefaultSettingParam": "Top"
-                    },
-                    "enable_features": [
-                        "BottomOmniboxDefaultSetting",
-                        "BottomOmniboxSteadyState"
-                    ]
-                },
-                {
                     "name": "Enabled_ForSafariSwitcher",
                     "params": {
                         "BottomOmniboxDefaultSettingParam": "BottomSafariSwitcher"
                     },
                     "enable_features": [
-                        "BottomOmniboxDefaultSetting",
-                        "BottomOmniboxSteadyState"
+                        "BottomOmniboxDefaultSetting"
                     ]
                 }
             ]
