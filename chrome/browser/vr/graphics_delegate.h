@@ -10,14 +10,17 @@
 #include "chrome/browser/vr/fov_rectangle.h"
 #include "chrome/browser/vr/frame_type.h"
 #include "chrome/browser/vr/vr_export.h"
+#include "device/vr/public/mojom/vr_service.mojom-forward.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace gfx {
 class Transform;
+class RectF;
 }  // namespace gfx
 
-namespace gl {
-class GLSurface;
-}  // namespace gl
+namespace gpu {
+struct SyncToken;
+}  // namespace gpu
 
 namespace vr {
 
@@ -43,9 +46,19 @@ class VR_EXPORT GraphicsDelegate {
   virtual void PrepareBufferForBrowserUi() = 0;
   virtual void OnFinishedDrawingBuffer() = 0;
   virtual void GetWebXrDrawParams(int* texture_id, Transform* uv_transform) = 0;
+  virtual void SetXrViews(
+      const std::vector<device::mojom::XRViewPtr>& views) = 0;
+  virtual bool PreRender() = 0;
+  virtual void PostRender() = 0;
+  virtual mojo::PlatformHandle GetTexture() = 0;
+  virtual const gpu::SyncToken& GetSyncToken() = 0;
+  virtual gfx::RectF GetLeft() = 0;
+  virtual gfx::RectF GetRight() = 0;
+  virtual void ResetMemoryBuffer() = 0;
+  virtual bool BindContext() = 0;
+  virtual void ClearContext() = 0;
 
-  // These methods return true when succeeded.
-  virtual bool Initialize(const scoped_refptr<gl::GLSurface>& surface) = 0;
+  // This method returns true when succeeded.
   virtual bool RunInSkiaContext(base::OnceClosure callback) = 0;
 };
 

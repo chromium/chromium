@@ -86,10 +86,6 @@ class VR_EXPORT VRBrowserRendererThreadWin {
 
   void UpdateOverlayState();
 
-  // We need to do some initialization of GraphicsDelegateWin before
-  // browser_renderer_, so we first store it in a unique_ptr, then transition
-  // ownership to browser_renderer_.
-  std::unique_ptr<GraphicsDelegateWin> initializing_graphics_;
   std::unique_ptr<VRUiBrowserInterface> ui_browser_interface_;
   std::unique_ptr<BrowserRenderer> browser_renderer_;
   std::unique_ptr<SchedulerDelegateWin> scheduler_delegate_win_;

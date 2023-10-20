@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/browser_renderer.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "chrome/browser/vr/graphics_delegate.h"
 #include "chrome/browser/vr/input_delegate.h"
 #include "chrome/browser/vr/input_event.h"
@@ -95,11 +96,24 @@ class MockGraphicsDelegate : public GraphicsDelegate {
     using_buffer_ = false;
   }
   void GetWebXrDrawParams(int*, Transform*) override {}
-  bool Initialize(const scoped_refptr<gl::GLSurface>&) override { return true; }
   bool RunInSkiaContext(base::OnceClosure callback) override {
     std::move(callback).Run();
     return true;
   }
+
+  // TODO(https://crbug.com/1493735): Provide implementations during refactor
+  // as needed.
+  void SetXrViews(const std::vector<device::mojom::XRViewPtr>& views) override {
+  }
+  bool PreRender() override { return true; }
+  void PostRender() override {}
+  mojo::PlatformHandle GetTexture() override { NOTREACHED_NORETURN(); }
+  const gpu::SyncToken& GetSyncToken() override { NOTREACHED_NORETURN(); }
+  gfx::RectF GetLeft() override { return {}; }
+  gfx::RectF GetRight() override { return {}; }
+  void ResetMemoryBuffer() override {}
+  bool BindContext() override { return true; }
+  void ClearContext() override {}
 
  private:
   void UseBuffer() {

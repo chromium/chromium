@@ -224,11 +224,6 @@ component("vr_common") {
   }
 
   if (!use_command_buffer) {
-    sources += [
-      "base_graphics_delegate.cc",
-      "base_graphics_delegate.h",
-    ]
-    deps += [ "//ui/gl/init" ]
   }
 }
 

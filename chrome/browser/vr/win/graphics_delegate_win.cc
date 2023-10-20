@@ -21,11 +21,7 @@ constexpr float kZNear = 0.1f;
 constexpr float kZFar = 10000.0f;
 }  // namespace
 
-GraphicsDelegateWin::GraphicsDelegateWin() = default;
-
-GraphicsDelegateWin::~GraphicsDelegateWin() = default;
-
-bool GraphicsDelegateWin::InitializeOnMainThread() {
+GraphicsDelegateWin::GraphicsDelegateWin() {
   gpu::GpuChannelEstablishFactory* factory =
       content::GetGpuChannelEstablishFactory();
   scoped_refptr<gpu::GpuChannelHost> host = factory->EstablishGpuChannelSync();
@@ -41,17 +37,15 @@ bool GraphicsDelegateWin::InitializeOnMainThread() {
       gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
       viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
   gpu_memory_buffer_manager_ = factory->GetGpuMemoryBufferManager();
-  return true;
-}
 
-void GraphicsDelegateWin::InitializeOnGLThread() {
-  DCHECK(context_provider_);
   if (context_provider_->BindToCurrentSequence() ==
       gpu::ContextResult::kSuccess) {
     gl_ = context_provider_->ContextGL();
     sii_ = context_provider_->SharedImageInterface();
   }
 }
+
+GraphicsDelegateWin::~GraphicsDelegateWin() = default;
 
 bool GraphicsDelegateWin::BindContext() {
   if (!gl_)
@@ -335,16 +329,6 @@ void GraphicsDelegateWin::GetWebXrDrawParams(int* texture_id,
                                              Transform* uv_transform) {
   // Reporting a texture_id of 0 will skip texture copies.
   *texture_id = 0;
-}
-
-// These methods return true when succeeded.
-bool GraphicsDelegateWin::Initialize(
-    const scoped_refptr<gl::GLSurface>& surface) {
-  // Commandbuffer intialization is split between the main thread and the render
-  // thread.  Additionally, it can be async, so we can't really do intialization
-  // here - instead, we are initalized earlier.
-  NOTREACHED();
-  return false;
 }
 
 bool GraphicsDelegateWin::RunInSkiaContext(base::OnceClosure callback) {

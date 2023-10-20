@@ -36,24 +36,6 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   GraphicsDelegateWin();
   ~GraphicsDelegateWin() override;
 
-  // Called on main UI thread.
-  bool InitializeOnMainThread();
-
-  // Called on background GL thread.
-  void InitializeOnGLThread();
-  void SetXrViews(const std::vector<device::mojom::XRViewPtr>& views);
-  bool PreRender();
-  void PostRender();
-  mojo::PlatformHandle GetTexture();
-  const gpu::SyncToken& GetSyncToken();
-  gfx::RectF GetLeft();
-  gfx::RectF GetRight();
-  void ResetMemoryBuffer();
-  bool BindContext();
-  void ClearContext();
-  void UpdateViews(std::vector<device::mojom::XRViewPtr> views);
-
- private:
   // GraphicsDelegate:
   FovRectangles GetRecommendedFovs() override;
   float GetZNear() override;
@@ -66,9 +48,19 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   void PrepareBufferForBrowserUi() override;
   void OnFinishedDrawingBuffer() override;
   void GetWebXrDrawParams(int* texture_id, Transform* uv_transform) override;
-  bool Initialize(const scoped_refptr<gl::GLSurface>& surface) override;
   bool RunInSkiaContext(base::OnceClosure callback) override;
+  void SetXrViews(const std::vector<device::mojom::XRViewPtr>& views) override;
+  bool PreRender() override;
+  void PostRender() override;
+  mojo::PlatformHandle GetTexture() override;
+  const gpu::SyncToken& GetSyncToken() override;
+  gfx::RectF GetLeft() override;
+  gfx::RectF GetRight() override;
+  void ResetMemoryBuffer() override;
+  bool BindContext() override;
+  void ClearContext() override;
 
+ private:
   // Helpers:
   bool EnsureMemoryBuffer(int width, int height);
   gfx::Rect GetTextureSize();
