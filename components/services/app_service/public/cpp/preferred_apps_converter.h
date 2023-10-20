@@ -10,10 +10,6 @@
 
 namespace apps {
 
-extern const char kConditionTypeKey[];
-extern const char kConditionValuesKey[];
-extern const char kValueKey[];
-extern const char kMatchTypeKey[];
 extern const char kAppIdKey[];
 extern const char kIntentFilterKey[];
 extern const char kPreferredAppsKey[];

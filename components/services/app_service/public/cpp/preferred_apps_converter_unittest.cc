@@ -50,17 +50,17 @@ TEST_F(PreferredAppsConverterTest, ConvertSimpleEntry) {
         (*converted_intent_filter)[i].GetDict();
     auto& condition_values = condition->condition_values;
     const base::Value::List* converted_condition_values =
-        converted_condition.FindList(apps::kConditionValuesKey);
+        converted_condition.FindList(apps_util::kConditionValuesKey);
 
     EXPECT_EQ(static_cast<int>(condition->condition_type),
-              converted_condition.FindInt(apps::kConditionTypeKey));
+              converted_condition.FindInt(apps_util::kConditionTypeKey));
     ASSERT_EQ(1u, converted_condition_values->size());
     EXPECT_EQ(condition_values[0]->value,
               *(*converted_condition_values)[0].GetDict().FindString(
-                  apps::kValueKey));
+                  apps_util::kValueKey));
     EXPECT_EQ(static_cast<int>(condition_values[0]->match_type),
               (*converted_condition_values)[0].GetDict().FindInt(
-                  apps::kMatchTypeKey));
+                  apps_util::kMatchTypeKey));
   }
 
   preferred_apps.Init();

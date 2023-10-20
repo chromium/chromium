@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -101,6 +102,11 @@ bool ConditionsHaveOverlap(const apps::ConditionPtr& condition1,
 }
 
 }  // namespace
+
+const char kValueKey[] = "value";
+const char kMatchTypeKey[] = "match_type";
+const char kConditionTypeKey[] = "condition_type";
+const char kConditionValuesKey[] = "condition_values";
 
 apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url,
                                                   bool omit_port_for_testing) {
@@ -310,6 +316,111 @@ std::set<std::string> GetSupportedLinksForAppManagement(
   }
 
   return supported_links;
+}
+
+base::Value::Dict ConvertConditionValueToDict(
+    const apps::ConditionValuePtr& condition_value) {
+  base::Value::Dict condition_value_dict;
+  condition_value_dict.Set(kValueKey, condition_value->value);
+  condition_value_dict.Set(kMatchTypeKey,
+                           static_cast<int>(condition_value->match_type));
+  return condition_value_dict;
+}
+
+apps::ConditionValuePtr ConvertDictToConditionValue(
+    const base::Value::Dict& dict) {
+  const std::string* value_string = dict.FindString(kValueKey);
+  if (!value_string) {
+    DVLOG(0) << "Fail to parse condition value. Cannot find \"" << kValueKey
+             << "\" key with string value.";
+    return nullptr;
+  }
+  const absl::optional<int> match_type = dict.FindInt(kMatchTypeKey);
+  if (!match_type) {
+    DVLOG(0) << "Fail to parse condition value. Cannot find \"" << kMatchTypeKey
+             << "\" key with int value.";
+    return nullptr;
+  }
+
+  // We used to have a kNone=0 defined in the enum which we have merged with
+  // kLiteral. Some legacy storage may still have zero stored in serialized form
+  // as an integer which we can safely treat as kLiteral=1.
+  apps::PatternMatchType pattern_match_type = apps::PatternMatchType::kLiteral;
+  if (match_type > 0) {
+    pattern_match_type =
+        static_cast<apps::PatternMatchType>(match_type.value());
+  }
+  return std::make_unique<apps::ConditionValue>(*value_string,
+                                                pattern_match_type);
+}
+
+base::Value::Dict ConvertConditionToDict(const apps::ConditionPtr& condition) {
+  base::Value::Dict condition_dict;
+  condition_dict.Set(kConditionTypeKey,
+                     static_cast<int>(condition->condition_type));
+  base::Value::List condition_values_list;
+  for (auto& condition_value : condition->condition_values) {
+    condition_values_list.Append(ConvertConditionValueToDict(condition_value));
+  }
+  condition_dict.Set(kConditionValuesKey, std::move(condition_values_list));
+  return condition_dict;
+}
+
+apps::ConditionPtr ConvertDictToCondition(const base::Value::Dict& dict) {
+  const absl::optional<int> condition_type = dict.FindInt(kConditionTypeKey);
+  if (!condition_type) {
+    DVLOG(0) << "Fail to parse condition. Cannot find \"" << kConditionTypeKey
+             << "\" key with int value.";
+    return nullptr;
+  }
+
+  apps::ConditionValues condition_values;
+  const base::Value::List* values = dict.FindList(kConditionValuesKey);
+  if (!values) {
+    DVLOG(0) << "Fail to parse condition. Cannot find \"" << kConditionValuesKey
+             << "\" key with list value.";
+    return nullptr;
+  }
+  for (const base::Value& condition_value : *values) {
+    auto parsed_condition_value =
+        apps_util::ConvertDictToConditionValue(condition_value.GetDict());
+    if (!parsed_condition_value) {
+      DVLOG(0) << "Fail to parse condition. Cannot parse condition values";
+      return nullptr;
+    }
+    condition_values.push_back(std::move(parsed_condition_value));
+  }
+
+  return std::make_unique<apps::Condition>(
+      static_cast<apps::ConditionType>(condition_type.value()),
+      std::move(condition_values));
+}
+
+base::Value::List ConvertIntentFilterToList(
+    const apps::IntentFilterPtr& intent_filter) {
+  base::Value::List intent_filter_list;
+  for (auto& condition : intent_filter->conditions) {
+    intent_filter_list.Append(apps_util::ConvertConditionToDict(condition));
+  }
+  return intent_filter_list;
+}
+
+apps::IntentFilterPtr ConvertValueToIntentFilter(const base::Value* value) {
+  if (!value || !value->is_list()) {
+    DVLOG(0) << "Fail to parse intent filter. Cannot find the conditions list.";
+    return nullptr;
+  }
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
+  for (const base::Value& condition : value->GetList()) {
+    auto parsed_condition =
+        apps_util::ConvertDictToCondition(condition.GetDict());
+    if (!parsed_condition) {
+      DVLOG(0) << "Fail to parse intent filter. Cannot parse conditions.";
+      return nullptr;
+    }
+    intent_filter->conditions.push_back(std::move(parsed_condition));
+  }
+  return intent_filter;
 }
 
 }  // namespace apps_util
