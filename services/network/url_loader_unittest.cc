@@ -980,7 +980,7 @@ class URLLoaderTest : public testing::Test {
   // Returns the path of the requested file in the test data directory.
   base::FilePath GetTestFilePath(const std::string& file_name) {
     base::FilePath file_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
     file_path = file_path.Append(FILE_PATH_LITERAL("services"));
     file_path = file_path.Append(FILE_PATH_LITERAL("test"));
     file_path = file_path.Append(FILE_PATH_LITERAL("data"));

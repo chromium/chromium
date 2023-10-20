@@ -121,7 +121,8 @@ TEST_P(FaceDetectionImplMacTest, ScanOneFace) {
 
   // Load image data from test directory.
   base::FilePath image_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &image_path));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &image_path));
   image_path = image_path.AppendASCII(GetParam().image_path);
   ASSERT_TRUE(base::PathExists(image_path));
   std::string image_data;
