@@ -26,6 +26,13 @@ namespace {
 // Toolbar button size is ~34dp.
 constexpr gfx::Size kButtonSize(34, 34);
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton1);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton2);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton3);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton4);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyObservedView);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyActivateView);
+
 class MockToolbarController : public ToolbarController {
  public:
   MockToolbarController(
@@ -87,12 +94,11 @@ class PopOutHandlerTest : public views::ViewsTestBase {
 
 TEST_F(PopOutHandlerTest, PopOutAndEndPopOut) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyObservedView);
 
   MockToolbarController toolbar_controller(
       {kDummyButton},
       ToolbarController::ResponsiveElementInfoMap(
-          {{kDummyButton, {0, kDummyObservedView}}}),
+          {{kDummyButton, {0, kDummyActivateView, kDummyObservedView}}}),
       1, container_view(), overflow_button());
 
   ui::ElementContext context =
@@ -113,12 +119,6 @@ constexpr int kElementFlexOrderStart = 1;
 
 }  // namespace
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton1);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton2);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton3);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton4);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyObservedView);
-
 class TestToolbarController : public ToolbarController {
  public:
   TestToolbarController(
@@ -133,11 +133,7 @@ class TestToolbarController : public ToolbarController {
                           toolbar_container_view,
                           overflow_button) {}
 
-  std::u16string GenerateMenuText(const views::View* element) override {
-    ui::ElementIdentifier id =
-        element->GetProperty(views::kElementIdentifierKey);
-    CHECK(id);
-
+  std::u16string GetMenuText(ui::ElementIdentifier id) override {
     static const auto kToolbarToMenuTextMap =
         base::MakeFixedFlatMap<ui::ElementIdentifier, std::u16string>({
             {kDummyButton1, u"DummyButton1"},
@@ -188,9 +184,9 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
     toolbar_controller_ = std::make_unique<TestToolbarController>(
         element_ids,
         ToolbarController::ResponsiveElementInfoMap(
-            {{kDummyButton1, {0, kDummyObservedView}},
-             {kDummyButton2, {0, kDummyObservedView}},
-             {kDummyButton3, {0, kDummyObservedView}}}),
+            {{kDummyButton1, {0, kDummyActivateView, kDummyObservedView}},
+             {kDummyButton2, {0, kDummyActivateView, kDummyObservedView}},
+             {kDummyButton3, {0, kDummyActivateView, kDummyObservedView}}}),
         kElementFlexOrderStart, toolbar_container_view_, overflow_button_);
     overflow_button_->set_create_menu_model_callback(
         base::BindRepeating(&ToolbarController::CreateOverflowMenuModel,
@@ -237,7 +233,7 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
   const ui::SimpleMenuModel* overflow_menu() {
     return overflow_button_->menu_model_for_testing();
   }
-  std::vector<const views::View*> GetOverflowedElements() {
+  std::vector<ui::ElementIdentifier> GetOverflowedElements() {
     return toolbar_controller()->GetOverflowedElements();
   }
 
@@ -281,13 +277,14 @@ TEST_F(ToolbarControllerUnitTest, OverflowedButtonsMatchMenu) {
   event_generator()->PressLeftButton();
 
   const ui::SimpleMenuModel* menu = overflow_menu();
-  std::vector<const views::View*> overflowed_buttons = GetOverflowedElements();
+  std::vector<ui::ElementIdentifier> overflowed_buttons =
+      GetOverflowedElements();
 
   // Overflowed buttons should match overflow menu.
   EXPECT_TRUE(menu);
   EXPECT_EQ(overflowed_buttons.size(), menu->GetItemCount());
   for (size_t i = 0; i < overflowed_buttons.size(); ++i) {
-    EXPECT_EQ(toolbar_controller()->GenerateMenuText(overflowed_buttons[i]),
+    EXPECT_EQ(toolbar_controller()->GetMenuText(overflowed_buttons[i]),
               menu->GetLabelAt(i));
   }
 }
