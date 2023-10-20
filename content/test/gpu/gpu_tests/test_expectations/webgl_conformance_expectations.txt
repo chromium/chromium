@@ -395,6 +395,7 @@ crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough an
 # they are not attributed to some known issue that needs resolving.
 
 crbug.com/1441710 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
+[ linux debug ] conformance/rendering/multisample-corruption.html [ Slow ]
 
 ###################
 # Failures/Flakes #
