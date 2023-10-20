@@ -146,6 +146,8 @@ bool FakeSyncEngine::IsNextPollTimeInThePast() const {
 
 void FakeSyncEngine::GetNigoriNodeForDebugging(AllNodesCallback callback) {}
 
+void FakeSyncEngine::RecordNigoriMemoryUsageAndCountsHistograms() {}
+
 void FakeSyncEngine::GetTypesWithUnsyncedData(
     base::OnceCallback<void(ModelTypeSet)> cb) const {
   std::move(cb).Run(ModelTypeSet());

@@ -2237,11 +2237,15 @@ void SyncServiceImpl::RemoveClientFromServer() const {
 }
 
 void SyncServiceImpl::RecordMemoryUsageAndCountsHistograms() {
+  CHECK(engine_);
   ModelTypeSet active_types = GetActiveDataTypes();
   for (ModelType type : active_types) {
     auto dtc_it = data_type_controllers_.find(type);
     if (dtc_it != data_type_controllers_.end()) {
       dtc_it->second->RecordMemoryUsageAndCountsHistograms();
+    } else if (type == NIGORI) {
+      // DTC for NIGORI is stored in the engine on sync thread.
+      engine_->RecordNigoriMemoryUsageAndCountsHistograms();
     }
   }
 }

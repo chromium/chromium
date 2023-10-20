@@ -18,7 +18,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_credentials.h"
@@ -190,6 +189,9 @@ class SyncEngine : public ModelTypeConfigurer {
 
   // Returns a Value::List representing Nigori node.
   virtual void GetNigoriNodeForDebugging(AllNodesCallback callback) = 0;
+
+  // Record histograms related to Nigori type.
+  virtual void RecordNigoriMemoryUsageAndCountsHistograms() = 0;
 };
 
 }  // namespace syncer

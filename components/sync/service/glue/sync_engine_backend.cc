@@ -465,6 +465,11 @@ void SyncEngineBackend::GetNigoriNodeForDebugging(AllNodesCallback callback) {
   nigori_controller_->GetAllNodes(std::move(callback));
 }
 
+void SyncEngineBackend::RecordNigoriMemoryUsageAndCountsHistograms() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  nigori_controller_->RecordMemoryUsageAndCountsHistograms();
+}
+
 bool SyncEngineBackend::HasUnsyncedItemsForTest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_manager_);
