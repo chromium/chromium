@@ -86,14 +86,21 @@ public class JsJavaInteractionTest {
 
         public static class Data {
             private MessagePayload mPayload;
+            public Uri mTopLevelOrigin;
             public Uri mSourceOrigin;
             public boolean mIsMainFrame;
             public JsReplyProxy mReplyProxy;
             public MessagePort[] mPorts;
 
-            public Data(MessagePayload payload, Uri sourceOrigin, boolean isMainFrame,
-                    JsReplyProxy replyProxy, MessagePort[] ports) {
+            public Data(
+                    MessagePayload payload,
+                    Uri topLevelOrigin,
+                    Uri sourceOrigin,
+                    boolean isMainFrame,
+                    JsReplyProxy replyProxy,
+                    MessagePort[] ports) {
                 mPayload = payload;
+                mTopLevelOrigin = topLevelOrigin;
                 mSourceOrigin = sourceOrigin;
                 mIsMainFrame = isMainFrame;
                 mReplyProxy = replyProxy;
@@ -110,9 +117,16 @@ public class JsJavaInteractionTest {
         }
 
         @Override
-        public void onPostMessage(MessagePayload payload, Uri sourceOrigin, boolean isMainFrame,
-                JsReplyProxy replyProxy, MessagePort[] ports) {
-            mQueue.add(new Data(payload, sourceOrigin, isMainFrame, replyProxy, ports));
+        public void onPostMessage(
+                MessagePayload payload,
+                Uri topLevelOrigin,
+                Uri sourceOrigin,
+                boolean isMainFrame,
+                JsReplyProxy replyProxy,
+                MessagePort[] ports) {
+            mQueue.add(
+                    new Data(
+                            payload, topLevelOrigin, sourceOrigin, isMainFrame, replyProxy, ports));
         }
 
         public Data waitForOnPostMessage() throws Exception {
@@ -145,6 +159,7 @@ public class JsJavaInteractionTest {
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
+        assertUrlHasOrigin(url, data.mTopLevelOrigin);
         assertUrlHasOrigin(url, data.mSourceOrigin);
         Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertTrue(data.mIsMainFrame);
@@ -232,13 +247,20 @@ public class JsJavaInteractionTest {
         final String frameUrl = mTestServer.getURL(POST_MESSAGE_SIMPLE_HTML);
         final String html = createCrossOriginAccessTestPageHtml(frameUrl);
 
+        final String baseUrl = "http://www.google.com";
         // Load a cross origin iframe page.
-        mActivityTestRule.loadDataWithBaseUrlSync(mAwContents,
-                mContentsClient.getOnPageFinishedHelper(), html, "text/html", false,
-                "http://www.google.com", null);
+        mActivityTestRule.loadDataWithBaseUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                html,
+                "text/html",
+                false,
+                baseUrl,
+                null);
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
+        assertUrlHasOrigin(baseUrl, data.mTopLevelOrigin);
         assertUrlHasOrigin(frameUrl, data.mSourceOrigin);
         Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertFalse(data.mIsMainFrame);
@@ -1431,6 +1453,11 @@ public class JsJavaInteractionTest {
     }
 
     private static void assertUrlHasOrigin(final String url, final Uri origin) {
+        Assert.assertEquals("The origin URI must not contain a path", "", origin.getPath());
+        Assert.assertEquals("The origin URI must not contain any queries", null, origin.getQuery());
+        Assert.assertEquals(
+                "The origin URI must not contain a fragment", null, origin.getFragment());
+
         Uri uriFromServer = Uri.parse(url);
         Assert.assertEquals(uriFromServer.getScheme(), origin.getScheme());
         Assert.assertEquals(uriFromServer.getHost(), origin.getHost());

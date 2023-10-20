@@ -433,10 +433,10 @@ public class MultiProfileTest {
         CallbackHelper testDoneHelper = new CallbackHelper();
 
         final WebMessageListener injectedListener =
-                (payload, sourceOrigin, isMainFrame, jsReplyProxy, ports) -> {
-            Assert.assertEquals("success", payload.getAsString());
-            testDoneHelper.notifyCalled();
-        };
+                (payload, topLevelOrigin, sourceOrigin, isMainFrame, jsReplyProxy, ports) -> {
+                    Assert.assertEquals("success", payload.getAsString());
+                    testDoneHelper.notifyCalled();
+                };
 
         // Setup a message listener and a startup script to post on to the listener.
         mRule.runOnUiThread(() -> {

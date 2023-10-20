@@ -99,6 +99,8 @@ void JsToBrowserMessaging::PostMessage(
   if (!web_contents)
     return;
 
+  const url::Origin top_level_origin =
+      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
   // |source_origin| has no race with this PostMessage call, because of
   // associated mojo channel, the committed origin message and PostMessage are
   // in sequence.
@@ -112,12 +114,16 @@ void JsToBrowserMessaging::PostMessage(
   DCHECK(reply_proxy_);
 
   if (!host_) {
+    const std::string top_level_origin_string =
+        GetOriginString(top_level_origin);
     const std::string origin_string = GetOriginString(source_origin);
     const bool is_main_frame = render_frame_host_->IsInPrimaryMainFrame();
 
-    host_ = connection_factory_->CreateHost(origin_string, is_main_frame,
-                                            reply_proxy_.get());
+    host_ =
+        connection_factory_->CreateHost(top_level_origin_string, origin_string,
+                                        is_main_frame, reply_proxy_.get());
 #if DCHECK_IS_ON()
+    top_level_origin_string_ = top_level_origin_string;
     origin_string_ = origin_string;
     is_main_frame_ = is_main_frame;
 #endif
@@ -127,6 +133,7 @@ void JsToBrowserMessaging::PostMessage(
   // The origin and whether this is the main frame should not change once
   // PostMessage() has been received.
 #if DCHECK_IS_ON()
+  DCHECK_EQ(GetOriginString(top_level_origin), top_level_origin_string_);
   DCHECK_EQ(GetOriginString(source_origin), origin_string_);
   DCHECK_EQ(is_main_frame_, render_frame_host_->IsInPrimaryMainFrame());
 #endif

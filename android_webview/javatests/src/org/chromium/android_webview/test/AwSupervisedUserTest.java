@@ -229,8 +229,13 @@ public class AwSupervisedUserTest {
         private volatile String mResult;
 
         @Override
-        public void onPostMessage(MessagePayload payload, Uri sourceOrigin, boolean isMainFrame,
-                JsReplyProxy replyProxy, MessagePort[] ports) {
+        public void onPostMessage(
+                MessagePayload payload,
+                Uri topLevelOrigin,
+                Uri sourceOrigin,
+                boolean isMainFrame,
+                JsReplyProxy replyProxy,
+                MessagePort[] ports) {
             mResult = payload.getAsString();
             mCallbackHelper.notifyCalled();
         }

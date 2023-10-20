@@ -29,12 +29,23 @@ public class WebMessageListenerHolder {
     }
 
     @CalledByNative
-    public void onPostMessage(MessagePayload payload, String sourceOrigin, boolean isMainFrame,
-            MessagePort[] ports, JsReplyProxy replyProxy) {
-        AwThreadUtils.postToCurrentLooper(() -> {
-            mListener.onPostMessage(
-                    payload, Uri.parse(sourceOrigin), isMainFrame, replyProxy, ports);
-        });
+    public void onPostMessage(
+            MessagePayload payload,
+            String topLevelOrigin,
+            String sourceOrigin,
+            boolean isMainFrame,
+            MessagePort[] ports,
+            JsReplyProxy replyProxy) {
+        AwThreadUtils.postToCurrentLooper(
+                () -> {
+                    mListener.onPostMessage(
+                            payload,
+                            Uri.parse(topLevelOrigin),
+                            Uri.parse(sourceOrigin),
+                            isMainFrame,
+                            replyProxy,
+                            ports);
+                });
     }
 
     public WebMessageListener getListener() {

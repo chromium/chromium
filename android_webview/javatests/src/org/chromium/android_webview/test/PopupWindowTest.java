@@ -402,8 +402,13 @@ public class PopupWindowTest {
         }
 
         @Override
-        public void onPostMessage(MessagePayload payload, Uri sourceOrigin, boolean isMainFrame,
-                JsReplyProxy replyProxy, MessagePort[] ports) {
+        public void onPostMessage(
+                MessagePayload payload,
+                Uri topLevelOrigin,
+                Uri sourceOrigin,
+                boolean isMainFrame,
+                JsReplyProxy replyProxy,
+                MessagePort[] ports) {
             mQueue.add(new Data(payload.getAsString(), isMainFrame, replyProxy));
         }
 
