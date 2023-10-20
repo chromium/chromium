@@ -538,7 +538,7 @@ void OsDiagnosticsCreateMemoryRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  cx_diag::CreateMemoryRoutineResponse response;
+  cx_diag::CreateRoutineResponse response;
   response.uuid = result->AsLowercaseString();
   Respond(
       ArgumentList(cx_diag::CreateMemoryRoutine::Results::Create(response)));

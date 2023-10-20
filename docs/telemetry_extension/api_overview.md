@@ -306,10 +306,10 @@ extension-event based interface in M119. The interface is described in
 ------------ | ------- | ----------- |
 | maxTestingMemKib | number | An optional field to indicate how much memory should be tested. If the value is null, memory test will run with as much memory as possible |
 
-### CreateMemoryRoutineResponse
+### CreateRoutineResponse
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
-| uuid | string | UUID of the memory routine that was just created  |
+| uuid | string | UUID of the routine that was just created  |
 
 ### RoutineSupportStatusInfo
 | Property Name | Type | Description |
@@ -332,7 +332,7 @@ extension-event based interface in M119. The interface is described in
 ------------ | ------------- | ------------- | ------------- |
 | startRoutine | (params: StartRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
 | cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
-| createMemoryRoutine | (args: RunMemoryRoutineArguments) => Promise<CreateMemoryRoutineResponse\> | `os.diagnostics` | M119 |
+| createMemoryRoutine | (args: RunMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 |
 | isMemoryRoutineArgumentSupported | (args: RunMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 |
 
 ## Events

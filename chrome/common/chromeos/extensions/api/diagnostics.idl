@@ -295,11 +295,11 @@ namespace os.diagnostics {
     long? maxTestingMemKib;
   };
 
-  dictionary CreateMemoryRoutineResponse {
+  dictionary CreateRoutineResponse {
     DOMString? uuid;
   };
 
-  callback CreateMemoryRoutineCallback = void (CreateMemoryRoutineResponse response);
+  callback CreateRoutineCallback = void (CreateRoutineResponse response);
 
   enum RoutineSupportStatus {
     supported,
@@ -411,7 +411,7 @@ namespace os.diagnostics {
     [supportsPromises] static void cancelRoutine(CancelRoutineRequest request, CancelRoutineCallback callback);
 
     [supportsPromises] static void createMemoryRoutine(RunMemoryRoutineArguments args,
-                                                          CreateMemoryRoutineCallback callback);
+                                                       CreateRoutineCallback callback);
 
     // Checks whether a certain `RunMemoryRoutineArguments` is supported on the platform.
     [supportsPromises] static void isMemoryRoutineArgumentSupported(RunMemoryRoutineArguments args,
