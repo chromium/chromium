@@ -1,0 +1,20 @@
+[
+  {
+    "note": "TODO(crbug.com/106682): Flag this with can_be_recommended",
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PopupsAllowedForUrls": [
+            "[*.]google.com"
+          ]
+        },
+        "prefs": {
+          "profile.managed_popups_allowed_for_urls": {}
+        }
+      }
+    ]
+  }
+]

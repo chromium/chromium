@@ -1,0 +1,26 @@
+[
+  {
+    "note": "TODO(crbug.com/106682): Flag this with can_be_recommended",
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DefaultPopupsSetting": 1
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.popups": {}
+        }
+      },
+      {
+        "policies": {
+          "DefaultPopupsSetting": 2
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.popups": {}
+        }
+      }
+    ]
+  }
+]

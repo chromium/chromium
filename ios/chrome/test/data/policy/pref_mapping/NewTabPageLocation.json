@@ -1,0 +1,39 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NewTabPageLocation": ""
+        },
+        "prefs": {
+          "ios.ntp.location_override": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "policies": {
+          "NewTabPageLocation": "m.youtube.com"
+        },
+        "prefs": {
+          "ios.ntp.location_override": {
+            "value": "https://m.youtube.com"
+          }
+        }
+      },
+      {
+        "policies": {
+          "NewTabPageLocation": "https://store.google.com"
+        },
+        "prefs": {
+          "ios.ntp.location_override": {
+            "value": "https://store.google.com"
+          }
+        }
+      }
+    ]
+  }
+]

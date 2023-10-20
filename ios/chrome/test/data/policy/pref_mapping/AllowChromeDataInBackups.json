@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ios.allow_chrome_data_in_backups": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "AllowChromeDataInBackups": false
+        },
+        "prefs": {
+          "ios.allow_chrome_data_in_backups": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

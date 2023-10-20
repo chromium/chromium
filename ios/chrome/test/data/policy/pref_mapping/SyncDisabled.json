@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SyncDisabled": true
+        },
+        "prefs": {
+          "sync.managed": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SyncDisabled": false
+        },
+        "prefs": {
+          "sync.managed": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "sync.managed": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

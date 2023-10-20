@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PolicyRefreshRate": 300000
+        },
+        "prefs": {
+          "policy.user_refresh_rate": {
+            "location": "local_state",
+            "value": 300000
+          }
+        }
+      }
+    ]
+  }
+]

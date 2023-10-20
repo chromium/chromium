@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Check pref matches when policy is set to true",
+        "policies": {
+          "SafeBrowsingProxiedRealTimeChecksAllowed": true
+        },
+        "prefs": {
+          "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check pref matches when policy is set to false",
+        "policies": {
+          "SafeBrowsingProxiedRealTimeChecksAllowed": false
+        },
+        "prefs": {
+          "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

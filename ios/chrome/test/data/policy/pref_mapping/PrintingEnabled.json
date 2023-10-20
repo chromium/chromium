@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintingEnabled": true
+        },
+        "prefs": {
+          "printing.enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "PrintingEnabled": false
+        },
+        "prefs": {
+          "printing.enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]
