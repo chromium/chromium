@@ -8,4 +8,10 @@ group("codelabs") {
     "//codelabs/cpp101:codelab_cpp101",
     "//codelabs/threading_and_scheduling:codelab_threading_and_scheduling",
   ]
+
+  # These examples rely on base::LaunchOptions which do not exist in the iOS
+  # simulator.
+  if (!is_ios) {
+    deps += [ "//codelabs/mojo_examples:codelab_mojo_examples" ]
+  }
 }
