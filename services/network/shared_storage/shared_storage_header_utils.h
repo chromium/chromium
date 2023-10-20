@@ -11,9 +11,9 @@
 
 namespace network {
 
-inline constexpr base::StringPiece kSharedStorageWritableHeader =
-    "Shared-Storage-Writable";
-inline constexpr base::StringPiece kSharedStorageWritableValue = "?1";
+inline constexpr base::StringPiece kSecSharedStorageWritableHeader =
+    "Sec-Shared-Storage-Writable";
+inline constexpr base::StringPiece kSecSharedStorageWritableValue = "?1";
 inline constexpr base::StringPiece kSharedStorageWriteHeader =
     "Shared-Storage-Write";
 

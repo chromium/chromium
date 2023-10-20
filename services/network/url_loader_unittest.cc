@@ -7569,8 +7569,8 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, RedirectNoLongerEligible) {
   // Simulate having permission revoked by the client, the effect of which is
   // the request header is removed.
   std::vector<std::string> removed_headers(
-      {std::string(kSharedStorageWritableHeader.data(),
-                   kSharedStorageWritableHeader.size())});
+      {std::string(kSecSharedStorageWritableHeader.data(),
+                   kSecSharedStorageWritableHeader.size())});
   url_loader_->FollowRedirect(removed_headers,
                               /*modified_headers=*/{},
                               /*modified_cors_exempt_headers=*/{},

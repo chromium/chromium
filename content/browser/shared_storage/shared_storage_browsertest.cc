@@ -8335,10 +8335,10 @@ class SharedStorageHeaderObserverBrowserTest
     response.WaitForRequest();
     if (expect_writable_header) {
       ASSERT_TRUE(base::Contains(response.http_request()->headers,
-                                 "Shared-Storage-Writable"));
+                                 "Sec-Shared-Storage-Writable"));
     } else {
       EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                                  "Shared-Storage-Writable"));
+                                  "Sec-Shared-Storage-Writable"));
     }
     EXPECT_EQ(response.http_request()->content, "");
     response.Send(http_status, content_type,

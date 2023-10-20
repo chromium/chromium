@@ -687,7 +687,7 @@ bool ResourceLoader::WillFollowRedirect(
 
   if (need_to_check_for_shared_storage_writable_change &&
       !new_request->GetSharedStorageWritable()) {
-    removed_headers->push_back(http_names::kSharedStorageWritable.Ascii());
+    removed_headers->push_back(http_names::kSecSharedStorageWritable.Ascii());
   }
 
   if (new_request->Url() != KURL(new_url)) {

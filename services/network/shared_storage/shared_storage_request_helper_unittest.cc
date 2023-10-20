@@ -226,8 +226,8 @@ TEST_F(SharedStorageRequestHelperTest,
   EXPECT_TRUE(helper_->shared_storage_writable());
 
   std::vector<std::string> removed_headers(
-      {std::string(kSharedStorageWritableHeader.data(),
-                   kSharedStorageWritableHeader.size())});
+      {std::string(kSecSharedStorageWritableHeader.data(),
+                   kSecSharedStorageWritableHeader.size())});
   helper_->RemoveEligibilityIfSharedStorageWritableRemoved(removed_headers);
   EXPECT_FALSE(helper_->shared_storage_writable());
 }
@@ -252,8 +252,8 @@ TEST_F(SharedStorageRequestHelperTest,
 
   std::string value;
   EXPECT_TRUE(request->extra_request_headers().GetHeader(
-      kSharedStorageWritableHeader, &value));
-  EXPECT_EQ(value, kSharedStorageWritableValue);
+      kSecSharedStorageWritableHeader, &value));
+  EXPECT_EQ(value, kSecSharedStorageWritableValue);
 }
 
 TEST_F(SharedStorageRequestHelperTest,
@@ -265,7 +265,7 @@ TEST_F(SharedStorageRequestHelperTest,
 
   std::string value;
   EXPECT_FALSE(request->extra_request_headers().GetHeader(
-      kSharedStorageWritableHeader, &value));
+      kSecSharedStorageWritableHeader, &value));
 }
 
 TEST_F(SharedStorageRequestHelperTest,
@@ -357,8 +357,8 @@ class SharedStorageRequestHelperProcessHeaderTest
 
     std::string value;
     EXPECT_TRUE(request->extra_request_headers().GetHeader(
-        kSharedStorageWritableHeader, &value));
-    EXPECT_EQ(value, kSharedStorageWritableValue);
+        kSecSharedStorageWritableHeader, &value));
+    EXPECT_EQ(value, kSecSharedStorageWritableValue);
     return request;
   }
 

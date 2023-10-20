@@ -330,7 +330,7 @@ struct URLRequest {
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-3-get-response-blobs-to-browser
   bool ad_auction_headers;
 
-  // True if the request should send the `Shared-Storage-Writable` request
+  // True if the request should send the `Sec-Shared-Storage-Writable` request
   // header.
   bool shared_storage_writable;
 
