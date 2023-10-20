@@ -168,6 +168,10 @@ class GraphInfoBuilder final {
         mojom::Operation::NewPool2d(std::move(pool2d)));
   }
 
+  void BuildPrelu(uint64_t input_operand_id,
+                  uint64_t slope_operand_id,
+                  uint64_t output_operand_id);
+
   void BuildRelu(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildResample2d(uint64_t input_operand_id,

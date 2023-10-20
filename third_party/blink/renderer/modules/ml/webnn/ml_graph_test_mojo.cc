@@ -1513,6 +1513,117 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   }
 }
 
+struct PreluTester {
+  OperandInfoBlink input;
+  OperandInfoBlink slope;
+  OperandInfoMojo expected;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* slope_operand = BuildInput(builder, "slope", slope.dimensions,
+                                     slope.type, scope.GetExceptionState());
+    auto* output_operand =
+        builder->prelu(input_operand, slope_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_prelu());
+    auto& prelu = operation->get_prelu();
+
+    // Verify the input operand.
+    ASSERT_EQ(graph_info->input_operands.size(), 2u);
+    auto input_operand_id = graph_info->input_operands[0];
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
+    EXPECT_EQ(input_operand_iter->value->name, "input");
+    EXPECT_EQ(prelu->input_operand_id, input_operand_id);
+
+    // Verify the slope operand.
+    auto slope_operand_id = graph_info->input_operands[1];
+    auto slope_operand_iter =
+        graph_info->id_to_operand_map.find(slope_operand_id);
+    ASSERT_TRUE(slope_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(slope_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(slope_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(slope_operand_iter->value->dimensions, slope.dimensions);
+    EXPECT_EQ(slope_operand_iter->value->name, "slope");
+    EXPECT_EQ(prelu->slope_operand_id, slope_operand_id);
+
+    // Verify the output operand.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kOutput);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+    EXPECT_EQ(prelu->output_operand_id, output_operand_id);
+  }
+};
+
+TEST_P(MLGraphTestMojo, PreluTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device preference.
+  options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test prelu operator when input shape is the same as slope shape.
+    PreluTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                          .dimensions = {2, 3, 5}},
+                .slope = {.type = V8MLOperandType::Enum::kFloat32,
+                          .dimensions = {2, 3, 5}},
+                .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 3, 5}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test prelu operator with input shape as {2, 3, 5} and slope shape as {3,
+    // 5}.
+    PreluTester{.input = {.type = V8MLOperandType::Enum::kFloat16,
+                          .dimensions = {2, 3, 5}},
+                .slope = {.type = V8MLOperandType::Enum::kFloat16,
+                          .dimensions = {3, 5}},
+                .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 3, 5}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test prelu operator with input shape as {2, 3, 5} and slope shape as {5}.
+    PreluTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat16,
+                  .dimensions = {2, 3, 5}},
+        .slope = {.type = V8MLOperandType::Enum::kFloat16, .dimensions = {5}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
+                     .dimensions = {2, 3, 5}}}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct ReluTester {
   OperandInfoBlink input;
   OperandInfoMojo expected;

@@ -458,6 +458,18 @@ OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewPool2d(std::move(pool2d_mojo));
 }
 
+OperationPtr CreatePreluOperation(const OperandToIdMap& operand_to_id_map,
+                                  const MLOperator* prelu) {
+  auto prelu_mojo = blink_mojom::Prelu::New();
+  prelu_mojo->input_operand_id =
+      GetOperatorInputId(prelu, operand_to_id_map, 0);
+  prelu_mojo->slope_operand_id =
+      GetOperatorInputId(prelu, operand_to_id_map, 1);
+  prelu_mojo->output_operand_id = GetOperatorOutputId(prelu, operand_to_id_map);
+
+  return blink_mojom::Operation::NewPrelu(std::move(prelu_mojo));
+}
+
 OperationPtr CreateResample2dOperation(const OperandToIdMap& operand_to_id_map,
                                        const MLOperator* resample2d) {
   auto resample2d_mojo = blink_mojom::Resample2d::New();
@@ -613,6 +625,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreatePool2dOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kGemm:
       return CreateGemmOperator(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kPRelu:
+      return CreatePreluOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kResample2d:
       return CreateResample2dOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kRelu:
@@ -633,7 +647,6 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kSigmoid:
     case MLOperator::OperatorKind::kLeakyRelu:
     case MLOperator::OperatorKind::kConvTranspose2d:
-    case MLOperator::OperatorKind::kPRelu:
     case MLOperator::OperatorKind::kElu:
     case MLOperator::OperatorKind::kAbs:
     case MLOperator::OperatorKind::kCeil:

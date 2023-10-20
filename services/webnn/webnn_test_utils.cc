@@ -162,6 +162,17 @@ void GraphInfoBuilder::BuildElementWiseBinary(
       mojom::Operation::NewElementWiseBinary(std::move(binary)));
 }
 
+void GraphInfoBuilder::BuildPrelu(uint64_t input_operand_id,
+                                  uint64_t slope_operand_id,
+                                  uint64_t output_operand_id) {
+  mojom::PreluPtr prelu = mojom::Prelu::New();
+  prelu->input_operand_id = input_operand_id;
+  prelu->slope_operand_id = slope_operand_id;
+  prelu->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewPrelu(std::move(prelu)));
+}
+
 void GraphInfoBuilder::BuildRelu(uint64_t input_operand_id,
                                  uint64_t output_operand_id) {
   mojom::ReluPtr relu = mojom::Relu::New();

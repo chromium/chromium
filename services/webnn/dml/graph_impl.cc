@@ -100,6 +100,8 @@ std::string OpTagToString(Operation::Tag tag) {
       return "pad";
     case Operation::Tag::kPool2d:
       return "pool2d";
+    case Operation::Tag::kPrelu:
+      return "prelu";
     case Operation::Tag::kResample2d:
       return "resample2d";
     case Operation::Tag::kRelu:

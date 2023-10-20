@@ -236,6 +236,12 @@ base::expected<Operand, std::string> ValidateConcatAndInferOutput(
     const std::vector<Operand>& input,
     const uint32_t axis);
 
+// Validate prelu operator defined in WebIDL here:
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-prelu
+base::expected<Operand, std::string> ValidatePreluAndInferOutput(
+    const Operand& input,
+    const Operand& slope);
+
 // Validate transpose operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose
 base::expected<Operand, std::string> ValidateTransposeAndInferOutput(

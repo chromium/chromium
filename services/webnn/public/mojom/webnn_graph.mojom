@@ -248,6 +248,20 @@ struct GemmAttributes {
   bool b_transpose = false;
 };
 
+// Represents a parametric relu operation whose calculation follows the
+// expression max(0, x) + slope ∗ min(0, x).
+struct Prelu {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of slope operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 slope_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
 // Corresponds to `MLOperand relu(MLOperand x)` that compute the rectified
 // linear function of the input tensor.
 struct Relu {
@@ -354,6 +368,7 @@ union Operation {
   ElementWiseBinary element_wise_binary;
   Pad pad;
   Pool2d pool2d;
+  Prelu prelu;
   Relu relu;
   Resample2d resample2d;
   Slice slice;

@@ -660,6 +660,27 @@ base::expected<Operand, std::string> ValidateConcatAndInferOutput(
   return Operand(output_type, std::move(output_shape));
 }
 
+base::expected<Operand, std::string> ValidatePreluAndInferOutput(
+    const Operand& input,
+    const Operand& slope) {
+  if (input.data_type != slope.data_type) {
+    return base::unexpected(
+        "The type of slope doesn't match the type of input.");
+  }
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The type of input and slope must be one of the floating point types.");
+  }
+  // BroadcastShape unidirectionally broadcasts slope.dimensions to
+  // input.dimensions.
+  if (!BroadcastShapes(slope.dimensions, input.dimensions, false)) {
+    return base::unexpected(
+        "The shape of slope is not broadcastable to the shape of input.");
+  }
+
+  return Operand(input.data_type, input.dimensions);
+}
+
 base::expected<Operand, std::string> ValidateTransposeAndInferOutput(
     const Operand& input,
     base::span<const uint32_t> permutation) {

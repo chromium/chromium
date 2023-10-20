@@ -1181,6 +1181,128 @@ TEST_F(WebNNGraphImplTest, Pool2dTest) {
   }
 }
 
+struct PreluTester {
+  OperandInfo input;
+  OperandInfo slope;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t slope_operand_id =
+        builder.BuildInput("slope", slope.dimensions, slope.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildPrelu(input_operand_id, slope_operand_id, output_operand_id);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, PreluTest) {
+  {
+    // Test prelu operator when the input and the slope have the same shape.
+    PreluTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {3, 2, 5}},
+                .slope = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {3, 2, 5}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {3, 2, 5}},
+                .expected = true}
+        .Test();
+  }
+  {
+    // Test prelu operator with a broadcastable slope.
+    PreluTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {3, 2, 5}},
+                .slope = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {3, 1, 5}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {3, 2, 5}},
+                .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph with an invalid slope.
+    PreluTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {3, 2, 5}},
+                .slope = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {3, 5}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {3, 2, 5}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the datatype isn't floating point.
+    PreluTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                          .dimensions = {3, 2, 5}},
+                .slope = {.type = mojom::Operand::DataType::kInt32,
+                          .dimensions = {3, 2, 5}},
+                .output = {.type = mojom::Operand::DataType::kInt32,
+                           .dimensions = {3, 2, 5}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the slope datatype doesn't match the input's
+    // datatype.
+    PreluTester{.input = {.type = mojom::Operand::DataType::kFloat16,
+                          .dimensions = {3, 2, 5}},
+                .slope = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {3, 2, 5}},
+                .output = {.type = mojom::Operand::DataType::kFloat16,
+                           .dimensions = {3, 2, 5}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output datatype doesn't match the input's
+    // datatype.
+    PreluTester{.input = {.type = mojom::Operand::DataType::kFloat16,
+                          .dimensions = {3, 2, 5}},
+                .slope = {.type = mojom::Operand::DataType::kFloat16,
+                          .dimensions = {3, 2, 5}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {3, 2, 5}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    PreluTester{.input = {.type = mojom::Operand::DataType::kFloat16,
+                          .dimensions = {3, 2, 5}},
+                .slope = {.type = mojom::Operand::DataType::kFloat16,
+                          .dimensions = {3, 2, 5}},
+                .output = {.type = mojom::Operand::DataType::kFloat16,
+                           .dimensions = {3, 2, 6}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input is as same as output.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, mojom::Operand::DataType::kFloat32);
+    uint64_t slope_operand_id =
+        builder.BuildInput("slope", {2, 3}, mojom::Operand::DataType::kFloat32);
+    builder.BuildPrelu(input_operand_id, slope_operand_id, input_operand_id);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the slope is as same as output.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, mojom::Operand::DataType::kFloat32);
+    uint64_t output_operand_id = builder.BuildOutput(
+        "output", {2, 3}, mojom::Operand::DataType::kFloat32);
+    builder.BuildPrelu(input_operand_id, output_operand_id, output_operand_id);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
 struct ReluTester {
   OperandInfo input;
   OperandInfo output;

@@ -433,6 +433,28 @@ bool ValidatePool2d(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidatePrelu(const IdToOperandMap& id_to_operand_map,
+                   const mojom::PreluPtr& prelu) {
+  auto* input = GetMojoOperand(id_to_operand_map, prelu->input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, prelu->output_operand_id);
+  auto* slope = GetMojoOperand(id_to_operand_map, prelu->slope_operand_id);
+  if (!input || !output || !slope || output == input || output == slope) {
+    // The prelu operator is invalid.
+    return false;
+  }
+
+  auto validated_output = ValidatePreluAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(slope));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateRelu(const IdToOperandMap& id_to_operand_map,
                   const mojom::ReluPtr& relu) {
   auto* input = GetMojoOperand(id_to_operand_map, relu->input_operand_id);
@@ -654,6 +676,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidatePad(id_to_operand_map, operation->get_pad());
     case mojom::Operation::Tag::kPool2d:
       return ValidatePool2d(id_to_operand_map, operation->get_pool2d());
+    case mojom::Operation::Tag::kPrelu:
+      return ValidatePrelu(id_to_operand_map, operation->get_prelu());
     case mojom::Operation::Tag::kResample2d:
       return ValidateResample2d(id_to_operand_map, operation->get_resample2d());
     case mojom::Operation::Tag::kRelu:
