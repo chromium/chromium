@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/reporting/device_reporting_settings_lacros.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_delegate_base.h"
 #include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
+#include "chrome/browser/chromeos/reporting/websites/website_usage_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -126,6 +127,11 @@ class MetricReportingManagerLacros : public KeyedService,
   std::unique_ptr<MetricReportQueue> telemetry_report_queue_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<MetricReportQueue> event_report_queue_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Website usage observer used to observe and collect website usage reports
+  // from the `WebsiteMetrics` component.
+  std::unique_ptr<WebsiteUsageObserver> website_usage_observer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Cache device deprovisioned state so we minimize crosapi calls. Updated on

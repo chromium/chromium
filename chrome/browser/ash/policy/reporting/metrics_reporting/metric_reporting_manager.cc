@@ -52,6 +52,9 @@
 #include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
 #include "chrome/browser/chromeos/reporting/websites/website_events_observer.h"
 #include "chrome/browser/chromeos/reporting/websites/website_metrics_retriever_ash.h"
+#include "chrome/browser/chromeos/reporting/websites/website_usage_observer.h"
+#include "chrome/browser/chromeos/reporting/websites/website_usage_telemetry_periodic_collector_ash.h"
+#include "chrome/browser/chromeos/reporting/websites/website_usage_telemetry_sampler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -82,6 +85,7 @@ constexpr char kPsrTelemetry[] = "psr_telemetry";
 constexpr char kDelayedPeripheralTelemetry[] = "delayed_peripheral_telemetry";
 constexpr char kDisplaysTelemetry[] = "displays_telemetry";
 constexpr char kDeviceActivityTelemetry[] = "device_activity_telemetry";
+constexpr char kWebsiteTelemetry[] = "website_telemetry";
 
 // App event rate limiter configuration.
 constexpr size_t kAppEventsTotalSize = 4096u /**bytes**/ * 1024;
@@ -251,6 +255,7 @@ MetricReportingManager::MetricReportingManager(
 void MetricReportingManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  website_usage_observer_.reset();
   app_usage_observer_.reset();
   delegate_.reset();
   event_observer_managers_.clear();
@@ -638,16 +643,34 @@ void MetricReportingManager::InitRuntimeCountersCollectors() {
 
 void MetricReportingManager::InitWebsiteMetricCollectors(Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto website_metrics_retriever =
-      std::make_unique<WebsiteMetricsRetrieverAsh>(profile->GetWeakPtr());
+  CHECK(profile);
+  const auto profile_weak_ptr = profile->GetWeakPtr();
+
+  // Website events.
   auto website_events_observer = std::make_unique<WebsiteEventsObserver>(
-      std::move(website_metrics_retriever), user_reporting_settings_.get());
+      std::make_unique<WebsiteMetricsRetrieverAsh>(profile_weak_ptr),
+      user_reporting_settings_.get());
   InitEventObserverManager(
       std::move(website_events_observer), user_event_report_queue_.get(),
       user_reporting_settings_.get(),
       /*enable_setting_path=*/kReportWebsiteActivityAllowlist,
       metrics::kReportWebsiteActivityEnabledDefaultValue,
       /*init_delay=*/base::TimeDelta());
+
+  // Website telemetry.
+  // TODO (b/305310234): Add browser tests to test the integrated setup.
+  website_usage_observer_ = std::make_unique<WebsiteUsageObserver>(
+      profile_weak_ptr, user_reporting_settings_.get(),
+      std::make_unique<WebsiteMetricsRetrieverAsh>(profile_weak_ptr));
+  auto website_usage_telemetry_sampler =
+      std::make_unique<WebsiteUsageTelemetrySampler>(profile_weak_ptr);
+  auto website_usage_telemetry_periodic_collector =
+      std::make_unique<WebsiteUsageTelemetryPeriodicCollectorAsh>(
+          website_usage_telemetry_sampler.get(),
+          user_telemetry_report_queue_.get(), user_reporting_settings_.get());
+  samplers_.emplace_back(std::move(website_usage_telemetry_sampler));
+  telemetry_collectors_.emplace(
+      kWebsiteTelemetry, std::move(website_usage_telemetry_periodic_collector));
 }
 
 void MetricReportingManager::InitFatalCrashCollectors() {
