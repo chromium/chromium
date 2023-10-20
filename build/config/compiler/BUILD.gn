@@ -846,6 +846,9 @@ config("compiler") {
   if (compiler_timing) {
     if (is_clang && !is_nacl) {
       cflags += [ "-ftime-trace" ]
+      if (use_lld && is_mac) {
+        ldflags += [ "-Wl,--time-trace" ]
+      }
     } else if (is_win) {
       cflags += [
         # "Documented" here:
@@ -1876,7 +1879,6 @@ config("default_warnings") {
         if (llvm_force_head_revision) {
           # TODO(https://crbug.com/1490607): Fix and re-enable.
           cflags += [ "-Wno-thread-safety-reference" ]
-
         }
 
         if (enable_precompiled_headers && !is_win) {
