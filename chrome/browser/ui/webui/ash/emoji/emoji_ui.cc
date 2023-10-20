@@ -34,10 +34,10 @@ namespace {
 constexpr gfx::Size kExtensionWindowSize(420, 480);
 constexpr int kPaddingAroundCursor = 8;
 
-class EmojiiBubbleDialogView : public WebUIBubbleDialogView {
+class EmojiBubbleDialogView : public WebUIBubbleDialogView {
  public:
-  METADATA_HEADER(EmojiiBubbleDialogView);
-  EmojiiBubbleDialogView(
+  METADATA_HEADER(EmojiBubbleDialogView);
+  explicit EmojiBubbleDialogView(
       std::unique_ptr<BubbleContentsWrapper> contents_wrapper)
       : WebUIBubbleDialogView(nullptr, contents_wrapper.get()),
         contents_wrapper_(std::move(contents_wrapper)) {
@@ -56,7 +56,7 @@ class EmojiiBubbleDialogView : public WebUIBubbleDialogView {
   std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
 };
 
-BEGIN_METADATA(EmojiiBubbleDialogView, WebUIBubbleDialogView)
+BEGIN_METADATA(EmojiBubbleDialogView, WebUIBubbleDialogView)
 END_METADATA
 
 }  // namespace
@@ -148,7 +148,7 @@ void EmojiUI::Show() {
       input_client == nullptr;
 
   auto bubble_view =
-      std::make_unique<EmojiiBubbleDialogView>(std::move(contents_wrapper));
+      std::make_unique<EmojiBubbleDialogView>(std::move(contents_wrapper));
   auto weak_ptr = bubble_view->GetWeakPtr();
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
   weak_ptr->SetAnchorRect(anchor_rect);
