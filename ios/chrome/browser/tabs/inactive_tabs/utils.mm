@@ -39,15 +39,14 @@ bool IsInactive(const base::TimeDelta& threshold, web::WebState* web_state) {
   }
 }
 
-// Returns the set of stable identifiers from the web state list.
-NSSet<NSString*>* StableIdentifiers(WebStateList* web_state_list) {
-  NSMutableSet<NSString*>* stable_identifiers = [[NSMutableSet alloc] init];
+// Returns the set of unique identifiers from the web state list.
+std::set<web::WebStateID> UniqueIdentifiers(WebStateList* web_state_list) {
+  std::set<web::WebStateID> identifiers;
   for (int index = 0; index < web_state_list->count(); index++) {
-    NSString* stable_identifier =
-        web_state_list->GetWebStateAt(index)->GetStableIdentifier();
-    [stable_identifiers addObject:stable_identifier];
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    identifiers.insert(web_state->GetUniqueIdentifier());
   }
-  return stable_identifiers;
+  return identifiers;
 }
 
 // Closes any tab from `losers_web_state_list` that is the duplicate of a tab
@@ -55,14 +54,14 @@ NSSet<NSString*>* StableIdentifiers(WebStateList* web_state_list) {
 // Returns the number of dropped duplicates.
 int FilterCrossDuplicates(WebStateList* keepers_web_state_list,
                           WebStateList* losers_web_state_list) {
-  NSSet<NSString*>* keepers_identifiers =
-      StableIdentifiers(keepers_web_state_list);
+  std::set<web::WebStateID> keepers_identifiers =
+      UniqueIdentifiers(keepers_web_state_list);
   // Count the number of dropped tabs because they are duplicates, for
   // reporting.
   int duplicate_count = 0;
   for (int index = losers_web_state_list->count() - 1; index >= 0; --index) {
     web::WebState* web_state = losers_web_state_list->GetWebStateAt(index);
-    if ([keepers_identifiers containsObject:web_state->GetStableIdentifier()]) {
+    if (keepers_identifiers.contains(web_state->GetUniqueIdentifier())) {
       losers_web_state_list->CloseWebStateAt(index,
                                              WebStateList::CLOSE_NO_FLAGS);
       duplicate_count++;

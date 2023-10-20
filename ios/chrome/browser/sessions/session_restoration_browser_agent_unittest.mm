@@ -55,7 +55,7 @@ struct TabInfo {
   int opener_index = -1;
   bool pinned = false;
   bool with_navigation = true;
-  NSString* stable_identifier = nil;
+  const web::WebStateID unique_identifier;
 };
 
 // Information about a collection of N tabs that needs to be restored.
@@ -93,9 +93,10 @@ CRWSessionUserData* CreateSessionUserData(TabInfo tab_info) {
 // Creates a CRWSessionStorage* from `tab_info`.
 CRWSessionStorage* CreateSessionStorage(TabInfo tab_info) {
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.stableIdentifier =
-      tab_info.stable_identifier ?: [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
+  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
+  session_storage.uniqueIdentifier = tab_info.unique_identifier.valid()
+                                         ? tab_info.unique_identifier
+                                         : web::WebStateID::NewUnique();
   if (tab_info.with_navigation) {
     session_storage.lastCommittedItemIndex = 0;
     session_storage.itemStorages = CreateNavigationStorage();
@@ -951,17 +952,20 @@ TEST_F(SessionRestorationBrowserAgentTest,
 TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionFilterOutDuplicates) {
   CreateSessionRestorationBrowserAgent(true);
 
+  const web::WebStateID quadruplet_id = web::WebStateID::NewUnique();
+  const web::WebStateID twin_id = web::WebStateID::NewUnique();
+  const web::WebStateID single_id = web::WebStateID::NewUnique();
   SessionWindowIOS* window = CreateSessionWindow(SessionInfo<7>{
       .active_index = 1,
       .tab_infos =
           {
-              TabInfo{.pinned = true, .stable_identifier = @"quadruplet"},
-              TabInfo{.pinned = true, .stable_identifier = @"quadruplet"},
-              TabInfo{.stable_identifier = @"twin"},
-              TabInfo{.stable_identifier = @"quadruplet"},
-              TabInfo{.stable_identifier = @"quadruplet"},
-              TabInfo{.stable_identifier = @"twin"},
-              TabInfo{.stable_identifier = @"single"},
+              TabInfo{.pinned = true, .unique_identifier = quadruplet_id},
+              TabInfo{.pinned = true, .unique_identifier = quadruplet_id},
+              TabInfo{.unique_identifier = twin_id},
+              TabInfo{.unique_identifier = quadruplet_id},
+              TabInfo{.unique_identifier = quadruplet_id},
+              TabInfo{.unique_identifier = twin_id},
+              TabInfo{.unique_identifier = single_id},
           },
   });
 

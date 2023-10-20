@@ -66,23 +66,20 @@ class InactiveTabsUtilsTest : public PlatformTest {
 
   std::unique_ptr<web::FakeWebState> CreateTab(
       web::WebStateID unique_identifier,
-      NSString* stable_identifier,
       base::Time last_active_time) {
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>(unique_identifier,
-                                            stable_identifier);
+                                            [[NSUUID UUID] UUIDString]);
     web_state->SetLastActiveTime(last_active_time);
     return web_state;
   }
 
   std::unique_ptr<web::FakeWebState> CreateActiveTab() {
-    return CreateTab(web::WebStateID::NewUnique(), [[NSUUID UUID] UUIDString],
-                     base::Time::Now());
+    return CreateTab(web::WebStateID::NewUnique(), base::Time::Now());
   }
 
   std::unique_ptr<web::FakeWebState> CreateInactiveTab(base::TimeDelta delta) {
-    return CreateTab(web::WebStateID::NewUnique(), [[NSUUID UUID] UUIDString],
-                     base::Time::Now() - delta);
+    return CreateTab(web::WebStateID::NewUnique(), base::Time::Now() - delta);
   }
 
   void CheckOrder(WebStateList* web_state_list,
@@ -563,18 +560,17 @@ TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
 // duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
   // Create known identifiers and last_active_time.
-  NSString* const stable_identifier = [[NSUUID UUID] UUIDString];
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
   const base::Time last_active_time = base::Time::Now();
 
   // Create and insert an active tab with known identifiers.
   browser_active_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      0, CreateTab(unique_identifier, last_active_time),
       WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Create and insert an inactive tab with the same identifiers.
   browser_inactive_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      0, CreateTab(unique_identifier, last_active_time),
       WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Migrate back all inactive tabs to the active browser.
@@ -604,18 +600,17 @@ TEST_F(InactiveTabsUtilsTest,
                                                   parameters);
 
   // Create known identifiers and last_active_time.
-  NSString* const stable_identifier = [[NSUUID UUID] UUIDString];
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
   const base::Time last_active_time = base::Time::Now();
 
   // Create and insert an active tab with known identifiers.
   browser_active_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      0, CreateTab(unique_identifier, last_active_time),
       WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Create and insert an inactive tab with the same identifiers.
   browser_inactive_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      0, CreateTab(unique_identifier, last_active_time),
       WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Migrate back all inactive tabs to the active browser.
@@ -645,18 +640,17 @@ TEST_F(InactiveTabsUtilsTest,
                                                   parameters);
 
   // Create known identifiers and last_active_time.
-  NSString* const stable_identifier = [[NSUUID UUID] UUIDString];
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
   const base::Time last_active_time = base::Time::Now() - base::Days(10);
 
   // Create and insert an active tab with known identifiers.
   browser_active_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      0, CreateTab(unique_identifier, last_active_time),
       WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Create and insert an inactive tab with the same identifiers.
   browser_inactive_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, stable_identifier, last_active_time),
+      0, CreateTab(unique_identifier, last_active_time),
       WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Migrate back all inactive tabs to the active browser.
