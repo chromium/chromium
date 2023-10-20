@@ -202,6 +202,7 @@ class PriceInsightsIconViewEngagementTest
         {commerce::kPriceInsights,
          feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature},
         {});
+    test_clock_.SetNow(base::Time::Now());
   }
 
   void SetUp() override { PriceInsightsIconViewInteractiveTest::SetUp(); }

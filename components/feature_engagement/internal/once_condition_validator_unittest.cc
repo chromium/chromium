@@ -12,6 +12,7 @@
 #include "components/feature_engagement/internal/never_availability_model.h"
 #include "components/feature_engagement/internal/noop_display_lock_controller.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
+#include "components/feature_engagement/internal/test/test_time_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feature_engagement {
@@ -94,6 +95,7 @@ class OnceConditionValidatorTest : public ::testing::Test {
   NeverAvailabilityModel availability_model_;
   NoopDisplayLockController display_lock_controller_;
   OnceConditionValidator validator_;
+  TestTimeProvider time_provider_;
 };
 
 }  // namespace
@@ -103,12 +105,13 @@ TEST_F(OnceConditionValidatorTest, EnabledFeatureShouldTriggerOnce) {
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
-                                   display_lock_controller_, nullptr, 0u)
+                                   display_lock_controller_, nullptr,
+                                   time_provider_)
                   .NoErrors());
   validator_.NotifyIsShowing(kOnceTestFeatureFoo, FeatureConfig(), {""});
   ConditionValidator::Result result = validator_.MeetsConditions(
       kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
-      availability_model_, display_lock_controller_, nullptr, 0u);
+      availability_model_, display_lock_controller_, nullptr, time_provider_);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_FALSE(result.trigger_ok);
@@ -123,12 +126,14 @@ TEST_F(OnceConditionValidatorTest,
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureBar, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
-                                   display_lock_controller_, nullptr, 0u)
+                                   display_lock_controller_, nullptr,
+                                   time_provider_)
                   .NoErrors());
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
-                                   display_lock_controller_, nullptr, 0u)
+                                   display_lock_controller_, nullptr,
+                                   time_provider_)
                   .NoErrors());
 }
 
@@ -137,12 +142,14 @@ TEST_F(OnceConditionValidatorTest, StillTriggerWhenAllFeaturesDisabled) {
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
-                                   display_lock_controller_, nullptr, 0u)
+                                   display_lock_controller_, nullptr,
+                                   time_provider_)
                   .NoErrors());
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureBar, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
-                                   display_lock_controller_, nullptr, 0u)
+                                   display_lock_controller_, nullptr,
+                                   time_provider_)
                   .NoErrors());
 }
 
@@ -150,7 +157,7 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerWhenModelIsReady) {
   event_model_.SetIsReady(false);
   ConditionValidator::Result result = validator_.MeetsConditions(
       kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
-      availability_model_, display_lock_controller_, nullptr, 0u);
+      availability_model_, display_lock_controller_, nullptr, time_provider_);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.event_model_ready_ok);
 
@@ -158,7 +165,8 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerWhenModelIsReady) {
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
-                                   display_lock_controller_, nullptr, 0u)
+                                   display_lock_controller_, nullptr,
+                                   time_provider_)
                   .NoErrors());
 }
 
@@ -166,7 +174,7 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerIfNothingElseIsShowing) {
   validator_.NotifyIsShowing(kOnceTestFeatureBar, FeatureConfig(), {""});
   ConditionValidator::Result result = validator_.MeetsConditions(
       kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
-      availability_model_, display_lock_controller_, nullptr, 0u);
+      availability_model_, display_lock_controller_, nullptr, time_provider_);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.currently_showing_ok);
 
@@ -174,7 +182,8 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerIfNothingElseIsShowing) {
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
-                                   display_lock_controller_, nullptr, 0u)
+                                   display_lock_controller_, nullptr,
+                                   time_provider_)
                   .NoErrors());
 }
 
@@ -184,14 +193,15 @@ TEST_F(OnceConditionValidatorTest,
   validator_.NotifyIsShowing(kOnceTestFeatureBar, FeatureConfig(), {""});
   ConditionValidator::Result result = validator_.MeetsConditions(
       kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
-      availability_model_, display_lock_controller_, nullptr, 0u);
+      availability_model_, display_lock_controller_, nullptr, time_provider_);
   EXPECT_TRUE(result.NoErrors());
 
   validator_.NotifyDismissed(kOnceTestFeatureBar);
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
-                                   display_lock_controller_, nullptr, 0u)
+                                   display_lock_controller_, nullptr,
+                                   time_provider_)
                   .NoErrors());
 }
 
@@ -199,7 +209,7 @@ TEST_F(OnceConditionValidatorTest, PriorityNotificationBlocksOtherIPHs) {
   validator_.SetPriorityNotification("test_bar");
   ConditionValidator::Result result = validator_.MeetsConditions(
       kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
-      availability_model_, display_lock_controller_, nullptr, 0u);
+      availability_model_, display_lock_controller_, nullptr, time_provider_);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.priority_notification_ok);
 
@@ -207,21 +217,23 @@ TEST_F(OnceConditionValidatorTest, PriorityNotificationBlocksOtherIPHs) {
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
-                                   display_lock_controller_, nullptr, 0u)
+                                   display_lock_controller_, nullptr,
+                                   time_provider_)
                   .NoErrors());
 }
 
 TEST_F(OnceConditionValidatorTest, DoNotTriggerForInvalidConfig) {
   ConditionValidator::Result result = validator_.MeetsConditions(
       kOnceTestFeatureFoo, kInvalidFeatureConfig, {}, event_model_,
-      availability_model_, display_lock_controller_, nullptr, 0u);
+      availability_model_, display_lock_controller_, nullptr, time_provider_);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.config_ok);
 
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
-                                   display_lock_controller_, nullptr, 0u)
+                                   display_lock_controller_, nullptr,
+                                   time_provider_)
                   .NoErrors());
 }
 

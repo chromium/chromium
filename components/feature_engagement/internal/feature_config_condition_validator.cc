@@ -16,6 +16,7 @@
 #include "components/feature_engagement/internal/display_lock_controller.h"
 #include "components/feature_engagement/internal/event_model.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
+#include "components/feature_engagement/internal/time_provider.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,7 +35,8 @@ ConditionValidator::Result FeatureConfigConditionValidator::MeetsConditions(
     const AvailabilityModel& availability_model,
     const DisplayLockController& display_lock_controller,
     const Configuration* configuration,
-    uint32_t current_day) const {
+    const TimeProvider& time_provider) const {
+  uint32_t current_day = time_provider.GetCurrentDay();
   ConditionValidator::Result result(true);
   result.event_model_ready_ok = event_model.IsReady();
   result.currently_showing_ok = !IsBlocked(feature, config, configuration);
@@ -63,7 +65,7 @@ ConditionValidator::Result FeatureConfigConditionValidator::MeetsConditions(
   result.snooze_expiration_ok =
       !event_model.IsSnoozeDismissed(config.trigger.name) &&
       (event_model.GetLastSnoozeTimestamp(config.trigger.name) <
-       base::Time::Now() - base::Days(config.snooze_params.snooze_interval));
+       time_provider.Now() - base::Days(config.snooze_params.snooze_interval));
 
   result.priority_notification_ok =
       !pending_priority_notification_.has_value() ||

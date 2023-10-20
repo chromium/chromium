@@ -12,6 +12,7 @@ static_library("internal") {
   visibility = [
     ":*",
     "//components/feature_engagement",
+    "//components/feature_engagement/internal/test:test_support",
     "//components/feature_engagement/test:test_support",
   ]
 

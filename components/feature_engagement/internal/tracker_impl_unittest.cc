@@ -32,6 +32,7 @@
 #include "components/feature_engagement/internal/never_event_storage_validator.h"
 #include "components/feature_engagement/internal/once_condition_validator.h"
 #include "components/feature_engagement/internal/stats.h"
+#include "components/feature_engagement/internal/test/test_time_provider.h"
 #include "components/feature_engagement/internal/time_provider.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -166,26 +167,6 @@ class StoreEverythingEventStorageValidator : public EventStorageValidator {
   }
 };
 
-class TestTimeProvider : public TimeProvider {
- public:
-  TestTimeProvider() = default;
-
-  TestTimeProvider(const TestTimeProvider&) = delete;
-  TestTimeProvider& operator=(const TestTimeProvider&) = delete;
-
-  ~TestTimeProvider() override = default;
-
-  // TimeProvider implementation.
-  uint32_t GetCurrentDay() const override { return 1u; }
-
-  base::Time Now() const override { return now_; }
-
-  void SetCurrentTime(base::Time now) { now_ = now; }
-
- private:
-  base::Time now_;
-};
-
 class TestTrackerAvailabilityModel : public AvailabilityModel {
  public:
   TestTrackerAvailabilityModel() : ready_(true) {}
@@ -315,6 +296,7 @@ class TrackerImplTest : public ::testing::Test {
 
     auto time_provider = std::make_unique<TestTimeProvider>();
     time_provider_ = time_provider.get();
+    time_provider->SetCurrentDay(1u);
 
     event_exporter_ = std::make_unique<TestTrackerEventExporter>();
 
