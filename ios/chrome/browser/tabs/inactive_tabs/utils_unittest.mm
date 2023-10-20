@@ -68,8 +68,7 @@ class InactiveTabsUtilsTest : public PlatformTest {
       web::WebStateID unique_identifier,
       base::Time last_active_time) {
     std::unique_ptr<web::FakeWebState> web_state =
-        std::make_unique<web::FakeWebState>(unique_identifier,
-                                            [[NSUUID UUID] UUIDString]);
+        std::make_unique<web::FakeWebState>(unique_identifier);
     web_state->SetLastActiveTime(last_active_time);
     return web_state;
   }

@@ -55,8 +55,7 @@ std::unique_ptr<web::WebState> CreateWebStateWithNavigations(
     }
   }
 
-  auto web_state = std::make_unique<web::FakeWebState>(
-      web_state_id, [[NSUUID UUID] UUIDString]);
+  auto web_state = std::make_unique<web::FakeWebState>(web_state_id);
   web_state->SetNavigationManager(std::move(navigation_manager));
   web_state->SetNavigationItemCount(navigation_count);
   if (navigation_count > 0) {

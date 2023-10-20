@@ -37,12 +37,10 @@ void FakeWebState::CloseWebState() {
   is_closed_ = true;
 }
 
-FakeWebState::FakeWebState()
-    : FakeWebState(WebStateID::NewUnique(), [[NSUUID UUID] UUIDString]) {}
+FakeWebState::FakeWebState() : FakeWebState(WebStateID::NewUnique()) {}
 
-FakeWebState::FakeWebState(WebStateID unique_identifier,
-                           NSString* stable_identifier)
-    : stable_identifier_(stable_identifier),
+FakeWebState::FakeWebState(WebStateID unique_identifier)
+    : stable_identifier_([[NSUUID UUID] UUIDString]),
       unique_identifier_(unique_identifier) {
   DCHECK(stable_identifier_.length);
   DCHECK(unique_identifier_.valid());
