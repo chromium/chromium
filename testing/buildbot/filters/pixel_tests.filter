@@ -61,6 +61,7 @@ PageInfoBubbleViewHistoryDialogBrowserTest.*
 PageInfoBubbleViewCookiesSubpageBrowserTest.*
 PageInfoBubbleViewIsolatedWebAppBrowserTest.*
 *PasswordBubbleBrowserTest.*
+*PasswordAutomaticSaveBubbleBrowserTest.*
 *PasswordGenerationPopupViewBrowsertest.*
 *PasswordManagementRevampedBubbleInteractiveUiTest.*
 PasswordReuseModalWarningTest.*
