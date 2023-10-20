@@ -365,6 +365,13 @@ VideoDecoderPipeline::GetSupportedConfigs(
     });
   }
 
+  if (workarounds.disable_accelerated_hevc_decode) {
+    base::EraseIf(configs.value(), [](const auto& config) {
+      return config.profile_min >= HEVCPROFILE_MIN &&
+             config.profile_max <= HEVCPROFILE_MAX;
+    });
+  }
+
   return configs;
 }
 

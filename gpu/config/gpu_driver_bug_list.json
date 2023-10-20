@@ -3804,6 +3804,23 @@
       "features": [
         "disable_accelerated_hevc_decode"
       ]
+    },
+    {
+      "id": 421,
+      "cr_bugs": [1494147],
+      "description": "Accelerated video decoding leads to lock up in ChromeOS Zork (AMD Radeon Vega 3 GPUs).",
+      "os": {
+        "type" : "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x15d8", "0x15dd"],
+      "features": [
+        "disable_accelerated_h264_decode",
+        "disable_accelerated_h264_encode",
+        "disable_accelerated_vp9_decode",
+        "disable_accelerated_vp9_profile2_decode",
+        "disable_accelerated_hevc_decode"
+      ]
     }
   ]
 }
