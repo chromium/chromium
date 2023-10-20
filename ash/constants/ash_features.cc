@@ -1855,6 +1855,11 @@ BASE_FEATURE(kOnDeviceSpeechRecognition,
 // If enabled, CHOBOE Screen will be shown during the new user onboarding flow.
 BASE_FEATURE(kOobeChoobe, "OobeChoobe", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, CrOS events for OOBE and onboarding flow will be recorded.
+BASE_FEATURE(kOobeCrosEvents,
+             "OobeCrosEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Drive Pinning Screen will be shown during
 // the new user onboarding flow.
 BASE_FEATURE(kOobeDrivePinning,
@@ -3786,6 +3791,10 @@ bool IsOobeSkipAssistantEnabled() {
 
 bool IsOobeChoobeEnabled() {
   return base::FeatureList::IsEnabled(kOobeChoobe);
+}
+
+bool IsOobeCrosEventsEnabled() {
+  return base::FeatureList::IsEnabled(kOobeCrosEvents);
 }
 
 bool IsOobeSoftwareUpdateEnabled() {
