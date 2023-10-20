@@ -1105,4 +1105,35 @@ TEST_P(CSSAnimationsTest, DeferredTimelineUpdate) {
   EXPECT_EQ(0u, DeferredTimelinesCount(target));
 }
 
+TEST_P(CSSAnimationsTest, OpacityUnchangedWhileDeferred) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes fade {
+        to {
+          opacity: 0.5;
+        }
+      }
+      #target {
+          width: 100px;
+          height: 100px;
+          background-color: green;
+          animation-name: fade;
+          animation-duration: 3s;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+
+  // The animation must be waiting on a deferred start time.
+  ElementAnimations* animations = target->GetElementAnimations();
+  ASSERT_EQ(1u, animations->Animations().size());
+  Animation* animation = (*animations->Animations().begin()).key;
+  ASSERT_TRUE(animation->WaitingOnDeferredStartTime());
+
+  // Ensure the opacity doesn't change, since the animation hasn't started.
+  EXPECT_EQ(target->GetComputedStyle()->Opacity(), 1);
+}
+
 }  // namespace blink
