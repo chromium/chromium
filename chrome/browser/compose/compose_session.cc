@@ -139,7 +139,7 @@ void ComposeSession::SaveWebUIState(const std::string& webui_state) {
 }
 
 void ComposeSession::AcceptComposeResult() {
-  CHECK(state_->response->status != compose::mojom::ComposeStatus::kOk);
+  CHECK(state_->response->status == compose::mojom::ComposeStatus::kOk);
   std::move(callback_).Run(base::UTF8ToUTF16(state_->response->result));
   // TODO(b/301370241): Make sure the WebUI or browser calls CloseUI.
 }

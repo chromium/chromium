@@ -104,6 +104,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.compose_();
   }
 
+  private onAccept_() {
+    this.apiProxy_.acceptComposeResult();
+  }
+
   private onTextareaValueChanged_() {
     this.input_ = this.$.textarea.value;
     this.isSubmitEnabled_ = this.$.textarea.validate();
