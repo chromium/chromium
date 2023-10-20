@@ -187,14 +187,6 @@ def __step_config(ctx, step_config):
             "remote": False,
             "handler": "strip_rewrapper",
         },
-        {
-            # TODO(b/306522114): reproxy request too large.
-            "name": "b306522114/request-too-large",
-            "action_outs": [
-                "./obj/components/components_unittests__apk.turbine.jar",
-            ],
-            "remote": False,
-        },
         # Handle generic action_remote calls.
         {
             "name": "action_remote",
