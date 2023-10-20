@@ -88,7 +88,9 @@ class AppStorageFileHandlerTest : public testing::Test {
 
   std::vector<AppPtr> CreateOneApp() {
     std::vector<AppPtr> apps;
-    apps.push_back(std::make_unique<App>(kAppType1, kAppId1));
+    AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
+    app->paused = false;
+    apps.push_back(std::move(app));
     return apps;
   }
 
@@ -98,6 +100,7 @@ class AppStorageFileHandlerTest : public testing::Test {
     AppPtr app1 = std::make_unique<App>(kAppType1, kAppId1);
     app1->readiness = Readiness::kReady;
     app1->name = kAppName1;
+    app1->paused = false;
     apps.push_back(std::move(app1));
 
     AppPtr app2 = std::make_unique<App>(kAppType2, kAppId2);
@@ -119,6 +122,7 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->show_in_management = true;
     app2->handles_intents = false;
     app2->allow_uninstall = false;
+    app2->paused = false;
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.

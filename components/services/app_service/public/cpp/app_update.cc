@@ -120,6 +120,42 @@ void AppUpdate::Merge(App* state, const App* delta) {
   // updated.
 }
 
+// static
+bool AppUpdate::IsChanged(const App* state, const App* delta) {
+  if (!delta) {
+    return false;
+  }
+
+  if (!state) {
+    return true;
+  }
+
+  CHECK_EQ(state->app_id, delta->app_id);
+
+  if (state->app_type != delta->app_type) {
+    return true;
+  }
+
+  ::AccountId acount_id;
+  AppUpdate update(state, delta, acount_id);
+  return update.ReadinessChanged() || update.NameChanged() ||
+         update.ShortNameChanged() || update.PublisherIdChanged() ||
+         update.DescriptionChanged() || update.VersionChanged() ||
+         update.AdditionalSearchTermsChanged() || update.IconKeyChanged() ||
+         update.LastLaunchTimeChanged() || update.InstallTimeChanged() ||
+         update.PermissionsChanged() || update.InstallReasonChanged() ||
+         update.InstallSourceChanged() || update.PolicyIdsChanged() ||
+         update.IsPlatformAppChanged() || update.RecommendableChanged() ||
+         update.SearchableChanged() || update.ShowInLauncherChanged() ||
+         update.ShowInShelfChanged() || update.ShowInSearchChanged() ||
+         update.ShowInManagementChanged() || update.HandlesIntentsChanged() ||
+         update.AllowUninstallChanged() || update.HasBadgeChanged() ||
+         update.PausedChanged() || update.IntentFiltersChanged() ||
+         update.ResizeLockedChanged() || update.WindowModeChanged() ||
+         update.RunOnOsLoginChanged() || update.AppSizeInBytesChanged() ||
+         update.DataSizeInBytesChanged();
+}
+
 AppUpdate::AppUpdate(const App* state,
                      const App* delta,
                      const ::AccountId& account_id)

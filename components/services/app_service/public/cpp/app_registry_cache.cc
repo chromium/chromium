@@ -196,6 +196,11 @@ void AppRegistryCache::DoOnApps(std::vector<AppPtr> deltas) {
     App* state = (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
     App* delta = d_iter.second;
 
+    // Skip OnAppUpdate if there is no change.
+    if (!AppUpdate::IsChanged(state, delta)) {
+      continue;
+    }
+
     for (auto& obs : observers_) {
       obs.OnAppUpdate(AppUpdate(state, delta, account_id_));
     }

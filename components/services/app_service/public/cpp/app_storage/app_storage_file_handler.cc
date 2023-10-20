@@ -260,6 +260,11 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     app->handles_intents = value->FindBool(kHandlesIntentsKey);
     app->allow_uninstall = value->FindBool(kAllowUninstallKey);
 
+    // Set paused as false for the default init value to keep the consistent
+    // implementation as AppPublisher::MakeApp, and wait for the family link to
+    // update the pasued status.
+    app->paused = false;
+
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info->apps.push_back(std::move(app));
     app_info->app_types.insert(static_cast<AppType>(app_type.value()));

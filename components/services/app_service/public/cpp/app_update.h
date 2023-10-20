@@ -58,6 +58,10 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   // fields whose values aren't "unknown". The |state| may not be nullptr.
   static void Merge(App* state, const App* delta);
 
+  // Returns true if there are some changed for `delta` compared with `state`.
+  // Otherwise, returns false. `state` and `delta` must have the same`app_id`.
+  static bool IsChanged(const App* state, const App* delta);
+
   // At most one of |state| or |delta| may be nullptr.
   AppUpdate(const App* state, const App* delta, const AccountId& account_id);
 

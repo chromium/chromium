@@ -34,6 +34,8 @@ PermissionPtr MakePermission(PermissionType permission_type,
 
 class AppUpdateTest : public testing::Test {
  protected:
+  bool expect_changed_;
+
   Readiness expect_readiness_;
   Readiness expect_prior_readiness_;
   bool expect_readiness_changed_;
@@ -131,6 +133,7 @@ class AppUpdateTest : public testing::Test {
   bool expect_data_size_in_bytes_changed_;
 
   void ExpectNoChange() {
+    expect_changed_ = false;
     expect_readiness_changed_ = false;
     expect_name_changed_ = false;
     expect_short_name_changed_ = false;
@@ -165,6 +168,8 @@ class AppUpdateTest : public testing::Test {
   }
 
   void CheckExpects(const AppUpdate& u) {
+    EXPECT_EQ(expect_changed_, AppUpdate::IsChanged(u.State(), u.Delta()));
+
     EXPECT_EQ(expect_readiness_, u.Readiness());
     EXPECT_EQ(expect_prior_readiness_, u.PriorReadiness());
     EXPECT_EQ(expect_readiness_changed_, u.ReadinessChanged());
@@ -302,12 +307,18 @@ class AppUpdateTest : public testing::Test {
     expect_app_size_in_bytes_ = absl::nullopt;
     expect_data_size_in_bytes_ = absl::nullopt;
     ExpectNoChange();
+
+    if (!state && delta) {
+      expect_changed_ = true;
+    }
+
     CheckExpects(u);
 
     if (delta) {
       delta->name = test_name_0;
       expect_name_ = test_name_0;
       expect_name_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -315,6 +326,7 @@ class AppUpdateTest : public testing::Test {
       state->name = test_name_0;
       expect_name_ = test_name_0;
       expect_name_changed_ = false;
+      expect_changed_ = false;
       CheckExpects(u);
     }
 
@@ -322,6 +334,7 @@ class AppUpdateTest : public testing::Test {
       delta->readiness = Readiness::kReady;
       expect_readiness_ = Readiness::kReady;
       expect_readiness_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
 
       delta->name = absl::nullopt;
@@ -346,6 +359,7 @@ class AppUpdateTest : public testing::Test {
       delta->name = test_name_1;
       expect_name_ = test_name_1;
       expect_name_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -362,6 +376,7 @@ class AppUpdateTest : public testing::Test {
       delta->short_name = "Bob";
       expect_short_name_ = "Bob";
       expect_short_name_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -386,6 +401,7 @@ class AppUpdateTest : public testing::Test {
       delta->publisher_id = "com.android.youtube";
       expect_publisher_id_ = "com.android.youtube";
       expect_publisher_id_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -409,6 +425,7 @@ class AppUpdateTest : public testing::Test {
       delta->description = "Has a dog.";
       expect_description_ = "Has a dog.";
       expect_description_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -432,6 +449,7 @@ class AppUpdateTest : public testing::Test {
       delta->version = "1.0.1";
       expect_version_ = "1.0.1";
       expect_version_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -460,6 +478,7 @@ class AppUpdateTest : public testing::Test {
       expect_additional_search_terms_.push_back("horse");
       expect_additional_search_terms_.push_back("mouse");
       expect_additional_search_terms_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -484,6 +503,7 @@ class AppUpdateTest : public testing::Test {
       delta->icon_key = IconKey(200, 0, 0);
       expect_icon_key_ = IconKey(200, 0, 0);
       expect_icon_key_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -507,6 +527,7 @@ class AppUpdateTest : public testing::Test {
       delta->last_launch_time = base::Time::FromDoubleT(1001.0);
       expect_last_launch_time_ = base::Time::FromDoubleT(1001.0);
       expect_last_launch_time_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -530,6 +551,7 @@ class AppUpdateTest : public testing::Test {
       delta->install_time = base::Time::FromDoubleT(2001.0);
       expect_install_time_ = base::Time::FromDoubleT(2001.0);
       expect_install_time_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -568,6 +590,7 @@ class AppUpdateTest : public testing::Test {
       expect_permissions_.push_back(p0->Clone());
       expect_permissions_.push_back(p1->Clone());
       expect_permissions_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -591,6 +614,7 @@ class AppUpdateTest : public testing::Test {
       delta->install_reason = InstallReason::kPolicy;
       expect_install_reason_ = InstallReason::kPolicy;
       expect_install_reason_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -614,6 +638,7 @@ class AppUpdateTest : public testing::Test {
       delta->install_source = InstallSource::kSync;
       expect_install_source_ = InstallSource::kSync;
       expect_install_source_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -637,6 +662,7 @@ class AppUpdateTest : public testing::Test {
       delta->policy_ids = {"https://app.site/delta", "https://site.app/delta"};
       expect_policy_ids_ = {"https://app.site/delta", "https://site.app/delta"};
       expect_policy_ids_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -661,6 +687,7 @@ class AppUpdateTest : public testing::Test {
       delta->is_platform_app = true;
       expect_is_platform_app_ = true;
       expect_is_platform_app_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -684,6 +711,7 @@ class AppUpdateTest : public testing::Test {
       delta->recommendable = true;
       expect_recommendable_ = true;
       expect_recommendable_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -707,6 +735,7 @@ class AppUpdateTest : public testing::Test {
       delta->searchable = true;
       expect_searchable_ = true;
       expect_searchable_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -730,6 +759,7 @@ class AppUpdateTest : public testing::Test {
       delta->show_in_launcher = true;
       expect_show_in_launcher_ = true;
       expect_show_in_launcher_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -753,6 +783,7 @@ class AppUpdateTest : public testing::Test {
       delta->show_in_shelf = true;
       expect_show_in_shelf_ = true;
       expect_show_in_shelf_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -776,6 +807,7 @@ class AppUpdateTest : public testing::Test {
       delta->show_in_search = true;
       expect_show_in_search_ = true;
       expect_show_in_search_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -799,6 +831,7 @@ class AppUpdateTest : public testing::Test {
       delta->show_in_management = true;
       expect_show_in_management_ = true;
       expect_show_in_management_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -822,6 +855,7 @@ class AppUpdateTest : public testing::Test {
       delta->handles_intents = true;
       expect_handles_intents_ = true;
       expect_handles_intents_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -845,6 +879,7 @@ class AppUpdateTest : public testing::Test {
       delta->allow_uninstall = true;
       expect_allow_uninstall_ = true;
       expect_allow_uninstall_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -868,6 +903,7 @@ class AppUpdateTest : public testing::Test {
       delta->has_badge = true;
       expect_has_badge_ = true;
       expect_has_badge_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -891,6 +927,7 @@ class AppUpdateTest : public testing::Test {
       delta->paused = true;
       expect_paused_ = true;
       expect_paused_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -952,6 +989,7 @@ class AppUpdateTest : public testing::Test {
       delta->intent_filters.push_back(intent_filter->Clone());
       expect_intent_filters_.push_back(intent_filter->Clone());
       expect_intent_filters_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -975,6 +1013,7 @@ class AppUpdateTest : public testing::Test {
       delta->resize_locked = true;
       expect_resize_locked_ = true;
       expect_resize_locked_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -998,6 +1037,7 @@ class AppUpdateTest : public testing::Test {
       delta->window_mode = WindowMode::kWindow;
       expect_window_mode_ = WindowMode::kWindow;
       expect_window_mode_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -1022,6 +1062,7 @@ class AppUpdateTest : public testing::Test {
       expect_run_on_os_login_ =
           RunOnOsLogin(RunOnOsLoginMode::kWindowed, false);
       expect_run_on_os_login_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -1046,6 +1087,7 @@ class AppUpdateTest : public testing::Test {
       delta->app_size_in_bytes = 42;
       expect_app_size_in_bytes_ = 42;
       expect_app_size_in_bytes_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -1069,6 +1111,7 @@ class AppUpdateTest : public testing::Test {
       delta->data_size_in_bytes = 42;
       expect_data_size_in_bytes_ = 42;
       expect_data_size_in_bytes_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
