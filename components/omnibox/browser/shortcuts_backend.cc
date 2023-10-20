@@ -318,6 +318,14 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   if (text_trimmed.empty())
     return;
 
+  // On mobile on focus, zero suggest navigations have a non-empty `text` (it
+  // contains the current page URL). Ignore these navigations as shortcut
+  // suggestions are not provided in zero suggest.
+  if (match.provider &&
+      match.provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST) {
+    return;
+  }
+
   const std::u16string text_trimmed_lowercase(
       base::i18n::ToLower(text_trimmed));
   const base::Time now(base::Time::Now());
