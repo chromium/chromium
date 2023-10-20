@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -735,6 +736,10 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // navigation is run, or until that NavigationRequest gets deleted (which
   // cancels the task).
   void CancelRestartingBackForwardCacheNavigation();
+
+  base::SafeRef<FrameTreeNode> GetSafeRef() {
+    return weak_factory_.GetSafeRef();
+  }
 
  private:
   friend class CSPEmbeddedEnforcementUnitTest;

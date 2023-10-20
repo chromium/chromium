@@ -5,8 +5,10 @@
 #ifndef CONTENT_BROWSER_WEBID_WEBID_UTILS_H_
 #define CONTENT_BROWSER_WEBID_WEBID_UTILS_H_
 
+#include "base/memory/safe_ref.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -20,13 +22,16 @@ class BrowserContext;
 enum class FedCmIdpSigninStatusMode;
 class FedCmMetrics;
 class FederatedIdentityPermissionContextDelegate;
+class FrameTreeNode;
 enum class IdpSigninStatus;
 
 namespace webid {
 
-void SetIdpSigninStatus(content::BrowserContext* context,
-                        const url::Origin& origin,
-                        blink::mojom::IdpSigninStatus status);
+void SetIdpSigninStatus(
+    BrowserContext* context,
+    absl::optional<base::SafeRef<FrameTreeNode>> frame_tree_node,
+    const url::Origin& origin,
+    blink::mojom::IdpSigninStatus status);
 
 // Computes string to display in developer tools console for a FedCM endpoint
 // request with the passed-in `endpoint_name` and which returns the passed-in

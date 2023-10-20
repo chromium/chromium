@@ -25,5 +25,18 @@ fedcm_test(async t => {
   return promise_rejects_dom(t, 'NetworkError', result);
 }, 'Cross-origin status header should be ignored from fetch()');
 
+fedcm_test(async t => {
+  await mark_signed_out(alt_manifest_origin);
+  // This should be ignored because it's a cross-origin fetch.
+  let iframe = document.createElement("iframe");
+  let iframe_load = new Promise(resolve => {iframe.onload = resolve;});
+  iframe.src = url_prefix + "mark_signedin";
+  document.body.appendChild(iframe);
+  await iframe_load;
+
+  const config = alt_request_options_with_mediation_required();
+  const result = navigator.credentials.get(config);
+  return promise_rejects_dom(t, 'NetworkError', result);
+}, 'Status header should be ignored from cross-origin iframe');
 </script>
 

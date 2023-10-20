@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
@@ -26,9 +27,26 @@ using blink::mojom::FederatedAuthRequestResult;
 
 namespace content::webid {
 
-void SetIdpSigninStatus(content::BrowserContext* context,
-                        const url::Origin& origin,
-                        blink::mojom::IdpSigninStatus status) {
+void SetIdpSigninStatus(
+    content::BrowserContext* context,
+    absl::optional<base::SafeRef<FrameTreeNode>> frame_tree_node,
+    const url::Origin& origin,
+    blink::mojom::IdpSigninStatus status) {
+  // Make sure we're same-origin with our ancestors.
+  if (frame_tree_node) {
+    if ((*frame_tree_node)->IsInFencedFrameTree()) {
+      return;
+    }
+
+    RenderFrameHostImpl* parent = (*frame_tree_node)->parent();
+    while (parent) {
+      if (!origin.IsSameOriginWith(parent->GetLastCommittedOrigin())) {
+        return;
+      }
+      parent = parent->GetParent();
+    }
+  }
+
   auto* delegate = context->GetFederatedIdentityPermissionContext();
   if (!delegate) {
     // The embedder may not have a delegate (e.g. webview)

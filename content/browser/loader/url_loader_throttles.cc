@@ -5,6 +5,7 @@
 #include "content/public/browser/url_loader_throttles.h"
 
 #include "base/feature_list.h"
+#include "base/memory/safe_ref.h"
 #include "components/variations/net/omnibox_url_loader_throttle.h"
 #include "components/variations/net/variations_url_loader_throttle.h"
 #include "content/browser/client_hints/client_hints.h"
@@ -78,6 +79,15 @@ CreateContentBrowserURLLoaderThrottles(
     }
   }
 
+  // frame_tree_node_id may be invalid if we are loading the first frame
+  // of the tab.
+  FrameTreeNode* frame_tree_node = nullptr;
+  absl::optional<base::SafeRef<FrameTreeNode>> frame_tree_node_ref;
+  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+    frame_tree_node_ref = frame_tree_node->GetSafeRef();
+  }
+
   // Handle Critical Origin Trial headers if the context supports it and this
   // is a navigation request.
   OriginTrialsControllerDelegate* origin_trials_delegate =
@@ -92,26 +102,20 @@ CreateContentBrowserURLLoaderThrottles(
     // further changes to server state.
     if (net::HttpUtil::IsMethodSafe(request.method) && origin_trials_delegate) {
       absl::optional<url::Origin> top_origin = absl::nullopt;
-      // frame_tree_node_id may be invalid if we are loading the first frame
-      // of the tab.
-      if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
-        FrameTreeNode* frame_tree_node =
-            FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-        // The throttle should only use a top-frame origin for partitioning if
-        // this is not the outermost frame.
-        if (frame_tree_node->GetParentOrOuterDocument()) {
-          top_origin = frame_tree_node->GetParentOrOuterDocument()
-                           ->GetOutermostMainFrame()
-                           ->GetLastCommittedOrigin();
-        }
+      // The throttle should only use a top-frame origin for partitioning if
+      // this is not the outermost frame.
+      if (frame_tree_node && frame_tree_node->GetParentOrOuterDocument()) {
+        top_origin = frame_tree_node->GetParentOrOuterDocument()
+                         ->GetOutermostMainFrame()
+                         ->GetLastCommittedOrigin();
       }
       throttles.push_back(std::make_unique<CriticalOriginTrialsThrottle>(
           *origin_trials_delegate, std::move(top_origin)));
     }
   }
 
-  auto throttle = MaybeCreateIdentityUrlLoaderThrottle(
-      base::BindRepeating(webid::SetIdpSigninStatus, browser_context));
+  auto throttle = MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
+      webid::SetIdpSigninStatus, browser_context, frame_tree_node_ref));
   if (throttle)
     throttles.push_back(std::move(throttle));
 
