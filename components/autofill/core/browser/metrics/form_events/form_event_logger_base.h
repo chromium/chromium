@@ -201,6 +201,7 @@ class FormEventLoggerBase {
   bool has_logged_autofilled_field_was_cleared_by_javascript_after_fill_ =
       false;
   bool has_called_on_destoryed_ = false;
+  bool is_heuristic_only_email_form_ = false;
   AblationGroup ablation_group_ = AblationGroup::kDefault;
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
   absl::optional<base::TimeDelta> time_from_interaction_to_submission_;

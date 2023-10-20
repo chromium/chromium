@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -447,6 +448,162 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
               {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
               {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+}
+
+TEST_F(FormEventLoggerBaseKeyMetricsTest, NoEmailOnlyLeakage) {
+  base::HistogramTester histogram_tester;
+  // Reset `form_` to be of the type that the email heuristic only metric is
+  // interested in. With the feature off, that metric should not be logged.
+  form_ = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
+
+  // Simulate that suggestion is shown and user accepts it.
+  SeeForm(form_);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  DidShowAutofillSuggestions(form_);
+  FillTestProfile(form_);
+  SubmitForm(form_);
+
+  ResetDriverToCommitMetrics();
+  histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
+}
+
+// Tests for Autofill.EmailHeuristicOnlyAcceptance. That metric is only written
+// when the form meets the email heuristic criteria and the feature is enabled.
+class FormEventLoggerBaseEmailHeuristicOnlyMetricsTest
+    : public AutofillMetricsBaseTest,
+      public testing::Test {
+ public:
+  void SetUp() override;
+  void TearDown() override { TearDownHelper(); }
+
+  // Fillable form.
+  FormData form_;
+  base::test::ScopedFeatureList features_{
+      features::kAutofillEnableEmailHeuristicOnlyAddressForms};
+};
+
+void FormEventLoggerBaseEmailHeuristicOnlyMetricsTest::SetUp() {
+  SetUpHelper();
+
+  // Create a profile.
+  RecreateProfile(/*is_server=*/false);
+
+  // Load a fillable form.
+  form_ = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
+  std::vector<ServerFieldType> heuristic_types = {EMAIL_ADDRESS};
+  std::vector<ServerFieldType> server_types = {NO_SERVER_DATA};
+
+  autofill_manager().AddSeenForm(form_, heuristic_types, server_types);
+}
+
+TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, UserDoesNotAccept) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate that suggestion is shown but user does not accept it.
+  SeeForm(form_);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  DidShowAutofillSuggestions(form_);
+  SubmitForm(form_);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectBucketCount("Autofill.EmailHeuristicOnlyAcceptance", 0,
+                                     1);
+}
+
+TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, UserAccepts) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate that suggestion is shown and user accepts it.
+  SeeForm(form_);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  DidShowAutofillSuggestions(form_);
+  FillTestProfile(form_);
+  SubmitForm(form_);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectBucketCount("Autofill.EmailHeuristicOnlyAcceptance", 1,
+                                     1);
+}
+
+TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, NoEmailField) {
+  base::HistogramTester histogram_tester;
+
+  // Reset the form to exclude any email addresses.
+  form_ = test::GetFormData({.fields = {{.role = NAME_FULL}}});
+
+  // Simulate that suggestion is shown and user accepts it.
+  SeeForm(form_);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  DidShowAutofillSuggestions(form_);
+  FillTestProfile(form_);
+  SubmitForm(form_);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
+}
+
+TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, ServerTypeKnown) {
+  base::HistogramTester histogram_tester;
+
+  // Reset the form to include only a known server type.
+  form_ = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
+  std::vector<ServerFieldType> field_types = {EMAIL_ADDRESS};
+  autofill_manager().AddSeenForm(form_, field_types, field_types);
+
+  // Simulate that suggestion is shown and user accepts it.
+  SeeForm(form_);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  DidShowAutofillSuggestions(form_);
+  FillTestProfile(form_);
+  SubmitForm(form_);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
+}
+
+TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, NotFormTag) {
+  base::HistogramTester histogram_tester;
+
+  // Set the form to appear outside a <form> tag, which means it is not eligible
+  // for the email heuristic only metric.
+  form_.is_form_tag = false;
+
+  // Simulate that suggestion is shown and user accepts it.
+  SeeForm(form_);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  DidShowAutofillSuggestions(form_);
+  FillTestProfile(form_);
+  SubmitForm(form_);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
+}
+
+TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, TooManyFields) {
+  base::HistogramTester histogram_tester;
+
+  // Reset the form to exceed the heuristic minimum, meaning it does not meet
+  // the requirements to be counted in the `EmailHeuristicOnlyAcceptance`
+  // metric.
+  form_ = test::GetFormData({.fields = {{.role = NAME_FULL},
+                                        {.role = EMAIL_ADDRESS},
+                                        {.role = NAME_SUFFIX}}});
+
+  // Simulate that suggestion is shown and user accepts it.
+  SeeForm(form_);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  DidShowAutofillSuggestions(form_);
+  FillTestProfile(form_);
+  SubmitForm(form_);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
 }
 
 }  // namespace autofill::autofill_metrics

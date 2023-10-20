@@ -1633,6 +1633,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.EmailHeuristicOnlyAcceptance"
+    enum="BooleanAutofillFillingAcceptance" expires_after="2024-07-01">
+  <owner>battre@chromium.org</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    This metric is intended to mimic the Autofill.KeyMetrics.FillingAcceptance
+    metric, but is recorded when the
+    kAutofillEnableEmailHeuristicOnlyAddressForms feature is enabled and an
+    email heuristic only form is observed. Counts for submitted forms whether
+    users accepted the suggestion to fill values. This is counted as 'yes' if
+    the user accepted such a suggestion at any time, regardless of whether other
+    suggestions were ignored or whether the accepted suggestion was reverted
+    afterwards.
+
+    This metric is experimental and may be removed in the future.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ErrorDialogShown" enum="AutofillErrorDialogType"
     expires_after="2024-07-01">
   <owner>siyua@chromium.org</owner>
