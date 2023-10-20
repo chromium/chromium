@@ -2508,10 +2508,19 @@ bool WebContentsImpl::HasRecentInteraction() {
   return delta <= kMaxInterval;
 }
 
-void WebContentsImpl::SetIgnoreInputEvents(bool ignore_input_events) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SetIgnoreInputEvents",
-                        "ignore_input_events", ignore_input_events);
-  ignore_input_events_ = ignore_input_events;
+WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents() {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::IgnoreInputEvents");
+  ++ignore_input_events_count_;
+  // Bind weakly, since the token might outlive us.
+  return ScopedIgnoreInputEvents(base::BindOnce(
+      [](base::WeakPtr<WebContentsImpl> wc) {
+        if (wc) {
+          OPTIONAL_TRACE_EVENT0("content",
+                                "WebContentsImpl::IgnoreInputEvents.Release");
+          --wc->ignore_input_events_count_;
+        }
+      },
+      weak_factory_.GetWeakPtr()));
 }
 
 bool WebContentsImpl::HasActiveEffectivelyFullscreenVideo() {
@@ -8444,8 +8453,9 @@ void WebContentsImpl::DidReceiveInputEvent(
 bool WebContentsImpl::ShouldIgnoreInputEvents() {
   WebContentsImpl* web_contents = this;
   while (web_contents) {
-    if (web_contents->ignore_input_events_)
+    if (web_contents->ignore_input_events_count_ > 0) {
       return true;
+    }
     web_contents = web_contents->GetOuterWebContents();
   }
 

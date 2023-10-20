@@ -277,6 +277,22 @@ class WebContents : public PageNavigator,
         picture_in_picture_options;
   };
 
+  // Token that causes input to be blocked on this WebContents for at least as
+  // long as it exists.
+  class CONTENT_EXPORT ScopedIgnoreInputEvents {
+   public:
+    ~ScopedIgnoreInputEvents();
+
+    ScopedIgnoreInputEvents(ScopedIgnoreInputEvents&&);
+    ScopedIgnoreInputEvents& operator=(ScopedIgnoreInputEvents&&);
+
+   private:
+    friend class WebContentsImpl;
+    explicit ScopedIgnoreInputEvents(base::OnceClosure on_destruction_cb);
+
+    base::ScopedClosureRunner on_destruction_cb_;
+  };
+
   // Creates a new WebContents.
   //
   // The caller is responsible for ensuring that the returned WebContents is
@@ -1336,8 +1352,10 @@ class WebContents : public PageNavigator,
   // user activation work: crbug.com/848778
   virtual bool HasRecentInteraction() = 0;
 
-  // Sets a flag that causes the WebContents to ignore input events.
-  virtual void SetIgnoreInputEvents(bool ignore_input_events) = 0;
+  // Causes the WebContents to ignore input events for at least as long as the
+  // token exists.  In the event of multiple calls, input events will be ignored
+  // until all tokens have been destroyed.
+  [[nodiscard]] virtual ScopedIgnoreInputEvents IgnoreInputEvents() = 0;
 
   // Returns the group id for all audio streams that correspond to a single
   // WebContents. This can be used to determine if a AudioOutputStream was

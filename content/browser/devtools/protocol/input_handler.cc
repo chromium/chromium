@@ -1074,10 +1074,11 @@ void InputHandler::SetRenderer(int process_host_id,
   web_contents_ = WebContentsImpl::FromRenderFrameHostImpl(host_);
 
   if (ignore_input_events_ && old_web_contents != web_contents_) {
-    if (old_web_contents)
-      old_web_contents->SetIgnoreInputEvents(false);
-    if (web_contents_)
-      web_contents_->SetIgnoreInputEvents(true);
+    if (web_contents_) {
+      scoped_ignore_input_events_ = web_contents_->IgnoreInputEvents();
+    } else {
+      scoped_ignore_input_events_.reset();
+    }
   }
 }
 
@@ -1088,8 +1089,7 @@ void InputHandler::Wire(UberDispatcher* dispatcher) {
 
 Response InputHandler::Disable() {
   ClearInputState();
-  if (web_contents_ && ignore_input_events_)
-    web_contents_->SetIgnoreInputEvents(false);
+  scoped_ignore_input_events_.reset();
   ignore_input_events_ = false;
   pointer_ids_.clear();
   touch_points_.clear();
@@ -1970,8 +1970,11 @@ Response InputHandler::EmulateTouchFromMouseEvent(const std::string& type,
 
 Response InputHandler::SetIgnoreInputEvents(bool ignore) {
   ignore_input_events_ = ignore;
-  if (web_contents_)
-    web_contents_->SetIgnoreInputEvents(ignore);
+  if (!ignore) {
+    scoped_ignore_input_events_.reset();
+  } else if (web_contents_) {
+    scoped_ignore_input_events_ = web_contents_->IgnoreInputEvents();
+  }
   return Response::Success();
 }
 
