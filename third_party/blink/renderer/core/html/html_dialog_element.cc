@@ -311,7 +311,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   document.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   if (LocalDOMWindow* window = GetDocument().domWindow()) {
-    close_watcher_ = CloseWatcher::Create(window, this);
+    close_watcher_ = CloseWatcher::Create(window);
     if (close_watcher_) {
       auto* event_listener =
           MakeGarbageCollected<DialogCloseWatcherEventListener>(this);

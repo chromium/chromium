@@ -1528,8 +1528,7 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
     }
 
     if (RuntimeEnabledFeatures::CloseWatcherEnabled()) {
-      auto* close_watcher = CloseWatcher::Create(
-          GetDocument().domWindow(), /*dialog_for_use_counters=*/nullptr);
+      auto* close_watcher = CloseWatcher::Create(GetDocument().domWindow());
       if (close_watcher) {
         auto* event_listener =
             MakeGarbageCollected<PopoverCloseWatcherEventListener>(this);
