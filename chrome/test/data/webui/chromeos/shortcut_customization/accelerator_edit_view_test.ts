@@ -224,4 +224,41 @@ suite('acceleratorEditViewTest', function() {
         '#acceleratorInfoText', editViewElement!.shadowRoot, HTMLDivElement);
     assertEquals(expectedHintMessage, statusMessageElement.textContent!.trim());
   });
+
+  test('ClickCancelButton', async () => {
+    const acceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+
+    editViewElement!.acceleratorInfo = acceleratorInfo;
+    await flush();
+
+    // Click on the edit button.
+    getElementById('editButton')!.click();
+
+    // Expect cancel button is visible.
+    const cancelButton = getElementById('cancelButton');
+    assertTrue(isVisible(cancelButton));
+
+    // Set up flags for event listeners
+    let onBlurCalled = false;
+    let onCancelButtonClickedCalled = false;
+
+    // Attach event listeners
+    editViewElement!.addEventListener('blur', () => {
+      onBlurCalled = true;
+    });
+    cancelButton!.addEventListener('click', () => {
+      onCancelButtonClickedCalled = true;
+    });
+
+    // Click on cancel button.
+    cancelButton.click();
+    await flush();
+
+    // Expect blur event is not triggered.
+    assertTrue(onCancelButtonClickedCalled);
+    assertFalse(onBlurCalled);
+  });
 });

@@ -9,8 +9,8 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
@@ -120,6 +120,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   source: AcceleratorSource;
   restoreDefaultHasError: boolean;
   protected statusMessage: string;
+  protected cancelButtonClicked = false;
   private shortcutProvider: ShortcutProviderInterface;
   private lookupManager: AcceleratorLookupManager;
 
@@ -129,6 +130,16 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
     this.shortcutProvider = getShortcutProvider();
 
     this.lookupManager = AcceleratorLookupManager.getInstance();
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener('blur', this.onBlur);
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener('blur', this.onBlur);
   }
 
   protected async onStatusMessageChanged(): Promise<void> {
@@ -199,12 +210,17 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   }
 
   protected onCancelButtonClicked(): void {
-    // Click the cancel button will lose focus of input then will trigger
-    // endCapture().
-    const viewElement = this.shadowRoot!.querySelector('accelerator-view') as
-        AcceleratorViewElement;
-    assert(viewElement);
-    viewElement.blur();
+    this.cancelButtonClicked = true;
+    this.endCapture();
+  }
+
+  protected onBlur(): void {
+    // Prevent clicking cancel button triggering blur event.
+    if (this.cancelButtonClicked) {
+      this.cancelButtonClicked = false;
+      return;
+    }
+    this.endCapture();
   }
 
   protected showEditView(): boolean {
@@ -214,6 +230,12 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   protected showStatusMessage(): boolean {
     return this.showEditView() ||
         this.acceleratorInfo.state === AcceleratorState.kDisabledByUser;
+  }
+
+  private endCapture(): void {
+    const viewElement = strictQuery(
+        'accelerator-view', this.shadowRoot, AcceleratorViewElement);
+    viewElement.endCapture(/*should_delay=*/ false);
   }
 
   getStatusMessageForTesting(): string {

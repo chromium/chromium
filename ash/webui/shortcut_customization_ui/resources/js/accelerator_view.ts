@@ -194,8 +194,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.eventTracker.add(this, 'keyup', (e: KeyboardEvent) => this.onKeyUp(e));
     this.eventTracker.add(this, 'focus', () => this.startCapture());
     this.eventTracker.add(this, 'mouseup', () => this.startCapture());
-    this.eventTracker.add(
-        this, 'blur', () => this.endCapture(/*should_delay=*/ false));
     this.$.container.focus();
   }
 
@@ -223,7 +221,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.makeA11yAnnouncement(this.i18n('editViewStatusMessage'));
   }
 
-  private async endCapture(shouldDelay: boolean): Promise<void> {
+  async endCapture(shouldDelay: boolean): Promise<void> {
     if (!this.isCapturing) {
       return;
     }
