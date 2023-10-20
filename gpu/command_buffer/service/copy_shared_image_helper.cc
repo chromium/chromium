@@ -122,10 +122,9 @@ sk_sp<SkSurface> CreateSkSurfaceWrappingGLTexture(
 }
 
 // Return true if all of `sk_yuv_color_space`, `sk_plane_config`,
-// `sk_subsampling`, `rgba_image` (if `populate_rgba_image` is true),
-// `num_yuva_images`, and `yuva_images` were successfully populated. Return
-// false on error. If this returns false, some of the output arguments may be
-// left populated.
+// `sk_subsampling`, `num_yuva_images`, and `yuva_images` were successfully
+// populated. Return false on error. If this returns false, some of the output
+// arguments may be left populated.
 base::expected<void, GLError> ConvertYUVACommon(
     const char* function_name,
     GLenum yuv_color_space_in,
@@ -137,11 +136,9 @@ base::expected<void, GLError> ConvertYUVACommon(
     SkYUVColorSpace& sk_yuv_color_space,
     SkYUVAInfo::PlaneConfig& sk_plane_config,
     SkYUVAInfo::Subsampling& sk_subsampling,
-    std::unique_ptr<SkiaImageRepresentation>& rgba_image,
     int& num_yuva_planes,
     std::array<std::unique_ptr<SkiaImageRepresentation>,
-               SkYUVAInfo::kMaxPlanes>& yuva_images,
-    bool populate_rgba_image) {
+               SkYUVAInfo::kMaxPlanes>& yuva_images) {
   if (yuv_color_space_in < 0 ||
       yuv_color_space_in > kLastEnum_SkYUVColorSpace) {
     return base::unexpected(
@@ -174,14 +171,6 @@ base::expected<void, GLError> ConvertYUVACommon(
         << " was passed an invalid mailbox for YUVA plane: " << i
         << " with plane config " << plane_config_in;
   }
-  gpu::Mailbox rgba_mailbox;
-  if (populate_rgba_image) {
-    rgba_mailbox =
-        Mailbox::FromVolatile(reinterpret_cast<const volatile Mailbox*>(
-            mailboxes_in)[SkYUVAInfo::kMaxPlanes]);
-    DLOG_IF(ERROR, !rgba_mailbox.Verify())
-        << function_name << " was passed an invalid mailbox for RGBA";
-  }
 
   for (int i = 0; i < num_yuva_planes; ++i) {
     yuva_images[i] = representation_factory->ProduceSkia(yuva_mailboxes[i],
@@ -193,15 +182,6 @@ base::expected<void, GLError> ConvertYUVACommon(
           base::NumberToString(plane_config_in) + ".";
       return base::unexpected(
           GLError(GL_INVALID_OPERATION, function_name, msg));
-    }
-  }
-  if (populate_rgba_image) {
-    rgba_image =
-        representation_factory->ProduceSkia(rgba_mailbox, shared_context_state);
-    if (!rgba_image) {
-      return base::unexpected(
-          GLError(GL_INVALID_OPERATION, "ConvertYUVAMailboxesToRGB",
-                  "Attempting to operate on unknown dest mailbox."));
     }
   }
   return base::ok();
@@ -389,18 +369,33 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in) {
+  // Populate the RGBA image.
+  gpu::Mailbox rgba_mailbox =
+      Mailbox::FromVolatile(reinterpret_cast<const volatile Mailbox*>(
+          mailboxes_in)[SkYUVAInfo::kMaxPlanes]);
+  DLOG_IF(ERROR, !rgba_mailbox.Verify())
+      << "ConvertRGBAToYUVAMailboxes was passed an invalid mailbox for RGBA";
+  std::unique_ptr<SkiaImageRepresentation> rgba_image =
+      representation_factory_->ProduceSkia(rgba_mailbox,
+                                           shared_context_state_.get());
+  if (!rgba_image) {
+    return base::unexpected(
+        GLError(GL_INVALID_OPERATION, "ConvertRGBAToYUVAMailboxes",
+                "Attempting to operate on unknown RGBA mailbox."));
+  }
+
+  // Populate common parameters.
   SkYUVColorSpace dst_color_space;
   SkYUVAInfo::PlaneConfig dst_plane_config;
   SkYUVAInfo::Subsampling dst_subsampling;
-  std::unique_ptr<SkiaImageRepresentation> rgba_image;
   int num_yuva_planes;
   std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
       yuva_images;
   RETURN_IF_ERROR(ConvertYUVACommon(
       "ConvertYUVAMailboxesToRGB", yuv_color_space, plane_config, subsampling,
       mailboxes_in, representation_factory_, shared_context_state_,
-      dst_color_space, dst_plane_config, dst_subsampling, rgba_image,
-      num_yuva_planes, yuva_images, /*populate_rgba_image=*/true));
+      dst_color_space, dst_plane_config, dst_subsampling, num_yuva_planes,
+      yuva_images));
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
@@ -477,19 +472,35 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* bytes_in) {
+  // Populate the destination image.
+  gpu::Mailbox rgba_mailbox =
+      Mailbox::FromVolatile(reinterpret_cast<const volatile Mailbox*>(
+          bytes_in)[SkYUVAInfo::kMaxPlanes]);
+  DLOG_IF(ERROR, !rgba_mailbox.Verify())
+      << "ConvertYUVAMailboxesToRGB was passed an invalid mailbox for RGBA";
+  std::unique_ptr<SkiaImageRepresentation> rgba_image =
+      representation_factory_->ProduceSkia(rgba_mailbox,
+                                           shared_context_state_.get());
+  if (!rgba_image) {
+    return base::unexpected(
+        GLError(GL_INVALID_OPERATION, "ConvertYUVAMailboxesToRGB",
+                "Attempting to operate on unknown dest mailbox."));
+  }
+
+  // Populate common parameters.
   SkYUVColorSpace src_yuv_color_space;
   SkYUVAInfo::PlaneConfig src_plane_config;
   SkYUVAInfo::Subsampling src_subsampling;
-  std::unique_ptr<SkiaImageRepresentation> rgba_image;
   int num_src_planes;
   std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
       yuva_images;
   RETURN_IF_ERROR(ConvertYUVACommon(
       "ConvertYUVAMailboxesToRGB", planes_yuv_color_space, plane_config,
       subsampling, bytes_in, representation_factory_, shared_context_state_,
-      src_yuv_color_space, src_plane_config, src_subsampling, rgba_image,
-      num_src_planes, yuva_images, /*populate_rgba_image=*/true));
+      src_yuv_color_space, src_plane_config, src_subsampling, num_src_planes,
+      yuva_images));
 
+  // Populate the source RGB color space.
   sk_sp<SkColorSpace> src_rgb_color_space = ReadSkColorSpace(
       bytes_in + (SkYUVAInfo::kMaxPlanes + 1) * sizeof(gpu::Mailbox));
 
