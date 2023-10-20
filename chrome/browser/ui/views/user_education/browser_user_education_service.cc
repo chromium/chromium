@@ -74,12 +74,10 @@
 namespace {
 
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
-const char kSidePanelReadingListTutorialMetricPrefix[] = "SidePanelReadingList";
 const char kCustomizeChromeTutorialMetricPrefix[] = "CustomizeChromeSidePanel";
 const char kSideSearchTutorialMetricPrefix[] = "SideSearch";
 const char kPasswordManagerTutorialMetricPrefix[] = "PasswordManager";
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
-constexpr char kReadingListItemElementName[] = "ReadingListItem";
 constexpr char kChromeThemeBackElementName[] = "ChromeThemeBackElement";
 
 class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
@@ -205,8 +203,6 @@ bool HasTabGroups(const BrowserView* browser_view) {
 
 }  // namespace
 
-const char kSidePanelReadingListTutorialId[] =
-    "Side Panel Reading List Tutorial";
 const char kSideSearchTutorialId[] = "Side Search Tutorial";
 
 user_education::HelpBubbleDelegate* GetHelpBubbleDelegate() {
@@ -875,54 +871,6 @@ void MaybeRegisterChromeTutorials(
               .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
               .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_SUCCESS_BODY)
               .InAnyContext()));
-
-  // Side panel reading list tutorial
-  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-    tutorial_registry.AddTutorial(
-        kSidePanelReadingListTutorialId,
-        TutorialDescription::Create<kSidePanelReadingListTutorialMetricPrefix>(
-
-            // Open side panel
-            BubbleStep(kToolbarSidePanelButtonElementId)
-                .SetBubbleBodyText(
-                    IDS_TUTORIAL_SIDE_PANEL_READING_LIST_OPEN_SIDE_PANEL)
-                .SetBubbleArrow(HelpBubbleArrow::kTopRight),
-
-            // Click "Add current tab"
-            BubbleStep(kAddCurrentTabToReadingListElementId)
-                .SetBubbleBodyText(IDS_TUTORIAL_SIDE_PANEL_READING_LIST_ADD_TAB)
-                .SetBubbleArrow(HelpBubbleArrow::kRightTop)
-                .InAnyContext(),
-
-            // When shown, name the element
-            HiddenStep::WaitForShowEvent(kSidePanelReadingListUnreadElementId)
-                .InAnyContext()
-                .NameElement(kReadingListItemElementName),
-
-            // Mark as read
-            BubbleStep(kReadingListItemElementName)
-                .SetBubbleBodyText(
-                    IDS_TUTORIAL_SIDE_PANEL_READING_LIST_MARK_READ)
-                .SetBubbleArrow(HelpBubbleArrow::kRightTop),
-
-            EventStep(kSidePanelReadingMarkedAsReadEventId,
-                      kReadingListItemElementName),
-
-            // Click drop down
-            BubbleStep(kSidePanelComboboxElementId)
-                .SetBubbleBodyText(
-                    IDS_TUTORIAL_SIDE_PANEL_READING_LIST_CLICK_DROPDOWN)
-                .SetBubbleArrow(HelpBubbleArrow::kTopLeft),
-
-            EventStep(kSidePanelComboboxChangedCustomEventId,
-                      kSidePanelComboboxElementId),
-
-            // Completion of the tutorial.
-            BubbleStep(kTabStripRegionElementId)
-                .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
-                .SetBubbleBodyText(
-                    IDS_TUTORIAL_SIDE_PANEL_READING_LIST_SUCCESS_BODY)));
-  }
 
   {  // Side Search tutorial
     auto side_search_tutorial =
