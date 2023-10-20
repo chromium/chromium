@@ -2420,6 +2420,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACKING_TITLE" desc="Title for Price Tracking Notifications settings menu row.">
         Tracking Price
       </message>
+      <message name="IDS_IOS_PRIVACY_GUIDE_TITLE" desc="Title for the Privacy Guide settings menu row.">
+        Privacy Guide
+      </message>
       <message name="IDS_IOS_TRACKING_PRICE_HEADER_TEXT" desc="Text for Tracking Price header.">
         Manage how you receive price drop alerts for products you track
       </message>

@@ -186,4 +186,7 @@ extern NSString* const kSettingsMoveInactiveTabsCellId;
 // The accessibility identifier of the tab pickup settings cell.
 extern NSString* const kSettingsTabPickupCellId;
 
+// The accessibility identifier of the Privacy Guide settings cell.
+extern NSString* const kSettingsPrivacyGuideCellId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_
