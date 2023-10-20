@@ -13,6 +13,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -48,9 +49,8 @@ class NotificationCenterTrayPixelTest : public AshTestBase {
 // Tests the UI of the notification center tray when connecting a secondary
 // display while two notification icons are present. This was added for
 // b/284313750.
-// TODO(b/306483873): Disabled due to test flake.
 TEST_F(NotificationCenterTrayPixelTest,
-       DISABLED_NotificationTrayOnSecondaryDisplayWithTwoNotificationIcons) {
+       NotificationTrayOnSecondaryDisplayWithTwoNotificationIcons) {
   // Add two pinned notifications to make two notification icons show up in the
   // notification center tray.
   test_api()->AddPinnedNotification();
@@ -59,12 +59,18 @@ TEST_F(NotificationCenterTrayPixelTest,
   // Add a secondary display.
   UpdateDisplay("800x799,800x799");
   auto secondary_display_id = display_manager()->GetDisplayAt(1).id();
-  ASSERT_TRUE(test_api()->GetTrayOnDisplay(secondary_display_id));
+  auto* tray = test_api()->GetTrayOnDisplay(secondary_display_id);
+  ASSERT_TRUE(tray);
+
+  // Hide any popups that may be showing to reduce the chance that this test
+  // flakes. See http://b/306483873 for details.
+  tray->ShowBubble();
+  tray->CloseBubble();
+  ASSERT_FALSE(message_center::MessageCenter::Get()->HasPopupNotifications());
 
   // Check the UI of the notification center tray on the secondary display.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnSecondaryScreen(
-      "check_view", /*revision_number=*/2,
-      test_api()->GetTrayOnDisplay(secondary_display_id)));
+      "check_view", /*revision_number=*/3, tray));
 }
 
 }  // namespace ash
