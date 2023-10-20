@@ -108,6 +108,7 @@ struct RWBuffer::BufferHead {
           reinterpret_cast<void*>(const_cast<RWBuffer::BufferHead*>(this)));
       while (block) {
         RWBuffer::BufferBlock* next = block->next_;
+        block->~BufferBlock();
         WTF::Partitions::BufferFree(block);
         block = next;
       }
