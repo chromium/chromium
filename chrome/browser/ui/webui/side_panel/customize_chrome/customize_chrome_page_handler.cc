@@ -59,6 +59,8 @@
 #include "ui/native_theme/native_theme.h"
 
 namespace {
+const char kDescriptorsBaseUrl[] =
+    "https://static.corp.google.com/chrome-wallpaper-search/";
 // Calculate new dimensions given the width and height that will make the
 // smaller dimension equal to goal_size but keep the current aspect ratio.
 // The first value in the pair is the width and the second is the height.
@@ -458,9 +460,8 @@ void CustomizeChromePageHandler::GetDescriptors(
           }
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(
-      "https://static.corp.google.com/chrome-wallpaper-search/"
-      "descriptors_en-US.json");
+  resource_request->url =
+      GURL(base::StrCat({kDescriptorsBaseUrl, "descriptors_en-US.json"}));
   resource_request->request_initiator =
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
   simple_url_loader_ = network::SimpleURLLoader::Create(
@@ -588,7 +589,8 @@ void CustomizeChromePageHandler::OnDescriptorsJsonParsed(
       }
       auto mojo_descriptor_b = side_panel::mojom::DescriptorB::New();
       mojo_descriptor_b->label = *label;
-      mojo_descriptor_b->image_path = *image_path;
+      mojo_descriptor_b->image_path =
+          base::StrCat({kDescriptorsBaseUrl, *image_path});
       mojo_descriptor_b_list.push_back(std::move(mojo_descriptor_b));
     }
   }

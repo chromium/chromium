@@ -112,7 +112,7 @@
     <cr-action-menu id="descriptorMenuB">
       <template is="dom-repeat" items="[[descriptors_.descriptorB]]">
         <button class="dropdown-item" on-click="onDescriptorLabelClickB_">
-          <img src="[[item.imagePath]]"></img>
+          <img is="cr-auto-img" auto-src="[[item.imagePath]]"></img>
           <span>[[item.label]]</span>
         </button>
       </template>

@@ -844,9 +844,10 @@ class CustomizeChromePageHandlerWithWallpaperSearchTest
     CustomizeChromePageHandlerTest::SetUp();
   }
 
+  const std::string kDescriptorsBaseURL =
+      "https://static.corp.google.com/chrome-wallpaper-search/";
   const std::string kDescriptorsLoadURL =
-      "https://static.corp.google.com/chrome-wallpaper-search/"
-      "descriptors_en-US.json";
+      base::StrCat({kDescriptorsBaseURL, "descriptors_en-US.json"});
   void SetUpDescriptorsResponseWithData(const std::string& response) {
     test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& request) {}));
@@ -908,7 +909,8 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   const auto& descriptor_b = descriptors->descriptor_b;
   EXPECT_EQ(1u, descriptor_b.size());
   EXPECT_EQ("foo", descriptor_b[0]->label);
-  EXPECT_EQ("bar.png", descriptor_b[0]->image_path);
+  EXPECT_EQ(base::StrCat({kDescriptorsBaseURL, "bar.png"}),
+            descriptor_b[0]->image_path);
 
   const auto& descriptor_c = descriptors->descriptor_c;
   EXPECT_EQ(3u, descriptor_c.size());
