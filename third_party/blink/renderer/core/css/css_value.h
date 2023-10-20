@@ -197,6 +197,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsViewValue() const { return class_type_ == kViewClass; }
   bool IsRatioValue() const { return class_type_ == kRatioClass; }
 
+  bool IsRepeatStyleValue() const { return class_type_ == kRepeatStyleClass; }
+
   bool HasFailedOrCanceledSubresources() const;
   bool MayContainUrl() const;
   void ReResolveUrl(const Document&) const;
@@ -301,6 +303,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
 
     kImageSetOptionClass,
     kImageSetTypeClass,
+
+    kRepeatStyleClass,
 
     // List class types must appear after ValueListClass.
     kValueListClass,

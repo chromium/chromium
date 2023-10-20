@@ -342,26 +342,22 @@ const CSSValueList* ComputedStyleUtils::CreatePositionListForLayer(
   return position_list;
 }
 
-const CSSValue* ComputedStyleUtils::ValueForFillRepeat(EFillRepeat x_repeat,
-                                                       EFillRepeat y_repeat) {
-  // For backwards compatibility, if both values are equal, just return one of
-  // them. And if the two values are equivalent to repeat-x or repeat-y, just
-  // return the shorthand.
-  if (x_repeat == y_repeat) {
-    return CSSIdentifierValue::Create(x_repeat);
-  }
-  if (x_repeat == EFillRepeat::kRepeatFill &&
-      y_repeat == EFillRepeat::kNoRepeatFill) {
-    return CSSIdentifierValue::Create(CSSValueID::kRepeatX);
-  }
-  if (x_repeat == EFillRepeat::kNoRepeatFill &&
-      y_repeat == EFillRepeat::kRepeatFill) {
-    return CSSIdentifierValue::Create(CSSValueID::kRepeatY);
+const CSSValue* ComputedStyleUtils::ValueForFillRepeat(
+    const FillLayer* curr_layer) {
+  const auto& fill_repeat = curr_layer->Repeat();
+
+  return MakeGarbageCollected<CSSRepeatStyleValue>(
+      CSSIdentifierValue::Create(fill_repeat.x),
+      CSSIdentifierValue::Create(fill_repeat.y));
+}
+
+const CSSValue* ComputedStyleUtils::RepeatStyle(const FillLayer* curr_layer) {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+
+  for (; curr_layer; curr_layer = curr_layer->Next()) {
+    list->Append(*ValueForFillRepeat(curr_layer));
   }
 
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*CSSIdentifierValue::Create(x_repeat));
-  list->Append(*CSSIdentifierValue::Create(y_repeat));
   return list;
 }
 
@@ -385,8 +381,7 @@ const CSSValueList* ComputedStyleUtils::ValuesForBackgroundShorthand(
                              ? *curr_layer->GetImage()->ComputedCSSValue(
                                    style, allow_visited_style)
                              : *CSSIdentifierValue::Create(CSSValueID::kNone));
-    before_slash->Append(
-        *ValueForFillRepeat(curr_layer->RepeatX(), curr_layer->RepeatY()));
+    before_slash->Append(*ValueForFillRepeat(curr_layer));
     before_slash->Append(*CSSIdentifierValue::Create(curr_layer->Attachment()));
     before_slash->Append(*CreatePositionListForLayer(
         GetCSSPropertyBackgroundPosition(), *curr_layer, style));
@@ -399,16 +394,6 @@ const CSSValueList* ComputedStyleUtils::ValuesForBackgroundShorthand(
     result->Append(*list);
   }
   return result;
-}
-
-const CSSValue* ComputedStyleUtils::BackgroundRepeatOrWebkitMaskRepeat(
-    const FillLayer* curr_layer) {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (; curr_layer; curr_layer = curr_layer->Next()) {
-    list->Append(
-        *ValueForFillRepeat(curr_layer->RepeatX(), curr_layer->RepeatY()));
-  }
-  return list;
 }
 
 const CSSValue* ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(

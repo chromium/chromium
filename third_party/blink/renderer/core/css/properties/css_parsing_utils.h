@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -378,14 +379,8 @@ bool ParseBackgroundOrMask(bool,
 
 CSSValue* ConsumeCoordBoxOrNoClip(CSSParserTokenRange&);
 
-bool ConsumeRepeatStyleComponent(CSSParserTokenRange&,
-                                 CSSValue*& value1,
-                                 CSSValue*& value2,
-                                 bool& implicit);
-bool ConsumeRepeatStyle(CSSParserTokenRange&,
-                        CSSValue*& result_x,
-                        CSSValue*& result_y,
-                        bool& implicit);
+CSSRepeatStyleValue* ConsumeRepeatStyleValue(CSSParserTokenRange& range);
+CSSValueList* ParseRepeatStyle(CSSParserTokenRange& range);
 
 CSSValue* ConsumeWebkitBorderImage(CSSParserTokenRange&,
                                    const CSSParserContext&);

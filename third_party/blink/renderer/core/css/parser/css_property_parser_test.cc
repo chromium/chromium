@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -1050,6 +1051,112 @@ TEST(CSSPropertyParserTest, AnchorPositioningDisabled) {
                              context));
   EXPECT_FALSE(ParseCSSValue(CSSPropertyID::kHeight,
                              "anchor-size(--foo height)", context));
+}
+
+void TestRepeatStyleParsing(const String& testValue,
+                            const String& expectedCssText,
+                            const CSSPropertyID& propID) {
+  const CSSValue* value = CSSParser::ParseSingleValue(
+      propID, testValue,
+      StrictCSSParserContext(SecureContextMode::kSecureContext));
+  ASSERT_NE(value, nullptr);
+
+  const CSSValueList* val_list = To<CSSValueList>(value);
+  ASSERT_EQ(val_list->length(), 1U);
+
+  const CSSRepeatStyleValue& repeat_style_value =
+      To<CSSRepeatStyleValue>(val_list->First());
+  EXPECT_EQ(expectedCssText, repeat_style_value.CssText());
+}
+
+void TestRepeatStylesParsing(const String& testValue,
+                             const String& expectedCssText) {
+  TestRepeatStyleParsing(testValue, expectedCssText,
+                         CSSPropertyID::kBackgroundRepeat);
+  TestRepeatStyleParsing(testValue, expectedCssText,
+                         CSSPropertyID::kWebkitMaskRepeat);
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleRepeatX1) {
+  TestRepeatStylesParsing("repeat-x", "repeat-x");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleRepeatX2) {
+  TestRepeatStylesParsing("repeat no-repeat", "repeat-x");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleRepeatY1) {
+  TestRepeatStylesParsing("repeat-y", "repeat-y");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleRepeatY2) {
+  TestRepeatStylesParsing("no-repeat repeat", "repeat-y");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleRepeat1) {
+  TestRepeatStylesParsing("repeat", "repeat");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleRepeat2) {
+  TestRepeatStylesParsing("repeat repeat", "repeat");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleNoRepeat1) {
+  TestRepeatStylesParsing("no-repeat", "no-repeat");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleNoRepeat2) {
+  TestRepeatStylesParsing("no-repeat no-repeat", "no-repeat");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleSpace1) {
+  TestRepeatStylesParsing("space", "space");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleSpace2) {
+  TestRepeatStylesParsing("space space", "space");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleRound1) {
+  TestRepeatStylesParsing("round", "round");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleRound2) {
+  TestRepeatStylesParsing("round round", "round");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyle2Val) {
+  TestRepeatStylesParsing("round space", "round space");
+}
+
+void TestRepeatStyleViaShorthandParsing(const String& testValue,
+                                        const String& expectedCssText,
+                                        const CSSPropertyID& propID) {
+  auto* style =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+  CSSParser::ParseValue(style, propID, testValue, false /* important */);
+  ASSERT_NE(style, nullptr);
+  EXPECT_TRUE(style->AsText().Contains(expectedCssText));
+}
+
+void TestRepeatStyleViaShorthandsParsing(const String& testValue,
+                                         const String& expectedCssText) {
+  TestRepeatStyleViaShorthandParsing(testValue, expectedCssText,
+                                     CSSPropertyID::kBackground);
+  TestRepeatStyleViaShorthandParsing(testValue, expectedCssText,
+                                     CSSPropertyID::kWebkitAlternativeMask);
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleRepeatXViaShorthand) {
+  TestRepeatStyleViaShorthandsParsing("url(foo) repeat no-repeat", "repeat-x");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyleRoundViaShorthand) {
+  TestRepeatStyleViaShorthandsParsing("url(foo) round round", "round");
+}
+
+TEST(CSSPropertyParserTest, RepeatStyle2ValViaShorthand) {
+  TestRepeatStyleViaShorthandsParsing("url(foo) space repeat", "space repeat");
 }
 
 }  // namespace blink

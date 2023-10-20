@@ -4305,10 +4305,12 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
       return ConsumeCoordBox(range);
     case CSSPropertyID::kWebkitMaskOrigin:
       return ConsumePrefixedBackgroundBox(range, AllowTextValue::kForbid);
+    case CSSPropertyID::kBackgroundRepeat:
+    case CSSPropertyID::kWebkitMaskRepeat:
+      return ConsumeRepeatStyleValue(range);
     default:
-      break;
+      return nullptr;
   };
-  return nullptr;
 }
 
 const StylePropertyShorthand& WebkitMaskShorthand(CSSPropertyID shorthand_id) {
@@ -4361,11 +4363,8 @@ bool ParseBackgroundOrMask(bool important,
         CSSValue* value = nullptr;
         CSSValue* value_y = nullptr;
         const CSSProperty& property = *shorthand.properties()[i];
-        if (property.IDEquals(CSSPropertyID::kBackgroundRepeatX) ||
-            property.IDEquals(CSSPropertyID::kWebkitMaskRepeatX)) {
-          ConsumeRepeatStyleComponent(range, value, value_y, implicit);
-        } else if (property.IDEquals(CSSPropertyID::kBackgroundPositionX) ||
-                   property.IDEquals(CSSPropertyID::kWebkitMaskPositionX)) {
+        if (property.IDEquals(CSSPropertyID::kBackgroundPositionX) ||
+            property.IDEquals(CSSPropertyID::kWebkitMaskPositionX)) {
           if (!ConsumePosition(range, context, UnitlessQuirk::kForbid,
                                WebFeature::kThreeValuedPositionBackground,
                                value, value_y)) {
@@ -4390,9 +4389,7 @@ bool ParseBackgroundOrMask(bool important,
             return false;
           }
         } else if (property.IDEquals(CSSPropertyID::kBackgroundPositionY) ||
-                   property.IDEquals(CSSPropertyID::kBackgroundRepeatY) ||
-                   property.IDEquals(CSSPropertyID::kWebkitMaskPositionY) ||
-                   property.IDEquals(CSSPropertyID::kWebkitMaskRepeatY)) {
+                   property.IDEquals(CSSPropertyID::kWebkitMaskPositionY)) {
           continue;
         } else {
           value =
@@ -4421,6 +4418,7 @@ bool ParseBackgroundOrMask(bool important,
     // TODO(timloh): This will make invalid longhands, see crbug.com/386459
     for (unsigned i = 0; i < longhand_count; ++i) {
       const CSSProperty& property = *shorthand.properties()[i];
+
       if (property.IDEquals(CSSPropertyID::kBackgroundColor) &&
           !range.AtEnd()) {
         if (parsed_longhand[i]) {
@@ -4428,14 +4426,16 @@ bool ParseBackgroundOrMask(bool important,
         }
         continue;
       }
-      if ((property.IDEquals(CSSPropertyID::kBackgroundClip) ||
-           property.IDEquals(CSSPropertyID::kMaskClip) ||
-           property.IDEquals(CSSPropertyID::kWebkitMaskClip)) &&
-          !parsed_longhand[i] && origin_value) {
-        AddBackgroundValue(longhands[i], origin_value);
-        continue;
-      }
+
       if (!parsed_longhand[i]) {
+        if ((property.IDEquals(CSSPropertyID::kBackgroundClip) ||
+             property.IDEquals(CSSPropertyID::kMaskClip) ||
+             property.IDEquals(CSSPropertyID::kWebkitMaskClip)) &&
+            origin_value) {
+          AddBackgroundValue(longhands[i], origin_value);
+          continue;
+        }
+
         AddBackgroundValue(longhands[i], CSSInitialValue::Create());
       }
     }
@@ -4458,51 +4458,33 @@ bool ParseBackgroundOrMask(bool important,
   return true;
 }
 
-bool ConsumeRepeatStyleComponent(CSSParserTokenRange& range,
-                                 CSSValue*& value1,
-                                 CSSValue*& value2,
-                                 bool& implicit) {
-  if (ConsumeIdent<CSSValueID::kRepeatX>(range)) {
-    value1 = CSSIdentifierValue::Create(CSSValueID::kRepeat);
-    value2 = CSSIdentifierValue::Create(CSSValueID::kNoRepeat);
-    implicit = true;
-    return true;
-  }
-  if (ConsumeIdent<CSSValueID::kRepeatY>(range)) {
-    value1 = CSSIdentifierValue::Create(CSSValueID::kNoRepeat);
-    value2 = CSSIdentifierValue::Create(CSSValueID::kRepeat);
-    implicit = true;
-    return true;
-  }
-  value1 = ConsumeIdent<CSSValueID::kRepeat, CSSValueID::kNoRepeat,
-                        CSSValueID::kRound, CSSValueID::kSpace>(range);
-  if (!value1) {
-    return false;
-  }
-
-  value2 = ConsumeIdent<CSSValueID::kRepeat, CSSValueID::kNoRepeat,
-                        CSSValueID::kRound, CSSValueID::kSpace>(range);
-  if (!value2) {
-    value2 = value1;
-    implicit = true;
-  }
-  return true;
+CSSIdentifierValue* ConsumeRepeatStyleIdent(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kRepeat, CSSValueID::kNoRepeat,
+                      CSSValueID::kRound, CSSValueID::kSpace>(range);
 }
 
-bool ConsumeRepeatStyle(CSSParserTokenRange& range,
-                        CSSValue*& result_x,
-                        CSSValue*& result_y,
-                        bool& implicit) {
-  do {
-    CSSValue* repeat_x = nullptr;
-    CSSValue* repeat_y = nullptr;
-    if (!ConsumeRepeatStyleComponent(range, repeat_x, repeat_y, implicit)) {
-      return false;
+CSSRepeatStyleValue* ConsumeRepeatStyleValue(CSSParserTokenRange& range) {
+  if (auto* id = ConsumeIdent<CSSValueID::kRepeatX>(range)) {
+    return MakeGarbageCollected<CSSRepeatStyleValue>(id);
+  }
+
+  if (auto* id = ConsumeIdent<CSSValueID::kRepeatY>(range)) {
+    return MakeGarbageCollected<CSSRepeatStyleValue>(id);
+  }
+
+  if (auto* id1 = ConsumeRepeatStyleIdent(range)) {
+    if (auto* id2 = ConsumeRepeatStyleIdent(range)) {
+      return MakeGarbageCollected<CSSRepeatStyleValue>(id1, id2);
     }
-    AddBackgroundValue(result_x, repeat_x);
-    AddBackgroundValue(result_y, repeat_y);
-  } while (ConsumeCommaIncludingWhitespace(range));
-  return true;
+
+    return MakeGarbageCollected<CSSRepeatStyleValue>(id1);
+  }
+
+  return nullptr;
+}
+
+CSSValueList* ParseRepeatStyle(CSSParserTokenRange& range) {
+  return ConsumeCommaSeparatedList(ConsumeRepeatStyleValue, range);
 }
 
 CSSValue* ConsumeWebkitBorderImage(CSSParserTokenRange& range,

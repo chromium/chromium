@@ -53,6 +53,14 @@ struct FillSize {
   LengthSize size;
 };
 
+struct FillRepeat {
+  EFillRepeat x{EFillRepeat::kRepeatFill};
+  EFillRepeat y{EFillRepeat::kRepeatFill};
+
+  bool operator==(const FillRepeat& r) const { return x == r.x && y == r.y; }
+  bool operator!=(const FillRepeat& r) const { return !(*this == r); }
+};
+
 class FillLayerWrapper;
 
 class CORE_EXPORT FillLayer {
@@ -77,8 +85,7 @@ class CORE_EXPORT FillLayer {
   }
   EFillBox Clip() const { return static_cast<EFillBox>(clip_); }
   EFillBox Origin() const { return static_cast<EFillBox>(origin_); }
-  EFillRepeat RepeatX() const { return static_cast<EFillRepeat>(repeat_x_); }
-  EFillRepeat RepeatY() const { return static_cast<EFillRepeat>(repeat_y_); }
+  const FillRepeat& Repeat() const { return repeat_; }
   CompositeOperator Composite() const {
     return static_cast<CompositeOperator>(composite_);
   }
@@ -103,8 +110,7 @@ class CORE_EXPORT FillLayer {
   bool IsAttachmentSet() const { return attachment_set_; }
   bool IsClipSet() const { return clip_set_; }
   bool IsOriginSet() const { return origin_set_; }
-  bool IsRepeatXSet() const { return repeat_x_set_; }
-  bool IsRepeatYSet() const { return repeat_y_set_; }
+  bool IsRepeatSet() const { return repeat_set_; }
   bool IsCompositeSet() const { return composite_set_; }
   bool IsBlendModeSet() const { return blend_mode_set_; }
   bool IsSizeSet() const {
@@ -150,13 +156,9 @@ class CORE_EXPORT FillLayer {
     origin_ = static_cast<unsigned>(b);
     origin_set_ = true;
   }
-  void SetRepeatX(EFillRepeat r) {
-    repeat_x_ = static_cast<unsigned>(r);
-    repeat_x_set_ = true;
-  }
-  void SetRepeatY(EFillRepeat r) {
-    repeat_y_ = static_cast<unsigned>(r);
-    repeat_y_set_ = true;
+  void SetRepeat(const FillRepeat& r) {
+    repeat_ = r;
+    repeat_set_ = true;
   }
   void SetComposite(CompositeOperator c) {
     composite_ = c;
@@ -189,8 +191,7 @@ class CORE_EXPORT FillLayer {
   void ClearAttachment() { attachment_set_ = false; }
   void ClearClip() { clip_set_ = false; }
   void ClearOrigin() { origin_set_ = false; }
-  void ClearRepeatX() { repeat_x_set_ = false; }
-  void ClearRepeatY() { repeat_y_set_ = false; }
+  void ClearRepeat() { repeat_set_ = false; }
   void ClearComposite() { composite_set_ = false; }
   void ClearBlendMode() { blend_mode_set_ = false; }
   void ClearSize() {
@@ -206,7 +207,6 @@ class CORE_EXPORT FillLayer {
   bool VisuallyEqual(const FillLayer&) const;
 
   bool ImageOccludesNextLayers(const Document&, const ComputedStyle&) const;
-  bool HasRepeatXY() const;
   bool ClipOccludesNextLayers() const;
 
   EFillLayerType GetType() const { return static_cast<EFillLayerType>(type_); }
@@ -262,11 +262,8 @@ class CORE_EXPORT FillLayer {
     return type == EFillLayerType::kBackground ? EFillBox::kPadding
                                                : EFillBox::kBorder;
   }
-  static EFillRepeat InitialFillRepeatX(EFillLayerType) {
-    return EFillRepeat::kRepeatFill;
-  }
-  static EFillRepeat InitialFillRepeatY(EFillLayerType) {
-    return EFillRepeat::kRepeatFill;
+  static FillRepeat InitialFillRepeat(EFillLayerType) {
+    return {EFillRepeat::kRepeatFill, EFillRepeat::kRepeatFill};
   }
   static CompositeOperator InitialFillComposite(EFillLayerType) {
     return kCompositeSourceOver;
@@ -312,12 +309,11 @@ class CORE_EXPORT FillLayer {
   Length position_y_;
 
   LengthSize size_length_;
+  FillRepeat repeat_;
 
   unsigned attachment_ : 2;           // EFillAttachment
   unsigned clip_ : 3;                 // EFillBox
   unsigned origin_ : 3;               // EFillBox
-  unsigned repeat_x_ : 3;             // EFillRepeat
-  unsigned repeat_y_ : 3;             // EFillRepeat
   unsigned composite_ : 4;            // CompositeOperator
   unsigned size_type_ : 2;            // EFillSizeType
   unsigned blend_mode_ : 5;           // BlendMode
@@ -328,8 +324,7 @@ class CORE_EXPORT FillLayer {
   unsigned attachment_set_ : 1;
   unsigned clip_set_ : 1;
   unsigned origin_set_ : 1;
-  unsigned repeat_x_set_ : 1;
-  unsigned repeat_y_set_ : 1;
+  unsigned repeat_set_ : 1;
   unsigned pos_x_set_ : 1;
   unsigned pos_y_set_ : 1;
   unsigned background_x_origin_set_ : 1;

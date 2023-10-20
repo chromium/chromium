@@ -506,8 +506,6 @@ String StylePropertySerializer::SerializeShorthand(
       return Get2Values(borderSpacingShorthand());
     case CSSPropertyID::kBackgroundPosition:
       return GetLayeredShorthandValue(backgroundPositionShorthand());
-    case CSSPropertyID::kBackgroundRepeat:
-      return BackgroundRepeatPropertyValue();
     case CSSPropertyID::kBackground:
       return GetLayeredShorthandValue(backgroundShorthand());
     case CSSPropertyID::kBorder:
@@ -627,8 +625,6 @@ String StylePropertySerializer::SerializeShorthand(
       return GetShorthandValue(listStyleShorthand());
     case CSSPropertyID::kWebkitMaskPosition:
       return GetLayeredShorthandValue(webkitMaskPositionShorthand());
-    case CSSPropertyID::kWebkitMaskRepeat:
-      return GetLayeredShorthandValue(webkitMaskRepeatShorthand());
     case CSSPropertyID::kWebkitMask:
       return GetLayeredShorthandValue(webkitMaskShorthand());
     case CSSPropertyID::kWebkitAlternativeMask:
@@ -1590,9 +1586,6 @@ String StylePropertySerializer::GetLayeredShorthandValue(
   // Now stitch the properties together.
   for (wtf_size_t layer = 0; layer < num_layers; layer++) {
     StringBuilder layer_result;
-    bool use_repeat_x_shorthand = false;
-    bool use_repeat_y_shorthand = false;
-    bool use_single_word_shorthand = false;
     bool found_position_x_css_property = false;
     bool found_position_y_css_property = false;
 
@@ -1619,44 +1612,6 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       // No point proceeding if there's not a value to look at.
       if (!value) {
         continue;
-      }
-
-      // Special case for background-repeat.
-      if (property->IDEquals(CSSPropertyID::kBackgroundRepeatX) ||
-          property->IDEquals(CSSPropertyID::kWebkitMaskRepeatX)) {
-        DCHECK(shorthand.properties()[property_index + 1]->IDEquals(
-                   CSSPropertyID::kBackgroundRepeatY) ||
-               shorthand.properties()[property_index + 1]->IDEquals(
-                   CSSPropertyID::kWebkitMaskRepeatY));
-        auto* value_list =
-            DynamicTo<CSSValueList>(values[property_index + 1].Get());
-        const CSSValue& y_value =
-            value_list ? value_list->Item(layer) : *values[property_index + 1];
-
-        // FIXME: At some point we need to fix this code to avoid returning an
-        // invalid shorthand, since some longhand combinations are not
-        // serializable into a single shorthand.
-        if (!IsA<CSSIdentifierValue>(value) ||
-            !IsA<CSSIdentifierValue>(y_value)) {
-          continue;
-        }
-
-        CSSValueID x_id = To<CSSIdentifierValue>(value)->GetValueID();
-        CSSValueID y_id = To<CSSIdentifierValue>(y_value).GetValueID();
-        // Maybe advance propertyIndex to look at the next CSSValue in the list
-        // for the checks below.
-        if (x_id == y_id) {
-          use_single_word_shorthand = true;
-          property = shorthand.properties()[++property_index];
-        } else if (x_id == CSSValueID::kRepeat &&
-                   y_id == CSSValueID::kNoRepeat) {
-          use_repeat_x_shorthand = true;
-          property = shorthand.properties()[++property_index];
-        } else if (x_id == CSSValueID::kNoRepeat &&
-                   y_id == CSSValueID::kRepeat) {
-          use_repeat_y_shorthand = true;
-          property = shorthand.properties()[++property_index];
-        }
       }
 
       bool is_initial_value = value->IsInitialValue();
@@ -1734,18 +1689,8 @@ String StylePropertySerializer::GetLayeredShorthandValue(
           layer_result.Append(' ');
         }
 
-        if (use_repeat_x_shorthand) {
-          use_repeat_x_shorthand = false;
-          layer_result.Append(getValueName(CSSValueID::kRepeatX));
-        } else if (use_repeat_y_shorthand) {
-          use_repeat_y_shorthand = false;
-          layer_result.Append(getValueName(CSSValueID::kRepeatY));
-        } else {
-          if (use_single_word_shorthand) {
-            use_single_word_shorthand = false;
-          }
-          layer_result.Append(value->CssText());
-        }
+        layer_result.Append(value->CssText());
+
         if (property->IDEquals(CSSPropertyID::kBackgroundPositionX) ||
             property->IDEquals(CSSPropertyID::kWebkitMaskPositionX)) {
           found_position_x_css_property = true;
@@ -2244,79 +2189,6 @@ String StylePropertySerializer::BorderRadiusValue() const {
                              bottom_right.Second(), bottom_left.Second()));
   }
 
-  return builder.ReleaseString();
-}
-
-static void AppendBackgroundRepeatValue(StringBuilder& builder,
-                                        const CSSValue& repeat_xcss_value,
-                                        const CSSValue& repeat_ycss_value) {
-  // FIXME: Ensure initial values do not appear in CSS_VALUE_LISTS.
-  DEFINE_STATIC_LOCAL(const Persistent<CSSIdentifierValue>,
-                      initial_repeat_value,
-                      (CSSIdentifierValue::Create(CSSValueID::kRepeat)));
-  const CSSIdentifierValue& repeat_x =
-      repeat_xcss_value.IsInitialValue()
-          ? *initial_repeat_value
-          : To<CSSIdentifierValue>(repeat_xcss_value);
-  const CSSIdentifierValue& repeat_y =
-      repeat_ycss_value.IsInitialValue()
-          ? *initial_repeat_value
-          : To<CSSIdentifierValue>(repeat_ycss_value);
-  CSSValueID repeat_x_value_id = repeat_x.GetValueID();
-  CSSValueID repeat_y_value_id = repeat_y.GetValueID();
-  if (repeat_x_value_id == repeat_y_value_id) {
-    builder.Append(repeat_x.CssText());
-  } else if (repeat_x_value_id == CSSValueID::kNoRepeat &&
-             repeat_y_value_id == CSSValueID::kRepeat) {
-    builder.Append("repeat-y");
-  } else if (repeat_x_value_id == CSSValueID::kRepeat &&
-             repeat_y_value_id == CSSValueID::kNoRepeat) {
-    builder.Append("repeat-x");
-  } else {
-    builder.Append(repeat_x.CssText());
-    builder.Append(' ');
-    builder.Append(repeat_y.CssText());
-  }
-}
-
-String StylePropertySerializer::BackgroundRepeatPropertyValue() const {
-  const CSSValue& repeat_x =
-      *property_set_.GetPropertyCSSValue(GetCSSPropertyBackgroundRepeatX());
-  const CSSValue& repeat_y =
-      *property_set_.GetPropertyCSSValue(GetCSSPropertyBackgroundRepeatY());
-
-  const auto* repeat_x_list = DynamicTo<CSSValueList>(repeat_x);
-  int repeat_x_length = 1;
-  if (repeat_x_list) {
-    repeat_x_length = repeat_x_list->length();
-  } else if (!repeat_x.IsIdentifierValue()) {
-    return String();
-  }
-
-  const auto* repeat_y_list = DynamicTo<CSSValueList>(repeat_y);
-  int repeat_y_length = 1;
-  if (repeat_y_list) {
-    repeat_y_length = repeat_y_list->length();
-  } else if (!repeat_y.IsIdentifierValue()) {
-    return String();
-  }
-
-  size_t shorthand_length =
-      LowestCommonMultiple(repeat_x_length, repeat_y_length);
-  StringBuilder builder;
-  for (size_t i = 0; i < shorthand_length; ++i) {
-    if (i) {
-      builder.Append(", ");
-    }
-
-    const CSSValue& x_value =
-        repeat_x_list ? repeat_x_list->Item(i % repeat_x_list->length())
-                      : repeat_x;
-    const CSSValue& y_value =
-        repeat_y_list ? repeat_y_list->Item(i % repeat_y_list->length())
-                      : repeat_y;
-    AppendBackgroundRepeatValue(builder, x_value, y_value);
-  }
   return builder.ReleaseString();
 }
 

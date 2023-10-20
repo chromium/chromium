@@ -28,8 +28,7 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-mask-origin
     -webkit-mask-position-x
     -webkit-mask-position-y
-    -webkit-mask-repeat-x
-    -webkit-mask-repeat-y
+    -webkit-mask-repeat
     -webkit-mask-size
     -webkit-perspective-origin-x
     -webkit-perspective-origin-y
@@ -81,8 +80,7 @@ All changes to this list should go through Blink's feature review process: http:
     background-origin
     background-position-x
     background-position-y
-    background-repeat-x
-    background-repeat-y
+    background-repeat
     background-size
     baseline-shift
     baseline-source
@@ -422,8 +420,7 @@ All changes to this list should go through Blink's feature review process: http:
         -webkit-mask-origin
         -webkit-mask-position-x
         -webkit-mask-position-y
-        -webkit-mask-repeat-x
-        -webkit-mask-repeat-y
+        -webkit-mask-repeat
         -webkit-mask-size
     -webkit-mask-box-image
         -webkit-mask-box-image-outset
@@ -434,9 +431,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-mask-position
         -webkit-mask-position-x
         -webkit-mask-position-y
-    -webkit-mask-repeat
-        -webkit-mask-repeat-x
-        -webkit-mask-repeat-y
     -webkit-text-stroke
         -webkit-text-stroke-color
         -webkit-text-stroke-width
@@ -463,15 +457,11 @@ All changes to this list should go through Blink's feature review process: http:
         background-origin
         background-position-x
         background-position-y
-        background-repeat-x
-        background-repeat-y
+        background-repeat
         background-size
     background-position
         background-position-x
         background-position-y
-    background-repeat
-        background-repeat-x
-        background-repeat-y
     border
         border-bottom-color
         border-bottom-style

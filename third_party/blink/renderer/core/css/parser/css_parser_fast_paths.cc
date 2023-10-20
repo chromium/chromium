@@ -1160,10 +1160,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id <= CSSValueID::kMathematical);
     case CSSPropertyID::kAll:
       return false;  // Only accepts css-wide keywords
-    case CSSPropertyID::kBackgroundRepeatX:
-    case CSSPropertyID::kBackgroundRepeatY:
-      return value_id == CSSValueID::kRepeat ||
-             value_id == CSSValueID::kNoRepeat;
     case CSSPropertyID::kBaselineSource:
       DCHECK(RuntimeEnabledFeatures::CSSBaselineSourceEnabled());
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kFirst ||
@@ -1666,8 +1662,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kAppearance,
     CSSPropertyID::kMixBlendMode,
     CSSPropertyID::kIsolation,
-    CSSPropertyID::kBackgroundRepeatX,
-    CSSPropertyID::kBackgroundRepeatY,
     CSSPropertyID::kBaselineSource,
     CSSPropertyID::kBorderBottomStyle,
     CSSPropertyID::kBorderCollapse,

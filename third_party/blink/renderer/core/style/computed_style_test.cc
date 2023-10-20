@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -1956,6 +1957,60 @@ TEST_F(ComputedStyleTest, ContainerNameNoDiff) {
 
   EXPECT_EQ(ComputedStyle::Difference::kEqual,
             ComputedStyle::ComputeDifference(style1, style2));
+}
+
+TEST_F(ComputedStyleTest, BackgroundRepeat) {
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  auto* repeat_style_value = MakeGarbageCollected<CSSRepeatStyleValue>(
+      CSSIdentifierValue::Create(CSSValueID::kRepeatX));
+
+  To<Longhand>(GetCSSPropertyBackgroundRepeat())
+      .ApplyValue(state, *repeat_style_value, CSSProperty::ValueMode::kNormal);
+  const ComputedStyle* style = state.TakeStyle();
+  auto* computed_value = To<Longhand>(GetCSSPropertyBackgroundRepeat())
+                             .CSSValueFromComputedStyleInternal(
+                                 *style, nullptr /* layout_object */,
+                                 false /* allow_visited_style */);
+  ASSERT_TRUE(computed_value);
+  ASSERT_EQ("repeat-x", computed_value->CssText());
+}
+
+TEST_F(ComputedStyleTest, MaskRepeat) {
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  auto* repeat_style_value = MakeGarbageCollected<CSSRepeatStyleValue>(
+      CSSIdentifierValue::Create(CSSValueID::kRepeatY));
+
+  To<Longhand>(GetCSSPropertyWebkitMaskRepeat())
+      .ApplyValue(state, *repeat_style_value, CSSProperty::ValueMode::kNormal);
+  const ComputedStyle* style = state.TakeStyle();
+  auto* computed_value = To<Longhand>(GetCSSPropertyWebkitMaskRepeat())
+                             .CSSValueFromComputedStyleInternal(
+                                 *style, nullptr /* layout_object */,
+                                 false /* allow_visited_style */);
+  ASSERT_TRUE(computed_value);
+  ASSERT_EQ("repeat-y", computed_value->CssText());
 }
 
 }  // namespace blink

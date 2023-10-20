@@ -1185,26 +1185,22 @@ The test verifies functionality of querying style information for view-transitio
                                                 value : initial
                                             }
                                             [4] : {
-                                                name : background-repeat-x
+                                                name : background-repeat
                                                 value : initial
                                             }
                                             [5] : {
-                                                name : background-repeat-y
-                                                value : initial
-                                            }
-                                            [6] : {
                                                 name : background-attachment
                                                 value : initial
                                             }
-                                            [7] : {
+                                            [6] : {
                                                 name : background-origin
                                                 value : initial
                                             }
-                                            [8] : {
+                                            [7] : {
                                                 name : background-clip
                                                 value : initial
                                             }
-                                            [9] : {
+                                            [8] : {
                                                 name : background-color
                                                 value : red
                                             }
@@ -1236,26 +1232,22 @@ The test verifies functionality of querying style information for view-transitio
                                         value : initial
                                     }
                                     [5] : {
-                                        name : background-repeat-x
+                                        name : background-repeat
                                         value : initial
                                     }
                                     [6] : {
-                                        name : background-repeat-y
-                                        value : initial
-                                    }
-                                    [7] : {
                                         name : background-attachment
                                         value : initial
                                     }
-                                    [8] : {
+                                    [7] : {
                                         name : background-origin
                                         value : initial
                                     }
-                                    [9] : {
+                                    [8] : {
                                         name : background-clip
                                         value : initial
                                     }
-                                    [10] : {
+                                    [9] : {
                                         name : background-color
                                         value : red
                                     }
@@ -1497,26 +1489,22 @@ The test verifies functionality of querying style information for view-transitio
                                                 value : initial
                                             }
                                             [4] : {
-                                                name : background-repeat-x
+                                                name : background-repeat
                                                 value : initial
                                             }
                                             [5] : {
-                                                name : background-repeat-y
-                                                value : initial
-                                            }
-                                            [6] : {
                                                 name : background-attachment
                                                 value : initial
                                             }
-                                            [7] : {
+                                            [6] : {
                                                 name : background-origin
                                                 value : initial
                                             }
-                                            [8] : {
+                                            [7] : {
                                                 name : background-clip
                                                 value : initial
                                             }
-                                            [9] : {
+                                            [8] : {
                                                 name : background-color
                                                 value : red
                                             }
@@ -1548,26 +1536,22 @@ The test verifies functionality of querying style information for view-transitio
                                         value : initial
                                     }
                                     [5] : {
-                                        name : background-repeat-x
+                                        name : background-repeat
                                         value : initial
                                     }
                                     [6] : {
-                                        name : background-repeat-y
-                                        value : initial
-                                    }
-                                    [7] : {
                                         name : background-attachment
                                         value : initial
                                     }
-                                    [8] : {
+                                    [7] : {
                                         name : background-origin
                                         value : initial
                                     }
-                                    [9] : {
+                                    [8] : {
                                         name : background-clip
                                         value : initial
                                     }
-                                    [10] : {
+                                    [9] : {
                                         name : background-color
                                         value : red
                                     }
@@ -2785,26 +2769,22 @@ Dumping styles for : ::view-transition-old with id root{
                                         value : initial
                                     }
                                     [4] : {
-                                        name : background-repeat-x
+                                        name : background-repeat
                                         value : initial
                                     }
                                     [5] : {
-                                        name : background-repeat-y
-                                        value : initial
-                                    }
-                                    [6] : {
                                         name : background-attachment
                                         value : initial
                                     }
-                                    [7] : {
+                                    [6] : {
                                         name : background-origin
                                         value : initial
                                     }
-                                    [8] : {
+                                    [7] : {
                                         name : background-clip
                                         value : initial
                                     }
-                                    [9] : {
+                                    [8] : {
                                         name : background-color
                                         value : red
                                     }
@@ -2836,26 +2816,22 @@ Dumping styles for : ::view-transition-old with id root{
                                 value : initial
                             }
                             [5] : {
-                                name : background-repeat-x
+                                name : background-repeat
                                 value : initial
                             }
                             [6] : {
-                                name : background-repeat-y
-                                value : initial
-                            }
-                            [7] : {
                                 name : background-attachment
                                 value : initial
                             }
-                            [8] : {
+                            [7] : {
                                 name : background-origin
                                 value : initial
                             }
-                            [9] : {
+                            [8] : {
                                 name : background-clip
                                 value : initial
                             }
-                            [10] : {
+                            [9] : {
                                 name : background-color
                                 value : red
                             }
@@ -3832,26 +3808,22 @@ Dumping styles for : ::view-transition-old with id shared{
                                         value : initial
                                     }
                                     [4] : {
-                                        name : background-repeat-x
+                                        name : background-repeat
                                         value : initial
                                     }
                                     [5] : {
-                                        name : background-repeat-y
-                                        value : initial
-                                    }
-                                    [6] : {
                                         name : background-attachment
                                         value : initial
                                     }
-                                    [7] : {
+                                    [6] : {
                                         name : background-origin
                                         value : initial
                                     }
-                                    [8] : {
+                                    [7] : {
                                         name : background-clip
                                         value : initial
                                     }
-                                    [9] : {
+                                    [8] : {
                                         name : background-color
                                         value : red
                                     }
@@ -3883,26 +3855,22 @@ Dumping styles for : ::view-transition-old with id shared{
                                 value : initial
                             }
                             [5] : {
-                                name : background-repeat-x
+                                name : background-repeat
                                 value : initial
                             }
                             [6] : {
-                                name : background-repeat-y
-                                value : initial
-                            }
-                            [7] : {
                                 name : background-attachment
                                 value : initial
                             }
-                            [8] : {
+                            [7] : {
                                 name : background-origin
                                 value : initial
                             }
-                            [9] : {
+                            [8] : {
                                 name : background-clip
                                 value : initial
                             }
-                            [10] : {
+                            [9] : {
                                 name : background-color
                                 value : red
                             }

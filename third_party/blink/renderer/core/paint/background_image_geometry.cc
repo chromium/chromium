@@ -826,8 +826,8 @@ void BackgroundImageGeometry::Calculate(const PaintInfo& paint_info,
   CalculateFillTileSize(fill_layer, unsnapped_positioning_area.size,
                         snapped_positioning_area.size);
 
-  EFillRepeat background_repeat_x = fill_layer.RepeatX();
-  EFillRepeat background_repeat_y = fill_layer.RepeatY();
+  EFillRepeat background_repeat_x = fill_layer.Repeat().x;
+  EFillRepeat background_repeat_y = fill_layer.Repeat().y;
 
   // Maintain both snapped and unsnapped available widths and heights.
   // Unsnapped values are used for most thing, but snapped are used

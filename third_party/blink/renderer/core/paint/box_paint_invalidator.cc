@@ -35,9 +35,10 @@ static bool ShouldFullyInvalidateFillLayersOnWidthChange(
   if (!image || !image->CanRender())
     return false;
 
-  if (layer.RepeatX() != EFillRepeat::kRepeatFill &&
-      layer.RepeatX() != EFillRepeat::kNoRepeatFill)
+  if (layer.Repeat().x != EFillRepeat::kRepeatFill &&
+      layer.Repeat().x != EFillRepeat::kNoRepeatFill) {
     return true;
+  }
 
   // TODO(alancutter): Make this work correctly for calc lengths.
   if (layer.PositionX().IsPercentOrCalc() && !layer.PositionX().IsZero())
@@ -77,9 +78,10 @@ static bool ShouldFullyInvalidateFillLayersOnHeightChange(
   if (!image || !image->CanRender())
     return false;
 
-  if (layer.RepeatY() != EFillRepeat::kRepeatFill &&
-      layer.RepeatY() != EFillRepeat::kNoRepeatFill)
+  if (layer.Repeat().y != EFillRepeat::kRepeatFill &&
+      layer.Repeat().y != EFillRepeat::kNoRepeatFill) {
     return true;
+  }
 
   // TODO(alancutter): Make this work correctly for calc lengths.
   if (layer.PositionY().IsPercentOrCalc() && !layer.PositionY().IsZero())

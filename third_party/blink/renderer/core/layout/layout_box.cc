@@ -1454,10 +1454,10 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
       bool layer_known_opaque = false;
       // Check if the image is opaque and fills the clip.
       if (const StyleImage* image = cur->GetImage()) {
-        if ((cur->RepeatX() == EFillRepeat::kRepeatFill ||
-             cur->RepeatX() == EFillRepeat::kRoundFill) &&
-            (cur->RepeatY() == EFillRepeat::kRepeatFill ||
-             cur->RepeatY() == EFillRepeat::kRoundFill) &&
+        if ((cur->Repeat().x == EFillRepeat::kRepeatFill ||
+             cur->Repeat().x == EFillRepeat::kRoundFill) &&
+            (cur->Repeat().y == EFillRepeat::kRepeatFill ||
+             cur->Repeat().y == EFillRepeat::kRoundFill) &&
             image->KnownToBeOpaque(GetDocument(), StyleRef())) {
           layer_known_opaque = true;
         }

@@ -1827,29 +1827,15 @@
       supports_incremental_style: true,
     },
     {
-      name: "background-repeat-x",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
+      name: "background-repeat",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_template: "background_layer",
       style_builder_template_args: {
-        fill_type: "RepeatX",
+        fill_type: "Repeat",
       },
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
-      computable: false,
-      supports_incremental_style: true,
-    },
-    {
-      name: "background-repeat-y",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      style_builder_template: "background_layer",
-      style_builder_template_args: {
-        fill_type: "RepeatY",
-      },
-      valid_for_first_letter: true,
-      valid_for_first_line: true,
-      valid_for_cue: true,
-      computable: false,
       supports_incremental_style: true,
     },
     {
@@ -5931,20 +5917,12 @@
       computable: false,
     },
     {
-      name: "-webkit-mask-repeat-x",
+      name: "-webkit-mask-repeat",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_template: "mask_layer",
       style_builder_template_args: {
-        fill_type: "RepeatX",
+        fill_type: "Repeat",
       },
-      computable: false,
-    },
-    {
-      name: "-webkit-mask-repeat-y",
-      style_builder_template: "mask_layer",
-      style_builder_template_args: {
-        fill_type: "RepeatY",
-      },
-      computable: false,
     },
     {
       name: "mask-size",
@@ -6969,7 +6947,7 @@
       name: "background",
       longhands: [
         "background-image", "background-position-x", "background-position-y",
-        "background-size", "background-repeat-x", "background-repeat-y",
+        "background-size", "background-repeat",
         "background-attachment", "background-origin", "background-clip",
         "background-color"
       ],
@@ -6982,12 +6960,6 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       computable: true,
       supports_incremental_style: true,
-    },
-    {
-      name: "background-repeat",
-      longhands: ["background-repeat-x", "background-repeat-y"],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      computable: true,
     },
     {
       name: "border",
@@ -7566,8 +7538,8 @@
       name: "-webkit-mask",
       longhands: [
         "-webkit-mask-image", "-webkit-mask-position-x",
-        "-webkit-mask-position-y", "-webkit-mask-size", "-webkit-mask-repeat-x",
-        "-webkit-mask-repeat-y", "-webkit-mask-origin", "-webkit-mask-clip"
+        "-webkit-mask-position-y", "-webkit-mask-size", "-webkit-mask-repeat",
+        "-webkit-mask-origin", "-webkit-mask-clip"
       ],
       property_methods: ["ParseShorthand"],
     },
@@ -7578,8 +7550,8 @@
       alternative_of: "-webkit-mask",
       longhands: [
         "mask-image", "-webkit-mask-position-x",
-        "-webkit-mask-position-y", "mask-size", "-webkit-mask-repeat-x",
-        "-webkit-mask-repeat-y", "mask-origin", "mask-clip"
+        "-webkit-mask-position-y", "mask-size", "-webkit-mask-repeat",
+        "mask-origin", "mask-clip"
       ],
       property_methods: ["ParseShorthand"],
       runtime_flag: "CSSMaskingInterop",
@@ -7597,12 +7569,6 @@
     {
       name: "-webkit-mask-position",
       longhands: ["-webkit-mask-position-x", "-webkit-mask-position-y"],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      computable: true,
-    },
-    {
-      name: "-webkit-mask-repeat",
-      longhands: ["-webkit-mask-repeat-x", "-webkit-mask-repeat-y"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       computable: true,
     },

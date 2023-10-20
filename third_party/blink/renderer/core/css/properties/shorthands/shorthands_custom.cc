@@ -218,33 +218,6 @@ bool ParseBackgroundOrMaskPosition(
   return true;
 }
 
-bool ParseBackgroundOrMaskRepeat(const StylePropertyShorthand& shorthand,
-                                 bool important,
-                                 CSSParserTokenRange& range,
-                                 HeapVector<CSSPropertyValue, 64>& properties) {
-  CSSValue* result_x = nullptr;
-  CSSValue* result_y = nullptr;
-  bool implicit = false;
-  if (!css_parsing_utils::ConsumeRepeatStyle(range, result_x, result_y,
-                                             implicit) ||
-      !range.AtEnd()) {
-    return false;
-  }
-  const CSSProperty** longhands = shorthand.properties();
-  DCHECK_EQ(2u, shorthand.length());
-  css_parsing_utils::AddProperty(
-      longhands[0]->PropertyID(), shorthand.id(), *result_x, important,
-      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
-               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  css_parsing_utils::AddProperty(
-      longhands[1]->PropertyID(), shorthand.id(), *result_y, important,
-      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
-               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  return true;
-}
-
 }  // namespace
 
 bool Animation::ParseShorthand(
@@ -581,24 +554,6 @@ const CSSValue* BackgroundPosition::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   return ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
       *this, style, &style.BackgroundLayers());
-}
-
-bool BackgroundRepeat::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  return ParseBackgroundOrMaskRepeat(backgroundRepeatShorthand(), important,
-                                     range, properties);
-}
-
-const CSSValue* BackgroundRepeat::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style) const {
-  return ComputedStyleUtils::BackgroundRepeatOrWebkitMaskRepeat(
-      &style.BackgroundLayers());
 }
 
 bool BorderBlockColor::ParseShorthand(
@@ -3853,24 +3808,6 @@ const CSSValue* WebkitMaskPosition::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   return ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
       *this, style, &style.MaskLayers());
-}
-
-bool WebkitMaskRepeat::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  return ParseBackgroundOrMaskRepeat(webkitMaskRepeatShorthand(), important,
-                                     range, properties);
-}
-
-const CSSValue* WebkitMaskRepeat::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style) const {
-  return ComputedStyleUtils::BackgroundRepeatOrWebkitMaskRepeat(
-      &style.MaskLayers());
 }
 
 bool TextEmphasis::ParseShorthand(

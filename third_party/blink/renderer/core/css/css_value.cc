@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
@@ -327,6 +328,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<cssvalue::CSSRatioValue>(*this, other);
       case kPaletteMixClass:
         return CompareCSSValues<cssvalue::CSSPaletteMixValue>(*this, other);
+      case kRepeatStyleClass:
+        return CompareCSSValues<CSSRepeatStyleValue>(*this, other);
     }
     NOTREACHED();
     return false;
@@ -475,6 +478,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSRatioValue>(this)->CustomCSSText();
     case kPaletteMixClass:
       return To<cssvalue::CSSPaletteMixValue>(this)->CustomCSSText();
+    case kRepeatStyleClass:
+      return To<CSSRepeatStyleValue>(this)->CustomCSSText();
   }
   NOTREACHED();
   return String();
@@ -716,6 +721,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kPaletteMixClass:
       To<cssvalue::CSSPaletteMixValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kRepeatStyleClass:
+      To<CSSRepeatStyleValue>(this)->TraceAfterDispatch(visitor);
       return;
   }
   NOTREACHED();

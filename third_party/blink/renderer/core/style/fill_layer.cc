@@ -37,6 +37,7 @@ struct SameSizeAsFillLayer {
   Length position_y_;
 
   LengthSize size_length_;
+  FillRepeat repeat_;
 
   unsigned bitfields1_;
   unsigned bitfields2_;
@@ -50,12 +51,11 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
       position_x_(FillLayer::InitialFillPositionX(type)),
       position_y_(FillLayer::InitialFillPositionY(type)),
       size_length_(FillLayer::InitialFillSizeLength(type)),
+      repeat_(FillLayer::InitialFillRepeat(type)),
       attachment_(
           static_cast<unsigned>(FillLayer::InitialFillAttachment(type))),
       clip_(static_cast<unsigned>(FillLayer::InitialFillClip(type))),
       origin_(static_cast<unsigned>(FillLayer::InitialFillOrigin(type))),
-      repeat_x_(static_cast<unsigned>(FillLayer::InitialFillRepeatX(type))),
-      repeat_y_(static_cast<unsigned>(FillLayer::InitialFillRepeatY(type))),
       composite_(FillLayer::InitialFillComposite(type)),
       size_type_(
           use_initial_values
@@ -68,8 +68,7 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
       attachment_set_(use_initial_values),
       clip_set_(use_initial_values),
       origin_set_(use_initial_values),
-      repeat_x_set_(use_initial_values),
-      repeat_y_set_(use_initial_values),
+      repeat_set_(use_initial_values),
       pos_x_set_(use_initial_values),
       pos_y_set_(use_initial_values),
       background_x_origin_set_(false),
@@ -93,11 +92,10 @@ FillLayer::FillLayer(const FillLayer& o)
       position_x_(o.position_x_),
       position_y_(o.position_y_),
       size_length_(o.size_length_),
+      repeat_(o.repeat_),
       attachment_(o.attachment_),
       clip_(o.clip_),
       origin_(o.origin_),
-      repeat_x_(o.repeat_x_),
-      repeat_y_(o.repeat_y_),
       composite_(o.composite_),
       size_type_(o.size_type_),
       blend_mode_(o.blend_mode_),
@@ -107,8 +105,7 @@ FillLayer::FillLayer(const FillLayer& o)
       attachment_set_(o.attachment_set_),
       clip_set_(o.clip_set_),
       origin_set_(o.origin_set_),
-      repeat_x_set_(o.repeat_x_set_),
-      repeat_y_set_(o.repeat_y_set_),
+      repeat_set_(o.repeat_set_),
       pos_x_set_(o.pos_x_set_),
       pos_y_set_(o.pos_y_set_),
       background_x_origin_set_(o.background_x_origin_set_),
@@ -149,8 +146,7 @@ FillLayer& FillLayer::operator=(const FillLayer& o) {
   composite_ = o.composite_;
   blend_mode_ = o.blend_mode_;
   origin_ = o.origin_;
-  repeat_x_ = o.repeat_x_;
-  repeat_y_ = o.repeat_y_;
+  repeat_ = o.repeat_;
   size_type_ = o.size_type_;
 
   image_set_ = o.image_set_;
@@ -159,8 +155,7 @@ FillLayer& FillLayer::operator=(const FillLayer& o) {
   composite_set_ = o.composite_set_;
   blend_mode_set_ = o.blend_mode_set_;
   origin_set_ = o.origin_set_;
-  repeat_x_set_ = o.repeat_x_set_;
-  repeat_y_set_ = o.repeat_y_set_;
+  repeat_set_ = o.repeat_set_;
   pos_x_set_ = o.pos_x_set_;
   pos_y_set_ = o.pos_y_set_;
 
@@ -178,9 +173,9 @@ bool FillLayer::LayerPropertiesEqual(const FillLayer& o) const {
          background_y_origin_ == o.background_y_origin_ &&
          attachment_ == o.attachment_ && clip_ == o.clip_ &&
          composite_ == o.composite_ && blend_mode_ == o.blend_mode_ &&
-         origin_ == o.origin_ && repeat_x_ == o.repeat_x_ &&
-         repeat_y_ == o.repeat_y_ && size_type_ == o.size_type_ &&
-         size_length_ == o.size_length_ && type_ == o.type_;
+         origin_ == o.origin_ && repeat_ == o.repeat_ &&
+         size_type_ == o.size_type_ && size_length_ == o.size_length_ &&
+         type_ == o.type_;
 }
 
 bool FillLayer::operator==(const FillLayer& o) const {
@@ -307,25 +302,12 @@ void FillLayer::FillUnsetProperties() {
     }
   }
 
-  for (curr = this; curr && curr->IsRepeatXSet(); curr = curr->Next()) {
+  for (curr = this; curr && curr->IsRepeatSet(); curr = curr->Next()) {
   }
   if (curr && curr != this) {
     // We need to fill in the remaining values with the pattern specified.
     for (FillLayer* pattern = this; curr; curr = curr->Next()) {
-      curr->repeat_x_ = pattern->repeat_x_;
-      pattern = pattern->Next();
-      if (pattern == curr || !pattern) {
-        pattern = this;
-      }
-    }
-  }
-
-  for (curr = this; curr && curr->IsRepeatYSet(); curr = curr->Next()) {
-  }
-  if (curr && curr != this) {
-    // We need to fill in the remaining values with the pattern specified.
-    for (FillLayer* pattern = this; curr; curr = curr->Next()) {
-      curr->repeat_y_ = pattern->repeat_y_;
+      curr->repeat_ = pattern->repeat_;
       pattern = pattern->Next();
       if (pattern == curr || !pattern) {
         pattern = this;
@@ -416,10 +398,12 @@ bool FillLayer::ImageTilesLayer() const {
   // rectangle. We could relax the repeat mode requirement if we also knew
   // the rect we had to fill, and the portion of the image we need to use, and
   // know that the latter covers the former.
-  return (RepeatX() == EFillRepeat::kRepeatFill ||
-          RepeatX() == EFillRepeat::kRoundFill) &&
-         (RepeatY() == EFillRepeat::kRepeatFill ||
-          RepeatY() == EFillRepeat::kRoundFill);
+  FillRepeat repeat = Repeat();
+
+  return (repeat.x == EFillRepeat::kRepeatFill ||
+          repeat.x == EFillRepeat::kRoundFill) &&
+         (repeat.y == EFillRepeat::kRepeatFill ||
+          repeat.y == EFillRepeat::kRoundFill);
 }
 
 bool FillLayer::ImageOccludesNextLayers(const Document& document,

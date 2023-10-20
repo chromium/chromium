@@ -111,15 +111,9 @@ bool FillLayersEqual(const FillLayer& a_layers, const FillLayer& b_layers) {
           return false;
         }
         break;
-      case CSSPropertyID::kWebkitMaskRepeatX:
-      case CSSPropertyID::kBackgroundRepeatX:
-        if (a_layer->RepeatX() != b_layer->RepeatX()) {
-          return false;
-        }
-        break;
-      case CSSPropertyID::kWebkitMaskRepeatY:
-      case CSSPropertyID::kBackgroundRepeatY:
-        if (a_layer->RepeatY() != b_layer->RepeatY()) {
+      case CSSPropertyID::kWebkitMaskRepeat:
+      case CSSPropertyID::kBackgroundRepeat:
+        if (a_layer->Repeat() != b_layer->Repeat()) {
           return false;
         }
         break;
@@ -202,11 +196,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kBackgroundPositionY:
       return FillLayersEqual<CSSPropertyID::kBackgroundPositionY>(
           a.BackgroundLayers(), b.BackgroundLayers());
-    case CSSPropertyID::kBackgroundRepeatX:
-      return FillLayersEqual<CSSPropertyID::kBackgroundRepeatX>(
-          a.BackgroundLayers(), b.BackgroundLayers());
-    case CSSPropertyID::kBackgroundRepeatY:
-      return FillLayersEqual<CSSPropertyID::kBackgroundRepeatY>(
+    case CSSPropertyID::kBackgroundRepeat:
+      return FillLayersEqual<CSSPropertyID::kBackgroundRepeat>(
           a.BackgroundLayers(), b.BackgroundLayers());
     case CSSPropertyID::kBackgroundSize:
       return FillLayersEqual<CSSPropertyID::kBackgroundSize>(
@@ -805,12 +796,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitMaskPositionY:
       return FillLayersEqual<CSSPropertyID::kWebkitMaskPositionY>(
           a.MaskLayers(), b.MaskLayers());
-    case CSSPropertyID::kWebkitMaskRepeatX:
-      return FillLayersEqual<CSSPropertyID::kWebkitMaskRepeatX>(a.MaskLayers(),
-                                                                b.MaskLayers());
-    case CSSPropertyID::kWebkitMaskRepeatY:
-      return FillLayersEqual<CSSPropertyID::kWebkitMaskRepeatY>(a.MaskLayers(),
-                                                                b.MaskLayers());
+    case CSSPropertyID::kWebkitMaskRepeat:
+      return FillLayersEqual<CSSPropertyID::kWebkitMaskRepeat>(a.MaskLayers(),
+                                                               b.MaskLayers());
     case CSSPropertyID::kMaskSize:
       return FillLayersEqual<CSSPropertyID::kMaskSize>(a.MaskLayers(),
                                                        b.MaskLayers());
@@ -1174,7 +1162,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     // Shorthand properties shouldn't be compared, use their longhands.
     case CSSPropertyID::kBackground:
     case CSSPropertyID::kBackgroundPosition:
-    case CSSPropertyID::kBackgroundRepeat:
     case CSSPropertyID::kBorder:
     case CSSPropertyID::kBorderBottom:
     case CSSPropertyID::kBorderColor:
@@ -1238,7 +1225,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitMask:
     case CSSPropertyID::kWebkitMaskBoxImage:
     case CSSPropertyID::kWebkitMaskPosition:
-    case CSSPropertyID::kWebkitMaskRepeat:
     case CSSPropertyID::kWebkitTextStroke:
     case CSSPropertyID::kWhiteSpace:
       NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
