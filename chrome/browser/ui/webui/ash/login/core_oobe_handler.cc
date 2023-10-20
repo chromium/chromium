@@ -171,10 +171,6 @@ void CoreOobeHandler::SetBluetoothDeviceInfo(
   CallJS("cr.ui.Oobe.setBluetoothDeviceInfo", bluetooth_name);
 }
 
-void CoreOobeHandler::SetWizardReadyForTesting() {
-  CallJS("cr.ui.Oobe.setWizardReadyForTesting");
-}
-
 void CoreOobeHandler::HandleInitializeCoreHandler() {
   VLOG(3) << "CoreOobeHandler::HandleInitializeCoreHandler";
   CHECK(ui_init_state_ == UiState::kUninitialized);

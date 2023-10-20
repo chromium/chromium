@@ -274,22 +274,13 @@ export class Oobe extends DisplayManager {
     Oobe.getInstance().updateOobeConfiguration_(configuration);
   }
 
-  /**
-   * Sets the `wizardReadyForTesting_` to true.
-   */
-  static setWizardReadyForTesting() {
-    Oobe.getInstance().wizardReadyForTesting = true;
-    Oobe.readyForTesting = Oobe.getInstance().readyForTesting();
-  }
-
 }  // class Oobe
 
 /**
- * Some ForTesting APIs directly access to DOM and helper C++ functions.
- * Because this script is loaded in header, DOM tree may not be available at
- * the beginning.
- * This is marked to true when both DOM is fully loaded and WizardController
- * is fully initialized.
+ * Some ForTesting APIs directly access to DOM. Because this script is loaded
+ * in header, DOM tree may not be available at beginning.
+ * In DOMContentLoaded, after Oobe.initialize() is done, this is marked to
+ * true, indicating ForTesting methods can be called.
  * External script using ForTesting APIs should wait for this condition.
  * @type {boolean}
  */

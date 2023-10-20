@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_CORE_OOBE_H_
 
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
@@ -83,11 +82,6 @@ class CoreOobe : public VersionInfoUpdater::Delegate,
   void ToggleSystemInfo();
   void LaunchHelpApp(int help_topic_id);
 
-  // Sets ready for testing bit in the OobeTestApi.
-  void SetWizardReadyForTesting();
-
-  base::WeakPtr<CoreOobe> GetWeakPtr();
-
  protected:
   // VersionInfoUpdater::Delegate implementation:
   void OnOSVersionLabelTextUpdated(
@@ -146,7 +140,6 @@ class CoreOobe : public VersionInfoUpdater::Delegate,
   CoreOobeView::UiState ui_init_state_ = CoreOobeView::UiState::kUninitialized;
 
   base::WeakPtr<CoreOobeView> view_;
-  base::WeakPtrFactory<CoreOobe> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

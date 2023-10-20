@@ -73,7 +73,6 @@ class CoreOobeView : public base::SupportsWeakPtr<CoreOobeView> {
   virtual void SetVirtualKeyboardShown(bool shown) = 0;
   virtual void SetOsVersionLabelText(const std::string& label_text) = 0;
   virtual void SetBluetoothDeviceInfo(const std::string& bluetooth_name) = 0;
-  virtual void SetWizardReadyForTesting() = 0;
 };
 
 // The core handler for Javascript messages related to the "oobe" view.
@@ -114,7 +113,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void SetVirtualKeyboardShown(bool shown) override;
   void SetOsVersionLabelText(const std::string& label_text) override;
   void SetBluetoothDeviceInfo(const std::string& bluetooth_name) override;
-  void SetWizardReadyForTesting() override;
   // ---- END --- CoreOobeView
 
   // ---- Handlers for JS WebUI messages.

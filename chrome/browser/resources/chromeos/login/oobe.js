@@ -79,8 +79,7 @@ function initializeOobe() {
   }
 
   Oobe.initialize();
-  Oobe.getInstance().domReadyForTesting = true;
-  Oobe.readyForTesting = Oobe.getInstance().readyForTesting();
+  Oobe.readyForTesting = true;
   traceExecution(TraceEvent.OOBE_INITIALIZED);
 }
 

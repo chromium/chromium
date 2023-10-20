@@ -118,21 +118,6 @@ export function invokePolymerMethod(element, name, ...args) {
        * @private
        */
       this.demoModeStartListener_ = null;
-
-      /**
-       * Represents that all of the OOBE contents are loaded and elements in
-       * DOM are ready for testing.
-       * @type {boolean}
-       * @private
-       */
-      this.domReadyForTesting_ = false;
-
-      /**
-       * Represents that WizardController is initialized.
-       * @type {boolean}
-       * @private
-       */
-      this.wizardReadyForTesting_ = false;
     }
 
     set virtualKeyboardShown(shown) {
@@ -198,26 +183,6 @@ export function invokePolymerMethod(element, name, ...args) {
      */
     get forceKeyboardFlow() {
       return this.forceKeyboardFlow_;
-    }
-
-    set domReadyForTesting(value) {
-      this.domReadyForTesting_ = value;
-    }
-
-    get domReadyForTesting() {
-      return this.domReadyForTesting_;
-    }
-
-    set wizardReadyForTesting(value) {
-      this.wizardReadyForTesting_ = value;
-    }
-
-    get wizardReadyForTesting() {
-      return this.wizardReadyForTesting_;
-    }
-
-    readyForTesting() {
-      return this.domReadyForTesting_ && this.wizardReadyForTesting_;
     }
 
     /**

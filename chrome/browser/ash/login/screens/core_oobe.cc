@@ -174,16 +174,6 @@ void CoreOobe::LaunchHelpApp(int help_topic_id) {
       static_cast<HelpAppLauncher::HelpTopic>(help_topic_id));
 }
 
-void CoreOobe::SetWizardReadyForTesting() {
-  if (view_) {
-    view_->SetWizardReadyForTesting();  // IN-TEST
-  }
-}
-
-base::WeakPtr<CoreOobe> CoreOobe::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void CoreOobe::OnOSVersionLabelTextUpdated(const std::string& os_version_text) {
   if (view_) {
     view_->SetOsVersionLabelText(os_version_text);
