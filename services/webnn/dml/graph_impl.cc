@@ -96,6 +96,8 @@ std::string OpTagToString(Operation::Tag tag) {
       return "conv2d";
     case Operation::Tag::kElementWiseBinary:
       return "element-wise binary";
+    case Operation::Tag::kPad:
+      return "pad";
     case Operation::Tag::kPool2d:
       return "pool2d";
     case Operation::Tag::kResample2d:

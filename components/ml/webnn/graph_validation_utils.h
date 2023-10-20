@@ -210,6 +210,13 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
     const Operand& filter,
     const Conv2dAttributes& attributes);
 
+// Validate and infer output information of pad operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pad
+base::expected<Operand, std::string> ValidatePadAndInferOutput(
+    const Operand& input,
+    base::span<const uint32_t> beginning_padding,
+    base::span<const uint32_t> ending_padding);
+
 // Validate and infer output information of 2-D pooling operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d
 base::expected<Operand, std::string> ValidatePool2dAndInferOutput(

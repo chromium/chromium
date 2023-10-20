@@ -380,6 +380,41 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
   return Operand(input.data_type, std::move(output_shape));
 }
 
+base::expected<Operand, std::string> ValidatePadAndInferOutput(
+    const Operand& input,
+    base::span<const uint32_t> beginning_padding,
+    base::span<const uint32_t> ending_padding) {
+  // Validate the beginning_padding and ending_padding.
+  const auto input_shape = input.dimensions;
+  auto input_rank = input_shape.size();
+  if (beginning_padding.size() != input_rank) {
+    return base::unexpected(
+        "The length of beginningPadding must be "
+        "equal to the rank of the input tensor.");
+  }
+  if (ending_padding.size() != input_rank) {
+    return base::unexpected(
+        "The length of endingPadding must be "
+        "equal to the rank of the input tensor.");
+  }
+
+  // Infer the output.
+  // Each dimension of the output tensor can be calculated as follow:
+  // input_size = input_shape[i];
+  // output_size = beginning_padding + input_size + ending_padding.
+  std::vector<uint32_t> output_shape(input_rank);
+  for (size_t i = 0; i < input_rank; ++i) {
+    auto checked_output_size = base::MakeCheckedNum<uint32_t>(input_shape[i]) +
+                               beginning_padding[i] + ending_padding[i];
+    if (!checked_output_size.AssignIfValid(&output_shape[i])) {
+      return base::unexpected(base::StringPrintf(
+          "The padding of dimension (%zu) is too large.", i));
+    }
+  }
+
+  return Operand(input.data_type, std::move(output_shape));
+}
+
 base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
     const Operand& input,
     const Pool2dAttributes& attributes) {

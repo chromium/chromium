@@ -385,6 +385,28 @@ bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidatePad(const IdToOperandMap& id_to_operand_map,
+                 const mojom::PadPtr& pad) {
+  auto* input = GetMojoOperand(id_to_operand_map, pad->input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, pad->output_operand_id);
+  if (!input || !output || output == input) {
+    // The pad operator is invalid.
+    return false;
+  }
+
+  auto validated_output =
+      ValidatePadAndInferOutput(ConvertToComponentOperand(input),
+                                pad->beginning_padding, pad->ending_padding);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidatePool2d(const IdToOperandMap& id_to_operand_map,
                     const mojom::Pool2dPtr& pool2d) {
   auto* input = GetMojoOperand(id_to_operand_map, pool2d->input_operand_id);
@@ -628,6 +650,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kElementWiseBinary:
       return ValidateElementWiseBinary(id_to_operand_map,
                                        operation->get_element_wise_binary());
+    case mojom::Operation::Tag::kPad:
+      return ValidatePad(id_to_operand_map, operation->get_pad());
     case mojom::Operation::Tag::kPool2d:
       return ValidatePool2d(id_to_operand_map, operation->get_pool2d());
     case mojom::Operation::Tag::kResample2d:

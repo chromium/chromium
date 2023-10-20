@@ -146,6 +146,41 @@ struct ElementWiseBinary  {
   uint64 output_operand;
 };
 
+// Specifies the different ways to pad a tensor. The padding value is only
+// specified when the mode is "constant".
+struct ConstantPadding {
+  float value = 0;
+};
+struct EdgePadding {};
+struct ReflectionPadding {};
+struct SymmetricPadding {};
+
+union PaddingMode {
+  ConstantPadding constant;
+  EdgePadding edge;
+  ReflectionPadding reflection;
+  SymmetricPadding symmetric;
+};
+
+// Represents a pad operation which inflates the input tensor with constant or
+// mirrored values on the edges.
+struct Pad {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // The number of padding values to add at the beginning of each input
+  // dimension. The array length should be equal to the rank of input tensor.
+  array<uint32> beginning_padding;
+  // The number of padding values to add at the ending of each input
+  // dimension. The array length should be equal to the rank of input tensor.
+  array<uint32> ending_padding;
+
+  PaddingMode mode;
+};
+
 // Represents an average or max pooling operation across all the elements with
 // moving window over the input tensor.
 // This struct also contains the attributes of pool2d operator, but the
@@ -317,6 +352,7 @@ union Operation {
   Concat concat;
   Conv2d conv2d;
   ElementWiseBinary element_wise_binary;
+  Pad pad;
   Pool2d pool2d;
   Relu relu;
   Resample2d resample2d;

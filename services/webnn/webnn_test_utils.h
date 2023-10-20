@@ -121,6 +121,13 @@ class GraphInfoBuilder final {
                               uint64_t rhs_operand,
                               uint64_t output_operand);
 
+  void BuildPad(uint64_t input_operand_id,
+                uint64_t output_operand_id,
+                const std::vector<uint32_t>& beginning_padding,
+                const std::vector<uint32_t>& ending_padding,
+                mojom::PaddingMode::Tag mode,
+                float value);
+
   // A `Pool2dAttributes` type should have the following members:
   // struct Pool2dAttributes {
   //   std::vector<uint32_t> window_dimensions;

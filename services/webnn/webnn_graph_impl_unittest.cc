@@ -919,6 +919,113 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
   }
 }
 
+struct PadTester {
+  OperandInfo input;
+  std::vector<uint32_t> beginning_padding;
+  std::vector<uint32_t> ending_padding;
+  mojom::PaddingMode::Tag mode = mojom::PaddingMode::Tag::kConstant;
+  float value = 0;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildPad(input_operand_id, output_operand_id, beginning_padding,
+                     ending_padding, mode, value);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, PadTest) {
+  {
+    // Test pad with default options, beginningPadding = {1, 2} and
+    // endingPadding = {1, 2}.
+    PadTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 3}},
+              .beginning_padding = {1, 2},
+              .ending_padding = {1, 2},
+              .output = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {4, 7}},
+              .expected = true}
+        .Test();
+  }
+  {
+    // Test pad with mode = "edge", beginningPadding = {1, 2} and
+    // endingPadding = {1, 2}.
+    PadTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 3}},
+              .beginning_padding = {1, 2},
+              .ending_padding = {1, 2},
+              .mode = mojom::PaddingMode::Tag::kEdge,
+              .output = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {4, 7}},
+              .expected = true}
+        .Test();
+  }
+  {
+    // Test pad with value = 1, beginningPadding = {1, 2} and
+    // endingPadding = {1, 2}.
+    PadTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 3}},
+              .beginning_padding = {1, 2},
+              .ending_padding = {1, 2},
+              .value = 1,
+              .output = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {4, 7}},
+              .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the length of beginningPadding is not equal
+    // to the input rank.
+    PadTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 3}},
+              .beginning_padding = {1},
+              .ending_padding = {1, 2},
+              .output = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {4, 7}},
+              .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the length of endingPadding is not equal to
+    // the input rank.
+    PadTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 3}},
+              .beginning_padding = {1, 0},
+              .ending_padding = {1, 2, 0},
+              .output = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {4, 7}},
+              .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the padding of one dimension is too large.
+    PadTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 3}},
+              .beginning_padding = {2294967295, 0},
+              .ending_padding = {3294967295, 2},
+              .output = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {1294967294, 5}},
+              .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input is as same as output.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, mojom::Operand::DataType::kFloat32);
+    builder.BuildPad(input_operand_id, input_operand_id, {1, 1}, {1, 1},
+                     mojom::PaddingMode::Tag::kConstant, 0);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
 struct Pool2dTester {
   OperandInfo input;
   struct Pool2dAttributes {

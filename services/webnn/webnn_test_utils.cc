@@ -63,6 +63,40 @@ uint64_t GraphInfoBuilder::BuildOutput(const std::string& name,
   return operand_id;
 }
 
+void GraphInfoBuilder::BuildPad(uint64_t input_operand_id,
+                                uint64_t output_operand_id,
+                                const std::vector<uint32_t>& beginning_padding,
+                                const std::vector<uint32_t>& ending_padding,
+                                mojom::PaddingMode::Tag mode,
+                                float value) {
+  mojom::PadPtr pad = mojom::Pad::New();
+  pad->input_operand_id = input_operand_id;
+  pad->output_operand_id = output_operand_id;
+  pad->beginning_padding = beginning_padding;
+  pad->ending_padding = ending_padding;
+  switch (mode) {
+    case mojom::PaddingMode::Tag::kConstant: {
+      auto constant_padding = mojom::ConstantPadding::New();
+      constant_padding->value = value;
+      pad->mode = mojom::PaddingMode::NewConstant(std::move(constant_padding));
+      break;
+    }
+    case mojom::PaddingMode::Tag::kEdge:
+      pad->mode = mojom::PaddingMode::NewEdge(mojom::EdgePadding::New());
+      break;
+    case mojom::PaddingMode::Tag::kReflection:
+      pad->mode =
+          mojom::PaddingMode::NewReflection(mojom::ReflectionPadding::New());
+      break;
+    case mojom::PaddingMode::Tag::kSymmetric:
+      pad->mode =
+          mojom::PaddingMode::NewSymmetric(mojom::SymmetricPadding::New());
+      break;
+  }
+
+  graph_info_->operations.push_back(mojom::Operation::NewPad(std::move(pad)));
+}
+
 void GraphInfoBuilder::BuildSplit(
     uint64_t input_operand_id,
     const std::vector<uint64_t>& output_operand_ids,

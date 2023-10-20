@@ -1178,17 +1178,12 @@ MLOperand* MLGraphBuilder::pad(const MLOperand* input,
                                const Vector<uint32_t>& ending_padding,
                                const MLPadOptions* options,
                                ExceptionState& exception_state) {
-  const auto input_rank = input->Dimensions().size();
-  if (beginning_padding.size() != input_rank) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The length of beginningPadding must be "
-                                      "equal to the rank of the input tensor.");
-    return nullptr;
-  }
-  if (ending_padding.size() != input_rank) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The length of endingPadding must be "
-                                      "equal to the rank of the input tensor.");
+  auto validated_output = webnn::ValidatePadAndInferOutput(
+      ConvertToComponentOperand(input), beginning_padding, ending_padding);
+  if (!validated_output.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        String::FromUTF8(validated_output.error()));
     return nullptr;
   }
 
@@ -1199,28 +1194,13 @@ MLOperand* MLGraphBuilder::pad(const MLOperand* input,
         "constant.");
   }
 
-  // Each dimension of the output tensor can be calculated as follow:
-  // output_size = beginning_padding + input_size + ending_padding.
-  Vector<uint32_t> output_shape(input_rank);
-  for (wtf_size_t i = 0; i < input_rank; i++) {
-    auto checked_output_size =
-        base::MakeCheckedNum<uint32_t>(input->Dimensions()[i]) +
-        beginning_padding[i] + ending_padding[i];
-    if (!checked_output_size.AssignIfValid(&output_shape[i])) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          String::Format("The padding of dimension (%u) is too large.", i));
-      return nullptr;
-    }
-  }
-
   auto* pad = MakeGarbageCollected<MLPadOperator>(this, beginning_padding,
                                                   ending_padding, options);
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pad, the output
   // tensor of pad has the same type as its input.
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, input->Type(), std::move(output_shape), pad);
+      this, input->Type(), Vector<uint32_t>(validated_output->dimensions), pad);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       output.error());
