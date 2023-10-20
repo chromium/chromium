@@ -1,0 +1,7 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tabs_internal") {
+  public_deps = [ "//ios/chrome/browser/tabs:tabs_internal" ]
+}
