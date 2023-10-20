@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-forward.h"
+#include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -143,14 +144,27 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // highlight/fragment.
   bool opened_from_highlight = false;
 
-  // The context menu was opened on an input or textarea field. Denotes the
-  // renderer id of the form containing the input or the textarea field.
-  // `absl::nullopt` if the click was not on an input field or a formless field.
-  absl::optional<uint64_t> form_renderer_id;
+  // The type of the form control element on which the context menu is invoked,
+  // if any.
+  std::optional<mojom::FormControlType> form_control_type;
 
-  // The context menu was opened on an input or textarea field.
-  // Otherwise, `absl::nullopt`.
-  absl::optional<uint64_t> field_renderer_id;
+  // Indicates whether the context menu is invoked on a non-form,
+  // non-form-control element that is contenteditable. Thus, it is mutually
+  // exclusive with `form_control_type`.
+  // TODO(crbug.com/1427131): Only true if AutofillUseDomNodeIdForRendererId
+  // is enabled.
+  bool is_content_editable_for_autofill = false;
+
+  // Identifies the element the context menu was invoked on if either
+  // `form_control_type` is engaged or `is_content_editable_for_autofill` is
+  // true.
+  // See `autofill::FieldRendererId` for the semantics of renderer IDs.
+  uint64_t field_renderer_id = 0;
+
+  // Identifies form to which the field identified by `field_renderer_id` is
+  // associated.
+  // See `autofill::FormRendererId` for the semantics of renderer IDs.
+  uint64_t form_renderer_id = 0;
 
  private:
   void Assign(const UntrustworthyContextMenuParams& other);

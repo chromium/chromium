@@ -2260,8 +2260,7 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
   }
 #if BUILDFLAG(ENABLE_COMPOSE)
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
-  if (render_frame_host && params_.form_renderer_id &&
-      params_.field_renderer_id) {
+  if (render_frame_host && params_.form_control_type) {
     compose::ComposeManager* compose_manager = GetComposeManager();
     if (compose_manager && compose_manager->ShouldOfferComposeContextMenu()) {
       menu_model_.AddItemWithStringId(IDC_CONTEXT_COMPOSE,
@@ -3299,7 +3298,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         // TODO(b/305798770): Use appropriate parameters once the Autofill Form
         // Extraction API is available.
         compose_manager->OpenComposeFromContextMenu(
-            frame_token, autofill::FieldRendererId(*params_.field_renderer_id),
+            frame_token, autofill::FieldRendererId(params_.field_renderer_id),
             gfx::Point(params_.x, params_.y));
       }
       break;
