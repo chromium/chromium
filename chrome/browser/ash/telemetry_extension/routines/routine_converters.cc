@@ -52,11 +52,10 @@ crosapi::TelemetryDiagnosticRoutineStateWaitingPtr UncheckedConvertPtr(
 crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
     healthd::RoutineDetailPtr input) {
   switch (input->which()) {
-    case healthd::internal::RoutineDetail_Data::RoutineDetail_Tag::
-        kUnrecognizedArgument:
+    case healthd::RoutineDetail::Tag::kUnrecognizedArgument:
       return crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
           input->get_unrecognizedArgument());
-    case healthd::internal::RoutineDetail_Data::RoutineDetail_Tag::kMemory:
+    case healthd::RoutineDetail::Tag::kMemory:
       return crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
           ConvertRoutinePtr(std::move(input->get_memory())));
   }
@@ -72,24 +71,19 @@ crosapi::TelemetryDiagnosticRoutineStateFinishedPtr UncheckedConvertPtr(
 crosapi::TelemetryDiagnosticRoutineStateUnionPtr UncheckedConvertPtr(
     healthd::RoutineStateUnionPtr input) {
   switch (input->which()) {
-    case healthd::internal::RoutineStateUnion_Data::RoutineStateUnion_Tag::
-        kUnrecognizedArgument:
+    case healthd::RoutineStateUnion::Tag::kUnrecognizedArgument:
       return crosapi::TelemetryDiagnosticRoutineStateUnion::
           NewUnrecognizedArgument(input->get_unrecognizedArgument());
-    case healthd::internal::RoutineStateUnion_Data::RoutineStateUnion_Tag::
-        kInitialized:
+    case healthd::RoutineStateUnion::Tag::kInitialized:
       return crosapi::TelemetryDiagnosticRoutineStateUnion::NewInitialized(
           ConvertRoutinePtr(std::move(input->get_initialized())));
-    case healthd::internal::RoutineStateUnion_Data::RoutineStateUnion_Tag::
-        kRunning:
+    case healthd::RoutineStateUnion::Tag::kRunning:
       return crosapi::TelemetryDiagnosticRoutineStateUnion::NewRunning(
           ConvertRoutinePtr(std::move(input->get_running())));
-    case healthd::internal::RoutineStateUnion_Data::RoutineStateUnion_Tag::
-        kWaiting:
+    case healthd::RoutineStateUnion::Tag::kWaiting:
       return crosapi::TelemetryDiagnosticRoutineStateUnion::NewWaiting(
           ConvertRoutinePtr(std::move(input->get_waiting())));
-    case healthd::internal::RoutineStateUnion_Data::RoutineStateUnion_Tag::
-        kFinished:
+    case healthd::RoutineStateUnion::Tag::kFinished:
       return crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
           ConvertRoutinePtr(std::move(input->get_finished())));
   }
@@ -105,12 +99,11 @@ crosapi::TelemetryDiagnosticRoutineStatePtr UncheckedConvertPtr(
 healthd::RoutineArgumentPtr UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticRoutineArgumentPtr input) {
   switch (input->which()) {
-    case crosapi::internal::TelemetryDiagnosticRoutineArgument_Data::
-        TelemetryDiagnosticRoutineArgument_Tag::kUnrecognizedArgument:
+    case crosapi::TelemetryDiagnosticRoutineArgument::Tag::
+        kUnrecognizedArgument:
       return healthd::RoutineArgument::NewUnrecognizedArgument(
           std::move(input->get_unrecognizedArgument()));
-    case crosapi::internal::TelemetryDiagnosticRoutineArgument_Data::
-        TelemetryDiagnosticRoutineArgument_Tag::kMemory:
+    case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory:
       return healthd::RoutineArgument::NewMemory(
           ConvertRoutinePtr(std::move(input->get_memory())));
   }

@@ -28,8 +28,7 @@ crosapi::mojom::TelemetryExtensionSupportedPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryExtensionUnsupportedReasonPtr UncheckedConvertPtr(
     cros_healthd::mojom::UnsupportedReasonPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::internal::UnsupportedReason_Data::
-        UnsupportedReason_Tag::kUnmappedUnionField:
+    case cros_healthd::mojom::UnsupportedReason::Tag::kUnmappedUnionField:
       return crosapi::mojom::TelemetryExtensionUnsupportedReason::
           NewUnmappedUnionField(input->get_unmapped_union_field());
   }
@@ -44,20 +43,16 @@ crosapi::mojom::TelemetryExtensionUnsupportedPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryExtensionSupportStatusPtr UncheckedConvertPtr(
     cros_healthd::mojom::SupportStatusPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::internal::SupportStatus_Data::SupportStatus_Tag::
-        kUnmappedUnionField:
+    case cros_healthd::mojom::SupportStatus::Tag::kUnmappedUnionField:
       return crosapi::mojom::TelemetryExtensionSupportStatus::
           NewUnmappedUnionField(input->get_unmapped_union_field());
-    case cros_healthd::mojom::internal::SupportStatus_Data::SupportStatus_Tag::
-        kException:
+    case cros_healthd::mojom::SupportStatus::Tag::kException:
       return crosapi::mojom::TelemetryExtensionSupportStatus::NewException(
           ConvertCommonPtr(std::move(input->get_exception())));
-    case cros_healthd::mojom::internal::SupportStatus_Data::SupportStatus_Tag::
-        kSupported:
+    case cros_healthd::mojom::SupportStatus::Tag::kSupported:
       return crosapi::mojom::TelemetryExtensionSupportStatus::NewSupported(
           ConvertCommonPtr(std::move(input->get_supported())));
-    case cros_healthd::mojom::internal::SupportStatus_Data::SupportStatus_Tag::
-        kUnsupported:
+    case cros_healthd::mojom::SupportStatus::Tag::kUnsupported:
       return crosapi::mojom::TelemetryExtensionSupportStatus::NewUnsupported(
           ConvertCommonPtr(std::move(input->get_unsupported())));
   }
