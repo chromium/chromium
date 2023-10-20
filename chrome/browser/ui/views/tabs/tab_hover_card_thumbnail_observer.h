@@ -40,6 +40,7 @@ class TabHoverCardThumbnailObserver {
   scoped_refptr<ThumbnailImage> current_image_;
   std::unique_ptr<ThumbnailImage::Subscription> subscription_;
   base::RepeatingCallbackList<CallbackSignature> callback_list_;
+  bool reentrancy_guard_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_THUMBNAIL_OBSERVER_H_
