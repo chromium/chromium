@@ -4,14 +4,22 @@
 
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
 
+#include "cc/paint/paint_op.h"
+#include "cc/test/paint_op_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/recording_test_utils.h"
 
 namespace blink {
 namespace {
+
+using ::blink_testing::RecordedOpsAre;
+using ::cc::ConcatOp;
+using ::cc::DrawColorOp;
+using ::cc::PaintOpEq;
 
 static const int kWidth = 50;
 static const int kHeight = 75;
@@ -101,6 +109,14 @@ TEST(PaintRenderingContext2DTest, setTransformWithDeviceScaleFactor) {
   EXPECT_FLOAT_EQ(matrix->d(), 2.3);
   EXPECT_FLOAT_EQ(matrix->e(), 20);
   EXPECT_FLOAT_EQ(matrix->f(), 50);
+
+  EXPECT_THAT(ctx->GetRecord(),
+              RecordedOpsAre(PaintOpEq<DrawColorOp>(SkColors::kTransparent,
+                                                    SkBlendMode::kSrc),
+                             PaintOpEq<ConcatOp>(SkM44(2.1, 1.4, 0, 20,  //
+                                                       2.5, 2.3, 0, 50,  //
+                                                       0, 0, 1, 0,       //
+                                                       0, 0, 0, 1))));
 }
 
 TEST(PaintRenderingContext2DTest, setTransformWithDefaultDeviceScaleFactor) {
@@ -120,6 +136,14 @@ TEST(PaintRenderingContext2DTest, setTransformWithDefaultDeviceScaleFactor) {
   EXPECT_FLOAT_EQ(matrix->d(), 4.5);
   EXPECT_FLOAT_EQ(matrix->e(), 56);
   EXPECT_FLOAT_EQ(matrix->f(), 67);
+
+  EXPECT_THAT(ctx->GetRecord(),
+              RecordedOpsAre(PaintOpEq<DrawColorOp>(SkColors::kTransparent,
+                                                    SkBlendMode::kSrc),
+                             PaintOpEq<ConcatOp>(SkM44(1.2, 3.4, 0, 56,  //
+                                                       2.3, 4.5, 0, 67,  //
+                                                       0, 0, 1, 0,       //
+                                                       0, 0, 0, 1))));
 }
 
 }  // namespace
