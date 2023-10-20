@@ -28,6 +28,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -257,14 +258,18 @@ void DispatchObserverTimingCallbacks(PageLoadMetricsObserverInterface* observer,
 }
 
 internal::PageLoadTrackerPageType CalculatePageType(
-    const content::NavigationHandle* navigation_handle) {
+    content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrerenderedMainFrame()) {
     return internal::PageLoadTrackerPageType::kPrerenderPage;
   } else if (navigation_handle->GetNavigatingFrameType() ==
              content::FrameType::kFencedFrameRoot) {
     return internal::PageLoadTrackerPageType::kFencedFramesPage;
   }
-  return internal::PageLoadTrackerPageType::kPrimaryPage;
+  content::WebContentsDelegate* delegate =
+      navigation_handle->GetWebContents()->GetDelegate();
+  return (delegate && delegate->IsInPreviewMode())
+             ? internal::PageLoadTrackerPageType::kPreviewPrimaryPage
+             : internal::PageLoadTrackerPageType::kPrimaryPage;
 }
 
 bool CalculateIsOriginVisit(bool is_first_navigation,
@@ -316,7 +321,7 @@ PageLoadTracker::PageLoadTracker(
   embedder_interface_->RegisterObservers(this);
   switch (page_type_) {
     case internal::PageLoadTrackerPageType::kPrimaryPage:
-      DCHECK_NE(ukm::kInvalidSourceId, source_id_);
+      CHECK_NE(ukm::kInvalidSourceId, source_id_);
       InvokeAndPruneObservers(
           "PageLoadMetricsObserver::OnStart",
           base::BindRepeating(
@@ -333,8 +338,8 @@ PageLoadTracker::PageLoadTracker(
           /*permit_forwarding=*/false);
       break;
     case internal::PageLoadTrackerPageType::kPrerenderPage:
-      DCHECK(!started_in_foreground_);
-      DCHECK_EQ(ukm::kInvalidSourceId, source_id_);
+      CHECK(!started_in_foreground_);
+      CHECK_EQ(ukm::kInvalidSourceId, source_id_);
       prerendering_state_ = PrerenderingState::kInPrerendering;
       InvokeAndPruneObservers(
           "PageLoadMetricsObserver::OnPrerenderStart",
@@ -352,7 +357,7 @@ PageLoadTracker::PageLoadTracker(
           internal::PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame);
       break;
     case internal::PageLoadTrackerPageType::kFencedFramesPage:
-      DCHECK_NE(ukm::kInvalidSourceId, source_id_);
+      CHECK_NE(ukm::kInvalidSourceId, source_id_);
       InvokeAndPruneObservers(
           "PageLoadMetricsObserver::OnFencedFramesStart",
           base::BindRepeating(
@@ -364,6 +369,20 @@ PageLoadTracker::PageLoadTracker(
               },
               navigation_handle, currently_committed_url),
           /*permit_forwarding=*/true);
+      break;
+    case internal::PageLoadTrackerPageType::kPreviewPrimaryPage:
+      CHECK_NE(ukm::kInvalidSourceId, source_id_);
+      InvokeAndPruneObservers(
+          "PageLoadMetricsObserver::OnPreviewStart",
+          base::BindRepeating(
+              [](content::NavigationHandle* navigation_handle,
+                 const GURL& currently_committed_url,
+                 PageLoadMetricsObserverInterface* observer) {
+                return observer->OnPreviewStart(navigation_handle,
+                                                currently_committed_url);
+              },
+              navigation_handle, currently_committed_url),
+          /*permit_forwarding=*/false);
       break;
   }
   RecordPageType(page_type_);

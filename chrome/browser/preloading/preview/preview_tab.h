@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
 
@@ -28,6 +29,8 @@ class PreviewTab final : public content::WebContentsDelegate {
 
   PreviewTab(const PreviewTab&) = delete;
   PreviewTab& operator=(const PreviewTab&) = delete;
+
+  base::WeakPtr<content::WebContents> GetWebContents();
 
  private:
   class WebContentsObserver;

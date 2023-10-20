@@ -66,6 +66,14 @@ PageLoadMetricsForwardObserver::OnPrerenderStart(
   return STOP_OBSERVING;
 }
 
+PageLoadMetricsObserverInterface::ObservePolicy
+PageLoadMetricsForwardObserver::OnPreviewStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  NOTREACHED();
+  return STOP_OBSERVING;
+}
+
 // Main frame events will be converted as sub-frame events on forwarding, and
 // OnRedirect is an event only for the main frame. We just mask it here.
 PageLoadMetricsObserverInterface::ObservePolicy

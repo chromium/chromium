@@ -62,7 +62,8 @@ enum class PageLoadTrackerPageType {
   kPrimaryPage = 0,
   kPrerenderPage = 1,
   kFencedFramesPage = 2,
-  kMaxValue = kFencedFramesPage,
+  kPreviewPrimaryPage = 3,  // Primary page in the preview mode
+  kMaxValue = kPreviewPrimaryPage,
 };
 
 extern const char kErrorEvents[];

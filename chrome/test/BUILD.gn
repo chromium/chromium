@@ -258,6 +258,13 @@ static_library("test_support") {
     "base/web_feature_histogram_tester.h",
   ]
 
+  if (!is_android) {
+    sources += [
+      "../browser/preloading/preview/preview_test_util.cc",
+      "../browser/preloading/preview/preview_test_util.h",
+    ]
+  }
+
   if (is_chromeos && is_chromeos_device) {
     sources += [
       "base/chromeos/crosier/chromeos_integration_test_mixin.cc",

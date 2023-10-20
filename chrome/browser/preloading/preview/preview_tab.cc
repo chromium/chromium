@@ -79,6 +79,10 @@ PreviewTab::PreviewTab(content::WebContents& parent, const GURL& url)
 
 PreviewTab::~PreviewTab() = default;
 
+base::WeakPtr<content::WebContents> PreviewTab::GetWebContents() {
+  return view_->GetWebContents()->GetWeakPtr();
+}
+
 void PreviewTab::AttachTabHelpersForInit() {
   content::WebContents* web_contents = view_->GetWebContents();
 

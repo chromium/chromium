@@ -219,12 +219,15 @@ class PageLoadMetricsObserverInterface {
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) = 0;
 
-  // For prerendered pages, OnPrerenderStart is called instead of OnStart. The
-  // default implementation returns STOP_OBSERVING, so that observers that are
-  // not aware of prerender will not see prerendered page loads.
-  // TODO(crbug.com/1190112): Prerender support is still in progress. Observers
-  // may not receive some signals.
+  // For prerendered pages, OnPrerenderStart is called instead of OnStart.
   virtual ObservePolicy OnPrerenderStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) = 0;
+
+  // For primary pages in the preview mode, OnPreviewStart is called instead of
+  // OnStart. The default implementation in PageLoadMetricsObserver returns
+  // STOP_OBSERVING. See b:291867362 to track the project progress.
+  virtual ObservePolicy OnPreviewStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) = 0;
 

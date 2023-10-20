@@ -20,4 +20,10 @@ void PreviewManager::InitiatePreview(const GURL& url) {
   tab_ = std::make_unique<PreviewTab>(GetWebContents(), url);
 }
 
+base::WeakPtr<content::WebContents>
+PreviewManager::GetWebContentsForPreviewTab() {
+  CHECK(tab_);
+  return tab_->GetWebContents();
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PreviewManager);
