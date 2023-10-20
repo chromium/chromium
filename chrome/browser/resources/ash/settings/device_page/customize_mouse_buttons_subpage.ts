@@ -110,9 +110,13 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       return;
     }
     this.previousRoute_ = route;
-    if (this.hasMice() &&
-        (!this.selectedMouse ||
-         this.selectedMouse.id !== this.getMouseIdFromUrl())) {
+
+    if (!this.hasMice()) {
+      return;
+    }
+
+    if (!this.selectedMouse ||
+        this.selectedMouse.id !== this.getMouseIdFromUrl()) {
       await this.initializeMouse();
     }
     this.inputDeviceSettingsProvider_.startObserving(this.selectedMouse.id);
@@ -124,14 +128,15 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
    */
   private async initializeMouse(): Promise<void> {
     this.isInitialized_ = false;
-    this.buttonActionList_ = (await this.inputDeviceSettingsProvider_
-                                  .getActionsForMouseButtonCustomization())
-                                 ?.options;
+
     const mouseId = this.getMouseIdFromUrl();
     const searchedMouse =
         this.mouseList.find((mouse: Mouse) => mouse.id === mouseId);
     this.selectedMouse = castExists(searchedMouse);
     this.set('primaryRightPref_.value', this.selectedMouse.settings.swapRight);
+    this.buttonActionList_ = (await this.inputDeviceSettingsProvider_
+                                  .getActionsForMouseButtonCustomization())
+                                 ?.options;
     this.isInitialized_ = true;
   }
 

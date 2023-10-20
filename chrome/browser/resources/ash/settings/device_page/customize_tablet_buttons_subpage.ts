@@ -85,9 +85,13 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
       return;
     }
     this.previousRoute_ = route;
-    if (this.hasGraphicsTablets() &&
-        (!this.selectedTablet ||
-         this.selectedTablet.id !== this.getGraphicsTabletIdFromUrl())) {
+
+    if (!this.hasGraphicsTablets()) {
+      return;
+    }
+
+    if (!this.selectedTablet ||
+        this.selectedTablet.id !== this.getGraphicsTabletIdFromUrl()) {
       await this.initializeTablet();
     }
     this.inputDeviceSettingsProvider_.startObserving(this.selectedTablet.id);
@@ -99,13 +103,13 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
    */
   private async initializeTablet(): Promise<void> {
     const tabletId = this.getGraphicsTabletIdFromUrl();
+    const searchedGraphicsTablet = this.graphicsTablets.find(
+        (graphicsTablet: GraphicsTablet) => graphicsTablet.id === tabletId);
+    this.selectedTablet = castExists(searchedGraphicsTablet);
     this.buttonActionList_ =
         (await this.inputDeviceSettingsProvider_
              .getActionsForGraphicsTabletButtonCustomization())
             ?.options;
-    const searchedGraphicsTablet = this.graphicsTablets.find(
-        (graphicsTablet: GraphicsTablet) => graphicsTablet.id === tabletId);
-    this.selectedTablet = castExists(searchedGraphicsTablet);
   }
 
   private getGraphicsTabletIdFromUrl(): number {
