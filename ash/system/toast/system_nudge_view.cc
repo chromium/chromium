@@ -7,24 +7,30 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/nudge_constants.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 
@@ -35,6 +41,15 @@ namespace {
 // Nudge constants
 constexpr gfx::Insets kNudgeInteriorMargin = gfx::Insets::VH(20, 20);
 constexpr gfx::Insets kTextOnlyNudgeInteriorMargin = gfx::Insets::VH(12, 20);
+
+constexpr gfx::Insets kNudgeWithCloseButton_InteriorMargin =
+    gfx::Insets::TLBR(8, 20, 20, 8);
+constexpr gfx::Insets
+    kNudgeWithCloseButton_ImageAndTextContainerInteriorMargin =
+        gfx::Insets::TLBR(12, 0, 0, 12);
+constexpr gfx::Insets kNudgeWithCloseButton_ButtonContainerInteriorMargin =
+    gfx::Insets::TLBR(0, 0, 0, 12);
+
 constexpr float kNudgeCornerRadius = 24.0f;
 
 // Label constants
@@ -78,6 +93,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
   SetBorder(std::make_unique<views::HighlightBorder>(
       kNudgeCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  SetNotifyEnterExitOnChild(true);
 
   // Since nudges have a large corner radius, we use the shadow on texture
   // layer. Refer to `ash::SystemShadowOnTextureLayer` for more details.
@@ -89,11 +105,59 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
   SetInteriorMargin(kNudgeInteriorMargin);
   SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
-  auto* image_and_text_container =
-      AddChildView(views::Builder<views::FlexLayoutView>()
-                       .SetOrientation(views::LayoutOrientation::kHorizontal)
-                       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-                       .Build());
+  const bool nudge_is_text_only = nudge_data.image_model.IsEmpty() &&
+                                  nudge_data.title_text.empty() &&
+                                  nudge_data.first_button_text.empty();
+
+  // Nudges without an anchor view that are not text-only will have a close
+  // button that is visible on view hovered.
+  bool has_close_button = !nudge_data.anchor_view && !nudge_is_text_only;
+
+  views::View* image_and_text_container;
+  auto image_and_text_container_unique =
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+          .SetInteriorMargin(
+              has_close_button
+                  ? kNudgeWithCloseButton_ImageAndTextContainerInteriorMargin
+                  : gfx::Insets())
+          .Build();
+
+  if (has_close_button) {
+    SetInteriorMargin(kNudgeWithCloseButton_InteriorMargin);
+
+    // Set the `image_and_text_container` parent to use a `FillLayout` so it can
+    // allow for overlap with the close button.
+    auto* fill_layout_container = AddChildView(std::make_unique<views::View>());
+    fill_layout_container->SetLayoutManager(
+        std::make_unique<views::FillLayout>());
+
+    image_and_text_container = fill_layout_container->AddChildView(
+        std::move(image_and_text_container_unique));
+
+    auto* close_button_container = fill_layout_container->AddChildView(
+        views::Builder<views::FlexLayoutView>()
+            .SetOrientation(views::LayoutOrientation::kHorizontal)
+            .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+            .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+            .Build());
+
+    close_button_ = close_button_container->AddChildView(
+        views::Builder<views::ImageButton>()
+            .SetID(VIEW_ID_SYSTEM_NUDGE_CLOSE_BUTTON)
+            .SetCallback(std::move(nudge_data.close_button_callback))
+            .SetImageModel(views::Button::STATE_NORMAL,
+                           ui::ImageModel::FromVectorIcon(
+                               kCloseSmallIcon, cros_tokens::kCrosSysOnSurface))
+            .SetTooltipText(l10n_util::GetStringUTF16(
+                IDS_ASH_SYSTEM_NUDGE_CLOSE_BUTTON_TOOLTIP))
+            .SetVisible(false)
+            .Build());
+  } else {
+    image_and_text_container =
+        AddChildView(std::move(image_and_text_container_unique));
+  }
 
   if (!nudge_data.image_model.IsEmpty()) {
     image_view_ = image_and_text_container->AddChildView(
@@ -153,7 +217,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
     CHECK(nudge_data.second_button_text.empty());
 
     // Update nudge margins and body label max width if nudge only has text.
-    if (nudge_data.title_text.empty() && nudge_data.image_model.IsEmpty()) {
+    if (nudge_is_text_only) {
       SetInteriorMargin(kTextOnlyNudgeInteriorMargin);
       // `SizeToFit` is reset to zero so a maximum width can be set.
       body_label_->SizeToFit(0);
@@ -166,12 +230,16 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
   AddPaddingView(this, image_and_text_container->width(),
                  kButtonContainerTopPadding);
 
-  auto* buttons_container =
-      AddChildView(views::Builder<views::FlexLayoutView>()
-                       .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-                       .SetIgnoreDefaultMainAxisMargins(true)
-                       .SetCollapseMargins(true)
-                       .Build());
+  auto* buttons_container = AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+          .SetInteriorMargin(
+              has_close_button
+                  ? kNudgeWithCloseButton_ButtonContainerInteriorMargin
+                  : gfx::Insets())
+          .SetIgnoreDefaultMainAxisMargins(true)
+          .SetCollapseMargins(true)
+          .Build());
   buttons_container->SetDefault(views::kMarginsKey, kButtonsMargins);
 
   const bool has_second_button = !nudge_data.second_button_text.empty();
@@ -214,6 +282,22 @@ void SystemNudgeView::AddedToWidget() {
 
   widget_layer->Add(shadow_layer);
   widget_layer->StackAtBottom(shadow_layer);
+}
+
+void SystemNudgeView::OnMouseEntered(const ui::MouseEvent& event) {
+  HandleOnMouseHovered(/*mouse_entered=*/true);
+}
+
+void SystemNudgeView::OnMouseExited(const ui::MouseEvent& event) {
+  HandleOnMouseHovered(/*mouse_entered=*/false);
+}
+
+void SystemNudgeView::HandleOnMouseHovered(const bool mouse_entered) {
+  if (!close_button_) {
+    return;
+  }
+
+  close_button_->SetVisible(mouse_entered);
 }
 
 BEGIN_METADATA(SystemNudgeView, views::View)

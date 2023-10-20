@@ -14,6 +14,7 @@ namespace views {
 class ImageView;
 class Label;
 class LabelButton;
+class ImageButton;
 }  // namespace views
 
 namespace ash {
@@ -34,6 +35,8 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
   SystemNudgeView& operator=(const SystemNudgeView&) = delete;
   ~SystemNudgeView() override;
 
+  // TODO(b/306466133): Use `GetViewByID` when applicable in tests instead of
+  // exposing nudge child views.
   views::ImageView* image_view() const { return image_view_; }
   views::Label* body_label() const { return body_label_; }
   views::Label* title_label() const { return title_label_; }
@@ -50,11 +53,17 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::LabelButton> first_button_ = nullptr;
   raw_ptr<views::LabelButton> second_button_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
 
   // views::View:
   void AddedToWidget() override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+
+  // Handles mouse enter/exit events to either show or hide `close_button_`.
+  void HandleOnMouseHovered(const bool mouse_entered);
 };
 
 }  // namespace ash
