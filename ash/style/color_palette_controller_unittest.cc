@@ -28,7 +28,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/known_user.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -172,29 +171,7 @@ TEST_F(ColorPaletteControllerTest,
             color_palette_controller()->GetColorScheme(kAccountId));
 }
 
-TEST_F(ColorPaletteControllerTest,
-       SetColorScheme_JellyDisabled_UsesDefaultScheme) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
-  WallpaperControllerTestApi wallpaper(wallpaper_controller());
-  wallpaper.SetCalculatedColors(
-      WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
-
-  color_palette_controller()->SetColorScheme(style::mojom::ColorScheme::kStatic,
-                                             kAccountId, base::DoNothing());
-  EXPECT_EQ(
-      kDefaultColorScheme,
-      color_palette_controller()->GetColorPaletteSeed(kAccountId)->scheme);
-
-  color_palette_controller()->SetColorScheme(
-      style::mojom::ColorScheme::kExpressive, kAccountId, base::DoNothing());
-  EXPECT_EQ(
-      kDefaultColorScheme,
-      color_palette_controller()->GetColorPaletteSeed(kAccountId)->scheme);
-}
-
 TEST_F(ColorPaletteControllerTest, SetColorScheme) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SimulateUserLogin(kAccountId);
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.SetCalculatedColors(
@@ -221,7 +198,6 @@ TEST_F(ColorPaletteControllerTest, SetColorScheme) {
 }
 
 TEST_F(ColorPaletteControllerTest, SetStaticColor) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SimulateUserLogin(kAccountId);
   const SkColor static_color = SK_ColorGRAY;
 
@@ -249,30 +225,7 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor) {
   EXPECT_EQ(static_color, static_cast<SkColor>(local_static_color.value()));
 }
 
-// If the Jelly flag is off, we always return the KMeans color from the
-// wallpaper controller regardless of scheme.
-TEST_F(ColorPaletteControllerTest, SetStaticColor_JellyDisabled_AlwaysKMeans) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
-
-  WallpaperControllerTestApi wallpaper(wallpaper_controller());
-  wallpaper.SetCalculatedColors(
-      WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
-
-  color_palette_controller()->SetColorScheme(style::mojom::ColorScheme::kStatic,
-                                             kAccountId, base::DoNothing());
-  color_palette_controller()->SetStaticColor(SK_ColorRED, kAccountId,
-                                             base::DoNothing());
-
-  // TODO(skau): Check that this matches kKMean after color blending has been
-  // moved.
-  EXPECT_NE(
-      SK_ColorWHITE,
-      color_palette_controller()->GetColorPaletteSeed(kAccountId)->seed_color);
-}
-
 TEST_F(ColorPaletteControllerTest, UpdateColorScheme_NotifiesObserver) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
   SimulateUserLogin(kAccountId);
@@ -297,7 +250,6 @@ TEST_F(ColorPaletteControllerTest, UpdateColorScheme_NotifiesObserver) {
 }
 
 TEST_F(ColorPaletteControllerTest, UpdateStaticColor_NotifiesObserver) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
   SimulateUserLogin(kAccountId);
@@ -322,7 +274,6 @@ TEST_F(ColorPaletteControllerTest, UpdateStaticColor_NotifiesObserver) {
 }
 
 TEST_F(ColorPaletteControllerTest, UpdateUseKMeans_NotifiesObserver) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kTonalSpot, kAccountId, base::DoNothing());
   SetUseKMeansPref(true);
@@ -346,8 +297,6 @@ TEST_F(ColorPaletteControllerTest, UpdateUseKMeans_NotifiesObserver) {
 }
 
 TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
-
   // A seed color needs to be present for the observer to trigger.
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.SetCalculatedColors(
@@ -369,60 +318,7 @@ TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
   dark_light_controller()->SetDarkModeEnabledForTest(true);
 }
 
-TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver_JellyDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
-
-  // Initialize Dark mode to a known state.
-  dark_light_controller()->SetDarkModeEnabledForTest(false);
-
-  MockPaletteObserver observer;
-  base::ScopedObservation<ColorPaletteController,
-                          ColorPaletteController::Observer>
-      observation(&observer);
-  observation.Observe(color_palette_controller());
-
-  EXPECT_CALL(observer, OnColorPaletteChanging(testing::Field(
-                            &ColorPaletteSeed::color_mode,
-                            ui::ColorProviderKey::ColorMode::kDark)))
-      .Times(1);
-  dark_light_controller()->SetDarkModeEnabledForTest(true);
-}
-
-TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_JellyDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
-
-  // Set to a known state.
-  dark_light_controller()->SetDarkModeEnabledForTest(true);
-  WallpaperControllerTestApi wallpaper(wallpaper_controller());
-  wallpaper.SetCalculatedColors(
-      WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
-
-  TestObserver observer;
-  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver> observation(
-      &observer);
-  observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
-
-  dark_light_controller()->SetDarkModeEnabledForTest(false);
-  task_environment()->RunUntilIdle();
-
-  EXPECT_EQ(1, observer.call_count());
-  ASSERT_TRUE(observer.last_theme());
-  EXPECT_EQ(ui::NativeTheme::ColorScheme::kLight,
-            observer.last_theme()->GetDefaultSystemColorScheme());
-  // TODO(skau): Check that this matches kKMean after color blending has been
-  // moved.
-  EXPECT_NE(SK_ColorWHITE, observer.last_theme()->user_color().value());
-  // Pre-Jelly, this should always be TonalSpot.
-  EXPECT_THAT(
-      observer.last_theme()->scheme_variant(),
-      testing::Optional(ui::ColorProviderKey::SchemeVariant::kTonalSpot));
-}
-
-TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_JellyEnabled) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
-
+TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged) {
   // Set to a known state.
   dark_light_controller()->SetDarkModeEnabledForTest(true);
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
@@ -448,35 +344,7 @@ TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_JellyEnabled) {
               testing::Optional(ui::ColorProviderKey::SchemeVariant::kVibrant));
 }
 
-// Emulates Dark mode changes on login screen that can result from pod
-// selection. When Jelly is enabled, this happens through
-// `SelectLocalAccount()`.
-TEST_F(ColorPaletteControllerTest,
-       NativeTheme_DarkModeChanged_NoSession_JellyDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
-  GetSessionControllerClient()->Reset();
-
-  // Set to a known state.
-  dark_light_controller()->SetDarkModeEnabledForTest(true);
-
-  TestObserver observer;
-  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver> observation(
-      &observer);
-  observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
-
-  dark_light_controller()->SetDarkModeEnabledForTest(false);
-  task_environment()->RunUntilIdle();
-
-  EXPECT_EQ(1, observer.call_count());
-  ASSERT_TRUE(observer.last_theme());
-  EXPECT_EQ(ui::NativeTheme::ColorScheme::kLight,
-            observer.last_theme()->GetDefaultSystemColorScheme());
-}
-
 TEST_F(ColorPaletteControllerTest, GetSeedWithUnsetWallpaper) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
-
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.ResetCalculatedColors();
 
@@ -486,7 +354,6 @@ TEST_F(ColorPaletteControllerTest, GetSeedWithUnsetWallpaper) {
 }
 
 TEST_F(ColorPaletteControllerTest, GenerateSampleScheme) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SimulateUserLogin(kAccountId);
   SetUseKMeansPref(false);
 
@@ -519,8 +386,6 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme) {
 }
 
 TEST_F(ColorPaletteControllerTest, GenerateSampleScheme_AllValues_Teal) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
-
   SkColor seed = SkColorSetRGB(0x00, 0xbf, 0x7f);  // Hue 160* Saturation 100%
                                                    // Vibrance 75%
 
@@ -551,8 +416,6 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme_AllValues_Teal) {
 }
 
 TEST_F(ColorPaletteControllerTest, NewUser_UsesCelebiColor) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
-
   SimulateNewUserFirstLogin("thecreek@song.com");
   base::RunLoop().RunUntilIdle();
 
@@ -564,7 +427,6 @@ TEST_F(ColorPaletteControllerTest, NewUser_UsesCelebiColor) {
 
 TEST_F(ColorPaletteControllerTest,
        UseKMeans_LogsInForTheFirstTime_UsesCelebiColor) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   const SkColor celebi_color = SK_ColorBLUE;
   SetUseKMeansPref(true);
 
@@ -577,7 +439,6 @@ TEST_F(ColorPaletteControllerTest,
 }
 
 TEST_F(ColorPaletteControllerTest, ExistingUser_UsesKMeansColor) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   const bool dark_mode = true;
   dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
 
@@ -590,23 +451,7 @@ TEST_F(ColorPaletteControllerTest, ExistingUser_UsesKMeansColor) {
 }
 
 TEST_F(ColorPaletteControllerTest,
-       GetWallpaperColorOrDefault_JellyDisabled_ReturnsKMeans) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
-  const bool dark_mode = true;
-  dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
-  SimulateUserLogin(kAccountId);
-  UpdateWallpaperColor(kCelebiColor);
-
-  SkColor color =
-      color_palette_controller()->GetUserWallpaperColorOrDefault(SK_ColorBLUE);
-
-  ASSERT_EQ(ColorUtil::AdjustKMeansColor(kKMeanColor, dark_mode), color);
-}
-
-TEST_F(ColorPaletteControllerTest,
        GetWallpaperColorOrDefault_UseKMeans_TonalSpot_ReturnsKMeans) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   const bool dark_mode = true;
   dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
   SimulateUserLogin(kAccountId);
@@ -623,7 +468,6 @@ TEST_F(ColorPaletteControllerTest,
 
 TEST_F(ColorPaletteControllerTest,
        GetWallpaperColorOrDefault_UseKMeans_NotTonalSpot_ReturnsCelebiColor) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SimulateUserLogin(kAccountId);
   UpdateWallpaperColor(kCelebiColor);
   color_palette_controller()->SetColorScheme(
@@ -638,7 +482,6 @@ TEST_F(ColorPaletteControllerTest,
 
 TEST_F(ColorPaletteControllerTest,
        GetWallpaperColorOrDefault_UseKMeansIsFalse_TonalSpot_ReturnsCelebi) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SimulateUserLogin(kAccountId);
   UpdateWallpaperColor(kCelebiColor);
   SetUseKMeansPref(false);
@@ -652,7 +495,6 @@ TEST_F(ColorPaletteControllerTest,
 }
 
 TEST_F(ColorPaletteControllerTest, GuestLogin_UsesCelebiColor) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   const SkColor celebi_color = SK_ColorBLUE;
 
   SimulateGuestLogin();
@@ -664,7 +506,6 @@ TEST_F(ColorPaletteControllerTest, GuestLogin_UsesCelebiColor) {
 }
 
 TEST_F(ColorPaletteControllerTest, WallpaperChanged_TurnsOffKMeans) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   const SkColor celebi_color = SK_ColorBLUE;
   SetUseKMeansPref(true);
   SimulateUserLogin(kAccountId);
@@ -687,7 +528,6 @@ TEST_F(ColorPaletteControllerTest, WallpaperChanged_TurnsOffKMeans) {
 }
 
 TEST_F(ColorPaletteControllerTest, UseKMeansColor_OnlyTonalSpotUsesKMeans) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   const bool dark_mode = true;
   dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
   SimulateUserLogin(kAccountId);
@@ -717,7 +557,6 @@ TEST_F(ColorPaletteControllerTest, UseKMeansColor_OnlyTonalSpotUsesKMeans) {
 }
 
 TEST_F(ColorPaletteControllerTest, WithoutUseKMeansColor_AllSchemesUseCelebi) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   const SkColor celebi_color = SK_ColorBLUE;
   SimulateUserLogin(kAccountId);
   SetUseKMeansPref(false);
@@ -746,7 +585,6 @@ TEST_F(ColorPaletteControllerTest, WithoutUseKMeansColor_AllSchemesUseCelebi) {
 }
 
 TEST_F(ColorPaletteControllerTest, GetSampleColorSchemes_WithKMeans) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SimulateUserLogin(kAccountId);
   SetUseKMeansPref(true);
 
@@ -819,7 +657,6 @@ class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {
 };
 
 TEST_F(ColorPaletteControllerLocalPrefTest, OnUserLogin_UpdatesLocalPrefs) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SetUpLocalPrefs();
   const auto wallpaper_color = SK_ColorGRAY;
   UpdateWallpaperColor(wallpaper_color);
@@ -835,7 +672,6 @@ TEST_F(ColorPaletteControllerLocalPrefTest, OnUserLogin_UpdatesLocalPrefs) {
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
        SelectLocalAccount_NotifiesObservers) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SetUpLocalPrefs();
   SessionController::Get()->SetClient(nullptr);
 
@@ -853,7 +689,6 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
        SelectLocalAccount_UseKMeansIsFalse_UsesCelebiColor) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SetUseKMeansLocalPref(false);
   UpdateWallpaperColor(kCelebiColor);
 
@@ -875,7 +710,6 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
        SelectLocalAccount_UseKMeansIsTrue_TonalSpot_UsesKMeansColor) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   const bool dark_mode = true;
   dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
   SimulateUserLogin(kAccountId);
@@ -903,7 +737,6 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
        SelectLocalAccount_UseKMeansIsTrue_Vibrant_UsesCelebiColor) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SetUpLocalPrefs();
   SessionController::Get()->SetClient(nullptr);
   SetUseKMeansLocalPref(true);
@@ -945,7 +778,6 @@ TEST_F(ColorPaletteControllerLocalPrefTest, NoLocalAccount_TimeOfDayScheme) {
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
        SelectLocalAccount_NoLocalState_NotifiesObserversWithDefault) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SessionController::Get()->SetClient(nullptr);
   UpdateWallpaperColor(kCelebiColor);
 
@@ -965,24 +797,7 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 }
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
-       SelectLocalAccount_JellyDisabled_SkipsNotification) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
-  SessionController::Get()->SetClient(nullptr);
-
-  MockPaletteObserver observer;
-  base::ScopedObservation<ColorPaletteController,
-                          ColorPaletteController::Observer>
-      observation(&observer);
-  observation.Observe(color_palette_controller());
-  EXPECT_CALL(observer, OnColorPaletteChanging(testing::_)).Times(0);
-
-  color_palette_controller()->SelectLocalAccount(kAccountId);
-}
-
-TEST_F(ColorPaletteControllerLocalPrefTest,
        UpdateWallpaperColor_WithSession_NotifiesObservers) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SetUpLocalPrefs();
   SimulateUserLogin(kAccountId);
   color_palette_controller()->SetColorScheme(kLocalColorScheme, kAccountId,
@@ -1003,7 +818,6 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
        UpdateWallpaperColor_WithoutSession_DoesNotNotifyObservers) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   MockPaletteObserver observer;
   base::ScopedObservation<ColorPaletteController,
                           ColorPaletteController::Observer>
@@ -1016,7 +830,6 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
        UpdateWallpaperColor_WithOobeSession_NotifiesObservers) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::OOBE);
   // Set the UseKMeans pref to make sure that it does not affect OOBE.
@@ -1036,7 +849,6 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
        UpdateWallpaperColor_WithOobeLogin_NotifiesObservers) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
   // Set the UseKMeans pref to make sure that it does not affect OOBE.
@@ -1058,7 +870,6 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
        UpdateWallpaperColor_WithNonOobeLogin_DoesNotNotifyObservers) {
-  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
   MockPaletteObserver observer;
