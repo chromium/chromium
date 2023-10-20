@@ -365,7 +365,6 @@
         },
       },
       'Mac13 Tests (dbg)': {
-        'experiment_percentage': 100,
         'args': [
           '--debug',
         ],
@@ -713,7 +712,6 @@
         },
       },
       'Mac13 Tests (dbg)': {
-        'experiment_percentage': 100,
         'args': [
           '--debug',
         ],
