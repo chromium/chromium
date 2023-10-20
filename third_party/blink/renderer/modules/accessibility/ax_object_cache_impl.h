@@ -550,6 +550,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool IsProcessingDeferredEvents() const {
     return processing_deferred_events_;
   }
+  bool EntireDocumentIsDirty() const { return mark_all_dirty_; }
   // Returns true if UpdateTreeIfNeeded has been called and has not finished.
   bool UpdatingTree() { return updating_tree_; }
   // The document/cache are in the tear-down phase.
