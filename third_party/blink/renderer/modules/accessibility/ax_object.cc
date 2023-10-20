@@ -6323,7 +6323,7 @@ AXObject* AXObject::CellForColumnAndRow(unsigned target_column_index,
   if (!IsTableLikeRole())
     return nullptr;
 
-  // Note that this code is only triggered if this is not a LayoutNGTable,
+  // Note that this code is only triggered if this is not a LayoutTable,
   // i.e. it's an ARIA grid/table.
   //
   // TODO(dmazzoni): delete this code or rename it "for testing only"

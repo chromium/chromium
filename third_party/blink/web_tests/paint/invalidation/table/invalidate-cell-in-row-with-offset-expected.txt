@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGTableRow TR",
+      "name": "LayoutTableRow TR",
       "bounds": [102, 102],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",
       "transform": 1
     },
     {
-      "name": "LayoutNGTableRow TR class='shadow-inset'",
+      "name": "LayoutTableRow TR class='shadow-inset'",
       "bounds": [214, 102],
       "invalidations": [
         [0, 0, 102, 102]

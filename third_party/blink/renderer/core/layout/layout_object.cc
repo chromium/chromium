@@ -464,20 +464,20 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return CreateBlockFlowOrListItem(element, style);
     case EDisplay::kTable:
     case EDisplay::kInlineTable:
-      return MakeGarbageCollected<LayoutNGTable>(element);
+      return MakeGarbageCollected<LayoutTable>(element);
     case EDisplay::kTableRowGroup:
     case EDisplay::kTableHeaderGroup:
     case EDisplay::kTableFooterGroup:
-      return MakeGarbageCollected<LayoutNGTableSection>(element);
+      return MakeGarbageCollected<LayoutTableSection>(element);
     case EDisplay::kTableRow:
-      return MakeGarbageCollected<LayoutNGTableRow>(element);
+      return MakeGarbageCollected<LayoutTableRow>(element);
     case EDisplay::kTableColumnGroup:
     case EDisplay::kTableColumn:
-      return MakeGarbageCollected<LayoutNGTableColumn>(element);
+      return MakeGarbageCollected<LayoutTableColumn>(element);
     case EDisplay::kTableCell:
-      return MakeGarbageCollected<LayoutNGTableCell>(element);
+      return MakeGarbageCollected<LayoutTableCell>(element);
     case EDisplay::kTableCaption:
-      return MakeGarbageCollected<LayoutNGTableCaption>(element);
+      return MakeGarbageCollected<LayoutTableCaption>(element);
     case EDisplay::kWebkitBox:
     case EDisplay::kWebkitInlineBox:
       if (style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
@@ -734,7 +734,7 @@ void LayoutObject::AddChild(LayoutObject* new_child,
         !after_child->IsBeforeContent()) {
       table = after_child;
     } else {
-      table = LayoutNGTable::CreateAnonymousWithParent(*this);
+      table = LayoutTable::CreateAnonymousWithParent(*this);
       children->InsertChildNode(this, table, before_child);
     }
     table->AddChild(new_child);
@@ -1715,7 +1715,7 @@ inline void LayoutObject::InvalidateContainerIntrinsicLogicalWidths() {
     // rather than from their parents (sections or rows). Skip these when
     // invalidating.
     if (current->IsTableCell()) {
-      return To<LayoutNGTableCell>(current)->Table();
+      return To<LayoutTableCell>(current)->Table();
     }
     return current->Container();
   };

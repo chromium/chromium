@@ -114,7 +114,7 @@ void HTMLTableCellElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kRowspanAttr ||
       params.name == html_names::kColspanAttr) {
-    if (auto* cell = DynamicTo<LayoutNGTableCell>(GetLayoutObject())) {
+    if (auto* cell = DynamicTo<LayoutTableCell>(GetLayoutObject())) {
       cell->ColSpanOrRowSpanChanged();
     }
   } else {

@@ -447,7 +447,7 @@ class ColumnGeometriesBuilder {
     if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
       wtf_size_t column_idx = 0;
       for (const auto& col : column_geometries) {
-        To<LayoutNGTableColumn>(col.node.GetLayoutBox())
+        To<LayoutTableColumn>(col.node.GetLayoutBox())
             ->SetColumnIndex(column_idx);
         column_idx++;
       }
@@ -521,7 +521,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
   // Tables need autosizer.
   absl::optional<TextAutosizer::TableLayoutScope> text_autosizer;
   if (!is_fixed_layout)
-    text_autosizer.emplace(To<LayoutNGTable>(table.GetLayoutBox()));
+    text_autosizer.emplace(To<LayoutTable>(table.GetLayoutBox()));
 
   const LogicalSize border_spacing = table.Style().TableBorderSpacing();
   NGTableGroupedChildren grouped_children(table);
@@ -703,7 +703,7 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
   // Tables need autosizer.
   absl::optional<TextAutosizer::TableLayoutScope> text_autosizer;
   if (!is_fixed_layout)
-    text_autosizer.emplace(To<LayoutNGTable>(Node().GetLayoutBox()));
+    text_autosizer.emplace(To<LayoutTable>(Node().GetLayoutBox()));
 
   const LogicalSize border_spacing = Style().TableBorderSpacing();
   const BoxStrut border_padding = container_builder_.BorderPadding();
@@ -866,8 +866,8 @@ void NGTableLayoutAlgorithm::ComputeTableSpecificFragmentData(
   if (grouped_children.columns.size() > 0) {
     ColumnGeometriesBuilder geometry_builder(column_locations,
                                              table_grid_block_size);
-    VisitLayoutNGTableColumn(grouped_children.columns, column_locations.size(),
-                             &geometry_builder);
+    VisitLayoutTableColumn(grouped_children.columns, column_locations.size(),
+                           &geometry_builder);
     geometry_builder.Sort();
     container_builder_.SetTableColumnGeometries(
         geometry_builder.column_geometries);

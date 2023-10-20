@@ -369,7 +369,7 @@ class ColumnConstraintsBuilder {
     }
     colgroup_constraint_.reset();
     colgroup.GetLayoutBox()->ClearNeedsLayout();
-    To<LayoutNGTableColumn>(colgroup.GetLayoutBox())
+    To<LayoutTableColumn>(colgroup.GetLayoutBox())
         ->ClearNeedsLayoutForChildren();
   }
 
@@ -392,7 +392,7 @@ void ComputeColumnElementConstraints(
   ColumnConstraintsBuilder constraints_builder(column_constraints,
                                                is_fixed_layout);
   // |table_column_count| is UINT_MAX because columns will get trimmed later.
-  VisitLayoutNGTableColumn(columns, UINT_MAX, &constraints_builder);
+  VisitLayoutTableColumn(columns, UINT_MAX, &constraints_builder);
 }
 
 void ComputeSectionInlineConstraints(
@@ -1465,7 +1465,7 @@ wtf_size_t ComputeMaximumNonMergeableColumnCount(
       base::MakeRefCounted<NGTableTypes::Columns>();
   ColumnConstraintsBuilder constraints_builder(column_constraints.get(),
                                                is_fixed_layout);
-  VisitLayoutNGTableColumn(columns, UINT_MAX, &constraints_builder);
+  VisitLayoutTableColumn(columns, UINT_MAX, &constraints_builder);
   // Find last non-mergeable column.
   if (column_constraints->data.size() == 0)
     return 0;

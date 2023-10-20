@@ -36,63 +36,63 @@ inline bool NeedsTableSection(const LayoutObject& object) {
 
 }  // namespace
 
-LayoutNGTable::LayoutNGTable(Element* element) : LayoutBlock(element) {}
+LayoutTable::LayoutTable(Element* element) : LayoutBlock(element) {}
 
-LayoutNGTable::~LayoutNGTable() = default;
+LayoutTable::~LayoutTable() = default;
 
-void LayoutNGTable::Trace(Visitor* visitor) const {
+void LayoutTable::Trace(Visitor* visitor) const {
   visitor->Trace(cached_table_borders_);
   LayoutBlock::Trace(visitor);
 }
 
-LayoutNGTable* LayoutNGTable::CreateAnonymousWithParent(
+LayoutTable* LayoutTable::CreateAnonymousWithParent(
     const LayoutObject& parent) {
   const ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(),
           parent.IsLayoutInline() ? EDisplay::kInlineTable : EDisplay::kTable);
-  auto* new_table = MakeGarbageCollected<LayoutNGTable>(nullptr);
+  auto* new_table = MakeGarbageCollected<LayoutTable>(nullptr);
   new_table->SetDocumentForAnonymous(&parent.GetDocument());
   new_table->SetStyle(new_style);
   return new_table;
 }
 
-bool LayoutNGTable::IsFirstCell(const LayoutNGTableCell& cell) const {
+bool LayoutTable::IsFirstCell(const LayoutTableCell& cell) const {
   NOT_DESTROYED();
-  const LayoutNGTableRow* row = cell.Row();
+  const LayoutTableRow* row = cell.Row();
   if (row->FirstCell() != &cell) {
     return false;
   }
-  const LayoutNGTableSection* section = row->Section();
+  const LayoutTableSection* section = row->Section();
   if (section->FirstRow() != row) {
     return false;
   }
   NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+      NGBlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   return first_section != grouped_children.end() &&
          (*first_section).GetLayoutBox() == section;
 }
 
-LayoutNGTableSection* LayoutNGTable::FirstSection() const {
+LayoutTableSection* LayoutTable::FirstSection() const {
   NOT_DESTROYED();
   NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+      NGBlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   if (first_section != grouped_children.end()) {
-    return To<LayoutNGTableSection>((*first_section).GetLayoutBox());
+    return To<LayoutTableSection>((*first_section).GetLayoutBox());
   }
   return nullptr;
 }
 
-LayoutNGTableSection* LayoutNGTable::FirstNonEmptySection() const {
+LayoutTableSection* LayoutTable::FirstNonEmptySection() const {
   NOT_DESTROYED();
   NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+      NGBlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   if (first_section != grouped_children.end()) {
     auto* section_object =
-        To<LayoutNGTableSection>((*first_section).GetLayoutBox());
+        To<LayoutTableSection>((*first_section).GetLayoutBox());
     if ((*first_section).IsEmptyTableSection()) {
       return NextSection(section_object, kSkipEmptySections);
     }
@@ -101,14 +101,14 @@ LayoutNGTableSection* LayoutNGTable::FirstNonEmptySection() const {
   return nullptr;
 }
 
-LayoutNGTableSection* LayoutNGTable::LastNonEmptySection() const {
+LayoutTableSection* LayoutTable::LastNonEmptySection() const {
   NOT_DESTROYED();
   NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+      NGBlockNode(const_cast<LayoutTable*>(this)));
   auto last_section = --grouped_children.end();
   if (last_section != grouped_children.end()) {
     auto* section_object =
-        To<LayoutNGTableSection>((*last_section).GetLayoutBox());
+        To<LayoutTableSection>((*last_section).GetLayoutBox());
     if ((*last_section).IsEmptyTableSection()) {
       return PreviousSection(section_object, kSkipEmptySections);
     }
@@ -117,47 +117,47 @@ LayoutNGTableSection* LayoutNGTable::LastNonEmptySection() const {
   return nullptr;
 }
 
-LayoutNGTableSection* LayoutNGTable::NextSection(
-    const LayoutNGTableSection* current,
+LayoutTableSection* LayoutTable::NextSection(
+    const LayoutTableSection* current,
     SkipEmptySectionsValue skip) const {
   NOT_DESTROYED();
   NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+      NGBlockNode(const_cast<LayoutTable*>(this)));
   bool found = false;
   for (NGBlockNode section : grouped_children) {
     if (found &&
         (skip == kDoNotSkipEmptySections || !section.IsEmptyTableSection())) {
-      return To<LayoutNGTableSection>(section.GetLayoutBox());
+      return To<LayoutTableSection>(section.GetLayoutBox());
     }
-    if (current == To<LayoutNGTableSection>(section.GetLayoutBox())) {
+    if (current == To<LayoutTableSection>(section.GetLayoutBox())) {
       found = true;
     }
   }
   return nullptr;
 }
 
-LayoutNGTableSection* LayoutNGTable::PreviousSection(
-    const LayoutNGTableSection* current,
+LayoutTableSection* LayoutTable::PreviousSection(
+    const LayoutTableSection* current,
     SkipEmptySectionsValue skip) const {
   NOT_DESTROYED();
   NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+      NGBlockNode(const_cast<LayoutTable*>(this)));
   auto stop = --grouped_children.begin();
   bool found = false;
   for (auto it = --grouped_children.end(); it != stop; --it) {
     NGBlockNode section = *it;
     if (found &&
         (skip == kDoNotSkipEmptySections || !section.IsEmptyTableSection())) {
-      return To<LayoutNGTableSection>(section.GetLayoutBox());
+      return To<LayoutTableSection>(section.GetLayoutBox());
     }
-    if (current == To<LayoutNGTableSection>(section.GetLayoutBox())) {
+    if (current == To<LayoutTableSection>(section.GetLayoutBox())) {
       found = true;
     }
   }
   return nullptr;
 }
 
-wtf_size_t LayoutNGTable::ColumnCount() const {
+wtf_size_t LayoutTable::ColumnCount() const {
   NOT_DESTROYED();
   const NGLayoutResult* cached_layout_result = GetCachedLayoutResult(nullptr);
   if (!cached_layout_result)
@@ -165,12 +165,12 @@ wtf_size_t LayoutNGTable::ColumnCount() const {
   return cached_layout_result->TableColumnCount();
 }
 
-void LayoutNGTable::SetCachedTableBorders(const NGTableBorders* table_borders) {
+void LayoutTable::SetCachedTableBorders(const NGTableBorders* table_borders) {
   NOT_DESTROYED();
   cached_table_borders_ = table_borders;
 }
 
-void LayoutNGTable::InvalidateCachedTableBorders() {
+void LayoutTable::InvalidateCachedTableBorders() {
   NOT_DESTROYED();
   // TODO(layout-dev) When cached borders are invalidated, we could do a
   // special kind of relayout where fragments can replace only TableBorders,
@@ -178,21 +178,21 @@ void LayoutNGTable::InvalidateCachedTableBorders() {
   cached_table_borders_ = nullptr;
 }
 
-const NGTableTypes::Columns* LayoutNGTable::GetCachedTableColumnConstraints() {
+const NGTableTypes::Columns* LayoutTable::GetCachedTableColumnConstraints() {
   NOT_DESTROYED();
   if (IsTableColumnsConstraintsDirty())
     cached_table_columns_.reset();
   return cached_table_columns_.get();
 }
 
-void LayoutNGTable::SetCachedTableColumnConstraints(
+void LayoutTable::SetCachedTableColumnConstraints(
     scoped_refptr<const NGTableTypes::Columns> columns) {
   NOT_DESTROYED();
   cached_table_columns_ = std::move(columns);
   SetTableColumnConstraintDirty(false);
 }
 
-void LayoutNGTable::GridBordersChanged() {
+void LayoutTable::GridBordersChanged() {
   NOT_DESTROYED();
   InvalidateCachedTableBorders();
   if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
@@ -204,7 +204,7 @@ void LayoutNGTable::GridBordersChanged() {
   }
 }
 
-void LayoutNGTable::TableGridStructureChanged() {
+void LayoutTable::TableGridStructureChanged() {
   NOT_DESTROYED();
   // Callers must ensure table layout gets invalidated.
   InvalidateCachedTableBorders();
@@ -212,7 +212,7 @@ void LayoutNGTable::TableGridStructureChanged() {
     SetShouldDoFullPaintInvalidation();
 }
 
-bool LayoutNGTable::HasBackgroundForPaint() const {
+bool LayoutTable::HasBackgroundForPaint() const {
   NOT_DESTROYED();
   if (StyleRef().HasBackground())
     return true;
@@ -228,7 +228,7 @@ bool LayoutNGTable::HasBackgroundForPaint() const {
   return false;
 }
 
-void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
+void LayoutTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
   NOT_DESTROYED();
   TableGridStructureChanged();
   // Only TablesNG table parts are allowed.
@@ -255,8 +255,8 @@ void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
 
   if (before_child && !before_child->IsAnonymous() &&
       before_child->Parent() == this) {
-    LayoutNGTableSection* section =
-        DynamicTo<LayoutNGTableSection>(before_child->PreviousSibling());
+    auto* section =
+        DynamicTo<LayoutTableSection>(before_child->PreviousSibling());
     if (section && section->IsAnonymous()) {
       section->AddChild(child);
       return;
@@ -279,19 +279,19 @@ void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
       NeedsTableSection(*before_child))
     before_child = nullptr;
 
-  auto* section = LayoutNGTableSection::CreateAnonymousWithParent(*this);
+  auto* section = LayoutTableSection::CreateAnonymousWithParent(*this);
   AddChild(section, before_child);
   section->AddChild(child);
 }
 
-void LayoutNGTable::RemoveChild(LayoutObject* child) {
+void LayoutTable::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   TableGridStructureChanged();
   LayoutBlock::RemoveChild(child);
 }
 
-void LayoutNGTable::StyleDidChange(StyleDifference diff,
-                                   const ComputedStyle* old_style) {
+void LayoutTable::StyleDidChange(StyleDifference diff,
+                                 const ComputedStyle* old_style) {
   NOT_DESTROYED();
   // StyleDifference handles changes in table-layout, border-spacing.
   if (old_style) {
@@ -308,13 +308,13 @@ void LayoutNGTable::StyleDidChange(StyleDifference diff,
   LayoutBlock::StyleDidChange(diff, old_style);
 }
 
-LayoutBox* LayoutNGTable::CreateAnonymousBoxWithSameTypeAs(
+LayoutBox* LayoutTable::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   NOT_DESTROYED();
   return CreateAnonymousWithParent(*parent);
 }
 
-PhysicalRect LayoutNGTable::OverflowClipRect(
+PhysicalRect LayoutTable::OverflowClipRect(
     const PhysicalOffset& location,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   NOT_DESTROYED();
@@ -355,7 +355,7 @@ PhysicalRect LayoutNGTable::OverflowClipRect(
   return clip_rect;
 }
 
-LayoutUnit LayoutNGTable::BorderLeft() const {
+LayoutUnit LayoutTable::BorderLeft() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
@@ -367,7 +367,7 @@ LayoutUnit LayoutNGTable::BorderLeft() const {
   return LayoutBlock::BorderLeft();
 }
 
-LayoutUnit LayoutNGTable::BorderRight() const {
+LayoutUnit LayoutTable::BorderRight() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
@@ -379,7 +379,7 @@ LayoutUnit LayoutNGTable::BorderRight() const {
   return LayoutBlock::BorderRight();
 }
 
-LayoutUnit LayoutNGTable::BorderTop() const {
+LayoutUnit LayoutTable::BorderTop() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
@@ -391,7 +391,7 @@ LayoutUnit LayoutNGTable::BorderTop() const {
   return LayoutBlock::BorderTop();
 }
 
-LayoutUnit LayoutNGTable::BorderBottom() const {
+LayoutUnit LayoutTable::BorderBottom() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
@@ -403,29 +403,29 @@ LayoutUnit LayoutNGTable::BorderBottom() const {
   return LayoutBlock::BorderBottom();
 }
 
-LayoutUnit LayoutNGTable::PaddingTop() const {
+LayoutUnit LayoutTable::PaddingTop() const {
   NOT_DESTROYED();
   return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingTop();
 }
 
-LayoutUnit LayoutNGTable::PaddingBottom() const {
+LayoutUnit LayoutTable::PaddingBottom() const {
   NOT_DESTROYED();
   return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingBottom();
 }
 
-LayoutUnit LayoutNGTable::PaddingLeft() const {
+LayoutUnit LayoutTable::PaddingLeft() const {
   NOT_DESTROYED();
   return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingLeft();
 }
 
-LayoutUnit LayoutNGTable::PaddingRight() const {
+LayoutUnit LayoutTable::PaddingRight() const {
   NOT_DESTROYED();
   return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingRight();
 }
 
 // Effective column index is index of columns with mergeable
 // columns skipped. Used in a11y.
-unsigned LayoutNGTable::AbsoluteColumnToEffectiveColumn(
+unsigned LayoutTable::AbsoluteColumnToEffectiveColumn(
     unsigned absolute_column_index) const {
   NOT_DESTROYED();
   if (!cached_table_columns_) {
@@ -445,7 +445,7 @@ unsigned LayoutNGTable::AbsoluteColumnToEffectiveColumn(
   return effective_column_index;
 }
 
-unsigned LayoutNGTable::EffectiveColumnCount() const {
+unsigned LayoutTable::EffectiveColumnCount() const {
   NOT_DESTROYED();
   const wtf_size_t column_count = ColumnCount();
   if (column_count == 0) {

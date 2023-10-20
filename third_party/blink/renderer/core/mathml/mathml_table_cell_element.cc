@@ -40,7 +40,7 @@ void MathMLTableCellElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == mathml_names::kRowspanAttr ||
       params.name == mathml_names::kColumnspanAttr) {
-    if (auto* cell = DynamicTo<LayoutNGTableCell>(GetLayoutObject())) {
+    if (auto* cell = DynamicTo<LayoutTableCell>(GetLayoutObject())) {
       cell->ColSpanOrRowSpanChanged();
     }
   } else {

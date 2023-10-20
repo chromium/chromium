@@ -18,7 +18,7 @@ class FillLayer;
 class ImageResourceObserver;
 class LayoutBox;
 class LayoutBoxModelObject;
-class LayoutNGTableCell;
+class LayoutTableCell;
 class LayoutView;
 class NGPhysicalBoxFragment;
 struct PaintInfo;
@@ -36,7 +36,7 @@ class BackgroundImageGeometry {
   explicit BackgroundImageGeometry(const LayoutBoxModelObject&);
 
   // Constructor for TablesNG table parts.
-  BackgroundImageGeometry(const LayoutNGTableCell& cell,
+  BackgroundImageGeometry(const LayoutTableCell& cell,
                           PhysicalOffset cell_offset,
                           const LayoutBox& table_part,
                           PhysicalSize table_part_size);

@@ -9,7 +9,7 @@
 
 namespace blink {
 
-class LayoutTableCellWithAnonymousMrow : public LayoutNGTableCell {
+class LayoutTableCellWithAnonymousMrow : public LayoutTableCell {
  public:
   explicit LayoutTableCellWithAnonymousMrow(Element*);
 

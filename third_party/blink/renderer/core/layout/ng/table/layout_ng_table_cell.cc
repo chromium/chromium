@@ -20,23 +20,23 @@
 
 namespace blink {
 
-LayoutNGTableCell::LayoutNGTableCell(Element* element)
+LayoutTableCell::LayoutTableCell(Element* element)
     : LayoutNGBlockFlow(element) {
   UpdateColAndRowSpanFlags();
 }
 
-LayoutNGTableCell* LayoutNGTableCell::CreateAnonymousWithParent(
+LayoutTableCell* LayoutTableCell::CreateAnonymousWithParent(
     const LayoutObject& parent) {
   const ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableCell);
-  auto* new_cell = MakeGarbageCollected<LayoutNGTableCell>(nullptr);
+  auto* new_cell = MakeGarbageCollected<LayoutTableCell>(nullptr);
   new_cell->SetDocumentForAnonymous(&parent.GetDocument());
   new_cell->SetStyle(new_style);
   return new_cell;
 }
 
-void LayoutNGTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
+void LayoutTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
   NOT_DESTROYED();
   if (LayoutBox* row = ParentBox()) {
     DCHECK(row->IsTableRow());
@@ -48,7 +48,7 @@ void LayoutNGTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
   }
 }
 
-LayoutUnit LayoutNGTableCell::BorderTop() const {
+LayoutUnit LayoutTableCell::BorderTop() const {
   NOT_DESTROYED();
   // TODO(1061423) Should return cell border, not fragment border.
   // To compute cell border, cell needs to know its starting row
@@ -61,7 +61,7 @@ LayoutUnit LayoutNGTableCell::BorderTop() const {
   return LayoutNGBlockFlow::BorderTop();
 }
 
-LayoutUnit LayoutNGTableCell::BorderBottom() const {
+LayoutUnit LayoutTableCell::BorderBottom() const {
   NOT_DESTROYED();
   // TODO(1061423) Should return cell border, not fragment border.
   if (Table()->HasCollapsedBorders() && PhysicalFragmentCount() > 0) {
@@ -70,7 +70,7 @@ LayoutUnit LayoutNGTableCell::BorderBottom() const {
   return LayoutNGBlockFlow::BorderBottom();
 }
 
-LayoutUnit LayoutNGTableCell::BorderLeft() const {
+LayoutUnit LayoutTableCell::BorderLeft() const {
   NOT_DESTROYED();
   // TODO(1061423) Should return cell border, not fragment border.
   if (Table()->HasCollapsedBorders() && PhysicalFragmentCount() > 0) {
@@ -79,7 +79,7 @@ LayoutUnit LayoutNGTableCell::BorderLeft() const {
   return LayoutNGBlockFlow::BorderLeft();
 }
 
-LayoutUnit LayoutNGTableCell::BorderRight() const {
+LayoutUnit LayoutTableCell::BorderRight() const {
   NOT_DESTROYED();
   // TODO(1061423) Should return cell border, not fragment border.
   if (Table()->HasCollapsedBorders() && PhysicalFragmentCount() > 0) {
@@ -88,40 +88,40 @@ LayoutUnit LayoutNGTableCell::BorderRight() const {
   return LayoutNGBlockFlow::BorderRight();
 }
 
-LayoutNGTableCell* LayoutNGTableCell::NextCell() const {
+LayoutTableCell* LayoutTableCell::NextCell() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableCell>(NextSibling());
+  return To<LayoutTableCell>(NextSibling());
 }
 
-LayoutNGTableCell* LayoutNGTableCell::PreviousCell() const {
+LayoutTableCell* LayoutTableCell::PreviousCell() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableCell>(PreviousSibling());
+  return To<LayoutTableCell>(PreviousSibling());
 }
 
-LayoutNGTableRow* LayoutNGTableCell::Row() const {
+LayoutTableRow* LayoutTableCell::Row() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableRow>(Parent());
+  return To<LayoutTableRow>(Parent());
 }
 
-LayoutNGTableSection* LayoutNGTableCell::Section() const {
+LayoutTableSection* LayoutTableCell::Section() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableSection>(Parent()->Parent());
+  return To<LayoutTableSection>(Parent()->Parent());
 }
 
-LayoutNGTable* LayoutNGTableCell::Table() const {
+LayoutTable* LayoutTableCell::Table() const {
   NOT_DESTROYED();
   if (LayoutObject* parent = Parent()) {
     if (LayoutObject* grandparent = parent->Parent()) {
-      return To<LayoutNGTable>(grandparent->Parent());
+      return To<LayoutTable>(grandparent->Parent());
     }
   }
   return nullptr;
 }
 
-void LayoutNGTableCell::StyleDidChange(StyleDifference diff,
-                                       const ComputedStyle* old_style) {
+void LayoutTableCell::StyleDidChange(StyleDifference diff,
+                                     const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  if (LayoutNGTable* table = Table()) {
+  if (LayoutTable* table = Table()) {
     if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
         (old_style && old_style->GetWritingDirection() !=
                           StyleRef().GetWritingDirection())) {
@@ -131,41 +131,42 @@ void LayoutNGTableCell::StyleDidChange(StyleDifference diff,
   LayoutNGBlockFlow::StyleDidChange(diff, old_style);
 }
 
-void LayoutNGTableCell::WillBeRemovedFromTree() {
+void LayoutTableCell::WillBeRemovedFromTree() {
   NOT_DESTROYED();
-  if (LayoutNGTable* table = Table())
+  if (LayoutTable* table = Table()) {
     table->TableGridStructureChanged();
+  }
   LayoutNGBlockFlow::WillBeRemovedFromTree();
 }
 
-void LayoutNGTableCell::ColSpanOrRowSpanChanged() {
+void LayoutTableCell::ColSpanOrRowSpanChanged() {
   NOT_DESTROYED();
   UpdateColAndRowSpanFlags();
-  if (LayoutNGTable* table = Table()) {
+  if (LayoutTable* table = Table()) {
     table->SetNeedsLayoutAndIntrinsicWidthsRecalc(
         layout_invalidation_reason::kTableChanged);
     table->TableGridStructureChanged();
   }
 }
 
-LayoutBox* LayoutNGTableCell::CreateAnonymousBoxWithSameTypeAs(
+LayoutBox* LayoutTableCell::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   NOT_DESTROYED();
   return CreateAnonymousWithParent(*parent);
 }
 
-LayoutBlock* LayoutNGTableCell::StickyContainer() const {
+LayoutBlock* LayoutTableCell::StickyContainer() const {
   NOT_DESTROYED();
   return Table();
 }
 
-void LayoutNGTableCell::InvalidatePaint(
+void LayoutTableCell::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
   NOT_DESTROYED();
   NGTableCellPaintInvalidator(*this, context).InvalidatePaint();
 }
 
-bool LayoutNGTableCell::BackgroundIsKnownToBeOpaqueInRect(
+bool LayoutTableCell::BackgroundIsKnownToBeOpaqueInRect(
     const PhysicalRect& local_rect) const {
   NOT_DESTROYED();
   // If this object has layer, the area of collapsed borders should be
@@ -179,19 +180,19 @@ bool LayoutNGTableCell::BackgroundIsKnownToBeOpaqueInRect(
 
 // TODO(crbug.com/1079133): Used by AXLayoutObject::RowIndex,
 // verify behaviour is correct.
-unsigned LayoutNGTableCell::RowIndex() const {
+unsigned LayoutTableCell::RowIndex() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableRow>(Parent())->RowIndex();
+  return To<LayoutTableRow>(Parent())->RowIndex();
 }
 
 // TODO(crbug.com/1079133): Used by AXLayoutObject::CellForColumnAndRow,
 // verify behaviour is correct.
-unsigned LayoutNGTableCell::ResolvedRowSpan() const {
+unsigned LayoutTableCell::ResolvedRowSpan() const {
   NOT_DESTROYED();
   return ParsedRowSpan();
 }
 
-unsigned LayoutNGTableCell::AbsoluteColumnIndex() const {
+unsigned LayoutTableCell::AbsoluteColumnIndex() const {
   NOT_DESTROYED();
   if (PhysicalFragmentCount() > 0) {
     return GetPhysicalFragment(0)->TableCellColumnIndex();
@@ -200,14 +201,14 @@ unsigned LayoutNGTableCell::AbsoluteColumnIndex() const {
   return 0;
 }
 
-unsigned LayoutNGTableCell::ColSpan() const {
+unsigned LayoutTableCell::ColSpan() const {
   NOT_DESTROYED();
   if (!has_col_span_)
     return 1;
   return ParseColSpanFromDOM();
 }
 
-unsigned LayoutNGTableCell::ParseColSpanFromDOM() const {
+unsigned LayoutTableCell::ParseColSpanFromDOM() const {
   NOT_DESTROYED();
   if (const auto* cell_element = DynamicTo<HTMLTableCellElement>(GetNode())) {
     unsigned span = cell_element->colSpan();
@@ -224,7 +225,7 @@ unsigned LayoutNGTableCell::ParseColSpanFromDOM() const {
   return kDefaultRowSpan;
 }
 
-unsigned LayoutNGTableCell::ParseRowSpanFromDOM() const {
+unsigned LayoutTableCell::ParseRowSpanFromDOM() const {
   NOT_DESTROYED();
   if (const auto* cell_element = DynamicTo<HTMLTableCellElement>(GetNode())) {
     unsigned span = cell_element->rowSpan();
@@ -241,7 +242,7 @@ unsigned LayoutNGTableCell::ParseRowSpanFromDOM() const {
   return kDefaultColSpan;
 }
 
-void LayoutNGTableCell::UpdateColAndRowSpanFlags() {
+void LayoutTableCell::UpdateColAndRowSpanFlags() {
   NOT_DESTROYED();
   // Colspan or rowspan are rare, so we keep the values in DOM.
   has_col_span_ = ParseColSpanFromDOM() != kDefaultColSpan;

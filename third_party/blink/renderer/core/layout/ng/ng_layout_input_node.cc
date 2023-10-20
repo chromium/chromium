@@ -84,22 +84,22 @@ bool NGLayoutInputNode::IsSvgText() const {
 
 bool NGLayoutInputNode::IsEmptyTableSection() const {
   return box_->IsTableSection() &&
-         To<LayoutNGTableSection>(box_.Get())->IsEmpty();
+         To<LayoutTableSection>(box_.Get())->IsEmpty();
 }
 
 wtf_size_t NGLayoutInputNode::TableColumnSpan() const {
   DCHECK(IsTableCol() || IsTableColgroup());
-  return To<LayoutNGTableColumn>(box_.Get())->Span();
+  return To<LayoutTableColumn>(box_.Get())->Span();
 }
 
 wtf_size_t NGLayoutInputNode::TableCellColspan() const {
   DCHECK(box_->IsTableCell());
-  return To<LayoutNGTableCell>(box_.Get())->ColSpan();
+  return To<LayoutTableCell>(box_.Get())->ColSpan();
 }
 
 wtf_size_t NGLayoutInputNode::TableCellRowspan() const {
   DCHECK(box_->IsTableCell());
-  return To<LayoutNGTableCell>(box_.Get())->ComputedRowSpan();
+  return To<LayoutTableCell>(box_.Get())->ComputedRowSpan();
 }
 
 bool NGLayoutInputNode::IsTextControlPlaceholder() const {

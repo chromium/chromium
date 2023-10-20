@@ -72,7 +72,7 @@ class ElementInnerTextCollector final {
   static bool IsBeingRendered(const Node& node);
   // Returns true if used value of "display" is block-level.
   static bool IsDisplayBlockLevel(const Node&);
-  static bool ShouldEmitNewlineForTableRow(const LayoutNGTableRow& table_row);
+  static bool ShouldEmitNewlineForTableRow(const LayoutTableRow& table_row);
 
   const NGOffsetMapping* GetOffsetMapping(const LayoutText& layout_text);
   void ProcessChildren(const Node& node);
@@ -150,7 +150,7 @@ bool ElementInnerTextCollector::IsDisplayBlockLevel(const Node& node) {
   if (!layout_object)
     return false;
   if (layout_object->IsTableSection()) {
-    // Note: |LayoutNGTableSection::IsInline()| returns false, but it is not
+    // Note: |LayoutTableSection::IsInline()| returns false, but it is not
     // block-level.
     return false;
   }
@@ -170,29 +170,29 @@ bool ElementInnerTextCollector::IsDisplayBlockLevel(const Node& node) {
     // e.g. <ruby>abc<rt>def</rt>.innerText == "abcdef"
     return false;
   }
-  // Note: CAPTION is associated to |LayoutNGTableCaption| in LayoutNG or
+  // Note: CAPTION is associated to |LayoutTableCaption| in LayoutNG or
   // |LayoutBlockFlow| in legacy layout.
   return true;
 }
 
 // static
 bool ElementInnerTextCollector::ShouldEmitNewlineForTableRow(
-    const LayoutNGTableRow& table_row) {
-  const LayoutNGTable* const table = table_row.Table();
+    const LayoutTableRow& table_row) {
+  const LayoutTable* const table = table_row.Table();
   if (!table)
     return false;
   if (table_row.NextRow()) {
     return true;
   }
   // For TABLE contains TBODY, TFOOTER, THEAD.
-  const LayoutNGTableSection* table_section = table_row.Section();
+  const LayoutTableSection* table_section = table_row.Section();
   if (!table_section)
     return false;
-  // See |LayoutNGTable::NextSection()| and
-  // |PreviousSection()| for traversing |LayoutNGTableSection|.
+  // See |LayoutTable::NextSection()| and
+  // |PreviousSection()| for traversing |LayoutTableSection|.
   for (const LayoutObject* runner = table_section->NextSibling(); runner;
        runner = runner->NextSibling()) {
-    const auto* section = DynamicTo<LayoutNGTableSection>(runner);
+    const auto* section = DynamicTo<LayoutTableSection>(runner);
     if (section && section->NumRows() > 0) {
       return true;
     }
@@ -329,7 +329,7 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
   if (style->Display() == EDisplay::kTableRow) {
     ProcessChildren(node);
     if (layout_object.IsTableRow() &&
-        ShouldEmitNewlineForTableRow(To<LayoutNGTableRow>(layout_object))) {
+        ShouldEmitNewlineForTableRow(To<LayoutTableRow>(layout_object))) {
       result_.EmitNewline();
     }
     return;

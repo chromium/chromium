@@ -328,7 +328,7 @@ BackgroundImageGeometry::BackgroundImageGeometry(
     : BackgroundImageGeometry(&obj, &obj) {}
 
 // TablesNG background painting.
-BackgroundImageGeometry::BackgroundImageGeometry(const LayoutNGTableCell& cell,
+BackgroundImageGeometry::BackgroundImageGeometry(const LayoutTableCell& cell,
                                                  PhysicalOffset cell_offset,
                                                  const LayoutBox& table_part,
                                                  PhysicalSize table_part_size)

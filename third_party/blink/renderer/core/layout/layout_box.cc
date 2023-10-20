@@ -2648,7 +2648,7 @@ void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result,
     if (measure_result_)
       InvalidateItems(*measure_result_);
     if (IsTableCell()) {
-      To<LayoutNGTableCell>(this)->InvalidateLayoutResultCacheAfterMeasure();
+      To<LayoutTableCell>(this)->InvalidateLayoutResultCacheAfterMeasure();
     }
     measure_result_ = result;
   } else {

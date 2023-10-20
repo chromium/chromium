@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGTableRow TR id='target'",
+      "name": "LayoutTableRow TR id='target'",
       "bounds": [180, 64],
       "invalidations": [
         [0, 0, 180, 64]
@@ -15,7 +15,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGTableCell TD",
+      "name": "LayoutTableCell TD",
       "bounds": [58, 64],
       "transform": 2
     }

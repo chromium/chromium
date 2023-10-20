@@ -11,15 +11,15 @@
 
 namespace blink {
 
-class LayoutNGTable;
+class LayoutTable;
 
 // Represents <col> and <colgroup> elements.
-class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
+class CORE_EXPORT LayoutTableColumn : public LayoutBox {
  public:
-  explicit LayoutNGTableColumn(Element*);
+  explicit LayoutTableColumn(Element*);
   void Trace(Visitor*) const override;
 
-  LayoutNGTable* Table() const;
+  LayoutTable* Table() const;
 
   bool IsColumn() const {
     NOT_DESTROYED();
@@ -53,9 +53,9 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
   const char* GetName() const override {
     NOT_DESTROYED();
     if (IsColumn())
-      return "LayoutNGTableCol";
+      return "LayoutTableCol";
     else
-      return "LayoutNGTableColGroup";
+      return "LayoutTableColGroup";
   }
 
   bool IsLayoutNGObject() const final {
@@ -126,7 +126,7 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
 
 // wtf/casting.h helper.
 template <>
-struct DowncastTraits<LayoutNGTableColumn> {
+struct DowncastTraits<LayoutTableColumn> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsLayoutTableCol();
   }

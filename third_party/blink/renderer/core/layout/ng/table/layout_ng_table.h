@@ -13,49 +13,49 @@
 
 namespace blink {
 
-class LayoutNGTableSection;
-class LayoutNGTableCell;
+class LayoutTableSection;
+class LayoutTableCell;
 class NGTableBorders;
 
 enum SkipEmptySectionsValue { kDoNotSkipEmptySections, kSkipEmptySections };
 
-// LayoutNGTable is the LayoutObject associated with
+// LayoutTable is the LayoutObject associated with
 // display: table or inline-table.
 //
-// LayoutNGTable is the coordinator for determining the overall table structure.
-// The reason is that LayoutNGTableSection children have a local view over what
-// their structure is but don't account for other LayoutNGTableSection. Thus
-// LayoutNGTable helps keep consistency across LayoutNGTableSection.
+// LayoutTable is the coordinator for determining the overall table structure.
+// The reason is that LayoutTableSection children have a local view over what
+// their structure is but don't account for other LayoutTableSection. Thus
+// LayoutTable helps keep consistency across LayoutTableSection.
 //
-// LayoutNGTable expects only 3 types of children:
-// - zero or more LayoutNGTableColumn
-// - zero or more LayoutNGTableCaption
-// - zero or more LayoutNGTableSection
+// LayoutTable expects only 3 types of children:
+// - zero or more LayoutTableColumn
+// - zero or more LayoutTableCaption
+// - zero or more LayoutTableSection
 // This is aligned with what HTML5 expects:
 // https://html.spec.whatwg.org/C/#the-table-element
 // with one difference: we allow more than one caption as we follow what
 // CSS expects (https://bugs.webkit.org/show_bug.cgi?id=69773).
-// Those expectations are enforced by LayoutNGTable::AddChild, that wraps
-// unknown children into an anonymous LayoutNGTableSection. This is what the
+// Those expectations are enforced by LayoutTable::AddChild, that wraps
+// unknown children into an anonymous LayoutTableSection. This is what the
 // "generate missing child wrapper" step in CSS mandates in
 // http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes.
 //
-// LayoutNGTable assumes a pretty strict structure that is mandated by CSS:
+// LayoutTable assumes a pretty strict structure that is mandated by CSS:
 // (note that this structure in HTML is enforced by the HTML5 Parser).
 //
-//                 LayoutNGTable
+//                 LayoutTable
 //                 |          |
-//  LayoutNGTableSection    LayoutNGTableCaption
+//    LayoutTableSection    LayoutTableCaption
 //                 |
-//      LayoutNGTableRow
+//        LayoutTableRow
 //                 |
-//     LayoutNGTableCell
+//       LayoutTableCell
 //
 // This means that we have to generate some anonymous table wrappers in order to
 // satisfy the structure. See again
 // http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes.
-// The anonymous table wrappers are inserted in LayoutNGTable::AddChild,
-// LayoutNGTableSection::AddChild, LayoutNGTableRow::AddChild and
+// The anonymous table wrappers are inserted in LayoutTable::AddChild,
+// LayoutTableSection::AddChild, LayoutTableRow::AddChild and
 // LayoutObject::AddChild.
 //
 // Note that this yields to interesting issues in the insertion code. The DOM
@@ -72,16 +72,16 @@ enum SkipEmptySectionsValue { kDoNotSkipEmptySections, kSkipEmptySections };
 // </tablerow>
 // <tablecell id="cell">Long second row, shows the table structure.</tablecell>
 //
-// The page generates a single anonymous table (LayoutNGTable) and table row
-// group (LayoutNGTableSection) to wrap the <tablerow> (#firstRow) and an
-// anonymous table row (LayoutNGTableRow) for the second <tablecell>. It is
+// The page generates a single anonymous table (LayoutTable) and table row
+// group (LayoutTableSection) to wrap the <tablerow> (#firstRow) and an
+// anonymous table row (LayoutTableRow) for the second <tablecell>. It is
 // possible for JavaScript to insert a new element between these 2 <tablecell>
 // (using Node.insertBefore), requiring us to split the anonymous table (or the
 // anonymous table row group) in 2. Also note that even though the second
 // <tablecell> and <tablerow> are siblings in the DOM tree, they are not in the
 // layout tree.
 //
-// Invalidation: LayoutNGTable differences from block invalidation:
+// Invalidation: LayoutTable differences from block invalidation:
 //
 // Cached collapsed borders:
 // Table caches collapsed borders as NGTableBorders.
@@ -96,23 +96,23 @@ enum SkipEmptySectionsValue { kDoNotSkipEmptySections, kSkipEmptySections };
 // The validation state is a IsTableColumnsConstraintsDirty flag
 // on LayoutObject. They are invalidated inside
 // LayoutObject::SetNeeds*Layout.
-class CORE_EXPORT LayoutNGTable : public LayoutBlock {
+class CORE_EXPORT LayoutTable : public LayoutBlock {
  public:
-  explicit LayoutNGTable(Element*);
-  ~LayoutNGTable() override;
+  explicit LayoutTable(Element*);
+  ~LayoutTable() override;
 
   void Trace(Visitor*) const override;
 
-  static LayoutNGTable* CreateAnonymousWithParent(const LayoutObject&);
+  static LayoutTable* CreateAnonymousWithParent(const LayoutObject&);
 
-  bool IsFirstCell(const LayoutNGTableCell&) const;
-  LayoutNGTableSection* FirstSection() const;
-  LayoutNGTableSection* FirstNonEmptySection() const;
-  LayoutNGTableSection* LastNonEmptySection() const;
-  LayoutNGTableSection* NextSection(const LayoutNGTableSection*,
-                                    SkipEmptySectionsValue) const;
-  LayoutNGTableSection* PreviousSection(const LayoutNGTableSection*,
-                                        SkipEmptySectionsValue) const;
+  bool IsFirstCell(const LayoutTableCell&) const;
+  LayoutTableSection* FirstSection() const;
+  LayoutTableSection* FirstNonEmptySection() const;
+  LayoutTableSection* LastNonEmptySection() const;
+  LayoutTableSection* NextSection(const LayoutTableSection*,
+                                  SkipEmptySectionsValue) const;
+  LayoutTableSection* PreviousSection(const LayoutTableSection*,
+                                      SkipEmptySectionsValue) const;
 
   wtf_size_t ColumnCount() const;
 
@@ -143,7 +143,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutBlock {
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGTable";
+    return "LayoutTable";
   }
 
   void AddChild(LayoutObject* child,
@@ -228,7 +228,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutBlock {
 
 // wtf/casting.h helper.
 template <>
-struct DowncastTraits<LayoutNGTable> {
+struct DowncastTraits<LayoutTable> {
   static bool AllowFrom(const LayoutObject& object) { return object.IsTable(); }
 };
 

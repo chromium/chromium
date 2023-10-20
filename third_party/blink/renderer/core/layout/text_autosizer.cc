@@ -382,14 +382,14 @@ void TextAutosizer::BeginLayout(LayoutBlock* block) {
   DCHECK(!cluster_stack_.empty());
 
   // Cells in auto-layout tables are handled separately by InflateAutoTable.
-  auto* cell = DynamicTo<LayoutNGTableCell>(block);
+  auto* cell = DynamicTo<LayoutTableCell>(block);
   bool is_auto_table_cell =
       cell && !cell->Table()->StyleRef().IsFixedTableLayout();
   if (!is_auto_table_cell && !cluster_stack_.empty())
     Inflate(block);
 }
 
-void TextAutosizer::InflateAutoTable(LayoutNGTable* table) {
+void TextAutosizer::InflateAutoTable(LayoutTable* table) {
   DCHECK(table);
   DCHECK(!table->StyleRef().IsFixedTableLayout());
   DCHECK(table->ContainingBlock());
@@ -402,13 +402,13 @@ void TextAutosizer::InflateAutoTable(LayoutNGTable* table) {
   // widths will be used for column sizing.
   for (LayoutObject* child = table->FirstChild(); child;
        child = child->NextSibling()) {
-    auto* section = DynamicTo<LayoutNGTableSection>(child);
+    auto* section = DynamicTo<LayoutTableSection>(child);
     if (!section) {
       continue;
     }
-    for (const LayoutNGTableRow* row = section->FirstRow(); row;
+    for (const LayoutTableRow* row = section->FirstRow(); row;
          row = row->NextRow()) {
-      for (LayoutNGTableCell* cell = row->FirstCell(); cell;
+      for (LayoutTableCell* cell = row->FirstCell(); cell;
            cell = cell->NextCell()) {
         if (!cell->NeedsLayout()) {
           continue;
@@ -1414,7 +1414,7 @@ TextAutosizer::LayoutScope::~LayoutScope() {
     text_autosizer_->EndLayout(block_);
 }
 
-TextAutosizer::TableLayoutScope::TableLayoutScope(LayoutNGTable* table)
+TextAutosizer::TableLayoutScope::TableLayoutScope(LayoutTable* table)
     : LayoutScope(table) {
   if (text_autosizer_) {
     DCHECK(text_autosizer_->ShouldHandleLayout());

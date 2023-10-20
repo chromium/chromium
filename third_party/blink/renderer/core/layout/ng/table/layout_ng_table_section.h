@@ -11,28 +11,28 @@
 
 namespace blink {
 
-class LayoutNGTable;
-class LayoutNGTableRow;
+class LayoutTable;
+class LayoutTableRow;
 
 // NOTE:
-// Every child of LayoutNGTableSection must be LayoutNGTableRow.
-class CORE_EXPORT LayoutNGTableSection : public LayoutBlock {
+// Every child of LayoutTableSection must be LayoutTableRow.
+class CORE_EXPORT LayoutTableSection : public LayoutBlock {
  public:
-  explicit LayoutNGTableSection(Element*);
+  explicit LayoutTableSection(Element*);
 
-  static LayoutNGTableSection* CreateAnonymousWithParent(const LayoutObject&);
+  static LayoutTableSection* CreateAnonymousWithParent(const LayoutObject&);
 
   bool IsEmpty() const;
 
-  LayoutNGTableRow* FirstRow() const;
-  LayoutNGTableRow* LastRow() const;
-  LayoutNGTable* Table() const;
+  LayoutTableRow* FirstRow() const;
+  LayoutTableRow* LastRow() const;
+  LayoutTable* Table() const;
 
   // LayoutBlock methods start.
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGTableSection";
+    return "LayoutTableSection";
   }
 
   void AddChild(LayoutObject* child,
@@ -91,7 +91,7 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutBlock {
 
 // wtf/casting.h helper.
 template <>
-struct DowncastTraits<LayoutNGTableSection> {
+struct DowncastTraits<LayoutTableSection> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsTableSection();
   }

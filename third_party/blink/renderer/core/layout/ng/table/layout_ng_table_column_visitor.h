@@ -16,7 +16,7 @@ namespace blink {
 //    a) sum of children COL spans if it has children.
 //    b) span attribute if it has no children.
 //
-// This function implements a Visitor pattern for LayoutNGTableColumn
+// This function implements a Visitor pattern for LayoutTableColumn
 // traversal, and computes correct spans.
 //
 // class Visitor {
@@ -31,9 +31,9 @@ namespace blink {
 //                      bool has_children);
 // }
 template <typename Visitor>
-void VisitLayoutNGTableColumn(const HeapVector<NGBlockNode>& columns,
-                              wtf_size_t table_column_count,
-                              Visitor* visitor) {
+void VisitLayoutTableColumn(const HeapVector<NGBlockNode>& columns,
+                            wtf_size_t table_column_count,
+                            Visitor* visitor) {
   wtf_size_t current_column_index = 0;
 
   auto VisitCol = [&](const NGBlockNode& col) {

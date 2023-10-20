@@ -386,7 +386,7 @@ class TableCellBackgroundClipper {
  public:
   TableCellBackgroundClipper(
       GraphicsContext& context,
-      const LayoutNGTableCell& table_cell,
+      const LayoutTableCell& table_cell,
       const PhysicalRect& cell_rect,
       bool is_painting_background_in_contents_space = false)
       : context_(context),
@@ -521,8 +521,7 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
       collapsed_borders_geometry = fragment_.TableCollapsedBordersGeometry();
   CHECK(collapsed_borders_geometry);
 
-  const LayoutNGTable& layout_table =
-      *To<LayoutNGTable>(fragment_.GetLayoutObject());
+  const auto& layout_table = *To<LayoutTable>(fragment_.GetLayoutObject());
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, layout_table, paint_info.phase))
     return;
@@ -861,7 +860,7 @@ void NGTableCellPainter::PaintBoxDecorationBackground(
     const BoxDecorationData& box_decoration_data) {
   DCHECK(box_decoration_data.ShouldPaint());
   TableCellBackgroundClipper clipper(
-      paint_info.context, *To<LayoutNGTableCell>(fragment_.GetLayoutObject()),
+      paint_info.context, *To<LayoutTableCell>(fragment_.GetLayoutObject()),
       paint_rect, box_decoration_data.IsPaintingBackgroundInContentsSpace());
   NGBoxFragmentPainter(fragment_).PaintBoxDecorationBackgroundWithRectImpl(
       paint_info, paint_rect, box_decoration_data);
@@ -875,8 +874,8 @@ void NGTableCellPainter::PaintBackgroundForTablePart(
     const PhysicalOffset& table_cell_paint_offset) {
   if (fragment_.Style().Visibility() != EVisibility::kVisible)
     return;
-  const LayoutNGTableCell& layout_table_cell =
-      *To<LayoutNGTableCell>(fragment_.GetLayoutObject());
+  const auto& layout_table_cell =
+      *To<LayoutTableCell>(fragment_.GetLayoutObject());
   if (layout_table_cell.BackgroundTransfersToView())
     return;  // cargo-culted from other painters.
 

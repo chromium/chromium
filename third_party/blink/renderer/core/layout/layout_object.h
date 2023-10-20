@@ -191,7 +191,7 @@ struct RecalcLayoutOverflowResult {
 // Some LayoutObjects don't have an associated Node and are called "anonymous"
 // (see the constructor below). Anonymous LayoutObjects exist for several
 // purposes but are usually required by CSS. A good example is anonymous table
-// parts (see LayoutNGTable for the expected structure). Anonymous LayoutObjects
+// parts (see LayoutTable for the expected structure). Anonymous LayoutObjects
 // are generated when a new child is added to the tree in addChild(). See the
 // function for some important information on this.
 //
@@ -581,7 +581,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // from a structure of a flat tree if Shadow DOM is used.
   // See LayoutTreeBuilderTraversal and FlatTreeTraversal.
   //
-  // See LayoutNGTable::AddChild and LayoutBlockFlow::AddChild.
+  // See LayoutTable::AddChild and LayoutBlockFlow::AddChild.
   // TODO(jchaffraix): |newChild| cannot be nullptr and should be a reference.
   virtual void AddChild(LayoutObject* new_child,
                         LayoutObject* before_child = nullptr);
@@ -847,7 +847,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // For renderer creation, the inline-* values create the same renderer
   // as the non-inline version. The difference is that inline-* sets
   // is_inline_ during initialization. This means that
-  // "display: inline-table" creates a LayoutNGTable, like "display: table".
+  // "display: inline-table" creates a LayoutTable, like "display: table".
   //
   // Ideally every Element::createLayoutObject would call this function to
   // respond to 'display' but there are deep rooted assumptions about

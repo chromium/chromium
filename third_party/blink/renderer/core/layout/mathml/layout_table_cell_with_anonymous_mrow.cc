@@ -8,7 +8,7 @@ namespace blink {
 
 LayoutTableCellWithAnonymousMrow::LayoutTableCellWithAnonymousMrow(
     Element* element)
-    : LayoutNGTableCell(element) {
+    : LayoutTableCell(element) {
   DCHECK(element);
 }
 
@@ -18,7 +18,7 @@ void LayoutTableCellWithAnonymousMrow::AddChild(LayoutObject* new_child,
   if (!anonymous_mrow) {
     anonymous_mrow = LayoutBlock::CreateAnonymousWithParentAndDisplay(
         this, EDisplay::kBlockMath);
-    LayoutNGTableCell::AddChild(anonymous_mrow);
+    LayoutTableCell::AddChild(anonymous_mrow);
   }
   anonymous_mrow->AddChild(new_child, before_child);
 }

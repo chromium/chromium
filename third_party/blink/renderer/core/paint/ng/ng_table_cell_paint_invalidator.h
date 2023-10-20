@@ -10,21 +10,21 @@
 
 namespace blink {
 
-class LayoutNGTableCell;
+class LayoutTableCell;
 struct PaintInvalidatorContext;
 
 class NGTableCellPaintInvalidator {
   STACK_ALLOCATED();
 
  public:
-  NGTableCellPaintInvalidator(const LayoutNGTableCell& cell,
+  NGTableCellPaintInvalidator(const LayoutTableCell& cell,
                               const PaintInvalidatorContext& context)
       : cell_(cell), context_(context) {}
 
   void InvalidatePaint();
 
  private:
-  const LayoutNGTableCell& cell_;
+  const LayoutTableCell& cell_;
   const PaintInvalidatorContext& context_;
 };
 

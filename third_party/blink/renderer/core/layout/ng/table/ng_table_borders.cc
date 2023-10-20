@@ -228,12 +228,12 @@ const NGTableBorders* NGTableBorders::ComputeTableBorders(
   // We have to traverse COL first, then COLGROUP.
   ColBordersMarker col_borders_marker(table_row_count, ++box_order,
                                       table_writing_direction, *table_borders);
-  VisitLayoutNGTableColumn(
+  VisitLayoutTableColumn(
       const_cast<HeapVector<NGBlockNode>&>(grouped_children.columns),
       table_column_count, &col_borders_marker);
   ColgroupBordersMarker colgroup_borders_marker(
       table_row_count, ++box_order, table_writing_direction, *table_borders);
-  VisitLayoutNGTableColumn(
+  VisitLayoutTableColumn(
       const_cast<HeapVector<NGBlockNode>&>(grouped_children.columns),
       table_column_count, &colgroup_borders_marker);
 

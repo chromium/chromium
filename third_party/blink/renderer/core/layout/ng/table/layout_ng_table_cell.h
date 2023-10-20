@@ -11,15 +11,15 @@
 
 namespace blink {
 
-class LayoutNGTable;
-class LayoutNGTableRow;
-class LayoutNGTableSection;
+class LayoutTable;
+class LayoutTableRow;
+class LayoutTableSection;
 
-class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutTableCell : public LayoutNGBlockFlow {
  public:
-  explicit LayoutNGTableCell(Element*);
+  explicit LayoutTableCell(Element*);
 
-  static LayoutNGTableCell* CreateAnonymousWithParent(const LayoutObject&);
+  static LayoutTableCell* CreateAnonymousWithParent(const LayoutObject&);
 
   // NOTE: Rowspan might overflow section boundaries.
   unsigned ComputedRowSpan() const {
@@ -55,11 +55,11 @@ class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow {
   LayoutUnit BorderLeft() const override;
   LayoutUnit BorderRight() const override;
 
-  LayoutNGTableCell* NextCell() const;
-  LayoutNGTableCell* PreviousCell() const;
-  LayoutNGTableRow* Row() const;
-  LayoutNGTableSection* Section() const;
-  LayoutNGTable* Table() const;
+  LayoutTableCell* NextCell() const;
+  LayoutTableCell* PreviousCell() const;
+  LayoutTableRow* Row() const;
+  LayoutTableSection* Section() const;
+  LayoutTable* Table() const;
 
   // LayoutBlockFlow methods start.
 
@@ -70,7 +70,7 @@ class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow {
 
   const char* GetName() const final {
     NOT_DESTROYED();
-    return "LayoutNGTableCell";
+    return "LayoutTableCell";
   }
 
   bool CreatesNewFormattingContext() const final {
@@ -136,7 +136,7 @@ class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow {
 
 // wtf/casting.h helper.
 template <>
-struct DowncastTraits<LayoutNGTableCell> {
+struct DowncastTraits<LayoutTableCell> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsTableCell();
   }

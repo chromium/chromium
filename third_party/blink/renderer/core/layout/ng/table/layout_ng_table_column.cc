@@ -12,21 +12,20 @@
 
 namespace blink {
 
-LayoutNGTableColumn::LayoutNGTableColumn(Element* element)
-    : LayoutBox(element) {
+LayoutTableColumn::LayoutTableColumn(Element* element) : LayoutBox(element) {
   UpdateFromElement();
 }
 
-void LayoutNGTableColumn::Trace(Visitor* visitor) const {
+void LayoutTableColumn::Trace(Visitor* visitor) const {
   visitor->Trace(children_);
   LayoutBox::Trace(visitor);
 }
 
-void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
-                                         const ComputedStyle* old_style) {
+void LayoutTableColumn::StyleDidChange(StyleDifference diff,
+                                       const ComputedStyle* old_style) {
   NOT_DESTROYED();
   if (diff.HasDifference()) {
-    if (LayoutNGTable* table = Table()) {
+    if (LayoutTable* table = Table()) {
       if (old_style && diff.NeedsNormalPaintInvalidation()) {
         // Regenerate table borders if needed
         if (!old_style->BorderVisuallyEqual(StyleRef()))
@@ -53,47 +52,47 @@ void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
   LayoutBox::StyleDidChange(diff, old_style);
 }
 
-void LayoutNGTableColumn::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
+void LayoutTableColumn::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
   NOT_DESTROYED();
-  if (LayoutNGTable* table = Table()) {
+  if (LayoutTable* table = Table()) {
     table->SetShouldDoFullPaintInvalidationWithoutLayoutChange(
         PaintInvalidationReason::kImage);
   }
 }
 
-void LayoutNGTableColumn::InsertedIntoTree() {
+void LayoutTableColumn::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutBox::InsertedIntoTree();
-  LayoutNGTable* table = Table();
+  LayoutTable* table = Table();
   DCHECK(table);
   if (StyleRef().HasBackground())
     table->SetBackgroundNeedsFullPaintInvalidation();
   table->TableGridStructureChanged();
 }
 
-void LayoutNGTableColumn::WillBeRemovedFromTree() {
+void LayoutTableColumn::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   LayoutBox::WillBeRemovedFromTree();
-  LayoutNGTable* table = Table();
+  LayoutTable* table = Table();
   DCHECK(table);
   if (StyleRef().HasBackground())
     table->SetBackgroundNeedsFullPaintInvalidation();
   table->TableGridStructureChanged();
 }
 
-bool LayoutNGTableColumn::IsChildAllowed(LayoutObject* child,
-                                         const ComputedStyle& style) const {
+bool LayoutTableColumn::IsChildAllowed(LayoutObject* child,
+                                       const ComputedStyle& style) const {
   NOT_DESTROYED();
   return child->IsLayoutTableCol() && style.Display() == EDisplay::kTableColumn;
 }
 
-bool LayoutNGTableColumn::CanHaveChildren() const {
+bool LayoutTableColumn::CanHaveChildren() const {
   NOT_DESTROYED();
   // <col> cannot have children.
   return IsColumnGroup();
 }
 
-void LayoutNGTableColumn::ClearNeedsLayoutForChildren() const {
+void LayoutTableColumn::ClearNeedsLayoutForChildren() const {
   NOT_DESTROYED();
   LayoutObject* child = children_.FirstChild();
   while (child) {
@@ -102,19 +101,19 @@ void LayoutNGTableColumn::ClearNeedsLayoutForChildren() const {
   }
 }
 
-LayoutNGTable* LayoutNGTableColumn::Table() const {
+LayoutTable* LayoutTableColumn::Table() const {
   NOT_DESTROYED();
   LayoutObject* table = Parent();
   if (table && !table->IsTable())
     table = table->Parent();
   if (table) {
     DCHECK(table->IsTable());
-    return To<LayoutNGTable>(table);
+    return To<LayoutTable>(table);
   }
   return nullptr;
 }
 
-void LayoutNGTableColumn::UpdateFromElement() {
+void LayoutTableColumn::UpdateFromElement() {
   NOT_DESTROYED();
   unsigned old_span = span_;
   if (const auto* tc = DynamicTo<HTMLTableColElement>(GetNode())) {
@@ -125,12 +124,13 @@ void LayoutNGTableColumn::UpdateFromElement() {
   if (span_ != old_span && Style() && Parent()) {
     SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kAttributeChanged);
-    if (LayoutNGTable* table = Table())
+    if (LayoutTable* table = Table()) {
       table->GridBordersChanged();
+    }
   }
 }
 
-PhysicalSize LayoutNGTableColumn::Size() const {
+PhysicalSize LayoutTableColumn::Size() const {
   NOT_DESTROYED();
   if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
     return frame_size_;
@@ -176,7 +176,7 @@ PhysicalSize LayoutNGTableColumn::Size() const {
   return ToPhysicalSize(size, table->StyleRef().GetWritingMode());
 }
 
-LayoutPoint LayoutNGTableColumn::LocationInternal() const {
+LayoutPoint LayoutTableColumn::LocationInternal() const {
   NOT_DESTROYED();
   if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
     return frame_location_;
@@ -189,9 +189,9 @@ LayoutPoint LayoutNGTableColumn::LocationInternal() const {
   }
 
   WritingDirectionMode direction = StyleRef().GetWritingDirection();
-  LayoutNGTableColumn* parent_colgroup = nullptr;
+  LayoutTableColumn* parent_colgroup = nullptr;
   if (IsColumn()) {
-    parent_colgroup = DynamicTo<LayoutNGTableColumn>(Parent());
+    parent_colgroup = DynamicTo<LayoutTableColumn>(Parent());
     DCHECK(!parent_colgroup || parent_colgroup->IsColumnGroup());
   }
 

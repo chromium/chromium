@@ -13,8 +13,8 @@ namespace {
 
 class LayoutTableTest : public RenderingTest {
  protected:
-  LayoutNGTable* GetTableByElementId(const char* id) {
-    return To<LayoutNGTable>(GetLayoutObjectByElementId(id));
+  LayoutTable* GetTableByElementId(const char* id) {
+    return To<LayoutTable>(GetLayoutObjectByElementId(id));
   }
 };
 
@@ -267,9 +267,9 @@ TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {
   )HTML");
   auto* table = GetTableByElementId("table");
   auto* head_section =
-      To<LayoutNGTableSection>(GetLayoutObjectByElementId("head"));
+      To<LayoutTableSection>(GetLayoutObjectByElementId("head"));
   auto* body_section =
-      To<LayoutNGTableSection>(GetLayoutObjectByElementId("body"));
+      To<LayoutTableSection>(GetLayoutObjectByElementId("body"));
   ASSERT_TRUE(table);
   ASSERT_TRUE(head_section);
   ASSERT_TRUE(body_section);
@@ -298,9 +298,9 @@ TEST_F(LayoutTableTest, OutOfOrderFootAndBody) {
   )HTML");
   auto* table = GetTableByElementId("table");
   auto* body_section =
-      To<LayoutNGTableSection>(GetLayoutObjectByElementId("body"));
+      To<LayoutTableSection>(GetLayoutObjectByElementId("body"));
   auto* foot_section =
-      To<LayoutNGTableSection>(GetLayoutObjectByElementId("foot"));
+      To<LayoutTableSection>(GetLayoutObjectByElementId("foot"));
   ASSERT_TRUE(table);
   ASSERT_TRUE(body_section);
   ASSERT_TRUE(foot_section);
@@ -330,11 +330,11 @@ TEST_F(LayoutTableTest, OutOfOrderHeadFootAndBody) {
   )HTML");
   auto* table = GetTableByElementId("table");
   auto* head_section =
-      To<LayoutNGTableSection>(GetLayoutObjectByElementId("head"));
+      To<LayoutTableSection>(GetLayoutObjectByElementId("head"));
   auto* body_section =
-      To<LayoutNGTableSection>(GetLayoutObjectByElementId("body"));
+      To<LayoutTableSection>(GetLayoutObjectByElementId("body"));
   auto* foot_section =
-      To<LayoutNGTableSection>(GetLayoutObjectByElementId("foot"));
+      To<LayoutTableSection>(GetLayoutObjectByElementId("foot"));
   ASSERT_TRUE(table);
   ASSERT_TRUE(head_section);
   ASSERT_TRUE(body_section);

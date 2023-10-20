@@ -11,45 +11,46 @@
 
 namespace blink {
 
-LayoutNGTableSection::LayoutNGTableSection(Element* element)
+LayoutTableSection::LayoutTableSection(Element* element)
     : LayoutBlock(element) {}
 
-LayoutNGTableSection* LayoutNGTableSection::CreateAnonymousWithParent(
+LayoutTableSection* LayoutTableSection::CreateAnonymousWithParent(
     const LayoutObject& parent) {
   const ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableRowGroup);
-  auto* new_section = MakeGarbageCollected<LayoutNGTableSection>(nullptr);
+  auto* new_section = MakeGarbageCollected<LayoutTableSection>(nullptr);
   new_section->SetDocumentForAnonymous(&parent.GetDocument());
   new_section->SetStyle(new_style);
   return new_section;
 }
 
-bool LayoutNGTableSection::IsEmpty() const {
+bool LayoutTableSection::IsEmpty() const {
   NOT_DESTROYED();
   return !FirstChild();
 }
 
-LayoutNGTableRow* LayoutNGTableSection::FirstRow() const {
+LayoutTableRow* LayoutTableSection::FirstRow() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableRow>(FirstChild());
+  return To<LayoutTableRow>(FirstChild());
 }
 
-LayoutNGTableRow* LayoutNGTableSection::LastRow() const {
+LayoutTableRow* LayoutTableSection::LastRow() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableRow>(LastChild());
+  return To<LayoutTableRow>(LastChild());
 }
 
-LayoutNGTable* LayoutNGTableSection::Table() const {
+LayoutTable* LayoutTableSection::Table() const {
   NOT_DESTROYED();
-  return To<LayoutNGTable>(Parent());
+  return To<LayoutTable>(Parent());
 }
 
-void LayoutNGTableSection::AddChild(LayoutObject* child,
-                                    LayoutObject* before_child) {
+void LayoutTableSection::AddChild(LayoutObject* child,
+                                  LayoutObject* before_child) {
   NOT_DESTROYED();
-  if (LayoutNGTable* table = Table())
+  if (LayoutTable* table = Table()) {
     table->TableGridStructureChanged();
+  }
 
   if (!child->IsTableRow()) {
     LayoutObject* last = before_child;
@@ -84,7 +85,7 @@ void LayoutNGTableSection::AddChild(LayoutObject* child,
       return;
     }
 
-    auto* row = LayoutNGTableRow::CreateAnonymousWithParent(*this);
+    auto* row = LayoutTableRow::CreateAnonymousWithParent(*this);
     AddChild(row, before_child);
     row->AddChild(child);
     return;
@@ -95,24 +96,26 @@ void LayoutNGTableSection::AddChild(LayoutObject* child,
   LayoutBlock::AddChild(child, before_child);
 }
 
-void LayoutNGTableSection::RemoveChild(LayoutObject* child) {
+void LayoutTableSection::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
-  if (LayoutNGTable* table = Table())
+  if (LayoutTable* table = Table()) {
     table->TableGridStructureChanged();
+  }
   LayoutBlock::RemoveChild(child);
 }
 
-void LayoutNGTableSection::WillBeRemovedFromTree() {
+void LayoutTableSection::WillBeRemovedFromTree() {
   NOT_DESTROYED();
-  if (LayoutNGTable* table = Table())
+  if (LayoutTable* table = Table()) {
     table->TableGridStructureChanged();
+  }
   LayoutBlock::WillBeRemovedFromTree();
 }
 
-void LayoutNGTableSection::StyleDidChange(StyleDifference diff,
-                                          const ComputedStyle* old_style) {
+void LayoutTableSection::StyleDidChange(StyleDifference diff,
+                                        const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  if (LayoutNGTable* table = Table()) {
+  if (LayoutTable* table = Table()) {
     if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
         (old_style && old_style->GetWritingDirection() !=
                           StyleRef().GetWritingDirection())) {
@@ -122,7 +125,7 @@ void LayoutNGTableSection::StyleDidChange(StyleDifference diff,
   LayoutBlock::StyleDidChange(diff, old_style);
 }
 
-LayoutBox* LayoutNGTableSection::CreateAnonymousBoxWithSameTypeAs(
+LayoutBox* LayoutTableSection::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   NOT_DESTROYED();
   return CreateAnonymousWithParent(*parent);
@@ -130,7 +133,7 @@ LayoutBox* LayoutNGTableSection::CreateAnonymousBoxWithSameTypeAs(
 
 // TODO(crbug.com/1079133): Used by AXLayoutObject, verify behaviour is
 // correct, and if caching is required.
-unsigned LayoutNGTableSection::NumRows() const {
+unsigned LayoutTableSection::NumRows() const {
   NOT_DESTROYED();
   unsigned num_rows = 0;
   for (LayoutObject* layout_row = FirstChild(); layout_row;

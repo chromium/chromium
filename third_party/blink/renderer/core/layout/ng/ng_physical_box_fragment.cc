@@ -1216,7 +1216,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
       if (!child_fragment.IsTableNGCell())
         continue;
       const auto* child_layout_object =
-          To<LayoutNGTableCell>(child_fragment.GetLayoutObject());
+          To<LayoutTableCell>(child_fragment.GetLayoutObject());
       if (child_layout_object->ComputedRowSpan() == 1)
         continue;
       PhysicalRect child_rect;

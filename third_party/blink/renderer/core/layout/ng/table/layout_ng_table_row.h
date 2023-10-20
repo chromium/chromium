@@ -12,29 +12,29 @@
 
 namespace blink {
 
-class LayoutNGTableCell;
-class LayoutNGTableSection;
-class LayoutNGTable;
+class LayoutTableCell;
+class LayoutTableSection;
+class LayoutTable;
 
-// Every child of LayoutNGTableRow must be LayoutNGTableCell.
-class CORE_EXPORT LayoutNGTableRow : public LayoutBlock {
+// Every child of LayoutTableRow must be LayoutTableCell.
+class CORE_EXPORT LayoutTableRow : public LayoutBlock {
  public:
-  explicit LayoutNGTableRow(Element*);
+  explicit LayoutTableRow(Element*);
 
-  static LayoutNGTableRow* CreateAnonymousWithParent(const LayoutObject&);
+  static LayoutTableRow* CreateAnonymousWithParent(const LayoutObject&);
 
-  LayoutNGTableCell* FirstCell() const;
-  LayoutNGTableCell* LastCell() const;
-  LayoutNGTableRow* NextRow() const;
-  LayoutNGTableRow* PreviousRow() const;
-  LayoutNGTableSection* Section() const;
-  LayoutNGTable* Table() const;
+  LayoutTableCell* FirstCell() const;
+  LayoutTableCell* LastCell() const;
+  LayoutTableRow* NextRow() const;
+  LayoutTableRow* PreviousRow() const;
+  LayoutTableSection* Section() const;
+  LayoutTable* Table() const;
 
   // LayoutBlock methods start.
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGTableRow";
+    return "LayoutTableRow";
   }
 
   void AddChild(LayoutObject* child,
@@ -97,7 +97,7 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutBlock {
 
 // wtf/casting.h helper.
 template <>
-struct DowncastTraits<LayoutNGTableRow> {
+struct DowncastTraits<LayoutTableRow> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsTableRow();
   }

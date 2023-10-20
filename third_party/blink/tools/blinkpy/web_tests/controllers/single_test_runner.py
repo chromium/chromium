@@ -516,12 +516,8 @@ class SingleTestRunner(object):
 
         def remove_ng_text(results):
             processed = re.sub(
-                r'LayoutNG(BlockFlow|ListItem|TableCell|FlexibleBox|View)',
-                r'Layout\1', results)
-            # LayoutTableCaption doesn't override LayoutBlockFlow::GetName, so
-            # render tree dumps have "LayoutBlockFlow" for captions.
-            processed = re.sub('LayoutNGTableCaption', 'LayoutBlockFlow',
-                               processed)
+                r'LayoutNG(BlockFlow|ListItem|FlexibleBox|View)', r'Layout\1',
+                results)
             return processed
 
         def is_ng_name_mismatch(expected, actual):

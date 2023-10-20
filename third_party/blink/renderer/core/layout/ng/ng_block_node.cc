@@ -246,10 +246,11 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
     return false;
   }
 
-  if (node.IsNGTableCell() && To<LayoutNGTableCell>(node.GetLayoutBox())
+  if (node.IsNGTableCell() && To<LayoutTableCell>(node.GetLayoutBox())
                                       ->IntrinsicLogicalWidthsBorderSizes() !=
-                                  constraint_space.TableCellBorders())
+                                  constraint_space.TableCellBorders()) {
     return false;
+  }
 
   // We may have something like:
   // "grid-template-columns: repeat(auto-fill, 50px); min-width: 50%;"
@@ -1034,7 +1035,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       result.depends_on_block_constraints, result.sizes);
 
   if (IsNGTableCell()) {
-    To<LayoutNGTableCell>(box_.Get())
+    To<LayoutTableCell>(box_.Get())
         ->SetIntrinsicLogicalWidthsBorderSizes(
             constraint_space.TableCellBorders());
   }

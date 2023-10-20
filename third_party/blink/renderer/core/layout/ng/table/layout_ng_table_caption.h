@@ -10,13 +10,13 @@
 
 namespace blink {
 
-class CORE_EXPORT LayoutNGTableCaption final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutTableCaption final : public LayoutNGBlockFlow {
  public:
-  explicit LayoutNGTableCaption(Element*);
+  explicit LayoutTableCaption(Element*);
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGTableCaption";
+    return "LayoutTableCaption";
   }
 
   bool CreatesNewFormattingContext() const final {
@@ -33,7 +33,7 @@ class CORE_EXPORT LayoutNGTableCaption final : public LayoutNGBlockFlow {
 
 // wtf/casting.h helper.
 template <>
-struct DowncastTraits<LayoutNGTableCaption> {
+struct DowncastTraits<LayoutTableCaption> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsTableCaption();
   }

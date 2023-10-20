@@ -13,58 +13,58 @@
 
 namespace blink {
 
-LayoutNGTableRow::LayoutNGTableRow(Element* element) : LayoutBlock(element) {}
+LayoutTableRow::LayoutTableRow(Element* element) : LayoutBlock(element) {}
 
-LayoutNGTableRow* LayoutNGTableRow::CreateAnonymousWithParent(
+LayoutTableRow* LayoutTableRow::CreateAnonymousWithParent(
     const LayoutObject& parent) {
   const ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableRow);
-  auto* new_row = MakeGarbageCollected<LayoutNGTableRow>(nullptr);
+  auto* new_row = MakeGarbageCollected<LayoutTableRow>(nullptr);
   new_row->SetDocumentForAnonymous(&parent.GetDocument());
   new_row->SetStyle(new_style);
   return new_row;
 }
 
-LayoutNGTableCell* LayoutNGTableRow::FirstCell() const {
+LayoutTableCell* LayoutTableRow::FirstCell() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableCell>(FirstChild());
+  return To<LayoutTableCell>(FirstChild());
 }
 
-LayoutNGTableCell* LayoutNGTableRow::LastCell() const {
+LayoutTableCell* LayoutTableRow::LastCell() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableCell>(LastChild());
+  return To<LayoutTableCell>(LastChild());
 }
 
-LayoutNGTableRow* LayoutNGTableRow::NextRow() const {
+LayoutTableRow* LayoutTableRow::NextRow() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableRow>(NextSibling());
+  return To<LayoutTableRow>(NextSibling());
 }
 
-LayoutNGTableRow* LayoutNGTableRow::PreviousRow() const {
+LayoutTableRow* LayoutTableRow::PreviousRow() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableRow>(PreviousSibling());
+  return To<LayoutTableRow>(PreviousSibling());
 }
 
-LayoutNGTableSection* LayoutNGTableRow::Section() const {
+LayoutTableSection* LayoutTableRow::Section() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableSection>(Parent());
+  return To<LayoutTableSection>(Parent());
 }
 
-LayoutNGTable* LayoutNGTableRow::Table() const {
+LayoutTable* LayoutTableRow::Table() const {
   NOT_DESTROYED();
   if (LayoutObject* section = Parent()) {
     if (LayoutObject* table = section->Parent())
-      return To<LayoutNGTable>(table);
+      return To<LayoutTable>(table);
   }
   return nullptr;
 }
 
-void LayoutNGTableRow::AddChild(LayoutObject* child,
-                                LayoutObject* before_child) {
+void LayoutTableRow::AddChild(LayoutObject* child, LayoutObject* before_child) {
   NOT_DESTROYED();
-  if (LayoutNGTable* table = Table())
+  if (LayoutTable* table = Table()) {
     table->TableGridStructureChanged();
+  }
 
   if (!child->IsTableCell()) {
     LayoutObject* last = before_child;
@@ -96,7 +96,7 @@ void LayoutNGTableRow::AddChild(LayoutObject* child,
       return;
     }
 
-    auto* cell = LayoutNGTableCell::CreateAnonymousWithParent(*this);
+    auto* cell = LayoutTableCell::CreateAnonymousWithParent(*this);
     AddChild(cell, before_child);
     cell->AddChild(child);
     return;
@@ -109,10 +109,11 @@ void LayoutNGTableRow::AddChild(LayoutObject* child,
   LayoutBlock::AddChild(child, before_child);
 }
 
-void LayoutNGTableRow::RemoveChild(LayoutObject* child) {
+void LayoutTableRow::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
-  if (LayoutNGTable* table = Table())
+  if (LayoutTable* table = Table()) {
     table->TableGridStructureChanged();
+  }
   // Invalidate background in case this doesn't need layout which would
   // trigger the invalidation, e.g. when the last child is removed.
   if (StyleRef().HasBackground()) {
@@ -122,17 +123,18 @@ void LayoutNGTableRow::RemoveChild(LayoutObject* child) {
   LayoutBlock::RemoveChild(child);
 }
 
-void LayoutNGTableRow::WillBeRemovedFromTree() {
+void LayoutTableRow::WillBeRemovedFromTree() {
   NOT_DESTROYED();
-  if (LayoutNGTable* table = Table())
+  if (LayoutTable* table = Table()) {
     table->TableGridStructureChanged();
+  }
   LayoutBlock::WillBeRemovedFromTree();
 }
 
-void LayoutNGTableRow::StyleDidChange(StyleDifference diff,
-                                      const ComputedStyle* old_style) {
+void LayoutTableRow::StyleDidChange(StyleDifference diff,
+                                    const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  if (LayoutNGTable* table = Table()) {
+  if (LayoutTable* table = Table()) {
     if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
         (old_style && old_style->GetWritingDirection() !=
                           StyleRef().GetWritingDirection())) {
@@ -142,18 +144,18 @@ void LayoutNGTableRow::StyleDidChange(StyleDifference diff,
   LayoutBlock::StyleDidChange(diff, old_style);
 }
 
-LayoutBox* LayoutNGTableRow::CreateAnonymousBoxWithSameTypeAs(
+LayoutBox* LayoutTableRow::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   NOT_DESTROYED();
   return CreateAnonymousWithParent(*parent);
 }
 
-LayoutBlock* LayoutNGTableRow::StickyContainer() const {
+LayoutBlock* LayoutTableRow::StickyContainer() const {
   NOT_DESTROYED();
   return Table();
 }
 
-PositionWithAffinity LayoutNGTableRow::PositionForPoint(
+PositionWithAffinity LayoutTableRow::PositionForPoint(
     const PhysicalOffset& offset) const {
   NOT_DESTROYED();
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
@@ -162,7 +164,7 @@ PositionWithAffinity LayoutNGTableRow::PositionForPoint(
   return LayoutBox::PositionForPoint(offset);
 }
 
-unsigned LayoutNGTableRow::RowIndex() const {
+unsigned LayoutTableRow::RowIndex() const {
   NOT_DESTROYED();
   unsigned index = 0;
   for (LayoutObject* child = Parent()->SlowFirstChild(); child;

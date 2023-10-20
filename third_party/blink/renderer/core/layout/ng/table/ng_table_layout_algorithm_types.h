@@ -222,7 +222,7 @@ class CORE_EXPORT NGTableTypes {
                                LayoutUnit block_size,
                                bool treat_as_tbody);
 
-  // Columns are cached by LayoutNGTable, and need to be RefCounted.
+  // Columns are cached by LayoutTable, and need to be RefCounted.
   typedef base::RefCountedData<WTF::Vector<Column>> Columns;
   // Inline constraints are optional because we need to distinguish between an
   // empty cell, and a non-existent cell.
