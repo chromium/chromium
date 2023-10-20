@@ -73,6 +73,7 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   password_specifics.set_sender_name("");
   password_specifics.set_date_received_windows_epoch_micros(0);
   password_specifics.set_sharing_notification_displayed(false);
+  password_specifics.set_sender_profile_image_url("");
   return password_specifics;
 }
 
