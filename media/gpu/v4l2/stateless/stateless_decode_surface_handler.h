@@ -20,6 +20,16 @@ class StatelessDecodeSurfaceHandler
       const StatelessDecodeSurfaceHandler&) = delete;
 
   ~StatelessDecodeSurfaceHandler() override = default;
+
+  // The stateless api requires that the client parse the header information
+  // and send that separately. |ctrls| is the parsed header while |data| is
+  // the complete frame of compressed data with |size| being the length of
+  // the buffer. |bitstream_id| is an identifier for the driver to use for
+  // reference frame designation.
+  virtual bool SubmitFrame(void* ctrls,
+                           const uint8_t* data,
+                           size_t size,
+                           int32_t bitstream_id) = 0;
 };
 
 }  // namespace media

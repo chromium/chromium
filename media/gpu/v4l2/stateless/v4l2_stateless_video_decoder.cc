@@ -163,6 +163,15 @@ scoped_refptr<V4L2DecodeSurface> V4L2StatelessVideoDecoder::CreateSurface() {
   return nullptr;
 }
 
+bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
+                                            const uint8_t* data,
+                                            size_t size,
+                                            int32_t bitstream_id) {
+  DVLOGF(4);
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void V4L2StatelessVideoDecoder::SurfaceReady(
     scoped_refptr<V4L2DecodeSurface> dec_surface,
     int32_t bitstream_id,
@@ -229,6 +238,9 @@ void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(
   // receive compressed data. Because the lifetime of the |compressed_buffer|
   // is only for this function every time through the decoder should
   // be requesting more data.
+  // TODO(frkoenig): There is the possibility of this function being called
+  // and |decode_result| being a decode error.  Should that be handled
+  // here?  or else where?
   CHECK_EQ(decode_result, AcceleratedVideoDecoder::kRanOutOfStreamData);
 
   if (!compressed_buffer->end_of_stream()) {
@@ -254,7 +266,7 @@ void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(
           break;
         case AcceleratedVideoDecoder::kRanOutOfSurfaces:
           VLOGF(2) << "AcceleratedVideoDecoder::kRanOutOfSurfaces";
-          NOTIMPLEMENTED();
+          NOTREACHED();
           break;
         case AcceleratedVideoDecoder::kNeedContextUpdate:
           VLOGF(2) << "AcceleratedVideoDecoder::kNeedContextUpdate";
@@ -262,14 +274,15 @@ void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(
           break;
         case AcceleratedVideoDecoder::kDecodeError:
           VLOGF(2) << "AcceleratedVideoDecoder::kDecodeError";
-          NOTIMPLEMENTED();
+          NOTREACHED();
           break;
         case AcceleratedVideoDecoder::kTryAgain:
           VLOGF(2) << "AcceleratedVideoDecoder::kTryAgain";
           NOTIMPLEMENTED();
           break;
       }
-    } while (AcceleratedVideoDecoder::kRanOutOfStreamData != decode_result);
+    } while (AcceleratedVideoDecoder::kRanOutOfStreamData != decode_result &&
+             AcceleratedVideoDecoder::kDecodeError != decode_result);
   }
 
   // TODO: This PostTask is blindly sending a positive status. Errors need

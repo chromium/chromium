@@ -64,6 +64,10 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
                     int32_t bitstream_id,
                     const gfx::Rect& visible_rect,
                     const VideoColorSpace& color_space) override;
+  bool SubmitFrame(void* ctrls,
+                   const uint8_t* data,
+                   size_t size,
+                   int32_t bitstream_id) override;
 
  private:
   V4L2StatelessVideoDecoder(
