@@ -161,7 +161,7 @@ void PrimaryAccountManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void PrimaryAccountManager::Initialize(PrefService* local_state) {
   // Should never call Initialize() twice.
-  DCHECK(!IsInitialized());
+  CHECK(!IsInitialized());
   initialized_ = true;
 
   // If the user is clearing the token service from the command line, then
