@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"

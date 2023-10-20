@@ -16,6 +16,7 @@
 #include "chrome/common/extensions/api/quick_unlock_private.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
