@@ -61262,6 +61262,8 @@ from previous Chrome versions.
   <int value="-2025360412" label="SyncAndroidPromosWithSingleButton:disabled"/>
   <int value="-2025330968" label="Journeys:disabled"/>
   <int value="-2024330288" label="RawDraw:enabled"/>
+  <int value="-2024065510"
+      label="OptimizationPersonalizedHintsFetching:enabled"/>
   <int value="-2023673947" label="TabRestoreSubMenus:disabled"/>
   <int value="-2023641192" label="DestroySystemProfiles:enabled"/>
   <int value="-2022956008" label="ExternalPciDevicesAllowed:disabled"/>
@@ -64542,6 +64544,8 @@ from previous Chrome versions.
   <int value="-430360431" label="disable-password-generation"/>
   <int value="-429580313" label="OmniboxActionsInSuggest:disabled"/>
   <int value="-429425707" label="StartSurfaceOnTablet:enabled"/>
+  <int value="-429419276"
+      label="OptimizationPersonalizedHintsFetching:disabled"/>
   <int value="-428599163" label="NTPDownloadSuggestions:enabled"/>
   <int value="-428556995" label="DesktopPWAsTabStripSettings:enabled"/>
   <int value="-428111342" label="FilesInlineSyncStatus:enabled"/>

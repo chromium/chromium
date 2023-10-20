@@ -2532,6 +2532,12 @@ const char kOptimizationGuideModelExecutionName[] =
 const char kOptimizationGuideModelExecutionDescription[] =
     "Enables the optimization guide to execute models.";
 
+const char kOptimizationGuidePersonalizedFetchingName[] =
+    "Enable optimization guide personalized fetching";
+const char kOptimizationGuidePersonalizedFetchingDescription[] =
+    "Enables the optimization guide to fetch personalized results, by "
+    "attaching Gaia.";
+
 const char kOptimizationGuidePushNotificationName[] =
     "Enable optimization guide push notifications";
 const char kOptimizationGuidePushNotificationDescription[] =
