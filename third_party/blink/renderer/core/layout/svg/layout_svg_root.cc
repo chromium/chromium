@@ -67,7 +67,8 @@ void LayoutSVGRoot::Trace(Visitor* visitor) const {
 }
 
 void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+    IntrinsicSizingInfo& intrinsic_sizing_info,
+    bool use_correct_viewbox) const {
   NOT_DESTROYED();
   // https://www.w3.org/TR/SVG/coords.html#IntrinsicSizing
 
@@ -84,7 +85,10 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
   if (!intrinsic_sizing_info.size.IsEmpty()) {
     intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
   } else {
-    const gfx::SizeF view_box_size = svg->CurrentViewBox().Rect().size();
+    const SVGRect& view_box = use_correct_viewbox
+                                  ? svg->CurrentViewBox()
+                                  : *svg->viewBox()->CurrentValue();
+    const gfx::SizeF view_box_size = view_box.Rect().size();
     if (!view_box_size.IsEmpty()) {
       // The viewBox can only yield an intrinsic ratio, not an intrinsic size.
       intrinsic_sizing_info.aspect_ratio = view_box_size;

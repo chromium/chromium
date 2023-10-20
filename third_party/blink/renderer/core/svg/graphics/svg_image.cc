@@ -263,7 +263,8 @@ bool SVGImage::GetIntrinsicSizingInfo(
   const LayoutSVGRoot* layout_root = LayoutRoot();
   if (!layout_root)
     return false;
-  layout_root->UnscaledIntrinsicSizingInfo(intrinsic_sizing_info);
+  layout_root->UnscaledIntrinsicSizingInfo(intrinsic_sizing_info,
+                                           /*use_correct_viewbox=*/false);
 
   if (!intrinsic_sizing_info.has_width || !intrinsic_sizing_info.has_height) {
     // We're not using an intrinsic aspect ratio to resolve a missing
