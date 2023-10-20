@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -60,6 +61,8 @@ class InactiveTabsUtilsTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_active_;
   std::unique_ptr<TestBrowser> browser_inactive_;
+  // Used to verify histogram logging.
+  base::HistogramTester histogram_tester_;
 
   std::unique_ptr<web::FakeWebState> CreateTab(
       web::WebStateID unique_identifier,
@@ -124,6 +127,10 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabStaysActive) {
 
   EXPECT_EQ(active_web_state_list->count(), 1);
   EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 0, 1);
 }
 
 // Ensure that inactive tabs are moved from the active tab list to the inactive
@@ -158,6 +165,10 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabAreMovedFromActiveList) {
 
   EXPECT_EQ(active_web_state_list->count(), 0);
   EXPECT_EQ(inactive_web_state_list->count(), 1);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 0, 1);
 }
 
 // Ensure there is no active tab in the inactive tab list.
@@ -190,6 +201,10 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabAreMovedFromInactiveList) {
 
   EXPECT_EQ(active_web_state_list->count(), 1);
   EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive", 0, 1);
 }
 
 // Ensure that inactive tab stay in inactive list.
@@ -223,6 +238,10 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
 
   EXPECT_EQ(active_web_state_list->count(), 0);
   EXPECT_EQ(inactive_web_state_list->count(), 1);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive", 0, 1);
 }
 
 // Restore all inactive tab.
@@ -245,6 +264,10 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
 
   EXPECT_EQ(active_web_state_list->count(), 1);
   EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnRestoreAllInactive", 0, 1);
 }
 
 // Ensure that all moving functions are working with complicated lists (multiple
@@ -323,6 +346,10 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
   EXPECT_EQ(active_web_state_list->count(), 4);
   EXPECT_EQ(inactive_web_state_list->count(), 8);
 
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 0, 1);
+
   // "old" inactive first (0, 10, 30, 2, 16, 0) and finally "new" inactive from
   // active list (22, 9).
   std::vector<int> expected_inactive_last_activity_order1 = {0,  10, 30, 2,
@@ -337,6 +364,10 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
 
   EXPECT_EQ(active_web_state_list->count(), 7);
   EXPECT_EQ(inactive_web_state_list->count(), 5);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive", 0, 1);
 
   // All active (< 8 days of inactivity) are removed.
   std::vector<int> expected_inactive_last_activity_order2 = {10, 30, 16, 22, 9};
@@ -398,6 +429,10 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
   // (0).
   std::vector<int> expected_last_activity_order = {18, 0, 10, 30, 2, 16, 0, 0};
   CheckOrder(active_web_state_list, expected_last_activity_order);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnRestoreAllInactive", 0, 1);
 }
 
 TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
@@ -455,6 +490,10 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
 
   EXPECT_EQ(active_web_state_list->count(), 1);
   EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 0, 1);
 }
 
 TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
@@ -498,12 +537,20 @@ TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
   EXPECT_EQ(active_web_state_list->count(), 1);
   EXPECT_EQ(inactive_web_state_list->count(), 2);
 
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 0, 1);
+
   std::vector<int> expected_inactive_order = {10, 30};
   CheckOrder(inactive_web_state_list, expected_inactive_order);
 
   // Set the preference to 14.
   local_state_.Get()->SetInteger(prefs::kInactiveTabsTimeThreshold, 14);
   MoveTabsFromInactiveToActive(browser_inactive_.get(), browser_active_.get());
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive", 0, 1);
 
   EXPECT_EQ(active_web_state_list->count(), 2);
   EXPECT_EQ(inactive_web_state_list->count(), 1);
@@ -535,6 +582,10 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
 
   EXPECT_EQ(browser_active_->GetWebStateList()->count(), 1);
   EXPECT_EQ(browser_inactive_->GetWebStateList()->count(), 0);
+
+  // Expect a log of 1 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnRestoreAllInactive", 1, 1);
 }
 
 // Checks that Inactive Tabs migration method MoveTabsFromInactiveToActive
@@ -572,6 +623,10 @@ TEST_F(InactiveTabsUtilsTest,
 
   EXPECT_EQ(browser_active_->GetWebStateList()->count(), 1);
   EXPECT_EQ(browser_inactive_->GetWebStateList()->count(), 0);
+
+  // Expect a log of 1 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive", 1, 1);
 }
 
 // Checks that Inactive Tabs migration method MoveTabsFromActiveToInactive
@@ -609,4 +664,8 @@ TEST_F(InactiveTabsUtilsTest,
 
   EXPECT_EQ(browser_active_->GetWebStateList()->count(), 0);
   EXPECT_EQ(browser_inactive_->GetWebStateList()->count(), 1);
+
+  // Expect a log of 1 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 1, 1);
 }

@@ -1064,32 +1064,33 @@ chromium-metrics-reviews@google.com.
   <summary>[Android and iOS] The number of tabs opened at cold launch.</summary>
 </histogram>
 
-<histogram name="Tabs.DroppedDuplicatesCountOnSessionRestore" units="tabs"
+<histogram name="Tabs.DroppedDuplicatesCountOn{Occasion}" units="tabs"
     expires_after="2024-10-16">
   <owner>lpromero@google.com</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
-    [iOS] The number of invalid duplicated tabs dropped during restoration.
+    [iOS] The number of invalid duplicated tabs dropped {Occasion}.
 
-    Note: This tracks invalid web states that share the same identifier. These
-    web states are dropped on all session restores. This metric is not to be
-    confused with Tabs.DuplicatesCountAtStartup which counts valid duplicates
-    (i.e. different web states, with different identifiers, but the same URL).
+    Note: This tracks invalid web states that share the same identifier. This
+    metric is not to be confused with Tabs.DuplicatesCountAtStartup which counts
+    valid duplicates (i.e. different web states, with different identifiers, but
+    the same URL).
   </summary>
-</histogram>
-
-<histogram name="Tabs.DroppedDuplicatesCountOnSessionSave" units="tabs"
-    expires_after="2024-10-16">
-  <owner>lpromero@google.com</owner>
-  <owner>chromeleon@google.com</owner>
-  <summary>
-    [iOS] The number of invalid duplicated tabs dropped when saving a session.
-
-    Note: This tracks invalid web states that share the same identifier. These
-    web states are dropped on all session saves. This metric is not to be
-    confused with Tabs.DuplicatesCountAtStartup which counts valid duplicates
-    (i.e. different web states, with different identifiers, but the same URL).
-  </summary>
+  <token key="Occasion">
+    <variant name="MigrateActiveToInactive"
+        summary="during Inactive Tabs migration (moving now-considered
+                 inactive tabs to the inactive browser)"/>
+    <variant name="MigrateInactiveToActive"
+        summary="during Inactive Tabs migration (moving now-considered active
+                 tabs to the active browser)"/>
+    <variant name="RestoreAllInactive"
+        summary="during Inactive Tabs migration (moving back all inactive
+                 tabs to the active browser)."/>
+    <variant name="SessionRestore"
+        summary="each time a session is restored from storage"/>
+    <variant name="SessionSave"
+        summary="each time a session is saved to storage"/>
+  </token>
 </histogram>
 
 <histogram name="Tabs.DuplicatesCountAtStartup" units="tabs"
