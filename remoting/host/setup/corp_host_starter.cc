@@ -115,7 +115,10 @@ void CorpHostStarter::StartHost(Params params, CompletionCallback on_done) {
   DCHECK(!on_done_);
 
   start_host_params_ = std::move(params);
-  start_host_params_.name = GetHostname();
+  if (start_host_params_.name.empty()) {
+    // Use the host FQDN if a name was not provided via the command line.
+    start_host_params_.name = GetHostname();
+  }
   on_done_ = std::move(on_done);
   key_pair_ = RsaKeyPair::Generate();
 

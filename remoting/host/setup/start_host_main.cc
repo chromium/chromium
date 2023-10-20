@@ -262,19 +262,26 @@ int StartHostMain(int argc, char** argv) {
   HostStarter::Params params;
   bool use_corp_machine_flow = false;
   if (command_line->HasSwitch("corp-user")) {
-    if (command_line->GetSwitches().size() > 1) {
-      fprintf(
-          stdout,
-          "Too many arguments provided.\n\nOnly one argument is needed when "
-          "setting up a corp machine: `--corp-user=<user_email_address>`\n");
-      return 1;
-    }
-
     use_corp_machine_flow = true;
     params.owner_email =
         base::ToLowerASCII(command_line->GetSwitchValueASCII("corp-user"));
     // Crash reporting is always enabled for this flow.
     params.enable_crash_reporting = true;
+    if (command_line->HasSwitch("display-name")) {
+      params.name = command_line->GetSwitchValueASCII("display-name");
+    }
+
+    size_t corp_arg_count = params.name.empty() ? 1 : 2;
+    if (command_line->GetSwitches().size() > corp_arg_count) {
+      fprintf(
+          stdout,
+          "Too many arguments provided.\nSetting up a machine for a corp user "
+          "requires the email address of that user and an optional display "
+          "name.\nExample usage: %s --corp-user=<user_email_address> "
+          "[--display-name=corp-machine-name]\n",
+          argv[0]);
+      return 1;
+    }
   } else if (!InitializeHostStarterParams(params, command_line)) {
     PrintHelpMessage(argv[0]);
     return 1;
