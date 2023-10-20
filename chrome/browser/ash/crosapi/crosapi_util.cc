@@ -664,8 +664,8 @@ void InjectBrowserInitParams(
   params->enable_clipboard_history_refresh =
       chromeos::features::IsClipboardHistoryRefreshEnabled();
 
-  params->is_variable_refresh_rate_enabled =
-      ::features::IsVariableRefreshRateEnabled();
+  params->is_variable_refresh_rate_always_on =
+      ::features::IsVariableRefreshRateAlwaysOn();
 
   params->is_pdf_ocr_enabled = ::features::IsPdfOcrEnabled();
 

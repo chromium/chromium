@@ -462,8 +462,8 @@ void AddFeatureFlagsToCommandLine(
     const chromeos::BrowserParamsProxy& init_params) {
   base::ScopedAddFeatureFlags flags(base::CommandLine::ForCurrentProcess());
 
-  if (init_params.IsVariableRefreshRateEnabled()) {
-    flags.EnableIfNotSet(features::kEnableVariableRefreshRate);
+  if (init_params.IsVariableRefreshRateAlwaysOn()) {
+    flags.EnableIfNotSet(features::kEnableVariableRefreshRateAlwaysOn);
   }
 
   if (init_params.IsPdfOcrEnabled()) {

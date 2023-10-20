@@ -140,7 +140,7 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool EnableClipboardHistoryRefresh() const;
 
-  bool IsVariableRefreshRateEnabled() const;
+  bool IsVariableRefreshRateAlwaysOn() const;
 
   bool IsPdfOcrEnabled() const;
 

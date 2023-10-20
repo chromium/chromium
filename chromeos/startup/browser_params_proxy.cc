@@ -319,8 +319,8 @@ bool BrowserParamsProxy::EnableClipboardHistoryRefresh() const {
   return BrowserInitParams::Get()->enable_clipboard_history_refresh;
 }
 
-bool BrowserParamsProxy::IsVariableRefreshRateEnabled() const {
-  return BrowserInitParams::Get()->is_variable_refresh_rate_enabled;
+bool BrowserParamsProxy::IsVariableRefreshRateAlwaysOn() const {
+  return BrowserInitParams::Get()->is_variable_refresh_rate_always_on;
 }
 
 bool BrowserParamsProxy::IsPdfOcrEnabled() const {

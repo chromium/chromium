@@ -1436,8 +1436,12 @@ struct BrowserInitParams {
 
   // When this flag is set to true, frames can be scheduled with variable
   // refresh rate timing.
-  [MinVersion=62]
-  bool is_variable_refresh_rate_enabled@62;
+  //
+  // NOTE: If the lacros version is skewed later than the ash on M120, this flag
+  // may have a false-positive state. The resulting behavior would regress as
+  // though the lacros version matches the current ash version.
+  [MinVersion=62, RenamedFrom="is_variable_refresh_rate_enabled"]
+  bool is_variable_refresh_rate_always_on@62;
 
   // Tells lacros whether the currently logged in user is ephemeral.
   [MinVersion=63]
