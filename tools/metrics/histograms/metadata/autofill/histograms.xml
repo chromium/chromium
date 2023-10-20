@@ -3278,6 +3278,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.OfferNotificationBubbleOffer.FreeListingCouponOffer.FromHistoryCluster"
+    enum="BooleanYesNo" expires_after="2024-06-01">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the offer notification bubble is shown from the History
+    Cluster or normal navigations. It emits true for History Cluster and false
+    for normal navigation. This is recorded when the bubble is shown.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OfferNotificationBubbleOffer.{BubbleType}"
     enum="BooleanPreviouslyShown" expires_after="2024-04-01">
   <owner>siyua@chromium.org</owner>
@@ -3289,6 +3301,20 @@ chromium-metrics-reviews@google.com.
     recorded when the bubble is shown.
   </summary>
   <token key="BubbleType" variants="Autofill.OfferNotification.Type"/>
+</histogram>
+
+<histogram
+    name="Autofill.OfferNotificationBubblePromoCodeButtonClicked.FreeListingCouponOffer.FromHistoryCluster"
+    enum="BooleanYesNo" expires_after="2024-06-01">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the copy promo code button is clicked on the offer
+    notification bubble from History Cluster or normal navigations. It emits
+    true for History Cluster and false for normal navigation. This is recorded
+    when the copy promo code button on the offer notification bubble is clicked
+    by the user.
+  </summary>
 </histogram>
 
 <histogram
@@ -3466,6 +3492,19 @@ chromium-metrics-reviews@google.com.
     value.
   </summary>
   <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
+</histogram>
+
+<histogram
+    name="Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer.FromHistoryCluster"
+    enum="BooleanYesNo" expires_after="2024-06-01">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the offer notification icon is shown due to the navigation
+    from History Cluster or normal navigation. It emits true for History Cluster
+    and false for normal navigation. This is recorded when the offer
+    notification omnibox icon is shown for a FreeListing coupon.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.PageLoadsWithOfferIconShowing.{OfferType}"
