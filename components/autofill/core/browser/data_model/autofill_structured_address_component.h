@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expression_components.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -514,6 +515,11 @@ class AddressComponent {
   std::u16string ReplacePlaceholderTypesWithValues(
       std::u16string_view format) const;
 
+  // This method uses i18n parsing instructions used by
+  // `ParseValueByI18nRegularExpression` to parse |value_| into the values of
+  // the subcomponents. Returns true on success and is allowed to fail.
+  bool ParseValueAndAssignSubcomponentsByI18nParsingRules();
+
   // This method uses regular expressions acquired by
   // |GetParseRegularExpressionsByRelevance| to parse |value_| into the values
   // of the subcomponents. Returns true on success and is allowed to fail.
@@ -534,6 +540,18 @@ class AddressComponent {
   bool ParseValueAndAssignSubcomponentsRespectingSetValues(
       const std::u16string& value,
       const re2::RE2* parse_expression);
+
+  // Assigns parsing results to the corresponding subcomponents. Overrides
+  // previously set values if necessary.
+  void AssignParsedValuesToSubcomponents(
+      i18n_model_definition::ValueParsingResults values);
+
+  // Assigns parsing results to the corresponding subcomponents. The value
+  // assigned to each subcomponent must be compatible with the information
+  // growth invariant (i.e child information is always contained in their
+  // ancestors). Previously set values are not overridden.
+  bool AssignParsedValuesToSubcomponentsRespectingSetValues(
+      i18n_model_definition::ValueParsingResults values);
 
   // This method verifies that the `value` is token compatible with this node
   // and all the node's descendants.

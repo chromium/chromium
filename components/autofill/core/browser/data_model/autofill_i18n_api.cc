@@ -250,19 +250,18 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
     std::string_view value,
     ServerFieldType field_type,
     AddressCountryCode country_code) {
-  auto* it = kAutofillParsingRulesMap.find({country_code.value(), field_type});
-  // If `country_code` is specified, attempt to parse the `value` using a custom
-  // parsing structure (if exist).
-  if (!country_code->empty() && it != kAutofillParsingRulesMap.end()) {
-    return it->second->Parse(value);
-  }
-
+  // If `country_code` is specified, attempt to parse the `value` using a
+  // custom parsing structure (if exist).
   // Otherwise try using a legacy parsing expression (if exist).
-  auto* legacy_it = kAutofillParsingRulesMap.find(
-      {kLegacyHierarchyCountryCode.value(), field_type});
-  return legacy_it != kAutofillParsingRulesMap.end()
-             ? legacy_it->second->Parse(value)
-             : absl::nullopt;
+  AddressCountryCode country_code_for_parsing =
+      IsCustomHierarchyAvailableForCountry(country_code)
+          ? country_code
+          : kLegacyHierarchyCountryCode;
+
+  auto* it = kAutofillParsingRulesMap.find(
+      {country_code_for_parsing.value(), field_type});
+  return it != kAutofillParsingRulesMap.end() ? it->second->Parse(value)
+                                              : absl::nullopt;
 }
 
 bool IsTypeEnabledForCountry(ServerFieldType field_type,
