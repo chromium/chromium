@@ -2842,17 +2842,16 @@ namespace {
 
 struct BidiMapperState {
   // input
-  bool emit_launched = true;
   bool fail_on_expose_devtools = false;
   bool fail_on_add_bidi_response_binding = false;
-  bool fail_on_set_self_target_id = false;
-  bool fail_on_mapper = false;
+  bool fail_on_mapper_init = false;
+  bool fail_on_mapper_run_instnace = false;
   bool fail_on_subscribe_to_cdp = false;
   // output
   bool devtools_exposed = false;
   bool send_bidi_response_binding_added = false;
-  bool mapper_is_passed = false;
-  bool self_target_id_is_set = false;
+  bool mapper_is_initiated = false;
+  bool mapper_instance_is_running = false;
   bool subscribed_to_cdp = false;
 };
 class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
@@ -2866,7 +2865,6 @@ class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
                         std::string method,
                         base::Value::Dict params,
                         std::string session_id) override {
-    bool mapper_was_running = mapper_state_->mapper_is_passed;
     if (method == "Target.exposeDevToolsProtocol") {
       EXPECT_EQ("root_session", session_id);
       EXPECT_THAT(params.FindString("bindingName"), Pointee(Eq("cdp")));
@@ -2887,31 +2885,18 @@ class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
       if (expression == nullptr) {
         return false;
       }
-      if (*expression == "window.setSelfTargetId(\"mapper_client\")") {
-        mapper_state_->self_target_id_is_set = true;
-        if (mapper_state_->fail_on_set_self_target_id) {
+      if (*expression == kTestMapperScript) {
+        mapper_state_->mapper_is_initiated = true;
+        if (mapper_state_->fail_on_mapper_init) {
           return false;
         }
-      } else if (*expression == kTestMapperScript) {
-        mapper_state_->mapper_is_passed = true;
-        if (mapper_state_->fail_on_mapper) {
+      } else if (*expression == "window.runMapperInstance(\"mapper_client\")") {
+        mapper_state_->mapper_instance_is_running = true;
+        if (mapper_state_->fail_on_mapper_run_instnace) {
           return false;
         }
       }
     }
-
-    if (!mapper_was_running && mapper_state_->mapper_is_passed &&
-        mapper_state_->emit_launched) {
-      base::Value::Dict bidi_evt;
-      bidi_evt.Set("launched", true);
-      base::Value::Dict cdp_evt;
-      EXPECT_TRUE(StatusOk(
-          WrapBidiEventInCdpEvent(bidi_evt, mapper_session_, &cdp_evt)));
-      std::string message;
-      EXPECT_TRUE(StatusOk(SerializeAsJson(cdp_evt, &message)));
-      queued_response_.push(std::move(message));
-    }
-
     base::Value::Dict response;
     EXPECT_TRUE(StatusOk(CreateCdpResponse(cmd_id, base::Value::Dict(),
                                            std::move(session_id), &response)));
@@ -2955,28 +2940,10 @@ TEST_F(DevToolsClientImplTest, StartBidiServer) {
 
   EXPECT_TRUE(StatusOk(mapper_client.StartBidiServer(kTestMapperScript)));
   EXPECT_TRUE(mapper_state.devtools_exposed);
-  EXPECT_TRUE(mapper_state.mapper_is_passed);
-  EXPECT_TRUE(mapper_state.self_target_id_is_set);
+  EXPECT_TRUE(mapper_state.mapper_is_initiated);
+  EXPECT_TRUE(mapper_state.mapper_instance_is_running);
   EXPECT_TRUE(mapper_state.send_bidi_response_binding_added);
   EXPECT_TRUE(mapper_state.subscribed_to_cdp);
-}
-
-TEST_F(DevToolsClientImplTest, StartBidiServerWaitsForLaunched) {
-  BidiMapperState mapper_state;
-  mapper_state.emit_launched = false;
-  SocketHolder<BidiServerMockSyncWebSocket> socket_holder{&mapper_state};
-  DevToolsClientImpl root_client("root", "root_session");
-  ASSERT_TRUE(socket_holder.ConnectSocket());
-  ASSERT_TRUE(StatusOk(root_client.SetSocket(socket_holder.Wrapper())));
-  DevToolsClientImpl mapper_client("mapper_client", "mapper_session");
-  mapper_client.EnableEventTunnelingForTesting();
-  mapper_client.SetMainPage(true);
-  ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
-
-  EXPECT_EQ(kTimeout,
-            mapper_client
-                .StartBidiServer(kTestMapperScript, Timeout(base::TimeDelta()))
-                .code());
 }
 
 TEST_F(DevToolsClientImplTest, StartBidiServerNotConnected) {
@@ -3036,9 +3003,9 @@ TEST_F(DevToolsClientImplTest, StartBidiServerFailOnAddBidiResponseBinding) {
   EXPECT_TRUE(mapper_client.StartBidiServer(kTestMapperScript).IsError());
 }
 
-TEST_F(DevToolsClientImplTest, StartBidiServerFailOnSetSelfTarget) {
+TEST_F(DevToolsClientImplTest, StartBidiServerFailOnRunMapperInstnace) {
   BidiMapperState mapper_state;
-  mapper_state.fail_on_set_self_target_id = true;
+  mapper_state.fail_on_mapper_run_instnace = true;
   SocketHolder<BidiServerMockSyncWebSocket> socket_holder{&mapper_state};
   DevToolsClientImpl root_client("root", "root_session");
   ASSERT_TRUE(socket_holder.ConnectSocket());
@@ -3066,9 +3033,9 @@ TEST_F(DevToolsClientImplTest, StartBidiServerFailOnExposeDevTools) {
   EXPECT_TRUE(mapper_client.StartBidiServer(kTestMapperScript).IsError());
 }
 
-TEST_F(DevToolsClientImplTest, StartBidiServerFailOnMapper) {
+TEST_F(DevToolsClientImplTest, StartBidiServerFailOnMapperInit) {
   BidiMapperState mapper_state;
-  mapper_state.fail_on_mapper = true;
+  mapper_state.fail_on_mapper_init = true;
   SocketHolder<BidiServerMockSyncWebSocket> socket_holder{&mapper_state};
   DevToolsClientImpl root_client("root", "root_session");
   ASSERT_TRUE(socket_holder.ConnectSocket());

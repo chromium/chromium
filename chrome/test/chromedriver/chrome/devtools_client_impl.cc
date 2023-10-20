@@ -312,34 +312,29 @@ Status DevToolsClientImpl::StartBidiServer(std::string bidi_mapper_script,
     }
   }
   {
-    std::unique_ptr<base::Value> result;
+    base::Value::Dict result;
     base::Value::Dict params;
     std::string window_id;
     status = SerializeAsJson(target_id, &window_id);
     if (status.IsError()) {
       return status;
     }
-    params.Set("expression", "window.setSelfTargetId(" + window_id + ")");
-    status =
-        SendCommandAndIgnoreResponse("Runtime.evaluate", std::move(params));
+    params.Set("expression", "window.runMapperInstance(" + window_id + ")");
+    status = SendCommandAndGetResultWithTimeout(
+        "Runtime.evaluate", std::move(params), &timeout, &result);
+    if (result.contains("exceptionDetails")) {
+      std::string description = "unknown";
+      if (const std::string* maybe_description =
+              result.FindStringByDottedPath("result.description")) {
+        description = *maybe_description;
+      }
+      return Status(kUnknownError,
+                    "Failed to initialize BiDi Mapper: " + description);
+    }
     if (status.IsError()) {
       return status;
     }
   }
-  {
-    base::RepeatingCallback<Status(bool*)> bidi_mapper_is_launched =
-        base::BindRepeating(
-            [](bool* is_launched, bool* condition_is_met) {
-              *condition_is_met = *is_launched;
-              return Status{kOk};
-            },
-            base::Unretained(&bidi_server_is_launched_));
-    status = HandleEventsUntil(bidi_mapper_is_launched, timeout);
-    if (status.IsError()) {
-      return status;
-    }
-  }
-
   // We know that the current DevToolsClient is a CDP tunnel now
   tunnel_session_id_ = session_id_;
 
@@ -359,7 +354,6 @@ Status DevToolsClientImpl::StartBidiServer(std::string bidi_mapper_script,
 
 Status DevToolsClientImpl::AppointAsBidiServerForTesting() {
   is_main_page_ = true;
-  bidi_server_is_launched_ = true;
   tunnel_session_id_ = session_id_;
   return Status{kOk};
 }
@@ -1019,18 +1013,6 @@ Status DevToolsClientImpl::ProcessEvent(const internal::InspectorEvent& event) {
     status = IsBidiMessage(event.method, *event.params, &is_bidi_message);
     if (status.IsError()) {
       return status;
-    }
-  }
-  if (is_bidi_message && !bidi_server_is_launched_) {
-    // BiDi events arrive only to the client connected to the BiDiMapper.
-    // The check means that that the current client bound to BiDiMapper is
-    // awaiting for the notification that the mapper was successfully launched.
-    // Such event is intended for the infrastructural purposes.
-    // We consume it and remember the fact that BiDiMapper is up and running.
-    if (event.params->FindBoolByDottedPath("payload.launched")
-            .value_or(false)) {
-      bidi_server_is_launched_ = true;
-      return Status{kOk};
     }
   }
 
