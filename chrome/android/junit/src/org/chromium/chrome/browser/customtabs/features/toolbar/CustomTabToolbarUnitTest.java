@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Minimi
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.SimpleHandleStrategy;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIPHController;
 import org.chromium.chrome.browser.tab.Tab;
@@ -82,9 +83,11 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -118,6 +121,7 @@ public class CustomTabToolbarUnitTest {
     @Mock Tab mTab;
     @Mock Callback<Integer> mContainerVisibilityChangeObserver;
     @Mock View mParentView;
+    @Mock WindowAndroid mWindowAndroid;
     private @Mock PageInfoIPHController mPageInfoIPHController;
 
     private Activity mActivity;
@@ -380,27 +384,10 @@ public class CustomTabToolbarUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_MINIMIZED})
     public void testMinimizeButtonEnabled() {
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(mActivity));
         MinimizedFeatureUtils.setMinimizeCustomTabAvailableForTesting(true);
-        mToolbar =
-                (CustomTabToolbar)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.custom_tabs_toolbar, null, false);
-        mToolbar.initialize(
-                mToolbarDataProvider,
-                mTabController,
-                mMenuButtonCoordinator,
-                mHistoryDelegate,
-                mPartnerHomepageEnabledSupplier,
-                mOfflineDownloader);
-        mLocationBar =
-                (CustomTabLocationBar)
-                        mToolbar.createLocationBar(
-                                mLocationBarModel,
-                                mActionModeCallback,
-                                () -> null,
-                                () -> null,
-                                mControlsVisibleDelegate,
-                                null);
+        setup();
         LinearLayout closeMinimizeLayout = mToolbar.findViewById(R.id.close_minimize_layout);
         var minimizeButton = (ImageButton) mToolbar.findViewById(R.id.custom_tabs_minimize_button);
         View titleUrlContainer = Mockito.mock(View.class);
@@ -455,6 +442,44 @@ public class CustomTabToolbarUnitTest {
                 "Close button should still be present",
                 closeMinimizeLayout.getChildAt(1),
                 closeButton);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_MINIMIZED})
+    public void testMinimizeButtonEnabled_MultiWindowMode() {
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(mActivity));
+        MinimizedFeatureUtils.setMinimizeCustomTabAvailableForTesting(true);
+        setup();
+        // Not in multi-window, show minimize button.
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+
+        LinearLayout closeMinimizeLayout = mToolbar.findViewById(R.id.close_minimize_layout);
+        mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        assertEquals(
+                "Close button should be visible",
+                View.VISIBLE,
+                closeMinimizeLayout.getChildAt(0).getVisibility());
+        assertEquals(
+                "Minimize button should be visible",
+                View.VISIBLE,
+                closeMinimizeLayout.getChildAt(1).getVisibility());
+
+        MinimizedFeatureUtils.setMinimizeCustomTabAvailableForTesting(true);
+        setup();
+        // In multi-window, hide minimize button visibility.
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        closeMinimizeLayout = mToolbar.findViewById(R.id.close_minimize_layout);
+        mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        assertNotNull(closeMinimizeLayout.getChildAt(1));
+        assertEquals(
+                "Minimize button should NOT be visible",
+                View.GONE,
+                closeMinimizeLayout.getChildAt(1).getVisibility());
+        assertEquals(
+                "Close button should be visible",
+                View.VISIBLE,
+                closeMinimizeLayout.getChildAt(0).getVisibility());
     }
 
     @Test

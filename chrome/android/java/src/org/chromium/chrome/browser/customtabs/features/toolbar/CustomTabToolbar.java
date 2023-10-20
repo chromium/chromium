@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingD
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -442,7 +443,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private void setMinimizeButtonVisibility() {
         if (mMinimizeButton == null) return;
 
-        if (!mMinimizeButtonEnabled) {
+        if (!mMinimizeButtonEnabled || isInMultiWindowMode()) {
             if (mMinimizeButton.getVisibility() != View.GONE) {
                 mMinimizeButton.setVisibility(View.GONE);
                 maybeAdjustButtonSpacingForCloseButtonPosition();
@@ -463,6 +464,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mMinimizeButton.setVisibility(View.VISIBLE);
             mLocationBar.removeButtonsVisibilityUpdater();
         }
+    }
+
+    private boolean isInMultiWindowMode() {
+        Tab currentTab = getCurrentTab();
+        if (currentTab == null) return false;
+
+        Activity activity = currentTab.getWindowAndroid().getActivity().get();
+        return MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
     }
 
     private void updateCustomActionButtonVisuals(
