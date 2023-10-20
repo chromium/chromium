@@ -49,7 +49,7 @@ class CORE_EXPORT NGInlinePaintContext {
     STACK_ALLOCATED();
 
    public:
-    ScopedInlineItem(const NGFragmentItem& inline_item,
+    ScopedInlineItem(const FragmentItem& inline_item,
                      NGInlinePaintContext* inline_context);
     ~ScopedInlineItem();
 
@@ -101,7 +101,7 @@ class CORE_EXPORT NGInlinePaintContext {
 
  private:
   wtf_size_t SyncDecoratingBox(
-      const NGFragmentItem& item,
+      const FragmentItem& item,
       DecoratingBoxList* saved_decorating_boxes = nullptr);
 
   DecoratingBoxList decorating_boxes_;

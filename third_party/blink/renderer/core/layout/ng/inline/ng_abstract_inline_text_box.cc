@@ -67,10 +67,10 @@ class NGAbstractInlineTextBoxCache final {
     map_->erase(key);
   }
 
-  // An NGFragmentItem pointer can't be a key because NGFragmentItem instances
+  // An FragmentItem pointer can't be a key because FragmentItem instances
   // are stored in HeapVector instances, and Oilpan heap compaction changes
-  // addresses of NGFragmentItem instances.
-  using MapKey = std::pair<const NGFragmentItems*, wtf_size_t>;
+  // addresses of FragmentItem instances.
+  using MapKey = std::pair<const FragmentItems*, wtf_size_t>;
   MapKey ToMapKey(const InlineCursor& cursor) {
     return MapKey(&cursor.Items(), ItemIndex(cursor));
   }

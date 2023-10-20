@@ -325,9 +325,9 @@ static void WriteTextFragment(WTF::TextStream& ts,
 
 static void WriteTextFragment(WTF::TextStream& ts, const InlineCursor& cursor) {
   DCHECK(cursor.CurrentItem());
-  const NGFragmentItem& item = *cursor.CurrentItem();
-  DCHECK(item.Type() == NGFragmentItem::kText ||
-         item.Type() == NGFragmentItem::kGeneratedText);
+  const FragmentItem& item = *cursor.CurrentItem();
+  DCHECK(item.Type() == FragmentItem::kText ||
+         item.Type() == FragmentItem::kGeneratedText);
   const LayoutUnit inline_size =
       item.IsHorizontal() ? item.Size().width : item.Size().height;
   WriteTextFragment(ts, item.RectInContainerFragment(),

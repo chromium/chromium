@@ -487,7 +487,7 @@ PositionWithAffinity NGCaretPosition::ToPositionInDOMTreeWithAffinity() const {
           NGOffsetMapping::GetFor(cursor.Current().GetLayoutObject());
       if (!mapping) {
         // TODO(yosin): We're not sure why |mapping| is |nullptr|. It seems
-        // we are attempt to use destroyed/moved |NGFragmentItem|.
+        // we are attempt to use destroyed/moved |FragmentItem|.
         // See http://crbug.com/1145514
         NOTREACHED() << cursor << " " << cursor.Current().GetLayoutObject();
         return PositionWithAffinity();

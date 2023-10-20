@@ -19,8 +19,8 @@ class AffineTransform;
 class AppliedTextDecoration;
 class ComputedStyle;
 class Font;
+class FragmentItem;
 class InlineCursor;
-class NGFragmentItem;
 class NGInlinePaintContext;
 class Text;
 struct LogicalRect;
@@ -75,7 +75,7 @@ class CORE_EXPORT NGInkOverflow {
     kSmallContents,
     kContents,
     kSelfAndContents
-    // When adding values, make sure |NGFragmentItem| has enough storage.
+    // When adding values, make sure |FragmentItem| has enough storage.
   };
   constexpr static int kTypeBits = 3;
 
@@ -151,7 +151,7 @@ class CORE_EXPORT NGInkOverflow {
       const NGInlinePaintContext* inline_context);
 
   // Returns ink-overflow with emphasis mark overflow in logical direction.
-  // |size| is a size of text item, e.g. |NGFragmentItem::Size()|.
+  // |size| is a size of text item, e.g. |FragmentItem::Size()|.
   // Note: |style| should have emphasis mark and |ink_overflow| should be in
   // logical direction.
   static LogicalRect ComputeEmphasisMarkOverflow(
@@ -198,7 +198,7 @@ class CORE_EXPORT NGInkOverflow {
   static LogicalRect ComputeMarkerOverflow(
       const DocumentMarkerVector& markers,
       const DocumentMarker::MarkerType type,
-      const NGFragmentItem* fragment_item,
+      const FragmentItem* fragment_item,
       Text* node,
       const ComputedStyle& style,
       const Font& scaled_font,
@@ -208,7 +208,7 @@ class CORE_EXPORT NGInkOverflow {
 
   static LogicalRect ComputeCustomHighlightOverflow(
       const DocumentMarkerVector& markers,
-      const NGFragmentItem* fragment_item,
+      const FragmentItem* fragment_item,
       Text* text_node,
       const ComputedStyle& style,
       const Font& scaled_font,

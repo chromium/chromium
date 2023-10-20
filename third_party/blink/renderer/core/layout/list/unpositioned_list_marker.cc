@@ -114,8 +114,7 @@ void UnpositionedListMarker::AddToBox(
       marker_offset.block_offset);
 
   DCHECK(container_builder);
-  if (NGFragmentItemsBuilder* items_builder =
-          container_builder->ItemsBuilder()) {
+  if (FragmentItemsBuilder* items_builder = container_builder->ItemsBuilder()) {
     items_builder->AddListMarker(marker_physical_fragment, marker_offset);
     return;
   }

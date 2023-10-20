@@ -569,7 +569,7 @@ LogicalRect NGInkOverflow::ComputeDecorationOverflow(
     // node. Ideally we would use cursor.Current().GetNode() but that's const
     // and the style functions we need to access pseudo styles take non-const
     // nodes.
-    const NGFragmentItem* fragment_item = cursor.CurrentItem();
+    const FragmentItem* fragment_item = cursor.CurrentItem();
     if (!fragment_item->IsText() || fragment_item->IsGeneratedText()) {
       return accumulated_bound;
     }
@@ -668,7 +668,7 @@ LogicalRect NGInkOverflow::ComputeAppliedDecorationOverflow(
 LogicalRect NGInkOverflow::ComputeMarkerOverflow(
     const DocumentMarkerVector& markers,
     const DocumentMarker::MarkerType type,
-    const NGFragmentItem* fragment_item,
+    const FragmentItem* fragment_item,
     Text* text_node,
     const ComputedStyle& style,
     const Font& scaled_font,
@@ -677,7 +677,7 @@ LogicalRect NGInkOverflow::ComputeMarkerOverflow(
     const NGInlinePaintContext* inline_context) {
   LogicalRect accumulated_bound;
   auto* pseudo_style =
-      fragment_item->Type() == NGFragmentItem::kSvgText
+      fragment_item->Type() == FragmentItem::kSvgText
           ? nullptr
           : HighlightStyleUtils::HighlightPseudoStyle(
                 text_node, style, NGHighlightPainter::PseudoFor(type));
@@ -715,7 +715,7 @@ LogicalRect NGInkOverflow::ComputeMarkerOverflow(
 
 LogicalRect NGInkOverflow::ComputeCustomHighlightOverflow(
     const DocumentMarkerVector& markers,
-    const NGFragmentItem* fragment_item,
+    const FragmentItem* fragment_item,
     Text* text_node,
     const ComputedStyle& style,
     const Font& scaled_font,
@@ -736,7 +736,7 @@ LogicalRect NGInkOverflow::ComputeCustomHighlightOverflow(
 
     const CustomHighlightMarker& highlight_marker =
         To<CustomHighlightMarker>(*marker);
-    const auto* pseudo_style = fragment_item->Type() == NGFragmentItem::kSvgText
+    const auto* pseudo_style = fragment_item->Type() == FragmentItem::kSvgText
                                    ? nullptr
                                    : HighlightStyleUtils::HighlightPseudoStyle(
                                          text_node, style, kPseudoIdHighlight,

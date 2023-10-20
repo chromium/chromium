@@ -1192,14 +1192,14 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
 
   const auto& previous_fragment =
       To<NGPhysicalBoxFragment>(previous_result_->PhysicalFragment());
-  const NGFragmentItems* previous_items = previous_fragment.Items();
+  const FragmentItems* previous_items = previous_fragment.Items();
   DCHECK(previous_items);
 
   // Find reusable lines. Fail if no items are reusable.
   // TODO(kojii): |DirtyLinesFromNeedsLayout| is needed only once for a
   // |LayoutBlockFlow|, not for every fragment.
-  NGFragmentItems::DirtyLinesFromNeedsLayout(*inline_node.GetLayoutBlockFlow());
-  const NGFragmentItem* end_item =
+  FragmentItems::DirtyLinesFromNeedsLayout(*inline_node.GetLayoutBlockFlow());
+  const FragmentItem* end_item =
       previous_items->EndOfReusableItems(previous_fragment);
   DCHECK(end_item);
   if (!end_item || end_item == &previous_items->front())
@@ -1216,7 +1216,7 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
 
   const auto& children = container_builder_.Children();
   const wtf_size_t children_before = children.size();
-  NGFragmentItemsBuilder* items_builder = container_builder_.ItemsBuilder();
+  FragmentItemsBuilder* items_builder = container_builder_.ItemsBuilder();
   const NGConstraintSpace& space = ConstraintSpace();
   DCHECK_EQ(items_builder->GetWritingDirection(), space.GetWritingDirection());
   const auto result =

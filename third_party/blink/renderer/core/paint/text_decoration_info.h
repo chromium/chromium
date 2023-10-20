@@ -111,7 +111,7 @@ class CORE_EXPORT TextDecorationInfo {
   const ComputedStyle& TargetStyle() const { return target_style_; }
   float TargetAscent() const { return target_ascent_; }
   // Returns the scaling factor for the decoration.
-  // It can be different from NGFragmentItem::SvgScalingFactor() if the
+  // It can be different from FragmentItem::SvgScalingFactor() if the
   // text works as a resource.
   float ScalingFactor() const { return scaling_factor_; }
   float InkSkipClipUpper(float bounds_upper) const {

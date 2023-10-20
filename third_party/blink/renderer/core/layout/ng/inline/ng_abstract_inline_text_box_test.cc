@@ -192,7 +192,7 @@ TEST_F(NGAbstractInlineTextBoxTest, HeapCompactionNoCrash) {
   compaction_driver.ForceCompactionForNextGC();
   TestSupportingGC::PreciselyCollectGarbage();
   // We assume the above code caused heap compaction, and moved the buffer
-  // of HeapVector<NGFragmentItem>.
+  // of HeapVector<FragmentItem>.
   ASSERT_NE(vector_buffer_before_gc, items->Items().data());
 
   // LocalBounds() calls GetCursor(), which crashed in this scenario.

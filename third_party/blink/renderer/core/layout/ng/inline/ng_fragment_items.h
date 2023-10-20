@@ -12,30 +12,30 @@
 
 namespace blink {
 
+class FragmentItemsBuilder;
 class LayoutInline;
-class NGFragmentItemsBuilder;
 
 // Represents the inside of an inline formatting context.
 //
 // During the layout phase, descendants of the inline formatting context is
-// transformed to a flat list of |NGFragmentItem| and stored in this class.
-class CORE_EXPORT NGFragmentItems final {
+// transformed to a flat list of |FragmentItem| and stored in this class.
+class CORE_EXPORT FragmentItems final {
   DISALLOW_NEW();
 
  public:
-  NGFragmentItems(const NGFragmentItems& other);
-  explicit NGFragmentItems(NGFragmentItemsBuilder* builder);
+  FragmentItems(const FragmentItems& other);
+  explicit FragmentItems(FragmentItemsBuilder* builder);
 
   wtf_size_t Size() const { return items_.size(); }
 
-  using Span = base::span<const NGFragmentItem>;
+  using Span = base::span<const FragmentItem>;
   Span Items() const { return base::make_span(ItemsData(), items_.size()); }
   bool Equals(const Span& span) const {
     return ItemsData() == span.data() && Size() == span.size();
   }
   bool IsSubSpan(const Span& span) const;
 
-  const NGFragmentItem& front() const {
+  const FragmentItem& front() const {
     CHECK_GE(items_.size(), 1u);
     return items_[0];
   }
@@ -53,7 +53,7 @@ class CORE_EXPORT NGFragmentItems final {
                : text_content_;
   }
 
-  // When block-fragmented, returns the number of |NGFragmentItem| in earlier
+  // When block-fragmented, returns the number of |FragmentItem| in earlier
   // fragments for this box. 0 for the first fragment.
   wtf_size_t SizeOfEarlierFragments() const {
     return size_of_earlier_fragments_;
@@ -65,13 +65,13 @@ class CORE_EXPORT NGFragmentItems final {
     return index >= SizeOfEarlierFragments() && index < EndItemIndex();
   }
 
-  // Associate |NGFragmentItem|s with |LayoutObject|s and finalize the items
+  // Associate |FragmentItem|s with |LayoutObject|s and finalize the items
   // (set which ones are the first / last for the LayoutObject).
   static void FinalizeAfterLayout(
       const HeapVector<Member<const NGLayoutResult>, 1>& results,
       LayoutBlockFlow& container);
 
-  // Disassociate |NGFragmentItem|s with |LayoutObject|s. And more.
+  // Disassociate |FragmentItem|s with |LayoutObject|s. And more.
   static void ClearAssociatedFragments(LayoutObject* container);
 
   // Notify when |LayoutObject| will be destroyed/moved.
@@ -80,7 +80,7 @@ class CORE_EXPORT NGFragmentItems final {
 
   // Returns the end (next of the last) item that are reusable. If no items are
   // reusable, it is the first item.
-  const NGFragmentItem* EndOfReusableItems(
+  const FragmentItem* EndOfReusableItems(
       const NGPhysicalBoxFragment& container) const;
 
   // Return true if any items inside the culled inline occur here. In that case,
@@ -116,7 +116,7 @@ class CORE_EXPORT NGFragmentItems final {
   void Trace(Visitor*) const;
 
  private:
-  const NGFragmentItem* ItemsData() const { return items_.data(); }
+  const FragmentItem* ItemsData() const { return items_.data(); }
 
   static bool CanReuseAll(InlineCursor* cursor);
   static bool TryDirtyFirstLineFor(const LayoutObject& layout_object,
@@ -128,11 +128,11 @@ class CORE_EXPORT NGFragmentItems final {
   String text_content_;
   String first_line_text_content_;
 
-  // Total size of |NGFragmentItem| in earlier fragments when block fragmented.
-  // 0 for the first |NGFragmentItems|.
+  // Total size of |FragmentItem| in earlier fragments when block fragmented.
+  // 0 for the first |FragmentItems|.
   mutable wtf_size_t size_of_earlier_fragments_ = 0u;
 
-  HeapVector<NGFragmentItem> items_;
+  HeapVector<FragmentItem> items_;
 };
 
 }  // namespace blink

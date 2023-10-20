@@ -837,7 +837,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
     HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates) {
   const WritingModeConverter conainer_converter(
       container_builder_->GetWritingDirection(), container_builder_->Size());
-  const NGFragmentItemsBuilder::ItemWithOffsetList* items = nullptr;
+  const FragmentItemsBuilder::ItemWithOffsetList* items = nullptr;
   absl::optional<NGLogicalAnchorQueryMap> anchor_queries;
   while (candidates->size() > 0) {
     if (!has_block_fragmentation_ ||
@@ -869,7 +869,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
             candidate.inline_container.container &&
             container_builder_->AnchorQuery();
         if (needs_anchor_queries && !anchor_queries) {
-          if (NGFragmentItemsBuilder* items_builder =
+          if (FragmentItemsBuilder* items_builder =
                   container_builder_->ItemsBuilder()) {
             items = &items_builder->Items(conainer_converter.OuterSize());
           }
@@ -2684,11 +2684,12 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
         // fragment generated for the nested multicol container. This happens
         // when we have a floated "inline-level" nested multicol container with
         // an OOF inside.
-        if (NGFragmentItems::ReplaceBoxFragment(
+        if (FragmentItems::ReplaceBoxFragment(
                 old_fragment,
                 To<NGPhysicalBoxFragment>(new_result->PhysicalFragment()),
-                parent_fragment))
+                parent_fragment)) {
           return;
+        }
       }
       // Search inside child fragments of the containing block.
       if (ReplaceChild(parent_fragment))

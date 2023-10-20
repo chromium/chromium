@@ -108,7 +108,7 @@ bool LayoutNGBlockFlow::NodeAtPoint(HitTestResult& result,
     DCHECK(fragment);
     if (fragment->HasItems() ||
         // Check descendants of this fragment because floats may be in the
-        // |NGFragmentItems| of the descendants.
+        // |FragmentItems| of the descendants.
         (phase == HitTestPhase::kFloat &&
          fragment->HasFloatingDescendantsForPaint())) {
       return NGBoxFragmentPainter(*fragment).NodeAtPoint(
@@ -152,7 +152,7 @@ void LayoutNGBlockFlow::DirtyLinesFromChangedChild(LayoutObject* child) {
   // LayoutNG inline formatting context. New objects are handled in
   // NGInlineNode::MarkLineBoxesDirty().
   if (child->IsInLayoutNGInlineFormattingContext()) {
-    NGFragmentItems::DirtyLinesFromChangedChild(*child, *this);
+    FragmentItems::DirtyLinesFromChangedChild(*child, *this);
   }
 }
 

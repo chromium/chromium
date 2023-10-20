@@ -31,7 +31,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
  public:
   ~NGInlineChildLayoutContext();
 
-  NGFragmentItemsBuilder* ItemsBuilder() { return &items_builder_; }
+  FragmentItemsBuilder* ItemsBuilder() { return &items_builder_; }
 
   NGScoreLineBreakContext* ScoreLineBreakContext() const {
     return score_line_break_context_;
@@ -87,7 +87,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
 
  private:
   NGBoxFragmentBuilder* container_builder_ = nullptr;
-  NGFragmentItemsBuilder items_builder_;
+  FragmentItemsBuilder items_builder_;
 
   NGLineInfo* line_info_ = nullptr;
   NGScoreLineBreakContext* score_line_break_context_ = nullptr;

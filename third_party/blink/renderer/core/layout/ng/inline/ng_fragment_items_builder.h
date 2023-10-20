@@ -14,22 +14,22 @@
 
 namespace blink {
 
-class NGFragmentItem;
-class NGFragmentItems;
+class FragmentItem;
+class FragmentItems;
 class NGInlineNode;
 
-// This class builds |NGFragmentItems|.
+// This class builds |FragmentItems|.
 //
-// Once |NGFragmentItems| is built, it is immutable.
-class CORE_EXPORT NGFragmentItemsBuilder {
+// Once |FragmentItems| is built, it is immutable.
+class CORE_EXPORT FragmentItemsBuilder {
   STACK_ALLOCATED();
 
  public:
-  explicit NGFragmentItemsBuilder(WritingDirectionMode writing_direction);
-  NGFragmentItemsBuilder(const NGInlineNode& node,
-                         WritingDirectionMode writing_direction,
-                         bool is_block_fragmented);
-  ~NGFragmentItemsBuilder();
+  explicit FragmentItemsBuilder(WritingDirectionMode writing_direction);
+  FragmentItemsBuilder(const NGInlineNode& node,
+                       WritingDirectionMode writing_direction,
+                       bool is_block_fragmented);
+  ~FragmentItemsBuilder();
 
   WritingDirectionMode GetWritingDirection() const {
     return writing_direction_;
@@ -69,7 +69,7 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   // Custom layout produces all line boxes first by running only 1 and 2 (in
   // |NGInlineLayoutAlgorithm|). Then after worklet determined the position and
   // the order of line boxes, it runs 3 for each line. In this case,
-  // |NGFragmentItemsBuilder| allocates new instance for each line, and keeps
+  // |FragmentItemsBuilder| allocates new instance for each line, and keeps
   // them alive until |AddLine|.
   NGLogicalLineItems* AcquireLogicalLineItems();
   void ReleaseCurrentLogicalLineItems();
@@ -95,15 +95,15 @@ class CORE_EXPORT NGFragmentItemsBuilder {
     bool succeeded = false;
   };
 
-  // Add previously laid out |NGFragmentItems|.
+  // Add previously laid out |FragmentItems|.
   //
   // When |stop_at_dirty| is true, this function checks reusability of previous
   // items and stops copying before the first dirty line.
   AddPreviousItemsResult AddPreviousItems(
       const NGPhysicalBoxFragment& container,
-      const NGFragmentItems& items,
+      const FragmentItems& items,
       NGBoxFragmentBuilder* container_builder = nullptr,
-      const NGFragmentItem* end_item = nullptr,
+      const FragmentItem* end_item = nullptr,
       wtf_size_t max_lines = 0);
 
   struct ItemWithOffset {
@@ -114,12 +114,12 @@ class CORE_EXPORT NGFragmentItemsBuilder {
     explicit ItemWithOffset(const LogicalOffset& offset, Args&&... args)
         : item(std::forward<Args>(args)...), offset(offset) {}
 
-    const NGFragmentItem& operator*() const { return item; }
-    const NGFragmentItem* operator->() const { return &item; }
+    const FragmentItem& operator*() const { return item; }
+    const FragmentItem* operator->() const { return &item; }
 
     void Trace(Visitor* visitor) const { visitor->Trace(item); }
 
-    NGFragmentItem item;
+    FragmentItem item;
     LogicalOffset offset;
   };
 
@@ -127,20 +127,20 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   // heuristic. Usually 10-40, some wikipedia pages have >64 items.
   using ItemWithOffsetList = HeapVector<ItemWithOffset, 128>;
 
-  // Find |LogicalOffset| of the first |NGFragmentItem| for |LayoutObject|.
+  // Find |LogicalOffset| of the first |FragmentItem| for |LayoutObject|.
   absl::optional<LogicalOffset> LogicalOffsetFor(const LayoutObject&) const;
 
-  // Moves all the |NGFragmentItem|s by |offset| in the block-direction.
+  // Moves all the |FragmentItem|s by |offset| in the block-direction.
   void MoveChildrenInBlockDirection(LayoutUnit offset);
 
-  // Converts the |NGFragmentItem| vector to the physical coordinate space and
+  // Converts the |FragmentItem| vector to the physical coordinate space and
   // returns the result. This should only be used for determining the inline
   // containing block geometry for OOF-positioned nodes.
   //
   // Once this method has been called, new items cannot be added.
   const ItemWithOffsetList& Items(const PhysicalSize& outer_size);
 
-  // Build a |NGFragmentItems|. The builder cannot build twice because data set
+  // Build a |FragmentItems|. The builder cannot build twice because data set
   // to this builder may be cleared.
   //
   // This function returns new size of the container if the container is an
@@ -176,12 +176,12 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   bool is_converted_to_physical_ = false;
   bool is_line_items_pool_acquired_ = false;
 
-  friend class NGFragmentItems;
+  friend class FragmentItems;
 };
 
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGFragmentItemsBuilder::ItemWithOffset)
+    blink::FragmentItemsBuilder::ItemWithOffset)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_FRAGMENT_ITEMS_BUILDER_H_

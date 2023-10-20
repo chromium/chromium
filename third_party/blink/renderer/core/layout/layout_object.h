@@ -458,7 +458,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // that it may return wrong results for out-of-flow positioned objects.
   LayoutBox* DeprecatedEnclosingScrollableBox() const;
 
-  // Return the NG |LayoutBlockFlow| that will have any |NGFragmentItems| for
+  // Return the NG |LayoutBlockFlow| that will have any |FragmentItems| for
   // |this|, or nullptr if the containing block isn't an NG inline formatting
   // context root. |this| is required to be an object that participates in an
   // inline formatting context (i.e. something inline-level, or a float).

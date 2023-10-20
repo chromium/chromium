@@ -545,7 +545,7 @@ void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
   block_flow->ClearNeedsCollectInlines();
 
   if (UNLIKELY(IsTextCombine())) {
-    // To use |LayoutNGTextCombine::UsersScaleX()| in |NGFragmentItemsBuilder|,
+    // To use |LayoutTextCombine::UsersScaleX()| in |FragmentItemsBuilder|,
     // we adjust font here instead in |Layout()|,
     AdjustFontForTextCombineUprightAll();
   }

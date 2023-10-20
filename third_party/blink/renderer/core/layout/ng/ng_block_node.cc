@@ -812,7 +812,7 @@ void NGBlockNode::FinishLayout(
   StoreResultInLayoutBox(layout_result, break_token, clear_trailing_results);
 
   if (block_flow) {
-    const NGFragmentItems* items = physical_fragment.Items();
+    const FragmentItems* items = physical_fragment.Items();
     bool has_inline_children = items || HasInlineChildren(block_flow);
 
     // Don't consider display-locked objects as having any children.
@@ -1497,7 +1497,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     // there, but they aren't stored as child fragments of |column| in that case
     // (but rather inside fragment items). Make sure that they get positioned,
     // too.
-    if (const NGFragmentItems* items = child_fragment.Items()) {
+    if (const FragmentItems* items = child_fragment.Items()) {
       CopyFragmentItemsToLayoutBox(child_fragment, *items,
                                    previous_column_break_token);
     }
@@ -1543,7 +1543,7 @@ void NGBlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
 
 void NGBlockNode::CopyFragmentItemsToLayoutBox(
     const NGPhysicalBoxFragment& container,
-    const NGFragmentItems& items,
+    const FragmentItems& items,
     const NGBlockBreakToken* previous_break_token) const {
   LayoutUnit previously_consumed_block_size;
   if (previous_break_token) {

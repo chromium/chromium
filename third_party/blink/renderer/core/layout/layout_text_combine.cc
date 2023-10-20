@@ -146,7 +146,7 @@ PhysicalRect LayoutTextCombine::AdjustRectForBoundingBox(
 }
 
 PhysicalRect LayoutTextCombine::ComputeTextBoundsRectForHitTest(
-    const NGFragmentItem& text_item,
+    const FragmentItem& text_item,
     const PhysicalOffset& inline_root_offset) const {
   DCHECK(text_item.IsText()) << text_item;
   PhysicalRect rect = text_item.SelfInkOverflow();

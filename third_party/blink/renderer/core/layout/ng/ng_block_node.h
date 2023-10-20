@@ -14,12 +14,12 @@
 
 namespace blink {
 
+class FragmentItems;
 class LayoutBox;
 class NGBlockBreakToken;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGEarlyBreak;
-class NGFragmentItems;
 class NGInlineNode;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
@@ -267,7 +267,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const NGBlockBreakToken* previous_break_token) const;
   void CopyFragmentItemsToLayoutBox(
       const NGPhysicalBoxFragment& container,
-      const NGFragmentItems& items,
+      const FragmentItems& items,
       const NGBlockBreakToken* previous_break_token) const;
   void PlaceChildrenInLayoutBox(const NGPhysicalBoxFragment&,
                                 const NGBlockBreakToken* previous_break_token,

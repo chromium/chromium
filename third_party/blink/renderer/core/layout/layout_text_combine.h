@@ -13,9 +13,9 @@
 namespace blink {
 
 class AffineTransform;
+class FragmentItem;
 class InlineCursor;
 class LayoutText;
-class NGFragmentItem;
 
 // The layout object for the element having "text-combine-upright:all" in
 // vertical writing mode, e.g. <i style="text-upright:all"><b>12</b>34<i>.
@@ -57,14 +57,14 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
   // Maps non-scaled |rect| to scaled rect for
   //  * |LayoutText::PhysicalLinesBoundingBox()| used by
   //    |LayoutObject::DebugRect()|, intersection observer, and scroll anchor.
-  //  * |NGFragmentItem::RecalcInkOverflow()| for line box
+  //  * |FragmentItem::RecalcInkOverflow()| for line box
   //  * |NGLayoutOverflowCalculator::AddItemsInternal()| for line box.
   //  * |NGPhysicalFragment::AddOutlineRectsForCursor()|
   //  * |NGPhysicalFragment::AddScrollableOverflowForInlineChild()|
   PhysicalRect AdjustRectForBoundingBox(const PhysicalRect& rect) const;
 
   PhysicalRect ComputeTextBoundsRectForHitTest(
-      const NGFragmentItem& text_item,
+      const FragmentItem& text_item,
       const PhysicalOffset& inline_root_offset) const;
 
   // Returns ink overflow for text decorations and emphasis mark.

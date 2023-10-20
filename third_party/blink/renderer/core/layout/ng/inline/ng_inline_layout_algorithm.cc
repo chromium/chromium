@@ -1431,7 +1431,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     container_builder_.SetIsLineForParallelFlow();
   }
 
-  NGFragmentItemsBuilder* const items_builder = context_->ItemsBuilder();
+  FragmentItemsBuilder* const items_builder = context_->ItemsBuilder();
   DCHECK(items_builder);
   NGLogicalLineItems* const line_box = items_builder->AcquireLogicalLineItems();
   DCHECK(line_box);

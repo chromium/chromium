@@ -348,8 +348,9 @@ void NGBoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
     descendant.fixedpos_containing_block.IncreaseBlockOffset(delta);
   }
 
-  if (NGFragmentItemsBuilder* items_builder = ItemsBuilder())
+  if (FragmentItemsBuilder* items_builder = ItemsBuilder()) {
     items_builder->MoveChildrenInBlockDirection(delta);
+  }
 }
 
 void NGBoxFragmentBuilder::PropagateBreakInfo(
@@ -574,7 +575,7 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
     const LayoutObject* object) const {
   DCHECK(object);
 
-  if (const NGFragmentItemsBuilder* items_builder = items_builder_) {
+  if (const FragmentItemsBuilder* items_builder = items_builder_) {
     if (auto offset = items_builder->LogicalOffsetFor(*object))
       return *offset;
     // Out-of-flow objects may be in |FragmentItems| or in |children_|.

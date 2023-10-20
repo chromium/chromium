@@ -162,7 +162,7 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
         builder->ConstraintSpace().HasBlockFragmentation(), borders, scrollbar,
         padding, physical_size, writing_direction);
 
-    if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
+    if (FragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
       calculator.AddItems(builder->GetLayoutObject(),
                           items_builder->Items(physical_size));
     }
@@ -188,9 +188,9 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
   // differs from the fragment size.
   bool has_layout_overflow = layout_overflow != PhysicalRect({}, physical_size);
 
-  // Omit |NGFragmentItems| if there were no items; e.g., display-lock.
+  // Omit |FragmentItems| if there were no items; e.g., display-lock.
   bool has_fragment_items = false;
-  if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
+  if (FragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
     if (items_builder->Size())
       has_fragment_items = true;
   }
@@ -286,7 +286,7 @@ constexpr void AccountSizeAndPadding(size_t& current_size) {
 size_t NGPhysicalBoxFragment::AdditionalByteSize(bool has_fragment_items) {
   size_t additional_size = 0;
   if (has_fragment_items) {
-    AccountSizeAndPadding<NGFragmentItems>(additional_size);
+    AccountSizeAndPadding<FragmentItems>(additional_size);
   }
   return additional_size;
 }
@@ -330,9 +330,8 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   }
 
   if (HasItems()) {
-    NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder();
-    NGFragmentItems* items =
-        const_cast<NGFragmentItems*>(ComputeItemsAddress());
+    FragmentItemsBuilder* items_builder = builder->ItemsBuilder();
+    auto* items = const_cast<FragmentItems*>(ComputeItemsAddress());
     DCHECK_EQ(items_builder->GetWritingMode(), block_or_line_writing_mode);
     DCHECK_EQ(items_builder->Direction(), builder->Direction());
     absl::optional<PhysicalSize> new_size =
@@ -418,9 +417,8 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       children_(other.children_) {
   SetInkOverflowType(other.InkOverflowType());
   if (HasItems()) {
-    NGFragmentItems* items =
-        const_cast<NGFragmentItems*>(ComputeItemsAddress());
-    new (items) NGFragmentItems(*other.ComputeItemsAddress());
+    auto* items = const_cast<FragmentItems*>(ComputeItemsAddress());
+    new (items) FragmentItems(*other.ComputeItemsAddress());
   }
   if (other.rare_data_) {
     rare_data_ =
@@ -438,7 +436,7 @@ void NGPhysicalBoxFragment::Dispose() {
   if (HasInkOverflow())
     SetInkOverflowType(ink_overflow_.Reset(InkOverflowType()));
   if (HasItems())
-    ComputeItemsAddress()->~NGFragmentItems();
+    ComputeItemsAddress()->~FragmentItems();
 }
 
 // TODO(kojii): Move to ng_physical_fragment.cc
@@ -832,7 +830,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
     TextHeightType height_type) const {
   // TODO(kojii): See |ScrollableOverflow|.
   DCHECK(height_type == TextHeightType::kEmHeight || PostLayout() == this);
-  const NGFragmentItems* items = Items();
+  const FragmentItems* items = Items();
   if (Children().empty() && !items)
     return PhysicalRect();
 
@@ -904,10 +902,10 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
       AddChild(child_scrollable_overflow);
     }
 
-    void AddLineBoxChild(const NGFragmentItem& child,
+    void AddLineBoxChild(const FragmentItem& child,
                          const InlineCursor& cursor) {
       DCHECK_EQ(&child, cursor.CurrentItem());
-      DCHECK_EQ(child.Type(), NGFragmentItem::kLine);
+      DCHECK_EQ(child.Type(), FragmentItem::kLine);
       if (padding_strut)
         AddLineBoxRect(child.RectInContainerFragment());
       const NGPhysicalLineBoxFragment* line_box = child.LineBoxFragment();
@@ -949,8 +947,8 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
   if (items) {
     for (InlineCursor cursor(*this, *items); cursor;
          cursor.MoveToNextSkippingChildren()) {
-      const NGFragmentItem* item = cursor.CurrentItem();
-      if (item->Type() == NGFragmentItem::kLine) {
+      const FragmentItem* item = cursor.CurrentItem();
+      if (item->Type() == FragmentItem::kLine) {
         context.AddLineBoxChild(*item, cursor);
         continue;
       }
@@ -1147,10 +1145,10 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
       !GetSelfOrContainerLayoutObject()->ChildPrePaintBlockedByDisplayLock());
 
   PhysicalRect contents_rect;
-  if (const NGFragmentItems* items = Items()) {
+  if (const FragmentItems* items = Items()) {
     InlineCursor cursor(*this, *items);
     NGInlinePaintContext child_inline_context;
-    contents_rect = NGFragmentItem::RecalcInkOverflowForCursor(
+    contents_rect = FragmentItem::RecalcInkOverflowForCursor(
         &cursor, &child_inline_context);
 
     // Add text decorations and emphasis mark ink over flow for combined
@@ -1445,7 +1443,7 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
           : point;
 
   if (!layout_object_->ChildPaintBlockedByDisplayLock()) {
-    if (const NGFragmentItems* items = Items()) {
+    if (const FragmentItems* items = Items()) {
       InlineCursor cursor(*this, *items);
       if (const PositionWithAffinity position =
               cursor.PositionForPointInInlineFormattingContext(
@@ -1845,9 +1843,9 @@ void NGPhysicalBoxFragment::AssertFragmentTreeSelf() const {
 
 void NGPhysicalBoxFragment::AssertFragmentTreeChildren(
     bool allow_destroyed_or_moved) const {
-  if (const NGFragmentItems* items = Items()) {
+  if (const FragmentItems* items = Items()) {
     for (InlineCursor cursor(*this, *items); cursor; cursor.MoveToNext()) {
-      const NGFragmentItem& item = *cursor.Current();
+      const FragmentItem& item = *cursor.Current();
       if (item.IsLayoutObjectDestroyedOrMoved()) {
         DCHECK(allow_destroyed_or_moved);
         continue;

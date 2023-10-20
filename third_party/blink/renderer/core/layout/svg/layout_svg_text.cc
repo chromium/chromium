@@ -296,7 +296,7 @@ gfx::RectF LayoutSVGText::ObjectBoundingBox() const {
         continue;
       }
       for (const auto& item : fragment.Items()->Items()) {
-        if (item.Type() != NGFragmentItem::kSvgText) {
+        if (item.Type() != FragmentItem::kSvgText) {
           continue;
         }
         // Do not use item.RectInContainerFragment() in order to avoid

@@ -56,7 +56,7 @@ unsigned ClampToFragmentRange(const NGTextOffsetRange& fragment_range,
 }
 
 base::span<const NGOffsetMappingUnit> GetMappingUnits(
-    const NGFragmentItem& text_fragment) {
+    const FragmentItem& text_fragment) {
   const NGOffsetMapping* const offset_mapping =
       NGOffsetMapping::GetFor(text_fragment.GetLayoutObject());
   DCHECK(offset_mapping);
@@ -78,7 +78,7 @@ class MarkerRangeMappingContext {
     STACK_ALLOCATED();
 
    public:
-    explicit DOMToTextContentOffsetMapper(const NGFragmentItem& text_fragment)
+    explicit DOMToTextContentOffsetMapper(const FragmentItem& text_fragment)
         : units_(GetMappingUnits(text_fragment)), units_begin_(units_.begin()) {
       DCHECK(units_.size());
     }
@@ -131,7 +131,7 @@ class MarkerRangeMappingContext {
   };
 
  public:
-  explicit MarkerRangeMappingContext(const NGFragmentItem& text_fragment)
+  explicit MarkerRangeMappingContext(const FragmentItem& text_fragment)
       : mapper_(DOMToTextContentOffsetMapper(text_fragment)),
         fragment_range_(text_fragment.TextOffset()),
         text_length_(To<Text>(*text_fragment.GetNode()).length()) {}
@@ -157,7 +157,7 @@ class MarkerRangeMappingContext {
   const unsigned text_length_;
 };
 
-LineRelativeRect LineRelativeLocalRect(const NGFragmentItem& text_fragment,
+LineRelativeRect LineRelativeLocalRect(const FragmentItem& text_fragment,
                                        StringView text,
                                        unsigned start_offset,
                                        unsigned end_offset) {
@@ -210,7 +210,7 @@ const LayoutSelectionStatus* GetSelectionStatus(
 
 // Returns true if the styles for the given spelling or grammar pseudo require
 // the full overlay painting algorithm.
-bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
+bool HasNonTrivialSpellingGrammarStyles(const FragmentItem& fragment_item,
                                         Node* node,
                                         const ComputedStyle& originating_style,
                                         PseudoId pseudo) {
@@ -289,7 +289,7 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
     // If the SVG-only fill- and stroke-related properties differ from their
     // values in the originating style. These checks must be skipped outside of
     // SVG content, because the initial ‘fill’ is ‘black’, not ‘currentColor’.
-    if (fragment_item.Type() == NGFragmentItem::kSvgText) {
+    if (fragment_item.Type() == FragmentItem::kSvgText) {
       // If the ‘fill’ is ‘currentColor’, assume that it differs from the
       // originating style, even if the current color actually happens to
       // match. This simplifies the logic until we know it performs poorly.
@@ -439,7 +439,7 @@ NGHighlightPainter::NGHighlightPainter(
     NGTextDecorationPainter& decoration_painter,
     const PaintInfo& paint_info,
     const InlineCursor& cursor,
-    const NGFragmentItem& fragment_item,
+    const FragmentItem& fragment_item,
     const absl::optional<AffineTransform> writing_mode_rotation,
     const PhysicalOffset& box_origin,
     const ComputedStyle& style,
@@ -578,7 +578,7 @@ void NGHighlightPainter::Paint(Phase phase) {
         }
 
         TextPaintStyle text_style;
-        if (fragment_item_->Type() != NGFragmentItem::kSvgText) {
+        if (fragment_item_->Type() != FragmentItem::kSvgText) {
           text_style = DocumentMarkerPainter::ComputeTextPaintStyleFrom(
               document, node_, originating_style_, text_match_marker,
               paint_info_);

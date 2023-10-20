@@ -63,10 +63,11 @@ LineBoxStrut ComputeNegativeSideBearings(
       [](const InlineCursor cursor) -> const ShapeResultView* {
     if (!cursor)
       return nullptr;
-    const NGFragmentItem& item = *cursor.CurrentItem();
-    if (item.Type() != NGFragmentItem::kText &&
-        item.Type() != NGFragmentItem::kGeneratedText)
+    const FragmentItem& item = *cursor.CurrentItem();
+    if (item.Type() != FragmentItem::kText &&
+        item.Type() != FragmentItem::kGeneratedText) {
       return nullptr;
+    }
     if (item.IsFlowControl())
       return nullptr;
     return item.TextShapeResult();
@@ -116,7 +117,7 @@ LineBoxStrut ComputeNegativeSideBearings(
     //             ^ text origin
     //             <----------> width/advance
     //
-    // When `NGFragmentItem` has `ShapeTesult`, its `rect` is
+    // When `FragmentItem` has `ShapeTesult`, its `rect` is
     //    * `rect.offset.left = X`
     //    * `rect.size.width  = shape_result.SnappedWidth() // advance
     // where `X` is the original item offset.
@@ -1245,7 +1246,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
 // In SVG <text>, we produce NGInlineItemResult split into segments partitioned
 // by x/y/dx/dy/rotate attributes.
 //
-// Split in PrepareLayout() or after producing NGFragmentItem would need
+// Split in PrepareLayout() or after producing FragmentItem would need
 // additional memory overhead. So we split in NGLineBreaker while it converts
 // NGInlineItems to NGInlineItemResults.
 void NGLineBreaker::SplitTextIntoSegments(const NGInlineItem& item,

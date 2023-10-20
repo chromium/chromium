@@ -266,7 +266,7 @@ void NGTextPainter::PaintSelectedText(
 
 void NGTextPainter::PaintDecorationsExceptLineThrough(
     const NGTextFragmentPaintInfo& fragment_paint_info,
-    const NGFragmentItem& text_item,
+    const FragmentItem& text_item,
     const PaintInfo& paint_info,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
@@ -297,7 +297,7 @@ void NGTextPainter::PaintDecorationsExceptLineThrough(
 }
 
 void NGTextPainter::PaintDecorationsOnlyLineThrough(
-    const NGFragmentItem& text_item,
+    const FragmentItem& text_item,
     const PaintInfo& paint_info,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,

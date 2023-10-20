@@ -52,7 +52,7 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
     gfx::Rect rect{};
     PhysicalOffset physical_offset{};
     PhysicalRect physical_rect{};
-    const NGFragmentItem& text_item = *cursor.CurrentItem();
+    const FragmentItem& text_item = *cursor.CurrentItem();
     const ComputedStyle& style = text_item.Style();
     absl::optional<NGHighlightPainter::SelectionPaintState> maybe_selection;
     NGHighlightPainter::SelectionPaintState* selection = nullptr;

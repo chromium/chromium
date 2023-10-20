@@ -32,10 +32,10 @@ unsigned AdjustCodeUnitEndOffset(StringView string, unsigned offset) {
              : offset;
 }
 
-std::tuple<Vector<const NGFragmentItem*>, const NGFragmentItems*>
+std::tuple<Vector<const FragmentItem*>, const FragmentItems*>
 FragmentItemsInVisualOrder(const LayoutObject& query_root) {
-  Vector<const NGFragmentItem*> item_list;
-  const NGFragmentItems* items = nullptr;
+  Vector<const FragmentItem*> item_list;
+  const FragmentItems* items = nullptr;
   if (query_root.IsSVGText()) {
     DCHECK_LE(To<LayoutBox>(query_root).PhysicalFragmentCount(), 1u);
     for (const auto& fragment : To<LayoutBox>(query_root).PhysicalFragments()) {
@@ -44,7 +44,7 @@ FragmentItemsInVisualOrder(const LayoutObject& query_root) {
       }
       items = fragment.Items();
       for (const auto& item : fragment.Items()->Items()) {
-        if (item.Type() == NGFragmentItem::kSvgText) {
+        if (item.Type() == FragmentItem::kSvgText) {
           item_list.push_back(&item);
         }
       }
@@ -55,12 +55,12 @@ FragmentItemsInVisualOrder(const LayoutObject& query_root) {
     cursor.MoveToIncludingCulledInline(query_root);
     items = &cursor.Items();
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-      const NGFragmentItem& item = *cursor.CurrentItem();
-      if (item.Type() == NGFragmentItem::kSvgText) {
+      const FragmentItem& item = *cursor.CurrentItem();
+      if (item.Type() == FragmentItem::kSvgText) {
         item_list.push_back(&item);
       } else if (InlineCursor descendants = cursor.CursorForDescendants()) {
         for (; descendants; descendants.MoveToNext()) {
-          if (descendants.CurrentItem()->Type() == NGFragmentItem::kSvgText) {
+          if (descendants.CurrentItem()->Type() == FragmentItem::kSvgText) {
             item_list.push_back(descendants.CurrentItem());
           }
         }
@@ -70,21 +70,21 @@ FragmentItemsInVisualOrder(const LayoutObject& query_root) {
   return std::tie(item_list, items);
 }
 
-std::tuple<Vector<const NGFragmentItem*>, const NGFragmentItems*>
+std::tuple<Vector<const FragmentItem*>, const FragmentItems*>
 FragmentItemsInLogicalOrder(const LayoutObject& query_root) {
   auto items_tuple = FragmentItemsInVisualOrder(query_root);
   auto& item_list = std::get<0>(items_tuple);
   // Sort |item_list| in the logical order.
   std::sort(item_list.begin(), item_list.end(),
-            [](const NGFragmentItem* a, const NGFragmentItem* b) {
+            [](const FragmentItem* a, const FragmentItem* b) {
               return a->StartOffset() < b->StartOffset();
             });
   return items_tuple;
 }
 
-// Returns a tuple of NGFragmentItem, Item text, IFC text offset for |index|,
+// Returns a tuple of FragmentItem, Item text, IFC text offset for |index|,
 // and the next IFC text offset.
-std::tuple<const NGFragmentItem*, StringView, unsigned, unsigned>
+std::tuple<const FragmentItem*, StringView, unsigned, unsigned>
 FindFragmentItemForAddressableCodeUnitIndex(const LayoutObject& query_root,
                                             unsigned index) {
   auto [item_list, items] = FragmentItemsInLogicalOrder(query_root);
@@ -117,7 +117,7 @@ void GetCanvasRotation(void* context,
   *canvas_rotation = rotation;
 }
 
-float InlineSize(const NGFragmentItem& item,
+float InlineSize(const FragmentItem& item,
                  StringView item_text,
                  unsigned start_code_unit_offset,
                  unsigned end_code_unit_offset) {
@@ -132,13 +132,13 @@ float InlineSize(const NGFragmentItem& item,
          item.SvgFragmentData()->length_adjust_scale / item.SvgScalingFactor();
 }
 
-std::tuple<const NGFragmentItem*, gfx::RectF> ScaledCharacterRectInContainer(
+std::tuple<const FragmentItem*, gfx::RectF> ScaledCharacterRectInContainer(
     const LayoutObject& query_root,
     unsigned code_unit_index) {
   auto [item, item_text, start_ifc_offset, end_ifc_offset] =
       FindFragmentItemForAddressableCodeUnitIndex(query_root, code_unit_index);
   DCHECK(item);
-  DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
+  DCHECK_EQ(item->Type(), FragmentItem::kSvgText);
   if (item->IsHiddenForPaint()) {
     return {item, gfx::RectF()};
   }
@@ -153,7 +153,7 @@ gfx::PointF StartOrEndPosition(const LayoutObject& query_root,
                                unsigned index,
                                QueryPosition pos) {
   auto [item, char_rect] = ScaledCharacterRectInContainer(query_root, index);
-  DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
+  DCHECK_EQ(item->Type(), FragmentItem::kSvgText);
   if (item->IsHiddenForPaint()) {
     return gfx::PointF();
   }
@@ -200,7 +200,7 @@ float SvgTextQuery::SubStringLength(unsigned start_index,
   auto [item_list, items] = FragmentItemsInLogicalOrder(query_root_);
 
   float total_length = 0.0f;
-  // Starting addressable code unit index for the current NGFragmentItem.
+  // Starting addressable code unit index for the current FragmentItem.
   unsigned character_index = 0;
   const unsigned end_index = start_index + length;
   for (const auto* item : item_list) {
@@ -233,7 +233,7 @@ gfx::PointF SvgTextQuery::EndPositionOfCharacter(unsigned index) const {
 
 gfx::RectF SvgTextQuery::ExtentOfCharacter(unsigned index) const {
   auto [item, char_rect] = ScaledCharacterRectInContainer(query_root_, index);
-  DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
+  DCHECK_EQ(item->Type(), FragmentItem::kSvgText);
   if (item->IsHiddenForPaint()) {
     return gfx::RectF();
   }
@@ -248,7 +248,7 @@ float SvgTextQuery::RotationOfCharacter(unsigned index) const {
   auto [item, item_text, start_ifc_offset, end_ifc_offset] =
       FindFragmentItemForAddressableCodeUnitIndex(query_root_, index);
   DCHECK(item);
-  DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
+  DCHECK_EQ(item->Type(), FragmentItem::kSvgText);
   if (item->IsHiddenForPaint()) {
     return 0.0f;
   }
@@ -282,7 +282,7 @@ int SvgTextQuery::CharacterNumberAtPosition(const gfx::PointF& position) const {
   // <text> behavior.
   auto [item_list, items] = FragmentItemsInVisualOrder(query_root_);
 
-  const NGFragmentItem* hit_item = nullptr;
+  const FragmentItem* hit_item = nullptr;
   for (const auto* item : item_list) {
     if (!item->IsHiddenForPaint() && item->InclusiveContains(position)) {
       hit_item = item;
@@ -295,7 +295,7 @@ int SvgTextQuery::CharacterNumberAtPosition(const gfx::PointF& position) const {
 
   // Count code units before |hit_item|.
   std::sort(item_list.begin(), item_list.end(),
-            [](const NGFragmentItem* a, const NGFragmentItem* b) {
+            [](const FragmentItem* a, const FragmentItem* b) {
               return a->StartOffset() < b->StartOffset();
             });
   unsigned addressable_code_unit_count = 0;
@@ -309,7 +309,7 @@ int SvgTextQuery::CharacterNumberAtPosition(const gfx::PointF& position) const {
   PhysicalOffset transformed_point =
       hit_item->MapPointInContainer(PhysicalOffset::FromPointFRound(position)) -
       hit_item->OffsetInContainerFragment();
-  // NGFragmentItem::TextOffsetForPoint() is not suitable here because it
+  // FragmentItem::TextOffsetForPoint() is not suitable here because it
   // returns an offset for the nearest glyph edge.
   unsigned offset_in_item =
       hit_item->TextShapeResult()->CreateShapeResult()->OffsetForPosition(

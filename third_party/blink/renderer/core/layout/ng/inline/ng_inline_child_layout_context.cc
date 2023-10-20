@@ -15,7 +15,7 @@ struct SameSizeAsNGInlineChildLayoutContext {
   STACK_ALLOCATED();
 
  public:
-  NGFragmentItemsBuilder items_builder_;
+  FragmentItemsBuilder items_builder_;
   absl::optional<NGInlineLayoutStateStack> box_states_;
   absl::optional<LayoutUnit> optional_layout_unit;
   void* pointers[5];

@@ -287,7 +287,7 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
 
   // We add both items and line-box fragments for existing mechanisms to work.
   // We may revisit this in future. See also |NGBoxFragmentBuilder::AddResult|.
-  if (const NGFragmentItems* previous_items = previous_fragment.Items()) {
+  if (const FragmentItems* previous_items = previous_fragment.Items()) {
     auto* items_builder = container_builder_.ItemsBuilder();
     DCHECK(items_builder);
     DCHECK_EQ(items_builder->GetWritingDirection(), writing_direction_);
@@ -322,11 +322,11 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
 
 NOINLINE const NGLayoutResult*
 NGSimplifiedLayoutAlgorithm::LayoutWithItemsBuilder() {
-  NGFragmentItemsBuilder items_builder(writing_direction_);
+  FragmentItemsBuilder items_builder(writing_direction_);
   container_builder_.SetItemsBuilder(&items_builder);
   const NGLayoutResult* result = Layout();
-  // Ensure stack-allocated |NGFragmentItemsBuilder| is not used anymore.
-  // TODO(kojii): Revisit when the storage of |NGFragmentItemsBuilder| is
+  // Ensure stack-allocated |FragmentItemsBuilder| is not used anymore.
+  // TODO(kojii): Revisit when the storage of |FragmentItemsBuilder| is
   // finalized.
   container_builder_.SetItemsBuilder(nullptr);
   return result;

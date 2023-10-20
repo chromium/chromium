@@ -325,7 +325,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
   InlineCursor cursor(*block_flow);
   const LayoutObject* span = GetLayoutObjectByElementId("span");
   cursor.MoveTo(*span);
-  const NGFragmentItem& item1 = *cursor.Current();
+  const FragmentItem& item1 = *cursor.Current();
   const NGPhysicalBoxFragment* box1 = item1.BoxFragment();
   ASSERT_TRUE(box1);
   const PhysicalBoxStrut borders1 = box1->Borders();
@@ -341,7 +341,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
             item1.OffsetInContainerFragment() + box1->ContentOffset());
 
   cursor.MoveToNextForSameLayoutObject();
-  const NGFragmentItem& item2 = *cursor.Current();
+  const FragmentItem& item2 = *cursor.Current();
   const NGPhysicalBoxFragment* box2 = item2.BoxFragment();
   ASSERT_TRUE(box2);
   const PhysicalBoxStrut borders2 = box2->Borders();

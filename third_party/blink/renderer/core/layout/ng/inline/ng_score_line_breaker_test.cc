@@ -160,7 +160,7 @@ TEST_F(NGScoreLineBreakerTest, BalanceMaxLinesExceeded) {
   cursor.MoveToLastLine();
   cursor.MoveToNext();
   // Neitehr `balance` nor `pretty` should be applied.
-  EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kText);
+  EXPECT_EQ(cursor.Current()->Type(), FragmentItem::kText);
   EXPECT_EQ(cursor.Current()->TextLength(), 1u);
 }
 

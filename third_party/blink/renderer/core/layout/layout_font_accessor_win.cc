@@ -27,7 +27,7 @@ void GetFontsUsedByLayoutObject(const LayoutObject& layout_object,
 void GetFontsUsedByFragment(const NGPhysicalBoxFragment& fragment,
                             FontFamilyNames& result) {
   for (InlineCursor cursor(fragment); cursor; cursor.MoveToNext()) {
-    const NGFragmentItem& item = *cursor.Current().Item();
+    const FragmentItem& item = *cursor.Current().Item();
     if (item.IsText()) {
       const ShapeResultView* shape_result_view = item.TextShapeResult();
       if (shape_result_view) {
@@ -46,13 +46,13 @@ void GetFontsUsedByFragment(const NGPhysicalBoxFragment& fragment,
     }
 
     // If this is a nested BFC (e.g., inline block, floats), compute its area.
-    if (item.Type() == NGFragmentItem::kBox) {
+    if (item.Type() == FragmentItem::kBox) {
       if (const auto* layout_box = DynamicTo<LayoutBox>(item.GetLayoutObject()))
         GetFontsUsedByLayoutObject(*layout_box, result);
     }
   }
 
-  // Traverse out-of-flow children. They are not in |NGFragmentItems|.
+  // Traverse out-of-flow children. They are not in |FragmentItems|.
   for (const NGLink& child : fragment.Children()) {
     if (const auto* child_layout_box =
             DynamicTo<LayoutBox>(child->GetLayoutObject()))

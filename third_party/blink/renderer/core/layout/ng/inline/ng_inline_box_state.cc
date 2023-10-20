@@ -888,7 +888,7 @@ const NGLayoutResult* NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
               space, child.PhysicalFragment()->Style()));
     }
 
-    // |NGFragmentItems| has a flat list of all descendants, except
+    // |FragmentItems| has a flat list of all descendants, except
     // OOF-positioned descendants. We still create a |NGPhysicalBoxFragment|,
     // but don't add children to it and keep them in the flat list.
   }

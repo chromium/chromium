@@ -5104,7 +5104,7 @@ Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
   if (iterator.Cursor()) {
     wtf_size_t fragment_index = iterator.Cursor()->ContainerFragmentIndex();
     do {
-      const NGFragmentItem* item = iterator.Cursor()->Current().Item();
+      const FragmentItem* item = iterator.Cursor()->Current().Item();
       if (!item)
         continue;
       if (const NGPhysicalBoxFragment* box_fragment = item->BoxFragment()) {

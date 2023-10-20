@@ -410,7 +410,7 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
 void LayoutBoxModelObject::RecalcVisualOverflow() {
   // |PaintLayer| calls this function when |HasSelfPaintingLayer|. When |this|
   // is an inline box or an atomic inline, its ink overflow is stored in
-  // |NGFragmentItem| in the inline formatting context.
+  // |FragmentItem| in the inline formatting context.
   if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
     DCHECK(HasSelfPaintingLayer());
     InlineCursor cursor;

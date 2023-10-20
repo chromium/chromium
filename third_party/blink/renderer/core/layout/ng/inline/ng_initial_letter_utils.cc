@@ -285,7 +285,7 @@ const ExclusionArea* PostPlaceInitialLetterBox(
   adjusted_block_offset -= initial_letter_block_start_adjust;
 
   if (writing_direction_mode.IsFlippedLines()) {
-    // Note: `NGFragmentItemsBuilder::ConvertToPhysical()` uses `kVerticalRl`
+    // Note: `FragmentItemsBuilder::ConvertToPhysical()` uses `kVerticalRl`
     // for items in line, by `ToLineWritingMode(kVerticalLR)`.
     // Conversion is done as below expression:
     //   * physical.x = outer_width - logical.block_offset - inner_width

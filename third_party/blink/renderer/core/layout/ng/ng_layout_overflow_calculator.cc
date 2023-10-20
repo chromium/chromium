@@ -43,8 +43,9 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
       node, fragment.IsCSSBox(), has_block_fragmentation, fragment.Borders(),
       scrollbar, fragment.Padding(), fragment.Size(), writing_direction);
 
-  if (const NGFragmentItems* items = fragment.Items())
+  if (const FragmentItems* items = fragment.Items()) {
     calculator.AddItems(fragment, *items);
+  }
 
   for (const auto& child : fragment.PostLayoutChildren()) {
     const auto* box_fragment =
@@ -180,13 +181,13 @@ void NGLayoutOverflowCalculator::AddItemsInternal(
 
 void NGLayoutOverflowCalculator::AddItems(
     const LayoutObject* layout_object,
-    const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+    const FragmentItemsBuilder::ItemWithOffsetList& items) {
   AddItemsInternal(layout_object, items);
 }
 
 void NGLayoutOverflowCalculator::AddItems(
     const NGPhysicalBoxFragment& box_fragment,
-    const NGFragmentItems& items) {
+    const FragmentItems& items) {
   AddItemsInternal(box_fragment.GetLayoutObject(), items.Items());
 }
 

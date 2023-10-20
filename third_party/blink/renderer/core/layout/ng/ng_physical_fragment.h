@@ -32,9 +32,9 @@ namespace blink {
 
 class ComputedStyle;
 class FragmentData;
+class FragmentItem;
 class Node;
 class NGFragmentBuilder;
-class NGFragmentItem;
 class PaintLayer;
 struct LogicalRect;
 struct NGFragmentedOutOfFlowData;
@@ -737,7 +737,7 @@ class CORE_EXPORT NGPhysicalFragment
   void AddScrollableOverflowForInlineChild(
       const NGPhysicalBoxFragment& container,
       const ComputedStyle& container_style,
-      const NGFragmentItem& line,
+      const FragmentItem& line,
       bool has_hanging,
       const InlineCursor& cursor,
       TextHeightType height_type,

@@ -95,7 +95,7 @@ PhysicalSize VttCueLayoutAlgorithm::FirstInlineBoxSize(
   cursor.MoveToNext();
   if (cursor.IsNull())
     return {};
-  const NGFragmentItem& first_item = *cursor.CurrentItem();
+  const FragmentItem& first_item = *cursor.CurrentItem();
   DCHECK(first_item.GetLayoutObject());
   DCHECK(IsA<VTTCueBackgroundBox>(first_item.GetLayoutObject()->GetNode()));
   return first_item.Size();

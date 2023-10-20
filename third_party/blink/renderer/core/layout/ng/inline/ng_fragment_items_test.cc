@@ -12,13 +12,12 @@
 
 namespace blink {
 
-class NGFragmentItemsTest : public RenderingTest {};
+class FragmentItemsTest : public RenderingTest {};
 
 // crbug.com/1147357
 // DirtyLinesFromNeedsLayout() didn't work well with an orthogonal writing-mode
 // root as a child, and it caused a failure of OOF descendants propagation.
-TEST_F(NGFragmentItemsTest,
-       DirtyLinesFromNeedsLayoutWithOrthogonalWritingMode) {
+TEST_F(FragmentItemsTest, DirtyLinesFromNeedsLayoutWithOrthogonalWritingMode) {
   SetBodyInnerHTML(R"HTML(
 <style>
 button {
@@ -46,7 +45,7 @@ b AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   EXPECT_TRUE(GetLayoutObjectByElementId("span1")->EverHadLayout());
 }
 
-TEST_F(NGFragmentItemsTest, IsContainerForCulledInline) {
+TEST_F(FragmentItemsTest, IsContainerForCulledInline) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #multicol {

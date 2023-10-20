@@ -275,7 +275,7 @@ void LayoutText::RemoveAndDestroyTextBoxes() {
     }
     if (FirstInlineFragmentItemIndex()) {
       DetachAbstractInlineTextBoxesIfNeeded();
-      NGFragmentItems::LayoutObjectWillBeDestroyed(*this);
+      FragmentItems::LayoutObjectWillBeDestroyed(*this);
       ClearFirstInlineFragmentItemIndex();
     }
   } else if (FirstInlineFragmentItemIndex()) {
@@ -377,7 +377,7 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
     InlineCursor cursor;
     cursor.MoveTo(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-      // TODO(yosin): We should introduce |NGFragmentItem::IsTruncated()| to
+      // TODO(yosin): We should introduce |FragmentItem::IsTruncated()| to
       // skip them instead of using |IsHiddenForPaint()| with ordering of
       // fragments.
       if (cursor.Current().IsHiddenForPaint()) {
@@ -604,7 +604,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
     InlineCursor cursor;
     bool is_last_end_included = false;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
-      const NGFragmentItem& item = *cursor.Current();
+      const FragmentItem& item = *cursor.Current();
       DCHECK(item.IsText());
       bool is_collapsed = false;
       PhysicalRect rect;
@@ -630,7 +630,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
       if (UNLIKELY(text_combine))
         rect = text_combine->AdjustRectForBoundingBox(rect);
       gfx::QuadF quad;
-      if (item.Type() == NGFragmentItem::kSvgText) {
+      if (item.Type() == FragmentItem::kSvgText) {
         gfx::RectF float_rect(rect);
         float_rect.Offset(item.SvgFragmentData()->rect.OffsetFromOrigin());
         quad = item.BuildSvgTransformForBoundingBox().MapQuad(
@@ -1079,7 +1079,7 @@ PhysicalRect LayoutText::PhysicalLinesBoundingBox() const {
 PhysicalRect LayoutText::VisualOverflowRect() const {
   NOT_DESTROYED();
   DCHECK(IsInLayoutNGInlineFormattingContext());
-  return NGFragmentItem::LocalVisualRectFor(*this);
+  return FragmentItem::LocalVisualRectFor(*this);
 }
 
 PhysicalRect LayoutText::LocalVisualRectIgnoringVisibility() const {
@@ -1111,7 +1111,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
       PhysicalRect item_rect = cursor.CurrentLocalSelectionRectForText(status);
       if (svg_inline_text) {
         gfx::RectF float_rect(item_rect);
-        const NGFragmentItem& item = *cursor.CurrentItem();
+        const FragmentItem& item = *cursor.CurrentItem();
         float_rect.Offset(item.SvgFragmentData()->rect.OffsetFromOrigin());
         if (item.HasSvgTransformForBoundingBox()) {
           float_rect =
@@ -1443,7 +1443,7 @@ const NGInlineItemSpan& LayoutText::InlineItems() const {
 void LayoutText::RecalcVisualOverflow() {
   // We should never reach here, because |PaintLayer| calls
   // |RecalcVisualOverflow| for each layer, and the containing |LayoutObject|
-  // should recalculate its |NGFragmentItem|s without traversing descendant
+  // should recalculate its |FragmentItem|s without traversing descendant
   // |LayoutObject|s.
   if (IsInline() && IsInLayoutNGInlineFormattingContext())
     NOTREACHED();

@@ -20,7 +20,7 @@ void NGInlinePaintContext::ClearDecoratingBoxes(
 }
 
 NGInlinePaintContext::ScopedInlineItem::ScopedInlineItem(
-    const NGFragmentItem& item,
+    const FragmentItem& item,
     NGInlinePaintContext* inline_context) {
   if (!RuntimeEnabledFeatures::TextDecoratingBoxEnabled())
     return;
@@ -39,7 +39,7 @@ NGInlinePaintContext::ScopedInlineItem::ScopedInlineItem(
 // This function may push multiple decorating boxes, or clear if the propagation
 // was stopped. See |StopPropagateTextDecorations|.
 wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
-    const NGFragmentItem& item,
+    const FragmentItem& item,
     DecoratingBoxList* saved_decorating_boxes) {
   DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
   DCHECK(!saved_decorating_boxes || saved_decorating_boxes->empty());
@@ -59,7 +59,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
 
    public:
     DecorationBoxSynchronizer(NGInlinePaintContext* inline_context,
-                              const NGFragmentItem& item,
+                              const FragmentItem& item,
                               const Vector<AppliedTextDecoration, 1>* stop_at,
                               DecoratingBoxList* saved_decorating_boxes)
         : inline_context_(inline_context),
@@ -70,7 +70,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
       DCHECK(stop_at_);
     }
 
-    wtf_size_t Sync(const NGFragmentItem* item,
+    wtf_size_t Sync(const FragmentItem* item,
                     const LayoutObject* layout_object,
                     const ComputedStyle* style,
                     const Vector<AppliedTextDecoration, 1>* decorations) {
@@ -188,7 +188,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
     }
 
     void PushDecoratingBox(
-        const NGFragmentItem* item,
+        const FragmentItem* item,
         const LayoutObject& layout_object,
         const ComputedStyle& style,
         const Vector<AppliedTextDecoration, 1>& decorations) {
@@ -240,7 +240,7 @@ void NGInlinePaintContext::PushDecoratingBoxAncestors(
   DCHECK(inline_box.Current().IsInlineBox());
   DCHECK(decorating_boxes_.empty());
 
-  Vector<const NGFragmentItem*, 16> ancestor_items;
+  Vector<const FragmentItem*, 16> ancestor_items;
   for (InlineCursor cursor = inline_box;;) {
     cursor.MoveToParent();
     const InlineCursorPosition& current = cursor.Current();
@@ -248,8 +248,9 @@ void NGInlinePaintContext::PushDecoratingBoxAncestors(
 
     if (current.IsLineBox()) {
       SetLineBox(cursor);
-      for (const NGFragmentItem* item : base::Reversed(ancestor_items))
+      for (const FragmentItem* item : base::Reversed(ancestor_items)) {
         SyncDecoratingBox(*item);
+      }
       return;
     }
 
@@ -275,11 +276,11 @@ NGInlinePaintContext::ScopedLineBox::ScopedLineBox(
 
 void NGInlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
   DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
-  DCHECK_EQ(line_cursor.Current()->Type(), NGFragmentItem::kLine);
+  DCHECK_EQ(line_cursor.Current()->Type(), FragmentItem::kLine);
   line_cursor_ = line_cursor;
   DCHECK(decorating_boxes_.empty());
 
-  const NGFragmentItem& line_item = *line_cursor.Current();
+  const FragmentItem& line_item = *line_cursor.Current();
   const ComputedStyle& style = line_item.Style();
   const Vector<AppliedTextDecoration, 1>& applied_text_decorations =
       style.AppliedTextDecorations();

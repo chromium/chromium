@@ -364,8 +364,9 @@ void CheckDidAddFragment(const LayoutBox& box,
   wtf_size_t index = 0;
   for (const NGPhysicalBoxFragment& fragment : box.PhysicalFragments()) {
     DCHECK_EQ(fragment.IsFirstForNode(), index == 0);
-    if (const NGFragmentItems* fragment_items = fragment.Items())
+    if (const FragmentItems* fragment_items = fragment.Items()) {
       fragment_items->CheckAllItemsAreValid();
+    }
     // Don't check past the fragment just added. Those entries may be invalid at
     // this point.
     if (index == new_fragment_index)
@@ -509,7 +510,7 @@ void LayoutBox::WillBeDestroyed() {
 
 void LayoutBox::DisassociatePhysicalFragments() {
   if (FirstInlineFragmentItemIndex()) {
-    NGFragmentItems::LayoutObjectWillBeDestroyed(*this);
+    FragmentItems::LayoutObjectWillBeDestroyed(*this);
     ClearFirstInlineFragmentItemIndex();
   }
   if (measure_result_)
@@ -576,7 +577,7 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
           if (containing_block && containing_block->IsLayoutNGGrid())
             containing_block->SetGridPlacementDirty(true);
 
-          // Out of flow are not part of |NGFragmentItems|, and that further
+          // Out of flow are not part of |FragmentItems|, and that further
           // changes including destruction cannot be tracked. We need to mark it
           // is moved out from this IFC.
           will_move_out_of_ifc = true;
@@ -600,7 +601,7 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
       }
 
       if (will_move_out_of_ifc && FirstInlineFragmentItemIndex()) {
-        NGFragmentItems::LayoutObjectWillBeMoved(*this);
+        FragmentItems::LayoutObjectWillBeMoved(*this);
         ClearFirstInlineFragmentItemIndex();
       }
       if (will_become_inflow)
@@ -2705,7 +2706,7 @@ void LayoutBox::SetLayoutResult(const NGLayoutResult* result,
         // Before forgetting any old fragments and their items, we need to clear
         // associations.
         if (box_fragment.IsInlineFormattingContext())
-          NGFragmentItems::ClearAssociatedFragments(this);
+          FragmentItems::ClearAssociatedFragments(this);
         ShrinkLayoutResults(index + 1);
       }
     }
@@ -2746,7 +2747,7 @@ void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
     if (HasFragmentItems()) {
       if (!index)
         InvalidateItems(*old_result);
-      NGFragmentItems::ClearAssociatedFragments(this);
+      FragmentItems::ClearAssociatedFragments(this);
     }
     if (layout_results_.size() > 1) {
       if (fragment.Size() != old_fragment.Size())
@@ -2776,8 +2777,8 @@ void LayoutBox::FinalizeLayoutResults() {
   // If we've added all the results we were going to, and the node establishes
   // an inline formatting context, we have some finalization to do.
   if (HasFragmentItems()) {
-    NGFragmentItems::FinalizeAfterLayout(layout_results_,
-                                         *To<LayoutBlockFlow>(this));
+    FragmentItems::FinalizeAfterLayout(layout_results_,
+                                       *To<LayoutBlockFlow>(this));
   }
 }
 

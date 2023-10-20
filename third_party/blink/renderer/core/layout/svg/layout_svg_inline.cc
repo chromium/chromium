@@ -75,14 +75,15 @@ bool LayoutSVGInline::IsObjectBoundingBoxValid() const {
 void LayoutSVGInline::ObjectBoundingBoxForCursor(InlineCursor& cursor,
                                                  gfx::RectF& bounds) {
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-    const NGFragmentItem& item = *cursor.CurrentItem();
-    if (item.Type() == NGFragmentItem::kSvgText) {
+    const FragmentItem& item = *cursor.CurrentItem();
+    if (item.Type() == FragmentItem::kSvgText) {
       bounds.Union(cursor.Current().ObjectBoundingBox(cursor));
     } else if (InlineCursor descendants = cursor.CursorForDescendants()) {
       for (; descendants; descendants.MoveToNext()) {
-        const NGFragmentItem& descendant_item = *descendants.CurrentItem();
-        if (descendant_item.Type() == NGFragmentItem::kSvgText)
+        const FragmentItem& descendant_item = *descendants.CurrentItem();
+        if (descendant_item.Type() == FragmentItem::kSvgText) {
           bounds.Union(descendants.Current().ObjectBoundingBox(cursor));
+        }
       }
     }
   }
@@ -133,8 +134,8 @@ void LayoutSVGInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
     InlineCursor cursor;
     for (cursor.MoveToIncludingCulledInline(*this); cursor;
          cursor.MoveToNextForSameLayoutObject()) {
-      const NGFragmentItem& item = *cursor.CurrentItem();
-      if (item.Type() == NGFragmentItem::kSvgText) {
+      const FragmentItem& item = *cursor.CurrentItem();
+      if (item.Type() == FragmentItem::kSvgText) {
         quads.push_back(LocalToAbsoluteQuad(
             gfx::QuadF(SVGLayoutSupport::ExtendTextBBoxWithStroke(
                 *this, cursor.Current().ObjectBoundingBox(cursor))),

@@ -28,13 +28,13 @@ class CORE_EXPORT NGDecoratingBox {
                                  : &style.AppliedTextDecorations()) {
     DCHECK_EQ(&style.AppliedTextDecorations(), decorations_);
   }
-  NGDecoratingBox(const NGFragmentItem& item,
+  NGDecoratingBox(const FragmentItem& item,
                   const ComputedStyle& style,
                   const Vector<AppliedTextDecoration, 1>* decorations)
       : NGDecoratingBox(item.ContentOffsetInContainerFragment(),
                         style,
                         decorations) {}
-  explicit NGDecoratingBox(const NGFragmentItem& item)
+  explicit NGDecoratingBox(const FragmentItem& item)
       : NGDecoratingBox(item, item.Style(), /* decorations */ nullptr) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(style_); }

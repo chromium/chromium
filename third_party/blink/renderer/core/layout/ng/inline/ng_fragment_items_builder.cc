@@ -13,11 +13,11 @@
 
 namespace blink {
 
-NGFragmentItemsBuilder::NGFragmentItemsBuilder(
+FragmentItemsBuilder::FragmentItemsBuilder(
     WritingDirectionMode writing_direction)
     : node_(nullptr), writing_direction_(writing_direction) {}
 
-NGFragmentItemsBuilder::NGFragmentItemsBuilder(
+FragmentItemsBuilder::FragmentItemsBuilder(
     const NGInlineNode& node,
     WritingDirectionMode writing_direction,
     bool is_block_fragmented)
@@ -46,7 +46,7 @@ NGFragmentItemsBuilder::NGFragmentItemsBuilder(
   }
 }
 
-NGFragmentItemsBuilder::~NGFragmentItemsBuilder() {
+FragmentItemsBuilder::~FragmentItemsBuilder() {
   ReleaseCurrentLogicalLineItems();
 
   // Delete leftovers that were associated, but were not added. Clear() is
@@ -59,7 +59,7 @@ NGFragmentItemsBuilder::~NGFragmentItemsBuilder() {
   }
 }
 
-void NGFragmentItemsBuilder::ReleaseCurrentLogicalLineItems() {
+void FragmentItemsBuilder::ReleaseCurrentLogicalLineItems() {
   if (!current_line_items_)
     return;
   if (current_line_items_ == line_items_pool_) {
@@ -71,7 +71,7 @@ void NGFragmentItemsBuilder::ReleaseCurrentLogicalLineItems() {
   current_line_items_ = nullptr;
 }
 
-void NGFragmentItemsBuilder::MoveCurrentLogicalLineItemsToMap() {
+void FragmentItemsBuilder::MoveCurrentLogicalLineItemsToMap() {
   if (!current_line_items_) {
     DCHECK(!current_line_fragment_);
     return;
@@ -82,7 +82,7 @@ void NGFragmentItemsBuilder::MoveCurrentLogicalLineItemsToMap() {
   current_line_items_ = nullptr;
 }
 
-NGLogicalLineItems* NGFragmentItemsBuilder::AcquireLogicalLineItems() {
+NGLogicalLineItems* FragmentItemsBuilder::AcquireLogicalLineItems() {
   if (line_items_pool_ && !is_line_items_pool_acquired_) {
     is_line_items_pool_acquired_ = true;
     return line_items_pool_;
@@ -93,7 +93,7 @@ NGLogicalLineItems* NGFragmentItemsBuilder::AcquireLogicalLineItems() {
   return current_line_items_;
 }
 
-const NGLogicalLineItems& NGFragmentItemsBuilder::LogicalLineItems(
+const NGLogicalLineItems& FragmentItemsBuilder::LogicalLineItems(
     const NGPhysicalLineBoxFragment& line_fragment) const {
   if (&line_fragment == current_line_fragment_) {
     DCHECK(current_line_items_);
@@ -104,7 +104,7 @@ const NGLogicalLineItems& NGFragmentItemsBuilder::LogicalLineItems(
   return *items;
 }
 
-void NGFragmentItemsBuilder::AssociateLogicalLineItems(
+void FragmentItemsBuilder::AssociateLogicalLineItems(
     NGLogicalLineItems* line_items,
     const NGPhysicalFragment& line_fragment) {
   DCHECK(!current_line_items_ || current_line_items_ == line_items);
@@ -113,7 +113,7 @@ void NGFragmentItemsBuilder::AssociateLogicalLineItems(
   current_line_fragment_ = &line_fragment;
 }
 
-void NGFragmentItemsBuilder::AddLine(
+void FragmentItemsBuilder::AddLine(
     const NGPhysicalLineBoxFragment& line_fragment,
     const LogicalOffset& offset) {
   DCHECK(!is_converted_to_physical_);
@@ -142,7 +142,7 @@ void NGFragmentItemsBuilder::AddLine(
   AddItems(line_items->begin(), line_items->end());
 
   // All children are added. Create an item for the start of the line.
-  NGFragmentItem& line_item = items_[line_start_index].item;
+  FragmentItem& line_item = items_[line_start_index].item;
   const wtf_size_t item_count = items_.size() - line_start_index;
   DCHECK_EQ(line_item.DescendantsCount(), 1u);
   line_item.SetDescendantsCount(item_count);
@@ -155,8 +155,8 @@ void NGFragmentItemsBuilder::AddLine(
   DCHECK_LE(items_.size(), estimated_size);
 }
 
-void NGFragmentItemsBuilder::AddItems(NGLogicalLineItem* child_begin,
-                                      NGLogicalLineItem* child_end) {
+void FragmentItemsBuilder::AddItems(NGLogicalLineItem* child_begin,
+                                    NGLogicalLineItem* child_end) {
   DCHECK(!is_converted_to_physical_);
 
   const WritingMode writing_mode = GetWritingMode();
@@ -193,13 +193,13 @@ void NGFragmentItemsBuilder::AddItems(NGLogicalLineItem* child_begin,
     // All children are added. Compute how many items are actually added. The
     // number of items added may be different from |children_count|.
     const wtf_size_t item_count = items_.size() - box_start_index;
-    NGFragmentItem& box_item = items_[box_start_index].item;
+    FragmentItem& box_item = items_[box_start_index].item;
     DCHECK_EQ(box_item.DescendantsCount(), 1u);
     box_item.SetDescendantsCount(item_count);
   }
 }
 
-void NGFragmentItemsBuilder::AddListMarker(
+void FragmentItemsBuilder::AddListMarker(
     const NGPhysicalBoxFragment& marker_fragment,
     const LogicalOffset& offset) {
   DCHECK(!is_converted_to_physical_);
@@ -210,13 +210,12 @@ void NGFragmentItemsBuilder::AddListMarker(
   items_.emplace_back(offset, marker_fragment, resolved_direction);
 }
 
-NGFragmentItemsBuilder::AddPreviousItemsResult
-NGFragmentItemsBuilder::AddPreviousItems(
-    const NGPhysicalBoxFragment& container,
-    const NGFragmentItems& items,
-    NGBoxFragmentBuilder* container_builder,
-    const NGFragmentItem* end_item,
-    wtf_size_t max_lines) {
+FragmentItemsBuilder::AddPreviousItemsResult
+FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
+                                       const FragmentItems& items,
+                                       NGBoxFragmentBuilder* container_builder,
+                                       const FragmentItem* end_item,
+                                       wtf_size_t max_lines) {
   if (end_item) {
     DCHECK(node_);
     DCHECK(container_builder);
@@ -225,7 +224,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
     if (UNLIKELY(items.FirstLineText() && !first_line_text_content_)) {
       // Don't reuse previous items if they have different `::first-line` style
       // but |this| doesn't. Reaching here means that computed style doesn't
-      // change, but |NGFragmentItem| has wrong |NGStyleVariant|.
+      // change, but |FragmentItem| has wrong |NGStyleVariant|.
       return AddPreviousItemsResult();
     }
   } else {
@@ -236,7 +235,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
   }
 
   DCHECK(items_.empty());
-  const NGFragmentItems::Span source_items = items.Items();
+  const FragmentItems::Span source_items = items.Items();
   const wtf_size_t estimated_size =
       base::checked_cast<wtf_size_t>(source_items.size());
   items_.reserve(estimated_size);
@@ -257,7 +256,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
 
   for (InlineCursor cursor(container, items); cursor;) {
     DCHECK(cursor.Current().Item());
-    const NGFragmentItem& item = *cursor.Current().Item();
+    const FragmentItem& item = *cursor.Current().Item();
     if (&item == end_item)
       break;
     DCHECK(!item.IsDirty());
@@ -265,7 +264,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
     const LogicalOffset item_offset =
         converter.ToLogical(item.OffsetInContainerFragment(), item.Size());
 
-    if (item.Type() == NGFragmentItem::kLine) {
+    if (item.Type() == FragmentItem::kLine) {
       DCHECK(item.LineBoxFragment());
       if (end_item) {
         // Check if this line has valid item_index and offset.
@@ -299,7 +298,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
       line_converter.SetOuterSize(line_box_bounds.size);
       for (InlineCursor line = cursor.CursorForDescendants(); line;
            line.MoveToNext()) {
-        const NGFragmentItem& line_child = *line.Current().Item();
+        const FragmentItem& line_child = *line.Current().Item();
         if (end_item) {
           // If |end_item| is given, the caller has computed the range safe to
           // reuse by calling |EndOfReusableItems|. All children should be safe
@@ -325,7 +324,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
             line_child);
 
         // Be sure to pick the post-layout fragment.
-        const NGFragmentItem& new_item = items_.back().item;
+        const FragmentItem& new_item = items_.back().item;
         if (const NGPhysicalBoxFragment* box = new_item.BoxFragment()) {
           box = box->PostLayout();
           new_item.GetMutableForCloning().ReplaceBoxFragment(*box);
@@ -337,7 +336,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
       continue;
     }
 
-    DCHECK_NE(item.Type(), NGFragmentItem::kLine);
+    DCHECK_NE(item.Type(), FragmentItem::kLine);
     DCHECK(!end_item);
     items_.emplace_back(item_offset, item);
     cursor.MoveToNext();
@@ -353,7 +352,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
   return AddPreviousItemsResult();
 }
 
-const NGFragmentItemsBuilder::ItemWithOffsetList& NGFragmentItemsBuilder::Items(
+const FragmentItemsBuilder::ItemWithOffsetList& FragmentItemsBuilder::Items(
     const PhysicalSize& outer_size) {
   ConvertToPhysical(outer_size);
   return items_;
@@ -361,7 +360,7 @@ const NGFragmentItemsBuilder::ItemWithOffsetList& NGFragmentItemsBuilder::Items(
 
 // Convert internal logical offsets to physical. Items are kept with logical
 // offset until outer box size is determined.
-void NGFragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
+void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
   if (is_converted_to_physical_)
     return;
 
@@ -373,13 +372,13 @@ void NGFragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
       {ToLineWritingMode(GetWritingMode()), TextDirection::kLtr});
 
   for (ItemWithOffset* iter = items_.begin(); iter != items_.end(); ++iter) {
-    NGFragmentItem* item = &iter->item;
+    FragmentItem* item = &iter->item;
     item->SetOffset(converter.ToPhysical(iter->offset, item->Size()));
 
     // Transform children of lines separately from children of the block,
     // because they may have different directions from the block. To do
     // this, their offsets are relative to their containing line box.
-    if (item->Type() == NGFragmentItem::kLine) {
+    if (item->Type() == FragmentItem::kLine) {
       unsigned descendants_count = item->DescendantsCount();
       DCHECK(descendants_count);
       if (descendants_count) {
@@ -400,7 +399,7 @@ void NGFragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
   is_converted_to_physical_ = true;
 }
 
-absl::optional<LogicalOffset> NGFragmentItemsBuilder::LogicalOffsetFor(
+absl::optional<LogicalOffset> FragmentItemsBuilder::LogicalOffsetFor(
     const LayoutObject& layout_object) const {
   for (const ItemWithOffset& item : items_) {
     if (item->GetLayoutObject() == &layout_object)
@@ -409,10 +408,10 @@ absl::optional<LogicalOffset> NGFragmentItemsBuilder::LogicalOffsetFor(
   return absl::nullopt;
 }
 
-void NGFragmentItemsBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
+void FragmentItemsBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   DCHECK(!is_converted_to_physical_);
   for (ItemWithOffset* iter = items_.begin(); iter != items_.end(); ++iter) {
-    if (iter->item->Type() == NGFragmentItem::kLine) {
+    if (iter->item->Type() == FragmentItem::kLine) {
       iter->offset.block_offset += delta;
       std::advance(iter, iter->item->DescendantsCount() - 1);
       DCHECK_LE(iter, items_.end());
@@ -422,7 +421,7 @@ void NGFragmentItemsBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   }
 }
 
-absl::optional<PhysicalSize> NGFragmentItemsBuilder::ToFragmentItems(
+absl::optional<PhysicalSize> FragmentItemsBuilder::ToFragmentItems(
     const PhysicalSize& outer_size,
     void* data) {
   DCHECK(text_content_);
@@ -432,7 +431,7 @@ absl::optional<PhysicalSize> NGFragmentItemsBuilder::ToFragmentItems(
     new_size = SvgTextLayoutAlgorithm(node_, GetWritingMode())
                    .Layout(TextContent(false), items_);
   }
-  new (data) NGFragmentItems(this);
+  new (data) FragmentItems(this);
   return new_size;
 }
 

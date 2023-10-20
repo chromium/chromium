@@ -24,7 +24,7 @@ struct PhysicalOffset;
 struct PhysicalRect;
 struct PhysicalSize;
 
-// Text fragment painter for LayoutNG. Operates on NGFragmentItem that IsText()
+// Text fragment painter for LayoutNG. Operates on FragmentItem that IsText()
 // and handles clipping, selection, etc. Delegates to NGTextPainter to paint the
 // text itself.
 class NGTextFragmentPainter {

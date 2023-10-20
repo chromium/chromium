@@ -127,13 +127,13 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return MutableChildrenForOutOfFlow(children_.data(), children_.size());
   }
 
-  // Returns |NGFragmentItems| if this fragment has one.
+  // Returns |FragmentItems| if this fragment has one.
   bool HasItems() const {
     // Use get_concurrently because it can be called from a background thread in
     // TraceAfterDispatch().
     return bit_field_.get_concurrently<ConstHasFragmentItemsFlag>();
   }
-  const NGFragmentItems* Items() const {
+  const FragmentItems* Items() const {
     return HasItems() ? ComputeItemsAddress() : nullptr;
   }
 
@@ -586,10 +586,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
   PhysicalFragmentRareData::RareField& EnsureRareField(FieldId id);
 
-  const NGFragmentItems* ComputeItemsAddress() const {
+  const FragmentItems* ComputeItemsAddress() const {
     DCHECK(HasItems());
-    return reinterpret_cast<const NGFragmentItems*>(base::bits::AlignUp(
-        reinterpret_cast<const uint8_t*>(this + 1), alignof(NGFragmentItems)));
+    return reinterpret_cast<const FragmentItems*>(base::bits::AlignUp(
+        reinterpret_cast<const uint8_t*>(this + 1), alignof(FragmentItems)));
   }
 
   void SetInkOverflow(const PhysicalRect& self, const PhysicalRect& contents);

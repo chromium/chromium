@@ -86,12 +86,12 @@ class InlineCursorTest : public RenderingTest,
   // instances, except that the order is reversed.
   void TestPrevoiusSibling(const InlineCursor& start) {
     DCHECK(start.HasRoot());
-    Vector<const NGFragmentItem*> forwards;
+    Vector<const FragmentItem*> forwards;
     for (InlineCursor cursor(start); cursor;
          cursor.MoveToNextSkippingChildren()) {
       forwards.push_back(cursor.CurrentItem());
     }
-    Vector<const NGFragmentItem*> backwards;
+    Vector<const FragmentItem*> backwards;
     for (InlineBackwardCursor cursor(start); cursor;
          cursor.MoveToPreviousSibling()) {
       backwards.push_back(cursor.Current().Item());
@@ -208,7 +208,7 @@ TEST_P(InlineCursorTest, Parent) {
 }
 
 TEST_P(InlineCursorTest, ContainingLine) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor =
       SetupCursor("<div id=root>abc<a id=target>def</a>ghi<br>xyz</div>");
@@ -347,7 +347,7 @@ TEST_P(InlineCursorTest, CursorForMovingAcrossFragmentainer) {
 }
 
 TEST_P(InlineCursorTest, FirstChild) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor =
       SetupCursor("<div id=root>abc<a>DEF<b>GHI</b></a>xyz</div>");
@@ -357,7 +357,7 @@ TEST_P(InlineCursorTest, FirstChild) {
 }
 
 TEST_P(InlineCursorTest, FirstChild2) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor = SetupCursor(
       "<div id=root><b id=first>abc</b><a>DEF<b>GHI</b></a><a "
@@ -370,7 +370,7 @@ TEST_P(InlineCursorTest, FirstChild2) {
 }
 
 TEST_P(InlineCursorTest, FirstLastLogicalLeafInSimpleText) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor =
       SetupCursor("<div id=root><b>first</b><b>middle</b><b>last</b></div>");
@@ -385,7 +385,7 @@ TEST_P(InlineCursorTest, FirstLastLogicalLeafInSimpleText) {
 }
 
 TEST_P(InlineCursorTest, FirstLastLogicalLeafInRtlText) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
       "<bdo id=root dir=rtl style=display:block>"
@@ -402,7 +402,7 @@ TEST_P(InlineCursorTest, FirstLastLogicalLeafInRtlText) {
 }
 
 TEST_P(InlineCursorTest, FirstLastLogicalLeafInTextAsDeepDescendants) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
       "<div id=root>"
@@ -484,7 +484,7 @@ TEST_P(InlineCursorTest, IsEmptyLineBox) {
 }
 
 TEST_P(InlineCursorTest, LastChild) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor =
       SetupCursor("<div id=root>abc<a>DEF<b>GHI</b></a>xyz</div>");
@@ -494,7 +494,7 @@ TEST_P(InlineCursorTest, LastChild) {
 }
 
 TEST_P(InlineCursorTest, LastChild2) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor = SetupCursor(
       "<div id=root><b id=first>abc</b><a>DEF<b>GHI</b></a>"
@@ -533,7 +533,7 @@ TEST_P(InlineCursorTest, Next) {
 }
 
 TEST_P(InlineCursorTest, NextIncludingFragmentainer) {
-  // TDOO(yosin): Remove style for <b> once NGFragmentItem don't do culled
+  // TDOO(yosin): Remove style for <b> once FragmentItem don't do culled
   // inline.
   LoadAhem();
   InsertStyleElement(
@@ -602,7 +602,7 @@ TEST_P(InlineCursorTest, NextWithSoftHyphens) {
 }
 
 TEST_P(InlineCursorTest, NextInlineLeaf) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
   Vector<String> list;
@@ -615,7 +615,7 @@ TEST_P(InlineCursorTest, NextInlineLeaf) {
 
 // Note: This is for AccessibilityLayoutTest.NextOnLine.
 TEST_P(InlineCursorTest, NextInlineLeafOnLineFromLayoutInline) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
       "<div id=root>"
@@ -655,7 +655,7 @@ TEST_P(InlineCursorTest, NextInlineLeafOnLineFromNestedLayoutInline) {
 }
 
 TEST_P(InlineCursorTest, NextInlineLeafOnLineFromLayoutText) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
       "<div id=root>"
@@ -705,7 +705,7 @@ TEST_P(InlineCursorTest, NextInlineLeafWithSoftHyphens) {
 }
 
 TEST_P(InlineCursorTest, NextInlineLeafIgnoringLineBreak) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
   Vector<String> list;
@@ -799,7 +799,7 @@ TEST_P(InlineCursorTest, NextForSameLayoutObjectWithRange) {
 }
 
 TEST_P(InlineCursorTest, Sibling) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor =
       SetupCursor("<div id=root>abc<a>DEF<b>GHI</b></a>xyz</div>");
@@ -810,7 +810,7 @@ TEST_P(InlineCursorTest, Sibling) {
 }
 
 TEST_P(InlineCursorTest, Sibling2) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor =
       SetupCursor("<div id=root><a>abc<b>def</b>xyz</a></div>");
@@ -822,7 +822,7 @@ TEST_P(InlineCursorTest, Sibling2) {
 }
 
 TEST_P(InlineCursorTest, NextSkippingChildren) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("span { background: gray; }");
   SetBodyInnerHTML(R"HTML(
     <div id=root>
@@ -1027,7 +1027,7 @@ TEST_P(InlineCursorTest, PositionForPointInChildBlockChildren) {
 }
 
 TEST_P(InlineCursorTest, Previous) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
   cursor.MoveTo(*cursor.GetLayoutBlockFlow()->LastChild());
@@ -1041,7 +1041,7 @@ TEST_P(InlineCursorTest, Previous) {
 }
 
 TEST_P(InlineCursorTest, PreviousIncludingFragmentainer) {
-  // TDOO(yosin): Remove style for <b> once NGFragmentItem don't do culled
+  // TDOO(yosin): Remove style for <b> once FragmentItem don't do culled
   // inline.
   LoadAhem();
   InsertStyleElement(
@@ -1062,7 +1062,7 @@ TEST_P(InlineCursorTest, PreviousIncludingFragmentainer) {
 }
 
 TEST_P(InlineCursorTest, PreviousInlineLeaf) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
   cursor.MoveTo(*cursor.GetLayoutBlockFlow()->LastChild());
@@ -1075,7 +1075,7 @@ TEST_P(InlineCursorTest, PreviousInlineLeaf) {
 }
 
 TEST_P(InlineCursorTest, PreviousInlineLeafIgnoringLineBreak) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
   cursor.MoveTo(*cursor.GetLayoutBlockFlow()->LastChild());
@@ -1088,7 +1088,7 @@ TEST_P(InlineCursorTest, PreviousInlineLeafIgnoringLineBreak) {
 }
 
 TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromLayoutInline) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
       "<div id=root>"
@@ -1128,7 +1128,7 @@ TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromNestedLayoutInline) {
 }
 
 TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromLayoutText) {
-  // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
+  // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
       "<div id=root>"
@@ -1224,12 +1224,12 @@ TEST_P(InlineCursorTest, MoveToVisualFirstOrLast) {
   InlineCursor cursor1;
   cursor1.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("span1"));
   cursor1.MoveToVisualFirstForSameLayoutObject();
-  EXPECT_EQ("NGFragmentItem Text \"MIXED\"", cursor1.Current()->ToString());
+  EXPECT_EQ("FragmentItem Text \"MIXED\"", cursor1.Current()->ToString());
 
   InlineCursor cursor2;
   cursor2.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("span1"));
   cursor2.MoveToVisualLastForSameLayoutObject();
-  EXPECT_EQ("NGFragmentItem Text \"some\"", cursor2.Current()->ToString());
+  EXPECT_EQ("FragmentItem Text \"some\"", cursor2.Current()->ToString());
 }
 
 class InlineCursorBlockFragmentationTest : public RenderingTest {};
@@ -1356,7 +1356,7 @@ TEST_F(InlineCursorBlockFragmentationTest, MoveToLayoutObject) {
   };
   TestFragment3(line3);
 
-  // Test cursors rooted at |NGFragmentItems|.
+  // Test cursors rooted at |FragmentItems|.
   // They can enumerate fragments only in the specified fragmentainer.
   HeapVector<Member<const NGPhysicalBoxFragment>> fragments;
   for (const NGPhysicalBoxFragment& fragment :

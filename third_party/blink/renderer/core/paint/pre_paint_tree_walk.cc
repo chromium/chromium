@@ -938,7 +938,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
            inline_cursor->MoveToNextForSameLayoutObject()) {
         // Check if the search is limited to descendants of |parent_fragment|.
         DCHECK_EQ(&inline_cursor->ContainerFragment(), parent_fragment);
-        const NGFragmentItem& item = *inline_cursor->Current().Item();
+        const FragmentItem& item = *inline_cursor->Current().Item();
         DCHECK_EQ(item.GetLayoutObject(), child);
 
         is_last_for_node = item.IsLastForNode();

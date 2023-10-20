@@ -717,7 +717,7 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
       // Mark all descendants of the first line if first-line style.
       for (InlineCursor descendants = first_line.CursorForDescendants();
            descendants; descendants.MoveToNext()) {
-        const NGFragmentItem* item = descendants.Current().Item();
+        const FragmentItem* item = descendants.Current().Item();
         if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
           descendants.MoveToNextSkippingChildren();
           continue;

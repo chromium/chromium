@@ -13,8 +13,8 @@
 namespace blink {
 
 class ComputedStyle;
+class FragmentItem;
 class GraphicsContextStateSaver;
-class NGFragmentItem;
 class NGTextPainter;
 struct LineRelativeRect;
 struct PaintInfo;
@@ -37,7 +37,7 @@ class CORE_EXPORT NGTextDecorationPainter {
  public:
   explicit NGTextDecorationPainter(
       NGTextPainter& text_painter,
-      const NGFragmentItem& text_item,
+      const FragmentItem& text_item,
       const PaintInfo& paint_info,
       const ComputedStyle& style,
       const TextPaintStyle& text_style,
@@ -62,7 +62,7 @@ class CORE_EXPORT NGTextDecorationPainter {
   void ClipIfNeeded(GraphicsContextStateSaver&);
 
   NGTextPainter& text_painter_;
-  const NGFragmentItem& text_item_;
+  const FragmentItem& text_item_;
   const PaintInfo& paint_info_;
   const ComputedStyle& style_;
   const TextPaintStyle& text_style_;

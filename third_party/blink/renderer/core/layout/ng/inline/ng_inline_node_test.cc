@@ -151,14 +151,14 @@ class NGInlineNodeTest : public RenderingTest {
   }
 
   void TestAnyItemsAreDirty(const LayoutBlockFlow& block_flow, bool expected) {
-    NGFragmentItems::DirtyLinesFromNeedsLayout(block_flow);
+    FragmentItems::DirtyLinesFromNeedsLayout(block_flow);
     for (const NGPhysicalBoxFragment& fragment :
          block_flow.PhysicalFragments()) {
-      if (const NGFragmentItems* items = fragment.Items()) {
-        // Check |NGFragmentItem::IsDirty| directly without using
+      if (const FragmentItems* items = fragment.Items()) {
+        // Check |FragmentItem::IsDirty| directly without using
         // |EndOfReusableItems|. This is different from the line cache logic,
         // but some items may not be reusable even if |!IsDirty()|.
-        for (const NGFragmentItem& item : items->Items()) {
+        for (const FragmentItem& item : items->Items()) {
           if (item.IsDirty()) {
             EXPECT_TRUE(expected);
             return;
@@ -788,7 +788,7 @@ TEST_P(StyleChangeTest, NeedsCollectInlinesOnStyle) {
         InlineCursor cursor;
         for (cursor.MoveTo(*child); cursor;
              cursor.MoveToNextForSameLayoutObject()) {
-          const NGFragmentItem* item = cursor.CurrentItem();
+          const FragmentItem* item = cursor.CurrentItem();
           EXPECT_EQ(item->IsInkOverflowComputed(),
                     !*data.invalidate_ink_overflow);
         }

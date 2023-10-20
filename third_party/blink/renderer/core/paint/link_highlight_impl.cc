@@ -310,7 +310,7 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
       use_rounded_rects = false;
 
     // TODO(yosin): We should remove following if-statement once we release
-    // NGFragmentItem to renderer rounded rect even if nested inline, e.g.
+    // FragmentItem to renderer rounded rect even if nested inline, e.g.
     // <a>ABC<b>DEF</b>GHI</a>.
     // See gesture-tapHighlight-simple-nested.html
     if (use_rounded_rects && object->IsLayoutInline() &&

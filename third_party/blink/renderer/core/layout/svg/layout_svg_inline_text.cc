@@ -114,9 +114,10 @@ gfx::RectF LayoutSVGInlineText::ObjectBoundingBox() const {
   InlineCursor cursor;
   cursor.MoveTo(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-    const NGFragmentItem& item = *cursor.CurrentItem();
-    if (item.Type() == NGFragmentItem::kSvgText)
+    const FragmentItem& item = *cursor.CurrentItem();
+    if (item.Type() == FragmentItem::kSvgText) {
       bounds.Union(cursor.Current().ObjectBoundingBox(cursor));
+    }
   }
   return bounds;
 }

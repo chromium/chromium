@@ -35,7 +35,7 @@ bool HasMultipleItems(const Items items) {
   return iter != items.end() && ++iter != items.end();
 }
 
-inline bool MayHaveMultipleFragmentItems(const NGFragmentItem& item,
+inline bool MayHaveMultipleFragmentItems(const FragmentItem& item,
                                          const LayoutObject& layout_object) {
   return !item.IsFirstForNode() || !item.IsLastForNode() ||
          // TODO(crbug.com/1061423): InlineCursor is currently unable to deal
@@ -201,8 +201,8 @@ void NGLineBoxFragmentPainter::PaintBackgroundBorderShadow(
   DCHECK_EQ(paint_info.phase, PaintPhase::kForeground);
   DCHECK_EQ(inline_box_fragment_.Type(), NGPhysicalFragment::kFragmentLineBox);
   DCHECK(NeedsPaint(inline_box_fragment_));
-  // |NGFragmentItem| uses the fragment id when painting the background of
-  // line boxes. Please see |NGFragmentItem::kInitialLineFragmentId|.
+  // |FragmentItem| uses the fragment id when painting the background of
+  // line boxes. Please see |FragmentItem::kInitialLineFragmentId|.
   DCHECK_NE(paint_info.context.GetPaintController().CurrentFragment(), 0u);
 
   if (line_style_ == style_ ||
@@ -535,7 +535,7 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(
         cursor, &inline_context);
-    const NGFragmentItem* item = cursor.CurrentItem();
+    const FragmentItem* item = cursor.CurrentItem();
     DCHECK(item);
     const NGPhysicalBoxFragment* box_fragment = item->BoxFragment();
     DCHECK(box_fragment);

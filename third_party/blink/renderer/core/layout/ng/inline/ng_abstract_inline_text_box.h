@@ -69,10 +69,10 @@ class CORE_EXPORT NGAbstractInlineTextBox final
   InlineCursor GetCursorOnLine() const;
   String GetTextContent() const;
 
-  // NGFragmentItem index in root_box_fragment_'s NGFragmentItems.
-  // It's an index instead of an NGFragmentItem pointer because NGFragmentItem
+  // FragmentItem index in root_box_fragment_'s FragmentItems.
+  // It's an index instead of an FragmentItem pointer because FragmentItem
   // instances are stored in HeapVector instances, and Oilpan heap compaction
-  // changes addresses of NGFragmentItem instances.
+  // changes addresses of FragmentItem instances.
   absl::optional<wtf_size_t> fragment_item_index_;
   Member<LayoutText> layout_text_;
   // |root_box_fragment_| owns |fragment_item_|. Persistent is used here to keep

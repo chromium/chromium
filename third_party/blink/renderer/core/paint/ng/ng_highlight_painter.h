@@ -25,10 +25,10 @@
 namespace blink {
 
 class ComputedStyle;
+class FragmentItem;
 class FrameSelection;
 class InlineCursor;
 class LayoutObject;
-class NGFragmentItem;
 class NGTextPainter;
 class NGTextDecorationPainter;
 class Node;
@@ -41,7 +41,7 @@ namespace {
 class MarkerRangeMappingContext;
 }
 
-// Highlight overlay painter for LayoutNG. Operates on NGFragmentItem that
+// Highlight overlay painter for LayoutNG. Operates on FragmentItem that
 // IsText(). Delegates to NGTextPainter to paint the text itself.
 class CORE_EXPORT NGHighlightPainter {
   STACK_ALLOCATED();
@@ -134,7 +134,7 @@ class CORE_EXPORT NGHighlightPainter {
       NGTextDecorationPainter& decoration_painter,
       const PaintInfo& paint_info,
       const InlineCursor& cursor,
-      const NGFragmentItem& fragment_item,
+      const FragmentItem& fragment_item,
       const absl::optional<AffineTransform> writing_mode_rotation,
       const PhysicalOffset& box_origin,
       const ComputedStyle& style,
@@ -294,7 +294,7 @@ class CORE_EXPORT NGHighlightPainter {
   NGTextDecorationPainter& decoration_painter_;
   const PaintInfo& paint_info_;
   const InlineCursor& cursor_;
-  const NGFragmentItem& fragment_item_;
+  const FragmentItem& fragment_item_;
   const PhysicalOffset& box_origin_;
   const ComputedStyle& originating_style_;
   const TextPaintStyle& originating_text_style_;

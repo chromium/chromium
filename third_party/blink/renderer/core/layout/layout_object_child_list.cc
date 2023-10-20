@@ -65,7 +65,7 @@ void InvalidateInlineItems(LayoutObject* object) {
   if (object->FirstInlineFragmentItemIndex()) {
     if (auto* text = DynamicTo<LayoutText>(object))
       text->DetachAbstractInlineTextBoxesIfNeeded();
-    NGFragmentItems::LayoutObjectWillBeMoved(*object);
+    FragmentItems::LayoutObjectWillBeMoved(*object);
   }
   object->SetIsInLayoutNGInlineFormattingContext(false);
 }

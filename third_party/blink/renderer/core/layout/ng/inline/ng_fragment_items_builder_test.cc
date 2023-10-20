@@ -18,9 +18,9 @@ using testing::ElementsAre;
 
 namespace blink {
 
-class NGFragmentItemsBuilderTest : public RenderingTest {};
+class FragmentItemsBuilderTest : public RenderingTest {};
 
-TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
+TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
   SetBodyInnerHTML(R"HTML(
     <div id="container">
       1<br>
@@ -46,7 +46,7 @@ TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // 1. |AcquireLogicalLineItems|
     // 2. |AssociateLogicalLineItems|
     // 3. |AddLine|.
-    NGFragmentItemsBuilder items_builder(
+    FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
     NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
@@ -67,7 +67,7 @@ TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // Custom layout produces all line boxes first without adding them to the
     // container box. Then runs worklet, and add line boxes to the container
     // box.
-    NGFragmentItemsBuilder items_builder(
+    FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
     NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
@@ -88,7 +88,7 @@ TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
   {
     // Custom layout can reorder line boxes. In this test, line boxes are added
     // to the container box in the reverse order.
-    NGFragmentItemsBuilder items_builder(
+    FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
     NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);
@@ -109,7 +109,7 @@ TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
   }
   {
     // Custom layout may not add all line boxes.
-    NGFragmentItemsBuilder items_builder(
+    FragmentItemsBuilder items_builder(
         inline_node, {WritingMode::kHorizontalTb, TextDirection::kLtr}, false);
     NGLogicalLineItems* line_items1 = items_builder.AcquireLogicalLineItems();
     items_builder.AssociateLogicalLineItems(line_items1, *line_fragment1);

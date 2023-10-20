@@ -74,7 +74,7 @@ Inline layout is performed in the following phases:
 | Pre-layout | LayoutObject | [NGInlineItem] |
 | Line Breaking | [NGInlineItem] | [NGInlineItemResult] |
 | Line box construction | [NGInlineItemResult] | [NGLogicalLineItem] |
-| Generate fragments | [NGLogicalLineItem] | [NGPhysicalFragment] / [NGFragmentItem] |
+| Generate fragments | [NGLogicalLineItem] | [NGPhysicalFragment] / [FragmentItem] |
 
 Note: There is [an idea](https://docs.google.com/document/d/1dxzIHl1dwBtgeKgWd2cKcog8AyydN5rduQvXthMOMD0/edit?usp=sharing)
 to merge [NGInlineItemResult] and [NGLogicalLineItem], but this hasn't been happened yet.
@@ -253,13 +253,13 @@ creates [NGPhysicalBoxFragment] and add children to it.
 When all [NGLogicalLineItem]s are ordered and positioned,
 they are converted to fragments.
 
-Without [NGFragmentItem] enabled,
+Without [FragmentItem] enabled,
 each [NGLogicalLineItem] produces a [NGPhysicalFragment],
 added to the [NGPhysicalLineBoxFragment].
 
-With [NGFragmentItem] enabled,
-each [NGLogicalLineItem] produces a [NGFragmentItem],
-added to the [NGFragmentItems] in the containing block of the inline formatting context.
+With [FragmentItem] enabled,
+each [NGLogicalLineItem] produces a [FragmentItem],
+added to the [FragmentItems] in the containing block of the inline formatting context.
 
 ## Miscellaneous topics ##
 
@@ -371,6 +371,8 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 
 [BidiParagraph]: ../../../../platform/text/bidi_paragraph.h
 [FontBaseline]: ../../../../platform/fonts/font_baseline.h
+[FragmentItem]: ng_fragment_item.h
+[FragmentItems]: ng_fragment_items.h
 [NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
 [NGBlockNode]: ../ng_block_node.h
@@ -378,8 +380,6 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGBoxFragmentBuilder]: ../ng_box_fragment_builder.h
 [NGConstraintSpace]: ../ng_constraint_space_builder.h
 [NGConstraintSpaceBuilder]: ../ng_constraint_space_builder.h
-[NGFragmentItem]: ng_fragment_item.h
-[NGFragmentItems]: ng_fragment_items.h
 [NGInlineBoxState]: ng_inline_box_state.h
 [NGInlineItem]: ng_inline_item.h
 [NGInlineItemResult]: ng_inline_item_result.h

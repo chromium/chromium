@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class NGFragmentItem;
+class FragmentItem;
 class NGLineBoxFragmentBuilder;
 
 class CORE_EXPORT NGPhysicalLineBoxFragment final : public NGPhysicalFragment {
@@ -72,7 +72,7 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final : public NGPhysicalFragment {
                                   TextHeightType height_type) const;
   PhysicalRect ScrollableOverflowForLine(const NGPhysicalBoxFragment& container,
                                          const ComputedStyle& container_style,
-                                         const NGFragmentItem& line,
+                                         const FragmentItem& line,
                                          const InlineCursor& cursor,
                                          TextHeightType height_type) const;
 

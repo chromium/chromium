@@ -327,13 +327,13 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       DynamicTo<LayoutSVGInlineText>(layout_object);
   float scaling_factor = 1.0f;
   if (UNLIKELY(svg_inline_text)) {
-    DCHECK_EQ(text_item.Type(), NGFragmentItem::kSvgText);
+    DCHECK_EQ(text_item.Type(), FragmentItem::kSvgText);
     scaling_factor = svg_inline_text->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
     visual_rect = gfx::ToEnclosingRect(
         svg_inline_text->Parent()->VisualRectInLocalSVGCoordinates());
   } else {
-    DCHECK_NE(text_item.Type(), NGFragmentItem::kSvgText);
+    DCHECK_NE(text_item.Type(), FragmentItem::kSvgText);
     PhysicalRect ink_overflow = text_item.SelfInkOverflow();
     ink_overflow.Move(physical_box.offset);
     visual_rect = ToEnclosingRect(ink_overflow);

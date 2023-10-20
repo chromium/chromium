@@ -18,7 +18,7 @@ using testing::ElementsAre;
 
 namespace blink {
 
-class NGFragmentItemTest : public RenderingTest {
+class FragmentItemTest : public RenderingTest {
  public:
   void ForceLayout() { RunDocumentLifecycle(); }
 
@@ -34,7 +34,7 @@ class NGFragmentItemTest : public RenderingTest {
   }
 
   wtf_size_t IndexOf(const Vector<InlineCursorPosition>& items,
-                     const NGFragmentItem* target) {
+                     const FragmentItem* target) {
     wtf_size_t index = 0;
     for (const auto& item : items) {
       if (item.Item() == target)
@@ -47,9 +47,9 @@ class NGFragmentItemTest : public RenderingTest {
   void TestFirstDirtyLineIndex(const char* id, wtf_size_t expected_index) {
     LayoutBlockFlow* block_flow = GetLayoutBlockFlowByElementId(id);
     const NGPhysicalBoxFragment* fragment = block_flow->GetPhysicalFragment(0);
-    const NGFragmentItems* items = fragment->Items();
-    NGFragmentItems::DirtyLinesFromNeedsLayout(*block_flow);
-    const NGFragmentItem* end_reusable_item =
+    const FragmentItems* items = fragment->Items();
+    FragmentItems::DirtyLinesFromNeedsLayout(*block_flow);
+    const FragmentItem* end_reusable_item =
         items->EndOfReusableItems(*fragment);
 
     InlineCursor cursor(*fragment, *items);
@@ -57,14 +57,14 @@ class NGFragmentItemTest : public RenderingTest {
     EXPECT_EQ(IndexOf(lines, end_reusable_item), expected_index);
   }
 
-  Vector<const NGFragmentItem*> ItemsForAsVector(
+  Vector<const FragmentItem*> ItemsForAsVector(
       const LayoutObject& layout_object) {
-    Vector<const NGFragmentItem*> list;
+    Vector<const FragmentItem*> list;
     InlineCursor cursor;
     for (cursor.MoveTo(layout_object); cursor;
          cursor.MoveToNextForSameLayoutObject()) {
       DCHECK(cursor.Current().Item());
-      const NGFragmentItem& item = *cursor.Current().Item();
+      const FragmentItem& item = *cursor.Current().Item();
       EXPECT_EQ(item.GetLayoutObject(), &layout_object);
       list.push_back(&item);
     }
@@ -72,7 +72,7 @@ class NGFragmentItemTest : public RenderingTest {
   }
 };
 
-TEST_F(NGFragmentItemTest, CopyMove) {
+TEST_F(FragmentItemTest, CopyMove) {
   SetBodyInnerHTML(R"HTML(
     <style>
     div {
@@ -90,15 +90,15 @@ TEST_F(NGFragmentItemTest, CopyMove) {
 
   // Test copying a line item.
   cursor.MoveToFirstLine();
-  const NGFragmentItem* line_item = cursor.Current().Item();
-  EXPECT_EQ(line_item->Type(), NGFragmentItem::kLine);
+  const FragmentItem* line_item = cursor.Current().Item();
+  EXPECT_EQ(line_item->Type(), FragmentItem::kLine);
   EXPECT_NE(line_item->LineBoxFragment(), nullptr);
-  NGFragmentItem copy_of_line(*line_item);
+  FragmentItem copy_of_line(*line_item);
   EXPECT_EQ(copy_of_line.LineBoxFragment(), line_item->LineBoxFragment());
   EXPECT_TRUE(copy_of_line.IsInkOverflowComputed());
 
   // Test moving a line item.
-  NGFragmentItem move_of_line(std::move(copy_of_line));
+  FragmentItem move_of_line(std::move(copy_of_line));
   EXPECT_EQ(move_of_line.LineBoxFragment(), line_item->LineBoxFragment());
   EXPECT_TRUE(move_of_line.IsInkOverflowComputed());
 
@@ -109,29 +109,29 @@ TEST_F(NGFragmentItemTest, CopyMove) {
           move_of_line.InkOverflowType(), not_small_ink_overflow_rect,
           line_item->Size()));
   EXPECT_EQ(move_of_line.InkOverflowType(), NGInkOverflow::Type::kContents);
-  NGFragmentItem move_of_line2(std::move(move_of_line));
+  FragmentItem move_of_line2(std::move(move_of_line));
   EXPECT_EQ(move_of_line2.InkOverflowType(), NGInkOverflow::Type::kContents);
   EXPECT_EQ(move_of_line2.InkOverflow(), not_small_ink_overflow_rect);
 
   // Test copying a text item.
   cursor.MoveToFirstChild();
-  const NGFragmentItem* text_item = cursor.Current().Item();
-  EXPECT_EQ(text_item->Type(), NGFragmentItem::kText);
+  const FragmentItem* text_item = cursor.Current().Item();
+  EXPECT_EQ(text_item->Type(), FragmentItem::kText);
   EXPECT_NE(text_item->TextShapeResult(), nullptr);
-  NGFragmentItem copy_of_text(*text_item);
+  FragmentItem copy_of_text(*text_item);
   EXPECT_EQ(copy_of_text.TextShapeResult(), text_item->TextShapeResult());
-  // Ink overflow is copied for text items. See |NGFragmentItem| copy ctor.
+  // Ink overflow is copied for text items. See |FragmentItem| copy ctor.
   EXPECT_TRUE(copy_of_text.IsInkOverflowComputed());
 
   // Test moving a text item.
-  NGFragmentItem move_of_text(std::move(copy_of_text));
+  FragmentItem move_of_text(std::move(copy_of_text));
   EXPECT_EQ(move_of_text.TextShapeResult(), text_item->TextShapeResult());
   // After the move, the source ShapeResult should be released.
   EXPECT_EQ(copy_of_text.TextShapeResult(), nullptr);
   EXPECT_TRUE(move_of_text.IsInkOverflowComputed());
 }
 
-TEST_F(NGFragmentItemTest, BasicText) {
+TEST_F(FragmentItemTest, BasicText) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -155,30 +155,30 @@ TEST_F(NGFragmentItemTest, BasicText) {
   auto* layout_text = To<LayoutText>(container->FirstChild());
   const NGPhysicalBoxFragment* box = container->GetPhysicalFragment(0);
   EXPECT_NE(box, nullptr);
-  const NGFragmentItems* items = box->Items();
+  const FragmentItems* items = box->Items();
   EXPECT_NE(items, nullptr);
   EXPECT_EQ(items->Items().size(), 4u);
 
   // The text node wraps, produces two fragments.
-  Vector<const NGFragmentItem*> items_for_text = ItemsForAsVector(*layout_text);
+  Vector<const FragmentItem*> items_for_text = ItemsForAsVector(*layout_text);
   EXPECT_EQ(items_for_text.size(), 2u);
 
-  const NGFragmentItem& text1 = *items_for_text[0];
-  EXPECT_EQ(text1.Type(), NGFragmentItem::kText);
+  const FragmentItem& text1 = *items_for_text[0];
+  EXPECT_EQ(text1.Type(), FragmentItem::kText);
   EXPECT_EQ(text1.GetLayoutObject(), layout_text);
   EXPECT_EQ(text1.OffsetInContainerFragment(), PhysicalOffset());
   EXPECT_TRUE(text1.IsFirstForNode());
   EXPECT_FALSE(text1.IsLastForNode());
 
-  const NGFragmentItem& text2 = *items_for_text[1];
-  EXPECT_EQ(text2.Type(), NGFragmentItem::kText);
+  const FragmentItem& text2 = *items_for_text[1];
+  EXPECT_EQ(text2.Type(), FragmentItem::kText);
   EXPECT_EQ(text2.GetLayoutObject(), layout_text);
   EXPECT_EQ(text2.OffsetInContainerFragment(), PhysicalOffset(0, 10));
   EXPECT_FALSE(text2.IsFirstForNode());
   EXPECT_TRUE(text2.IsLastForNode());
 }
 
-TEST_F(NGFragmentItemTest, RtlText) {
+TEST_F(FragmentItemTest, RtlText) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -202,13 +202,13 @@ TEST_F(NGFragmentItemTest, RtlText) {
   auto* layout_text = To<LayoutText>(span->SlowFirstChild());
   const NGPhysicalBoxFragment* box = container->GetPhysicalFragment(0);
   EXPECT_NE(box, nullptr);
-  const NGFragmentItems* items = box->Items();
+  const FragmentItems* items = box->Items();
   EXPECT_NE(items, nullptr);
   EXPECT_EQ(items->Items().size(), 8u);
 
-  Vector<const NGFragmentItem*> items_for_span = ItemsForAsVector(*span);
+  Vector<const FragmentItem*> items_for_span = ItemsForAsVector(*span);
   EXPECT_EQ(items_for_span.size(), 2u);
-  const NGFragmentItem* item = items_for_span[0];
+  const FragmentItem* item = items_for_span[0];
   EXPECT_TRUE(item->IsFirstForNode());
   EXPECT_FALSE(item->IsLastForNode());
 
@@ -216,7 +216,7 @@ TEST_F(NGFragmentItemTest, RtlText) {
   EXPECT_FALSE(item->IsFirstForNode());
   EXPECT_TRUE(item->IsLastForNode());
 
-  Vector<const NGFragmentItem*> items_for_text = ItemsForAsVector(*layout_text);
+  Vector<const FragmentItem*> items_for_text = ItemsForAsVector(*layout_text);
   EXPECT_EQ(items_for_text.size(), 4u);
 
   item = items_for_text[0];
@@ -240,7 +240,7 @@ TEST_F(NGFragmentItemTest, RtlText) {
   EXPECT_TRUE(item->IsLastForNode());
 }
 
-TEST_F(NGFragmentItemTest, BasicInlineBox) {
+TEST_F(FragmentItemTest, BasicInlineBox) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -268,7 +268,7 @@ TEST_F(NGFragmentItemTest, BasicInlineBox) {
   // "span1" wraps, produces two fragments.
   const LayoutObject* span1 = GetLayoutObjectByElementId("span1");
   ASSERT_NE(span1, nullptr);
-  Vector<const NGFragmentItem*> items_for_span1 = ItemsForAsVector(*span1);
+  Vector<const FragmentItem*> items_for_span1 = ItemsForAsVector(*span1);
   EXPECT_EQ(items_for_span1.size(), 2u);
   EXPECT_TRUE(items_for_span1[0]->IsFirstForNode());
   EXPECT_FALSE(items_for_span1[0]->IsLastForNode());
@@ -284,7 +284,7 @@ TEST_F(NGFragmentItemTest, BasicInlineBox) {
   // "span2" doesn't wrap, produces only one fragment.
   const LayoutObject* span2 = GetLayoutObjectByElementId("span2");
   ASSERT_NE(span2, nullptr);
-  Vector<const NGFragmentItem*> items_for_span2 = ItemsForAsVector(*span2);
+  Vector<const FragmentItem*> items_for_span2 = ItemsForAsVector(*span2);
   EXPECT_EQ(items_for_span2.size(), 1u);
   EXPECT_TRUE(items_for_span2[0]->IsFirstForNode());
   EXPECT_TRUE(items_for_span2[0]->IsLastForNode());
@@ -296,7 +296,7 @@ TEST_F(NGFragmentItemTest, BasicInlineBox) {
 // Same as |BasicInlineBox| but `<span>`s do not have background.
 // They will not produce fragment items, but all operations should work the
 // same.
-TEST_F(NGFragmentItemTest, CulledInlineBox) {
+TEST_F(FragmentItemTest, CulledInlineBox) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -321,19 +321,19 @@ TEST_F(NGFragmentItemTest, CulledInlineBox) {
   // "span1" wraps, produces two fragments.
   const LayoutObject* span1 = GetLayoutObjectByElementId("span1");
   ASSERT_NE(span1, nullptr);
-  Vector<const NGFragmentItem*> items_for_span1 = ItemsForAsVector(*span1);
+  Vector<const FragmentItem*> items_for_span1 = ItemsForAsVector(*span1);
   EXPECT_EQ(items_for_span1.size(), 0u);
   EXPECT_EQ(gfx::Rect(0, 0, 80, 20), span1->AbsoluteBoundingBoxRect());
 
   // "span2" doesn't wrap, produces only one fragment.
   const LayoutObject* span2 = GetLayoutObjectByElementId("span2");
   ASSERT_NE(span2, nullptr);
-  Vector<const NGFragmentItem*> items_for_span2 = ItemsForAsVector(*span2);
+  Vector<const FragmentItem*> items_for_span2 = ItemsForAsVector(*span2);
   EXPECT_EQ(items_for_span2.size(), 0u);
   EXPECT_EQ(gfx::Rect(0, 20, 80, 10), span2->AbsoluteBoundingBoxRect());
 }
 
-TEST_F(NGFragmentItemTest, SelfPaintingInlineBox) {
+TEST_F(FragmentItemTest, SelfPaintingInlineBox) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #self_painting_inline_box {
@@ -362,7 +362,7 @@ TEST_F(NGFragmentItemTest, SelfPaintingInlineBox) {
     EXPECT_TRUE(cursor.Current()->IsInkOverflowComputed());
 }
 
-TEST_F(NGFragmentItemTest, StartOffsetInContainer) {
+TEST_F(FragmentItemTest, StartOffsetInContainer) {
   SetBodyInnerHTML(R"HTML(
     <style>
     atomic {
@@ -388,7 +388,7 @@ TEST_F(NGFragmentItemTest, StartOffsetInContainer) {
   EXPECT_EQ(12u, cursor.Current()->StartOffsetInContainer(cursor));
 }
 
-TEST_F(NGFragmentItemTest, EllipsizedAtomicInline) {
+TEST_F(FragmentItemTest, EllipsizedAtomicInline) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #container {
@@ -410,19 +410,19 @@ TEST_F(NGFragmentItemTest, EllipsizedAtomicInline) {
   InlineCursor cursor(*container);
   cursor.MoveToNext();
   EXPECT_EQ(cursor.Current().GetLayoutObject(), atomic);
-  EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kBox);
+  EXPECT_EQ(cursor.Current()->Type(), FragmentItem::kBox);
   // When atomic inline is ellipsized, |IsLastForNode| should be set to the last
   // |kBox| item, even if ellipses follow.
   EXPECT_TRUE(cursor.Current()->IsLastForNode());
   cursor.MoveToNext();
-  EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kText);
+  EXPECT_EQ(cursor.Current()->Type(), FragmentItem::kText);
   cursor.MoveToNext();
   EXPECT_EQ(cursor.Current().GetLayoutObject(), atomic);
-  EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kGeneratedText);
+  EXPECT_EQ(cursor.Current()->Type(), FragmentItem::kGeneratedText);
   EXPECT_TRUE(cursor.Current()->IsLastForNode());
 }
 
-TEST_F(NGFragmentItemTest, LineFragmentId) {
+TEST_F(FragmentItemTest, LineFragmentId) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #columns {
@@ -451,12 +451,12 @@ TEST_F(NGFragmentItemTest, LineFragmentId) {
   for (cursor.MoveToFirstLine(); cursor;
        cursor.MoveToNextLineIncludingFragmentainer(), ++line_index) {
     EXPECT_EQ(cursor.Current()->FragmentId(),
-              line_index + NGFragmentItem::kInitialLineFragmentId);
+              line_index + FragmentItem::kInitialLineFragmentId);
   }
   EXPECT_EQ(line_index, 6u);
 }
 
-TEST_F(NGFragmentItemTest, Outline) {
+TEST_F(FragmentItemTest, Outline) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -506,21 +506,21 @@ static CreateNode node_creators[] = {
       return element;
     }};
 
-class FragmentItemInsertTest : public NGFragmentItemTest,
+class FragmentItemInsertTest : public FragmentItemTest,
                                public testing::WithParamInterface<CreateNode> {
 };
 
-INSTANTIATE_TEST_SUITE_P(NGFragmentItemTest,
+INSTANTIATE_TEST_SUITE_P(FragmentItemTest,
                          FragmentItemInsertTest,
                          testing::ValuesIn(node_creators));
 
 // Various nodes/elements to test removals.
-class FragmentItemRemoveTest : public NGFragmentItemTest,
+class FragmentItemRemoveTest : public FragmentItemTest,
                                public testing::WithParamInterface<const char*> {
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    NGFragmentItemTest,
+    FragmentItemTest,
     FragmentItemRemoveTest,
     testing::Values("text",
                     "<span>span</span>",
@@ -601,7 +601,7 @@ TEST_P(FragmentItemInsertTest, MarkLineBoxesDirtyOnAppendAfterBR) {
 }
 
 // Test marking line boxes when removing a span.
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnRemove) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyOnRemove) {
   SetBodyInnerHTML(R"HTML(
     <div id=container style="font-size: 10px; width: 10ch">
       1234<span id=t>5678</span>
@@ -629,7 +629,7 @@ TEST_P(FragmentItemRemoveTest, MarkLineBoxesDirtyOnRemoveFirst) {
 }
 
 // Test marking line boxes when removing a span on 2nd line.
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnRemove2) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyOnRemove2) {
   SetBodyInnerHTML(R"HTML(
     <div id=container style="font-size: 10px; width: 10ch">
       12345678
@@ -659,7 +659,7 @@ TEST_P(FragmentItemRemoveTest, MarkLineBoxesDirtyOnRemoveAfterBR) {
   ForceLayout();  // Ensure running layout does not crash.
 }
 
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnEndSpaceCollapsed) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyOnEndSpaceCollapsed) {
   SetBodyInnerHTML(R"HTML(
     <style>
     div {
@@ -690,7 +690,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnEndSpaceCollapsed) {
 
 // Test marking line boxes when the first span has NeedsLayout. The span is
 // culled.
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnNeedsLayoutFirst) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyOnNeedsLayoutFirst) {
   SetBodyInnerHTML(R"HTML(
     <div id=container style="font-size: 10px; width: 10ch">
       <span id=t>1234</span>5678
@@ -704,7 +704,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnNeedsLayoutFirst) {
 
 // Test marking line boxes when the first span has NeedsLayout. The span has a
 // box fragment.
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnNeedsLayoutFirstWithBox) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyOnNeedsLayoutFirstWithBox) {
   SetBodyInnerHTML(R"HTML(
     <div id=container style="font-size: 10px; width: 10ch">
       <span id=t style="background: blue">1234</span>5678
@@ -717,7 +717,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnNeedsLayoutFirstWithBox) {
 }
 
 // Test marking line boxes when a span has NeedsLayout. The span is culled.
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnNeedsLayout) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyOnNeedsLayout) {
   SetBodyInnerHTML(R"HTML(
     <div id=container style="font-size: 10px; width: 10ch">
       12345678
@@ -732,7 +732,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnNeedsLayout) {
 
 // Test marking line boxes when a span has NeedsLayout. The span has a box
 // fragment.
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnNeedsLayoutWithBox) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyOnNeedsLayoutWithBox) {
   SetBodyInnerHTML(R"HTML(
     <div id=container style="font-size: 10px; width: 10ch">
       12345678
@@ -748,7 +748,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnNeedsLayoutWithBox) {
 // Test marking line boxes when a span inside a span has NeedsLayout.
 // The parent span has a box fragment, and wraps, so that its fragment
 // is seen earlier in pre-order DFS.
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnChildOfWrappedBox) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyOnChildOfWrappedBox) {
   SetBodyInnerHTML(R"HTML(
     <div id=container style="font-size: 10px">
       <span style="background: yellow">
@@ -765,7 +765,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyOnChildOfWrappedBox) {
 
 // Test marking line boxes when a span has NeedsLayout. The span has a box
 // fragment.
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyInInlineBlock) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyInInlineBlock) {
   SetBodyInnerHTML(R"HTML(
     <div id=container style="display: inline-block; font-size: 10px">
       12345678<br>
@@ -778,7 +778,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyInInlineBlock) {
   TestFirstDirtyLineIndex("container", 1);
 }
 
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByRemoveChildAfterForcedBreak) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyByRemoveChildAfterForcedBreak) {
   SetBodyInnerHTML(R"HTML(
     <div id=container>
       line 1<br>
@@ -792,7 +792,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByRemoveChildAfterForcedBreak) {
   TestFirstDirtyLineIndex("container", 0);
 }
 
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByRemoveForcedBreak) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyByRemoveForcedBreak) {
   SetBodyInnerHTML(R"HTML(
     <div id=container>
       line 1<br>
@@ -806,7 +806,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByRemoveForcedBreak) {
   TestFirstDirtyLineIndex("container", 0);
 }
 
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByRemoveSpanWithForcedBreak) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyByRemoveSpanWithForcedBreak) {
   SetBodyInnerHTML(R"HTML(
     <div id=container>
       line 1<br>
@@ -821,7 +821,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByRemoveSpanWithForcedBreak) {
   TestFirstDirtyLineIndex("container", 0);
 }
 
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByInsertAtStart) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyByInsertAtStart) {
   SetBodyInnerHTML(R"HTML(
     <div id=container>
       line 1<br>
@@ -837,7 +837,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByInsertAtStart) {
   TestFirstDirtyLineIndex("container", 0);
 }
 
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByInsertAtLast) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyByInsertAtLast) {
   SetBodyInnerHTML(R"HTML(
     <div id=container>
       line 1<br>
@@ -851,7 +851,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByInsertAtLast) {
   TestFirstDirtyLineIndex("container", 1);
 }
 
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByInsertAtMiddle) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyByInsertAtMiddle) {
   SetBodyInnerHTML(R"HTML(
     <div id=container>
       line 1<br>
@@ -867,7 +867,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByInsertAtMiddle) {
   TestFirstDirtyLineIndex("container", 0);
 }
 
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByTextSetData) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyByTextSetData) {
   SetBodyInnerHTML(R"HTML(
     <div id=container>
       line 1<br>
@@ -881,7 +881,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByTextSetData) {
   TestFirstDirtyLineIndex("container", 0);
 }
 
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyWrappedLine) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyWrappedLine) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #container {
@@ -900,7 +900,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyWrappedLine) {
   TestFirstDirtyLineIndex("container", 0);
 }
 
-TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyInsideInlineBlock) {
+TEST_F(FragmentItemTest, MarkLineBoxesDirtyInsideInlineBlock) {
   SetBodyInnerHTML(R"HTML(
     <div id=container>
       <div id="inline-block" style="display: inline-block">
@@ -913,9 +913,9 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyInsideInlineBlock) {
   TestFirstDirtyLineIndex("container", 0);
 }
 
-// This test creates various types of |NGFragmentItem| to check "natvis" (Native
+// This test creates various types of |FragmentItem| to check "natvis" (Native
 // DebugVisualizers) for Windows Visual Studio.
-TEST_F(NGFragmentItemTest, Disabled_DebugVisualizers) {
+TEST_F(FragmentItemTest, Disabled_DebugVisualizers) {
   SetBodyInnerHTML(R"HTML(
     <div id=container>
       text
@@ -926,13 +926,13 @@ TEST_F(NGFragmentItemTest, Disabled_DebugVisualizers) {
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
   InlineCursor cursor(*container);
   cursor.MoveToFirstLine();
-  const NGFragmentItem* line = cursor.Current().Item();
+  const FragmentItem* line = cursor.Current().Item();
   EXPECT_NE(line, nullptr);
   cursor.MoveToNext();
-  const NGFragmentItem* text = cursor.Current().Item();
+  const FragmentItem* text = cursor.Current().Item();
   EXPECT_NE(text, nullptr);
   cursor.MoveToNext();
-  const NGFragmentItem* box = cursor.Current().Item();
+  const FragmentItem* box = cursor.Current().Item();
   EXPECT_NE(box, nullptr);
 }
 

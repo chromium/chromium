@@ -23,13 +23,13 @@
 
 namespace blink {
 
-class NGFragmentItems;
+class FragmentItems;
 class NGInlineBreakToken;
 class NGInlinePaintContext;
 struct NGTextFragmentPaintInfo;
 struct NGLogicalLineItem;
 
-// Data for SVG text in addition to NGFragmentItem.
+// Data for SVG text in addition to FragmentItem.
 struct NGSvgFragmentData {
   USING_FAST_MALLOC(NGSvgFragmentData);
 
@@ -46,8 +46,8 @@ struct NGSvgFragmentData {
 // This class represents a text run or a box in an inline formatting context.
 //
 // This class consumes less memory than a full fragment, and can be stored in a
-// flat list (NGFragmentItems) for easier and faster traversal.
-class CORE_EXPORT NGFragmentItem final {
+// flat list (FragmentItems) for easier and faster traversal.
+class CORE_EXPORT FragmentItem final {
   DISALLOW_NEW();
 
  public:
@@ -104,18 +104,18 @@ class CORE_EXPORT NGFragmentItem final {
   enum TracedType { kNone, kLineItem, kBoxItem };
 
   // Create appropriate type for |line_item|.
-  NGFragmentItem(NGLogicalLineItem&& line_item, WritingMode writing_mode);
+  FragmentItem(NGLogicalLineItem&& line_item, WritingMode writing_mode);
   // Create a box item.
-  NGFragmentItem(const NGPhysicalBoxFragment& box,
-                 TextDirection resolved_direction);
+  FragmentItem(const NGPhysicalBoxFragment& box,
+               TextDirection resolved_direction);
   // Create a line item.
-  explicit NGFragmentItem(const NGPhysicalLineBoxFragment& line);
+  explicit FragmentItem(const NGPhysicalLineBoxFragment& line);
 
   // The copy/move constructors.
-  NGFragmentItem(const NGFragmentItem&);
-  NGFragmentItem(NGFragmentItem&&);
+  FragmentItem(const FragmentItem&);
+  FragmentItem(FragmentItem&&);
 
-  ~NGFragmentItem();
+  ~FragmentItem();
 
   ItemType Type() const { return static_cast<ItemType>(type_); }
 
@@ -208,7 +208,7 @@ class CORE_EXPORT NGFragmentItem final {
   // This function returns a transformed unscaled glyph bounds for kSvgText
   // type.
   // Do not call this for other types.
-  gfx::RectF ObjectBoundingBox(const NGFragmentItems& items) const;
+  gfx::RectF ObjectBoundingBox(const FragmentItems& items) const;
 
   // Returns a point transformed by the inverse of
   // BuildSvgTransformForBoundingBox(). The return value can be compared with
@@ -328,11 +328,11 @@ class CORE_EXPORT NGFragmentItem final {
     }
 
    private:
-    friend class NGFragmentItem;
-    explicit MutableForPainting(const NGFragmentItem& item)
-        : item_(const_cast<NGFragmentItem&>(item)) {}
+    friend class FragmentItem;
+    explicit MutableForPainting(const FragmentItem& item)
+        : item_(const_cast<FragmentItem&>(item)) {}
 
-    NGFragmentItem& item_;
+    FragmentItem& item_;
   };
 
   MutableForPainting GetMutableForPainting() const {
@@ -349,11 +349,11 @@ class CORE_EXPORT NGFragmentItem final {
     }
 
    private:
-    friend class NGFragmentItem;
-    explicit MutableForCloning(const NGFragmentItem& item)
-        : item_(const_cast<NGFragmentItem&>(item)) {}
+    friend class FragmentItem;
+    explicit MutableForCloning(const FragmentItem& item)
+        : item_(const_cast<FragmentItem&>(item)) {}
 
-    NGFragmentItem& item_;
+    FragmentItem& item_;
   };
 
   MutableForCloning GetMutableForCloning() const {
@@ -422,12 +422,12 @@ class CORE_EXPORT NGFragmentItem final {
   // this function returns the latter.
   unsigned StartOffsetInContainer(const InlineCursor& container) const;
 
-  StringView Text(const NGFragmentItems& items) const;
+  StringView Text(const FragmentItems& items) const;
   String GeneratedText() const {
     DCHECK_EQ(Type(), kGeneratedText);
     return generated_text_.text;
   }
-  NGTextFragmentPaintInfo TextPaintInfo(const NGFragmentItems& items) const;
+  NGTextFragmentPaintInfo TextPaintInfo(const FragmentItems& items) const;
 
   // Compute the inline position from text offset, in logical coordinate
   // relative to this fragment suitable for |LocalCaretRect|.
@@ -473,7 +473,7 @@ class CORE_EXPORT NGFragmentItem final {
   PositionWithAffinity PositionForPointInText(unsigned text_offset,
                                               const InlineCursor& cursor) const;
   unsigned TextOffsetForPoint(const PhysicalOffset& point,
-                              const NGFragmentItems& items) const;
+                              const FragmentItems& items) const;
 
   // Whether this item was marked dirty for reuse or not.
   bool IsDirty() const { return is_dirty_; }
@@ -482,7 +482,7 @@ class CORE_EXPORT NGFragmentItem final {
   // Returns true if this item is reusable.
   bool CanReuse() const;
 
-  const NGFragmentItem* operator->() const { return this; }
+  const FragmentItem* operator->() const { return this; }
 
   const NGSvgFragmentData* SvgFragmentData() const {
     return Type() == kSvgText ? svg_text_.data.get() : nullptr;
@@ -506,11 +506,11 @@ class CORE_EXPORT NGFragmentItem final {
   gfx::QuadF SvgUnscaledQuad() const;
 
   // Returns a font scaling factor for SVG <text>.
-  // This returns 1 for an NGFragmentItem not for LayoutSVGInlineText.
+  // This returns 1 for an FragmentItem not for LayoutSVGInlineText.
   float SvgScalingFactor() const;
 
   // Return a scaled font for SVG <text>.
-  // This returns Style().GetFont() for an NGFragmentItem not for
+  // This returns Style().GetFont() for an FragmentItem not for
   // LayoutSVGInlineText.
   const Font& ScaledFont() const;
 
@@ -520,31 +520,31 @@ class CORE_EXPORT NGFragmentItem final {
   void Trace(Visitor*) const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(NGFragmentItemTest, CopyMove);
-  FRIEND_TEST_ALL_PREFIXES(NGFragmentItemTest, SelfPaintingInlineBox);
+  FRIEND_TEST_ALL_PREFIXES(FragmentItemTest, CopyMove);
+  FRIEND_TEST_ALL_PREFIXES(FragmentItemTest, SelfPaintingInlineBox);
   FRIEND_TEST_ALL_PREFIXES(StyleChangeTest, NeedsCollectInlinesOnStyle);
   friend class LayoutTextCombineTest;
 
   // Create a text item.
-  NGFragmentItem(const NGInlineItem& inline_item,
-                 scoped_refptr<const ShapeResultView> shape_result,
-                 const NGTextOffsetRange& text_offset,
-                 const PhysicalSize& size,
-                 bool is_hidden_for_paint);
+  FragmentItem(const NGInlineItem& inline_item,
+               scoped_refptr<const ShapeResultView> shape_result,
+               const NGTextOffsetRange& text_offset,
+               const PhysicalSize& size,
+               bool is_hidden_for_paint);
   // Create a generated text item.
-  NGFragmentItem(const NGInlineItem& inline_item,
-                 scoped_refptr<const ShapeResultView> shape_result,
-                 const String& text_content,
-                 const PhysicalSize& size,
-                 bool is_hidden_for_paint);
-  NGFragmentItem(const LayoutObject& layout_object,
-                 TextItemType text_type,
-                 NGStyleVariant style_variant,
-                 TextDirection direction,
-                 scoped_refptr<const ShapeResultView> shape_result,
-                 const String& text_content,
-                 const PhysicalSize& size,
-                 bool is_hidden_for_paint);
+  FragmentItem(const NGInlineItem& inline_item,
+               scoped_refptr<const ShapeResultView> shape_result,
+               const String& text_content,
+               const PhysicalSize& size,
+               bool is_hidden_for_paint);
+  FragmentItem(const LayoutObject& layout_object,
+               TextItemType text_type,
+               NGStyleVariant style_variant,
+               TextDirection direction,
+               scoped_refptr<const ShapeResultView> shape_result,
+               const String& text_content,
+               const PhysicalSize& size,
+               bool is_hidden_for_paint);
 
   NGInkOverflow::Type InkOverflowType() const {
     return static_cast<NGInkOverflow::Type>(ink_overflow_type_);
@@ -620,7 +620,7 @@ class CORE_EXPORT NGFragmentItem final {
   mutable unsigned is_last_for_node_ : 1;
 };
 
-inline bool NGFragmentItem::CanReuse() const {
+inline bool FragmentItem::CanReuse() const {
   DCHECK_NE(Type(), kLine);
   if (IsDirty())
     return false;
@@ -629,17 +629,17 @@ inline bool NGFragmentItem::CanReuse() const {
   return false;
 }
 
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGFragmentItem*);
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGFragmentItem&);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const FragmentItem*);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const FragmentItem&);
 
 }  // namespace blink
 
 namespace WTF {
 template <>
-struct VectorTraits<blink::NGFragmentItem>
-    : VectorTraitsBase<blink::NGFragmentItem> {
+struct VectorTraits<blink::FragmentItem>
+    : VectorTraitsBase<blink::FragmentItem> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
-  // NGFragmentItem(NGFragmentItem&&) is safe to be replaced with memcpy. This
+  // FragmentItem(FragmentItem&&) is safe to be replaced with memcpy. This
   // will enable Oilpan compaction as well.
   static constexpr bool kCanMoveWithMemcpy = true;
 };

@@ -112,7 +112,7 @@ PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflow(
 PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflowForLine(
     const NGPhysicalBoxFragment& container,
     const ComputedStyle& container_style,
-    const NGFragmentItem& line,
+    const FragmentItem& line,
     const InlineCursor& cursor,
     TextHeightType height_type) const {
   DCHECK_EQ(&line, cursor.CurrentItem());

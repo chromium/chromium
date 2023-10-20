@@ -50,9 +50,9 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
   }
 
   // Adds layout-overflow from fragment-items.
-  void AddItems(const NGPhysicalBoxFragment&, const NGFragmentItems&);
+  void AddItems(const NGPhysicalBoxFragment&, const FragmentItems&);
   void AddItems(const LayoutObject*,
-                const NGFragmentItemsBuilder::ItemWithOffsetList&);
+                const FragmentItemsBuilder::ItemWithOffsetList&);
 
   void AddTableSelfRect();
 
