@@ -53,6 +53,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_thread.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -575,20 +576,8 @@ void WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void WebAppInternalsHandler::ClearExperimentalWebAppIsolationData(
     ClearExperimentalWebAppIsolationDataCallback callback) {
-  CHECK(web_app::ResolveExperimentalWebAppIsolationFeature() !=
-        web_app::ExperimentalWebAppIsolationMode::kDisabled);
-
-  // Remove app profiles.
-  auto* profile_manager = g_browser_process->profile_manager();
-  for (auto* profile_entry : profile_manager->GetProfileAttributesStorage()
-                                 .GetAllProfilesAttributes()) {
-    auto path = profile_entry->GetPath();
-    if (Profile::IsWebAppProfilePath(path)) {
-      profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
-          path, base::DoNothing(),
-          ProfileMetrics::ProfileDelete::DELETE_PROFILE_USER_MANAGER);
-    }
-  }
+  CHECK(base::FeatureList::IsEnabled(
+      chromeos::features::kExperimentalWebAppStoragePartitionIsolation));
 
   // Remove app storage partitions.
   auto helper = base::MakeRefCounted<ObliterateStoragePartitionHelper>(

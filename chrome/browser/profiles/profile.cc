@@ -436,18 +436,6 @@ bool Profile::IsMainProfilePath(base::FilePath profile_path) {
   // The main profile is the one with the "Default" path.
   return profile_path.BaseName().value() == chrome::kInitialProfile;
 }
-
-// static
-bool Profile::IsWebAppProfilePath(const base::FilePath& path) {
-  // If the path is not ascii, `MaybeAsASCII()` will return an empty string, and
-  // IsWebAppProfileName() will reject it correctly.
-  return Profile::IsWebAppProfileName(path.BaseName().MaybeAsASCII());
-}
-
-// static
-bool Profile::IsWebAppProfileName(const std::string& name) {
-  return base::StartsWith(name, chrome::kWebAppProfilePrefix);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool Profile::IsPrimaryOTRProfile() const {

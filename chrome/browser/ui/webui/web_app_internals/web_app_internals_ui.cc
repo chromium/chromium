@@ -20,6 +20,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
@@ -43,8 +44,8 @@ WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   internals->AddBoolean(
       "experimentalIsolationEnabled",
-      web_app::ResolveExperimentalWebAppIsolationFeature() !=
-          web_app::ExperimentalWebAppIsolationMode::kDisabled);
+      base::FeatureList::IsEnabled(
+          chromeos::features::kExperimentalWebAppStoragePartitionIsolation));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

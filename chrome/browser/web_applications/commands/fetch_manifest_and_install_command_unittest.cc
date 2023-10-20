@@ -51,11 +51,6 @@
 #include "components/arc/test/fake_intent_helper_instance.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace web_app {
 namespace {
 
@@ -199,10 +194,6 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 };
 
 TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const auto profile_count =
-      g_browser_process->profile_manager()->GetNumberOfProfiles();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   SetupPageState();
   EXPECT_EQ(
       InstallAndWait(
@@ -212,17 +203,6 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
   auto& registrar = provider()->registrar_unsafe();
   EXPECT_TRUE(registrar.IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Sanity check to confirm the experimental web app profile feature logic is
-  // not running.
-  auto* web_app = registrar.GetAppById(kWebAppId);
-  ASSERT_NE(web_app, nullptr);
-  EXPECT_TRUE(web_app->chromeos_data().has_value() &&
-              !web_app->chromeos_data()->app_profile_path.has_value());
-  EXPECT_EQ(g_browser_process->profile_manager()->GetNumberOfProfiles(),
-            profile_count);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 TEST_F(FetchManifestAndInstallCommandTest,

@@ -24,7 +24,6 @@ source_set("app_service") {
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",

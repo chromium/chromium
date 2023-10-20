@@ -158,9 +158,6 @@ class ProfileManager : public Profile::Delegate {
                          bool incognito,
                          ProfileLoadedCallback callback);
 
-  // Whether a new profile can be created at |path|.
-  bool CanCreateProfileAtPath(const base::FilePath& path) const;
-
   // Creates or loads the profile located at |profile_path|.
   // Should be called on the UI thread.
   // Params:
@@ -489,6 +486,9 @@ class ProfileManager : public Profile::Delegate {
   // also return a profile that is not fully initialized yet, so this method
   // should be used carefully.
   Profile* GetProfileByPathInternal(const base::FilePath& path) const;
+
+  // Whether a new profile can be created at |path|.
+  bool CanCreateProfileAtPath(const base::FilePath& path) const;
 
   // Adds |profile| to the profile attributes storage if it hasn't been added
   // yet.
