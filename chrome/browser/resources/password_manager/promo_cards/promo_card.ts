@@ -58,6 +58,8 @@ export interface PromoCardElement {
   };
 }
 
+const isOpenedAsShortcut = window.matchMedia('(display-mode: standalone)');
+
 export class PromoCardElement extends PolymerElement {
   static get is() {
     return 'promo-card';
@@ -74,6 +76,24 @@ export class PromoCardElement extends PolymerElement {
   }
 
   promoCard: PromoCard;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    // If this is a shortcut promo we should listen to display mode changes to
+    // close it automatically when shortcut is installed from another place.
+    // Check crbug.com/1493264 for more details when it can happen.
+    if (this.promoCard.id === PromoCardId.SHORTCUT) {
+      isOpenedAsShortcut.addEventListener('change', this.close_.bind(this));
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this.promoCard.id === PromoCardId.SHORTCUT) {
+      isOpenedAsShortcut.removeEventListener('change', this.close_.bind(this));
+    }
+  }
 
   private getDescription_(): TrustedHTML {
     return sanitizeInnerHtml(this.promoCard.description);
