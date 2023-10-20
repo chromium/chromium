@@ -65,14 +65,27 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     }
 
     // These values are persisted in histograms. Please do not renumber. Append only.
-    @IntDef({LaunchCause.OTHER, LaunchCause.CUSTOM_TAB, LaunchCause.TWA, LaunchCause.RECENTS,
-            LaunchCause.RECENTS_OR_BACK, LaunchCause.FOREGROUND_WHEN_LOCKED,
-            LaunchCause.MAIN_LAUNCHER_ICON, LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT,
-            LaunchCause.HOME_SCREEN_WIDGET, LaunchCause.OPEN_IN_BROWSER_FROM_MENU,
-            LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT, LaunchCause.NOTIFICATION,
-            LaunchCause.EXTERNAL_VIEW_INTENT, LaunchCause.OTHER_CHROME,
-            LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, LaunchCause.WEBAPK_OTHER_DISTRIBUTOR,
-            LaunchCause.HOME_SCREEN_SHORTCUT, LaunchCause.SHARE_INTENT})
+    @IntDef({
+        LaunchCause.OTHER,
+        LaunchCause.CUSTOM_TAB,
+        LaunchCause.TWA,
+        LaunchCause.RECENTS,
+        LaunchCause.RECENTS_OR_BACK,
+        LaunchCause.FOREGROUND_WHEN_LOCKED,
+        LaunchCause.MAIN_LAUNCHER_ICON,
+        LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT,
+        LaunchCause.HOME_SCREEN_WIDGET,
+        LaunchCause.OPEN_IN_BROWSER_FROM_MENU,
+        LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT,
+        LaunchCause.NOTIFICATION,
+        LaunchCause.EXTERNAL_VIEW_INTENT,
+        LaunchCause.OTHER_CHROME,
+        LaunchCause.WEBAPK_CHROME_DISTRIBUTOR,
+        LaunchCause.WEBAPK_OTHER_DISTRIBUTOR,
+        LaunchCause.HOME_SCREEN_SHORTCUT,
+        LaunchCause.SHARE_INTENT,
+        LaunchCause.NFC
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
         int OTHER = 0;
@@ -93,8 +106,9 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
         int WEBAPK_OTHER_DISTRIBUTOR = 15;
         int HOME_SCREEN_SHORTCUT = 16;
         int SHARE_INTENT = 17;
+        int NFC = 18;
 
-        int NUM_ENTRIES = 18;
+        int NUM_ENTRIES = 19;
     }
 
     /**

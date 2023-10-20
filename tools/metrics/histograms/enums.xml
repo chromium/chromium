@@ -59187,6 +59187,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="15" label="WebApk not installed by Chrome"/>
   <int value="16" label="Homescreen shortcut (Add To Homescreen)"/>
   <int value="17" label="Share Intent"/>
+  <int value="18" label="NFC"/>
 </enum>
 
 <enum name="LauncherContinueSectionResultType">

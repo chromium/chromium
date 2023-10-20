@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.metrics;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.provider.Browser;
 import android.speech.RecognizerResultsIntent;
 
@@ -282,5 +283,20 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         ++count;
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.SHARE_INTENT));
+    }
+
+    @Test
+    public void testNfcViewIntent() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.NFC);
+        Intent intent =
+                new Intent(NfcAdapter.ACTION_NDEF_DISCOVERED, Uri.parse("https://example.com"));
+        Mockito.when(mActivity.getIntent()).thenReturn(intent);
+
+        TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.NFC));
     }
 }
