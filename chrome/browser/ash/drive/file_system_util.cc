@@ -134,9 +134,6 @@ bool IsDriveFsBulkPinningAvailable(const Profile* const profile) {
   }
 
   // For Googlers, the bulk-pinning feature is available on any kind of device.
-  // This allows Googlers to easily test ("dogfood") the bulk-pinning feature.
-  //
-  // TODO(b/296316774) Revisit this decision for Googlers.
   if (UserManager::IsInitialized()) {
     if (const User* const user = UserManager::Get()->GetActiveUser();
         user && gaia::IsGoogleInternalAccountEmail(
