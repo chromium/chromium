@@ -208,20 +208,24 @@ void ScrollbarAnimationController::UpdateScrollbarState() {
   } else {
     PostDelayedAnimation(AnimationChange::kFadeOut);
   }
-
-  if (need_thinning_animation_) {
-    vertical_controller_->UpdateThumbThicknessScale();
-    horizontal_controller_->UpdateThumbThicknessScale();
-  }
 }
 
 void ScrollbarAnimationController::WillUpdateScroll() {
-  if (show_scrollbars_on_scroll_gesture_)
+  if (show_scrollbars_on_scroll_gesture_) {
     UpdateScrollbarState();
+    if (need_thinning_animation_) {
+      vertical_controller_->DidRequestShow();
+      horizontal_controller_->DidRequestShow();
+    }
+  }
 }
 
 void ScrollbarAnimationController::DidRequestShow() {
   UpdateScrollbarState();
+  if (need_thinning_animation_) {
+    vertical_controller_->DidRequestShow();
+    horizontal_controller_->DidRequestShow();
+  }
 }
 
 void ScrollbarAnimationController::UpdateTickmarksVisibility(bool show) {

@@ -56,9 +56,8 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   void StartAnimation();
   void StopAnimation();
 
-  void UpdateThumbThicknessScale();
-
   void DidScrollUpdate();
+  void DidRequestShow();
 
   void DidMouseDown();
   void DidMouseUp();
@@ -85,7 +84,7 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   // a bar or kDecrease it (thin).
   enum class AnimationChange { kNone, kIncrease, kDecrease };
   float ThumbThicknessScaleAt(float progress) const;
-  float CurrentThumbThicknessScale() const;
+  float CurrentForcedThumbThicknessScale() const;
   void CalculateThicknessShouldChange(const gfx::PointF& device_viewport_point);
 
   float AdjustScale(float new_value,
@@ -93,6 +92,7 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
                     AnimationChange animation_change,
                     float min_value,
                     float max_value);
+  void UpdateThumbThicknessScale();
   void ApplyThumbThicknessScale(float thumb_thickness_scale);
 
   raw_ptr<ScrollbarAnimationControllerClient> client_;
