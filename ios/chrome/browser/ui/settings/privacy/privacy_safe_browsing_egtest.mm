@@ -57,6 +57,8 @@ namespace {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  // TODO (crbug.com/1285974) Remove when bug is resolved.
+  config.features_disabled.push_back(kNewOverflowMenu);
 
   if ([self isRunningTest:@selector
             (testStandardProtectionSettingsPageWithFriendlierSafeBrowsing)] ||
