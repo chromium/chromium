@@ -120,6 +120,14 @@ TestSudoHelperClient::Result TestSudoHelperClient::StopSessionManager() {
   return SendDictAndGetResult(dict);
 }
 
+void TestSudoHelperClient::EnsureSessionManagerStopped() {
+  if (g_start_session_manager_count == 0) {
+    return;
+  }
+
+  CHECK_EQ(StopSessionManager().return_code, 0);
+}
+
 // static
 TestSudoHelperClient::Result TestSudoHelperClient::ConnectAndRunCommand(
     const std::string_view command) {

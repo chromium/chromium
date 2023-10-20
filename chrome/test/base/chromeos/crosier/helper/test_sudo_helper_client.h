@@ -51,6 +51,9 @@ class TestSudoHelperClient {
   // Stops the session manager daemon.
   Result StopSessionManager();
 
+  // Ensures that session manager daemon is not left running from this client.
+  void EnsureSessionManagerStopped();
+
  private:
   base::ScopedFD ConnectToServer(const base::FilePath& client_path);
 
