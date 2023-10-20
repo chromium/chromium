@@ -150,6 +150,7 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   MOCK_METHOD1(OnHadFormInteractionChanged, void(const FrameNode*));
   MOCK_METHOD1(OnHadUserEditsChanged, void(const FrameNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const FrameNode*));
+  MOCK_METHOD1(OnIsCapturingVideoStreamChanged, void(const FrameNode*));
   MOCK_METHOD1(OnViewportIntersectionChanged, void(const FrameNode*));
   MOCK_METHOD2(OnFrameVisibilityChanged,
                void(const FrameNode*, FrameNode::Visibility));
@@ -434,6 +435,22 @@ TEST_F(FrameNodeImplTest, IsAudible) {
   EXPECT_CALL(obs, OnIsAudibleChanged(frame_node.get()));
   frame_node->SetIsAudible(true);
   EXPECT_TRUE(frame_node->is_audible());
+
+  graph()->RemoveFrameNodeObserver(&obs);
+}
+
+TEST_F(FrameNodeImplTest, IsCapturingVideoStream) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
+  EXPECT_FALSE(frame_node->is_capturing_video_stream());
+
+  MockObserver obs;
+  graph()->AddFrameNodeObserver(&obs);
+
+  EXPECT_CALL(obs, OnIsCapturingVideoStreamChanged(frame_node.get()));
+  frame_node->SetIsCapturingVideoStream(true);
+  EXPECT_TRUE(frame_node->is_capturing_video_stream());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }

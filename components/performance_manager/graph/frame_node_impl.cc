@@ -254,6 +254,11 @@ bool FrameNodeImpl::is_audible() const {
   return is_audible_.value();
 }
 
+bool FrameNodeImpl::is_capturing_video_stream() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_capturing_video_stream_.value();
+}
+
 const absl::optional<gfx::Rect>& FrameNodeImpl::viewport_intersection() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The viewport intersection of the main frame is not tracked.
@@ -311,6 +316,12 @@ void FrameNodeImpl::SetIsAudible(bool is_audible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(is_audible, is_audible_.value());
   is_audible_.SetAndMaybeNotify(this, is_audible);
+}
+
+void FrameNodeImpl::SetIsCapturingVideoStream(bool is_capturing_video_stream) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(is_capturing_video_stream, is_capturing_video_stream_.value());
+  is_capturing_video_stream_.SetAndMaybeNotify(this, is_capturing_video_stream);
 }
 
 void FrameNodeImpl::SetViewportIntersection(
@@ -619,6 +630,11 @@ bool FrameNodeImpl::HadUserEdits() const {
 bool FrameNodeImpl::IsAudible() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_audible();
+}
+
+bool FrameNodeImpl::IsCapturingVideoStream() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_capturing_video_stream();
 }
 
 const absl::optional<gfx::Rect>& FrameNodeImpl::GetViewportIntersection()

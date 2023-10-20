@@ -106,6 +106,8 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   // Ignored.
   void OnIsAudibleChanged(
       const performance_manager::FrameNode* frame_node) override {}
+  void OnIsCapturingVideoStreamChanged(
+      const performance_manager::FrameNode* frame_node) override {}
   // Ignored.
   void OnFirstContentfulPaint(
       const performance_manager::FrameNode* frame_node,

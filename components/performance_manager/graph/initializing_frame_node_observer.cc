@@ -127,6 +127,13 @@ void InitializingFrameNodeObserverManager::OnIsAudibleChanged(
   }
 }
 
+void InitializingFrameNodeObserverManager::OnIsCapturingVideoStreamChanged(
+    const FrameNode* frame_node) {
+  for (InitializingFrameNodeObserver& observer : observer_list_) {
+    observer.OnIsCapturingVideoStreamChanged(frame_node);
+  }
+}
+
 void InitializingFrameNodeObserverManager::OnViewportIntersectionChanged(
     const FrameNode* frame_node) {
   for (InitializingFrameNodeObserver& observer : observer_list_) {

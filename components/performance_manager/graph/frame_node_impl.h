@@ -107,6 +107,7 @@ class FrameNodeImpl
   bool had_form_interaction() const;
   bool had_user_edits() const;
   bool is_audible() const;
+  bool is_capturing_video_stream() const;
   const absl::optional<gfx::Rect>& viewport_intersection() const;
   Visibility visibility() const;
   uint64_t resident_set_kb_estimate() const;
@@ -117,6 +118,7 @@ class FrameNodeImpl
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
+  void SetIsCapturingVideoStream(bool is_capturing_video_stream);
   void SetViewportIntersection(const gfx::Rect& viewport_intersection);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
@@ -195,6 +197,7 @@ class FrameNodeImpl
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   bool IsAudible() const override;
+  bool IsCapturingVideoStream() const override;
   const absl::optional<gfx::Rect>& GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
   uint64_t GetResidentSetKbEstimate() const override;
@@ -351,6 +354,12 @@ class FrameNodeImpl
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsAudibleChanged>
           is_audible_{false};
+
+  // Indicates if the frame is capturing a video stream.
+  ObservedProperty::NotifiesOnlyOnChanges<
+      bool,
+      &FrameNodeObserver::OnIsCapturingVideoStreamChanged>
+      is_capturing_video_stream_{false};
 
   // Tracks the intersection of this frame with the viewport.
   //
