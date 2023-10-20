@@ -298,7 +298,10 @@ NotificationGroupingController::CreateCopyForParentNotification(
   copy->set_settings_button_handler(
       parent_notification.rich_notification_data().settings_button_handler);
   copy->set_fullscreen_visibility(parent_notification.fullscreen_visibility());
-  copy->set_delegate(parent_notification.delegate());
+  if (parent_notification.delegate()) {
+    copy->set_delegate(
+        parent_notification.delegate()->GetDelegateForParentCopy());
+  }
   copy->set_vector_small_image(parent_notification.parent_vector_small_image());
 
   if (parent_notification.accent_color_id().has_value()) {
