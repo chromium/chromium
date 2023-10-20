@@ -17,10 +17,10 @@ namespace {
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 
-class NGTextAutoSpaceTest : public RenderingTest,
-                            ScopedCSSTextAutoSpaceForTest {
+class InlineTextAutoSpaceTest : public RenderingTest,
+                                ScopedCSSTextAutoSpaceForTest {
  public:
-  explicit NGTextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
+  explicit InlineTextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
 
   LayoutBlockFlow* PreparePageLayoutBlock(String html,
                                           String container_css = String()) {
@@ -44,14 +44,14 @@ class NGTextAutoSpaceTest : public RenderingTest,
         PreparePageLayoutBlock(html, container_css);
     NGInlineNodeData* node_data = container->GetNGInlineNodeData();
     Vector<wtf_size_t> offsets;
-    NGTextAutoSpace auto_space(*node_data);
+    InlineTextAutoSpace auto_space(*node_data);
     auto_space.ApplyIfNeeded(*node_data, &offsets);
     return offsets;
   }
 };
 
 // Test the optimizations in `ApplyIfNeeded` don't affect results.
-TEST_F(NGTextAutoSpaceTest, NonHanIdeograph) {
+TEST_F(InlineTextAutoSpaceTest, NonHanIdeograph) {
   // For boundary-check, extend the range by 1 to lower and to upper.
   for (UChar ch = TextAutoSpace::kNonHanIdeographMin - 1;
        ch <= TextAutoSpace::kNonHanIdeographMax + 1; ++ch) {
@@ -71,7 +71,7 @@ TEST_F(NGTextAutoSpaceTest, NonHanIdeograph) {
 }
 
 // End to end test for text-autospace
-TEST_F(NGTextAutoSpaceTest, InsertSpacing) {
+TEST_F(InlineTextAutoSpaceTest, InsertSpacing) {
   LoadAhem();
   String test_string = u"AAAあああa";
   LayoutBlockFlow* container = PreparePageLayoutBlock(test_string);
@@ -124,9 +124,9 @@ struct HtmlData {
      {},
      "writing-mode: vertical-rl"},
 };
-class HtmlTest : public NGTextAutoSpaceTest,
+class HtmlTest : public InlineTextAutoSpaceTest,
                  public testing::WithParamInterface<HtmlData> {};
-INSTANTIATE_TEST_SUITE_P(NGTextAutoSpaceTest,
+INSTANTIATE_TEST_SUITE_P(InlineTextAutoSpaceTest,
                          HtmlTest,
                          testing::ValuesIn(g_html_data));
 

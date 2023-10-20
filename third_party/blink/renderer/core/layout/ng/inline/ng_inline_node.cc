@@ -1292,7 +1292,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
   HeapVector<NGInlineItem>* items = &data->items;
 
   ShapeResultSpacing<String> spacing(text_content, IsSvgText());
-  NGTextAutoSpace auto_space(*data);
+  InlineTextAutoSpace auto_space(*data);
 
   const bool allow_shape_cache =
       IsNGShapeCacheAllowed(text_content, override_font, *items, spacing) &&

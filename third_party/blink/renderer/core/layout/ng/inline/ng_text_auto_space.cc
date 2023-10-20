@@ -52,7 +52,7 @@ class SpacingApplier {
                   const NGInlineItem* current_item,
                   const ComputedStyle& style) {
     DCHECK(current_item->TextShapeResult());
-    const float spacing = NGTextAutoSpace::GetSpacingWidth(style.GetFont());
+    const float spacing = TextAutoSpace::GetSpacingWidth(style.GetFont());
     const wtf_size_t* offset = offsets.begin();
     if (!offsets.empty() && *offset == current_item->StartOffset()) {
       DCHECK(last_item_);
@@ -104,7 +104,7 @@ class SpacingApplier {
 
 }  // namespace
 
-void NGTextAutoSpace::Initialize(const NGInlineItemsData& data) {
+void InlineTextAutoSpace::Initialize(const NGInlineItemsData& data) {
   const HeapVector<NGInlineItem>& items = data.items;
   if (UNLIKELY(items.empty())) {
     return;
@@ -142,8 +142,8 @@ void NGTextAutoSpace::Initialize(const NGInlineItemsData& data) {
   }
 }
 
-void NGTextAutoSpace::Apply(NGInlineItemsData& data,
-                            Vector<wtf_size_t>* offsets_out) {
+void InlineTextAutoSpace::Apply(NGInlineItemsData& data,
+                                Vector<wtf_size_t>* offsets_out) {
   const String& text = data.text_content;
   DCHECK(!text.Is8Bit());
   DCHECK_EQ(text.length(), ranges_.back().end);

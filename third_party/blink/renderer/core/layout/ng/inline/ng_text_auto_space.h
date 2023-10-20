@@ -18,11 +18,12 @@ namespace blink {
 
 struct NGInlineItemsData;
 
-class CORE_EXPORT NGTextAutoSpace : public TextAutoSpace {
+// A wrapper of TextAutoSpace for the inline layout.
+class CORE_EXPORT InlineTextAutoSpace : public TextAutoSpace {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTextAutoSpace(const NGInlineItemsData& data);
+  explicit InlineTextAutoSpace(const NGInlineItemsData& data);
 
   // True if this may apply auto-spacing. If this is false, it's safe to skip
   // calling `Apply()`.
@@ -50,7 +51,7 @@ class CORE_EXPORT NGTextAutoSpace : public TextAutoSpace {
   NGInlineItemSegments::RunSegmenterRanges ranges_;
 };
 
-inline NGTextAutoSpace::NGTextAutoSpace(const NGInlineItemsData& data) {
+inline InlineTextAutoSpace::InlineTextAutoSpace(const NGInlineItemsData& data) {
   if (!RuntimeEnabledFeatures::CSSTextAutoSpaceEnabled()) {
     return;
   }
