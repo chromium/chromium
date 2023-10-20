@@ -4172,9 +4172,9 @@
     {
       "id": 414,
       "cr_bugs": [
-        1318380
+        1445741
       ],
-      "description": "Only enable video processor auto HDR on NVIDIA GPUs with 545+ driver",
+      "description": "Only enable video processor auto HDR on NVIDIA GPUs with 550.50+ driver",
       "os": {
         "type": "win"
       },
@@ -4187,7 +4187,7 @@
           "driver_version": {
             "schema": "nvidia_driver",
             "op": ">",
-            "value": "545.00"
+            "value": "550.50"
           }
         }
       ],
