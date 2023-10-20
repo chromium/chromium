@@ -1179,7 +1179,6 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::ChromiumExperimentalReadWriteStorageTexture:
     case wgpu::FeatureName::ChromiumExperimentalSubgroups:
     case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
-    case wgpu::FeatureName::ShaderF16:
       return allow_unsafe_apis_;
     case wgpu::FeatureName::DawnMultiPlanarFormats:
     case wgpu::FeatureName::Depth32FloatStencil8:
@@ -1190,7 +1189,8 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::TextureCompressionASTC:
     case wgpu::FeatureName::IndirectFirstInstance:
     case wgpu::FeatureName::RG11B10UfloatRenderable:
-    case wgpu::FeatureName::BGRA8UnormStorage: {
+    case wgpu::FeatureName::BGRA8UnormStorage:
+    case wgpu::FeatureName::ShaderF16: {
       if (runtime_unsafe_features_.empty()) {
         // Likely case when no features are blocked.
         return true;
