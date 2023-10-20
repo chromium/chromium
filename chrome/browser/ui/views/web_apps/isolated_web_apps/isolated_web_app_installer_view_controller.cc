@@ -8,13 +8,16 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -63,15 +66,13 @@ void IsolatedWebAppInstallerViewController::Show(base::OnceClosure callback) {
   std::unique_ptr<views::DialogDelegate> dialog_delegate =
       CreateDialogDelegate(std::move(view));
   dialog_delegate_ = dialog_delegate.get();
+
+  OnModelChanged();
+
   views::DialogDelegate::CreateDialogWidget(std::move(dialog_delegate),
                                             /*context=*/nullptr,
                                             /*parent=*/nullptr)
       ->Show();
-
-  // TODO(crbug.com/1479140): Switch to "not enabled" if the pref isn't set
-  model_->SetStep(IsolatedWebAppInstallerModel::Step::kGetMetadata);
-
-  UpdateView();
 }
 
 void IsolatedWebAppInstallerViewController::OnSettingsLinkClicked() {
@@ -96,7 +97,7 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
     default:
       NOTREACHED();
   }
-  UpdateView();
+  OnModelChanged();
   return false;
 }
 
@@ -106,7 +107,7 @@ void IsolatedWebAppInstallerViewController::OnComplete() {
   std::move(callback_).Run();
 }
 
-void IsolatedWebAppInstallerViewController::UpdateView() {
+void IsolatedWebAppInstallerViewController::OnModelChanged() {
   // TODO(crbug.com/1479140): Configure Install/Cancel buttons for all screens
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kDisabled:
@@ -114,6 +115,11 @@ void IsolatedWebAppInstallerViewController::UpdateView() {
       break;
 
     case IsolatedWebAppInstallerModel::Step::kGetMetadata:
+      dialog_delegate_->SetButtons(ui::DIALOG_BUTTON_CANCEL);
+      dialog_delegate_->SetButtonLabel(
+          ui::DIALOG_BUTTON_CANCEL, l10n_util::GetStringUTF16(IDS_APP_CANCEL));
+      dialog_delegate_->SetButtonStyle(ui::DIALOG_BUTTON_CANCEL,
+                                       ui::ButtonStyle::kDefault);
       view_->ShowGetMetadataScreen();
       break;
 
@@ -141,7 +147,10 @@ IsolatedWebAppInstallerViewController::CreateDialogDelegate(
   delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
   delegate->SetShowCloseButton(false);
   delegate->SetHasWindowSizeControls(false);
+  delegate->set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   // TODO(crbug.com/1479140): Set the title of the dialog for Alt+Tab
+  delegate->SetShowTitle(false);
 
   delegate->SetAcceptCallbackWithClose(base::BindRepeating(
       &IsolatedWebAppInstallerViewController::OnAcceptWrapper,

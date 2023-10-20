@@ -50,6 +50,7 @@ IntentPickerDialogTest.*
 IntentPickerDialogGridViewTest.*
 InteractionTestUtilBrowserTest.CompareScreenshot_*
 InteractionTestUtilBrowserUiTest.CompareScreenshot_*
+IsolatedWebAppInstallerViewUiPixelTest.*
 LocalCardMigrationBrowserUiTest.*
 NewTabPageTest.*
 OfferNotificationBubbleViewPixelBrowserTest.*

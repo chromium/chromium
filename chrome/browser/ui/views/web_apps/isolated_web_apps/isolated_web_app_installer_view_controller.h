@@ -29,6 +29,9 @@ class IsolatedWebAppInstallerViewController
 
   void Show(base::OnceClosure callback);
 
+  // Updates the View to reflect the current state of the model.
+  void OnModelChanged();
+
  private:
   // Handles returning a default value if the controller has been deleted.
   static bool OnAcceptWrapper(
@@ -36,9 +39,6 @@ class IsolatedWebAppInstallerViewController
 
   bool OnAccept();
   void OnComplete();
-
-  // Updates the View to reflect the current state of the model.
-  void UpdateView();
 
   // `IsolatedWebAppInstallerView::Delegate`:
   void OnSettingsLinkClicked() override;

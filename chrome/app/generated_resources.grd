@@ -16248,6 +16248,20 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_PROMISE_APP_ACCESSIBLE_LABEL_INSTALLING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that the app is currently downloading or installing">
       <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, installing
     </message>
+
+    <!-- Isolated Web App installer. -->
+    <message name="IDS_IWA_INSTALLER_VERIFICATION_TITLE" desc="Title of the verification step of the IWA installation">
+      Chrome is verifying the installation bundle
+    </message>
+    <message name="IDS_IWA_INSTALLER_VERIFICATION_SUBTITLE" desc="Subtitle of the verification step of the IWA installation">
+      Please wait while verification is in progress
+    </message>
+    <message name="IDS_IWA_INSTALLER_VERIFICATION_STATUS" desc="Text below a progress bar describing the operation being performed and a time remaining estimate">
+      {MINUTES, plural,
+        =0 {Checking public key and integrity block... Less than 1 minute remaining}
+        =1 {Checking public key and integrity block... 1 minute remaining}
+        other {Checking public key and integrity block... # minutes remaining}}
+    </message>
   </messages>
 </release>
 </grit>
