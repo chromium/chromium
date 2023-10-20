@@ -1305,6 +1305,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.SandboxedTrustedPointersCount" units="count"
+    expires_after="2024-09-30">
+  <owner>saelo@chromium.org</owner>
+  <owner>ishell@chromium.org</owner>
+  <summary>
+    The number of in-use entries in a TrustedPointerTable.
+
+    When the V8 Sandbox is enabled, &quot;trusted&quot; V8 objects are
+    referenced from inside the sandbox through a pointer table indirection (via
+    the TrustedPointerTable) to ensure memory-safe access to them. This
+    histogram records the number of active entries in the per-Isolate
+    TrustedPointerTable during garbage collection.
+  </summary>
+</histogram>
+
 <histogram name="V8.SandboxMode" enum="V8SandboxMode"
     expires_after="2024-02-25">
   <owner>saelo@chromium.org</owner>
