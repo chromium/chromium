@@ -1149,6 +1149,17 @@ config("compiler_cpu_abi") {
         "-m64",
         "-msse3",
       ]
+
+      # Minimum SIMD support for devices running lacros.
+      # See https://crbug.com/1475858
+      if (is_chromeos_lacros) {
+        cflags += [
+          "-mssse3",
+          "-msse4",
+          "-msse4.1",
+          "-msse4.2",
+        ]
+      }
       ldflags += [ "-m64" ]
     } else if (current_cpu == "x86") {
       cflags += [ "-m32" ]
