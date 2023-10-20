@@ -6298,8 +6298,6 @@ static_library("browser") {
 
   if (is_android || is_mac || is_win || is_chromeos) {
     sources += [
-      "device_reauth/chrome_device_authenticator_common.cc",
-      "device_reauth/chrome_device_authenticator_common.h",
       "device_reauth/chrome_device_authenticator_factory.cc",
       "device_reauth/chrome_device_authenticator_factory.h",
     ]

@@ -7,9 +7,9 @@
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/device_reauth/chrome_device_authenticator_common.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/device_reauth/device_authenticator_common.h"
 
 class AuthenticatorMacInterface;
 
@@ -17,7 +17,7 @@ namespace device::fido::mac {
 class TouchIdContext;
 }  // namespace device::fido::mac
 
-class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
+class DeviceAuthenticatorMac : public DeviceAuthenticatorCommon {
  public:
   DeviceAuthenticatorMac(
       std::unique_ptr<AuthenticatorMacInterface> authenticator,

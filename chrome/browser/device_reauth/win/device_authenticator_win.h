@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "chrome/browser/device_reauth/chrome_device_authenticator_common.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/device_reauth/win/authenticator_win.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/device_reauth/device_authenticator_common.h"
 
-class DeviceAuthenticatorWin : public ChromeDeviceAuthenticatorCommon {
+class DeviceAuthenticatorWin : public DeviceAuthenticatorCommon {
  public:
   DeviceAuthenticatorWin(
       std::unique_ptr<AuthenticatorWinInterface> authenticator,
