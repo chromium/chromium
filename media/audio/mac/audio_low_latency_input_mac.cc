@@ -446,8 +446,8 @@ bool AUAudioInputStream::OpenAUHAL() {
   // For obtaining input from a device, the device format is always expressed
   // on the output scope of the AUHAL's Element 1.
   result = AudioUnitSetProperty(audio_unit_, kAudioUnitProperty_StreamFormat,
-                                kAudioUnitScope_Output, 1, &format_,
-                                sizeof(format_));
+                                kAudioUnitScope_Output, AUElement::INPUT,
+                                &format_, sizeof(format_));
   if (result != noErr) {
     HandleError(result);
     return false;

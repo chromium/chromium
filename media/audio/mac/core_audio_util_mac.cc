@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/audio/mac/scoped_audio_unit.h"
 #include "media/base/audio_timestamp_helper.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -392,9 +393,9 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
   // Get audio unit latency.
   Float64 audio_unit_latency_sec = 0.0;
   UInt32 size = sizeof(audio_unit_latency_sec);
-  OSStatus result = AudioUnitGetProperty(audio_unit, kAudioUnitProperty_Latency,
-                                         kAudioUnitScope_Global, 0,
-                                         &audio_unit_latency_sec, &size);
+  OSStatus result = AudioUnitGetProperty(
+      audio_unit, kAudioUnitProperty_Latency, kAudioUnitScope_Global,
+      AUElement::OUTPUT, &audio_unit_latency_sec, &size);
   OSSTATUS_DLOG_IF(WARNING, result != noErr, result)
       << "Could not get audio unit latency";
 
