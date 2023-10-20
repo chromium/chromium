@@ -2806,8 +2806,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.Omnibox.{AndroidSearchPrefetch}.GeoLocationTime.{AndroidNavigationOrSuggestionPrefetch}"
-    units="ms" expires_after="2023-10-15">
+    name="Android.Omnibox.{AndroidSearchPrefetch}.GeoLocationHeaderTime.{AndroidNavigationOrSuggestionPrefetch}"
+    units="ms" expires_after="2024-01-15">
+  <owner>nhiroki@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
   <owner>chrome-search@google.com</owner>
@@ -2826,7 +2827,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.Omnibox.{AndroidSearchPrefetch}.NumPrefetchesStartedInOmniboxSession.{AndroidNavigationPrefetchOnly}"
-    units="count" expires_after="2023-10-15">
+    units="count" expires_after="2024-01-15">
+  <owner>nhiroki@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
   <owner>chrome-search@google.com</owner>
@@ -2845,7 +2847,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.Omnibox.{AndroidSearchPrefetch}.TouchDownPrefetchResult.{AndroidNavigationPrefetchOnly}"
-    enum="SearchPrefetchTouchDownPrefetchResult" expires_after="2023-10-15">
+    enum="SearchPrefetchTouchDownPrefetchResult" expires_after="2024-01-15">
+  <owner>nhiroki@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
   <owner>chrome-search@google.com</owner>
@@ -2864,7 +2867,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.Omnibox.{AndroidSearchPrefetch}.TouchDownProcessTime.{AndroidNavigationPrefetchOnly}"
-    units="ms" expires_after="2023-10-15">
+    units="ms" expires_after="2024-01-15">
+  <owner>nhiroki@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
   <owner>chrome-search@google.com</owner>
