@@ -89,12 +89,12 @@ export class FileSystemSiteDetailsElement extends
     if (!site) {
       return;
     }
-    this.browserProxy.isOriginValid(site).then((valid) => {
+    this.browserProxy.isOriginValid(site).then(valid => {
       if (!valid) {
         Router.getInstance().navigateToPreviousRoute();
       }
       this.origin_ = site;
-      this.set('pageTitle', this.origin_);
+      this.pageTitle = this.origin_;
     });
     this.populateList_();
   }
@@ -111,8 +111,9 @@ export class FileSystemSiteDetailsElement extends
     // no file system grants.
     if (!originFileSystemGrantsObj) {
       Router.getInstance().navigateTo(routes.SITE_SETTINGS_FILE_SYSTEM_WRITE);
+      return;
     }
-    this.set('grantsPerOrigin', originFileSystemGrantsObj);
+    this.grantsPerOrigin = originFileSystemGrantsObj;
   }
 
   /**
