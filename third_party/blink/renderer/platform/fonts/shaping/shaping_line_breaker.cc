@@ -96,7 +96,9 @@ inline ShapingLineBreaker::EdgeOffset ShapingLineBreaker::FirstSafeOffset(
     return {start};
   }
   if (UNLIKELY(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) &&
-      UNLIKELY(HanKerning::IsOpen(GetText()[start])) &&
+      // TODO(crbug.com/1463891): `MaybeOpen` is likely to hit the performance
+      // for non-CJK documents. We should try harder not to require reshaping.
+      UNLIKELY(HanKerning::MaybeOpen(GetText()[start])) &&
       text_spacing_trim_ == TextSpacingTrim::kSpaceFirst) {
     // `HanKerning` wants to apply kerning to `kOpen` characters at the start of
     // the line. Reshape it to resolve the `SimpleFontData` and apply

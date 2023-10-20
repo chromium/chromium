@@ -130,10 +130,9 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
   NOTREACHED_NORETURN();
 }
 
-bool HanKerning::IsOpen(UChar ch) {
-  // Any `FontData` will do, because it only changes between `kClose` and
-  // `kMiddle`. See `FontData::FontData`.
-  return GetCharType(ch, FontData()) == CharType::kOpen;
+bool HanKerning::MaybeOpen(UChar ch) {
+  const CharType type = Character::GetHanKerningCharType(ch);
+  return type == CharType::kOpen || type == CharType::kOpenQuote;
 }
 
 inline bool HanKerning::ShouldKern(CharType type, CharType last_type) {
