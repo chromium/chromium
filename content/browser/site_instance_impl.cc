@@ -1203,6 +1203,12 @@ bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const UrlInfo& url_info) {
     return false;
   }
 
+  // Similarly, the common_coop_origin in the UrlInfo and in this
+  // SiteInstance's BrowsingInstance must be compatible.
+  if (url_info.common_coop_origin != GetCommonCoopOrigin()) {
+    return false;
+  }
+
   // If the passed in UrlInfo has a null WebExposedIsolationInfo, meaning that
   // it is compatible with any isolation state, we reuse the isolation state of
   // this SiteInstance's SiteInfo so the member comparison of SiteInfos will
