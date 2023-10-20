@@ -432,6 +432,7 @@ def CreateFromDict(options, registration_dict):
 
 #include <iterator>
 
+#include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_int_wrapper.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
 
