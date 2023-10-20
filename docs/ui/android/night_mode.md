@@ -161,7 +161,7 @@ Some tips:
 
 * If building **chrome\_apk**, add `compress_resources = false` in gn args to disable Lemon compression. See [Issue 957286](https://crbug.com/957286) for details.
 * Night mode is only available on L+
-* Animation is turned off when in power save mode on Andoird L-O
+* Animation is turned off when in power save mode on Android L-O
 
 ## Optional: Add independent night mode control to an Activity
 Most of the features will follow the app-wise night mode control, but some features might require introduction of an independent night mode control. For example, custom tab will not follow the app-wise night mode control, but instead, will respect the night mode settings from the host app. In such cases, you can
