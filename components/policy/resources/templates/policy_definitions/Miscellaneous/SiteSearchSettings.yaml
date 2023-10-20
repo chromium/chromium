@@ -1,0 +1,50 @@
+caption: Site search settings
+desc: |-
+  This policy provides a list of site searches where the user can search on a specific site. Users can initiate the search by typing the shortcut or @shortcut (e.g. @work) in the address bar.
+
+  The following fields are required for each entry: name, shortcut, url. Shortcuts in the list must be unique and must not contain spaces. Prepending @ to a shortcut is optional, so the resulting shortcut is considered the same as the shortcut without the @; for example "work" and "@work" are considered the same shortcut.
+
+  For each entry, the url field specifies the URL of the search engine used during a search with the corresponding keyword. The URL must include the string <ph name="SEARCH_TERM_MARKER">‘{searchTerms}’</ph>, replaced in the query by the user's search terms. Invalid entries and entries with duplicate shortcuts are ignored.
+
+  Site search entries configured as featured are displayed in the address bar when the user types "@". Up to three entries can be selected as featured.
+
+  Users cannot edit or disable site search entries set by policy, but they can add new shortcuts for the same URL. In addition, users cannot create new site search entries with a shortcut previously created via policy.
+
+  In case of conflict with a shortcut previously created by the user, the user setting is respected. However, users can still trigger the option created by policy by typing "@" in the search bar. For example, if the user already defined "work" as a shortcut to URL1 and the policy defines "work" as a shortcut to URL2, then typing "work" in the search bar will trigger a search to URL1, but typing "@work" in the search bar will trigger a search to URL2.
+
+example_value:
+- featured: true
+  name: Google Wikipedia
+  shortcut: wikipedia
+  url: https://www.google.com/search?q=site%3Awikipedia.com+%s
+- name: YouTube
+  shortcut: youtube
+  url: https://www.youtube.com/results?search_query=%s
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+- chrome_os
+owners:
+- ftirelo@chromium.org
+- pastarmovj@chromium.org
+schema:
+  type: array
+  items:
+    type: object
+    properties:
+      featured:
+        type: boolean
+      name:
+        type: string
+      shortcut:
+        type: string
+      url:
+        type: string
+    required:
+    - shortcut
+    - name
+    - url
+tags: []
+type: dict

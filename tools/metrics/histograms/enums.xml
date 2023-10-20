@@ -34061,6 +34061,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1173" label="UserFeedbackWithLowLevelDebugDataAllowed"/>
   <int value="1174" label="MicrosoftOneDriveAccountRestrictions"/>
   <int value="1175" label="DeviceFlexHwDataForProductImprovementEnabled"/>
+  <int value="1176" label="SiteSearchSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
