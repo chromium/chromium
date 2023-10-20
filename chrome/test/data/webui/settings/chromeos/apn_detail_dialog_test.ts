@@ -239,6 +239,10 @@ suite('<apn-detail-dialog>', () => {
       'Clicking on the advanced settings button expands/collapses section',
       async () => {
         await init();
+        assertEquals(
+            'apnDetailDialogTitle',
+            apnDetailDialog.shadowRoot!.querySelector('#advancedSettingsBtn')!
+                .getAttribute('aria-describedby'));
         const isAdvancedSettingShowing = () => {
           const ironCollapseElement =
               apnDetailDialog.shadowRoot!.querySelector('iron-collapse');

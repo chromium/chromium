@@ -81,11 +81,11 @@
     </cr-input>
     <cr-expand-button id="advancedSettingsBtn"
         class="advanced-settings cr-row"
-        expanded="{{advancedSettingsExpanded_}}">
+        expanded="{{advancedSettingsExpanded_}}"
+        aria-describedby="apnDetailDialogTitle">
       <div>[[i18n('apnDetailAdvancedSettings')]]</div>
     </cr-expand-button>
     <iron-collapse opened="[[advancedSettingsExpanded_]]">
-      <!-- TODO(b/162365553): Add validation. -->
       <div id="authenticationTypeSelection" class="dropdown-section">
         <div id="authenticationTypeLabel" class="cr-form-field-label">
           [[i18n('apnDetailAuthType')]]
