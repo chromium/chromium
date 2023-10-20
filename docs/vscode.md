@@ -115,7 +115,7 @@ $ echo "ms-vscode.cpptools llvm-vs-code-extensions.vscode-clangd ms-python.pytho
     functions like jumping to definition, and provide smarter autocompletion
     than **C/C++** extension's IntelliSense, but they also conflicts with each
     other. To resolve the conflict, add the following to `settings.json`:
-    `"C_Cpp.intelliSenseEngine": "disabled"`.  See [clangd.md](clangd.md) for
+    `"C_Cpp.intelliSenseEngine": "Disabled"`.  See [clangd.md](clangd.md) for
     setup instructions.
 *   [**Python**](https://marketplace.visualstudio.com/items?itemName=ms-python.python) -
     Linting, intellisense, code formatting, refactoring, debugging, snippets.
