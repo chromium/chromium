@@ -878,7 +878,7 @@ testcase.driveInlineSyncStatusSingleFile = async () => {
     mimeType: 'video/ogg',
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'toBeUploaded.ogv',
-    sizeText: '59 KB',
+    sizeText: '56 KB',
     typeText: 'OGG video',
     availableOffline: true,
   });
@@ -945,7 +945,7 @@ testcase.driveInlineSyncStatusParentFolder = async () => {
     mimeType: 'video/ogg',
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'toBeUploaded.ogv',
-    sizeText: '59 KB',
+    sizeText: '56 KB',
     typeText: 'OGG video',
     availableOffline: true,
   });
@@ -958,7 +958,7 @@ testcase.driveInlineSyncStatusParentFolder = async () => {
     mimeType: 'video/ogg',
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'toFailUploading.ogv',
-    sizeText: '59 KB',
+    sizeText: '56 KB',
     typeText: 'OGG video',
     availableOffline: true,
   });
@@ -1033,7 +1033,7 @@ testcase.driveInlineSyncStatusSingleFileProgressEvents = async () => {
     mimeType: 'video/ogg',
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'toBeUploaded.ogv',
-    sizeText: '59 KB',
+    sizeText: '56 KB',
     typeText: 'OGG video',
     availableOffline: true,
   });
@@ -1090,7 +1090,7 @@ testcase.driveInlineSyncStatusParentFolderProgressEvents = async () => {
     mimeType: 'video/ogg',
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'toBeUploaded.ogv',
-    sizeText: '59 KB',
+    sizeText: '56 KB',
     typeText: 'OGG video',
     availableOffline: true,
   });
@@ -1103,7 +1103,7 @@ testcase.driveInlineSyncStatusParentFolderProgressEvents = async () => {
     mimeType: 'video/ogg',
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'toFailUploading.ogv',
-    sizeText: '59 KB',
+    sizeText: '56 KB',
     typeText: 'OGG video',
     availableOffline: true,
   });
