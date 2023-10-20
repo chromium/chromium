@@ -111,7 +111,13 @@ void FragmentItems::FinalizeAfterLayout(
         item.SetFragmentId(line_fragment_id++);
         continue;
       } else if (!found_inflow_content) {
-        found_inflow_content = !item.IsFloating();
+        // Resumed floats may take up all the space in the containing block
+        // fragment, leaving no room for actual content inside the inline
+        // formatting context. The non-atomic inline boxes themselves also don't
+        // contribute to having inflow content, as they may just be wrappers
+        // around such floats. We need something "real", such as text or a
+        // non-atomic inline.
+        found_inflow_content = !item.IsFloating() && !item.IsInlineBox();
       }
       LayoutObject* const layout_object = item.GetMutableLayoutObject();
       DCHECK(!layout_object->IsOutOfFlowPositioned());
