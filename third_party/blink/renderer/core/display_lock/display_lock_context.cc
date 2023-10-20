@@ -391,8 +391,7 @@ bool DisplayLockContext::ShouldLayoutChildren() const {
               .ActivatableDisplayLocksForced() &&
           IsActivatable(DisplayLockActivationReason::kAny)) ||
          (document_->ExistingAXObjectCache() &&
-          document_->GetStyleEngine()
-              .StyleMaybeAffectedByLayoutForAccessibility() &&
+          document_->GetStyleEngine().SkippedContainerRecalc() &&
           IsActivatable(DisplayLockActivationReason::kAccessibility));
 }
 
