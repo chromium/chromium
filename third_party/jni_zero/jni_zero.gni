@@ -208,8 +208,13 @@ template("generate_jni_registration") {
         rebase_path(_jni_header_output, root_build_dir),
       ]
 
-      # This gives targets depending on this registration access to our generated header.
-      public_configs = [ "//third_party/jni_zero:jni_include_dir" ]
+      public_configs = [
+        # This gives targets depending on this registration access to our generated header.
+        "//third_party/jni_zero:jni_include_dir",
+
+        # This ensures we are depending on base only when build_with_chromium.
+        "//third_party/jni_zero:jni_defines",
+      ]
     }
 
     if (defined(invoker.namespace)) {
@@ -233,8 +238,11 @@ template("generate_jni_impl") {
     group(target_name) {
       not_needed(invoker, "*")
       public_deps = [ ":$target_name($default_toolchain)" ]
-      public_configs =
-          [ "//third_party/jni_zero:jni_include_dir($default_toolchain)" ]
+      public_configs = [
+        "//third_party/jni_zero:jni_include_dir($default_toolchain)",
+
+        "//third_party/jni_zero:jni_defines",
+      ]
     }
   } else {
     _invoke_jni_zero(target_name) {
@@ -270,7 +278,12 @@ template("generate_jni_impl") {
       }
       public_deps += _jni_generator_include_deps
 
-      public_configs = [ "//third_party/jni_zero:jni_include_dir" ]
+      public_configs = [
+        "//third_party/jni_zero:jni_include_dir",
+
+        # This ensures we are depending on base only when build_with_chromium.
+        "//third_party/jni_zero:jni_defines",
+      ]
       if (defined(visibility)) {
         # Allow dependency on ourselves from secondary toolchain.
         visibility += [ ":$target_name" ]
