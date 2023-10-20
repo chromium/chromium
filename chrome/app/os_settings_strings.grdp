@@ -2796,7 +2796,7 @@ Press an assigned switch or key to remove assignment.
     Key combination
   </message>
   <message name="IDS_SETTINGS_NO_REMAPPING_OPTION_LABEL" desc="Label of no remapping option in the button remapping action dropdown menu.">
-    None
+    Default
   </message>
   <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_TITLE" desc="Title of the button renaming dialog in customize device buttons page.">
     Change button name
@@ -2818,6 +2818,63 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_CHARACTER_COUNT" desc="Character count of the button renaming dialog input that shows up the current and maximum character count.">
     <ph name="CURRENT_CHARACTER_COUNT">$1<ex>15</ex></ph>/<ph name="MAX_CHARACTER_COUNT">$2<ex>64</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_DISABLE_OPTION_LABEL" desc="Label of Disable option in the button remapping action dropdown menu.">
+    Disable
+  </message>
+  <message name="IDS_SETTINGS_VOLUME_ON_OFF_OPTION_LABEL" desc="Label of Volume on/off option in the button remapping action dropdown menu.">
+    Volume on/off
+  </message>
+  <message name="IDS_SETTINGS_MICROPHONE_ON_OFF_OPTION_LABEL" desc="Label of Microphone on/off option in the button remapping action dropdown menu.">
+    Microphone on/off
+  </message>
+  <message name="IDS_SETTINGS_MEDIA_PLAY_PAUSE_OPTION_LABEL" desc="Label of Media Play/Pause option in the button remapping action dropdown menu.">
+    Media Play/Pause
+  </message>
+  <message name="IDS_SETTINGS_OVERVIEW_OPTION_LABEL" desc="Label of Overview option in the button remapping action dropdown menu.">
+    Overview
+  </message>
+  <message name="IDS_SETTINGS_SCREENSHOT_OPTION_LABEL" desc="Label of Screenshot option in the button remapping action dropdown menu.">
+    Screenshot
+  </message>
+  <message name="IDS_SETTINGS_EMOJI_PICKER_OPTION_LABEL" desc="Label of Emoji Picker option in the button remapping action dropdown menu.">
+    Emoji Picker
+  </message>
+  <message name="IDS_SETTINGS_HIGH_CONTRAST_ON_OFF_OPTION_LABEL" desc="Label of High contrast on/off option in the button remapping action dropdown menu.">
+    High contrast on/off
+  </message>
+  <message name="IDS_SETTINGS_MAGNIFIER_ON_OFF_OPTION_LABEL" desc="Label of Magnifier on/off option in the button remapping action dropdown menu.">
+    Magnifier on/off
+  </message>
+  <message name="IDS_SETTINGS_DICTATION_ON_OFF_OPTION_LABEL" desc="Label of Dictation on/off option in the button remapping action dropdown menu.">
+    Dictation on/off
+  </message>
+  <message name="IDS_SETTINGS_UNDO_OPTION_LABEL" desc="Label of Undo option in the button remapping action dropdown menu.">
+    Undo
+  </message>
+  <message name="IDS_SETTINGS_REDO_OPTION_LABEL" desc="Label of Redo option in the button remapping action dropdown menu.">
+    Redo
+  </message>
+  <message name="IDS_SETTINGS_ZOOM_IN_OPTION_LABEL" desc="Label of Zoom In option in the button remapping action dropdown menu.">
+    Zoom In
+  </message>
+  <message name="IDS_SETTINGS_ZOOM_OUT_OPTION_LABEL" desc="Label of Zoom Out option in the button remapping action dropdown menu.">
+    Zoom Out
+  </message>
+  <message name="IDS_SETTINGS_RIGHT_CLICK_OPTION_LABEL" desc="Label of Right click option in the button remapping action dropdown menu.">
+    Right click
+  </message>
+  <message name="IDS_SETTINGS_LEFT_CLICK_OPTION_LABEL" desc="Label of Left click option in the button remapping action dropdown menu.">
+    Left click
+  </message>
+  <message name="IDS_SETTINGS_MIDDLE_CLICK_OPTION_LABEL" desc="Label of Middle click option in the button remapping action dropdown menu.">
+    Middle click
+  </message>
+  <message name="IDS_SETTINGS_PREVIOUS_PAGE_OPTION_LABEL" desc="Label of Previous page option in the button remapping action dropdown menu.">
+    Previous page
+  </message>
+  <message name="IDS_SETTINGS_NEXT_PAGE_OPTION_LABEL" desc="Label of Next page option in the button remapping action dropdown menu.">
+    Next page
   </message>
 
   <!-- Bluetooth page (OS settings) -->
