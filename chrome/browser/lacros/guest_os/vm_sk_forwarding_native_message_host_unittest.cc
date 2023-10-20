@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file has been duplicated for lacros in
-// //chrome/browser/lacros/guest_os/vm_sk_forwarding_native_message_host_unittest.cc
-// and should eventually be removed.
+// This file is copied from
+// //chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host_unittest.cc
 
-#include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
+#include "chrome/browser/lacros/guest_os/vm_sk_forwarding_native_message_host.h"
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -28,8 +27,6 @@ using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
 using testing::WithArg;
-
-namespace ash {
 
 namespace guest_os {
 
@@ -122,4 +119,3 @@ TEST(VmSKForwardingNativeMessageHostTests, MultipleMessagesFromExtension) {
 }
 
 }  // namespace guest_os
-}  // namespace ash

@@ -8444,6 +8444,7 @@ test("unit_tests") {
       "../browser/lacros/device_settings_lacros_unittest.cc",
       "../browser/lacros/force_installed_tracker_lacros_unittest.cc",
       "../browser/lacros/fullscreen_controller_client_lacros_unittest.cc",
+      "../browser/lacros/guest_os/vm_sk_forwarding_native_message_host_unittest.cc",
       "../browser/lacros/lacros_memory_pressure_evaluator_unittest.cc",
       "../browser/lacros/lacros_url_handling_unittest.cc",
       "../browser/lacros/metrics_reporting_observer_unittest.cc",

@@ -61,6 +61,10 @@ namespace drive {
 class DriveFsNativeMessageHostBridge;
 }  // namespace drive
 
+namespace guest_os {
+class VmSkForwardingService;
+}
+
 namespace video_conference {
 class VideoConferenceManagerClientImpl;
 }  // namespace video_conference
@@ -212,6 +216,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Caches the clipboard history item descriptors in Lacros. Used only when
   // the clipboard history refresh feature is enabled.
   std::unique_ptr<crosapi::ClipboardHistoryLacros> clipboard_history_lacros_;
+
+  // Forwards messages between VMs and the gnubbyd extension.
+  std::unique_ptr<guest_os::VmSkForwardingService> vm_sk_forwarding_service_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

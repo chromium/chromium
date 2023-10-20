@@ -46,6 +46,7 @@ class AuthenticationAsh;
 class AutomationAsh;
 class BrowserServiceHostAsh;
 class BrowserVersionServiceAsh;
+class GuestOsSkForwarderFactoryAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
 class ChromeAppKioskServiceAsh;
@@ -390,6 +391,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::WebKioskService> receiver) override;
   void BindWebPageInfoFactory(
       mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) override;
+  void BindGuestOsSkForwarderFactory(
+      mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver)
+      override;
   void OnBrowserStartup(mojom::BrowserInfoPtr browser_info) override;
   void REMOVED_29(
       mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) override;
@@ -578,6 +582,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<AutomationAsh> automation_ash_;
   std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;
   std::unique_ptr<BrowserVersionServiceAsh> browser_version_service_ash_;
+  std::unique_ptr<GuestOsSkForwarderFactoryAsh>
+      guest_os_sk_forwarder_factory_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
   std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;

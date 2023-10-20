@@ -33,6 +33,7 @@
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
 #include "chrome/browser/lacros/geolocation/system_geolocation_source_lacros.h"
+#include "chrome/browser/lacros/guest_os/vm_sk_forwarding_service.h"
 #include "chrome/browser/lacros/lacros_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
@@ -184,6 +185,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     clipboard_history_lacros_ = CreateClipboardHistoryLacros();
   }
+  vm_sk_forwarding_service_ =
+      std::make_unique<guest_os::VmSkForwardingService>();
 
   memory_pressure::MultiSourceMemoryPressureMonitor* monitor =
       static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(

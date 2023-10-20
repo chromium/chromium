@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file has been duplicated for lacros in
-// //chrome/browser/lacros/guest_os/vm_sk_forwarding_native_message_host.cc and
-// should eventually be removed.
+// This file is copied from
+// //chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.cc
 
-#include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
+#include "chrome/browser/lacros/guest_os/vm_sk_forwarding_native_message_host.h"
 
 #include <utility>
 
@@ -32,7 +31,6 @@
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "url/gurl.h"
 
-namespace ash {
 namespace guest_os {
 
 // static
@@ -170,4 +168,3 @@ void VmSKForwardingNativeMessageHost::DeliverMessageToSKForwardingExtension(
 }
 
 }  // namespace guest_os
-}  // namespace ash

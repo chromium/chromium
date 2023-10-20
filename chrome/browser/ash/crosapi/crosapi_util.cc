@@ -90,6 +90,7 @@
 #include "chromeos/crosapi/mojom/force_installed_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/fullscreen_controller.mojom.h"
 #include "chromeos/crosapi/mojom/geolocation.mojom.h"
+#include "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/crosapi/mojom/identity_manager.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
@@ -296,7 +297,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 120,
+static_assert(crosapi::mojom::Crosapi::Version_ == 121,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -429,6 +430,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
         crosapi::mojom::EmbeddedAccessibilityHelperClient>(),
     MakeInterfaceVersionEntry<
         crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::GuestOsSkForwarderFactory>(),
 };
 
 constexpr bool HasDuplicatedUuid() {

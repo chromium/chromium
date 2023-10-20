@@ -63,6 +63,7 @@
 #include "chromeos/crosapi/mojom/force_installed_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/fullscreen_controller.mojom.h"
 #include "chromeos/crosapi/mojom/geolocation.mojom.h"
+#include "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/crosapi/mojom/identity_manager.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
@@ -387,6 +388,10 @@ LacrosService::LacrosService()
       crosapi::mojom::GeolocationService,
       &crosapi::mojom::Crosapi::BindGeolocationService,
       Crosapi::MethodMinVersions::kBindGeolocationServiceMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::GuestOsSkForwarderFactory,
+      &Crosapi::BindGuestOsSkForwarderFactory,
+      Crosapi::MethodMinVersions::kBindGuestOsSkForwarderFactoryMinVersion>();
   ConstructRemote<device::mojom::HidManager,
                   &crosapi::mojom::Crosapi::BindHidManager,
                   Crosapi::MethodMinVersions::kBindHidManagerMinVersion>();

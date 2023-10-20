@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_
-#define CHROME_BROWSER_ASH_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_
+#ifndef CHROME_BROWSER_LACROS_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_
+#define CHROME_BROWSER_LACROS_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_
 
-// This file has been duplicated for lacros in
-// //chrome/browser/lacros/guest_os/vm_sk_forwarding_native_message_host.h and
-// should eventually be removed.
+// This file is copied from
+// //chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h
 
 #include <memory>
 #include <string>
@@ -25,7 +24,6 @@ class BrowserContext;
 
 class Profile;
 
-namespace ash {
 namespace guest_os {
 
 // Implements a message pipe to communicate with a Chrome Extension for
@@ -96,11 +94,9 @@ class VmSKForwardingNativeMessageHost : public extensions::NativeMessageHost {
   const std::string json_message_to_send_;
 
   // Unowned. |client_| must outlive this instance.
-  raw_ptr<extensions::NativeMessageHost::Client, ExperimentalAsh> client_ =
-      nullptr;
+  raw_ptr<extensions::NativeMessageHost::Client> client_ = nullptr;
 };
 
 }  // namespace guest_os
-}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_
+#endif  // CHROME_BROWSER_LACROS_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_

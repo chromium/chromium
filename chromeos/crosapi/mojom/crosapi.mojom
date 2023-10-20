@@ -16,6 +16,7 @@ import "chromeos/crosapi/mojom/authentication.mojom";
 import "chromeos/crosapi/mojom/automation.mojom";
 import "chromeos/crosapi/mojom/browser_app_instance_registry.mojom";
 import "chromeos/crosapi/mojom/browser_version.mojom";
+import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
 import "chromeos/crosapi/mojom/cert_provisioning.mojom";
 import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
@@ -148,8 +149,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 121
-// Next method id: 123
+// Next version: 122
+// Next method id: 124
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -775,6 +776,11 @@ interface Crosapi {
 
   // Binds the service to allow lacros-chrome to set the chromeos wallpaper.
   [MinVersion=84] BindWallpaper@87(pending_receiver<Wallpaper> receiver);
+
+  // Binds the GuestOS security key forwarding service.
+  // Added in M120.
+  [MinVersion=121] BindGuestOsSkForwarderFactory@123(
+      pending_receiver<GuestOsSkForwarderFactory> receiver);
 
   // Passes generic browser information such as version, etc into ash in
   // |browser_info| during startup.

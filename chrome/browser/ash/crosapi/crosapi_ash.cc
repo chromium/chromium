@@ -61,6 +61,7 @@
 #include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/crosapi/geolocation_service_ash.h"
+#include "chrome/browser/ash/crosapi/guest_os_sk_forwarder_factory_ash.h"
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/image_writer_ash.h"
@@ -201,6 +202,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       browser_service_host_ash_(std::make_unique<BrowserServiceHostAsh>()),
       browser_version_service_ash_(std::make_unique<BrowserVersionServiceAsh>(
           g_browser_process->component_updater())),
+      guest_os_sk_forwarder_factory_ash_(
+          std::make_unique<GuestOsSkForwarderFactoryAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chrome_app_kiosk_service_ash_(
@@ -1000,6 +1003,11 @@ void CrosapiAsh::BindWebKioskService(
 void CrosapiAsh::BindWebPageInfoFactory(
     mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) {
   web_page_info_factory_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindGuestOsSkForwarderFactory(
+    mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver) {
+  guest_os_sk_forwarder_factory_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindWebAppPublisher(

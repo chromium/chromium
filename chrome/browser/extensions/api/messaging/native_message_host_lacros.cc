@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/api/messaging/native_message_built_in_host.h"
 #include "chrome/browser/extensions/api/messaging/native_message_echo_host.h"
 #include "chrome/browser/lacros/drivefs_native_message_host_lacros.h"
+#include "chrome/browser/lacros/guest_os/vm_sk_forwarding_native_message_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -37,6 +38,10 @@ const NativeMessageBuiltInHost kBuiltInHosts[] = {
      drive::kDriveFsNativeMessageHostOrigins.data(),
      drive::kDriveFsNativeMessageHostOrigins.size(),
      &drive::CreateDriveFsNativeMessageHostLacros},
+    {guest_os::VmSKForwardingNativeMessageHost::kHostName,
+     guest_os::VmSKForwardingNativeMessageHost::kOrigins,
+     guest_os::VmSKForwardingNativeMessageHost::kOriginCount,
+     &guest_os::VmSKForwardingNativeMessageHost::CreateFromExtension},
 };
 
 const size_t kBuiltInHostsCount = std::size(kBuiltInHosts);

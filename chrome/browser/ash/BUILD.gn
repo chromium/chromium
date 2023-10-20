@@ -1424,6 +1424,8 @@ source_set("ash") {
     "guest_os/public/guest_os_service.h",
     "guest_os/public/guest_os_service_factory.cc",
     "guest_os/public/guest_os_service_factory.h",
+    "guest_os/public/guest_os_sk_forwarder.cc",
+    "guest_os/public/guest_os_sk_forwarder.h",
     "guest_os/public/guest_os_terminal_provider.cc",
     "guest_os/public/guest_os_terminal_provider.h",
     "guest_os/public/guest_os_terminal_provider_registry.cc",
