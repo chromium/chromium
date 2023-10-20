@@ -190,8 +190,7 @@ void PriceTrackingView::HandleSubscriptionUpdate(
 
 std::u16string PriceTrackingView::GetToggleAccessibleName() {
   return l10n_util::GetStringUTF16(
-      IsToggleOn() ? IDS_PRICE_TRACKING_UNTRACK_PRODUCT_ACCESSIBILITY
-                   : IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY);
+      IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY);
 }
 
 void PriceTrackingView::OnToggleButtonPressed(const GURL& url) {
