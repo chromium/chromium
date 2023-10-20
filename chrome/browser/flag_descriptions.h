@@ -148,9 +148,6 @@ extern const char kCustomizeChromeWallpaperSearchDescription[];
 extern const char kDeprecateUnloadName[];
 extern const char kDeprecateUnloadDescription[];
 
-extern const char kDigestAuthEnableSecureAlgorithmsName[];
-extern const char kDigestAuthEnableSecureAlgorithmsDescription[];
-
 extern const char kDIPSName[];
 extern const char kDIPSDescription[];
 

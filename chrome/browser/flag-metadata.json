@@ -1616,11 +1616,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "digest-auth-enable-secure-algorithms",
-    "owners": [ "rojer@rojer.me" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "disable-accelerated-2d-canvas",
     "owners": [ "fserb@chromium.org" ],
     "expiry_milestone": -1

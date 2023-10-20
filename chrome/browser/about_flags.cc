@@ -10707,11 +10707,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kFillingAcrossAffiliatedWebsitesAndroid)},
 #endif
 
-    {"digest-auth-enable-secure-algorithms",
-     flag_descriptions::kDigestAuthEnableSecureAlgorithmsName,
-     flag_descriptions::kDigestAuthEnableSecureAlgorithmsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kDigestAuthEnableSecureAlgorithms)},
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {"third-party-profile-management",
      flag_descriptions::kThirdPartyProfileManagementName,
