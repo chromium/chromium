@@ -90,11 +90,11 @@ extern const char kOgTypeProductItem[];
 extern const long kToMicroCurrency;
 
 extern const char kImageAvailabilityHistogramName[];
-extern const char kProductInfoJavascriptTime[];
+extern const char kProductInfoLocalExtractionTime[];
 
 // The amount of time to wait after the last "stopped loading" event to run the
 // on-page extraction for product info.
-extern const uint64_t kProductInfoJavascriptDelayMs;
+extern const uint64_t kProductInfoLocalExtractionDelayMs;
 
 // The availability of the product image for an offer. This needs to be kept in
 // sync with the ProductImageAvailability enum in enums.xml.
@@ -141,14 +141,14 @@ struct ProductInfoCacheEntry {
   // The number of pages that have the URL open.
   size_t pages_with_url_open{0};
 
-  // Whether the fallback javascript needs to run for page.
-  bool needs_javascript_run{false};
+  // Whether the fallback local extraction needs to run for page.
+  bool needs_local_extraction_run{false};
 
-  // The time that the javascript execution started. This is primarily used for
-  // metrics.
-  base::Time javascript_execution_start_time;
+  // The time that the local extraction execution started. This is primarily
+  // used for metrics.
+  base::Time local_extraction_execution_start_time;
 
-  std::unique_ptr<base::CancelableOnceClosure> run_javascript_task;
+  std::unique_ptr<base::CancelableOnceClosure> run_local_extraction_task;
 
   // The product info associated with the URL.
   std::unique_ptr<ProductInfo> product_info;
@@ -489,14 +489,14 @@ class ShoppingService : public KeyedService,
   // frame.
   void DidFinishLoad(WebWrapper* web);
 
-  // Schedule (or reschedule) the on-page javascript execution. Calling this
-  // sequentially for the same web wrapper with the same URL will cancel the
-  // pending task and schedule a new one. The script will, at most, run once
+  // Schedule (or reschedule) the on-page local extraction execution. Calling
+  // this sequentially for the same web wrapper with the same URL will cancel
+  // the pending task and schedule a new one. The script will, at most, run once
   // per unique navigation.
-  void ScheduleProductInfoJavascript(WebWrapper* web);
+  void ScheduleProductInfoLocalExtraction(WebWrapper* web);
 
-  // Run the on-page, javascript info extraction if needed.
-  void TryRunningJavascriptForProductInfo(base::WeakPtr<WebWrapper> web);
+  // Run the on-page info extraction if needed.
+  void TryRunningLocalExtractionForProductInfo(base::WeakPtr<WebWrapper> web);
 
   // Whether APIs like |GetProductInfoForURL| are enabled and allowed to be
   // used.
@@ -538,11 +538,12 @@ class ShoppingService : public KeyedService,
   std::unique_ptr<ProductInfo> OptGuideResultToProductInfo(
       const optimization_guide::OptimizationMetadata& metadata);
 
-  // Handle the result of running the javascript fallback for product info.
-  void OnProductInfoJavascriptResult(const GURL url, base::Value result);
+  // Handle the result of running the local extraction fallback for product
+  // info.
+  void OnProductInfoLocalExtractionResult(const GURL url, base::Value result);
 
-  // Handle the result of JSON parsing obtained from running javascript on the
-  // product info page.
+  // Handle the result of JSON parsing obtained from running local extraction on
+  // the product info page.
   void OnProductInfoJsonSanitizationCompleted(
       const GURL url,
       data_decoder::DataDecoder::ValueOrError result);

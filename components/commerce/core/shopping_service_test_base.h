@@ -192,9 +192,9 @@ class ShoppingServiceTestBase : public testing::Test {
   static void MergeProductInfoData(ProductInfo* info,
                                    const base::Value::Dict& on_page_data_map);
 
-  // Skip the delay for running the on-page javascript for product info and
-  // wait until the task completes.
-  void SimulateProductInfoJsTaskFinished();
+  // Skip the delay for running the on-page local extraction for product info
+  // and wait until the task completes.
+  void SimulateProductInfoLocalExtractionTaskFinished();
 
   // Get the count of the number of tabs a particular URL is open in from the
   // product info cache.

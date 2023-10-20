@@ -76,7 +76,7 @@ TEST_F(ShoppingServiceMetricsTest,
   ASSERT_NE(kImageUrl, cached_info->image_url);
 
   DidFinishLoad(&web);
-  SimulateProductInfoJsTaskFinished();
+  SimulateProductInfoLocalExtractionTaskFinished();
 
   // After the page has loaded and the on-page js has run, we should have the
   // on-page image.
@@ -110,7 +110,7 @@ TEST_F(ShoppingServiceMetricsTest,
   ASSERT_EQ(kImageUrl, cached_info->image_url.spec());
 
   DidFinishLoad(&web);
-  SimulateProductInfoJsTaskFinished();
+  SimulateProductInfoLocalExtractionTaskFinished();
 
   // After the page has loaded and the on-page js has run, we should have the
   // on-page image.
@@ -144,7 +144,7 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoServerImage) {
   ASSERT_NE(kImageUrl, cached_info->image_url);
 
   DidFinishLoad(&web);
-  SimulateProductInfoJsTaskFinished();
+  SimulateProductInfoLocalExtractionTaskFinished();
 
   // After the page has loaded and the on-page js has run, we should have the
   // on-page image.
@@ -177,7 +177,7 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoLocalImage) {
   ASSERT_EQ(kImageUrl, cached_info->image_url);
 
   DidFinishLoad(&web);
-  SimulateProductInfoJsTaskFinished();
+  SimulateProductInfoLocalExtractionTaskFinished();
 
   // After the page has loaded and the on-page js has run, we should not have
   // detected another image and report "server only".
@@ -225,7 +225,7 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_NoLocal) {
 
   DidNavigatePrimaryMainFrame(&web);
   DidFinishLoad(&web);
-  SimulateProductInfoJsTaskFinished();
+  SimulateProductInfoLocalExtractionTaskFinished();
 
   histogram_tester_->ExpectBucketCount(
       metrics::kPDPStateWithLocalMetaName,
@@ -247,7 +247,7 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_BothServerAndLocal) {
 
   DidNavigatePrimaryMainFrame(&web);
   DidFinishLoad(&web);
-  SimulateProductInfoJsTaskFinished();
+  SimulateProductInfoLocalExtractionTaskFinished();
 
   histogram_tester_->ExpectBucketCount(
       metrics::kPDPStateWithLocalMetaName,
@@ -269,7 +269,7 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_NoServer) {
 
   DidNavigatePrimaryMainFrame(&web);
   DidFinishLoad(&web);
-  SimulateProductInfoJsTaskFinished();
+  SimulateProductInfoLocalExtractionTaskFinished();
 
   histogram_tester_->ExpectBucketCount(
       metrics::kPDPStateWithLocalMetaName,
@@ -291,7 +291,7 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_IllegalScheme) {
 
   DidNavigatePrimaryMainFrame(&web);
   DidFinishLoad(&web);
-  SimulateProductInfoJsTaskFinished();
+  SimulateProductInfoLocalExtractionTaskFinished();
 
   histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 0);
 }
@@ -311,7 +311,7 @@ TEST_F(ShoppingServiceMetricsTest,
 
   DidNavigatePrimaryMainFrame(&web);
   DidFinishLoad(&web);
-  SimulateProductInfoJsTaskFinished();
+  SimulateProductInfoLocalExtractionTaskFinished();
 
   histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 0);
 }
@@ -330,9 +330,9 @@ TEST_F(ShoppingServiceMetricsTest, TestProductInfoJsExecutionTime) {
 
   DidNavigatePrimaryMainFrame(&web);
   DidFinishLoad(&web);
-  SimulateProductInfoJsTaskFinished();
+  SimulateProductInfoLocalExtractionTaskFinished();
 
-  histogram_tester_->ExpectTotalCount(kProductInfoJavascriptTime, 1);
+  histogram_tester_->ExpectTotalCount(kProductInfoLocalExtractionTime, 1);
 }
 
 }  // namespace commerce

@@ -412,9 +412,9 @@ TEST_P(ShoppingServiceTest,
   // The page will have finished its initial load prior to DidFinishLoad.
   web.SetIsFirstLoadForNavigationFinished(true);
   DidFinishLoad(&web);
-  // The js should only be able to run now after all loading has completed (for
-  // at least the timeout duration).
-  SimulateProductInfoJsTaskFinished();
+  // The local extraction should only be able to run now after all loading has
+  // completed (for at least the timeout duration).
+  SimulateProductInfoLocalExtractionTaskFinished();
 
   // At this point we should have the image in the cache.
   cached_info =
@@ -452,7 +452,7 @@ TEST_P(ShoppingServiceTest,
 
   DidNavigatePrimaryMainFrame(&web);
   // If the page was already loaded, assume the js has time to run now.
-  SimulateProductInfoJsTaskFinished();
+  SimulateProductInfoLocalExtractionTaskFinished();
 
   // By this point there should be something in the cache.
   ASSERT_EQ(1, GetProductInfoCacheOpenURLCount(GURL(kProductUrl)));

@@ -417,9 +417,9 @@ void ShoppingServiceTestBase::DidFinishLoad(WebWrapper* web) {
   base::RunLoop().RunUntilIdle();
 }
 
-void ShoppingServiceTestBase::SimulateProductInfoJsTaskFinished() {
+void ShoppingServiceTestBase::SimulateProductInfoLocalExtractionTaskFinished() {
   task_environment_.FastForwardBy(
-      base::Milliseconds(kProductInfoJavascriptDelayMs));
+      base::Milliseconds(kProductInfoLocalExtractionDelayMs));
   base::RunLoop().RunUntilIdle();
 }
 

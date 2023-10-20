@@ -78,10 +78,10 @@ const long kToMicroCurrency = 1e6;
 
 const char kImageAvailabilityHistogramName[] =
     "Commerce.ShoppingService.ProductInfo.ImageAvailability";
-const char kProductInfoJavascriptTime[] =
-    "Commerce.ShoppingService.ProductInfo.JavascriptExecutionTime";
+const char kProductInfoLocalExtractionTime[] =
+    "Commerce.ShoppingService.ProductInfo.LocalExtractionExecutionTime";
 
-const uint64_t kProductInfoJavascriptDelayMs = 2000;
+const uint64_t kProductInfoLocalExtractionDelayMs = 2000;
 
 ProductInfo::ProductInfo() = default;
 ProductInfo::ProductInfo(const ProductInfo&) = default;
@@ -296,10 +296,10 @@ void ShoppingService::DidNavigateAway(WebWrapper* web, const GURL& from_url) {
 }
 
 void ShoppingService::DidStopLoading(WebWrapper* web) {
-  ScheduleProductInfoJavascript(web);
+  ScheduleProductInfoLocalExtraction(web);
 }
 
-void ShoppingService::ScheduleProductInfoJavascript(WebWrapper* web) {
+void ShoppingService::ScheduleProductInfoLocalExtraction(WebWrapper* web) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsProductInfoApiEnabled()) {
@@ -322,40 +322,43 @@ void ShoppingService::ScheduleProductInfoJavascript(WebWrapper* web) {
 
   auto it = product_info_cache_.find(url.spec());
 
-  if (it == product_info_cache_.end() || !it->second->needs_javascript_run) {
+  if (it == product_info_cache_.end() ||
+      !it->second->needs_local_extraction_run) {
     return;
   }
 
   ProductInfoCacheEntry* entry = it->second.get();
 
   // If there's already a task scheduled, cancel it.
-  if (entry->run_javascript_task.get()) {
-    entry->run_javascript_task->Cancel();
-    entry->run_javascript_task.reset();
+  if (entry->run_local_extraction_task.get()) {
+    entry->run_local_extraction_task->Cancel();
+    entry->run_local_extraction_task.reset();
   }
 
-  entry->run_javascript_task = std::make_unique<base::CancelableOnceClosure>(
-      base::BindOnce(&ShoppingService::TryRunningJavascriptForProductInfo,
-                     weak_ptr_factory_.GetWeakPtr(), web->GetWeakPtr()));
+  entry->run_local_extraction_task =
+      std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
+          &ShoppingService::TryRunningLocalExtractionForProductInfo,
+          weak_ptr_factory_.GetWeakPtr(), web->GetWeakPtr()));
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, entry->run_javascript_task->callback(),
-      base::Milliseconds(kProductInfoJavascriptDelayMs));
+      FROM_HERE, entry->run_local_extraction_task->callback(),
+      base::Milliseconds(kProductInfoLocalExtractionDelayMs));
 }
 
 void ShoppingService::DidFinishLoad(WebWrapper* web) {
-  ScheduleProductInfoJavascript(web);
+  ScheduleProductInfoLocalExtraction(web);
 }
 
-void ShoppingService::TryRunningJavascriptForProductInfo(
+void ShoppingService::TryRunningLocalExtractionForProductInfo(
     base::WeakPtr<WebWrapper> web) {
   if (web.WasInvalidated()) {
     return;
   }
 
-  // Make sure we actually need the javascript to run based on the cache.
+  // Make sure we actually need the local extraction to run based on the cache.
   auto it = product_info_cache_.find(web->GetLastCommittedURL().spec());
-  if (it == product_info_cache_.end() || !it->second->needs_javascript_run) {
+  if (it == product_info_cache_.end() ||
+      !it->second->needs_local_extraction_run) {
     return;
   }
 
@@ -365,27 +368,28 @@ void ShoppingService::TryRunningJavascriptForProductInfo(
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // If there is both an entry in the cache and the javascript fallback needs
-  // to run, run it.
-  if (it != product_info_cache_.end() && it->second->needs_javascript_run) {
+  // If there is both an entry in the cache and the local extraction fallback
+  // needs to run, run it.
+  if (it != product_info_cache_.end() &&
+      it->second->needs_local_extraction_run) {
     // Since we're about to run the JS, flip the flag in the cache.
-    it->second->needs_javascript_run = false;
+    it->second->needs_local_extraction_run = false;
 
     std::string script =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_QUERY_SHOPPING_META_JS);
 
-    it->second->javascript_execution_start_time = base::Time::Now();
+    it->second->local_extraction_execution_start_time = base::Time::Now();
     web->RunJavascript(
         base::UTF8ToUTF16(script),
-        base::BindOnce(&ShoppingService::OnProductInfoJavascriptResult,
+        base::BindOnce(&ShoppingService::OnProductInfoLocalExtractionResult,
                        weak_ptr_factory_.GetWeakPtr(),
                        GURL(web->GetLastCommittedURL())));
   }
 }
 
-void ShoppingService::OnProductInfoJavascriptResult(const GURL url,
-                                                    base::Value result) {
+void ShoppingService::OnProductInfoLocalExtractionResult(const GURL url,
+                                                         base::Value result) {
   // We should only ever get a string result from the script execution.
   if (!result.is_string()) {
     return;
@@ -398,8 +402,8 @@ void ShoppingService::OnProductInfoJavascriptResult(const GURL url,
   }
 
   base::UmaHistogramTimes(
-      kProductInfoJavascriptTime,
-      base::Time::Now() - it->second->javascript_execution_start_time);
+      kProductInfoLocalExtractionTime,
+      base::Time::Now() - it->second->local_extraction_execution_start_time);
 
   data_decoder::DataDecoder::ParseJsonIsolated(
       result.GetString(),
@@ -428,10 +432,10 @@ void ShoppingService::OnProductInfoJsonSanitizationCompleted(
   bool pdp_detected_by_client = false;
   bool pdp_detected_by_server = false;
 
-  // If there wasn't cached info but the javascript still ran, it means that
-  // the server didn't detect the page as a PDP, so we should try to determine
-  // whether it is using the meta extracted from the page. This will only
-  // happen if the |kCommerceLocalPDPDetection| flag is enabled.
+  // If there wasn't cached info but the local extraction still ran, it means
+  // that the server didn't detect the page as a PDP, so we should try to
+  // determine whether it is using the meta extracted from the page. This will
+  // only happen if the |kCommerceLocalPDPDetection| flag is enabled.
   pdp_detected_by_client = CheckIsPDPFromMetaOnly(result.value().GetDict());
   if (cached_info) {
     pdp_detected_by_server = true;
@@ -502,7 +506,7 @@ void ShoppingService::UpdateProductInfoCache(
   if (it == product_info_cache_.end())
     return;
 
-  it->second->needs_javascript_run = needs_js;
+  it->second->needs_local_extraction_run = needs_js;
   it->second->product_info = std::move(info);
 }
 
@@ -524,9 +528,9 @@ void ShoppingService::UpdateProductInfoCacheForRemoval(const GURL& url) {
   if (it != product_info_cache_.end()) {
     ProductInfoCacheEntry* entry = it->second.get();
     if (entry->pages_with_url_open <= 1) {
-      if (entry->run_javascript_task.get()) {
-        entry->run_javascript_task->Cancel();
-        entry->run_javascript_task.reset();
+      if (entry->run_local_extraction_task.get()) {
+        entry->run_local_extraction_task->Cancel();
+        entry->run_local_extraction_task.reset();
       }
       product_info_cache_.erase(it);
     } else {
@@ -836,7 +840,7 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection)) {
       UpdateProductInfoCache(url, true, nullptr);
       if (web) {
-        ScheduleProductInfoJavascript(web);
+        ScheduleProductInfoLocalExtraction(web);
       }
     }
 
@@ -853,14 +857,14 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
   }
 
   // TODO(mdjones): Longer-term it might make sense to wait until the
-  // javascript has run to execute this. The problem is that optimization guide
-  // is fast and the javascript is slow.
+  // local extraction has run to execute this. The problem is that optimization
+  // guide is fast and the local extraction is slow.
   std::move(callback).Run(url, optional_info);
 
-  // Check if we still need to run the javascript. This could happen if page
-  // load happened prior to optimization guide responding.
+  // Check if we still need to run the local extraction. This could happen if
+  // page load happened prior to optimization guide responding.
   if (web) {
-    ScheduleProductInfoJavascript(web);
+    ScheduleProductInfoLocalExtraction(web);
   }
 }
 
