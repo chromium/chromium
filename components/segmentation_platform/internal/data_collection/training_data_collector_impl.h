@@ -105,7 +105,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       TrainingRequestId request_id,
       DecisionType type,
       scoped_refptr<InputContext> input_context,
-      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_list,
+      const proto::SegmentInfo& segment_info,
       absl::optional<ModelProvider::Request> inputs);
 
   void OnGetTrainingTensorsAtDecisionTime(
@@ -178,20 +178,15 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   // Cache class to temporarily store training data in the observation period.
   std::unique_ptr<TrainingDataCache> training_cache_;
 
-  // Hash of histograms for immediate training data collection. When any
-  // histogram hash contained in the map is recorded, a UKM message is reported
-  // right away.
-  base::flat_map<uint64_t, base::flat_set<proto::SegmentId>>
-      immediate_collection_histograms_;
-
   // Hash of histograms and their corresponding accepted enum ids for trigger
   // based training data collection.
   base::flat_map<uint64_t,
-                 base::flat_set<std::pair<proto::SegmentId, std::vector<int>>>>
+                 base::flat_set<std::pair<std::pair<SegmentId, ModelSource>,
+                                          std::vector<int>>>>
       immediate_trigger_histograms_;
 
   // Hash of user actions for trigger based training data collection.
-  base::flat_map<uint64_t, base::flat_set<proto::SegmentId>>
+  base::flat_map<uint64_t, base::flat_set<std::pair<SegmentId, ModelSource>>>
       immediate_trigger_user_actions_;
 
   // A list of segment IDs that needs to report metrics continuously.
@@ -200,7 +195,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   // List of all segments that need to upload training data.
   // TODO(ssid): Clean up the list of segment IDs in this class to be a single
   // list.
-  base::flat_set<SegmentId> all_segments_for_training_;
+  base::flat_map<SegmentId, ModelSource> all_segments_for_training_;
 
   uint64_t time_trigger_sampling_rate_{0};
 

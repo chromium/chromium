@@ -8,7 +8,6 @@
 
 namespace segmentation_platform {
 
-using proto::SegmentId;
 using TrainingData = proto::TrainingData;
 
 TrainingDataCache::TrainingDataCache(SegmentInfoDatabase* segment_info_database)
@@ -16,45 +15,48 @@ TrainingDataCache::TrainingDataCache(SegmentInfoDatabase* segment_info_database)
 
 TrainingDataCache::~TrainingDataCache() = default;
 
-void TrainingDataCache::StoreInputs(proto::SegmentId segment_id,
-                                    const proto::TrainingData& data,
+void TrainingDataCache::StoreInputs(SegmentId segment_id,
+                                    ModelSource model_source,
+                                    const TrainingData& data,
                                     bool save_to_db) {
   if (save_to_db) {
     // TODO (ritikagup@) : Add handling for default models, if required.
     segment_info_database_->SaveTrainingData(
-        segment_id, proto::ModelSource::SERVER_MODEL_SOURCE, std::move(data),
-        base::DoNothing());
+        segment_id, model_source, std::move(data), base::DoNothing());
   } else {
-    cache[segment_id][TrainingRequestId::FromUnsafeValue(data.request_id())] =
-        std::move(data);
+    cache[std::make_pair(segment_id, model_source)]
+         [TrainingRequestId::FromUnsafeValue(data.request_id())] =
+             std::move(data);
   }
 }
 
 void TrainingDataCache::GetInputsAndDelete(SegmentId segment_id,
+                                           ModelSource model_source,
                                            TrainingRequestId request_id,
                                            TrainingDataCallback callback) {
   absl::optional<TrainingData> result;
-  if (cache.contains(segment_id) && cache[segment_id].contains(request_id)) {
+  if (cache.contains(std::make_pair(segment_id, model_source)) &&
+      cache[std::make_pair(segment_id, model_source)].contains(request_id)) {
     // TrainingRequestId found from cache, return and delete the cache entry.
-    auto& segment_data = cache[segment_id];
+    auto& segment_data = cache[std::make_pair(segment_id, model_source)];
     auto it = segment_data.find(request_id);
     result = std::move(it->second);
     segment_data.erase(it);
     std::move(callback).Run(result);
   } else {
-    // TODO (ritikagup@) : Add handling for default models, if required.
     segment_info_database_->GetTrainingData(
-        segment_id, proto::ModelSource::SERVER_MODEL_SOURCE, request_id,
+        segment_id, model_source, request_id,
         /*delete_from_db=*/true, std::move(callback));
   }
 }
 
 absl::optional<TrainingRequestId> TrainingDataCache::GetRequestId(
-    proto::SegmentId segment_id) {
+    SegmentId segment_id,
+    ModelSource model_source) {
   // TODO(haileywang): Add a metric to record how many request at a given time
   // every time this function is triggered.
   absl::optional<TrainingRequestId> request_id;
-  auto it = cache.find(segment_id);
+  auto it = cache.find(std::make_pair(segment_id, model_source));
   if (it == cache.end() or it->second.size() == 0) {
     return request_id;
   }

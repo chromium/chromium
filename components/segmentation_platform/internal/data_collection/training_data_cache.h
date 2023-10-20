@@ -25,6 +25,7 @@ class TrainingDataCache {
 
   // Stores the inputs for a segment given a request ID.
   void StoreInputs(proto::SegmentId segment_id,
+                   proto::ModelSource model_source,
                    const proto::TrainingData& data,
                    bool save_to_db = false);
 
@@ -32,6 +33,7 @@ class TrainingDataCache {
   // the segment ID and the request ID. Returns nullopt when the associated
   // request ID is not found.
   void GetInputsAndDelete(proto::SegmentId segment_id,
+                          proto::ModelSource model_source,
                           TrainingRequestId request_id,
                           TrainingDataCallback callback);
 
@@ -39,14 +41,16 @@ class TrainingDataCache {
   // request ID found. This is used when uma histogram triggering happens and
   // only segment ID is available.
   // Note: The earliest ID created by this cache will be returned first.
-  absl::optional<TrainingRequestId> GetRequestId(proto::SegmentId segment_id);
+  absl::optional<TrainingRequestId> GetRequestId(
+      proto::SegmentId segment_id,
+      proto::ModelSource model_source);
 
   TrainingRequestId GenerateNextId();
 
  private:
   const raw_ptr<SegmentInfoDatabase, DanglingUntriaged> segment_info_database_;
   TrainingRequestId::Generator request_id_generator;
-  base::flat_map<proto::SegmentId,
+  base::flat_map<std::pair<proto::SegmentId, proto::ModelSource>,
                  base::flat_map<TrainingRequestId, proto::TrainingData>>
       cache;
   base::WeakPtrFactory<TrainingDataCache> weak_ptr_factory_{this};
