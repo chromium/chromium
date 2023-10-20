@@ -139,34 +139,10 @@ class ArcUtilTest : public ash::AshTestBase {
         }));
   }
 
-  void StartRecordingUpstartOperations() {
-    auto* upstart_client = ash::FakeUpstartClient::Get();
-    upstart_client->set_start_job_cb(
-        base::BindLambdaForTesting([this](const std::string& job_name,
-                                          const std::vector<std::string>& env) {
-          upstart_operations_.emplace_back(job_name, true);
-          return ash::FakeUpstartClient::StartJobResult(true /* success */);
-        }));
-    upstart_client->set_stop_job_cb(
-        base::BindLambdaForTesting([this](const std::string& job_name,
-                                          const std::vector<std::string>& env) {
-          upstart_operations_.emplace_back(job_name, false);
-          return true;
-        }));
-  }
-
-  const std::vector<std::pair<std::string, bool>>& upstart_operations() const {
-    return upstart_operations_;
-  }
-
   PrefService* profile_prefs() { return &profile_prefs_; }
 
  private:
   TestingPrefServiceSimple profile_prefs_;
-
-  // List of upstart operations recorded. When it's "start" the boolean is set
-  // to true.
-  std::vector<std::pair<std::string, bool>> upstart_operations_;
 };
 
 TEST_F(ArcUtilTest, IsArcAvailable_None) {
@@ -495,7 +471,7 @@ TEST_F(ArcUtilTest, ConfigureUpstartJobs_Success) {
       JobDesc{"Job_2dC", UpstartOperation::JOB_START, {}},
   };
   bool result = false;
-  StartRecordingUpstartOperations();
+  ash::FakeUpstartClient::Get()->StartRecordingUpstartOperations();
   ConfigureUpstartJobs(
       jobs,
       base::BindLambdaForTesting(
@@ -506,16 +482,16 @@ TEST_F(ArcUtilTest, ConfigureUpstartJobs_Success) {
   task_environment()->RunUntilQuit();
   EXPECT_TRUE(result);
 
-  auto ops = upstart_operations();
+  auto ops = ash::FakeUpstartClient::Get()->upstart_operations();
   ASSERT_EQ(4u, ops.size());
-  EXPECT_EQ(ops[0].first, "Job_2dA");
-  EXPECT_FALSE(ops[0].second);
-  EXPECT_EQ(ops[1].first, "Job_2dB");
-  EXPECT_FALSE(ops[1].second);
-  EXPECT_EQ(ops[2].first, "Job_2dB");
-  EXPECT_TRUE(ops[2].second);
-  EXPECT_EQ(ops[3].first, "Job_2dC");
-  EXPECT_TRUE(ops[3].second);
+  EXPECT_EQ(ops[0].name, "Job_2dA");
+  EXPECT_EQ(ops[0].type, ash::FakeUpstartClient::UpstartOperationType::STOP);
+  EXPECT_EQ(ops[1].name, "Job_2dB");
+  EXPECT_EQ(ops[1].type, ash::FakeUpstartClient::UpstartOperationType::STOP);
+  EXPECT_EQ(ops[2].name, "Job_2dB");
+  EXPECT_EQ(ops[2].type, ash::FakeUpstartClient::UpstartOperationType::START);
+  EXPECT_EQ(ops[3].name, "Job_2dC");
+  EXPECT_EQ(ops[3].type, ash::FakeUpstartClient::UpstartOperationType::START);
 }
 
 TEST_F(ArcUtilTest, ConfigureUpstartJobs_StopFail) {

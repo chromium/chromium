@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/kerberos/fake_kerberos_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
@@ -46,6 +47,10 @@ FakeUpstartClient::StartJobResult::~StartJobResult() = default;
 void FakeUpstartClient::StartJob(const std::string& job,
                                  const std::vector<std::string>& upstart_env,
                                  chromeos::VoidDBusMethodCallback callback) {
+  if (is_recording_) {
+    upstart_operations_.emplace_back(job, upstart_env,
+                                     UpstartOperationType::START);
+  }
   const bool result =
       start_job_cb_ ? start_job_cb_.Run(job, upstart_env).success : true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -56,6 +61,10 @@ void FakeUpstartClient::StartJobWithErrorDetails(
     const std::string& job,
     const std::vector<std::string>& upstart_env,
     StartJobWithErrorDetailsCallback callback) {
+  if (is_recording_) {
+    upstart_operations_.emplace_back(job, upstart_env,
+                                     UpstartOperationType::START);
+  }
   const StartJobResult result = start_job_cb_
                                     ? start_job_cb_.Run(job, upstart_env)
                                     : StartJobResult(true /* success */);
@@ -67,6 +76,10 @@ void FakeUpstartClient::StartJobWithErrorDetails(
 void FakeUpstartClient::StopJob(const std::string& job,
                                 const std::vector<std::string>& upstart_env,
                                 chromeos::VoidDBusMethodCallback callback) {
+  if (is_recording_) {
+    upstart_operations_.emplace_back(job, upstart_env,
+                                     UpstartOperationType::STOP);
+  }
   const bool result = stop_job_cb_ ? stop_job_cb_.Run(job, upstart_env) : true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
@@ -115,5 +128,36 @@ void FakeUpstartClient::StopWilcoDtcService(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
+
+void FakeUpstartClient::StartRecordingUpstartOperations() {
+  if (is_recording_) {
+    LOG(WARNING) << "Already recording Upstart operations";
+  }
+  is_recording_ = true;
+}
+
+std::vector<FakeUpstartClient::UpstartOperation>
+FakeUpstartClient::GetRecordedUpstartOperationsForJob(const std::string& name) {
+  std::vector<FakeUpstartClient::UpstartOperation> filtered_ops;
+  base::ranges::copy_if(
+      upstart_operations_, std::back_inserter(filtered_ops),
+      [&name](const UpstartOperation& op) { return op.name == name; });
+  return filtered_ops;
+}
+
+FakeUpstartClient::UpstartOperation::UpstartOperation(
+    const std::string& name,
+    const std::vector<std::string>& env,
+    UpstartOperationType type)
+    : name(name), env(env), type(type) {}
+
+FakeUpstartClient::UpstartOperation::UpstartOperation(
+    const FakeUpstartClient::UpstartOperation& other) = default;
+
+FakeUpstartClient::UpstartOperation&
+FakeUpstartClient::UpstartOperation::operator=(
+    const FakeUpstartClient::UpstartOperation&) = default;
+
+FakeUpstartClient::UpstartOperation::~UpstartOperation() = default;
 
 }  // namespace ash

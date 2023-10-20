@@ -65,12 +65,47 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
   void set_start_job_cb(const StartJobCallback& cb) { start_job_cb_ = cb; }
   void set_stop_job_cb(const StopJobCallback& cb) { stop_job_cb_ = cb; }
 
+  enum class UpstartOperationType { START, STOP };
+
+  struct UpstartOperation {
+    UpstartOperation(const std::string& name,
+                     const std::vector<std::string>& env,
+                     UpstartOperationType type);
+    UpstartOperation(const UpstartOperation& other);
+    UpstartOperation& operator=(const UpstartOperation&);
+
+    ~UpstartOperation();
+
+    std::string name;
+    std::vector<std::string> env;
+    UpstartOperationType type;
+  };
+
+  // Starts recording all Upstart start/stop operations made via
+  // FakeUpstartClient using StartJob* or StopJob methods.
+  void StartRecordingUpstartOperations();
+
+  // Getter for |upstart_operations_|.
+  std::vector<UpstartOperation> upstart_operations() {
+    return upstart_operations_;
+  }
+
+  // Returns the history of all the Upstart operations recorded for a given job.
+  std::vector<UpstartOperation> GetRecordedUpstartOperationsForJob(
+      const std::string& name);
+
  private:
   // Callback to decide the result of StartJob() / StartJobWithErrorDetails().
   StartJobCallback start_job_cb_;
 
   // Callback to decide the result of StopJob().
   StopJobCallback stop_job_cb_;
+
+  // Stores all Upstart start/stop operations recorded, ordered by the timing.
+  std::vector<UpstartOperation> upstart_operations_;
+
+  // A flag indicating whether to record Upstart operations.
+  bool is_recording_ = false;
 };
 
 }  // namespace ash

@@ -13,7 +13,6 @@
 #include "ash/components/arc/test/fake_adbd_monitor_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/testing_profile.h"
@@ -57,6 +56,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
     instance_.reset();
     profile_.reset();
     arc_service_manager_.reset();
+    ash::UpstartClient::Shutdown();
   }
 
  protected:
@@ -65,10 +65,6 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
   }
 
   ArcAdbdMonitorBridge* arc_adbd_monitor_bridge() const { return bridge_; }
-
-  const std::vector<std::pair<std::string, bool>>& upstart_operations() const {
-    return upstart_operations_;
-  }
 
   void InjectUpstartStopJobFailure(const std::string& job_name_to_fail) {
     auto* upstart_client = ash::FakeUpstartClient::Get();
@@ -80,32 +76,12 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
         }));
   }
 
-  void StartRecordingUpstartOperations() {
-    auto* upstart_client = ash::FakeUpstartClient::Get();
-    upstart_client->set_start_job_cb(
-        base::BindLambdaForTesting([this](const std::string& job_name,
-                                          const std::vector<std::string>& env) {
-          upstart_operations_.emplace_back(job_name, true);
-          return ash::FakeUpstartClient::StartJobResult(true /* success */);
-        }));
-    upstart_client->set_stop_job_cb(
-        base::BindLambdaForTesting([this](const std::string& job_name,
-                                          const std::vector<std::string>& env) {
-          upstart_operations_.emplace_back(job_name, false);
-          return true;
-        }));
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FakeAdbdMonitorInstance> instance_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   raw_ptr<ArcAdbdMonitorBridge, DanglingUntriaged | ExperimentalAsh> bridge_;
-
-  // List of upstart operations recorded. When it's "start" the boolean is set
-  // to true.
-  std::vector<std::pair<std::string, bool>> upstart_operations_;
 };
 
 // Testing bridge constructor/destructor in setup/teardown.
@@ -113,7 +89,7 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestConstructDestruct) {}
 
 // Testing bridge start arcvm-adbd successfully
 TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdSuccess) {
-  StartRecordingUpstartOperations();
+  ash::FakeUpstartClient::Get()->StartRecordingUpstartOperations();
   arc_adbd_monitor_bridge()->EnableAdbOverUsbForTesting();
   base::RunLoop run_loop;
   arc_adbd_monitor_bridge()->OnStartArcVmAdbdTesting(base::BindOnce(
@@ -124,23 +100,19 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdSuccess) {
       &run_loop));
   run_loop.Run();
 
-  const auto& ops = upstart_operations();
-  // Find the STOP operation for the job.
-  auto it = base::ranges::find(
-      ops, std::make_pair(std::string(kArcVmAdbdJobName), false));
-  ASSERT_NE(ops.end(), it);
-  ++it;
-  ASSERT_NE(ops.end(), it);
-  // The next operation must be START for the job.
-  EXPECT_EQ(it->first, kArcVmAdbdJobName);
-  EXPECT_TRUE(it->second);  // true means START.
+  const auto& ops =
+      ash::FakeUpstartClient::Get()->GetRecordedUpstartOperationsForJob(
+          kArcVmAdbdJobName);
+  ASSERT_EQ(ops.size(), 2u);
+  EXPECT_EQ(ops[0].type, ash::FakeUpstartClient::UpstartOperationType::STOP);
+  EXPECT_EQ(ops[1].type, ash::FakeUpstartClient::UpstartOperationType::START);
 }
 
 // Testing bridge start arcvm-adbd regardless stop failure.
 TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdFailure) {
   // Inject failure to FakeUpstartClient.
   InjectUpstartStopJobFailure(kArcVmAdbdJobName);
-  StartRecordingUpstartOperations();
+  ash::FakeUpstartClient::Get()->StartRecordingUpstartOperations();
   arc_adbd_monitor_bridge()->EnableAdbOverUsbForTesting();
   base::RunLoop run_loop;
   arc_adbd_monitor_bridge()->OnStartArcVmAdbdTesting(base::BindOnce(
@@ -151,22 +123,17 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdFailure) {
       &run_loop));
   run_loop.Run();
 
-  const auto& ops = upstart_operations();
-  // Find the STOP operation for the job.
-  auto it = base::ranges::find(
-      ops, std::make_pair(std::string(kArcVmAdbdJobName), false));
-  EXPECT_EQ(ops.size(), 2u);
-  ASSERT_NE(ops.end(), it);
-  ++it;
-  ASSERT_NE(ops.end(), it);
-  // The next operation must be START for the job.
-  EXPECT_EQ(it->first, kArcVmAdbdJobName);
-  EXPECT_TRUE(it->second);  // true means START.
+  const auto& ops =
+      ash::FakeUpstartClient::Get()->GetRecordedUpstartOperationsForJob(
+          kArcVmAdbdJobName);
+  ASSERT_EQ(ops.size(), 2u);
+  EXPECT_EQ(ops[0].type, ash::FakeUpstartClient::UpstartOperationType::STOP);
+  EXPECT_EQ(ops[1].type, ash::FakeUpstartClient::UpstartOperationType::START);
 }
 
 // Testing bridge handle stop arcvm-adbd job failure well
 TEST_F(ArcAdbdMonitorBridgeTest, TestStopArcVmAdbdSuccess) {
-  StartRecordingUpstartOperations();
+  ash::FakeUpstartClient::Get()->StartRecordingUpstartOperations();
   arc_adbd_monitor_bridge()->EnableAdbOverUsbForTesting();
   base::RunLoop run_loop;
   arc_adbd_monitor_bridge()->OnStopArcVmAdbdTesting(base::BindOnce(
@@ -177,13 +144,11 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStopArcVmAdbdSuccess) {
       &run_loop));
   run_loop.Run();
 
-  const auto& ops = upstart_operations();
-  // Find the STOP operation for the job.
-  auto it = base::ranges::find(
-      ops, std::make_pair(std::string(kArcVmAdbdJobName), false));
-  EXPECT_EQ(ops.size(), 1u);
-  // The next operation must be START for the job.
-  EXPECT_EQ(it->first, kArcVmAdbdJobName);
+  const auto& ops =
+      ash::FakeUpstartClient::Get()->GetRecordedUpstartOperationsForJob(
+          kArcVmAdbdJobName);
+  ASSERT_EQ(ops.size(), 1u);
+  EXPECT_EQ(ops[0].type, ash::FakeUpstartClient::UpstartOperationType::STOP);
 }
 
 }  // namespace
