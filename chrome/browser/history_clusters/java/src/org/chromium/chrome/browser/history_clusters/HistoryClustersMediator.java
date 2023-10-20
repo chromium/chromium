@@ -420,8 +420,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         boolean showClustersAsSearchSuggestions =
                 !mQueryState.isSearching() || mQueryState.getQuery().isEmpty();
         if (showClustersAsSearchSuggestions) {
-            ensureHeaders();
             addClustersAsSearchSuggestions(result);
+            ensureHeaders();
         } else {
             addExpandedClusters(result);
         }

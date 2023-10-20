@@ -312,7 +312,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
 
-        mShouldShowPrivacyDisclaimerSupplier.set(shouldShowInfoHeader);
+        mShouldShowPrivacyDisclaimerSupplier.set(
+                shouldShowInfoHeader && mContentManager.hasPrivacyDisclaimers());
         mShouldShowClearBrowsingDataSupplier.set(mContentManager.getShouldShowClearData());
 
         // 3. Initialize toolbar.
@@ -561,7 +562,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, shouldShowInfoHeader);
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeader);
         mContentManager.updatePrivacyDisclaimers(shouldShowInfoHeader);
-        mShouldShowPrivacyDisclaimerSupplier.set(shouldShowInfoHeader);
+        mShouldShowPrivacyDisclaimerSupplier.set(
+                shouldShowInfoHeader && mContentManager.hasPrivacyDisclaimers());
     }
 
     private String getSearchEmptyString() {
@@ -851,7 +853,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     public void onPrivacyDisclaimerHasChanged() {
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
         mShouldShowPrivacyDisclaimerSupplier.set(
-                mContentManager.getShouldShowPrivacyDisclaimersIfAvailable());
+                mContentManager.getShouldShowPrivacyDisclaimersIfAvailable()
+                        && mContentManager.hasPrivacyDisclaimers());
     }
 
     // HistoryContentManager.Observer
