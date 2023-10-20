@@ -395,6 +395,9 @@ public final class ChromePreferenceKeys {
     public static final String ISOLATED_SPLITS_DEX_COMPILE_VERSION =
             "Chrome.IsolatedSplits.VersionCode";
 
+    /** Whether the device is from an EEA country. */
+    public static final String IS_EEA_CHOICE_COUNTRY = "Chrome.SearchEngine.IsEeaChoiceCountry";
+
     /**
      * Whether the default search engine is Google.
      */
@@ -1024,6 +1027,7 @@ public final class ChromePreferenceKeys {
                 INCOGNITO_REAUTH_PROMO_CARD_ENABLED,
                 INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
                 INCOGNITO_TAB_COUNT,
+                IS_EEA_CHOICE_COUNTRY,
                 IS_LAST_VISITED_TAB_SRP,
                 IS_DSE_GOOGLE,
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,

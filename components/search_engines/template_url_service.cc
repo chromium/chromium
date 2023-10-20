@@ -1424,6 +1424,11 @@ void TemplateURLService::ProcessTemplateURLChange(
   sync_processor_->ProcessSyncChanges(FROM_HERE, changes);
 }
 
+bool TemplateURLService::IsEeaChoiceCountry() {
+  return search_engines::IsEeaChoiceCountry(
+      search_engines::GetSearchEngineChoiceCountryId(prefs_));
+}
+
 std::string TemplateURLService::GetSessionToken() {
   base::TimeTicks current_time(base::TimeTicks::Now());
   // Renew token if it expired.

@@ -2278,6 +2278,16 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam
+    kNewTabSearchEngineUrlAndroid_EeaCountryOnly[] = {
+        {"eea_country_only", "true"}};
+
+const FeatureEntry::FeatureVariation kNewTabSearchEngineUrlAndroidVariations[] =
+    {
+        {"EEA Country Only", kNewTabSearchEngineUrlAndroid_EeaCountryOnly,
+         std::size(kNewTabSearchEngineUrlAndroid_EeaCountryOnly), nullptr},
+};
+
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface[] = {
     {"open_ntp_instead_of_start", "false"},
     {"open_start_as_homepage", "true"},
@@ -6981,7 +6991,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-new-tab-search-engine-url-android",
      flag_descriptions::kNewTabSearchEngineUrlAndroidName,
      flag_descriptions::kNewTabSearchEngineUrlAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kNewTabSearchEngineUrlAndroid)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kNewTabSearchEngineUrlAndroid,
+         kNewTabSearchEngineUrlAndroidVariations,
+         "NewTabSearchEngineUrl")},
 
     {"enable-start-surface", flag_descriptions::kStartSurfaceAndroidName,
      flag_descriptions::kStartSurfaceAndroidDescription, kOsAndroid,

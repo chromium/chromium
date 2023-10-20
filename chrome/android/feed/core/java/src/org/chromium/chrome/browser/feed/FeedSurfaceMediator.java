@@ -282,14 +282,15 @@ public class FeedSurfaceMediator
          * visible.
          */
         mTemplateUrlService.addObserver(this);
-        if (mIsNewTabSearchEngineUrlAndroidEnabled) {
-            // It is possible that the default search engine has been changed before any NTP or
-            // Start is showing, update the value of Pref.ENABLE_SNIPPETS_BY_DSE here. The
-            // value should be updated before adding an observer to prevent an extra call of
-            // updateContent().
-            getPrefService().setBoolean(
-                    Pref.ENABLE_SNIPPETS_BY_DSE, mTemplateUrlService.isDefaultSearchEngineGoogle());
-        }
+        // It is possible that the default search engine has been changed before any NTP or
+        // Start is showing, update the value of Pref.ENABLE_SNIPPETS_BY_DSE here. The
+        // value should be updated before adding an observer to prevent an extra call of
+        // updateContent().
+        getPrefService()
+                .setBoolean(
+                        Pref.ENABLE_SNIPPETS_BY_DSE,
+                        !mIsNewTabSearchEngineUrlAndroidEnabled
+                                || mTemplateUrlService.isDefaultSearchEngineGoogle());
 
         if (sTestPrefChangeRegistar != null) {
             mPrefChangeRegistrar = sTestPrefChangeRegistar;

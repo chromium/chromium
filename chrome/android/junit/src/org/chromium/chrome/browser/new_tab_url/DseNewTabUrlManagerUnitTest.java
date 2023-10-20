@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,6 +71,11 @@ public class DseNewTabUrlManagerUnitTest {
         mDseNewTabUrlManager = new DseNewTabUrlManager(mProfileSupplier);
     }
 
+    @After
+    public void tearDown() {
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY);
+    }
+
     @Test
     @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
     public void testIsNewTabSearchEngineUrlAndroidEnabled() {
@@ -80,6 +86,32 @@ public class DseNewTabUrlManagerUnitTest {
     @DisableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
     public void testIsNewTabSearchEngineUrlAndroidDisabled() {
         assertFalse(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
+    public void testIsNewTabSearchEngineUrlAndroidIgnoredForNonEeaCountry() {
+        DseNewTabUrlManager.EEA_COUNTRY_ONLY.setForTesting(true);
+        assertTrue(DseNewTabUrlManager.EEA_COUNTRY_ONLY.getValue());
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false));
+
+        assertFalse(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
+    public void testIsNewTabSearchEngineUrlAndroidEnabledForEeaCountry() {
+        DseNewTabUrlManager.EEA_COUNTRY_ONLY.setForTesting(true);
+        assertTrue(DseNewTabUrlManager.EEA_COUNTRY_ONLY.getValue());
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, true);
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false));
+
+        assertTrue(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
     }
 
     @Test
@@ -163,12 +195,16 @@ public class DseNewTabUrlManagerUnitTest {
 
         // Sets the DSE is Google.
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        doReturn(true).when(mTemplateUrlService).isEeaChoiceCountry();
         mProfileSupplier.set(mProfile);
 
         // Verifies that the SharedPreference is updated once the TemplateUrlService is ready.
         assertEquals(mTemplateUrlService, mDseNewTabUrlManager.getTemplateUrlServiceForTesting());
         assertTrue(mSharedPreferenceManager.readBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false));
         assertFalse(mSharedPreferenceManager.contains(ChromePreferenceKeys.DSE_NEW_TAB_URL));
+        assertTrue(
+                mSharedPreferenceManager.readBoolean(
+                        ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false));
     }
 
     @Test
@@ -187,8 +223,12 @@ public class DseNewTabUrlManagerUnitTest {
 
         // Verifies that the SharedPreference is updated when the DSE is changed.
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        doReturn(true).when(mTemplateUrlService).isEeaChoiceCountry();
         mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
         assertTrue(mSharedPreferenceManager.readBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false));
+        assertTrue(
+                mSharedPreferenceManager.readBoolean(
+                        ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false));
         assertFalse(mSharedPreferenceManager.contains(ChromePreferenceKeys.DSE_NEW_TAB_URL));
 
         mDseNewTabUrlManager.destroy();
