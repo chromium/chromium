@@ -351,16 +351,6 @@ class BookmarkModel final : public BookmarkUndoProvider,
                           const BookmarkNode::MetaInfoMap& meta_info_map);
   void DeleteNodeMetaInfo(const BookmarkNode* node, const std::string& key);
 
-  // Sets/deletes local meta info of `node`.
-  void SetNodeUnsyncedMetaInfo(const BookmarkNode* node,
-                               const std::string& key,
-                               const std::string& value);
-  void SetNodeUnsyncedMetaInfoMap(
-      const BookmarkNode* node,
-      const BookmarkNode::MetaInfoMap& meta_info_map);
-  void DeleteUnsyncedNodeMetaInfo(const BookmarkNode* node,
-                                  const std::string& key);
-
   // Notify BookmarkModel that the favicons for the given page URLs (e.g.
   // http://www.google.com) and the given icon URL (e.g.
   // http://www.google.com/favicon.ico) have changed. It is valid to call

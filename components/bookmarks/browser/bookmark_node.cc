@@ -100,56 +100,6 @@ const BookmarkNode::MetaInfoMap* BookmarkNode::GetMetaInfoMap() const {
   return meta_info_map_.get();
 }
 
-bool BookmarkNode::GetUnsyncedMetaInfo(const std::string& key,
-                                       std::string* value) const {
-  if (!unsynced_meta_info_map_)
-    return false;
-
-  MetaInfoMap::const_iterator it = unsynced_meta_info_map_->find(key);
-  if (it == unsynced_meta_info_map_->end())
-    return false;
-
-  *value = it->second;
-  return true;
-}
-
-bool BookmarkNode::SetUnsyncedMetaInfo(const std::string& key,
-                                       const std::string& value) {
-  if (!unsynced_meta_info_map_)
-    unsynced_meta_info_map_ = std::make_unique<MetaInfoMap>();
-
-  auto it = unsynced_meta_info_map_->find(key);
-  if (it == unsynced_meta_info_map_->end()) {
-    (*unsynced_meta_info_map_)[key] = value;
-    return true;
-  }
-  // Key already in map, check if the value has changed.
-  if (it->second == value)
-    return false;
-  it->second = value;
-  return true;
-}
-
-bool BookmarkNode::DeleteUnsyncedMetaInfo(const std::string& key) {
-  if (!unsynced_meta_info_map_)
-    return false;
-  bool erased = unsynced_meta_info_map_->erase(key) != 0;
-  if (unsynced_meta_info_map_->empty())
-    unsynced_meta_info_map_.reset();
-  return erased;
-}
-
-void BookmarkNode::SetUnsyncedMetaInfoMap(const MetaInfoMap& meta_info_map) {
-  if (meta_info_map.empty())
-    unsynced_meta_info_map_.reset();
-  else
-    unsynced_meta_info_map_ = std::make_unique<MetaInfoMap>(meta_info_map);
-}
-
-const BookmarkNode::MetaInfoMap* BookmarkNode::GetUnsyncedMetaInfoMap() const {
-  return unsynced_meta_info_map_.get();
-}
-
 const std::u16string& BookmarkNode::GetTitledUrlNodeTitle() const {
   return GetTitle();
 }

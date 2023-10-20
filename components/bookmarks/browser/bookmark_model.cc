@@ -695,54 +695,6 @@ void BookmarkModel::DeleteNodeMetaInfo(const BookmarkNode* node,
   }
 }
 
-void BookmarkModel::SetNodeUnsyncedMetaInfo(const BookmarkNode* node,
-                                            const std::string& key,
-                                            const std::string& value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  std::string old_value;
-  if (node->GetUnsyncedMetaInfo(key, &old_value) && old_value == value) {
-    return;
-  }
-
-  if (AsMutable(node)->SetUnsyncedMetaInfo(key, value) && store_.get()) {
-    store_->ScheduleSave();
-  }
-}
-
-void BookmarkModel::SetNodeUnsyncedMetaInfoMap(
-    const BookmarkNode* node,
-    const BookmarkNode::MetaInfoMap& meta_info_map) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const BookmarkNode::MetaInfoMap* old_meta_info_map =
-      node->GetUnsyncedMetaInfoMap();
-  if ((!old_meta_info_map && meta_info_map.empty()) ||
-      (old_meta_info_map && meta_info_map == *old_meta_info_map)) {
-    return;
-  }
-
-  AsMutable(node)->SetUnsyncedMetaInfoMap(meta_info_map);
-  if (store_) {
-    store_->ScheduleSave();
-  }
-}
-
-void BookmarkModel::DeleteUnsyncedNodeMetaInfo(const BookmarkNode* node,
-                                               const std::string& key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const BookmarkNode::MetaInfoMap* meta_info_map =
-      node->GetUnsyncedMetaInfoMap();
-  if (!meta_info_map || meta_info_map->find(key) == meta_info_map->end()) {
-    return;
-  }
-
-  if (AsMutable(node)->DeleteUnsyncedMetaInfo(key) && store_.get()) {
-    store_->ScheduleSave();
-  }
-}
-
 void BookmarkModel::OnFaviconsChanged(const std::set<GURL>& page_urls,
                                       const GURL& icon_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
