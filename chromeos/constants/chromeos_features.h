@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "build/buildflag.h"
 
 // This file is only for the feature flags that are shared between ash-chrome
 // and lacros-chrome that are not common. For ash features, please add them
@@ -31,6 +32,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kCloudGamingDevice);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kBlinkExtension);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kBlinkExtensionDiagnostics);
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+BASE_DECLARE_FEATURE(kCrosAppsBackgroundEventHandling);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kCrosComponents);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kCrosWebAppInstallDialog);

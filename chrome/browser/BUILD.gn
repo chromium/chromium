@@ -5811,6 +5811,7 @@ static_library("browser") {
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/settings/public/constants",
       "//chrome/browser/chromeos",
+      "//chrome/browser/chromeos/cros_apps",
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/extensions/telemetry",
       "//chrome/browser/policy:onc",

@@ -1317,6 +1317,15 @@
     "expiry_milestone": 114
   },
   {
+    "name": "cros-apps-background-event-handling",
+    "owners": [
+      "clamclamyan",
+      "cros-apps-platform-core@google.com",
+      "//chrome/browser/chromeos/cros_apps/OWNERS"
+    ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "cros-battery-saver",
     "owners": [ "chromeos-bsm@google.com", "cwd@chromium.org" ],
     "expiry_milestone": 122

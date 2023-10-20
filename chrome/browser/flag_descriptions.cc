@@ -7185,6 +7185,11 @@ const char kAppToAppLinkCapturingWorkspaceAppsDescription[] =
     "does not have link capturing enabled in settings. Only applies if the "
     "target app is a Workspace app (Google Drive/Docs/Sheets/Slides).";
 
+const char kCrosAppsBackgroundEventHandlingName[] =
+    "Experimental Background Events for CrOS Apps";
+const char kCrosAppsBackgroundEventHandlingDescription[] =
+    "Enable key events for CrOS Apps running in background.";
+
 const char kCrosWebAppInstallDialogName[] = "Web app install dialog";
 const char kCrosWebAppInstallDialogDescription[] =
     "Enables a more detailed, OS-level dialog for web app installs";

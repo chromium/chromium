@@ -300,6 +300,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/chromeos/cros_apps/cros_apps_key_event_handler_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_download_observer_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event_factory.h"
@@ -685,6 +686,12 @@ void ChromeBrowserMainExtraPartsProfiles::
   CookieSettingsFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   CouponServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kCrosAppsBackgroundEventHandling)) {
+    CrosAppsKeyEventHandlerFactory::GetInstance();
+  }
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   DevToolsAndroidBridge::Factory::GetInstance();

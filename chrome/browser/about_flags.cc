@@ -4463,6 +4463,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
+    {"cros-apps-background-event-handling",
+     flag_descriptions::kCrosAppsBackgroundEventHandlingName,
+     flag_descriptions::kCrosAppsBackgroundEventHandlingDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(chromeos::features::kCrosAppsBackgroundEventHandling)},
     {"cros-legacy-media-formats",
      flag_descriptions::kCrOSLegacyMediaFormatsName,
      flag_descriptions::kCrOSLegacyMediaFormatsDescription, kOsCrOS | kOsLacros,

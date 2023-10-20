@@ -48,6 +48,11 @@ BASE_FEATURE(kBlinkExtensionDiagnostics,
              "BlinkExtensionDiagnostics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables handling of key press event in background.
+BASE_FEATURE(kCrosAppsBackgroundEventHandling,
+             "CrosAppsBackgroundEventHandling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of cros-component UI elements. Contact:
 // cros-jellybean-team@google.com.
 BASE_FEATURE(kCrosComponents,

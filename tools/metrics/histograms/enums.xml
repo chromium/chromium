@@ -60972,6 +60972,7 @@ from previous Chrome versions.
   <int value="-2130982324" label="DesktopPWAsWebBundles:disabled"/>
   <int value="-2129940395" label="WebAssemblySimd:disabled"/>
   <int value="-2129781123" label="RequestDesktopSiteZoom:enabled"/>
+  <int value="-2129662187" label="CrosAppsBackgroundEventHandling:disabled"/>
   <int value="-2129531046" label="LacrosProfileBackwardMigration:enabled"/>
   <int value="-2128705444" label="AssistantAppSupport:enabled"/>
   <int value="-2128535212" label="GuestOsFiles:enabled"/>
@@ -67020,6 +67021,7 @@ from previous Chrome versions.
   <int value="780743733" label="QueryTilesLocalOrdering:disabled"/>
   <int value="781085897" label="IncognitoReauthenticationForAndroid:disabled"/>
   <int value="781152619" label="SupportToolScreenshot:disabled"/>
+  <int value="781298961" label="CrosAppsBackgroundEventHandling:enabled"/>
   <int value="781573553" label="UnifiedPasswordManagerAndroid:enabled"/>
   <int value="781785788" label="ClipboardSuggestionContentHidden:disabled"/>
   <int value="782167080" label="enable-new-qp-input-view"/>

@@ -8,12 +8,18 @@ assert(is_chromeos)
 
 source_set("cros_apps") {
   sources = [
+    "cros_apps_key_event_handler.cc",
+    "cros_apps_key_event_handler.h",
+    "cros_apps_key_event_handler_factory.cc",
+    "cros_apps_key_event_handler_factory.h",
     "cros_apps_tab_helper.cc",
     "cros_apps_tab_helper.h",
   ]
 
   deps = [
+    "//chrome/browser/profiles:profile",
     "//chromeos/constants:constants",
+    "//components/keyed_service/content",
     "//content/public/browser",
     "//content/public/common",
   ]
