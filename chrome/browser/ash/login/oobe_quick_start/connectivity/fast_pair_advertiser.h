@@ -20,8 +20,9 @@ namespace ash::quick_start {
 class AdvertisingId;
 
 // FastPairAdvertiser broadcasts advertisements with the service UUID
-// 0xFE2C and model ID 0x41C0D9. When the remote device detects this
-// advertisement it will trigger a prompt to begin Quick Start.
+// 0xFE2C and a model ID specific to the device form factor (Chromebook,
+// Chromebox, etc). When the remote device detects this advertisement it will
+// trigger a prompt to begin Quick Start.
 class FastPairAdvertiser : public device::BluetoothAdvertisement::Observer {
  public:
   class Factory {

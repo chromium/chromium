@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
+#include "chromeos/constants/devicetype.h"
 
 namespace ash::quick_start {
 
@@ -16,7 +17,9 @@ namespace {
 
 constexpr const char kFastPairServiceUuid[] =
     "0000fe2c-0000-1000-8000-00805f9b34fb";
-constexpr uint8_t kFastPairModelId[] = {0x41, 0xc0, 0xd9};
+constexpr uint8_t kFastPairModelIdChromebook[] = {0x30, 0x68, 0x46};
+constexpr uint8_t kFastPairModelIdChromebase[] = {0xe9, 0x31, 0x6c};
+constexpr uint8_t kFastPairModelIdChromebox[] = {0xda, 0xde, 0x43};
 constexpr uint16_t kCompanyId = 0x00e0;
 
 quick_start_metrics::FastPairAdvertisingErrorCode
@@ -61,6 +64,23 @@ MapBluetoothAdvertisementErrorCode(
   }
 }
 
+std::vector<uint8_t> GetFastPairModelId() {
+  switch (chromeos::GetDeviceType()) {
+    case chromeos::DeviceType::kChromebook:
+      return std::vector<uint8_t>(std::begin(kFastPairModelIdChromebook),
+                                  std::end(kFastPairModelIdChromebook));
+    case chromeos::DeviceType::kChromebase:
+      return std::vector<uint8_t>(std::begin(kFastPairModelIdChromebase),
+                                  std::end(kFastPairModelIdChromebase));
+    case chromeos::DeviceType::kChromebox:
+      return std::vector<uint8_t>(std::begin(kFastPairModelIdChromebox),
+                                  std::end(kFastPairModelIdChromebox));
+    default:
+      return std::vector<uint8_t>(std::begin(kFastPairModelIdChromebook),
+                                  std::end(kFastPairModelIdChromebook));
+  }
+}
+
 }  // namespace
 
 // static
@@ -70,8 +90,9 @@ FastPairAdvertiser::Factory* FastPairAdvertiser::Factory::factory_instance_ =
 // static
 std::unique_ptr<FastPairAdvertiser> FastPairAdvertiser::Factory::Create(
     scoped_refptr<device::BluetoothAdapter> adapter) {
-  if (factory_instance_)
+  if (factory_instance_) {
     return factory_instance_->CreateInstance(adapter);
+  }
 
   return std::make_unique<FastPairAdvertiser>(adapter);
 }
@@ -136,9 +157,8 @@ void FastPairAdvertiser::RegisterAdvertisement(
   advertisement_data->set_service_uuids(std::move(list));
 
   device::BluetoothAdvertisement::ServiceData service_data;
-  auto payload = std::vector<uint8_t>(std::begin(kFastPairModelId),
-                                      std::end(kFastPairModelId));
-  service_data.insert(std::make_pair(kFastPairServiceUuid, std::move(payload)));
+  service_data.insert(
+      std::make_pair(kFastPairServiceUuid, GetFastPairModelId()));
   advertisement_data->set_service_data(std::move(service_data));
 
   device::BluetoothAdvertisement::ManufacturerData manufacturer_data;
