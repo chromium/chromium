@@ -14,7 +14,11 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/mojo_service_events_observer_base.h"
@@ -122,6 +126,9 @@ class FatalCrashEventsObserver
     // local ID is not found, does nothing.
     void Remove(const std::string& local_id);
 
+    // Indicates whether the save file has been loaded.
+    bool IsLoaded() const;
+
    private:
     // Give `TestEnvironment` the access to `kMaxNumOfLocalIds`.
     friend class FatalCrashEventsObserver::TestEnvironment;
@@ -150,12 +157,15 @@ class FatalCrashEventsObserver
     // clear existing local IDs in RAM.
     void LoadSaveFile();
 
+    // Resume loading save file after the IO part is done.
+    void ResumeLoadingSaveFile(const std::string& content);
+
     // Writes save file based on the currently saved reported local IDs. Ignores
     // and logs any errors encountered. If the device reboots before the write
     // succeeds next time, this may lead to a repeated report of an unuploaded
     // crash, which is, however, better than the opposite, i.e., missing
     // unuploaded crash.
-    void WriteSaveFile() const;
+    void WriteSaveFile();
 
     // Cleans up local IDs corresponding to crashes that have been reported
     // again as uploaded in an efficient manner.
@@ -199,6 +209,16 @@ class FatalCrashEventsObserver
                         std::vector<LocalIdEntry>,
                         LocalIdEntryComparator>
         local_id_entry_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+    // The task runner that performs IO.
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner_ GUARDED_BY_CONTEXT(
+        sequence_checker_){base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()})};
+
+    // Indicates whether loading has finished.
+    bool loaded_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+
+    base::WeakPtrFactory<ReportedLocalIdManager> weak_factory_{this};
   };
 
   // Manages uploaded crash info, namely the creation time and offset of
@@ -264,7 +284,8 @@ class FatalCrashEventsObserver
 
   FatalCrashEventsObserver();
   FatalCrashEventsObserver(base::FilePath reported_local_id_save_file,
-                           base::FilePath uploaded_crash_info_save_file);
+                           base::FilePath uploaded_crash_info_save_file,
+                           base::TimeDelta backoff_time_for_loading);
 
   MetricData FillFatalCrashTelemetry(
       const ::ash::cros_healthd::mojom::CrashEventInfoPtr& info);
@@ -274,6 +295,9 @@ class FatalCrashEventsObserver
 
   // CrosHealthdEventsObserverBase
   void AddObserver() override;
+
+  // Indicates whether the save files have been loaded.
+  bool AreLoaded() const;
 
   // Sets whether to continue postprocessing after event observed callback is
   // called. Pass in true to simulate that event observed callback is
@@ -305,6 +329,10 @@ class FatalCrashEventsObserver
   // Only used for testing.
   bool interrupted_after_event_observed_for_test_
       GUARDED_BY_CONTEXT(sequence_checker_){false};
+
+  const base::TimeDelta backoff_time_for_loading_;
+
+  base::WeakPtrFactory<FatalCrashEventsObserver> weak_factory_{this};
 };
 }  // namespace reporting
 #endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_FATAL_CRASH_FATAL_CRASH_EVENTS_OBSERVER_H_
