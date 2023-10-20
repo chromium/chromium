@@ -31,7 +31,6 @@
 
 class AccountTrackerService;
 class PrefRegistrySimple;
-class PrefService;
 class ProfileOAuth2TokenService;
 
 namespace signin_metrics {
@@ -73,7 +72,7 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // If user was signed in, load tokens from DB if available.
-  void Initialize(PrefService* local_state);
+  void Initialize();
   bool IsInitialized() const;
 
   // Returns whether the user's primary account is available. If consent is

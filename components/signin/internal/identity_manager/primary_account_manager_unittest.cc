@@ -62,7 +62,6 @@ class PrimaryAccountManagerTest : public testing::Test,
     AccountTrackerService::RegisterPrefs(user_prefs_.registry());
     ProfileOAuth2TokenService::RegisterProfilePrefs(user_prefs_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(user_prefs_.registry());
-    PrimaryAccountManager::RegisterPrefs(local_state_.registry());
     account_tracker_.Initialize(&user_prefs_, base::FilePath());
     account_fetcher_.Initialize(
         &test_signin_client_, &token_service_, &account_tracker_,
@@ -126,7 +125,7 @@ class PrimaryAccountManagerTest : public testing::Test,
     DCHECK(!manager_);
     manager_ = std::make_unique<PrimaryAccountManager>(
         &test_signin_client_, &token_service_, &account_tracker_);
-    manager_->Initialize(&local_state_);
+    manager_->Initialize();
     manager_->AddObserver(this);
   }
 
@@ -167,7 +166,6 @@ class PrimaryAccountManagerTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  TestingPrefServiceSimple local_state_;
   TestSigninClient test_signin_client_;
   ProfileOAuth2TokenService token_service_;
   AccountTrackerService account_tracker_;

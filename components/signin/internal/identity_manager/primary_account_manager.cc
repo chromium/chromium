@@ -159,7 +159,7 @@ void PrimaryAccountManager::RegisterPrefs(PrefRegistrySimple* registry) {
                                std::string());
 }
 
-void PrimaryAccountManager::Initialize(PrefService* local_state) {
+void PrimaryAccountManager::Initialize() {
   // Should never call Initialize() twice.
   CHECK(!IsInitialized());
   initialized_ = true;
