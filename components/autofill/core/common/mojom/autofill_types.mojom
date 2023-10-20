@@ -12,7 +12,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 // The form control types supported by Autofill: a subset of
-// WebFormControlElement::Type plus kContentEditable.
+// blink::mojom::FormControlType plus kContentEditable.
 enum FormControlType {
   kContentEditable,
   kInputCheckbox,
