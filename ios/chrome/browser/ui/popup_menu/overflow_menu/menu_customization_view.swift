@@ -29,6 +29,11 @@ struct MenuCustomizationView: View {
   /// The namespace for the animation of this view appearing or disappearing.
   let namespace: Namespace.ID
 
+  /// Focus state to allow setting VoiceOver focus to the page header when
+  /// the page appears.
+  @AccessibilityFocusState
+  private var headerFocused: Bool
+
   init(
     actionCustomizationModel: ActionCustomizationModel,
     destinationCustomizationModel: DestinationCustomizationModel,
@@ -94,6 +99,9 @@ struct MenuCustomizationView: View {
     .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
     .overflowMenuListStyle()
     .environment(\.editMode, .constant(.active))
+    .onAppear {
+      headerFocused = true
+    }
   }
 
   /// Custom header for this view. This should look like a `NavigationView`'s
@@ -123,6 +131,7 @@ struct MenuCustomizationView: View {
         )
         .fontWeight(.semibold)
         .lineLimit(1)
+        .accessibilityFocused($headerFocused)
         .accessibilityAddTraits(.isHeader)
       }
       .layoutPriority(1000)
