@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -25,7 +26,8 @@ class OmniboxController;
 // code, work with OmniboxPopupViewWebUI directly.
 class OmniboxPopupPresenter : public views::WebView,
                               public views::WidgetObserver,
-                              public OmniboxWebUIPopupChangeObserver {
+                              public OmniboxWebUIPopupChangeObserver,
+                              public views::ViewObserver {
  public:
   METADATA_HEADER(OmniboxPopupPresenter);
   explicit OmniboxPopupPresenter(LocationBarView* location_bar_view,
@@ -51,6 +53,9 @@ class OmniboxPopupPresenter : public views::WebView,
   // RealboxWebUIChangeClient:
   void OnPopupElementSizeChanged(gfx::Size size) override;
 
+  // views::ViewObserver:
+  void OnViewBoundsChanged(View* observed_view) override;
+
  private:
   friend class OmniboxPopupViewWebUITest;
 
@@ -68,6 +73,9 @@ class OmniboxPopupPresenter : public views::WebView,
 
   // Whether any call to `GetHandler` has been made.
   bool requested_handler_;
+
+  // Last reported WebUI element size.
+  gfx::Size webui_element_size_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_

@@ -30,9 +30,11 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
   // the handler asynchronously.
   OmniboxPopupUI::SetOmniboxController(controller);
   LoadInitialURL(GURL(chrome::kChromeUIOmniboxPopupURL));
+  location_bar_view_->AddObserver(this);
 }
 
 OmniboxPopupPresenter::~OmniboxPopupPresenter() {
+  location_bar_view_->RemoveObserver(this);
   ReleaseWidget(false);
 }
 
@@ -99,9 +101,8 @@ void OmniboxPopupPresenter::OnWidgetDestroyed(views::Widget* widget) {
   }
 }
 
-// TODO(crbug.com/1396174): This should also be called when LocationBarView
-//  size is changed.
 void OmniboxPopupPresenter::OnPopupElementSizeChanged(gfx::Size size) {
+  webui_element_size_ = size;
   if (widget_) {
     // The width is known, and is the basis for consistent web content rendering
     // so width is specified exactly; then only height adjusts dynamically.
@@ -117,6 +118,11 @@ void OmniboxPopupPresenter::OnPopupElementSizeChanged(gfx::Size size) {
     widget_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
     widget_->SetBounds(widget_bounds);
   }
+}
+
+void OmniboxPopupPresenter::OnViewBoundsChanged(View* observed_view) {
+  CHECK(observed_view == location_bar_view_);
+  OnPopupElementSizeChanged(webui_element_size_);
 }
 
 bool OmniboxPopupPresenter::IsHandlerReady() {
