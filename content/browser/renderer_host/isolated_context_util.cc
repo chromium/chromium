@@ -5,25 +5,33 @@
 #include "content/browser/renderer_host/isolated_context_util.h"
 
 #include "content/browser/process_lock.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_client.h"
 
 namespace content {
 
-bool IsFrameSufficientlyIsolated(RenderFrameHost* frame) {
-  if (frame->GetWebExposedIsolationLevel() >=
-      content::WebExposedIsolationLevel::kMaybeIsolatedApplication) {
-    return true;
-  }
+namespace {
 
-  if (GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
-          frame->GetBrowserContext(),
-          frame->GetProcess()->GetProcessLock().lock_url())) {
-    return true;
-  }
+bool IsIsolatedContextAllowedByEmbedder(RenderProcessHost* process) {
+  return GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
+      process->GetBrowserContext(), process->GetProcessLock().lock_url());
+}
 
-  return false;
+}  // namespace
+
+bool IsIsolatedContext(RenderProcessHost* process) {
+  return (process->GetWebExposedIsolationLevel() >=
+          WebExposedIsolationLevel::kMaybeIsolatedApplication) ||
+         IsIsolatedContextAllowedByEmbedder(process);
+}
+
+bool HasIsolatedContextCapability(RenderFrameHost* frame) {
+  return (frame->GetWebExposedIsolationLevel() >=
+          WebExposedIsolationLevel::kIsolatedApplication) ||
+         IsIsolatedContextAllowedByEmbedder(frame->GetProcess());
 }
 
 }  // namespace content

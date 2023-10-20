@@ -66,7 +66,7 @@ void SmartCardService::Create(
     return;
   }
 
-  if (!IsFrameSufficientlyIsolated(render_frame_host)) {
+  if (!HasIsolatedContextCapability(render_frame_host)) {
     mojo::ReportBadMessage(
         "Frame is not sufficiently isolated to use the Smart Card API.");
     return;

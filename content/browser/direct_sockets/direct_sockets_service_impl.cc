@@ -232,7 +232,7 @@ void DirectSocketsServiceImpl::CreateForFrame(
         "Permissions policy blocks access to Direct Sockets.");
     return;
   }
-  if (!IsFrameSufficientlyIsolated(render_frame_host)) {
+  if (!HasIsolatedContextCapability(render_frame_host)) {
     mojo::ReportBadMessage(
         "Frame is not sufficiently isolated to use Direct Sockets.");
     return;

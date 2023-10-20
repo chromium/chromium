@@ -113,6 +113,7 @@
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
 #include "content/browser/renderer_host/indexed_db_client_state_checker_factory.h"
+#include "content/browser/renderer_host/isolated_context_util.h"
 #include "content/browser/renderer_host/media/media_stream_track_metrics_host.h"
 #include "content/browser/renderer_host/p2p/socket_dispatcher_host.h"
 #include "content/browser/renderer_host/recently_destroyed_hosts.h"
@@ -3185,18 +3186,11 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
       process_lock.GetWebExposedIsolationLevel() >=
       WebExposedIsolationLevel::kMaybeIsolated);
 
+  GetRendererInterface()->SetIsIsolatedContext(IsIsolatedContext(this));
+
   GetRendererInterface()->SetIsWebSecurityDisabled(
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity));
-
-  bool is_isolated_context_allowed_by_embedder =
-      GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
-          GetBrowserContext(), process_lock.lock_url());
-
-  GetRendererInterface()->SetIsIsolatedContext(
-      process_lock.GetWebExposedIsolationLevel() >=
-          WebExposedIsolationLevel::kMaybeIsolatedApplication ||
-      is_isolated_context_allowed_by_embedder);
 
   if (!process_lock.IsASiteOrOrigin())
     return;
