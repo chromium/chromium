@@ -11976,12 +11976,31 @@
             ]
         }
     ],
-    "PartitionAllocBackupRefPtr": [
+    "PartitionAllocBackupRefPtr16BRefcount": [
         {
             "platforms": [
                 "android",
                 "android_weblayer",
-                "android_webview",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "brp-mode": "enabled",
+                        "enabled-processes": "non-renderer",
+                        "ref-count-size": "16B"
+                    },
+                    "enable_features": [
+                        "PartitionAllocBackupRefPtr"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PartitionAllocBackupRefPtrDefaultRefcountSize": [
+        {
+            "platforms": [
                 "chromeos",
                 "chromeos_lacros",
                 "fuchsia",
@@ -11994,8 +12013,7 @@
                     "name": "Enabled",
                     "params": {
                         "brp-mode": "enabled",
-                        "enabled-processes": "non-renderer",
-                        "ref-count-size": "16B"
+                        "enabled-processes": "non-renderer"
                     },
                     "enable_features": [
                         "PartitionAllocBackupRefPtr"
