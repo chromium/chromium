@@ -135,9 +135,12 @@ class CODEC_EXPORT PNGCodec {
   // This function may not support all PNG types, and it hasn't been tested
   // with a large number of images, so assume a new format may not work. It's
   // really designed to be able to read in something written by Encode() above.
-  static bool Decode(const unsigned char* input, size_t input_size,
-                     ColorFormat format, std::vector<unsigned char>* output,
-                     int* w, int* h);
+  static bool Decode(const unsigned char* input,
+                     size_t input_size,
+                     ColorFormat format,
+                     std::vector<unsigned char>* output,
+                     int* w,
+                     int* h);
 
   // Decodes the PNG data directly into the passed in SkBitmap. This is
   // significantly faster than the vector<unsigned char> version of Decode()
@@ -147,7 +150,8 @@ class CODEC_EXPORT PNGCodec {
   //
   // Returns true if data is non-null and can be decoded as a png, false
   // otherwise.
-  static bool Decode(const unsigned char* input, size_t input_size,
+  static bool Decode(const unsigned char* input,
+                     size_t input_size,
                      SkBitmap* bitmap);
 };
 
