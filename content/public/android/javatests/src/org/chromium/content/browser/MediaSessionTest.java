@@ -34,9 +34,7 @@ import org.chromium.media.MediaSwitches;
 
 import java.util.ArrayList;
 
-/**
- * Tests for MediaSession.
- */
+/** Tests for MediaSession. */
 @RunWith(ContentJUnit4ClassRunner.class)
 @CommandLineFlags.Add(MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY)
 public class MediaSessionTest {
@@ -52,12 +50,14 @@ public class MediaSessionTest {
     private static final String SHORT_VIDEO = "short-video";
     private static final String LONG_VIDEO = "long-video";
     private static final String LONG_VIDEO_SILENT = "long-video-silent";
-    private static final int AUDIO_FOCUS_CHANGE_TIMEOUT = 500;  // ms
+    private static final int AUDIO_FOCUS_CHANGE_TIMEOUT = 500; // ms
 
     private AudioManager getAudioManager() {
-        return (AudioManager) mActivityTestRule.getActivity()
-                .getApplicationContext()
-                .getSystemService(Context.AUDIO_SERVICE);
+        return (AudioManager)
+                mActivityTestRule
+                        .getActivity()
+                        .getApplicationContext()
+                        .getSystemService(Context.AUDIO_SERVICE);
     }
 
     private class MockAudioFocusChangeListener implements AudioManager.OnAudioFocusChangeListener {
@@ -73,8 +73,8 @@ public class MediaSessionTest {
         }
 
         public void requestAudioFocus(int focusType) {
-            int result = getAudioManager().requestAudioFocus(
-                    this, AudioManager.STREAM_MUSIC, focusType);
+            int result =
+                    getAudioManager().requestAudioFocus(this, AudioManager.STREAM_MUSIC, focusType);
             if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                 Assert.fail("Did not get audio focus");
             } else {
@@ -137,15 +137,19 @@ public class MediaSessionTest {
         }
 
         mAudioFocusChangeListener = new MockAudioFocusChangeListener();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mObserver = new MediaSessionObserver(
-                    MediaSession.fromWebContents(mActivityTestRule.getWebContents())) {
-                @Override
-                public void mediaSessionStateChanged(boolean isControllable, boolean isSuspended) {
-                    mStateRecords.add(new StateRecord(isControllable, isSuspended));
-                }
-            };
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mObserver =
+                            new MediaSessionObserver(
+                                    MediaSession.fromWebContents(
+                                            mActivityTestRule.getWebContents())) {
+                                @Override
+                                public void mediaSessionStateChanged(
+                                        boolean isControllable, boolean isSuspended) {
+                                    mStateRecords.add(new StateRecord(isControllable, isSuspended));
+                                }
+                            };
+                });
     }
 
     @After
@@ -427,7 +431,8 @@ public class MediaSessionTest {
 
         mAudioFocusChangeListener.requestAudioFocus(
                 AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
-        Assert.assertEquals(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK,
+        Assert.assertEquals(
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK,
                 mAudioFocusChangeListener.getAudioFocusState());
 
         // TODO(zqzhang): Currently, the volume change cannot be observed. If it could, the volume
@@ -468,7 +473,8 @@ public class MediaSessionTest {
         mAudioFocusChangeListener.waitForFocusStateChange(AudioManager.AUDIOFOCUS_LOSS);
 
         mAudioFocusChangeListener.requestAudioFocus(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
-        Assert.assertEquals(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT,
+        Assert.assertEquals(
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT,
                 mAudioFocusChangeListener.getAudioFocusState());
 
         DOMUtils.waitForMediaPauseBeforeEnd(mActivityTestRule.getWebContents(), LONG_AUDIO);

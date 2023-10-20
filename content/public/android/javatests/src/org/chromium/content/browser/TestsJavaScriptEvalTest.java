@@ -19,21 +19,20 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
-/**
- * Integration tests for JavaScript execution.
- */
+/** Integration tests for JavaScript execution. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class TestsJavaScriptEvalTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
 
-    private static final String JSTEST_URL = UrlUtils.encodeHtmlDataUri("<html><head><script>"
-            + "  function foobar() { return 'foobar'; }"
-            + "</script></head>"
-            + "<body><button id=\"test\">Test button</button></body></html>");
+    private static final String JSTEST_URL =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html><head><script>"
+                            + "  function foobar() { return 'foobar'; }"
+                            + "</script></head>"
+                            + "<body><button id=\"test\">Test button</button></body></html>");
 
-    public TestsJavaScriptEvalTest() {
-    }
+    public TestsJavaScriptEvalTest() {}
 
     /**
      * Tests that evaluation of JavaScript for test purposes (using JavaScriptUtils, DOMUtils etc)

@@ -44,8 +44,7 @@ import java.io.File;
 public class JavaBridgeCoercionTest {
     private static final double ASSERTION_DELTA = 0;
 
-    @Rule
-    public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
+    @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 
     private static class TestObject extends Controller {
         private Object mObjectInstance;
@@ -73,9 +72,11 @@ public class JavaBridgeCoercionTest {
         public Object getObjectInstance() {
             return mObjectInstance;
         }
+
         public CustomType getCustomTypeInstance() {
             return mCustomTypeInstance;
         }
+
         public CustomType2 getCustomType2Instance() {
             return mCustomType2Instance;
         }
@@ -84,42 +85,52 @@ public class JavaBridgeCoercionTest {
             mBooleanValue = x;
             notifyResultIsReady();
         }
+
         public synchronized void setByteValue(byte x) {
             mByteValue = x;
             notifyResultIsReady();
         }
+
         public synchronized void setCharValue(char x) {
             mCharValue = x;
             notifyResultIsReady();
         }
+
         public synchronized void setShortValue(short x) {
             mShortValue = x;
             notifyResultIsReady();
         }
+
         public synchronized void setIntValue(int x) {
             mIntValue = x;
             notifyResultIsReady();
         }
+
         public synchronized void setLongValue(long x) {
             mLongValue = x;
             notifyResultIsReady();
         }
+
         public synchronized void setFloatValue(float x) {
             mFloatValue = x;
             notifyResultIsReady();
         }
+
         public synchronized void setDoubleValue(double x) {
             mDoubleValue = x;
             notifyResultIsReady();
         }
+
         public synchronized void setStringValue(String x) {
             mStringValue = x;
             notifyResultIsReady();
         }
+
         public synchronized void setObjectValue(Object x) {
             mObjectValue = x;
             notifyResultIsReady();
         }
+
         public synchronized void setCustomTypeValue(CustomType x) {
             mCustomTypeValue = x;
             notifyResultIsReady();
@@ -129,42 +140,52 @@ public class JavaBridgeCoercionTest {
             waitForResult();
             return mBooleanValue;
         }
+
         public synchronized byte waitForByteValue() {
             waitForResult();
             return mByteValue;
         }
+
         public synchronized char waitForCharValue() {
             waitForResult();
             return mCharValue;
         }
+
         public synchronized short waitForShortValue() {
             waitForResult();
             return mShortValue;
         }
+
         public synchronized int waitForIntValue() {
             waitForResult();
             return mIntValue;
         }
+
         public synchronized long waitForLongValue() {
             waitForResult();
             return mLongValue;
         }
+
         public synchronized float waitForFloatValue() {
             waitForResult();
             return mFloatValue;
         }
+
         public synchronized double waitForDoubleValue() {
             waitForResult();
             return mDoubleValue;
         }
+
         public synchronized String waitForStringValue() {
             waitForResult();
             return mStringValue;
         }
+
         public synchronized Object waitForObjectValue() {
             waitForResult();
             return mObjectValue;
         }
+
         public synchronized CustomType waitForCustomTypeValue() {
             waitForResult();
             return mCustomTypeValue;
@@ -172,10 +193,9 @@ public class JavaBridgeCoercionTest {
     }
 
     // Two custom types used when testing passing objects.
-    private static class CustomType {
-    }
-    private static class CustomType2 {
-    }
+    private static class CustomType {}
+
+    private static class CustomType2 {}
 
     @UseMethodParameterBefore(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void setupMojoTest(boolean useMojo) {
@@ -191,6 +211,7 @@ public class JavaBridgeCoercionTest {
             mBooleanValue = x;
             notifyResultIsReady();
         }
+
         public synchronized boolean waitForBooleanValue() {
             waitForResult();
             return mBooleanValue;
@@ -201,11 +222,14 @@ public class JavaBridgeCoercionTest {
 
     // Note that this requires that we can pass a JavaScript boolean to Java.
     private void assertRaisesException(String script) throws Throwable {
-        mActivityTestRule.executeJavaScript("try {" + script + ";"
-                + "  testController.setBooleanValue(false);"
-                + "} catch (exception) {"
-                + "  testController.setBooleanValue(true);"
-                + "}");
+        mActivityTestRule.executeJavaScript(
+                "try {"
+                        + script
+                        + ";"
+                        + "  testController.setBooleanValue(false);"
+                        + "} catch (exception) {"
+                        + "  testController.setBooleanValue(true);"
+                        + "}");
         Assert.assertTrue(mTestController.waitForBooleanValue());
     }
 
@@ -727,20 +751,27 @@ public class JavaBridgeCoercionTest {
         final File optimizedDir = File.createTempFile("optimized", "");
         Assert.assertTrue(optimizedDir.delete());
         Assert.assertTrue(optimizedDir.mkdirs());
-        DexClassLoader loader = new DexClassLoader(UrlUtils.getIsolatedTestFilePath(dexFileName),
-                optimizedDir.getAbsolutePath(), null, ClassLoader.getSystemClassLoader());
-        final Object selfConsuming = loader.loadClass(
-                "org.example.SelfConsumingObject").newInstance();
-        mActivityTestRule.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mActivityTestRule.getJavascriptInjector(useMojo).addPossiblyUnsafeInterface(
-                        selfConsuming, "selfConsuming", null);
-            }
-        });
+        DexClassLoader loader =
+                new DexClassLoader(
+                        UrlUtils.getIsolatedTestFilePath(dexFileName),
+                        optimizedDir.getAbsolutePath(),
+                        null,
+                        ClassLoader.getSystemClassLoader());
+        final Object selfConsuming =
+                loader.loadClass("org.example.SelfConsumingObject").newInstance();
+        mActivityTestRule.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mActivityTestRule
+                                .getJavascriptInjector(useMojo)
+                                .addPossiblyUnsafeInterface(selfConsuming, "selfConsuming", null);
+                    }
+                });
         mActivityTestRule.synchronousPageReload();
-        mActivityTestRule.executeJavaScript("testObject.setBooleanValue("
-                + "selfConsuming.verifySelf(selfConsuming.getSelf()));");
+        mActivityTestRule.executeJavaScript(
+                "testObject.setBooleanValue("
+                        + "selfConsuming.verifySelf(selfConsuming.getSelf()));");
         Assert.assertTrue(mTestObject.waitForBooleanValue());
     }
 

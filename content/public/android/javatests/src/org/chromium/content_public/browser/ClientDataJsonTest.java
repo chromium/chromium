@@ -24,9 +24,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 import org.chromium.url.mojom.Url;
 
-/**
- * Unit tests for ClientDataJson
- */
+/** Unit tests for ClientDataJson */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ClientDataJsonTest {
@@ -55,8 +53,15 @@ public class ClientDataJsonTest {
         String relyingPartyId = "subdomain.example.test";
         String origin = "https://example.test";
         Origin topOrigin = Origin.create(new GURL("https://www.chromium.test/pay"));
-        String output = ClientDataJson.buildClientDataJson(ClientDataRequestType.PAYMENT_GET,
-                origin, challenge, /*isCrossOrigin=*/false, payment, relyingPartyId, topOrigin);
+        String output =
+                ClientDataJson.buildClientDataJson(
+                        ClientDataRequestType.PAYMENT_GET,
+                        origin,
+                        challenge,
+                        /* isCrossOrigin= */ false,
+                        payment,
+                        relyingPartyId,
+                        topOrigin);
 
         // Test that the output has the expected fields.
         assertThat(output, containsString("\"type\":\"payment.get\""));
@@ -68,11 +73,14 @@ public class ClientDataJsonTest {
         assertThat(output, containsString("\"topOrigin\":\"https://www.chromium.test\""));
         assertThat(output, containsString("\"payeeOrigin\":\"https://test.example\""));
         assertThat(output, containsString(String.format("\"value\":\"%s\"", payment.total.value)));
-        assertThat(output,
+        assertThat(
+                output,
                 containsString(String.format("\"currency\":\"%s\"", payment.total.currency)));
-        assertThat(output,
+        assertThat(
+                output,
                 containsString(String.format("\"icon\":\"%s\"", payment.instrument.icon.url)));
-        assertThat(output,
+        assertThat(
+                output,
                 containsString(
                         String.format("\"displayName\":\"%s\"", payment.instrument.displayName)));
     }

@@ -42,28 +42,28 @@ import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.util.concurrent.Callable;
 
-/**
- * Integration tests for text selection-related behavior.
- */
+/** Integration tests for text selection-related behavior. */
 @RunWith(ContentJUnit4ClassRunner.class)
 public class ContentTextSelectionTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
-    private static final String DATA_URL = UrlUtils.encodeHtmlDataUri(
-            "<html><head><meta name=\"viewport\""
-            + "content=\"width=device-width\" /></head>"
-            + "<body><form action=\"about:blank\">"
-            + "<input id=\"empty_input_text\" type=\"text\" />"
-            + "<input id=\"whitespace_input_text\" type=\"text\" value=\" \" />"
-            + "<input id=\"input_text\" type=\"text\" value=\"SampleInputText\" />"
-            + "<textarea id=\"textarea\" rows=\"2\" cols=\"20\">SampleTextArea</textarea>"
-            + "<input id=\"password\" type=\"password\" value=\"SamplePassword\" size=\"10\"/>"
-            + "<p><span id=\"smart_selection\">1600 Amphitheatre Parkway</span></p>"
-            + "<p><span id=\"plain_text_1\">SamplePlainTextOne</span></p>"
-            + "<p><span id=\"plain_text_2\">SamplePlainTextTwo</span></p>"
-            + "<input id=\"disabled_text\" type=\"text\" disabled value=\"Sample Text\" />"
-            + "<div id=\"rich_div\" contentEditable=\"true\" >Rich Editor</div>"
-            + "</form></body></html>");
+
+    private static final String DATA_URL =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html><head><meta name=\"viewport\"content=\"width=device-width\""
+                        + " /></head><body><form action=\"about:blank\"><input"
+                        + " id=\"empty_input_text\" type=\"text\" /><input"
+                        + " id=\"whitespace_input_text\" type=\"text\" value=\" \" /><input"
+                        + " id=\"input_text\" type=\"text\" value=\"SampleInputText\" /><textarea"
+                        + " id=\"textarea\" rows=\"2\" cols=\"20\">SampleTextArea</textarea><input"
+                        + " id=\"password\" type=\"password\" value=\"SamplePassword\""
+                        + " size=\"10\"/><p><span id=\"smart_selection\">1600 Amphitheatre"
+                        + " Parkway</span></p><p><span"
+                        + " id=\"plain_text_1\">SamplePlainTextOne</span></p><p><span"
+                        + " id=\"plain_text_2\">SamplePlainTextTwo</span></p><input"
+                        + " id=\"disabled_text\" type=\"text\" disabled value=\"Sample Text\""
+                        + " /><div id=\"rich_div\" contentEditable=\"true\" >Rich Editor</div>"
+                        + "</form></body></html>");
     private WebContents mWebContents;
     private SelectionPopupControllerImpl mSelectionPopupController;
 
@@ -418,12 +418,15 @@ public class ContentTextSelectionTest {
 
         DOMUtils.clickNode(mWebContents, "smart_selection");
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mSelectionPopupController.getClassificationResult().startAdjust,
-                    Matchers.is(0));
-            Criteria.checkThat(
-                    mSelectionPopupController.getSelectedText(), Matchers.is("Amphitheatre"));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mSelectionPopupController.getClassificationResult().startAdjust,
+                            Matchers.is(0));
+                    Criteria.checkThat(
+                            mSelectionPopupController.getSelectedText(),
+                            Matchers.is("Amphitheatre"));
+                });
     }
 
     @Test
@@ -434,7 +437,10 @@ public class ContentTextSelectionTest {
         copyStringToClipboard("SampleTextToCopy");
         DOMUtils.longPressNode(mWebContents, "empty_input_text");
         waitForPastePopupStatus(true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mWebContents.destroy(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mWebContents.destroy();
+                });
         waitForPastePopupStatus(false);
     }
 
@@ -666,10 +672,11 @@ public class ContentTextSelectionTest {
 
     private CharSequence getTextBeforeCursor(final int length, final int flags) {
         final ChromiumBaseInputConnection connection =
-                (ChromiumBaseInputConnection) mActivityTestRule.getImeAdapter()
-                        .getInputConnectionForTest();
+                (ChromiumBaseInputConnection)
+                        mActivityTestRule.getImeAdapter().getInputConnectionForTest();
         return ImeTestUtils.runBlockingOnHandlerNoException(
-                connection.getHandler(), new Callable<CharSequence>() {
+                connection.getHandler(),
+                new Callable<CharSequence>() {
                     @Override
                     public CharSequence call() {
                         return connection.getTextBeforeCursor(length, flags);
@@ -689,9 +696,10 @@ public class ContentTextSelectionTest {
         Assert.assertEquals(mSelectionPopupController.getSelectedText(), "SampleTextArea");
         hideSelectActionMode();
         waitForSelectActionBarVisible(false);
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(getTextBeforeCursor(50, 0), Matchers.is("SampleTextArea"));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(getTextBeforeCursor(50, 0), Matchers.is("SampleTextArea"));
+                });
     }
 
     @Test
@@ -803,121 +811,156 @@ public class ContentTextSelectionTest {
     }
 
     private void selectActionBarPaste() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mSelectionPopupController.paste(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSelectionPopupController.paste();
+                });
     }
 
     private void selectActionBarSelectAll() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mSelectionPopupController.selectAll(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSelectionPopupController.selectAll();
+                });
     }
 
     private void selectActionBarCut() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mSelectionPopupController.cut(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSelectionPopupController.cut();
+                });
     }
 
     private void selectActionBarCopy() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mSelectionPopupController.copy(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSelectionPopupController.copy();
+                });
     }
 
     private void selectActionBarSearch() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mSelectionPopupController.search(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSelectionPopupController.search();
+                });
     }
 
     private void selectActionBarShare() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mSelectionPopupController.share(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSelectionPopupController.share();
+                });
     }
 
     private void hideSelectActionMode() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mSelectionPopupController.destroySelectActionMode(); });
+                () -> {
+                    mSelectionPopupController.destroySelectActionMode();
+                });
     }
 
     private void waitForClipboardContents(final String expectedContents) {
-        CriteriaHelper.pollUiThread(() -> {
-            Context context = mActivityTestRule.getActivity();
-            ClipboardManager clipboardManager =
-                    (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = clipboardManager.getPrimaryClip();
-            Criteria.checkThat(clip, Matchers.notNullValue());
-            Criteria.checkThat(clip.getItemCount(), Matchers.is(1));
-            Criteria.checkThat(clip.getItemAt(0).getText(), Matchers.is(expectedContents));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Context context = mActivityTestRule.getActivity();
+                    ClipboardManager clipboardManager =
+                            (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = clipboardManager.getPrimaryClip();
+                    Criteria.checkThat(clip, Matchers.notNullValue());
+                    Criteria.checkThat(clip.getItemCount(), Matchers.is(1));
+                    Criteria.checkThat(clip.getItemAt(0).getText(), Matchers.is(expectedContents));
+                });
     }
 
     private void waitForSelectActionBarVisible(final boolean visible) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mSelectionPopupController.isSelectActionBarShowing(), Matchers.is(visible));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mSelectionPopupController.isSelectActionBarShowing(),
+                            Matchers.is(visible));
+                });
     }
 
     private void setVisibileOnUiThread(final boolean show) {
         final WebContents webContents = mActivityTestRule.getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (show) {
-                webContents.onShow();
-            } else {
-                webContents.onHide();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (show) {
+                        webContents.onShow();
+                    } else {
+                        webContents.onHide();
+                    }
+                });
     }
 
     private void setAttachedOnUiThread(final boolean attached) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ViewEventSinkImpl viewEventSink =
-                    ViewEventSinkImpl.from(mActivityTestRule.getWebContents());
-            if (attached) {
-                viewEventSink.onAttachedToWindow();
-            } else {
-                viewEventSink.onDetachedFromWindow();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewEventSinkImpl viewEventSink =
+                            ViewEventSinkImpl.from(mActivityTestRule.getWebContents());
+                    if (attached) {
+                        viewEventSink.onAttachedToWindow();
+                    } else {
+                        viewEventSink.onDetachedFromWindow();
+                    }
+                });
     }
 
     private void requestFocusOnUiThread(final boolean gainFocus) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ViewEventSinkImpl viewEventSink =
-                    ViewEventSinkImpl.from(mActivityTestRule.getWebContents());
-            viewEventSink.onViewFocusChanged(gainFocus);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewEventSinkImpl viewEventSink =
+                            ViewEventSinkImpl.from(mActivityTestRule.getWebContents());
+                    viewEventSink.onViewFocusChanged(gainFocus);
+                });
     }
 
     private void copyStringToClipboard(final String string) throws Throwable {
-        mActivityTestRule.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ClipboardManager clipboardManager =
-                        (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
-                                Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("test", string);
-                clipboardManager.setPrimaryClip(clip);
-            }
-        });
+        mActivityTestRule.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        ClipboardManager clipboardManager =
+                                (ClipboardManager)
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("test", string);
+                        clipboardManager.setPrimaryClip(clip);
+                    }
+                });
     }
 
     private void copyHtmlToClipboard(final String plainText, final String htmlText)
             throws Throwable {
-        mActivityTestRule.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ClipboardManager clipboardManager =
-                        (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
-                                Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newHtmlText("html", plainText, htmlText);
-                clipboardManager.setPrimaryClip(clip);
-            }
-        });
+        mActivityTestRule.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        ClipboardManager clipboardManager =
+                                (ClipboardManager)
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newHtmlText("html", plainText, htmlText);
+                        clipboardManager.setPrimaryClip(clip);
+                    }
+                });
     }
 
     private void waitForPastePopupStatus(final boolean show) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mSelectionPopupController.isPastePopupShowing(), Matchers.is(show));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mSelectionPopupController.isPastePopupShowing(), Matchers.is(show));
+                });
     }
 
     private void waitForInsertion(final boolean show) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mSelectionPopupController.isInsertionForTesting(), Matchers.is(show));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mSelectionPopupController.isInsertionForTesting(), Matchers.is(show));
+                });
     }
 }

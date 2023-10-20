@@ -63,11 +63,9 @@ public final class RemoteObjectImplTest {
     @Target({ElementType.METHOD})
     private @interface TestJavascriptInterface {}
 
-    @Mock
-    private RemoteObjectImpl.Auditor mAuditor;
+    @Mock private RemoteObjectImpl.Auditor mAuditor;
 
-    @Mock
-    private RemoteObjectImpl.ObjectIdAllocator mIdAllocator;
+    @Mock private RemoteObjectImpl.ObjectIdAllocator mIdAllocator;
 
     @Before
     public void setUp() {
@@ -76,21 +74,22 @@ public final class RemoteObjectImplTest {
 
     @Test
     public void testHasMethodWithSafeAnnotationClass() {
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public void exposedMethod() {}
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public void exposedMethod() {}
 
-            @TestJavascriptInterface
-            public void anotherExposedMethod() {}
+                    @TestJavascriptInterface
+                    public void anotherExposedMethod() {}
 
-            @TestJavascriptInterface
-            public void anotherExposedMethod(int x) {}
+                    @TestJavascriptInterface
+                    public void anotherExposedMethod(int x) {}
 
-            @TestJavascriptInterface
-            private void privateAnnotatedMethod() {}
+                    @TestJavascriptInterface
+                    private void privateAnnotatedMethod() {}
 
-            public void unannotatedMethod() {}
-        };
+                    public void unannotatedMethod() {}
+                };
 
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.HasMethod_Response hasMethodResponse;
@@ -121,12 +120,13 @@ public final class RemoteObjectImplTest {
 
     @Test
     public void testHasMethodWithoutSafeAnnotationClass() {
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public void annotatedMethod() {}
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public void annotatedMethod() {}
 
-            public void unannotatedMethod() {}
-        };
+                    public void unannotatedMethod() {}
+                };
 
         RemoteObject remoteObject = newRemoteObjectImpl(target, null);
         RemoteObject.HasMethod_Response hasMethodResponse;
@@ -162,12 +162,13 @@ public final class RemoteObjectImplTest {
     @Test
     public void testInvokeMethodBasic() {
         final Runnable runnable = mock(Runnable.class);
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public void frobnicate() {
-                runnable.run();
-            }
-        };
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public void frobnicate() {
+                        runnable.run();
+                    }
+                };
 
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.InvokeMethod_Response response =
@@ -182,17 +183,18 @@ public final class RemoteObjectImplTest {
     @Test
     public void testInvokeMethodOverloadUsingArity() {
         final Consumer<Integer> consumer = (Consumer<Integer>) mock(Consumer.class);
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public void frobnicate() {
-                consumer.accept(0);
-            }
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public void frobnicate() {
+                        consumer.accept(0);
+                    }
 
-            @TestJavascriptInterface
-            public void frobnicate(Object argument) {
-                consumer.accept(1);
-            }
-        };
+                    @TestJavascriptInterface
+                    public void frobnicate(Object argument) {
+                        consumer.accept(1);
+                    }
+                };
 
         // The method overload to be called depends on the number of arguments supplied.
         // TODO(jbroman): Once it's possible to construct a non-trivial argument, do so.
@@ -251,16 +253,17 @@ public final class RemoteObjectImplTest {
 
     @Test
     public void testInvokeMethodNotFound() {
-        Object target = new Object() {
-            public void unexposedMethod() {
-                Assert.fail("Unexposed method should not be called.");
-            }
+        Object target =
+                new Object() {
+                    public void unexposedMethod() {
+                        Assert.fail("Unexposed method should not be called.");
+                    }
 
-            @TestJavascriptInterface
-            public void exposedMethodWithWrongArity(Object argument) {
-                Assert.fail("Exposed method should only be called with the correct arity.");
-            }
-        };
+                    @TestJavascriptInterface
+                    public void exposedMethodWithWrongArity(Object argument) {
+                        Assert.fail("Exposed method should only be called with the correct arity.");
+                    }
+                };
 
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.InvokeMethod_Response response =
@@ -275,16 +278,18 @@ public final class RemoteObjectImplTest {
 
     @Test
     public void testGetMethodsWithDisallowedInspection() {
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public void exposedMethod() {}
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public void exposedMethod() {}
 
-            @TestJavascriptInterface
-            public void anotherExposedMethod() {}
-        };
+                    @TestJavascriptInterface
+                    public void anotherExposedMethod() {}
+                };
 
-        RemoteObject remoteObject = newRemoteObjectImpl(
-                target, TestJavascriptInterface.class, /* allowInspection */ false);
+        RemoteObject remoteObject =
+                newRemoteObjectImpl(
+                        target, TestJavascriptInterface.class, /* allowInspection= */ false);
 
         // getMethods should be empty.
         RemoteObject.GetMethods_Response getMethodsResponse =
@@ -308,12 +313,13 @@ public final class RemoteObjectImplTest {
     @Test
     public void testOverloadedGetClassPermitted() {
         final Runnable runnable = mock(Runnable.class);
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public void getClass(Object o) {
-                runnable.run();
-            }
-        };
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public void getClass(Object o) {
+                        runnable.run();
+                    }
+                };
         RemoteObject.InvokeMethod_Response response =
                 mock(RemoteObject.InvokeMethod_Response.class);
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
@@ -327,13 +333,14 @@ public final class RemoteObjectImplTest {
 
     @Test
     public void testMethodReturningArrayIgnored() {
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public int[] returnsIntArray() {
-                Assert.fail("Method returning array should not be called.");
-                return null;
-            }
-        };
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public int[] returnsIntArray() {
+                        Assert.fail("Method returning array should not be called.");
+                        return null;
+                    }
+                };
 
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.InvokeMethod_Response response =
@@ -345,12 +352,14 @@ public final class RemoteObjectImplTest {
 
     @Test
     public void testInvocationTargetException() {
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public void exceptionThrowingMethod() throws Exception {
-                throw new Exception("This exception is expected during test. Do not be alarmed.");
-            }
-        };
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public void exceptionThrowingMethod() throws Exception {
+                        throw new Exception(
+                                "This exception is expected during test. Do not be alarmed.");
+                    }
+                };
 
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.InvokeMethod_Response response =
@@ -372,62 +381,77 @@ public final class RemoteObjectImplTest {
         public void consumeByte(byte b) {
             mConsumer.accept(b);
         }
+
         @TestJavascriptInterface
         public void consumeChar(char c) {
             mConsumer.accept(c);
         }
+
         @TestJavascriptInterface
         public void consumeShort(short s) {
             mConsumer.accept(s);
         }
+
         @TestJavascriptInterface
         public void consumeInt(int i) {
             mConsumer.accept(i);
         }
+
         @TestJavascriptInterface
         public void consumeLong(long l) {
             mConsumer.accept(l);
         }
+
         @TestJavascriptInterface
         public void consumeFloat(float f) {
             mConsumer.accept(f);
         }
+
         @TestJavascriptInterface
         public void consumeDouble(double d) {
             mConsumer.accept(d);
         }
+
         @TestJavascriptInterface
         public void consumeBoolean(boolean b) {
             mConsumer.accept(b);
         }
+
         @TestJavascriptInterface
         public void consumeString(String s) {
             mConsumer.accept(s);
         }
+
         @TestJavascriptInterface
         public void consumeObjectArray(Object[] oa) {
             mConsumer.accept(oa);
         }
+
         @TestJavascriptInterface
         public void consumeBooleanArray(boolean[] ba) {
             mConsumer.accept(ba);
         }
+
         @TestJavascriptInterface
         public void consumeIntArray(int[] ia) {
             mConsumer.accept(ia);
         }
+
         @TestJavascriptInterface
         public void consumeFloatArray(float[] fa) {
             mConsumer.accept(fa);
         }
+
         @TestJavascriptInterface
         public void consumeDoubleArray(double[] da) {
             mConsumer.accept(da);
         }
+
         @TestJavascriptInterface
         public void consumeStringArray(String[] sa) {
             mConsumer.accept(sa);
         }
+
         @TestJavascriptInterface
         public void consumeObject(Object o) {
             mConsumer.accept(o);
@@ -454,28 +478,42 @@ public final class RemoteObjectImplTest {
                 "consumeShort", new RemoteInvocationArgument[] {numberArgument(32768)}, response);
         remoteObject.invokeMethod(
                 "consumeInt", new RemoteInvocationArgument[] {numberArgument(-1.5)}, response);
-        remoteObject.invokeMethod("consumeLong",
+        remoteObject.invokeMethod(
+                "consumeLong",
                 new RemoteInvocationArgument[] {numberArgument(Double.POSITIVE_INFINITY)},
                 response);
-        remoteObject.invokeMethod("consumeFloat",
-                new RemoteInvocationArgument[] {numberArgument(3.141592654)}, response);
-        remoteObject.invokeMethod("consumeDouble",
-                new RemoteInvocationArgument[] {numberArgument(Double.NaN)}, response);
+        remoteObject.invokeMethod(
+                "consumeFloat",
+                new RemoteInvocationArgument[] {numberArgument(3.141592654)},
+                response);
+        remoteObject.invokeMethod(
+                "consumeDouble",
+                new RemoteInvocationArgument[] {numberArgument(Double.NaN)},
+                response);
         remoteObject.invokeMethod(
                 "consumeBoolean", new RemoteInvocationArgument[] {numberArgument(1)}, response);
-        remoteObject.invokeMethod("consumeString",
-                new RemoteInvocationArgument[] {numberArgument(-1.66666666666)}, response);
-        remoteObject.invokeMethod("consumeString",
-                new RemoteInvocationArgument[] {numberArgument(Double.NaN)}, response);
-        remoteObject.invokeMethod("consumeString",
+        remoteObject.invokeMethod(
+                "consumeString",
+                new RemoteInvocationArgument[] {numberArgument(-1.66666666666)},
+                response);
+        remoteObject.invokeMethod(
+                "consumeString",
+                new RemoteInvocationArgument[] {numberArgument(Double.NaN)},
+                response);
+        remoteObject.invokeMethod(
+                "consumeString",
                 new RemoteInvocationArgument[] {numberArgument(Double.NEGATIVE_INFINITY)},
                 response);
         remoteObject.invokeMethod(
                 "consumeString", new RemoteInvocationArgument[] {numberArgument(-0.0)}, response);
-        remoteObject.invokeMethod("consumeString",
-                new RemoteInvocationArgument[] {numberArgument(123456789)}, response);
-        remoteObject.invokeMethod("consumeString",
-                new RemoteInvocationArgument[] {numberArgument(123000000.1)}, response);
+        remoteObject.invokeMethod(
+                "consumeString",
+                new RemoteInvocationArgument[] {numberArgument(123456789)},
+                response);
+        remoteObject.invokeMethod(
+                "consumeString",
+                new RemoteInvocationArgument[] {numberArgument(123000000.1)},
+                response);
         remoteObject.invokeMethod(
                 "consumeObjectArray", new RemoteInvocationArgument[] {numberArgument(6)}, response);
         remoteObject.invokeMethod(
@@ -526,8 +564,10 @@ public final class RemoteObjectImplTest {
                 "consumeString", new RemoteInvocationArgument[] {booleanArgument(true)}, response);
         remoteObject.invokeMethod(
                 "consumeString", new RemoteInvocationArgument[] {booleanArgument(false)}, response);
-        remoteObject.invokeMethod("consumeObjectArray",
-                new RemoteInvocationArgument[] {booleanArgument(true)}, response);
+        remoteObject.invokeMethod(
+                "consumeObjectArray",
+                new RemoteInvocationArgument[] {booleanArgument(true)},
+                response);
         remoteObject.invokeMethod(
                 "consumeObject", new RemoteInvocationArgument[] {booleanArgument(true)}, response);
 
@@ -565,18 +605,28 @@ public final class RemoteObjectImplTest {
                 "consumeLong", new RemoteInvocationArgument[] {stringArgument("hello")}, response);
         remoteObject.invokeMethod(
                 "consumeFloat", new RemoteInvocationArgument[] {stringArgument("hello")}, response);
-        remoteObject.invokeMethod("consumeDouble",
-                new RemoteInvocationArgument[] {stringArgument("hello")}, response);
-        remoteObject.invokeMethod("consumeString",
-                new RemoteInvocationArgument[] {stringArgument("hello")}, response);
-        remoteObject.invokeMethod("consumeString",
-                new RemoteInvocationArgument[] {
-                        stringArgument(stringWithNonAsciiCharacterAndUnpairedSurrogate)},
+        remoteObject.invokeMethod(
+                "consumeDouble",
+                new RemoteInvocationArgument[] {stringArgument("hello")},
                 response);
-        remoteObject.invokeMethod("consumeObjectArray",
-                new RemoteInvocationArgument[] {stringArgument("hello")}, response);
-        remoteObject.invokeMethod("consumeObject",
-                new RemoteInvocationArgument[] {stringArgument("hello")}, response);
+        remoteObject.invokeMethod(
+                "consumeString",
+                new RemoteInvocationArgument[] {stringArgument("hello")},
+                response);
+        remoteObject.invokeMethod(
+                "consumeString",
+                new RemoteInvocationArgument[] {
+                    stringArgument(stringWithNonAsciiCharacterAndUnpairedSurrogate)
+                },
+                response);
+        remoteObject.invokeMethod(
+                "consumeObjectArray",
+                new RemoteInvocationArgument[] {stringArgument("hello")},
+                response);
+        remoteObject.invokeMethod(
+                "consumeObject",
+                new RemoteInvocationArgument[] {stringArgument("hello")},
+                response);
 
         InOrder inOrder = inOrder(consumer);
         inOrder.verify(consumer).accept((byte) 0);
@@ -661,8 +711,13 @@ public final class RemoteObjectImplTest {
         RemoteObject.InvokeMethod_Response response =
                 mock(RemoteObject.InvokeMethod_Response.class);
         RemoteInvocationArgument args[] = {
-                arrayArgument(numberArgument(3.14159), booleanArgument(true),
-                        stringArgument("Hello"), arrayArgument(), undefinedArgument())};
+            arrayArgument(
+                    numberArgument(3.14159),
+                    booleanArgument(true),
+                    stringArgument("Hello"),
+                    arrayArgument(),
+                    undefinedArgument())
+        };
         remoteObject.invokeMethod("consumeByte", args, response);
         remoteObject.invokeMethod("consumeChar", args, response);
         remoteObject.invokeMethod("consumeShort", args, response);
@@ -699,8 +754,11 @@ public final class RemoteObjectImplTest {
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.InvokeMethod_Response response =
                 mock(RemoteObject.InvokeMethod_Response.class);
-        RemoteInvocationArgument args[] = {typedArrayArgument(RemoteArrayType.INT8_ARRAY,
-                BigBufferUtil.createBigBufferFromBytes(new byte[] {3, 2, 1, 0}))};
+        RemoteInvocationArgument args[] = {
+            typedArrayArgument(
+                    RemoteArrayType.INT8_ARRAY,
+                    BigBufferUtil.createBigBufferFromBytes(new byte[] {3, 2, 1, 0}))
+        };
         remoteObject.invokeMethod("consumeByte", args, response);
         remoteObject.invokeMethod("consumeChar", args, response);
         remoteObject.invokeMethod("consumeShort", args, response);
@@ -743,9 +801,12 @@ public final class RemoteObjectImplTest {
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.InvokeMethod_Response response =
                 mock(RemoteObject.InvokeMethod_Response.class);
-        RemoteInvocationArgument args[] = {typedArrayArgument(RemoteArrayType.FLOAT64_ARRAY,
-                BigBufferUtil.createBigBufferFromBytes(
-                        new byte[] {51, 51, 51, 51, 51, 51, 36, 64}))};
+        RemoteInvocationArgument args[] = {
+            typedArrayArgument(
+                    RemoteArrayType.FLOAT64_ARRAY,
+                    BigBufferUtil.createBigBufferFromBytes(
+                            new byte[] {51, 51, 51, 51, 51, 51, 36, 64}))
+        };
 
         remoteObject.invokeMethod("consumeByte", args, response);
         remoteObject.invokeMethod("consumeChar", args, response);
@@ -784,20 +845,23 @@ public final class RemoteObjectImplTest {
     @Test
     public void testArgumentConversionObjectId() {
         Object foo = new Object();
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public Object getFoo() {
-                return foo;
-            }
-            @TestJavascriptInterface
-            public boolean isFoo(Object object) {
-                return foo == object;
-            }
-            @TestJavascriptInterface
-            public int isNotFoo(int number) {
-                return number;
-            }
-        };
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public Object getFoo() {
+                        return foo;
+                    }
+
+                    @TestJavascriptInterface
+                    public boolean isFoo(Object object) {
+                        return foo == object;
+                    }
+
+                    @TestJavascriptInterface
+                    public int isNotFoo(int number) {
+                        return number;
+                    }
+                };
         when(mIdAllocator.getObjectId(foo, TestJavascriptInterface.class)).thenReturn(42);
         when(mIdAllocator.getObjectById(42)).thenReturn(foo);
 
@@ -822,20 +886,24 @@ public final class RemoteObjectImplTest {
     public void testObjectNonAssignableType() {
         class CustomType {}
         Object foo = new Object();
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public Object getFoo() {
-                return foo;
-            }
-            @TestJavascriptInterface
-            public boolean exposedNonAssignableTypeMethodWithBooleanObject(Boolean value) {
-                return true;
-            }
-            @TestJavascriptInterface
-            public boolean exposedNonAssignableTypeMethodWithCustomObject(CustomType custom) {
-                return true;
-            }
-        };
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public Object getFoo() {
+                        return foo;
+                    }
+
+                    @TestJavascriptInterface
+                    public boolean exposedNonAssignableTypeMethodWithBooleanObject(Boolean value) {
+                        return true;
+                    }
+
+                    @TestJavascriptInterface
+                    public boolean exposedNonAssignableTypeMethodWithCustomObject(
+                            CustomType custom) {
+                        return true;
+                    }
+                };
         when(mIdAllocator.getObjectId(foo, TestJavascriptInterface.class)).thenReturn(42);
         when(mIdAllocator.getObjectById(42)).thenReturn(foo);
 
@@ -843,10 +911,14 @@ public final class RemoteObjectImplTest {
         RemoteObject.InvokeMethod_Response response =
                 mock(RemoteObject.InvokeMethod_Response.class);
         remoteObject.invokeMethod("getFoo", new RemoteInvocationArgument[] {}, response);
-        remoteObject.invokeMethod("exposedNonAssignableTypeMethodWithBooleanObject",
-                new RemoteInvocationArgument[] {objectIdArgument(42)}, response);
-        remoteObject.invokeMethod("exposedNonAssignableTypeMethodWithCustomObject",
-                new RemoteInvocationArgument[] {objectIdArgument(42)}, response);
+        remoteObject.invokeMethod(
+                "exposedNonAssignableTypeMethodWithBooleanObject",
+                new RemoteInvocationArgument[] {objectIdArgument(42)},
+                response);
+        remoteObject.invokeMethod(
+                "exposedNonAssignableTypeMethodWithCustomObject",
+                new RemoteInvocationArgument[] {objectIdArgument(42)},
+                response);
 
         verify(response).call(resultIsObject(42));
         verify(response, times(2)).call(resultHasError(RemoteInvocationError.NON_ASSIGNABLE_TYPES));
@@ -854,10 +926,11 @@ public final class RemoteObjectImplTest {
 
     @Test
     public void testResultConversionVoid() {
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public void returnsVoid() {}
-        };
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public void returnsVoid() {}
+                };
 
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.InvokeMethod_Response response =
@@ -869,22 +942,23 @@ public final class RemoteObjectImplTest {
 
     @Test
     public void testConversionResultNumber() {
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public int returnsInt() {
-                return 42;
-            }
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public int returnsInt() {
+                        return 42;
+                    }
 
-            @TestJavascriptInterface
-            public float returnsFloat() {
-                return -1.5f;
-            }
+                    @TestJavascriptInterface
+                    public float returnsFloat() {
+                        return -1.5f;
+                    }
 
-            @TestJavascriptInterface
-            public char returnsChar() {
-                return '\ufeed';
-            }
-        };
+                    @TestJavascriptInterface
+                    public char returnsChar() {
+                        return '\ufeed';
+                    }
+                };
 
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.InvokeMethod_Response response =
@@ -900,17 +974,18 @@ public final class RemoteObjectImplTest {
 
     @Test
     public void testConversionResultBoolean() {
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public boolean returnsTrue() {
-                return true;
-            }
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public boolean returnsTrue() {
+                        return true;
+                    }
 
-            @TestJavascriptInterface
-            public boolean returnsFalse() {
-                return false;
-            }
-        };
+                    @TestJavascriptInterface
+                    public boolean returnsFalse() {
+                        return false;
+                    }
+                };
 
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.InvokeMethod_Response response =
@@ -926,22 +1001,23 @@ public final class RemoteObjectImplTest {
     @Test
     public void testConversionResultString() {
         final String stringWithNonAsciiCharacterAndUnpairedSurrogate = "caf\u00e9\ud800";
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public String returnsHello() {
-                return "Hello";
-            }
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public String returnsHello() {
+                        return "Hello";
+                    }
 
-            @TestJavascriptInterface
-            public String returnsExoticString() {
-                return stringWithNonAsciiCharacterAndUnpairedSurrogate;
-            }
+                    @TestJavascriptInterface
+                    public String returnsExoticString() {
+                        return stringWithNonAsciiCharacterAndUnpairedSurrogate;
+                    }
 
-            @TestJavascriptInterface
-            public String returnsNull() {
-                return null;
-            }
-        };
+                    @TestJavascriptInterface
+                    public String returnsNull() {
+                        return null;
+                    }
+                };
 
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.InvokeMethod_Response response =
@@ -959,17 +1035,18 @@ public final class RemoteObjectImplTest {
     @Test
     public void testConversionResultObject() {
         final Object foo = new Object();
-        Object target = new Object() {
-            @TestJavascriptInterface
-            public Object getFoo() {
-                return foo;
-            }
+        Object target =
+                new Object() {
+                    @TestJavascriptInterface
+                    public Object getFoo() {
+                        return foo;
+                    }
 
-            @TestJavascriptInterface
-            public Object getNull() {
-                return null;
-            }
-        };
+                    @TestJavascriptInterface
+                    public Object getNull() {
+                        return null;
+                    }
+                };
 
         when(mIdAllocator.getObjectId(foo, TestJavascriptInterface.class)).thenReturn(42);
 
@@ -992,35 +1069,53 @@ public final class RemoteObjectImplTest {
     }
 
     private RemoteInvocationResult resultIsUndefined() {
-        return and(resultIsOk(), ArgumentMatchers.argThat(result -> {
-            return result.value != null
-                    && result.value.which() == RemoteInvocationResultValue.Tag.SingletonValue
-                    && result.value.getSingletonValue() == SingletonJavaScriptValue.UNDEFINED;
-        }));
+        return and(
+                resultIsOk(),
+                ArgumentMatchers.argThat(
+                        result -> {
+                            return result.value != null
+                                    && result.value.which()
+                                            == RemoteInvocationResultValue.Tag.SingletonValue
+                                    && result.value.getSingletonValue()
+                                            == SingletonJavaScriptValue.UNDEFINED;
+                        }));
     }
 
     private RemoteInvocationResult resultIsNull() {
-        return and(resultIsOk(), ArgumentMatchers.argThat(result -> {
-            return result.value != null
-                    && result.value.which() == RemoteInvocationResultValue.Tag.SingletonValue
-                    && result.value.getSingletonValue() == SingletonJavaScriptValue.NULL;
-        }));
+        return and(
+                resultIsOk(),
+                ArgumentMatchers.argThat(
+                        result -> {
+                            return result.value != null
+                                    && result.value.which()
+                                            == RemoteInvocationResultValue.Tag.SingletonValue
+                                    && result.value.getSingletonValue()
+                                            == SingletonJavaScriptValue.NULL;
+                        }));
     }
 
     private RemoteInvocationResult resultIsNumber(final double numberValue) {
-        return and(resultIsOk(), ArgumentMatchers.argThat(result -> {
-            return result.value != null
-                    && result.value.which() == RemoteInvocationResultValue.Tag.NumberValue
-                    && result.value.getNumberValue() == numberValue;
-        }));
+        return and(
+                resultIsOk(),
+                ArgumentMatchers.argThat(
+                        result -> {
+                            return result.value != null
+                                    && result.value.which()
+                                            == RemoteInvocationResultValue.Tag.NumberValue
+                                    && result.value.getNumberValue() == numberValue;
+                        }));
     }
 
     private RemoteInvocationResult resultIsBoolean(final boolean booleanValue) {
-        return and(resultIsOk(), ArgumentMatchers.argThat(result -> {
-            return result.value != null
-                    && result.value.which() == RemoteInvocationResultValue.Tag.BooleanValue
-                    && result.value.getBooleanValue() == booleanValue;
-        }));
+        return and(
+                resultIsOk(),
+                ArgumentMatchers.argThat(
+                        result -> {
+                            return result.value != null
+                                    && result.value.which()
+                                            == RemoteInvocationResultValue.Tag.BooleanValue
+                                    && result.value.getBooleanValue() == booleanValue;
+                        }));
     }
 
     private RemoteInvocationResult resultIsString(String stringValue) {
@@ -1028,19 +1123,28 @@ public final class RemoteObjectImplTest {
         for (int i = 0; i < expectedData.length; i++) {
             expectedData[i] = (short) stringValue.charAt(i);
         }
-        return and(resultIsOk(), ArgumentMatchers.argThat(result -> {
-            return result.value != null
-                    && result.value.which() == RemoteInvocationResultValue.Tag.StringValue
-                    && Arrays.equals(result.value.getStringValue().data, expectedData);
-        }));
+        return and(
+                resultIsOk(),
+                ArgumentMatchers.argThat(
+                        result -> {
+                            return result.value != null
+                                    && result.value.which()
+                                            == RemoteInvocationResultValue.Tag.StringValue
+                                    && Arrays.equals(
+                                            result.value.getStringValue().data, expectedData);
+                        }));
     }
 
     private RemoteInvocationResult resultIsObject(final int objectId) {
-        return and(resultIsOk(), ArgumentMatchers.argThat(result -> {
-            return result.value != null
-                    && result.value.which() == RemoteInvocationResultValue.Tag.ObjectId
-                    && result.value.getObjectId() == objectId;
-        }));
+        return and(
+                resultIsOk(),
+                ArgumentMatchers.argThat(
+                        result -> {
+                            return result.value != null
+                                    && result.value.which()
+                                            == RemoteInvocationResultValue.Tag.ObjectId
+                                    && result.value.getObjectId() == objectId;
+                        }));
     }
 
     private RemoteInvocationArgument numberArgument(double numberValue) {

@@ -28,18 +28,13 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.ui.base.EventForwarder;
 
-/**
- * Unit tests for {@link WebContentsImpl}.
- */
+/** Unit tests for {@link WebContentsImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebContentsImplTest {
-    @Mock
-    private NavigationController mNavigationController;
-    @Mock
-    private WebContentsImpl.Natives mWebContentsJniMock;
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Mock private NavigationController mNavigationController;
+    @Mock private WebContentsImpl.Natives mWebContentsJniMock;
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private WebContentsImpl mWebContentsImpl;
     private final long mNativeWebContentsAndroid = 1;

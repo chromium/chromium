@@ -29,16 +29,13 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-/**
- * Tests for {@link CriteriaHelper}.
- */
+/** Tests for {@link CriteriaHelper}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class CriteriaHelperTest {
     private static final String ERROR_MESSAGE = "my special error message";
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @Rule public ExpectedException thrown = ExpectedException.none();
 
     @Test
     @MediumTest
@@ -104,9 +101,12 @@ public class CriteriaHelperTest {
     @MediumTest
     public void testThrow_Runnable_UiThread() {
         thrown.expect(AssertionError.class);
-        CriteriaHelper.pollUiThread(() -> {
-            throw new CriteriaNotSatisfiedException("");
-        }, 0, DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    throw new CriteriaNotSatisfiedException("");
+                },
+                0,
+                DEFAULT_POLLING_INTERVAL);
     }
 
     @Test
@@ -114,18 +114,24 @@ public class CriteriaHelperTest {
     @UiThreadTest
     public void testThrow_Runnable_UiThreadNested() {
         thrown.expect(AssertionError.class);
-        CriteriaHelper.pollUiThreadNested(() -> {
-            throw new CriteriaNotSatisfiedException("");
-        }, 0, DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThreadNested(
+                () -> {
+                    throw new CriteriaNotSatisfiedException("");
+                },
+                0,
+                DEFAULT_POLLING_INTERVAL);
     }
 
     @Test
     @MediumTest
     public void testThrow_Runnable_InstrumentationThread() {
         thrown.expect(AssertionError.class);
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            throw new CriteriaNotSatisfiedException("");
-        }, 0, DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    throw new CriteriaNotSatisfiedException("");
+                },
+                0,
+                DEFAULT_POLLING_INTERVAL);
     }
 
     @Test
@@ -154,9 +160,12 @@ public class CriteriaHelperTest {
     @MediumTest
     public void testMessage_Runnable_UiThread() {
         thrown.expectMessage(ERROR_MESSAGE);
-        CriteriaHelper.pollUiThread(() -> {
-            throw new CriteriaNotSatisfiedException(ERROR_MESSAGE);
-        }, 0, DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    throw new CriteriaNotSatisfiedException(ERROR_MESSAGE);
+                },
+                0,
+                DEFAULT_POLLING_INTERVAL);
     }
 
     @Test
@@ -164,18 +173,24 @@ public class CriteriaHelperTest {
     @UiThreadTest
     public void testMessage_Runnable_UiThreadNested() {
         thrown.expectMessage(ERROR_MESSAGE);
-        CriteriaHelper.pollUiThreadNested(() -> {
-            throw new CriteriaNotSatisfiedException(ERROR_MESSAGE);
-        }, 0, DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThreadNested(
+                () -> {
+                    throw new CriteriaNotSatisfiedException(ERROR_MESSAGE);
+                },
+                0,
+                DEFAULT_POLLING_INTERVAL);
     }
 
     @Test
     @MediumTest
     public void testMessage_Runnable_InstrumentationThread() {
         thrown.expectMessage(ERROR_MESSAGE);
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            throw new CriteriaNotSatisfiedException(ERROR_MESSAGE);
-        }, 0, DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    throw new CriteriaNotSatisfiedException(ERROR_MESSAGE);
+                },
+                0,
+                DEFAULT_POLLING_INTERVAL);
     }
 
     @Test
@@ -203,11 +218,15 @@ public class CriteriaHelperTest {
     @MediumTest
     public void testStack_Runnable_UiThread() {
         try {
-            CriteriaHelper.pollUiThread(() -> {
-                throw new CriteriaNotSatisfiedException("test");
-            }, 0, DEFAULT_POLLING_INTERVAL);
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        throw new CriteriaNotSatisfiedException("test");
+                    },
+                    0,
+                    DEFAULT_POLLING_INTERVAL);
         } catch (AssertionError e) {
-            assertThat(getStackTrace(e),
+            assertThat(
+                    getStackTrace(e),
                     containsString("CriteriaHelperTest.testStack_Runnable_UiThread("));
             return;
         }
@@ -219,11 +238,15 @@ public class CriteriaHelperTest {
     @UiThreadTest
     public void testStack_Runnable_UiThreadNested() {
         try {
-            CriteriaHelper.pollUiThreadNested(() -> {
-                throw new CriteriaNotSatisfiedException("test");
-            }, 0, DEFAULT_POLLING_INTERVAL);
+            CriteriaHelper.pollUiThreadNested(
+                    () -> {
+                        throw new CriteriaNotSatisfiedException("test");
+                    },
+                    0,
+                    DEFAULT_POLLING_INTERVAL);
         } catch (AssertionError e) {
-            assertThat(getStackTrace(e),
+            assertThat(
+                    getStackTrace(e),
                     containsString("CriteriaHelperTest.testStack_Runnable_UiThreadNested("));
             return;
         }
@@ -234,11 +257,15 @@ public class CriteriaHelperTest {
     @MediumTest
     public void testStack_Runnable_InstrumentationThread() {
         try {
-            CriteriaHelper.pollInstrumentationThread(() -> {
-                throw new CriteriaNotSatisfiedException("test");
-            }, 0, DEFAULT_POLLING_INTERVAL);
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> {
+                        throw new CriteriaNotSatisfiedException("test");
+                    },
+                    0,
+                    DEFAULT_POLLING_INTERVAL);
         } catch (AssertionError e) {
-            assertThat(getStackTrace(e),
+            assertThat(
+                    getStackTrace(e),
                     containsString("CriteriaHelperTest.testStack_Runnable_InstrumentationThread("));
             return;
         }
@@ -251,7 +278,8 @@ public class CriteriaHelperTest {
         try {
             CriteriaHelper.pollUiThread(() -> false, 0, DEFAULT_POLLING_INTERVAL);
         } catch (AssertionError e) {
-            assertThat(getStackTrace(e),
+            assertThat(
+                    getStackTrace(e),
                     containsString("CriteriaHelperTest.testStack_Callable_UiThread("));
             return;
         }
@@ -265,7 +293,8 @@ public class CriteriaHelperTest {
         try {
             CriteriaHelper.pollUiThreadNested(() -> false, 0, DEFAULT_POLLING_INTERVAL);
         } catch (AssertionError e) {
-            assertThat(getStackTrace(e),
+            assertThat(
+                    getStackTrace(e),
                     containsString("CriteriaHelperTest.testStack_Callable_UiThreadNested("));
             return;
         }
@@ -278,7 +307,8 @@ public class CriteriaHelperTest {
         try {
             CriteriaHelper.pollInstrumentationThread(() -> false, 0, DEFAULT_POLLING_INTERVAL);
         } catch (AssertionError e) {
-            assertThat(getStackTrace(e),
+            assertThat(
+                    getStackTrace(e),
                     containsString("CriteriaHelperTest.testStack_Callable_InstrumentationThread("));
             return;
         }

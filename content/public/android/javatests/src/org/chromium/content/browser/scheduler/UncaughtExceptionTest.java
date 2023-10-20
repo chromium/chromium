@@ -21,9 +21,7 @@ import org.chromium.content.app.ContentMain;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
-/**
- * Tests that uncaught exceptions propagate to the Java uncaught exception handler.
- */
+/** Tests that uncaught exceptions propagate to the Java uncaught exception handler. */
 @DoNotBatch(reason = "Does crazy things to the UI thread, not safe to batch.")
 @RunWith(ContentJUnit4ClassRunner.class)
 public class UncaughtExceptionTest {
@@ -34,21 +32,31 @@ public class UncaughtExceptionTest {
     public void testUncaughtException() throws Exception {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         PowerMonitor.createForTests();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> { ContentMain.start(/* startMinimalBrowser */ true); });
-        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-            mExceptionHelper.notifyCalled();
-            // Re-start the UI thread so test cleanup works.
-            Looper.loop();
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            ContentMain.start(/* startMinimalBrowser= */ true);
+                        });
+        Thread.setDefaultUncaughtExceptionHandler(
+                (thread, exception) -> {
+                    mExceptionHelper.notifyCalled();
+                    // Re-start the UI thread so test cleanup works.
+                    Looper.loop();
+                });
         // Slow task to ensure we queue up a few tasks at once.
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            try {
-                Thread.sleep(10);
-            } catch (Exception ex) {
-            }
-        });
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> { throw new RuntimeException(); });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    try {
+                        Thread.sleep(10);
+                    } catch (Exception ex) {
+                    }
+                });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    throw new RuntimeException();
+                });
         // If tasks are batched, this task will cause a JNI abort, which we don't want.
         PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {});
         mExceptionHelper.waitForFirst();

@@ -41,8 +41,8 @@ public class ScreenOrientationListenerTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
 
-    private static class OrientationChangeCallbackHelper
-            extends CallbackHelper implements DisplayAndroidObserver {
+    private static class OrientationChangeCallbackHelper extends CallbackHelper
+            implements DisplayAndroidObserver {
         private int mLastOrientation;
 
         @Override
@@ -67,11 +67,15 @@ public class ScreenOrientationListenerTest {
     public void setUp() throws Exception {
         mActivityTestRule.launchContentShellWithUrl("about:blank");
         mCallbackHelper = new OrientationChangeCallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDisplayAndroid =
-                    mActivityTestRule.getWebContents().getTopLevelNativeWindow().getDisplay();
-            mDisplayAndroid.addObserver(mCallbackHelper);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDisplayAndroid =
+                            mActivityTestRule
+                                    .getWebContents()
+                                    .getTopLevelNativeWindow()
+                                    .getDisplay();
+                    mDisplayAndroid.addObserver(mCallbackHelper);
+                });
 
         // Calculate device natural orientation, as mObserver.mOrientation
         // is difference between current and natural orientation in degrees.
@@ -83,12 +87,14 @@ public class ScreenOrientationListenerTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDisplayAndroid.removeObserver(mCallbackHelper);
-            mDisplayAndroid = null;
-            mActivityTestRule.getActivity().setRequestedOrientation(
-                    ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDisplayAndroid.removeObserver(mCallbackHelper);
+                    mDisplayAndroid = null;
+                    mActivityTestRule
+                            .getActivity()
+                            .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                });
 
         mCallbackHelper = null;
     }
@@ -141,12 +147,13 @@ public class ScreenOrientationListenerTest {
     }
 
     private int getCurrentRotation() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return mDisplayAndroid.getRotation();
-            }
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                new Callable<Integer>() {
+                    @Override
+                    public Integer call() {
+                        return mDisplayAndroid.getRotation();
+                    }
+                });
     }
 
     // Returns the rotation observed.
@@ -157,7 +164,9 @@ public class ScreenOrientationListenerTest {
 
         int callCount = mCallbackHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivityTestRule.getActivity().setRequestedOrientation(orientation); });
+                () -> {
+                    mActivityTestRule.getActivity().setRequestedOrientation(orientation);
+                });
         mCallbackHelper.waitForCallback(callCount);
         return mCallbackHelper.getLastRotation();
     }
@@ -231,11 +240,13 @@ public class ScreenOrientationListenerTest {
         if (expectedRotation == currentRotation) return expectedRotation;
 
         int callCount = mCallbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ScreenOrientationProvider.getInstance().lockOrientation(
-                    mActivityTestRule.getWebContents().getTopLevelNativeWindow(),
-                    (byte) orientationValue);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ScreenOrientationProvider.getInstance()
+                            .lockOrientation(
+                                    mActivityTestRule.getWebContents().getTopLevelNativeWindow(),
+                                    (byte) orientationValue);
+                });
         mCallbackHelper.waitForCallback(callCount);
         return mCallbackHelper.getLastRotation();
     }

@@ -40,8 +40,7 @@ import org.chromium.content.browser.JavaBridgeActivityTestRule.Controller;
 public class JavaBridgeArrayCoercionTest {
     private static final double ASSERTION_DELTA = 0;
 
-    @Rule
-    public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
+    @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 
     private static class TestObject extends Controller {
         private final Object mObjectInstance;
@@ -68,6 +67,7 @@ public class JavaBridgeArrayCoercionTest {
         public Object getObjectInstance() {
             return mObjectInstance;
         }
+
         @JavascriptInterface
         public CustomType getCustomTypeInstance() {
             return mCustomTypeInstance;
@@ -78,51 +78,61 @@ public class JavaBridgeArrayCoercionTest {
             mBooleanArray = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setByteArray(byte[] x) {
             mByteArray = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setCharArray(char[] x) {
             mCharArray = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setShortArray(short[] x) {
             mShortArray = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setIntArray(int[] x) {
             mIntArray = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setLongArray(long[] x) {
             mLongArray = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setFloatArray(float[] x) {
             mFloatArray = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setDoubleArray(double[] x) {
             mDoubleArray = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setStringArray(String[] x) {
             mStringArray = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setObjectArray(Object[] x) {
             mObjectArray = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setCustomTypeArray(CustomType[] x) {
             mCustomTypeArray = x;
@@ -133,42 +143,52 @@ public class JavaBridgeArrayCoercionTest {
             waitForResult();
             return mBooleanArray;
         }
+
         public synchronized byte[] waitForByteArray() {
             waitForResult();
             return mByteArray;
         }
+
         public synchronized char[] waitForCharArray() {
             waitForResult();
             return mCharArray;
         }
+
         public synchronized short[] waitForShortArray() {
             waitForResult();
             return mShortArray;
         }
+
         public synchronized int[] waitForIntArray() {
             waitForResult();
             return mIntArray;
         }
+
         public synchronized long[] waitForLongArray() {
             waitForResult();
             return mLongArray;
         }
+
         public synchronized float[] waitForFloatArray() {
             waitForResult();
             return mFloatArray;
         }
+
         public synchronized double[] waitForDoubleArray() {
             waitForResult();
             return mDoubleArray;
         }
+
         public synchronized String[] waitForStringArray() {
             waitForResult();
             return mStringArray;
         }
+
         public synchronized Object[] waitForObjectArray() {
             waitForResult();
             return mObjectArray;
         }
+
         public synchronized CustomType[] waitForCustomTypeArray() {
             waitForResult();
             return mCustomTypeArray;
@@ -176,8 +196,7 @@ public class JavaBridgeArrayCoercionTest {
     }
 
     // Two custom types used when testing passing objects.
-    private static class CustomType {
-    }
+    private static class CustomType {}
 
     @UseMethodParameterBefore(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void setupMojoTest(boolean useMojo) {
@@ -1092,8 +1111,10 @@ public class JavaBridgeArrayCoercionTest {
         Assert.assertEquals(4294967295L, mTestObject.waitForLongArray()[0]);
 
         mActivityTestRule.executeJavaScript("testObject.setFloatArray(uint32_array);");
-        Assert.assertEquals((Long.valueOf(4294967295L)).floatValue(),
-                mTestObject.waitForFloatArray()[0], ASSERTION_DELTA);
+        Assert.assertEquals(
+                (Long.valueOf(4294967295L)).floatValue(),
+                mTestObject.waitForFloatArray()[0],
+                ASSERTION_DELTA);
 
         mActivityTestRule.executeJavaScript("testObject.setDoubleArray(uint32_array);");
         Assert.assertEquals(4294967295.0, mTestObject.waitForDoubleArray()[0], ASSERTION_DELTA);

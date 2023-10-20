@@ -19,9 +19,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Test suite to ensure that |AccessibilityEventDispatcher| behaves appropriately.
- */
+/** Test suite to ensure that |AccessibilityEventDispatcher| behaves appropriately. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class AccessibilityEventDispatcherTest {
     private AccessibilityEventDispatcher mDispatcher;
@@ -44,32 +42,35 @@ public class AccessibilityEventDispatcherTest {
         mEventDelays.put(3, 5000);
 
         // Create a dispatcher, and track which callback methods have been called with booleans
-        mDispatcher = new AccessibilityEventDispatcher(new AccessibilityEventDispatcher.Client() {
-            @Override
-            public void postRunnable(Runnable toPost, long delayInMilliseconds) {
-                mRunnablePosted = true;
-            }
+        mDispatcher =
+                new AccessibilityEventDispatcher(
+                        new AccessibilityEventDispatcher.Client() {
+                            @Override
+                            public void postRunnable(Runnable toPost, long delayInMilliseconds) {
+                                mRunnablePosted = true;
+                            }
 
-            @Override
-            public void removeRunnable(Runnable toRemove) {
-                mRunnableRemoved = true;
-            }
+                            @Override
+                            public void removeRunnable(Runnable toRemove) {
+                                mRunnableRemoved = true;
+                            }
 
-            @Override
-            public boolean dispatchEvent(int virtualViewId, int eventType) {
-                mEventDispatched = true;
-                return true;
-            }
-        }, mEventDelays, mViewIndependentEvents, new HashSet<Integer>(Arrays.asList(1, 2, 3)));
+                            @Override
+                            public boolean dispatchEvent(int virtualViewId, int eventType) {
+                                mEventDispatched = true;
+                                return true;
+                            }
+                        },
+                        mEventDelays,
+                        mViewIndependentEvents,
+                        new HashSet<Integer>(Arrays.asList(1, 2, 3)));
 
         mRunnablePosted = false;
         mRunnableRemoved = false;
         mEventDispatched = false;
     }
 
-    /**
-     * Test enqueue properly ignores events not being throttled and acts like a pass-through.
-     */
+    /** Test enqueue properly ignores events not being throttled and acts like a pass-through. */
     @Test
     @SmallTest
     public void testEnqueue_notThrottle() {
@@ -155,9 +156,7 @@ public class AccessibilityEventDispatcherTest {
         Assert.assertTrue(mRunnableRemoved);
     }
 
-    /**
-     * Test enqueue will drop events that are not part of the relevant events type set.
-     */
+    /** Test enqueue will drop events that are not part of the relevant events type set. */
     @Test
     @SmallTest
     public void testEnqueue_relevantEventsCheck() {
@@ -184,9 +183,7 @@ public class AccessibilityEventDispatcherTest {
         Assert.assertFalse(mRunnableRemoved);
     }
 
-    /**
-     * Test the creation of uuid for view independent throttling.
-     */
+    /** Test the creation of uuid for view independent throttling. */
     @Test
     @SmallTest
     public void testUuid_creation() {

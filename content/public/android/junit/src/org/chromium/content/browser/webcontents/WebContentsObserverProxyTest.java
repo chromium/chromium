@@ -23,20 +23,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.content_public.browser.WebContentsObserver;
 
-/**
- * Unit tests for {@link WebContentsObserverProxy}.
- */
+/** Unit tests for {@link WebContentsObserverProxy}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebContentsObserverProxyTest {
-    @Mock
-    private WebContentsObserver mWebContentsObserver;
-    @Mock
-    private WebContentsObserver mWebContentsObserver2;
-    @Mock
-    private WebContentsObserverProxy.Natives mWebContentsObserverProxyJni;
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Mock private WebContentsObserver mWebContentsObserver;
+    @Mock private WebContentsObserver mWebContentsObserver2;
+    @Mock private WebContentsObserverProxy.Natives mWebContentsObserverProxyJni;
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private WebContentsImpl mWebContentsImpl;
     private final long mNativeWebContentsAndroid = 1;
@@ -54,13 +48,14 @@ public class WebContentsObserverProxyTest {
         final WebContentsObserverProxy proxy = new WebContentsObserverProxy(null);
         proxy.addObserver(mWebContentsObserver);
         proxy.addObserver(mWebContentsObserver2);
-        Mockito.doAnswer(new Answer<Void>() {
-                   @Override
-                   public Void answer(InvocationOnMock invocation) {
-                       proxy.navigationEntriesChanged();
-                       return null;
-                   }
-               })
+        Mockito.doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                proxy.navigationEntriesChanged();
+                                return null;
+                            }
+                        })
                 .when(mWebContentsObserver)
                 .navigationEntriesDeleted();
         proxy.navigationEntriesDeleted();

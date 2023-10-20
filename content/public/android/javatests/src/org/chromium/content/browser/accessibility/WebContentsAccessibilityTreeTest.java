@@ -29,9 +29,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 
-/**
- * Tests for WebContentsAccessibilityImpl integration with accessibility services.
- */
+/** Tests for WebContentsAccessibilityImpl integration with accessibility services. */
 @RunWith(ContentJUnit4ClassRunner.class)
 @SuppressLint("VisibleForTests")
 @DoNotBatch(reason = "Flaky tests")
@@ -65,8 +63,10 @@ public class WebContentsAccessibilityTreeTest {
         mActivityTestRule.setupTestFromFile(expectationFilePath + inputFile);
 
         // Create an extra string to print to logs along with potential error for rebase tool.
-        String errorStringPrefix = String.format("\n\nTesting: %s%s\nExpected output: %s%s",
-                expectationFilePath, inputFile, expectationFilePath, expectationFile);
+        String errorStringPrefix =
+                String.format(
+                        "\n\nTesting: %s%s\nExpected output: %s%s",
+                        expectationFilePath, inputFile, expectationFilePath, expectationFile);
 
         // Generate full AccessibilityNodeInfo tree and verify results.
         assertResults(
@@ -147,9 +147,16 @@ public class WebContentsAccessibilityTreeTest {
         String expectedResults = mActivityTestRule.readExpectationFile(expectationFile).trim();
 
         Assert.assertNotNull(RESULTS_NULL, actualResults);
-        Assert.assertEquals(NODE_ERROR + errorPrefix + "\n\nExpected\n--------\n" + expectedResults
-                        + "\n\nActual\n------\n" + actualResults + "\n<-- End-of-file -->\n\n\n",
-                expectedResults, actualResults);
+        Assert.assertEquals(
+                NODE_ERROR
+                        + errorPrefix
+                        + "\n\nExpected\n--------\n"
+                        + expectedResults
+                        + "\n\nActual\n------\n"
+                        + actualResults
+                        + "\n<-- End-of-file -->\n\n\n",
+                expectedResults,
+                actualResults);
     }
 
     /**
@@ -288,6 +295,7 @@ public class WebContentsAccessibilityTreeTest {
     public void test_ariaBrailleLabel() {
         performAriaTest("aria-braillelabel.html");
     }
+
     @Test
     @SmallTest
     public void test_ariaBrailleRoleDescription() {

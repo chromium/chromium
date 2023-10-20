@@ -22,9 +22,7 @@ import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for the Wake Lock API.
- */
+/** Integration tests for the Wake Lock API. */
 @RunWith(ContentJUnit4ClassRunner.class)
 @CommandLineFlags.Add({"enable-experimental-web-platform-features"})
 public class WakeLockTest {
@@ -54,17 +52,21 @@ public class WakeLockTest {
     @SmallTest
     @Feature({"WakeLock"})
     public void testScreenLock() throws Exception {
-        Assert.assertFalse(mActivityTestRule.getActivity()
-                                   .getActiveShell()
-                                   .getContentView()
-                                   .getKeepScreenOn());
+        Assert.assertFalse(
+                mActivityTestRule
+                        .getActivity()
+                        .getActiveShell()
+                        .getContentView()
+                        .getKeepScreenOn());
 
         getWakeLock("screen");
 
-        CriteriaHelper.pollInstrumentationThread(()
-                                                         -> mActivityTestRule.getActivity()
-                                                                    .getActiveShell()
-                                                                    .getContentView()
-                                                                    .getKeepScreenOn());
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        mActivityTestRule
+                                .getActivity()
+                                .getActiveShell()
+                                .getContentView()
+                                .getKeepScreenOn());
     }
 }

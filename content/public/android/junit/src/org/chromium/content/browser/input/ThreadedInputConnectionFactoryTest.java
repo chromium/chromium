@@ -46,16 +46,12 @@ import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
 import java.util.concurrent.Callable;
 
-/**
- * Unit tests for {@ThreadedInputConnectionFactory}.
- */
+/** Unit tests for {@ThreadedInputConnectionFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ContentFeatureList.OPTIMIZE_IMM_HIDE_CALLS})
 public class ThreadedInputConnectionFactoryTest {
-    /**
-     * A testable version of ThreadedInputConnectionFactory.
-     */
+    /** A testable version of ThreadedInputConnectionFactory. */
     private class TestFactory extends ThreadedInputConnectionFactory {
 
         private boolean mSucceeded;
@@ -67,8 +63,8 @@ public class ThreadedInputConnectionFactoryTest {
         }
 
         @Override
-        protected ThreadedInputConnectionProxyView createProxyView(Handler handler,
-                View containerView) {
+        protected ThreadedInputConnectionProxyView createProxyView(
+                Handler handler, View containerView) {
             return mProxyView;
         }
 
@@ -109,18 +105,12 @@ public class ThreadedInputConnectionFactoryTest {
         }
     }
 
-    @Mock
-    private ImeAdapterImpl mImeAdapter;
-    @Mock
-    private View mContainerView;
-    @Mock
-    private ThreadedInputConnectionProxyView mProxyView;
-    @Mock
-    private InputMethodManager mInputMethodManager;
-    @Mock
-    private Context mContext;
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Mock private ImeAdapterImpl mImeAdapter;
+    @Mock private View mContainerView;
+    @Mock private ThreadedInputConnectionProxyView mProxyView;
+    @Mock private InputMethodManager mInputMethodManager;
+    @Mock private Context mContext;
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private EditorInfo mEditorInfo;
     private Handler mImeHandler;
@@ -162,56 +152,74 @@ public class ThreadedInputConnectionFactoryTest {
         when(mProxyView.getContext()).thenReturn(mContext);
         when(mProxyView.requestFocus()).thenReturn(true);
         when(mProxyView.getHandler()).thenReturn(mImeHandler);
-        final Callable<InputConnection> callable = new Callable<InputConnection>() {
-            @Override
-            public InputConnection call() {
-                return mFactory.initializeAndGet(
-                        mContainerView, mImeAdapter, 1, 0, 0, 0, 0, 0, "", mEditorInfo);
-            }
-        };
+        final Callable<InputConnection> callable =
+                new Callable<InputConnection>() {
+                    @Override
+                    public InputConnection call() {
+                        return mFactory.initializeAndGet(
+                                mContainerView, mImeAdapter, 1, 0, 0, 0, 0, 0, "", mEditorInfo);
+                    }
+                };
         when(mProxyView.onCreateInputConnection(any(EditorInfo.class)))
-                .thenAnswer((InvocationOnMock invocation) -> {
-                    mFactory.setTriggerDelayedOnCreateInputConnection(false);
-                    InputConnection connection =
-                            ThreadUtils.runOnUiThreadBlockingNoException(callable);
-                    mFactory.setTriggerDelayedOnCreateInputConnection(true);
-                    return connection;
-                });
+                .thenAnswer(
+                        (InvocationOnMock invocation) -> {
+                            mFactory.setTriggerDelayedOnCreateInputConnection(false);
+                            InputConnection connection =
+                                    ThreadUtils.runOnUiThreadBlockingNoException(callable);
+                            mFactory.setTriggerDelayedOnCreateInputConnection(true);
+                            return connection;
+                        });
 
-        when(mInputMethodManager.isActive(mContainerView)).thenAnswer(new Answer<Boolean>() {
-            private int mCount;
+        when(mInputMethodManager.isActive(mContainerView))
+                .thenAnswer(
+                        new Answer<Boolean>() {
+                            private int mCount;
 
-            @Override
-            public Boolean answer(InvocationOnMock invocation) {
-                mCount++;
-                // To simplify IMM's behavior, let's say that it succeeds input method activation
-                // only when the view has a window focus.
-                if (!mHasWindowFocus) return false;
-                if (mCount == 1) {
-                    mInputConnection = mProxyView.onCreateInputConnection(mEditorInfo);
-                    return false;
-                }
-                return mHasWindowFocus;
-            }
-        });
-        when(mInputMethodManager.isActive(mProxyView)).thenAnswer(new Answer<Boolean>() {
-            @Override
-            public Boolean answer(InvocationOnMock invocation) {
-                return mInputConnection != null;
-            }
-        });
+                            @Override
+                            public Boolean answer(InvocationOnMock invocation) {
+                                mCount++;
+                                // To simplify IMM's behavior, let's say that it succeeds input
+                                // method activation only when the view has a window focus.
+                                if (!mHasWindowFocus) return false;
+                                if (mCount == 1) {
+                                    mInputConnection =
+                                            mProxyView.onCreateInputConnection(mEditorInfo);
+                                    return false;
+                                }
+                                return mHasWindowFocus;
+                            }
+                        });
+        when(mInputMethodManager.isActive(mProxyView))
+                .thenAnswer(
+                        new Answer<Boolean>() {
+                            @Override
+                            public Boolean answer(InvocationOnMock invocation) {
+                                return mInputConnection != null;
+                            }
+                        });
 
         mInOrder = inOrder(mImeAdapter, mInputMethodManager, mContainerView, mProxyView);
     }
 
     private void activateInput() {
-        mUiHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                assertNull(mFactory.initializeAndGet(
-                        mContainerView, mImeAdapter, 1, 0, 0, 0, 0, 0, "", mEditorInfo));
-            }
-        });
+        mUiHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        assertNull(
+                                mFactory.initializeAndGet(
+                                        mContainerView,
+                                        mImeAdapter,
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        "",
+                                        mEditorInfo));
+                    }
+                });
     }
 
     private void runOneUiTask() {
