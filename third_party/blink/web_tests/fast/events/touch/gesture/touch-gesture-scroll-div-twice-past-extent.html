@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/gesture-util.js"></script>
+<style type="text/css">
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+#greenbox {
+  width: 100px;
+  height: 100px;
+  background: green;
+  padding: 0px;
+  margin: 0px;
+}
+
+#redbox {
+  width: 100px;
+  height: 100px;
+  background: red;
+  padding: 0px;
+  margin: 0px;
+}
+
+#bluebox {
+  width: 100px;
+  height: 100px;
+  background: blue;
+  padding: 0px;
+  margin: 0px;
+}
+
+#yellowbox {
+  width: 100px;
+  height: 100px;
+  background: yellow;
+  padding: 0px;
+  margin: 0px;
+}
+
+#innerdiv {
+  width: 200px;
+  height: 200px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+#outerdiv {
+  width: 250px;
+  height: 250px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+#outermostdiv {
+  width: 300px;
+  height: 300px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+td {
+  padding: 0px;
+}
+
+</style>
+
+<body style="margin:0">
+<div id="outermostdiv">
+  <table border="0" cellspacing="0px" >
+    <tr><td>
+      <div id="outerdiv">
+        <table border="0" cellspacing="0px" >
+          <tr><td>
+            <div id="innerdiv">
+              <table border="0" cellspacing="0px" >
+                <tr><td><div id="greenbox"></div></td></tr>
+                <tr><td><div id="redbox"></div></td></tr>
+                <tr><td><div id="greenbox"></div></td></tr>
+                <tr><td><div id="redbox"></div></td></tr>
+              </table>
+            </div>
+          </td></tr>
+          <tr><td>
+            <div id="bluebox"></div>
+          </td></tr>
+        </table>
+      </div>
+    </td></tr>
+    <tr><td>
+      <div id="yellowbox"></div>
+    </td></tr>
+  </table>
+</div>
+</body>
+
+<script type="text/javascript">
+var touchtarget;
+var expectedGesturesTotal = 2;
+var gesturesOccurred = 0;
+var scrollAmountX = [0, 0];
+var scrollAmountY = [0, 0];
+var scrolledElement = document.getElementById("outermostdiv");
+var scrollEventsOccurred = 0;
+var expectedScrollEventsOccurred = 1;
+
+var x =10;
+var y = 72;
+function firstGestureScroll() {
+  return smoothScroll(230, x, y, GestureSourceType.TOUCH_INPUT, "down",
+      SPEED_INSTANT);
+}
+
+function secondGestureScroll() {
+  x = 12;
+  y = 40;
+  return smoothScroll(45, x, y, GestureSourceType.TOUCH_INPUT, "down",
+      SPEED_INSTANT);
+}
+
+function innerDivScrollTop() {
+  return document.getElementById('innerdiv').scrollTop;
+}
+
+promise_test (async () => {
+  touchtarget = document.getElementById("innerdiv");
+  touchtarget.addEventListener("scroll", recordScroll);
+
+  await firstGestureScroll();
+  await conditionHolds(() => { return notScrolled(); });
+  await secondGestureScroll();
+  // wait for the inner to fully scroll, then wait for 100 rafs to make sure
+  // that the rest of the delta does not propagate to the outer most div.
+  await waitForAnimationEnd(innerDivScrollTop, 200, 20);
+  await conditionHolds(() => { return notScrolled(); });
+  assert_equals(scrollEventsOccurred, expectedScrollEventsOccurred);
+
+}, 'This tests that a gesture scroll isn\'t propagated from an inner div to ' +
+   'an outer div when the scrolled divs have no remaining scroll offset.');
+</script>
