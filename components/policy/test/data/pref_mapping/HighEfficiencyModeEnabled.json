@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "performance_tuning.high_efficiency_mode.state": {
+            "default_value": 0,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "HighEfficiencyModeEnabled": true
+        },
+        "prefs": {
+          "performance_tuning.high_efficiency_mode.state": {
+            "location": "local_state",
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "HighEfficiencyModeEnabled": false
+        },
+        "prefs": {
+          "performance_tuning.high_efficiency_mode.state": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      }
+    ]
+  }
+]

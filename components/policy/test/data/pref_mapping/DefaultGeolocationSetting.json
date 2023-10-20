@@ -1,0 +1,46 @@
+[
+  {
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DefaultGeolocationSetting": 1
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.geolocation": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultGeolocationSetting": 2
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.geolocation": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultGeolocationSetting": 3
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.geolocation": {
+            "value": 3
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "arc.status_reporting_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ReportArcStatusEnabled": false
+        },
+        "prefs": {
+          "arc.status_reporting_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ReportArcStatusEnabled": true
+        },
+        "prefs": {
+          "arc.status_reporting_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

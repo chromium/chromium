@@ -1,0 +1,34 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_website_telemetry": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple list value.",
+        "policies": {
+          "ReportWebsiteTelemetry": [
+            "usage"
+          ]
+        },
+        "prefs": {
+          "reporting.report_website_telemetry": {
+            "value": [
+              "usage"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

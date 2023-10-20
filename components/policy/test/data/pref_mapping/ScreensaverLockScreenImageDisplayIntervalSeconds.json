@@ -1,0 +1,30 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.ambient.managed_screensaver.image_display_interval_seconds": {
+            "default_value": 60,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "ScreensaverLockScreenImageDisplayIntervalSeconds": 128
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.image_display_interval_seconds": {
+            "location": "user_profile",
+            "value": 128
+          }
+        }
+      }
+    ]
+  }
+]

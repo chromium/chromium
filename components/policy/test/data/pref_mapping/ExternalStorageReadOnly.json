@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "hardware.external_storage_read_only": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExternalStorageReadOnly": false
+        },
+        "prefs": {
+          "hardware.external_storage_read_only": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExternalStorageReadOnly": true
+        },
+        "prefs": {
+          "hardware.external_storage_read_only": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

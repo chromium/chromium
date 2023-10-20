@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "access_control_allow_methods_in_cors_preflight_spec_conformant": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "AccessControlAllowMethodsInCORSPreflightSpecConformant": true
+        },
+        "prefs": {
+          "access_control_allow_methods_in_cors_preflight_spec_conformant": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "AccessControlAllowMethodsInCORSPreflightSpecConformant": false
+        },
+        "prefs": {
+          "access_control_allow_methods_in_cors_preflight_spec_conformant": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

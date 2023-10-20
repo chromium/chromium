@@ -1,0 +1,30 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "saml.UrlParameterToAutofillSAMLUsername": {
+            "default_value": "",
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "DeviceAutofillSAMLUsername": "login_hint"
+        },
+        "prefs": {
+          "saml.UrlParameterToAutofillSAMLUsername": {
+            "location": "local_state",
+            "value": "login_hint"
+          }
+        }
+      }
+    ]
+  }
+]

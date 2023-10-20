@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SendMouseEventsDisabledFormControlsEnabled": true
+        },
+        "prefs": {
+          "policy.send_mouse_events_disabled_form_controls_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SendMouseEventsDisabledFormControlsEnabled": false
+        },
+        "prefs": {
+          "policy.send_mouse_events_disabled_form_controls_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "policy.send_mouse_events_disabled_form_controls_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  }
+]

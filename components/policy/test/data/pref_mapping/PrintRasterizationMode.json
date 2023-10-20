@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintRasterizationMode": 1
+        },
+        "prefs": {
+          "printing.rasterization_mode": {}
+        }
+      }
+    ]
+  }
+]

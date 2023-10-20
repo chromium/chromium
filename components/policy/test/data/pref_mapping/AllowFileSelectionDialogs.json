@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "AllowFileSelectionDialogs": false
+        },
+        "prefs": {
+          "download.prompt_for_download": {
+            "check_for_recommended": false,
+            "value": false
+          },
+          "select_file_dialogs.allowed": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "AllowFileSelectionDialogs": true
+        },
+        "prefs": {
+          "download.prompt_for_download": {
+            "check_for_recommended": false,
+            "default_value": false
+          },
+          "select_file_dialogs.allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

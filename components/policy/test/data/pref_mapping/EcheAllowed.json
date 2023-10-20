@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "eche.allowed": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "EcheAllowed": false
+        },
+        "prefs": {
+          "eche.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "EcheAllowed": true
+        },
+        "prefs": {
+          "eche.allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

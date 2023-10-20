@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "policies": {},
+        "prefs": {
+          "user_avatar_customization_selectors_enabled": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Check true policy value",
+        "policies": {
+          "UserAvatarCustomizationSelectorsEnabled": true
+        },
+        "prefs": {
+          "user_avatar_customization_selectors_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check false policy value",
+        "policies": {
+          "UserAvatarCustomizationSelectorsEnabled": false
+        },
+        "prefs": {
+          "user_avatar_customization_selectors_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

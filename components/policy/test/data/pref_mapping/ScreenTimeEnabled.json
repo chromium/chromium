@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.screen_time": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ScreenTimeEnabled": true
+        },
+        "prefs": {
+          "policy.screen_time": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ScreenTimeEnabled": false
+        },
+        "prefs": {
+          "policy.screen_time": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

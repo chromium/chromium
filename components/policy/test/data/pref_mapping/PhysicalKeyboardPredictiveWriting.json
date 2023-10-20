@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PhysicalKeyboardPredictiveWriting": true
+        },
+        "prefs": {
+          "settings.ime.managed.physical_keyboard.predictive_writing_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "PhysicalKeyboardPredictiveWriting": false
+        },
+        "prefs": {
+          "settings.ime.managed.physical_keyboard.predictive_writing_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

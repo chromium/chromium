@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintingDuplexDefault": "long-edge"
+        },
+        "prefs": {
+          "printing.duplex_default": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "os": [
+      "win",
+      "linux"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NetworkServiceSandboxEnabled": false
+        },
+        "prefs": {
+          "net.network_service_sandbox": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "NetworkServiceSandboxEnabled": true
+        },
+        "prefs": {
+          "net.network_service_sandbox": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

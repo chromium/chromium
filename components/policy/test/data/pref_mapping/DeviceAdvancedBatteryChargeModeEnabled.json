@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceAdvancedBatteryChargeModeEnabled": true
+        },
+        "prefs": {
+          "ash.power.advanced_battery_charge_mode_enabled": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

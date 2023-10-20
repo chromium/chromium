@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "CACertificateManagementAllowed": 2
+        },
+        "prefs": {
+          "ca_certificate_management_allowed": {}
+        }
+      }
+    ]
+  }
+]

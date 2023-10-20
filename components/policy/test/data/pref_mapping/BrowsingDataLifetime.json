@@ -1,0 +1,78 @@
+[
+  {
+    "os": [
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "linux",
+      "mac",
+      "win",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser.clear_data.browsing_data_lifetime": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value when SyncDisabled is true.",
+        "policies": {
+          "BrowsingDataLifetime": [
+            {
+              "data_types": [
+                "browsing_history"
+              ],
+              "time_to_live_in_hours": 2
+            }
+          ],
+          "SyncDisabled": true
+        },
+        "prefs": {
+          "browser.clear_data.browsing_data_lifetime": {
+            "value": [
+              {
+                "data_types": [
+                  "browsing_history"
+                ],
+                "time_to_live_in_hours": 2
+              }
+            ]
+          }
+        }
+      },
+      {
+        "note": "Simple value when SyncDisabled is false.",
+        "policies": {
+          "BrowsingDataLifetime": [
+            {
+              "data_types": [
+                "autofill"
+              ],
+              "time_to_live_in_hours": 2
+            }
+          ],
+          "SyncDisabled": false
+        },
+        "prefs": {
+          "browser.clear_data.browsing_data_lifetime": {
+            "value": [
+              {
+                "data_types": [
+                  "autofill"
+                ],
+                "time_to_live_in_hours": 2
+              }
+            ]
+          },
+          "sync.autofill": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

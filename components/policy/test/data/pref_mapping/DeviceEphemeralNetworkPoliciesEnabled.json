@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value test.",
+        "prefs": {
+          "ash.network.device_ephemeral_network_policies_enabled": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceEphemeralNetworkPoliciesEnabled": true
+        },
+        "prefs": {
+          "ash.network.device_ephemeral_network_policies_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceEphemeralNetworkPoliciesEnabled": false
+        },
+        "prefs": {
+          "ash.network.device_ephemeral_network_policies_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

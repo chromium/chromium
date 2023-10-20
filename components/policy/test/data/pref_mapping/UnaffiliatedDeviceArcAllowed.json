@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policy set).",
+        "policies": {},
+        "prefs": {
+          "arc.unaffiliated.device.allowed": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "UnaffiliatedDeviceArcAllowed": false
+        },
+        "prefs": {
+          "arc.unaffiliated.device.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "UnaffiliatedDeviceArcAllowed": true
+        },
+        "prefs": {
+          "arc.unaffiliated.device.allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

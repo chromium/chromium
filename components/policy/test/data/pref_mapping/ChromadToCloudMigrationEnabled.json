@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ChromadToCloudMigrationEnabled": true
+        },
+        "prefs": {
+          "ash.chromad_to_cloud_migration_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ChromadToCloudMigrationEnabled": false
+        },
+        "prefs": {
+          "ash.chromad_to_cloud_migration_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "ash.chromad_to_cloud_migration_enabled": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

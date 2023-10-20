@@ -1,0 +1,34 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "ssl.error_override_allowed": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value",
+        "policies": {
+          "SSLErrorOverrideAllowed": false
+        },
+        "prefs": {
+          "ssl.error_override_allowed": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

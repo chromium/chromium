@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DevicePowerPeakShiftBatteryThreshold": 20
+        },
+        "prefs": {
+          "ash.power.peak_shift_battery_threshold": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

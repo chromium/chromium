@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "settings.a11y.color_filtering.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "ColorCorrectionEnabled": true
+        },
+        "prefs": {
+          "settings.a11y.color_filtering.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "UrlKeyedMetricsAllowed": false
+        },
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "notes": "When true, the pref is not changed allow the user to modify it",
+        "policies": {
+          "UrlKeyedMetricsAllowed": true
+        },
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "notes": "UrlKeyedMetricsAllowed overrides UrlKeyedAnonymizedDataCollectionEnabled",
+        "policies": {
+          "UrlKeyedAnonymizedDataCollectionEnabled": true,
+          "UrlKeyedMetricsAllowed": false
+        },
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "notes": "UrlKeyedMetricsAllowed overrides UrlKeyedAnonymizedDataCollectionEnabled",
+        "policies": {
+          "UrlKeyedAnonymizedDataCollectionEnabled": false,
+          "UrlKeyedMetricsAllowed": true
+        },
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

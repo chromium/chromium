@@ -1,0 +1,30 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.ambient.managed_screensaver.idle_timeout_seconds": {
+            "default_value": 7,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "ScreensaverLockScreenIdleTimeoutSeconds": 42
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.idle_timeout_seconds": {
+            "location": "user_profile",
+            "value": 42
+          }
+        }
+      }
+    ]
+  }
+]

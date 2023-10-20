@@ -1,0 +1,25 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros",
+      "linux",
+      "mac",
+      "win",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IntranetRedirectBehavior": 0
+        },
+        "prefs": {
+          "browser.intranet_redirect_behavior": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      }
+    ]
+  }
+]

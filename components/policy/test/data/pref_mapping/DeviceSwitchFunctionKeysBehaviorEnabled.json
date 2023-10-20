@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ash.settings.switch_function_keys_behavior_enabled": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceSwitchFunctionKeysBehaviorEnabled": true
+        },
+        "prefs": {
+          "ash.settings.switch_function_keys_behavior_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceSwitchFunctionKeysBehaviorEnabled": false
+        },
+        "prefs": {
+          "ash.settings.switch_function_keys_behavior_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

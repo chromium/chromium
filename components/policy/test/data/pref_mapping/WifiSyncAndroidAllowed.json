@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "wifi_sync.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "WifiSyncAndroidAllowed": false
+        },
+        "prefs": {
+          "wifi_sync.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "WifiSyncAndroidAllowed": true
+        },
+        "prefs": {
+          "wifi_sync.allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

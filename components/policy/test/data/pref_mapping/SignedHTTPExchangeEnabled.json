@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "web_package.signed_exchange.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SignedHTTPExchangeEnabled": false
+        },
+        "prefs": {
+          "web_package.signed_exchange.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SignedHTTPExchangeEnabled": true
+        },
+        "prefs": {
+          "web_package.signed_exchange.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

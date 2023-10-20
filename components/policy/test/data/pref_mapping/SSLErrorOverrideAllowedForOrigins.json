@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "ssl.error_override_allowed_for_origins": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value",
+        "policies": {
+          "SSLErrorOverrideAllowedForOrigins": [
+            "meow.com",
+            "woof.net"
+          ]
+        },
+        "prefs": {
+          "ssl.error_override_allowed_for_origins": {
+            "value": [
+              "meow.com",
+              "woof.net"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

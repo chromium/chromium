@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ChromeOsMultiProfileUserBehavior": "unrestricted"
+        },
+        "prefs": {
+          "settings.multiprofile_user_behavior": {}
+        }
+      }
+    ]
+  }
+]

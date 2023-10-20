@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ForceLogoutUnauthenticatedUserEnabled": false
+        },
+        "prefs": {
+          "profile.force_logout_unauthenticated_user_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForceLogoutUnauthenticatedUserEnabled": true
+        },
+        "prefs": {
+          "profile.force_logout_unauthenticated_user_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "profile.force_logout_unauthenticated_user_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile_separation.settings": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationSettings": 0
+        },
+        "prefs": {
+          "profile_separation.settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationSettings": 1
+        },
+        "prefs": {
+          "profile_separation.settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationSettings": 2
+        },
+        "prefs": {
+          "profile_separation.settings": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "ManagedAccountsSigninRestriction": "primary_account",
+          "ProfileSeparationSettings": 2
+        },
+        "prefs": {
+          "profile.managed_accounts.restriction.all_managed_accounts": {
+            "default_value": false
+          },
+          "profile.managed_accounts.restriction.value": {
+            "default_value": ""
+          },
+          "profile_separation.settings": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,41 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SchedulerConfiguration": "performance"
+        },
+        "prefs": {
+          "chromeos.scheduler_configuration": {
+            "location": "local_state",
+            "value": "performance"
+          }
+        }
+      },
+      {
+        "policies": {
+          "SchedulerConfiguration": "conservative"
+        },
+        "prefs": {
+          "chromeos.scheduler_configuration": {
+            "location": "local_state",
+            "value": "conservative"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "chromeos.scheduler_configuration": {
+            "default_value": "",
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

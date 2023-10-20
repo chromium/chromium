@@ -1,0 +1,45 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "headless.mode": {
+            "default_value": 1,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "HeadlessMode": 1
+        },
+        "prefs": {
+          "headless.mode": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "HeadlessMode": 2
+        },
+        "prefs": {
+          "headless.mode": {
+            "location": "local_state",
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

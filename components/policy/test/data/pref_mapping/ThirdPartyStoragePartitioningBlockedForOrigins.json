@@ -1,0 +1,39 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile.managed_third_party_storage_partitioning_blocked_for_origins": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "ThirdPartyStoragePartitioningBlockedForOrigins": [
+            "google.com",
+            "[*.]example.edu"
+          ]
+        },
+        "prefs": {
+          "profile.managed_third_party_storage_partitioning_blocked_for_origins": {
+            "value": [
+              "google.com",
+              "[*.]example.edu"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ash.shortcut_customization_allowed": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShortcutCustomizationAllowed": true
+        },
+        "prefs": {
+          "ash.shortcut_customization_allowed": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShortcutCustomizationAllowed": false
+        },
+        "prefs": {
+          "ash.shortcut_customization_allowed": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

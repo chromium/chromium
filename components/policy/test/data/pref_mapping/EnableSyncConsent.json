@@ -1,0 +1,39 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "policies": {},
+        "prefs": {
+          "sync_consent.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnableSyncConsent": false
+        },
+        "prefs": {
+          "sync_consent.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnableSyncConsent": true
+        },
+        "prefs": {
+          "sync_consent.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

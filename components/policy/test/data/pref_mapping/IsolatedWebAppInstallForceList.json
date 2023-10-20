@@ -1,0 +1,36 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "No isolated web apps force installing.",
+        "prefs": {
+          "profile.isolated_web_app.install.forcelist": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "The policy is set",
+        "policies": {
+          "IsolatedWebAppInstallForceList": [
+            {
+              "update_manifest_url": "https://example.com/isolated_web_app/update_manifest.json",
+              "web_bundle_id": "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"
+            },
+            {
+              "update_manifest_url": "https://example.com/another_isolated_web_app/update_manifest.json",
+              "web_bundle_id": "bbceqaztij5biqquuksfawpsaibuegqqcirgfcgwuosuofdjabzqaaic"
+            }
+          ]
+        },
+        "prefs": {
+          "profile.isolated_web_app.install.forcelist": {}
+        }
+      }
+    ]
+  }
+]

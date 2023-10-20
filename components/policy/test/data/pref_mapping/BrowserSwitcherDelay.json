@@ -1,0 +1,31 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.delay": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "BrowserSwitcherDelay": 10000
+        },
+        "prefs": {
+          "browser_switcher.delay": {
+            "value": 10000
+          }
+        }
+      }
+    ]
+  }
+]

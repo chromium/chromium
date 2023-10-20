@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "enterprise_remote_support_connections_allowed": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Check true policy value",
+        "policies": {
+          "RemoteAccessHostAllowEnterpriseRemoteSupportConnections": true
+        },
+        "prefs": {
+          "enterprise_remote_support_connections_allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check false policy value",
+        "policies": {
+          "RemoteAccessHostAllowEnterpriseRemoteSupportConnections": false
+        },
+        "prefs": {
+          "enterprise_remote_support_connections_allowed": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

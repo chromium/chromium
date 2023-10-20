@@ -1,0 +1,33 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "AllowedDomainsForApps": "google.com,mit.edu"
+        },
+        "prefs": {
+          "settings.allowed_domains_for_apps": {
+            "value": "google.com,mit.edu"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "settings.allowed_domains_for_apps": {
+            "default_value": ""
+          }
+        }
+      }
+    ]
+  }
+]

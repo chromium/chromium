@@ -1,0 +1,41 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "devtools.availability": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeveloperToolsDisabled": false
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeveloperToolsDisabled": true
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

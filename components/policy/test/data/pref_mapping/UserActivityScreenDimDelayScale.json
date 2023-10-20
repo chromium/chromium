@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "UserActivityScreenDimDelayScale": 200
+        },
+        "prefs": {
+          "power.user_activity_screen_dim_delay_factor": {
+            "value": 2.0
+          }
+        }
+      }
+    ]
+  }
+]

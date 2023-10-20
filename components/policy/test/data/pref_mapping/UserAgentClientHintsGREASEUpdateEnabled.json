@@ -1,0 +1,46 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_lacros",
+      "chromeos_ash",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.user_agent_client_hints_grease_update_enabled": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "UserAgentClientHintsGREASEUpdateEnabled": true
+        },
+        "prefs": {
+          "policy.user_agent_client_hints_grease_update_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "UserAgentClientHintsGREASEUpdateEnabled": false
+        },
+        "prefs": {
+          "policy.user_agent_client_hints_grease_update_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

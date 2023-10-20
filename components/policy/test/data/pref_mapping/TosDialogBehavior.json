@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "TosDialogBehavior": 2
+        },
+        "prefs": {
+          "policy.cct_tos_dialog_behavior": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

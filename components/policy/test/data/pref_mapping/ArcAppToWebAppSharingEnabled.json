@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ArcAppToWebAppSharingEnabled": false
+        },
+        "prefs": {
+          "generated_webapks_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ArcAppToWebAppSharingEnabled": true
+        },
+        "prefs": {
+          "generated_webapks_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "generated_webapks_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,33 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_app_inventory": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple list value.",
+        "policies": {
+          "ReportAppInventory": [
+            "chrome_apps_and_extensions"
+          ]
+        },
+        "prefs": {
+          "reporting.report_app_inventory": {
+            "value": [
+              "chrome_apps_and_extensions"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

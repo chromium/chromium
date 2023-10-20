@@ -1,0 +1,69 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebHidAllowDevicesWithHidUsagesForUrls": [
+            {
+              "urls": [
+                "https://stadia.google.com"
+              ],
+              "usages": [
+                {
+                  "usage": 5,
+                  "usage_page": 1
+                }
+              ]
+            },
+            {
+              "urls": [
+                "https://meet.google.com"
+              ],
+              "usages": [
+                {
+                  "usage_page": 11
+                }
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "managed.web_hid_allow_devices_with_hid_usages_for_urls": {
+            "location": "local_state",
+            "value": [
+              {
+                "urls": [
+                  "https://stadia.google.com"
+                ],
+                "usages": [
+                  {
+                    "usage": 5,
+                    "usage_page": 1
+                  }
+                ]
+              },
+              {
+                "urls": [
+                  "https://meet.google.com"
+                ],
+                "usages": [
+                  {
+                    "usage_page": 11
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

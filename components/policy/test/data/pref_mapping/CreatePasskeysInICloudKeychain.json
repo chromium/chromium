@@ -1,0 +1,30 @@
+[
+  {
+    "note": "default value of the pref in case no policy is set evaluates differently on CQ/CI bots and will therefor be skipped here (see crbug.com/1477033)",
+    "os": [
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "CreatePasskeysInICloudKeychain": true
+        },
+        "prefs": {
+          "webauthn.create_in_icloud_keychain": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "CreatePasskeysInICloudKeychain": false
+        },
+        "prefs": {
+          "webauthn.create_in_icloud_keychain": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DevicePowerPeakShiftEnabled": true
+        },
+        "prefs": {
+          "ash.power.peak_shift_enabled": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

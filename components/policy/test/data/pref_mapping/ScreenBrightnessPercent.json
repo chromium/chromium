@@ -1,0 +1,36 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ScreenBrightnessPercent": {
+            "BrightnessAC": 100,
+            "BrightnessBattery": 90
+          }
+        },
+        "prefs": {
+          "power.ac_screen_brightness_percent": {
+            "value": 100
+          },
+          "power.battery_screen_brightness_percent": {
+            "value": 90
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "power.ac_screen_brightness_percent": {
+            "default_value": -1
+          },
+          "power.battery_screen_brightness_percent": {
+            "default_value": -1
+          }
+        }
+      }
+    ]
+  }
+]

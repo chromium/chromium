@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ArcEnabled": false
+        },
+        "prefs": {
+          "arc.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ArcEnabled": true
+        },
+        "prefs": {
+          "arc.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

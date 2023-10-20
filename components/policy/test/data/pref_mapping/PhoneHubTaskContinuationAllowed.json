@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "phone_hub_task_continuation.allowed": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "PhoneHubTaskContinuationAllowed": false
+        },
+        "prefs": {
+          "phone_hub_task_continuation.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "PhoneHubTaskContinuationAllowed": true
+        },
+        "prefs": {
+          "phone_hub_task_continuation.allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

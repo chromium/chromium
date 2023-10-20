@@ -1,0 +1,46 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ssl.rsa_key_usage_for_local_anchors_enabled": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "RSAKeyUsageForLocalAnchorsEnabled": false
+        },
+        "prefs": {
+          "ssl.rsa_key_usage_for_local_anchors_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "RSAKeyUsageForLocalAnchorsEnabled": true
+        },
+        "prefs": {
+          "ssl.rsa_key_usage_for_local_anchors_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

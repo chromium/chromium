@@ -1,0 +1,27 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "CoalesceH2ConnectionsWithClientCertificatesForHosts": [
+            "example.com"
+          ]
+        },
+        "prefs": {
+          "ssl.client_certs.h2_coalescing_hosts": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

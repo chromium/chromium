@@ -1,0 +1,47 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile.enterprise_profile_creation.keep_existing_data_by_default": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnterpriseProfileCreationKeepBrowsingData": true
+        },
+        "prefs": {
+          "profile.enterprise_profile_creation.keep_existing_data_by_default": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnterpriseProfileCreationKeepBrowsingData": false
+        },
+        "prefs": {
+          "profile.enterprise_profile_creation.keep_existing_data_by_default": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SecurityKeyPermitAttestation": [
+            "https://example.com",
+            "example.net"
+          ]
+        },
+        "prefs": {
+          "securitykey.permit_attestation": {
+            "value": [
+              "https://example.com",
+              "example.net"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "securitykey.permit_attestation": {
+            "default_value": []
+          }
+        }
+      }
+    ]
+  }
+]

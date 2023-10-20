@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ScreenDimDelayBattery": 1111
+        },
+        "prefs": {
+          "power.battery_screen_dim_delay_ms": {
+            "value": 1111
+          }
+        }
+      },
+      {
+        "note": "Should clamp to range 0..INT_MAX",
+        "policies": {
+          "ScreenDimDelayBattery": -1
+        },
+        "prefs": {
+          "power.battery_screen_dim_delay_ms": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "power.battery_screen_dim_delay_ms": {
+            "default_value": 300000
+          }
+        }
+      }
+    ]
+  }
+]

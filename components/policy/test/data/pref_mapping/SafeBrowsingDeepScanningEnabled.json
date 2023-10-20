@@ -1,0 +1,47 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "safebrowsing.deep_scanning_enabled": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Check pref matches when policy is set to true",
+        "policies": {
+          "SafeBrowsingDeepScanningEnabled": true
+        },
+        "prefs": {
+          "safebrowsing.deep_scanning_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check pref matches when policy is set to false",
+        "policies": {
+          "SafeBrowsingDeepScanningEnabled": false
+        },
+        "prefs": {
+          "safebrowsing.deep_scanning_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

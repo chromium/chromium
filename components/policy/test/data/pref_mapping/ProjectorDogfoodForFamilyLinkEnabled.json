@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.projector.dogfood_for_family_link_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProjectorDogfoodForFamilyLinkEnabled": false
+        },
+        "prefs": {
+          "ash.projector.dogfood_for_family_link_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProjectorDogfoodForFamilyLinkEnabled": true
+        },
+        "prefs": {
+          "ash.projector.dogfood_for_family_link_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

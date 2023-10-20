@@ -1,0 +1,18 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IdleAction": 0
+        },
+        "prefs": {
+          "power.ac_idle_action": {},
+          "power.battery_idle_action": {}
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "FullRestoreEnabled": false
+        },
+        "prefs": {
+          "settings.restore_apps_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "FullRestoreEnabled": true
+        },
+        "prefs": {
+          "settings.restore_apps_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "settings.restore_apps_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  }
+]

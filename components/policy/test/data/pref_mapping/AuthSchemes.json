@@ -1,0 +1,48 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "auth.schemes": {
+            "default_value": "basic,digest,ntlm,negotiate",
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "AuthSchemes": "negotiate"
+        },
+        "prefs": {
+          "auth.schemes": {
+            "location": "local_state",
+            "value": "negotiate"
+          }
+        }
+      },
+      {
+        "note": "Empty value",
+        "policies": {
+          "AuthSchemes": ""
+        },
+        "prefs": {
+          "auth.schemes": {
+            "location": "local_state",
+            "value": ""
+          }
+        }
+      }
+    ]
+  }
+]

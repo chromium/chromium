@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForceSafeSearch": true
+        },
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForceSafeSearch": false
+        },
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

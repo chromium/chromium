@@ -1,0 +1,33 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "media.autoplay_allowed": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "AutoplayAllowed": true
+        },
+        "prefs": {
+          "media.autoplay_allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

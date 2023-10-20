@@ -1,0 +1,47 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "policies": {},
+        "prefs": {
+          "profile.content_settings.data_url_in_svg_use_enabled": {
+            "default_value": false,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DataUrlInSvgUseEnabled": true
+        },
+        "prefs": {
+          "profile.content_settings.data_url_in_svg_use_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DataUrlInSvgUseEnabled": false
+        },
+        "prefs": {
+          "profile.content_settings.data_url_in_svg_use_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

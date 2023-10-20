@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceBootOnAcEnabled": true
+        },
+        "prefs": {
+          "ash.power.boot_on_ac_enabled": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

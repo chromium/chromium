@@ -1,0 +1,65 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "CloudProfileReportingEnabled": true
+        },
+        "policies_settings": {
+          "CloudProfileReportingEnabled": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.chrome_profile_cloud_reporting": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "CloudProfileReportingEnabled": true
+        },
+        "policies_settings": {
+          "CloudProfileReportingEnabled": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.chrome_profile_cloud_reporting": {
+            "default_value": false,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "CloudProfileReportingEnabled": true
+        },
+        "policies_settings": {
+          "CloudProfileReportingEnabled": {
+            "scope": "user",
+            "source": "platform"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.chrome_profile_cloud_reporting": {
+            "default_value": false,
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  }
+]

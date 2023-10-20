@@ -1,0 +1,21 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DataLeakPreventionClipboardCheckSizeLimit": 50
+        },
+        "prefs": {
+          "policy.dlp_clipboard_check_size_limit": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,69 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebHidAllowDevicesForUrls": [
+            {
+              "devices": [
+                {
+                  "product_id": 37888,
+                  "vendor_id": 6353
+                }
+              ],
+              "urls": [
+                "https://stadia.google.com"
+              ]
+            },
+            {
+              "devices": [
+                {
+                  "vendor_id": 6353
+                }
+              ],
+              "urls": [
+                "https://www.google.com"
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "managed.web_hid_allow_devices_for_urls": {
+            "location": "local_state",
+            "value": [
+              {
+                "devices": [
+                  {
+                    "product_id": 37888,
+                    "vendor_id": 6353
+                  }
+                ],
+                "urls": [
+                  "https://stadia.google.com"
+                ]
+              },
+              {
+                "devices": [
+                  {
+                    "vendor_id": 6353
+                  }
+                ],
+                "urls": [
+                  "https://www.google.com"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

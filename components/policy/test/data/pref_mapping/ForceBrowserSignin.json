@@ -1,0 +1,44 @@
+[
+  {
+    "os": [
+      "win",
+      "android",
+      "mac",
+      "linux",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile.force_browser_signin": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForceBrowserSignin": false
+        },
+        "prefs": {
+          "profile.force_browser_signin": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForceBrowserSignin": true
+        },
+        "prefs": {
+          "profile.force_browser_signin": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

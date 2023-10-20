@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintingAllowedPinModes": "pin"
+        },
+        "prefs": {
+          "printing.allowed_pin_modes": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "policies": {},
+        "prefs": {
+          "arc.vm_data_migration_strategy": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ArcVmDataMigrationStrategy": 0
+        },
+        "prefs": {
+          "arc.vm_data_migration_strategy": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ArcVmDataMigrationStrategy": 1
+        },
+        "prefs": {
+          "arc.vm_data_migration_strategy": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

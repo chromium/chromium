@@ -1,0 +1,48 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "browser.shared_clipboard_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SharedClipboardEnabled": false
+        },
+        "prefs": {
+          "browser.shared_clipboard_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SharedClipboardEnabled": true
+        },
+        "prefs": {
+          "browser.shared_clipboard_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "android"
+    ],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
+  }
+]

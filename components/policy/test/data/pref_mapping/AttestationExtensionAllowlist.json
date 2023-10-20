@@ -1,0 +1,35 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "attestation.extension_allowlist": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "AttestationExtensionAllowlist": [
+            "abcdefghijklmnopabcdefghijklmnop",
+            "aabbccddeeffgghhiijjkkllmmnnoopp",
+            "non-32-char-long-a-p-string-gets-filtered-out"
+          ]
+        },
+        "prefs": {
+          "attestation.extension_allowlist": {
+            "value": [
+              "abcdefghijklmnopabcdefghijklmnop",
+              "aabbccddeeffgghhiijjkkllmmnnoopp"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

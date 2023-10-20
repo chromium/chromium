@@ -1,0 +1,75 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "filebrowser.default_handlers_for_file_extensions": {
+            "default_value": {}
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultHandlersForFileExtensions": [
+            {
+              "file_extensions": [
+                "maps"
+              ],
+              "policy_id": "https://google.com/maps"
+            },
+            {
+              "file_extensions": [
+                "docx",
+                "pdf"
+              ],
+              "policy_id": "pnomlkjighijklmnopabcdefghijklff"
+            },
+            {
+              "file_extensions": [
+                "arc",
+                "arcpp"
+              ],
+              "policy_id": "com.android.google.pm"
+            },
+            {
+              "file_extensions": [
+                "proj"
+              ],
+              "policy_id": "projector"
+            },
+            {
+              "file_extensions": [
+                "filtered"
+              ],
+              "policy_id": "unknown_id_should_be_filtered"
+            },
+            {
+              "file_extensions": [
+                "pptx"
+              ],
+              "policy_id": "VirtualTask/microsoft-office"
+            }
+          ]
+        },
+        "prefs": {
+          "filebrowser.default_handlers_for_file_extensions": {
+            "value": {
+              ".arc": "com.android.google.pm",
+              ".arcpp": "com.android.google.pm",
+              ".docx": "pnomlkjighijklmnopabcdefghijklff",
+              ".maps": "https://google.com/maps",
+              ".pdf": "pnomlkjighijklmnopabcdefghijklff",
+              ".pptx": "VirtualTask/microsoft-office",
+              ".proj": "projector"
+            }
+          }
+        }
+      }
+    ]
+  }
+]

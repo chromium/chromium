@@ -1,0 +1,63 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "lacros_data_backward_migration_mode": {
+            "default_value": "",
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosDataBackwardMigrationMode": "none"
+        },
+        "prefs": {
+          "lacros_data_backward_migration_mode": {
+            "location": "local_state",
+            "value": "none"
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosDataBackwardMigrationMode": "keep_none"
+        },
+        "prefs": {
+          "lacros_data_backward_migration_mode": {
+            "location": "local_state",
+            "value": "keep_none"
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosDataBackwardMigrationMode": "keep_safe_data"
+        },
+        "prefs": {
+          "lacros_data_backward_migration_mode": {
+            "location": "local_state",
+            "value": "keep_safe_data"
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosDataBackwardMigrationMode": "keep_all"
+        },
+        "prefs": {
+          "lacros_data_backward_migration_mode": {
+            "location": "local_state",
+            "value": "keep_all"
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeskAPIThirdPartyAccessEnabled": true
+        },
+        "prefs": {
+          "desk_api.third_party_access_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeskAPIThirdPartyAccessEnabled": false
+        },
+        "prefs": {
+          "desk_api.third_party_access_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "desk_api.third_party_access_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ChromeAppsWebViewPermissiveBehaviorAllowed": false
+        },
+        "prefs": {
+          "extensions.webview_permissive_behavior": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ChromeAppsWebViewPermissiveBehaviorAllowed": true
+        },
+        "prefs": {
+          "extensions.webview_permissive_behavior": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "extensions.webview_permissive_behavior": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

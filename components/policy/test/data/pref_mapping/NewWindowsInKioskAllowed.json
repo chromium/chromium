@@ -1,0 +1,44 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "new_windows_in_kiosk_allowed": {
+            "default_value": false,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Check true policy value",
+        "policies": {
+          "NewWindowsInKioskAllowed": true
+        },
+        "prefs": {
+          "new_windows_in_kiosk_allowed": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check false policy value",
+        "policies": {
+          "NewWindowsInKioskAllowed": false
+        },
+        "prefs": {
+          "new_windows_in_kiosk_allowed": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

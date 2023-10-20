@@ -1,0 +1,23 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceAttributesAllowedForOrigins": [
+            "https://www.google.com"
+          ]
+        },
+        "prefs": {
+          "policy.device_attributes_allowed_for_origins": {
+            "value": [
+              "https://www.google.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

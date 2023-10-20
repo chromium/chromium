@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "AuthAndroidNegotiateAccountType": "com.example.spnego"
+        },
+        "prefs": {
+          "auth.android_negotiate_account_type": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceUsbPowerShareEnabled": true
+        },
+        "prefs": {
+          "ash.power.usb_power_share_enabled": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

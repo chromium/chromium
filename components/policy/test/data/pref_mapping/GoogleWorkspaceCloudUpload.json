@@ -1,0 +1,48 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "filebrowser.office.google_workspace_cloud_upload": {
+            "value": "disallowed"
+          }
+        }
+      },
+      {
+        "policies": {
+          "GoogleWorkspaceCloudUpload": "allowed"
+        },
+        "prefs": {
+          "filebrowser.office.google_workspace_cloud_upload": {
+            "value": "allowed"
+          }
+        }
+      },
+      {
+        "policies": {
+          "GoogleWorkspaceCloudUpload": "disallowed"
+        },
+        "prefs": {
+          "filebrowser.office.google_workspace_cloud_upload": {
+            "value": "disallowed"
+          }
+        }
+      },
+      {
+        "policies": {
+          "GoogleWorkspaceCloudUpload": "automated"
+        },
+        "prefs": {
+          "filebrowser.office.google_workspace_cloud_upload": {
+            "value": "automated"
+          }
+        }
+      }
+    ]
+  }
+]

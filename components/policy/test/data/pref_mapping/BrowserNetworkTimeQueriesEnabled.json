@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserNetworkTimeQueriesEnabled": true
+        },
+        "prefs": {
+          "network_time.network_time_queries_enabled": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (empty list)",
+        "policies": {},
+        "prefs": {
+          "ash.user_feedback_with_low_level_debug_data_allowed": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "UserFeedbackWithLowLevelDebugDataAllowed": [
+            "wifi"
+          ]
+        },
+        "prefs": {
+          "ash.user_feedback_with_low_level_debug_data_allowed": {
+            "value": [
+              "wifi"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "UserFeedbackWithLowLevelDebugDataAllowed": [
+            "all"
+          ]
+        },
+        "prefs": {
+          "ash.user_feedback_with_low_level_debug_data_allowed": {
+            "value": [
+              "all"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

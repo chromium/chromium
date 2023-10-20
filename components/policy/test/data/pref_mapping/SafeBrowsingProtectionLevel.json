@@ -1,0 +1,93 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "value 'enhanced'",
+        "policies": {
+          "SafeBrowsingProtectionLevel": 2
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": true
+          },
+          "safebrowsing.enhanced": {
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "value 'standard'",
+        "policies": {
+          "SafeBrowsingProtectionLevel": 1
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": true
+          },
+          "safebrowsing.enhanced": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "value 'disabled'",
+        "policies": {
+          "SafeBrowsingProtectionLevel": 0
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": false
+          },
+          "safebrowsing.enhanced": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "safebrowsing.enabled": {
+            "default_value": true
+          },
+          "safebrowsing.enhanced": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "SafeBrowsingProtectionLevel overrules SafeBrowsingEnabled",
+        "policies": {
+          "SafeBrowsingEnabled": true,
+          "SafeBrowsingProtectionLevel": 0
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "SafeBrowsingProtectionLevel overrules SafeBrowsingEnabled",
+        "policies": {
+          "SafeBrowsingEnabled": false,
+          "SafeBrowsingProtectionLevel": 1
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

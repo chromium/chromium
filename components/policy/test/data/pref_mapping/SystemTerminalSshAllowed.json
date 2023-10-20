@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policy set)",
+        "policies": {},
+        "prefs": {
+          "crostini.terminal_ssh_allowed_by_policy": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Set policy to false force disable",
+        "policies": {
+          "SystemTerminalSshAllowed": false
+        },
+        "prefs": {
+          "crostini.terminal_ssh_allowed_by_policy": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Set policy to true falls back to default",
+        "policies": {
+          "SystemTerminalSshAllowed": true
+        },
+        "prefs": {
+          "crostini.terminal_ssh_allowed_by_policy": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  }
+]

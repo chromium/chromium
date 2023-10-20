@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.usb_detector_notification_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "UsbDetectorNotificationEnabled": false
+        },
+        "prefs": {
+          "ash.usb_detector_notification_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "UsbDetectorNotificationEnabled": true
+        },
+        "prefs": {
+          "ash.usb_detector_notification_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

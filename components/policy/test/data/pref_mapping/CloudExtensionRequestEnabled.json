@@ -1,0 +1,140 @@
+[
+  {
+    "note": "Policy uses default value if CloudReportingEnabled is false or unset.",
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "enterprise_reporting.extension_request.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CloudExtensionRequestEnabled": true
+        },
+        "policies_settings": {
+          "CloudExtensionRequestEnabled": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.extension_request.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CloudExtensionRequestEnabled": false
+        },
+        "policies_settings": {
+          "CloudExtensionRequestEnabled": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.extension_request.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CloudExtensionRequestEnabled": true,
+          "CloudReportingEnabled": false
+        },
+        "policies_settings": {
+          "CloudExtensionRequestEnabled": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.extension_request.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CloudExtensionRequestEnabled": false,
+          "CloudReportingEnabled": false
+        },
+        "policies_settings": {
+          "CloudExtensionRequestEnabled": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.extension_request.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CloudExtensionRequestEnabled": true,
+          "CloudReportingEnabled": true
+        },
+        "policies_settings": {
+          "CloudExtensionRequestEnabled": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.extension_request.enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "CloudExtensionRequestEnabled": false,
+          "CloudReportingEnabled": true
+        },
+        "policies_settings": {
+          "CloudExtensionRequestEnabled": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.extension_request.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CloudExtensionRequestEnabled": true,
+          "CloudReportingEnabled": true
+        },
+        "policies_settings": {
+          "CloudExtensionRequestEnabled": {
+            "scope": "machine",
+            "source": "platform"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.extension_request.enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

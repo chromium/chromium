@@ -1,0 +1,101 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "browser.enable_spellchecking": {
+            "default_value": true
+          },
+          "spellcheck.forced_dictionaries": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value & enables spellchecking pref",
+        "policies": {
+          "SpellcheckLanguage": [
+            "fr"
+          ]
+        },
+        "prefs": {
+          "browser.enable_spellchecking": {
+            "value": true
+          },
+          "spellcheck.forced_dictionaries": {
+            "value": [
+              "fr"
+            ]
+          }
+        }
+      },
+      {
+        "note": "Check that SpellcheckEnabled precedes this one",
+        "policies": {
+          "SpellcheckEnabled": false,
+          "SpellcheckLanguage": [
+            "fr"
+          ]
+        },
+        "prefs": {
+          "spellcheck.forced_dictionaries": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Invalid values get filtered out",
+        "policies": {
+          "SpellcheckLanguage": [
+            "fr",
+            "frrrrrr"
+          ]
+        },
+        "prefs": {
+          "spellcheck.forced_dictionaries": {
+            "value": [
+              "fr"
+            ]
+          }
+        }
+      },
+      {
+        "note": "Language transforms",
+        "policies": {
+          "SpellcheckLanguage": [
+            "af-ZA"
+          ]
+        },
+        "prefs": {
+          "spellcheck.forced_dictionaries": {
+            "value": [
+              "af"
+            ]
+          }
+        }
+      },
+      {
+        "note": "Whitespace trimming",
+        "policies": {
+          "SpellcheckLanguage": [
+            "    fr "
+          ]
+        },
+        "prefs": {
+          "spellcheck.forced_dictionaries": {
+            "value": [
+              "fr"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

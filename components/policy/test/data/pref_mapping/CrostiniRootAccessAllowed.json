@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "crostini.user_root_access_allowed_by_policy": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "CrostiniRootAccessAllowed": false
+        },
+        "prefs": {
+          "crostini.user_root_access_allowed_by_policy": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CrostiniRootAccessAllowed": true
+        },
+        "prefs": {
+          "crostini.user_root_access_allowed_by_policy": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

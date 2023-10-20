@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SharedArrayBufferUnrestrictedAccessAllowed": false
+        },
+        "prefs": {
+          "profile.shared_array_buffer_unrestricted_access_allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SharedArrayBufferUnrestrictedAccessAllowed": true
+        },
+        "prefs": {
+          "profile.shared_array_buffer_unrestricted_access_allowed": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "profile.shared_array_buffer_unrestricted_access_allowed": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

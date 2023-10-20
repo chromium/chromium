@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.voice_interaction.hotword.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "VoiceInteractionHotwordEnabled": false
+        },
+        "prefs": {
+          "settings.voice_interaction.hotword.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "VoiceInteractionHotwordEnabled": true
+        },
+        "prefs": {
+          "settings.voice_interaction.hotword.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

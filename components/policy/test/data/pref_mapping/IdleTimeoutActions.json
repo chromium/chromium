@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "android",
+      "linux",
+      "mac",
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IdleTimeout": 10,
+          "IdleTimeoutActions": [
+            "clear_cookies_and_other_site_data",
+            "clear_cached_images_and_files"
+          ]
+        },
+        "prefs": {
+          "idle_timeout_actions": {
+            "value": [
+              4,
+              5
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

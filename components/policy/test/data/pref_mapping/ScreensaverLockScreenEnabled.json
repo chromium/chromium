@@ -1,0 +1,41 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.ambient.managed_screensaver.enabled": {
+            "default_value": false,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "ScreensaverLockScreenEnabled": true
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ScreensaverLockScreenEnabled": false
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

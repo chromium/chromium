@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceAllowMGSToStoreDisplayProperties": true
+        },
+        "prefs": {
+          "settings.display.allow_mgs_to_store": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

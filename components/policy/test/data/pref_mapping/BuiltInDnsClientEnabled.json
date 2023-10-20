@@ -1,0 +1,63 @@
+[
+  {
+    "os": [
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "async_dns.enabled": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "BuiltInDnsClientEnabled": true
+        },
+        "prefs": {
+          "async_dns.enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "mac",
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "linux"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "async_dns.enabled": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "BuiltInDnsClientEnabled": false
+        },
+        "prefs": {
+          "async_dns.enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

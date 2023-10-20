@@ -1,0 +1,36 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "hardware.video_capture_allowed_urls": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "VideoCaptureAllowedUrls": [
+            "[*.]google.com"
+          ]
+        },
+        "prefs": {
+          "hardware.video_capture_allowed_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

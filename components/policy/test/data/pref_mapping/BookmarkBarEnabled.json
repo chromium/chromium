@@ -1,0 +1,34 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "bookmark_bar.show_on_all_tabs": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value: true.",
+        "policies": {
+          "BookmarkBarEnabled": true
+        },
+        "prefs": {
+          "bookmark_bar.show_on_all_tabs": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

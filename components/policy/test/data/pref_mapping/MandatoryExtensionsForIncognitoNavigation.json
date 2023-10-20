@@ -1,0 +1,36 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "mandatory_extensions_for_incognito_navigation": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "MandatoryExtensionsForIncognitoNavigation": [
+            "id1",
+            "id2",
+            "id3"
+          ]
+        },
+        "prefs": {
+          "mandatory_extensions_for_incognito_navigation": {
+            "value": [
+              "id1",
+              "id2",
+              "id3"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

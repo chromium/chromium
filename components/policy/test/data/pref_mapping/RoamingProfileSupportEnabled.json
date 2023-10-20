@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RoamingProfileSupportEnabled": true
+        },
+        "prefs": {
+          "sync.enable_local_sync_backend": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "RoamingProfileSupportEnabled": false
+        },
+        "prefs": {
+          "sync.enable_local_sync_backend": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "sync.enable_local_sync_backend": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]
