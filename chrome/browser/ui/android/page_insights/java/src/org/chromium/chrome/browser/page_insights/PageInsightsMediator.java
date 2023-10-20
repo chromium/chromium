@@ -367,7 +367,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     private void initSheetContent(PageInsightsMetadata metadata) {
         mCurrentFeedView = getXSurfaceView(metadata.getFeedPage().getElementsOutput());
-        mSheetContent.setFeedPage(mCurrentFeedView);
+        mSheetContent.initContent(mCurrentFeedView);
         mSheetContent.showFeedPage();
     }
 
