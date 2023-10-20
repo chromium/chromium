@@ -11,15 +11,19 @@
 @protocol PasswordSuggestionBottomSheetDelegate;
 @protocol PasswordSuggestionBottomSheetHandler;
 
+class GURL;
+
 // Password Bottom Sheet UI, which includes a table to display password
 // suggestions, a button to use a suggestion and a button to revert to using the
 // keyboard to enter a password.
 @interface PasswordSuggestionBottomSheetViewController
     : TableViewBottomSheetViewController <PasswordSuggestionBottomSheetConsumer>
 
-// Initialize with the delegate used to open the password manager.
+// Initialize with the delegate used to open the password manager and the URL of
+// the current page.
 - (instancetype)initWithHandler:
-    (id<PasswordSuggestionBottomSheetHandler>)handler;
+                    (id<PasswordSuggestionBottomSheetHandler>)handler
+                            URL:(const GURL&)URL;
 
 // The delegate for the bottom sheet view controller.
 @property(nonatomic, strong) id<PasswordSuggestionBottomSheetDelegate> delegate;

@@ -7,6 +7,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -63,6 +64,13 @@ UIViewController* TopPresentedViewController() {
 id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
   return grey_allOf(grey_accessibilityID(id),
                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
+
+id<GREYMatcher> SubtitleString(const GURL& url) {
+  return grey_text(l10n_util::GetNSStringF(
+      IDS_IOS_PASSWORD_BOTTOM_SHEET_SUBTITLE,
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          url)));
 }
 
 }  // namespace
@@ -161,11 +169,12 @@ id<GREYMatcher> NavigationBarEditButton() {
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
                                                    kSuccess];
+
+  GURL URL = self.testServer->GetURL("/simple_login_form.html");
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
-                              URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
+                              URL:net::NSURLWithGURL(URL)];
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   [self loadLoginPage];
@@ -175,6 +184,9 @@ id<GREYMatcher> NavigationBarEditButton() {
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+
+  // Verify that the subtitle string appears.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SubtitleString(URL)];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(

@@ -117,6 +117,10 @@ const CGFloat kFaviconBadgeSideLength = 24;
     [stackSubviews addObject:self.imageContainerView];
   }
 
+  if (self.aboveTitleView) {
+    [stackSubviews addObject:self.aboveTitleView];
+  }
+
   if (self.titleString.length) {
     UILabel* title = [self createTitleLabel];
     [stackSubviews addObject:title];

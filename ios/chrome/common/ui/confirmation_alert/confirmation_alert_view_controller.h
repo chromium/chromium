@@ -23,6 +23,11 @@
 // before the view is loaded.
 @property(nonatomic, strong) UIView* titleView;
 
+// The view displayed above titles and subtitles, but under the navigation bar
+// and the image view. Nil if not needed. If needed, must be set before the view
+// is loaded.
+@property(nonatomic, strong) UIView* aboveTitleView;
+
 // The view displayed under titles and subtitles. Nil if not needed.
 // If needed, must be set before the view is loaded.
 @property(nonatomic, strong) UIView* underTitleView;
