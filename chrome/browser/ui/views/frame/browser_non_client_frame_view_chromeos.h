@@ -203,11 +203,15 @@ class BrowserNonClientFrameViewChromeOS
   // Returns whether the associated window is currently floated or not.
   bool IsFloated() const;
 
-  // Helper to check whether we should enable immersive mode.
-  bool ShouldEnableImmersiveModeController() const;
+  // Helper to check whether we should enable immersive mode.`on_tablet_enabled`
+  // is set to true only when it is called when tablet mode is just toggled on
+  // notified from OnTabletModeToggled.
+  bool ShouldEnableImmersiveModeController(bool on_tablet_enabled) const;
 
   // Helper to check whether we should enable fullscreen mode.
-  bool ShouldEnableFullscreenMode() const;
+  // `on_tablet_enabled` is set to true only when tablet mode is just toggled
+  // on notified from OnTabletModeToggled.
+  bool ShouldEnableFullscreenMode(bool on_tablet_enabled) const;
 
   // True if the the associated browser window should be using the WebUI tab
   // strip.
