@@ -65,6 +65,7 @@ using ::testing::Field;
 using ::testing::Gt;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
+using ::testing::IsNull;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Return;
@@ -164,6 +165,11 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
               (base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
+              ExtractForm,
+              (FormRendererId,
+               base::OnceCallback<void(const std::optional<FormData>&)>),
+              (override));
+  MOCK_METHOD(void,
               GetPotentialLastFourCombinationsForStandaloneCvc,
               (base::OnceCallback<void(const std::vector<std::string>&)>),
               (override));
@@ -205,10 +211,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     }
     CallDone();
   }
-
-  void ExtractForm(FormRendererId form,
-                   base::OnceCallback<void(const std::optional<FormData>&)>
-                       callback) override {}
 
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override {
@@ -448,6 +450,77 @@ class ContentAutofillDriverTestWithAddressForm
 
  private:
   FormData address_form_;
+};
+
+class ContentAutofillDriverWithMultiFrameCreditCardForm
+    : public ContentAutofillDriverTest {
+ public:
+  static constexpr size_t kName = 0;
+  static constexpr size_t kNumber = 1;
+  static constexpr size_t kExp = 2;
+  static constexpr size_t kCvc = 3;
+
+  void SetUp() override {
+    ContentAutofillDriverTest::SetUp();
+
+    rfhs_[kName] = CreateChild("name");
+    rfhs_[kNumber] = CreateChild("number");
+    rfhs_[kExp] = CreateChild("exp");
+    rfhs_[kCvc] = CreateChild("cvc");
+
+    // We see the subframes before the ancestor frame, so the forms are not
+    // flattened and not routed to an ancestor frame.
+    forms_[kName] = SeeFormWithField(rfh(kName), "name");
+    forms_[kNumber] = SeeFormWithField(rfh(kNumber), "number");
+    forms_[kExp] = SeeFormWithField(rfh(kExp), "exp");
+    forms_[kCvc] = SeeFormWithField(rfh(kCvc), "csc");
+
+    FormData main_form;
+    main_form.child_frames.resize(4);
+    main_form.child_frames[kName].token = form(kName).host_frame;
+    main_form.child_frames[kNumber].token = form(kNumber).host_frame;
+    main_form.child_frames[kExp].token = form(kExp).host_frame;
+    main_form.child_frames[kCvc].token = form(kCvc).host_frame;
+    SeeForm(main_frame(), main_form);
+  }
+
+  void TearDown() override {
+    rfhs_[kName] = nullptr;
+    rfhs_[kNumber] = nullptr;
+    rfhs_[kExp] = nullptr;
+    rfhs_[kCvc] = nullptr;
+    ContentAutofillDriverTest::TearDown();
+  }
+
+  content::RenderFrameHost* rfh(size_t i) { return rfhs_[i]; }
+  const FormData& form(size_t i) { return forms_[i]; }
+  FormGlobalId form_id(size_t i) { return form(i).global_id(); }
+  FieldGlobalId field_id(size_t i) {
+    return form(i).fields.front().global_id();
+  }
+
+ private:
+  content::RenderFrameHost* CreateChild(std::string_view name) {
+    return content::NavigationSimulator::NavigateAndCommitFromDocument(
+        GURL(base::StrCat({"https://foo.com/", name})),
+        content::RenderFrameHostTester::For(main_rfh())
+            ->AppendChild(std::string(name)));
+  }
+
+  FormData SeeFormWithField(content::RenderFrameHost* source_rfh,
+                            std::string_view name,
+                            content::RenderFrameHost* target_rfh = nullptr) {
+    FormData form;
+    form.fields.push_back(test::CreateTestFormField(
+        /*label=*/name, /*name=*/name, /*value=*/"",
+        FormControlType::kInputText,
+        /*autocomplete=*/base::StrCat({"cc-", name})));
+    form = SeeForm(source_rfh, std::move(form), target_rfh);
+    return form;
+  }
+
+  std::array<FormData, 4> forms_;
+  std::array<raw_ptr<content::RenderFrameHost>, 4> rfhs_;
 };
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameDifferentDocument) {
@@ -802,6 +875,48 @@ TEST_F(ContentAutofillDriverTest, TriggerFormExtractionInAllFrames) {
 
   EXPECT_FALSE(form_extraction_finished_callback.is_null());
   std::move(form_extraction_finished_callback).Run(true);
+}
+
+TEST_F(ContentAutofillDriverWithMultiFrameCreditCardForm,
+       ExtractForm_NotFound) {
+  using RendererResponseHandler =
+      base::OnceCallback<void(const std::optional<FormData>&)>;
+  using BrowserResponseHandler = AutofillDriver::BrowserFormHandler;
+  EXPECT_CALL(agent(), ExtractForm)
+      .WillRepeatedly(
+          [](FormRendererId form_id, RendererResponseHandler callback) {
+            std::move(callback).Run(std::nullopt);
+          });
+  base::MockCallback<BrowserResponseHandler> cb;
+  EXPECT_CALL(cb, Run(IsNull(), Eq(std::nullopt)));
+  driver().browser_events().ExtractForm(test::MakeFormGlobalId(), cb.Get());
+}
+
+TEST_F(ContentAutofillDriverWithMultiFrameCreditCardForm, ExtractForm_Found) {
+  using RendererResponseHandler =
+      base::OnceCallback<void(const std::optional<FormData>&)>;
+  using BrowserResponseHandler = AutofillDriver::BrowserFormHandler;
+  EXPECT_CALL(agent(rfh(kNumber)), ExtractForm)
+      .WillRepeatedly(
+          [this](FormRendererId form_id, RendererResponseHandler callback) {
+            std::move(callback).Run(form(kNumber));
+          });
+  base::MockCallback<BrowserResponseHandler> cb;
+  EXPECT_CALL(
+      cb, Run(&driver(main_frame()),
+              Optional(Field(
+                  "FormData::fields", &FormData::fields,
+                  ElementsAre(
+                      Property("FormFieldData::global_id",
+                               &FormFieldData::global_id, field_id(kName)),
+                      Property("FormFieldData::global_id",
+                               &FormFieldData::global_id, field_id(kNumber)),
+                      Property("FormFieldData::global_id",
+                               &FormFieldData::global_id, field_id(kExp)),
+                      Property("FormFieldData::global_id",
+                               &FormFieldData::global_id, field_id(kCvc)))))));
+  driver(main_frame()).browser_events().ExtractForm(form_id(kNumber), cb.Get());
+  task_environment()->RunUntilIdle();
 }
 
 TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDOM_NoMatches) {

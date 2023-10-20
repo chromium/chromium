@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
@@ -312,7 +313,10 @@ class ContentAutofillDriver : public AutofillDriver,
   // received from the renderer.
   void SetFrameAndFormMetaData(FormData& form,
                                FormFieldData* optional_field) const;
+  // Returns a copy of `form` after applying `SetFormAndFormMetaData` to it.
   [[nodiscard]] FormData GetFormWithFrameAndFormMetaData(FormData form) const;
+  [[nodiscard]] std::optional<FormData> GetFormWithFrameAndFormMetaData(
+      base::optional_ref<const FormData> form) const;
 
   // Transform bounding box coordinates to real viewport coordinates. In the
   // case of a page spanning multiple renderer processes, subframe renderers
