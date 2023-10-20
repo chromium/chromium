@@ -127,6 +127,7 @@ packager_builder(
                 "tools/android/avd/proto/creation/android_31_google_atd_x64.textpb",
                 "tools/android/avd/proto/creation/android_32_google_atd_x64.textpb",
                 "tools/android/avd/proto/creation/android_33_google_atd_x64.textpb",
+                "tools/android/avd/proto/creation/android_34_google_apis_x64.textpb",
                 # TODO(hypan): Using more specific names for the configs below.
                 "tools/android/avd/proto/creation/generic_android19.textpb",
                 "tools/android/avd/proto/creation/generic_android22.textpb",
@@ -149,8 +150,6 @@ packager_builder(
                 "tools/android/avd/proto/creation/generic_playstore_android32_foldable.textpb",
                 "tools/android/avd/proto/creation/generic_android33.textpb",
                 "tools/android/avd/proto/creation/generic_playstore_android33.textpb",
-                "tools/android/avd/proto/creation/generic_android34.textpb",
-                "tools/android/avd/proto/creation/generic_playstore_android34.textpb",
             ],
             "gclient_config": "chromium",
             "gclient_apply_config": ["android"],
