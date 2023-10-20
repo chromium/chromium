@@ -3080,6 +3080,13 @@
         {}
        ]
       ],
+      "text-in-inline-interrupted-by-float.html": [
+       "fbb26507a21c3d93cd47c0595f697e3e92ac9fb9",
+       [
+        null,
+        {}
+       ]
+      ],
       "trailing-parent-padding-between-spanners.html": [
        "ffd10021772d21c1db6d77bb074a77d92bd4b145",
        [
@@ -130587,6 +130594,19 @@
         [
          [
           "/css/css-fonts/matching/fixed-stretch-style-over-weight-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "font-unicode-PUA.html": [
+       "9ed897aa006317c2eee63ecd69cc37c068c34217",
+       [
+        null,
+        [
+         [
+          "/css/css-fonts/matching/font-unicode-PUA-ref.html",
           "=="
          ]
         ],
@@ -263909,32 +263929,6 @@
          {}
         ]
        ],
-       "2d.layer.render-opportunities.transferToImageBitmap.html": [
-        "634d9e3a78c1a585c60de3ab5f6609f22b0c2250",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.render-opportunities.transferToImageBitmap-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.render-opportunities.transferToImageBitmap.w.html": [
-        "823bfac58b09ee27c788ecad09872efb1ab2326b",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.render-opportunities.transferToImageBitmap-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "2d.layer.reset.html": [
         "3254c0a0489094feee414f868bdd59da81e11729",
         [
@@ -264195,7 +264189,7 @@
         ]
        ],
        "2d.layer.unclosed-nested.w.html": [
-        "dd1c36ea471975155643be51277562e3e3e785c6",
+        "e330e1710cf488f6cb31a8dd032f87ad2ae07905",
         [
          null,
          [
@@ -264221,7 +264215,7 @@
         ]
        ],
        "2d.layer.unclosed.w.html": [
-        "830dea7e3d1165dd3c6d236448a48779aca794f8",
+        "1da44c26c8661b2deaa9747d704acc52610debc7",
         [
          null,
          [
@@ -312633,6 +312627,10 @@
        "ebbef02f628baa63b2cb565f0f2850899d54ae65",
        []
       ],
+      "font-unicode-PUA-ref.html": [
+       "01b95e8e72e59bf248148555d32a5e06c943b166",
+       []
+      ],
       "range-descriptor-reversed-ref.html": [
        "e59dc50dc757ddc746e73615953372c4a3e92d3c",
        []
@@ -328808,14 +328806,6 @@
        []
       ]
      },
-     "at-property-cssom-expected.txt": [
-      "85e1ab7e2ab5a427cae5a1c03138204ea51c8c83",
-      []
-     ],
-     "at-property-expected.txt": [
-      "705767fb099fe2c123b71ad5b3ad2fcbe8bc68dc",
-      []
-     ],
      "registered-property-change-style-002-ref.html": [
       "758e769d7821fa55b82e339883f1f9c4d4f0d5e7",
       []
@@ -370066,14 +370056,6 @@
         "c73da157b12a2275c7a40d26300febb567e11025",
         []
        ],
-       "2d.layer.render-opportunities.transferToImageBitmap-expected.html": [
-        "36deca50f4a30f47dbadf225d63456cee774c39e",
-        []
-       ],
-       "2d.layer.render-opportunities.transferToImageBitmap.w.html.ini": [
-        "9586cca013a52bd4af54314d48079211fe8822d4",
-        []
-       ],
        "2d.layer.reset-expected.html": [
         "93131dca9cfee5953e4a06cee99ec1429d8f062d",
         []
@@ -370565,7 +370547,7 @@
         []
        ],
        "layers.yaml": [
-        "9145108bd3c27f1563fd3ca36e3ef3f1069f85b4",
+        "41cd2ddfb3d88aad1d44fd14b19fb1eb8b791f8a",
         []
        ],
        "line-styles.yaml": [
@@ -562601,6 +562583,20 @@
         "5c2bb73e8f8423aa0a3971ec6a1b8bfe60fdf2ba",
         [
          "html/canvas/offscreen/layers/2d.layer.layer-rendering-state-reset-in-layer.worker.html",
+         {}
+        ]
+       ],
+       "2d.layer.transferToImageBitmap.html": [
+        "5e5d6d16c6b11d2ee5b05797ad72aca21656da96",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.layer.transferToImageBitmap.worker.js": [
+        "073a3e84a486ac7ae6d95090cbce67661dbf7a7b",
+        [
+         "html/canvas/offscreen/layers/2d.layer.transferToImageBitmap.worker.html",
          {}
         ]
        ],
