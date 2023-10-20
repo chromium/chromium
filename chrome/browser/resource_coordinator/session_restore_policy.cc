@@ -232,10 +232,6 @@ void TabDataAccess::OnSiteDataAvailable(
     policy->notify_tab_score_changed_callback_.Run(contents, tab_data->score);
 
   ++policy->tabs_scored_;
-  DCHECK(tab_data->used_in_bg.has_value());
-  if (tab_data->used_in_bg)
-    ++policy->tabs_used_in_bg_;
-
   policy->DispatchNotifyAllTabsScoredIfNeeded();
 }
 #endif
@@ -245,15 +241,7 @@ SessionRestorePolicy::SessionRestorePolicy()
       delegate_(SysInfoDelegate::Get()),
       simultaneous_tab_loads_(CalculateSimultaneousTabLoads()) {}
 
-SessionRestorePolicy::~SessionRestorePolicy() {
-  // Record the number of tabs involved in the session restore that use
-  // background communications mechanisms.
-  DCHECK_GE(tabs_used_in_bg_, tabs_used_in_bg_restored_);
-  UMA_HISTOGRAM_COUNTS_100("SessionRestore.BackgroundUseCaseTabCount.Total",
-                           tabs_used_in_bg_);
-  UMA_HISTOGRAM_COUNTS_100("SessionRestore.BackgroundUseCaseTabCount.Restored",
-                           tabs_used_in_bg_restored_);
-}
+SessionRestorePolicy::~SessionRestorePolicy() = default;
 
 float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
   DCHECK(!base::Contains(tab_data_, contents));
@@ -322,10 +310,6 @@ void SessionRestorePolicy::RemoveTabForScoring(content::WebContents* contents) {
 
   if (HasFinalScore(tab_data)) {
     --tabs_scored_;
-
-    // Tabs are removed from the policy engine when they start loading.
-    if (tab_data->UsedInBg())
-      ++tabs_used_in_bg_restored_;
   }
 
   tab_data_.erase(it);

@@ -1018,27 +1018,6 @@ chromium-metrics-reviews@google.com.
   <summary>How did the user interact with the SessionCrashed Bubble?</summary>
 </histogram>
 
-<histogram name="SessionRestore.BackgroundUseCaseTabCount.Restored"
-    units="tabs" expires_after="2019-11-30">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of tabs involved in a single session restore that were observed
-    to have historically made use of background communication mechanisms
-    (favicon and tab title changes, notifications, etc).
-  </summary>
-</histogram>
-
-<histogram name="SessionRestore.BackgroundUseCaseTabCount.Total" units="tabs"
-    expires_after="2019-11-30">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of tabs involved in a single session restore that were observed
-    to have historically made use of background communication mechanisms
-    (favicon and tab title changes, notifications, etc) and that were actually
-    loaded.
-  </summary>
-</histogram>
-
 <histogram name="SessionRestore.ForegroundTabFirstPaint4" units="ms"
     expires_after="2024-02-22">
   <owner>chrisha@chromium.org</owner>
