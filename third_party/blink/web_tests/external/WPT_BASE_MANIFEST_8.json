@@ -19957,6 +19957,19 @@
        {}
       ]
      ],
+     "page-margin-006-print.html": [
+      "43621acf80920276c11349e4f3677ee03c6204ca",
+      [
+       null,
+       [
+        [
+         "/css/printing/page-margin-006-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "page-name-001-print.html": [
       "56281bb4ed5f8b3e34401420b10504ed6c0e00fd",
       [
@@ -130965,7 +130978,7 @@
       ]
      ],
      "size-adjust-unicode-range-system-fallback.html": [
-      "9e1a65d0fe7f03909434d7e6000e6a689f543887",
+      "6cfc23fec58fe650eb1c01487bec33b824004eb1",
       [
        null,
        [
@@ -173694,6 +173707,19 @@
        {}
       ]
      ],
+     "scrollbar-color-012.html": [
+      "974c6012b20d636d9b694305d4f7eb6ebc9190a9",
+      [
+       null,
+       [
+        [
+         "/css/css-scrollbars/scrollbar-color-012-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scrollbar-color-dynamic-1.html": [
       "0b4820c7b7ef2cb72df4e46de18c7b0c0f9c6bbb",
       [
@@ -193775,7 +193801,7 @@
        ]
       ],
       "text-spacing-trim-wrap-001.html": [
-       "9a3c9a9f78e678b08ab53ec53e01c4a12cf79e97",
+       "76af819d79cd53831be4670b401d16158ff6efb5",
        [
         "css/css-text/text-spacing-trim/text-spacing-trim-wrap-001.html?class=chws,htb",
         [
@@ -193818,7 +193844,7 @@
        ]
       ],
       "text-spacing-trim-wrap-br-001.html": [
-       "b1bf33b3438ef36d9da797b36fb8914254b80272",
+       "017443976f876546bd58d9c98c039bb3f6168874",
        [
         "css/css-text/text-spacing-trim/text-spacing-trim-wrap-br-001.html?class=chws,htb",
         [
@@ -312893,7 +312919,7 @@
       []
      ],
      "size-adjust-unicode-range-system-fallback-ref.html": [
-      "46586c6f5386402a28888a4b721ec72f9741ab38",
+      "c14d922a7059becf54dc3597f9302581b57a3140",
       []
      ],
      "size-adjust-unicode-range-system-fallback.html.ini": [
@@ -327324,10 +327350,6 @@
       "259afc014ec4c5ece4af5bb62a0a2d2d44d867d7",
       []
      ],
-     "scrollbar-gutter-dynamic-003.html.ini": [
-      "dc11616533f9bf55a546fb86227a245275db943d",
-      []
-     ],
      "scrollbar-gutter-rtl-002-ref.html": [
       "e6510a081353db996c4ead14ad6a167b90d48297",
       []
@@ -330794,6 +330816,10 @@
      ],
      "scrollbar-color-011-ref.html": [
       "a4db731eb0ddc19c9b51e8b365def94e156f2db1",
+      []
+     ],
+     "scrollbar-color-012-ref.html": [
+      "1effaf39223c5f6f26c6fce3456767197be06df0",
       []
      ],
      "scrollbar-color-dynamic-1-ref.html": [
@@ -336930,7 +336956,7 @@
        []
       ],
       "text-spacing-trim-wrap-001-ref.html": [
-       "0f620f6b5db6bcf6102eeca46d7dfd3cfeef3454",
+       "5295bdc34fff440fc3c75c6d1a1600390f601573",
        []
       ],
       "text-spacing-trim-wrap-001.html.ini": [
@@ -351574,6 +351600,10 @@
      ],
      "page-margin-005-print-ref.html": [
       "bd1829be383a7cbd7c6b134fc6efb6517520731f",
+      []
+     ],
+     "page-margin-006-print-ref.html": [
+      "fe7a2c66db21b005464b89a5436894c67b95ad58",
       []
      ],
      "page-name-001-print-ref.html": [
@@ -449956,7 +449986,7 @@
       ]
      ],
      "frame-src-cross-origin-load.sub.html": [
-      "956c79fbf0a17f02a5c354e1dfaeb360aeeeb647",
+      "d5a0d4bbbec22013bf8a620def15b48a689786ba",
       [
        null,
        {}
