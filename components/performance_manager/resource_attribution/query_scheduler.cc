@@ -5,6 +5,9 @@
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/task/task_runner.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -39,12 +42,16 @@ void QueryScheduler::RemoveCPUQuery() {
   }
 }
 
-QueryResultMap QueryScheduler::RequestCPUResults() {
+void QueryScheduler::RequestCPUResults(
+    base::OnceCallback<void(const QueryResultMap&)> callback,
+    scoped_refptr<base::TaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(cpu_monitor_.IsMonitoring());
   // TODO(crbug.com/1471683): Keep track of which ResourceContexts are being
   // queried, and return only those from `cpu_monitor_`.
-  return cpu_monitor_.UpdateAndGetCPUMeasurements();
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                cpu_monitor_.UpdateAndGetCPUMeasurements()));
 }
 
 CPUMeasurementMonitor& QueryScheduler::GetCPUMonitorForTesting() {

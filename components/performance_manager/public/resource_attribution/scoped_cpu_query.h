@@ -5,8 +5,15 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_SCOPED_CPU_QUERY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_SCOPED_CPU_QUERY_H_
 
+#include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
+
+namespace base {
+class TaskRunner;
+}
 
 namespace performance_manager {
 class Graph;
@@ -30,8 +37,11 @@ class ScopedCPUQuery {
   ScopedCPUQuery(const ScopedCPUQuery&) = delete;
   ScopedCPUQuery& operator=(const ScopedCPUQuery&) = delete;
 
-  // Requests the current CPU measurements.
-  QueryResultMap QueryOnce();
+  // Requests the current CPU measurements to be passed to `callback` on
+  // `task_runner`.
+  void QueryOnce(base::OnceCallback<void(const QueryResultMap&)> callback,
+                 scoped_refptr<base::TaskRunner> task_runner =
+                     base::SequencedTaskRunner::GetCurrentDefault());
 
  private:
   base::WeakPtr<QueryScheduler> scheduler_;

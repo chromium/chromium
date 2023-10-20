@@ -15,6 +15,8 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -42,8 +44,6 @@ namespace {
 
 using PageMeasurementBackgroundState =
     PageTimelineMonitor::PageMeasurementBackgroundState;
-
-using PageCPUUsageVector = std::vector<std::pair<const PageNode*, double>>;
 
 // CPU usage metrics are provided as a double in the [0.0, number of cores *
 // 100.0] range. The CPU usage is usually below 1%, so the UKM is
@@ -91,8 +91,9 @@ PageTimelineMonitor::PageTimelineMonitor()
 
   // PageResourceUsage is collected on a different schedule from PageTimeline.
   collect_page_resource_usage_timer_.Start(
-      FROM_HERE, base::Minutes(2), this,
-      &PageTimelineMonitor::CollectPageResourceUsage);
+      FROM_HERE, base::Minutes(2),
+      base::BindRepeating(&PageTimelineMonitor::CollectPageResourceUsage,
+                          weak_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
 PageTimelineMonitor::~PageTimelineMonitor() = default;
@@ -116,10 +117,18 @@ PageTimelineMonitor::PageNodeInfo::GetPageState() {
   }
 }
 
-void PageTimelineMonitor::CollectPageResourceUsage() {
+void PageTimelineMonitor::CollectPageResourceUsage(
+    base::OnceClosure done_closure) {
+  CalculatePageCPUUsage(
+      base::BindOnce(&PageTimelineMonitor::OnPageResourceUsageResult,
+                     weak_factory_.GetWeakPtr())
+          .Then(std::move(done_closure)));
+}
+
+void PageTimelineMonitor::OnPageResourceUsageResult(
+    const PageCPUUsageVector& page_cpu_usage) {
   // Calculate the overall CPU usage.
   double total_cpu_usage = 0;
-  const PageCPUUsageVector page_cpu_usage = CalculatePageCPUUsage();
   for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
     total_cpu_usage += cpu_usage;
   }
@@ -281,9 +290,15 @@ bool PageTimelineMonitor::ShouldCollectSlice() const {
 
 void PageTimelineMonitor::CheckDelayedCPUInterventionMetrics() {
   CHECK(performance_manager::features::kUseResourceAttributionCPUMonitor.Get());
+  CalculatePageCPUUsage(base::BindOnce(
+      &PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult,
+      weak_factory_.GetWeakPtr()));
+}
 
+void PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult(
+    const PageCPUUsageVector& page_cpu_usage) {
+  CHECK(performance_manager::features::kUseResourceAttributionCPUMonitor.Get());
   double total_cpu_usage = 0;
-  auto page_cpu_usage = CalculatePageCPUUsage();
   for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
     total_cpu_usage += cpu_usage;
   }
@@ -297,7 +312,7 @@ void PageTimelineMonitor::CheckDelayedCPUInterventionMetrics() {
 }
 
 void PageTimelineMonitor::LogCPUInterventionMetrics(
-    const PageCPUUsageVector page_cpu_usage,
+    const PageCPUUsageVector& page_cpu_usage,
     const base::TimeTicks now,
     const std::string& suffix) {
   std::vector<double> background_cpu_usage;
@@ -403,10 +418,16 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
   }
 }
 
-PageCPUUsageVector PageTimelineMonitor::CalculatePageCPUUsage() {
-  const PageTimelineCPUMonitor::CPUUsageMap cpu_usage_map =
-      cpu_monitor_.UpdateCPUMeasurements();
+void PageTimelineMonitor::CalculatePageCPUUsage(
+    base::OnceCallback<void(const PageCPUUsageVector&)> callback) {
+  cpu_monitor_.UpdateCPUMeasurements(
+      base::BindOnce(&PageTimelineMonitor::OnCPUUsageResult,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
 
+void PageTimelineMonitor::OnCPUUsageResult(
+    base::OnceCallback<void(const PageCPUUsageVector&)> callback,
+    const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map) {
   // Calculate the overall CPU usage.
   PageCPUUsageVector page_cpu_usage;
   page_cpu_usage.reserve(page_node_info_map_.size());
@@ -418,8 +439,7 @@ PageCPUUsageVector PageTimelineMonitor::CalculatePageCPUUsage() {
         PageTimelineCPUMonitor::EstimatePageCPUUsage(page_node, cpu_usage_map);
     page_cpu_usage.emplace_back(page_node, cpu_usage);
   }
-
-  return page_cpu_usage;
+  std::move(callback).Run(std::move(page_cpu_usage));
 }
 
 void PageTimelineMonitor::SetTriggerCollectionManuallyForTesting() {

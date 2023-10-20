@@ -11,6 +11,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -98,7 +99,9 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
   void TriggerCollectSlice() { monitor_->CollectSlice(); }
 
   void TriggerCollectPageResourceUsage() {
-    monitor_->CollectPageResourceUsage();
+    base::RunLoop run_loop;
+    monitor_->CollectPageResourceUsage(run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   void ResetUkmRecorder() {

@@ -5,13 +5,19 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_QUERY_SCHEDULER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_QUERY_SCHEDULER_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
+
+namespace base {
+class TaskRunner;
+}
 
 namespace performance_manager::resource_attribution {
 
@@ -40,9 +46,11 @@ class QueryScheduler : public GraphRegisteredImpl<QueryScheduler>,
   // usage when the count == 0.
   void RemoveCPUQuery();
 
-  // Requests the latest CPU measurements from `cpu_monitor_`. Asserts that the
-  // CPU query count > 0.
-  QueryResultMap RequestCPUResults();
+  // Requests the latest CPU measurements from `cpu_monitor_`, and posts them
+  // to `callback` on `task_runner`. Asserts that the CPU query count > 0.
+  void RequestCPUResults(
+      base::OnceCallback<void(const QueryResultMap&)> callback,
+      scoped_refptr<base::TaskRunner> task_runner);
 
   // Gives tests direct access to `cpu_monitor_`.
   CPUMeasurementMonitor& GetCPUMonitorForTesting();

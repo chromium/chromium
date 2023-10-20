@@ -14,6 +14,7 @@
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/performance_manager/public/features.h"
@@ -138,25 +139,29 @@ void PageTimelineCPUMonitor::StopMonitoring(Graph* graph) {
   }
 }
 
-PageTimelineCPUMonitor::CPUUsageMap
-PageTimelineCPUMonitor::UpdateCPUMeasurements() {
+void PageTimelineCPUMonitor::UpdateCPUMeasurements(
+    base::OnceCallback<void(const CPUUsageMap&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Update CPU metrics, attributing the cumulative CPU of each process to its
   // frames and workers.
   CHECK(!last_measurement_time_.is_null());
-  CPUUsageMap cpu_usage_map;
   const base::TimeTicks now = base::TimeTicks::Now();
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
-    cpu_usage_map =
-        UpdateResourceAttributionCPUMeasurements(now - last_measurement_time_);
+    cpu_query_->QueryOnce(base::BindOnce(
+        &PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements,
+        weak_factory_.GetWeakPtr(), std::move(callback),
+        now - last_measurement_time_));
   } else {
+    CPUUsageMap cpu_usage_map;
     for (auto& [process_node, cpu_measurement] : cpu_measurement_map_) {
       cpu_measurement.MeasureAndDistributeCPUUsage(
           process_node, last_measurement_time_, now, cpu_usage_map);
     }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(cpu_usage_map)));
   }
   last_measurement_time_ = now;
-  return cpu_usage_map;
 }
 
 // static
@@ -237,23 +242,23 @@ void PageTimelineCPUMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   CHECK(was_inserted);
 }
 
-PageTimelineCPUMonitor::CPUUsageMap
-PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements(
-    base::TimeDelta measurement_interval) {
+void PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements(
+    base::OnceCallback<void(const CPUUsageMap&)> callback,
+    base::TimeDelta measurement_interval,
+    const resource_attribution::QueryResultMap& results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(features::kUseResourceAttributionCPUMonitor.Get());
   if (measurement_interval.is_zero()) {
-    // No time passed to measure.
-    return CPUUsageMap();
+    // No time passed to measure. Ignore the results to avoid division by zero.
+    std::move(callback).Run({});
+    return;
   }
   CHECK(measurement_interval.is_positive());
 
   // Swap a new measurement into `cached_cpu_measurements_`, storing the
   // previous contents in `previous_measurements`.
-  CHECK(cpu_query_);
   std::map<ResourceContext, resource_attribution::CPUTimeResult>
-      previous_measurements =
-          std::exchange(cached_cpu_measurements_, cpu_query_->QueryOnce());
+      previous_measurements = std::exchange(cached_cpu_measurements_, results);
 
   CPUUsageMap cpu_usage_map;
   for (const auto& [context, result] : cached_cpu_measurements_) {
@@ -335,7 +340,7 @@ PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements(
     CHECK(!current_cpu.is_negative());
     cpu_usage_map.emplace(context, current_cpu / measurement_interval);
   }
-  return cpu_usage_map;
+  std::move(callback).Run(std::move(cpu_usage_map));
 }
 
 PageTimelineCPUMonitor::CPUMeasurement::CPUMeasurement(

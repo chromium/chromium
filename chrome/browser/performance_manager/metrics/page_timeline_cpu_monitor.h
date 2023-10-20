@@ -8,6 +8,8 @@
 #include <map>
 #include <memory>
 
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/process_node.h"
@@ -64,10 +66,11 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // Stops monitoring ProcessNode's in `graph`.
   void StopMonitoring(Graph* graph);
 
-  // Updates the CPU measurements for each ProcessNode being tracked and returns
-  // the estimated CPU usage of each frame and worker in those processes since
-  // the last time UpdateCPUMeasurements() was called .
-  CPUUsageMap UpdateCPUMeasurements();
+  // Updates the CPU measurements for each ProcessNode being tracked and invokes
+  // `callback` with the estimated CPU usage of each frame and worker in those
+  // processes since the last time UpdateCPUMeasurements() was called .
+  void UpdateCPUMeasurements(
+      base::OnceCallback<void(const CPUUsageMap&)> callback);
 
   // Helper to estimate the CPU usage of a PageNode given the estimates for all
   // frames and workers. If the kUseResourceAttributionCPUMonitor feature
@@ -122,11 +125,13 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // `cpu_measurement_map_`.
   void MonitorCPUUsage(const ProcessNode* process_node);
 
-  // Uses `cpu_measurement_monitor_` to update CPU measurements. Called from
-  // UpdateCPUMeasurements() if the kUseResourceAttributionCPUMonitor feature
-  // parameter is enabled.
-  CPUUsageMap UpdateResourceAttributionCPUMeasurements(
-      base::TimeDelta measurement_interval);
+  // Uses results from `cpu_measurement_monitor_` to update CPU measurements.
+  // Called from UpdateCPUMeasurements() if the
+  // kUseResourceAttributionCPUMonitor feature parameter is enabled.
+  void UpdateResourceAttributionCPUMeasurements(
+      base::OnceCallback<void(const CPUUsageMap&)> callback,
+      base::TimeDelta measurement_interval,
+      const resource_attribution::QueryResultMap& results);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -155,6 +160,8 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   std::map<resource_attribution::ResourceContext,
            resource_attribution::CPUTimeResult>
       cached_cpu_measurements_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<PageTimelineCPUMonitor> weak_factory_{this};
 };
 
 }  // namespace metrics
