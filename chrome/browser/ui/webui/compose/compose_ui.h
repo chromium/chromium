@@ -43,6 +43,8 @@ class ComposeUI : public ui::MojoBubbleWebUIController,
 
  private:
   void CreateComposeDialogPageHandler(
+      mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
+          close_handler,
       mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
       mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) override;
   mojo::Receiver<compose::mojom::ComposeDialogPageHandlerFactory>

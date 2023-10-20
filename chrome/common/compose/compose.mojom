@@ -9,6 +9,7 @@ module compose.mojom;
 interface ComposeDialogPageHandlerFactory {
   // Called from dialog compose JS to set up native handler.
   CreateComposeDialogPageHandler(
+      pending_receiver<ComposeDialogClosePageHandler> close_handler,
       pending_receiver<ComposeDialogPageHandler> handler,
       pending_remote<ComposeDialog> dialog);
 };
@@ -72,6 +73,11 @@ struct OpenMetadata {
   ComposeState compose_state;
 };
 
+// The trigger for dismissing the compose dialog.
+enum CloseReason {
+  // The X button on the upper-right of the dialog.
+  kCloseButton,
+};
 
 // Interface for calls from Compose dialog JS into the Browser process.
 interface ComposeDialogPageHandler {
@@ -94,6 +100,13 @@ interface ComposeDialogPageHandler {
   // Asks the native handler for state information needed for opening the
   // compose dialog for the last field the user selected compose on.
   RequestInitialState() => (OpenMetadata initial_state);
+};
+
+// Interface for calls from Compose dialog JS into the Browser process.
+interface ComposeDialogClosePageHandler {
+  // Asks the receiver to close the compose dialog. `reason` describes
+  // the user action that triggered the close.
+  CloseUI(CloseReason reason);
 };
 
 // Interface for calls from the Browser process into Compose dialog JS.

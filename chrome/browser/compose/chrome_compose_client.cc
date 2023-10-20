@@ -43,7 +43,8 @@ const char kComposeURL[] = "chrome://compose/";
 
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
     : content::WebContentsUserData<ChromeComposeClient>(*web_contents),
-      manager_(this) {
+      manager_(this),
+      close_page_receiver_(this) {
   profile_ = Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
 
@@ -62,8 +63,13 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
 ChromeComposeClient::~ChromeComposeClient() = default;
 
 void ChromeComposeClient::BindComposeDialog(
+    mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
+        close_handler,
     mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
     mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) {
+  close_page_receiver_.reset();
+  close_page_receiver_.Bind(std::move(close_handler));
+
   url::Origin origin =
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
   if (origin == url::Origin::Create(GURL(kComposeURL))) {
@@ -72,8 +78,7 @@ void ChromeComposeClient::BindComposeDialog(
     debug_session_->Bind(std::move(handler), std::move(dialog));
     return;
   }
-
-  sessions_.at(last_compose_field_id_)
+  sessions_.at(last_compose_field_id_.value())
       ->Bind(std::move(handler), std::move(dialog));
 }
 
@@ -96,22 +101,43 @@ void ChromeComposeClient::ShowComposeDialog(
   }
 }
 
+void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
+  switch (reason) {
+    case compose::mojom::CloseReason::kCloseButton:
+      RemoveActiveSession();
+      break;
+  }
+  // TODO(b/302748101) Call CloseDialog() on ComposeDialogController.
+}
+
 void ChromeComposeClient::SaveFieldAndCreateComposeStateIfEmpty(
     const autofill::FieldGlobalId& field_id,
     ComposeCallback callback) {
-  last_compose_field_id_ = field_id;
-  auto it = sessions_.find(last_compose_field_id_);
+  last_compose_field_id_ =
+      std::make_optional<autofill::FieldGlobalId>(field_id);
+  auto it = sessions_.find(last_compose_field_id_.value());
   if (it != sessions_.end()) {
     // Update existing session
     auto& existing_session = *it->second;
     existing_session.SetComposeResultCallback(std::move(callback));
     return;
   }
-
   sessions_.emplace(
-      last_compose_field_id_,
+      last_compose_field_id_.value(),
       std::make_unique<ComposeSession>(&GetWebContents(), GetModelExecutor(),
                                        std::move(callback)));
+}
+
+void ChromeComposeClient::RemoveActiveSession() {
+  if (debug_session_) {
+    debug_session_.reset();
+    return;
+  }
+  auto it = sessions_.find(last_compose_field_id_.value());
+  CHECK(it != sessions_.end())
+      << "Attempted to remove compose session that doesn't exist.";
+  sessions_.erase(last_compose_field_id_.value());
+  last_compose_field_id_.reset();
 }
 
 compose::ComposeManager& ChromeComposeClient::GetManager() {

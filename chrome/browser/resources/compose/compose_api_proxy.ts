@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeDialogCallbackRouter, ComposeDialogPageHandlerFactory, ComposeDialogPageHandlerInterface, ComposeDialogPageHandlerRemote, StyleModifiers} from './compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeDialogClosePageHandlerRemote, ComposeDialogPageHandlerFactory, ComposeDialogPageHandlerRemote, StyleModifiers} from './compose.mojom-webui.js';
 
 /** @interface */
 export interface ComposeApiProxy {
@@ -14,14 +14,14 @@ export interface ComposeApiProxy {
 export class ComposeApiProxyImpl implements ComposeApiProxy {
   static instance: ComposeApiProxy|null = null;
 
-  handler: ComposeDialogPageHandlerInterface =
-      new ComposeDialogPageHandlerRemote();
   composeDialogPageHandler = new ComposeDialogPageHandlerRemote();
+  composeDialogClosePageHandler = new ComposeDialogClosePageHandlerRemote();
   router = new ComposeDialogCallbackRouter();
 
   constructor() {
     const factoryRemote = ComposeDialogPageHandlerFactory.getRemote();
     factoryRemote.createComposeDialogPageHandler(
+        this.composeDialogClosePageHandler.$.bindNewPipeAndPassReceiver(),
         this.composeDialogPageHandler.$.bindNewPipeAndPassReceiver(),
         this.router.$.bindNewPipeAndPassRemote());
   }
@@ -48,5 +48,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
   /** @override */
   acceptComposeResult() {
     this.composeDialogPageHandler.acceptComposeResult();
+  }
+
+  /** @override */
+  closeUi(reason: CloseReason) {
+    this.composeDialogClosePageHandler.closeUI(reason);
   }
 }

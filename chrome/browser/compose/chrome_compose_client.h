@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_COMPOSE_CHROME_COMPOSE_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -33,7 +34,8 @@ class WebContents;
 // An implementation of `ComposeClient` for Desktop and Android.
 class ChromeComposeClient
     : public compose::ComposeClient,
-      public content::WebContentsUserData<ChromeComposeClient> {
+      public content::WebContentsUserData<ChromeComposeClient>,
+      public compose::mojom::ComposeDialogClosePageHandler {
  public:
   ChromeComposeClient(const ChromeComposeClient&) = delete;
   ChromeComposeClient& operator=(const ChromeComposeClient&) = delete;
@@ -48,7 +50,14 @@ class ChromeComposeClient
           popup_screen_location,
       ComposeCallback callback) override;
 
+  // ComposeDialogClosePageHandler
+  // Closes the compose dialog. `reason` describes the user action that
+  // triggered the close.
+  void CloseUI(compose::mojom::CloseReason reason) override;
+
   void BindComposeDialog(
+      mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
+          close_handler,
       mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
       mojo::PendingRemote<compose::mojom::ComposeDialog> dialog);
 
@@ -77,6 +86,10 @@ class ChromeComposeClient
       const autofill::FieldGlobalId& field_id,
       ComposeCallback callback);
 
+  // Removes `last_compose_field_id_` from `sessions_` and resets
+  // `last_compose_field_id_`.
+  void RemoveActiveSession();
+
   compose::ComposeManagerImpl manager_;
 
   std::unique_ptr<compose::ComposeDialogController> compose_dialog_controller_;
@@ -88,11 +101,19 @@ class ChromeComposeClient
       model_executor_for_test_;
 
   // The unique renderer ID of the last field the user selected compose on.
-  autofill::FieldGlobalId last_compose_field_id_;
+  std::optional<autofill::FieldGlobalId> last_compose_field_id_;
 
   // Saved states for each compose field.
   base::flat_map<autofill::FieldGlobalId, std::unique_ptr<ComposeSession>>
       sessions_;
+
+  // A mojom receiver that is bound to `this` in `BindComposeDialog()`. A pipe
+  // may disconnect but this receiver will still be bound, until reset in the
+  // next bind call. With mojo, there is no need to immediately reset the
+  // binding when the pipe disconnects. Any callbacks in receiver methods can be
+  // safely called even when the pipe is disconnected.
+  mojo::Receiver<compose::mojom::ComposeDialogClosePageHandler>
+      close_page_receiver_;
 
   // Used to test Compose in a tab at |chrome://compose|.
   std::unique_ptr<ComposeSession> debug_session_;

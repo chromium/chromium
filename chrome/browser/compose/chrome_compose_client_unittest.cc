@@ -119,6 +119,9 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   void BindMojo() {
     // Setup Dialog Page Handler.
+    mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
+        close_page_handler_pending_receiver =
+            close_page_handler_.BindNewPipeAndPassReceiver();
     mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler>
         page_handler_pending_receiver =
             page_handler_.BindNewPipeAndPassReceiver();
@@ -132,7 +135,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
             callback_router_->BindNewPipeAndPassRemote();
 
     // Bind mojo to client.
-    client_->BindComposeDialog(std::move(page_handler_pending_receiver),
+    client_->BindComposeDialog(std::move(close_page_handler_pending_receiver),
+                               std::move(page_handler_pending_receiver),
                                std::move(callback_router_pending_remote));
   }
 
@@ -140,6 +144,11 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   MockModelExecutor& model_executor() { return model_executor_; }
   MockOptimizationGuideDecider& opt_guide() { return opt_guide_; }
   MockComposeDialog& compose_dialog() { return compose_dialog_; }
+
+  mojo::Remote<compose::mojom::ComposeDialogClosePageHandler>&
+  close_page_handler() {
+    return close_page_handler_;
+  }
 
   mojo::Remote<compose::mojom::ComposeDialogPageHandler>& page_handler() {
     return page_handler_;
@@ -194,9 +203,12 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   MockModelExecutor model_executor_;
   MockOptimizationGuideDecider opt_guide_;
   MockComposeDialog compose_dialog_;
+  autofill::FormFieldData field_data_;
 
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialog>>
       callback_router_;
+  mojo::Remote<compose::mojom::ComposeDialogClosePageHandler>
+      close_page_handler_;
   mojo::Remote<compose::mojom::ComposeDialogPageHandler> page_handler_;
 };
 
@@ -560,6 +572,22 @@ TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {
   EXPECT_EQ("Cucumbers", result->result);
 }
 
+// Tests that closing after showing the dialog does not crash the browser.
+TEST_F(ChromeComposeClientTest, TestCloseUI) {
+  ShowDialogAndBindMojo();
+  close_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+}
+
+// Tests that closing the session at chrome://compose does not crash the
+// browser, even though there is no dialog shown at that URL.
+TEST_F(ChromeComposeClientTest, TestCloseUIAtChromeCompose) {
+  NavigateAndCommitActiveTab(GURL("chrome://compose"));
+  // We skip the dialog showing here, as there is no dialog required at this
+  // URL.
+  BindMojo();
+  close_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+}
+
 #if defined(GTEST_HAS_DEATH_TEST)
 // Tests that the Compose client crashes the browser if a webcontents
 // tries to bind mojo without opening the dialog at a non Compose URL.
@@ -567,5 +595,45 @@ TEST_F(ChromeComposeClientTest, NoStateCrashesAtOtherUrls) {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
   // We skip the dialog showing here, to validate that non special URLs check.
   EXPECT_DEATH(BindMojo(), "");
+}
+
+// Tests that the Compose client crashes the browser if a webcontents
+// sends any message when the dialog has not been shown.
+TEST_F(ChromeComposeClientTest, TestCannotSendMessagesToNotShownDialog) {
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  EXPECT_DEATH(page_handler()->SaveWebUIState(""), "");
+}
+
+// Tests that the Compose client crashes the browser if a webcontents
+// tries to close the dialog when the dialog has not been shown.
+TEST_F(ChromeComposeClientTest, TestCannotCloseNotShownDialog) {
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  EXPECT_DEATH(
+      close_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton),
+      "");
+}
+
+// Tests that the Compose client crashes the browser if a webcontents
+// tries to close the dialog when the dialog has not been shown.
+TEST_F(ChromeComposeClientTest, TestCannotSendMessagesAfterClosingDialog) {
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  ShowDialogAndBindMojo();
+  close_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+  // Any message after closing the session will crash.
+  EXPECT_DEATH(page_handler()->SaveWebUIState(""), "");
+}
+
+// Tests that the Compose client crashes the browser if a webcontents
+// sends any more messages after closing the dialog at chrome://contents.
+TEST_F(ChromeComposeClientTest,
+       TestCannotSendMessagesAfterClosingDialogAtChromeCompose) {
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  NavigateAndCommitActiveTab(GURL("chrome://compose"));
+  // We skip the dialog showing here, as there is no dialog required at this
+  // URL.
+  BindMojo();
+  close_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+  // Any message after closing the session will crash.
+  EXPECT_DEATH(page_handler()->SaveWebUIState(""), "");
 }
 #endif  // GTEST_HAS_DEATH_TEST
