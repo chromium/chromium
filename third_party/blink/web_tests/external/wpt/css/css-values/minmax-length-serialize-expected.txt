@@ -20,7 +20,7 @@ This is a testharness.js-based test.
 [PASS] 'min(1px, 1em)' as a specified value should serialize as 'min(1px, 1em)'.
 [PASS] 'min(1px, 1em)' as a computed value should serialize as '1px'.
 [FAIL] 'calc(min(1px, 1in) + max(100px + 1em, 10px + 1in) + 1px)' as a specified value should serialize as 'calc(2px + max(1em + 100px, 106px))'.
-  assert_equals: 'calc(min(1px, 1in) + max(100px + 1em, 10px + 1in) + 1px)' and 'calc(2px + max(1em + 100px, 106px))' should serialize the same in specified values. expected "calc(2px + max(1em + 100px, 106px))" but got "calc(1px + max(100px + 1em, 106px) + 1px)"
+  assert_equals: 'calc(min(1px, 1in) + max(100px + 1em, 10px + 1in) + 1px)' and 'calc(2px + max(1em + 100px, 106px))' should serialize the same in specified values. expected "calc(2px + max(1em + 100px, 106px))" but got "calc(2px + max(100px + 1em, 106px))"
 [PASS] 'calc(min(1px, 1in) + max(100px + 1em, 10px + 1in) + 1px)' as a computed value should serialize as '118px'.
 Harness: the test ran to completion.
 
