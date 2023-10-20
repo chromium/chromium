@@ -11,8 +11,8 @@
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
-#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
-#             chromeos-board-jacuzzi chromeos-board-octopus
+#         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -223,11 +223,6 @@ crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExt
 crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 crbug.com/1473838 [ chromeos chromeos-board-amd64-generic angle-opengles passthrough ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
-# Unsupported on this config.
-crbug.com/1429756 [ chromeos chromeos-board-kevin passthrough ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
-crbug.com/1429756 [ chromeos chromeos-board-kevin passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Skip ]
-crbug.com/1429756 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
-
 # Extensions not available on jacuzzi ChromeOS devices.
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_clip_control [ Skip ]
@@ -389,8 +384,6 @@ crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 # this config under normal circumstances. With bad luck, we can end up hitting
 # the default 15 second heartbeat timeout because of that.
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/functional/gles3/uniformapi/random.html [ Slow ]
-
-crbug.com/1441710 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
 
 ###################
 # Failures/Flakes #

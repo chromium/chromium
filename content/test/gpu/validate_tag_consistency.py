@@ -171,8 +171,8 @@ TAG_HEADER = """\
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
-#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
-#             chromeos-board-jacuzzi chromeos-board-octopus
+#         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
