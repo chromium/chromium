@@ -500,7 +500,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     return;
   }
 
-  if (suggestion.popupItemId == autofill::PopupItemId::kAutocompleteEntry) {
+  if (suggestion.popupItemId == autofill::PopupItemId::kAutocompleteEntry ||
+      suggestion.popupItemId ==
+          autofill::PopupItemId::kFillExistingPlusAddress) {
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
         uniqueFieldID:uniqueFieldID
