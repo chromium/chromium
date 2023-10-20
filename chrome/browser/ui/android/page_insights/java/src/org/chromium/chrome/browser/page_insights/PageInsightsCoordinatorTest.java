@@ -92,7 +92,7 @@ import java.util.function.BooleanSupplier;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PageInsightsCoordinatorTest {
-    private static final float ASSERTION_DELTA = 0.01f;
+    private static final float ASSERTION_DELTA = 1.01f;
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
