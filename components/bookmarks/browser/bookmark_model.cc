@@ -743,11 +743,6 @@ void BookmarkModel::DeleteUnsyncedNodeMetaInfo(const BookmarkNode* node,
   }
 }
 
-void BookmarkModel::AddNonClonedKey(const std::string& key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  non_cloned_keys_.insert(key);
-}
-
 void BookmarkModel::OnFaviconsChanged(const std::set<GURL>& page_urls,
                                       const GURL& icon_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

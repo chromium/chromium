@@ -361,16 +361,6 @@ class BookmarkModel final : public BookmarkUndoProvider,
   void DeleteUnsyncedNodeMetaInfo(const BookmarkNode* node,
                                   const std::string& key);
 
-  // Adds `key` to the set of meta info keys that are not copied when a node is
-  // cloned.
-  void AddNonClonedKey(const std::string& key);
-
-  // Returns the set of meta info keys that should not be copied when a node is
-  // cloned.
-  const std::set<std::string>& non_cloned_keys() const {
-    return non_cloned_keys_;
-  }
-
   // Notify BookmarkModel that the favicons for the given page URLs (e.g.
   // http://www.google.com) and the given icon URL (e.g.
   // http://www.google.com/favicon.ico) have changed. It is valid to call
@@ -528,8 +518,6 @@ class BookmarkModel final : public BookmarkUndoProvider,
 
   // See description of IsDoingExtensiveChanges above.
   int extensive_changes_ = 0;
-
-  std::set<std::string> non_cloned_keys_;
 
   scoped_refptr<ModelLoader> model_loader_;
 

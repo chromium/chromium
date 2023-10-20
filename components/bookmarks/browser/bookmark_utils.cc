@@ -54,9 +54,6 @@ void CloneBookmarkNodeImpl(BookmarkModel* model,
                            bool reset_node_times) {
   // Make sure to not copy non clonable keys.
   BookmarkNode::MetaInfoMap meta_info_map = element.meta_info_map;
-  for (const std::string& key : model->non_cloned_keys())
-    meta_info_map.erase(key);
-
   if (element.is_url) {
     Time date_added = reset_node_times ? Time::Now() : element.date_added;
     DCHECK(!date_added.is_null());
