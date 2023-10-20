@@ -221,44 +221,51 @@ CloudOpenMetrics::~CloudOpenMetrics() {
 }
 
 void CloudOpenMetrics::LogCopyError(base::File::Error value) {
-  copy_error_.Log(value);
-  PrintDebugInformationIfInconsistent(copy_error_, /*destructor=*/false);
+  if (!copy_error_.Log(value)) {
+    PrintDebugInformation(copy_error_);
+  }
 }
 
 void CloudOpenMetrics::LogMoveError(base::File::Error value) {
-  move_error_.Log(value);
-  PrintDebugInformationIfInconsistent(move_error_, /*destructor=*/false);
+  if (!move_error_.Log(value)) {
+    PrintDebugInformation(move_error_);
+  }
 }
 
 void CloudOpenMetrics::LogGoogleDriveOpenError(OfficeDriveOpenErrors value) {
-  drive_open_error_.Log(value);
-  PrintDebugInformationIfInconsistent(drive_open_error_, /*destructor=*/false);
+  if (!drive_open_error_.Log(value)) {
+    PrintDebugInformation(drive_open_error_);
+  }
 }
 
 void CloudOpenMetrics::LogOneDriveOpenError(OfficeOneDriveOpenErrors value) {
-  one_drive_open_error_.Log(value);
-  PrintDebugInformationIfInconsistent(one_drive_open_error_,
-                                      /*destructor=*/false);
+  if (!one_drive_open_error_.Log(value)) {
+    PrintDebugInformation(one_drive_open_error_);
+  }
 }
 
 void CloudOpenMetrics::LogSourceVolume(OfficeFilesSourceVolume value) {
-  source_volume_.Log(value);
-  PrintDebugInformationIfInconsistent(source_volume_, /*destructor=*/false);
+  if (!source_volume_.Log(value)) {
+    PrintDebugInformation(source_volume_);
+  }
 }
 
 void CloudOpenMetrics::LogTaskResult(OfficeTaskResult value) {
-  task_result_.Log(value);
-  PrintDebugInformationIfInconsistent(task_result_, /*destructor=*/false);
+  if (!task_result_.Log(value)) {
+    PrintDebugInformation(task_result_);
+  }
 }
 
 void CloudOpenMetrics::LogTransferRequired(OfficeFilesTransferRequired value) {
-  transfer_required_.Log(value);
-  PrintDebugInformationIfInconsistent(transfer_required_, /*destructor=*/false);
+  if (!transfer_required_.Log(value)) {
+    PrintDebugInformation(transfer_required_);
+  }
 }
 
 void CloudOpenMetrics::LogUploadResult(OfficeFilesUploadResult value) {
-  upload_result_.Log(value);
-  PrintDebugInformationIfInconsistent(upload_result_, /*destructor=*/false);
+  if (!upload_result_.Log(value)) {
+    PrintDebugInformation(upload_result_);
+  }
 }
 
 base::SafeRef<CloudOpenMetrics> CloudOpenMetrics::GetSafeRef() const {
@@ -271,53 +278,9 @@ base::WeakPtr<CloudOpenMetrics> CloudOpenMetrics::GetWeakPtr() {
 }
 
 template <typename MetricType>
-void CloudOpenMetrics::PrintDebugInformationIfInconsistent(
-    Metric<MetricType>& metric,
-    bool destructor) {
-  if (metric.state == MetricState::kCorrectlyNotLogged ||
-      metric.state == MetricState::kCorrectlyLogged) {
-    // Consistent state.
-    return;
-  }
-  if (destructor &&
-      metric.state == MetricState::kIncorrectlyLoggedMultipleTimes) {
-    // This inconsistency is detected during the cloud upload flow and
-    // should not be re-detected in the destructor.
-    return;
-  }
+void CloudOpenMetrics::PrintDebugInformation(Metric<MetricType>& metric) {
   inconsistency_found_ = true;
   LOG(ERROR) << "Inconsistent metric found: " << metric;
-  PrintMetrics();
-}
-
-template <typename MetricType>
-void CloudOpenMetrics::ExpectNotLogged(Metric<MetricType>& metric) {
-  metric.MakeInconsistentIfLogged();
-  PrintDebugInformationIfInconsistent(metric);
-}
-
-template <typename MetricType>
-void CloudOpenMetrics::ExpectNotLoggedWith(
-    Metric<MetricType>& metric,
-    const std::vector<MetricType>& values) {
-  metric.MakeInconsistentIfLoggedWith(values);
-  PrintDebugInformationIfInconsistent(metric);
-}
-
-template <typename MetricType>
-void CloudOpenMetrics::ExpectLogged(Metric<MetricType>& metric) {
-  metric.MakeInconsistentIfNotLogged();
-  PrintDebugInformationIfInconsistent(metric);
-}
-
-template <typename MetricType>
-void CloudOpenMetrics::ExpectLoggedWith(Metric<MetricType>& metric,
-                                        const std::vector<MetricType>& values) {
-  metric.MakeInconsistentIfNotLoggedWith(values);
-  PrintDebugInformationIfInconsistent(metric);
-}
-
-void CloudOpenMetrics::PrintMetrics() {
   LOG(ERROR) << "Metrics: " << std::endl
              << copy_error_ << std::endl
              << move_error_ << std::endl
@@ -327,6 +290,37 @@ void CloudOpenMetrics::PrintMetrics() {
              << task_result_ << std::endl
              << transfer_required_ << std::endl
              << upload_result_;
+}
+
+template <typename MetricType>
+void CloudOpenMetrics::ExpectNotLogged(Metric<MetricType>& metric) {
+  if (!metric.IsNotLogged()) {
+    PrintDebugInformation(metric);
+  }
+}
+
+template <typename MetricType>
+void CloudOpenMetrics::ExpectNotLoggedWith(
+    Metric<MetricType>& metric,
+    const std::vector<MetricType>& values) {
+  if (!metric.IsNotLoggedWith(values)) {
+    PrintDebugInformation(metric);
+  }
+}
+
+template <typename MetricType>
+void CloudOpenMetrics::ExpectLogged(Metric<MetricType>& metric) {
+  if (!metric.IsLogged()) {
+    PrintDebugInformation(metric);
+  }
+}
+
+template <typename MetricType>
+void CloudOpenMetrics::ExpectLoggedWith(Metric<MetricType>& metric,
+                                        const std::vector<MetricType>& values) {
+  if (!metric.IsLoggedWith(values)) {
+    PrintDebugInformation(metric);
+  }
 }
 
 }  // namespace ash::cloud_upload

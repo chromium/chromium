@@ -44,7 +44,9 @@ class Metric {
   // `value`. Update the state:
   //   kCorrectlyNotLogged  -> kCorrectlyLogged
   //   !kCorrectlyNotLogged -> kIncorrectlyLoggedMultipleTimes
-  void Log(MetricType new_value) {
+  // Return false if there was a metric inconsistency. That is, if the latter
+  // state change occurred.
+  bool Log(MetricType new_value) {
     LogMetric(new_value);
     if (state == MetricState::kCorrectlyNotLogged) {
       state = MetricState::kCorrectlyLogged;
@@ -53,6 +55,7 @@ class Metric {
     }
     old_value = value;
     value = new_value;
+    return state == MetricState::kCorrectlyLogged;
   }
 
   // Return true if the `state` is a logged state.
@@ -69,36 +72,51 @@ class Metric {
     }
   }
 
-  // Metric should not be logged.
-  void MakeInconsistentIfLogged() {
+  // Check metric is not logged, otherwise mark the metric as inconsistent and
+  // return false.
+  bool IsNotLogged() {
     if (logged()) {
       state = MetricState::kIncorrectlyLogged;
+      return false;
     }
+    return true;
   }
 
-  // Metric should be logged but not with a value in `values`.
-  void MakeInconsistentIfLoggedWith(const std::vector<MetricType>& values) {
+  // Check metric is logged but not with a value in `values`, otherwise mark the
+  // metric as inconsistent and return false.
+  bool IsNotLoggedWith(const std::vector<MetricType>& values) {
     if (!logged()) {
       state = MetricState::kIncorrectlyNotLogged;
-    } else if (base::Contains(values, value)) {
+      return false;
+    }
+    if (base::Contains(values, value)) {
       state = MetricState::kWrongValueLogged;
+      return false;
     }
+    return true;
   }
 
-  // Metric should be logged.
-  void MakeInconsistentIfNotLogged() {
+  // Check metric is logged, otherwise mark the metric as inconsistent and
+  // return false.
+  bool IsLogged() {
     if (!logged()) {
       state = MetricState::kIncorrectlyNotLogged;
+      return false;
     }
+    return true;
   }
 
-  // Metric should be logged with a value in `values`.
-  void MakeInconsistentIfNotLoggedWith(const std::vector<MetricType>& values) {
+  // Check metric is logged with a value in `values`, otherwise mark the metric
+  // as inconsistent and return false.
+  bool IsLoggedWith(const std::vector<MetricType>& values) {
     if (!logged()) {
       state = MetricState::kIncorrectlyNotLogged;
+      return false;
     } else if (!base::Contains(values, value)) {
       state = MetricState::kWrongValueLogged;
+      return false;
     }
+    return true;
   }
 
   const std::string metric_name;
@@ -170,16 +188,9 @@ class CloudOpenMetrics {
   base::WeakPtr<CloudOpenMetrics> GetWeakPtr();
 
  private:
-  // Print the debug information for each metric.
-  void PrintMetrics();
-
-  // If the metric has moved to an inconsistent state print debug information
-  // about the inconsistency. Only handle the kIncorrectlyLoggedMultipleTimes
-  // state during the cloud upload flow and not when the `destructor` is
-  // running.
+  // Print debug information about the detected inconsistency and every metric.
   template <typename MetricType>
-  void PrintDebugInformationIfInconsistent(Metric<MetricType>& metric,
-                                           bool destructor = true);
+  void PrintDebugInformation(Metric<MetricType>& metric);
 
   // Expect that the `metric` is not logged. Otherwise update the state and
   // print debug information.
