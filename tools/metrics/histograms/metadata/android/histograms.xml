@@ -1848,16 +1848,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.IsLastSharedAppInfoRetrieved"
-    enum="BooleanIsLastSharedAppInfoRetrieved" expires_after="M77">
-  <owner>tedchoc@chromium.org</owner>
-  <owner>clank-team@google.com</owner>
-  <summary>
-    Signifies whether the last shared app information is retrieved successfully
-    or not. This is logged when configuring the direct sharing menu item.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Android.IsolatedSplits.ClassLoaderReplaced"
     enum="BooleanYesNo" expires_after="2023-06-26">
 <!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->

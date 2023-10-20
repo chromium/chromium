@@ -12998,11 +12998,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="A user triggered password generation"/>
 </enum>
 
-<enum name="BooleanIsLastSharedAppInfoRetrieved">
-  <int value="0" label="Not retrieved"/>
-  <int value="1" label="Retrieved"/>
-</enum>
-
 <enum name="BooleanIsMalware">
   <int value="0" label="Not malware"/>
   <int value="1" label="Is malware"/>
