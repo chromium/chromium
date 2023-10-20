@@ -112,7 +112,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
            connectionInformation:
                (id<ConnectionInformation>)connectionInformation
               startupInformation:(id<StartupInformation>)startupInformation
-                       Incognito:(BOOL)Incognito
+                       incognito:(BOOL)incognito
                        initStage:(InitStage)initStage;
 
 // Checks if a new tab must be opened immediately. If the app is not active,
@@ -289,17 +289,12 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       return NO;
     }
 
-    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
-           initWithURLs:URLs
-        applicationMode:ApplicationModeForTabOpening::NORMAL];
-
-    [connectionInformation setStartupParameters:startupParams];
     [self continueUserActivityURLs:URLs
                applicationIsActive:applicationIsActive
                          tabOpener:tabOpener
              connectionInformation:connectionInformation
                 startupInformation:startupInformation
-                         Incognito:NO
+                         incognito:NO
                          initStage:initStage];
     return YES;
 
@@ -321,17 +316,12 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 
     std::vector<GURL> URLs = createGURLVectorFromIntentURLs(intent.url);
 
-    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
-           initWithURLs:URLs
-        applicationMode:ApplicationModeForTabOpening::INCOGNITO];
-
-    [connectionInformation setStartupParameters:startupParams];
     [self continueUserActivityURLs:URLs
                applicationIsActive:applicationIsActive
                          tabOpener:tabOpener
              connectionInformation:connectionInformation
                 startupInformation:startupInformation
-                         Incognito:YES
+                         incognito:YES
                          initStage:initStage];
     return YES;
 
@@ -757,8 +747,19 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
            connectionInformation:
                (id<ConnectionInformation>)connectionInformation
               startupInformation:(id<StartupInformation>)startupInformation
-                       Incognito:(BOOL)Incognito
+                       incognito:(BOOL)incognito
                        initStage:(InitStage)initStage {
+  ApplicationModeForTabOpening applicationMode;
+  if (incognito) {
+    applicationMode = ApplicationModeForTabOpening::INCOGNITO;
+  } else {
+    applicationMode = ApplicationModeForTabOpening::NORMAL;
+  }
+  AppStartupParameters* startupParams =
+      [[AppStartupParameters alloc] initWithURLs:webpageURLs
+                                 applicationMode:applicationMode];
+  [connectionInformation setStartupParameters:startupParams];
+
   if (applicationIsActive && initStage > InitStageFirstRun) {
     // The app is already active so the applicationDidBecomeActive: method will
     // never be called. Open the requested URLs immediately.
@@ -772,10 +773,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   [startupInformation resetFirstUserActionRecorder];
 
   if (![connectionInformation startupParameters]) {
-    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
-           initWithURLs:webpageURLs
-        applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
-    if (Incognito) {
+    startupParams.applicationMode = ApplicationModeForTabOpening::UNDETERMINED;
+    if (incognito) {
       startupParams.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
     }
     [connectionInformation setStartupParameters:startupParams];
