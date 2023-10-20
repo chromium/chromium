@@ -2550,27 +2550,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DomDistiller.Statistics.FirstPageWordCount" units="words"
-    expires_after="M85">
-  <owner>mdjones@chromium.org</owner>
-  <summary>
-    Records the number of words in a distilled page. This only records the first
-    page of a multi-page article.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Statistics.WordCount" units="words"
-    expires_after="M85">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the number of words in a distilled page. For articles with multiple
-    pages, each page is counted separately.
-  </summary>
-</histogram>
-
 <histogram name="DomDistiller.Time.ActivelyViewingArticleBeforeDistilling"
     units="ms" expires_after="2021-08-19">
   <obsolete>
