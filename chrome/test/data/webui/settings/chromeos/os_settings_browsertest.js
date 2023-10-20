@@ -760,7 +760,7 @@ TEST_F(
  ],
  [
    'OsBluetoothPageOsBluetoothDeviceDetailSubpage',
-   'os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js',
+   'os_bluetooth_page/os_bluetooth_device_detail_subpage_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [

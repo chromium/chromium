@@ -209,7 +209,7 @@ build_webui_tests("build") {
     "os_apps_page/test_android_apps_browser_proxy.ts",
 
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog_test.ts",
-    "os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js",
+    "os_bluetooth_page/os_bluetooth_device_detail_subpage_test.ts",
     "os_bluetooth_page/os_bluetooth_devices_subpage_test.ts",
     "os_bluetooth_page/os_bluetooth_page_test.ts",
     "os_bluetooth_page/os_bluetooth_pairing_dialog_test.ts",

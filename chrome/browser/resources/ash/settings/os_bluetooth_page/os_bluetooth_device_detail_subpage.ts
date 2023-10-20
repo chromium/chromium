@@ -45,7 +45,7 @@ enum PageState {
 const SettingsBluetoothDeviceDetailSubpageElementBase =
     RouteOriginMixin(WebUiListenerMixin(I18nMixin((PolymerElement))));
 
-class SettingsBluetoothDeviceDetailSubpageElement extends
+export class SettingsBluetoothDeviceDetailSubpageElement extends
     SettingsBluetoothDeviceDetailSubpageElementBase {
   static get is() {
     return 'os-settings-bluetooth-device-detail-subpage' as const;
