@@ -15,6 +15,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
@@ -60,7 +61,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
 
     private final BottomSheetController mBottomSheetController;
 
-    private final ReadAloudReadabilityHooks mReadabilityHooks;
+    private ReadAloudReadabilityHooks mReadabilityHooks;
+
     @Nullable
     private static ReadAloudReadabilityHooks sReadabilityHooksForTesting;
     @Nullable
@@ -121,17 +123,24 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     public ReadAloudController(Context context, ObservableSupplier<Profile> profileSupplier,
             TabModel tabModel, ViewStub miniPlayerStub,
             BottomSheetController bottomSheetController) {
-        this.mContext = context;
+        mContext = context;
         mProfileSupplier = profileSupplier;
+        new OneShotCallback<Profile>(mProfileSupplier, this::onProfileAvailable);
         mTabModel = tabModel;
-        mReadabilityHooks = sReadabilityHooksForTesting != null
-                ? sReadabilityHooksForTesting
-                : new ReadAloudReadabilityHooksImpl(context, ReadAloudFeatures.getApiKeyOverride());
         mBottomSheetController = bottomSheetController;
         mPlayerCoordinator =
                 sPlayerCoordinatorForTesting != null
                         ? sPlayerCoordinatorForTesting
                         : new PlayerCoordinator(context, miniPlayerStub, this);
+    }
+
+    private void onProfileAvailable(Profile profile) {
+        mReadabilityHooks =
+                sReadabilityHooksForTesting != null
+                        ? sReadabilityHooksForTesting
+                        : new ReadAloudReadabilityHooksImpl(
+                                mContext, profile, ReadAloudFeatures.getApiKeyOverride());
+
         if (mReadabilityHooks.isEnabled()) {
             mTabObserver =
                     new TabModelTabObserver(mTabModel) {
@@ -166,6 +175,10 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         }
 
         if (!isAvailable()) {
+            return;
+        }
+
+        if (mReadabilityHooks == null) {
             return;
         }
 
@@ -213,9 +226,10 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     public void playTab(Tab tab) {
         assert tab.getUrl().isValid();
         if (mPlaybackHooks == null) {
-            mPlaybackHooks = sPlaybackHooksForTesting != null
-                    ? sPlaybackHooksForTesting
-                    : ReadAloudPlaybackHooksProvider.getInstance();
+            mPlaybackHooks =
+                    sPlaybackHooksForTesting != null
+                            ? sPlaybackHooksForTesting
+                            : ReadAloudPlaybackHooksProvider.getForProfile(mProfileSupplier.get());
         }
         // only start a new playback if different URL or no active playback for that url
         if (mCurrentlyPlayingTab == null || !tab.getUrl().equals(mCurrentlyPlayingTab.getUrl())) {

@@ -8,9 +8,12 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.profiles.Profile;
+
 /** Empty implementation of ReadAloudReadabilityHooks. */
 public class ReadAloudReadabilityHooksImpl implements ReadAloudReadabilityHooks {
-    public ReadAloudReadabilityHooksImpl(Context context, @Nullable String apiKeyOverride) {}
+    public ReadAloudReadabilityHooksImpl(
+            Context context, Profile profile, @Nullable String apiKeyOverride) {}
 
     @Override
     public boolean isEnabled() {

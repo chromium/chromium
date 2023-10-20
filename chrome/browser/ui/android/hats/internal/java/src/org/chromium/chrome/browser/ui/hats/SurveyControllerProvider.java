@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.hats;
 
+import org.chromium.chrome.browser.profiles.Profile;
+
 /**
  * Util class that creates a new SurveyController.
  */
@@ -11,10 +13,8 @@ package org.chromium.chrome.browser.ui.hats;
 public class SurveyControllerProvider {
     private SurveyControllerProvider() {}
 
-    /**
-     * @return A new instance of survey controller.
-     */
-    public static SurveyController create() {
+    /** Return a SurveyController associated with the given profile. */
+    public static SurveyController create(Profile profile) {
         return new SurveyController() {};
     }
 }

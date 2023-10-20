@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashMap;
@@ -50,10 +51,13 @@ public class SurveyClientUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private Activity mActivity;
+    @Mock private Profile mProfile;
     @Captor private ArgumentCaptor<PauseResumeWithNativeObserver> mLifecycleObserverCaptor;
 
     @Before
     public void setup() {
+        Profile.setLastUsedProfileForTesting(mProfile);
+
         mCrashUploadPermissionSupplier = new ObservableSupplierImpl<>();
         mCrashUploadPermissionSupplier.set(true);
 

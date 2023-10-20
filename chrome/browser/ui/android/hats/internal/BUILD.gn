@@ -28,6 +28,7 @@ android_library("java") {
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/hats:java",
     "//chrome/browser/ui/android/hats:message_ui_delegate_java",
@@ -56,6 +57,7 @@ robolectric_library("junit") {
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/hats:java",
     "//chrome/browser/ui/android/hats:message_ui_delegate_java",
@@ -81,6 +83,7 @@ android_library("controller_java") {
   deps = [
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/profiles/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
@@ -93,7 +96,10 @@ android_library("controller_java") {
 android_library("provider_public_impl_java") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/hats/SurveyControllerProvider.java" ]
 
-  deps = [ ":controller_java" ]
+  deps = [
+    ":controller_java",
+    "//chrome/browser/profiles/android:java",
+  ]
 }
 
 generate_jni("jni_headers") {

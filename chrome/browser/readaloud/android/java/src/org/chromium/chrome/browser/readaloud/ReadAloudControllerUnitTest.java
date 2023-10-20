@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.readaloud;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -32,8 +31,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -72,7 +72,7 @@ public class ReadAloudControllerUnitTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private FakeTranslateBridgeJni mFakeTranslateBridge;
-    @Mock private ObservableSupplier<Profile> mMockProfileSupplier;
+    private ObservableSupplierImpl<Profile> mProfileSupplier;
     @Mock private Profile mMockProfile;
     @Mock private ReadAloudReadabilityHooksImpl mHooksImpl;
     @Mock private ReadAloudPlaybackHooks mPlaybackHooks;
@@ -95,7 +95,8 @@ public class ReadAloudControllerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        doReturn(mMockProfile).when(mMockProfileSupplier).get();
+        mProfileSupplier = new ObservableSupplierImpl<>();
+        mProfileSupplier.set(mMockProfile);
 
         when(mMockProfile.isOffTheRecord()).thenReturn(false);
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
@@ -118,10 +119,11 @@ public class ReadAloudControllerUnitTest {
         mController =
                 new ReadAloudController(
                         mContext,
-                        mMockProfileSupplier,
+                        mProfileSupplier,
                         mTabModelSelector.getModel(false),
                         mViewStub,
                         mBottomSheetController);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         mTab = mTabModelSelector.getCurrentTab();
         mTab.setGurlOverrideForTesting(sTestGURL);

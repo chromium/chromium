@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.modules.readaloud;
 
+import org.chromium.chrome.browser.profiles.Profile;
+
 /** Provides an empty implementation of ReadAloudPlaybackHooks. */
 public class ReadAloudPlaybackHooksProvider {
-    public static ReadAloudPlaybackHooks getInstance() {
+    /** Creates or returns an instance associated with the specified Profile. */
+    public static ReadAloudPlaybackHooks getForProfile(Profile profile) {
         return new ReadAloudPlaybackHooks() {};
     }
 }

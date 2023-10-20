@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.browser.ui.hats.SurveyThrottler;
@@ -41,11 +42,13 @@ public class ChromeSurveyControllerTest {
     @Mock TabModelSelector mSelector;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock Activity mActivity;
+    @Mock Profile mProfile;
     @Mock MessageDispatcher mMessageDispatcher;
 
     @Before
     public void before() {
         doReturn(Mockito.mock(Resources.class)).when(mActivity).getResources();
+        Profile.setLastUsedProfileForTesting(mProfile);
         SurveyClientFactory.initialize(null);
     }
 

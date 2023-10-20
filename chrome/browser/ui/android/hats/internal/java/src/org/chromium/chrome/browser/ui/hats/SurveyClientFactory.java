@@ -13,6 +13,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * Factory class used to create SurveyClient.
@@ -74,7 +75,10 @@ public class SurveyClientFactory {
             @NonNull SurveyConfig config, @NonNull SurveyUiDelegate uiDelegate) {
         if (config.mProbability == 0f || TextUtils.isEmpty(config.mTriggerId)) return null;
 
-        return new SurveyClientImpl(config, uiDelegate, SurveyControllerProvider.create(),
+        return new SurveyClientImpl(
+                config,
+                uiDelegate,
+                SurveyControllerProvider.create(Profile.getLastUsedRegularProfile()),
                 mCrashUploadPermissionSupplier);
     }
 
