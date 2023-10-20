@@ -124,8 +124,8 @@ id<GREYMatcher> notPracticallyVisible() {
 + (void)setUpForTestCase {
   [super setUpForTestCase];
   // Mark What's New as already-seen so it does not override Bookmarks.
-  [ChromeEarlGrey setUserDefaultObject:@YES forKey:kWhatsNewUsageEntryKey];
-  [ChromeEarlGrey setUserDefaultObject:@YES forKey:kWhatsNewM116UsageEntryKey];
+  [ChromeEarlGrey setUserDefaultsObject:@YES forKey:kWhatsNewUsageEntryKey];
+  [ChromeEarlGrey setUserDefaultsObject:@YES forKey:kWhatsNewM116UsageEntryKey];
   [NTPHomeTestCase setUpHelper];
 }
 
@@ -141,8 +141,8 @@ id<GREYMatcher> notPracticallyVisible() {
 + (void)tearDown {
   [self closeAllTabs];
   // Clean up What's New already-seen.
-  [ChromeEarlGrey removeUserDefaultObjectForKey:kWhatsNewUsageEntryKey];
-  [ChromeEarlGrey setUserDefaultObject:@YES forKey:kWhatsNewM116UsageEntryKey];
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:kWhatsNewUsageEntryKey];
+  [ChromeEarlGrey setUserDefaultsObject:@YES forKey:kWhatsNewM116UsageEntryKey];
 
   [super tearDown];
 }
@@ -266,7 +266,7 @@ id<GREYMatcher> notPracticallyVisible() {
 - (void)MAYBE_testCollectionShortcutsWithWhatsNew {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [ChromeEarlGrey setUserDefaultObject:@NO forKey:kWhatsNewM116UsageEntryKey];
+  [ChromeEarlGrey setUserDefaultsObject:@NO forKey:kWhatsNewM116UsageEntryKey];
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 

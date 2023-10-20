@@ -129,8 +129,8 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
       @"Inactive tabs preference is not set to default value.");
 
   // Mark the User Education screen as already-seen by default.
-  [ChromeEarlGrey setUserDefaultObject:@YES
-                                forKey:kInactiveTabsUserEducationShownOnceKey];
+  [ChromeEarlGrey setUserDefaultsObject:@YES
+                                 forKey:kInactiveTabsUserEducationShownOnceKey];
 }
 
 // Sets up the EmbeddedTestServer as needed for tests.
@@ -784,7 +784,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   }
   // Reset the User-Education marker.
   [ChromeEarlGrey
-      removeUserDefaultObjectForKey:kInactiveTabsUserEducationShownOnceKey];
+      removeUserDefaultsObjectForKey:kInactiveTabsUserEducationShownOnceKey];
 
   // Set up one inactive tab.
   CreateRegularTabs(1, self.testServer);
@@ -820,7 +820,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   }
   // Reset the User-Education marker.
   [ChromeEarlGrey
-      removeUserDefaultObjectForKey:kInactiveTabsUserEducationShownOnceKey];
+      removeUserDefaultsObjectForKey:kInactiveTabsUserEducationShownOnceKey];
   // Set up one inactive tab.
   CreateRegularTabs(1, self.testServer);
   [self relaunchAppWithInactiveTabsEnabled];

@@ -564,13 +564,13 @@
 #pragma mark - Default Utilities (EG2)
 
 // Stores a value for the provided key in NSUserDefaults.
-+ (void)setUserDefaultObject:(id)value forKey:(NSString*)defaultName;
++ (void)setUserDefaultsObject:(id)value forKey:(NSString*)defaultName;
 
 // Removes the object for the provided `key` in NSUserDefaults.
-+ (void)removeUserDefaultObjectForKey:(NSString*)key;
++ (void)removeUserDefaultsObjectForKey:(NSString*)key;
 
 // Returns the value for provided key from NSUserDefaults.
-+ (id)userDefaultObjectForKey:(NSString*)key;
++ (id)userDefaultsObjectForKey:(NSString*)key;
 
 #pragma mark - Pref Utilities (EG2)
 

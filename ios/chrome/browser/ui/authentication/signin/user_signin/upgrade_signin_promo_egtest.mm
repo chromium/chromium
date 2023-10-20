@@ -80,13 +80,13 @@ void OpenNTPAndBackgroundAndForegroundApp() {
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Cannot setup histogram tester.");
   [ChromeEarlGrey
-      removeUserDefaultObjectForKey:kDisplayedSSORecallPromoCountKey];
+      removeUserDefaultsObjectForKey:kDisplayedSSORecallPromoCountKey];
   [ChromeEarlGrey
-      removeUserDefaultObjectForKey:kDisplayedSSORecallForMajorVersionKey];
+      removeUserDefaultsObjectForKey:kDisplayedSSORecallForMajorVersionKey];
   [ChromeEarlGrey
-      removeUserDefaultObjectForKey:kLastShownAccountGaiaIdVersionKey];
+      removeUserDefaultsObjectForKey:kLastShownAccountGaiaIdVersionKey];
   [ChromeEarlGrey
-      removeUserDefaultObjectForKey:kSigninPromoViewDisplayCountKey];
+      removeUserDefaultsObjectForKey:kSigninPromoViewDisplayCountKey];
 }
 
 - (void)tearDown {
@@ -242,11 +242,11 @@ void OpenNTPAndBackgroundAndForegroundApp() {
   GREYAssertNil(error, @"Failed to record show count histogram %s %@",
                 kUMASSORecallPromoAction, error);
   NSNumber* value =
-      [ChromeEarlGrey userDefaultObjectForKey:kSigninPromoViewDisplayCountKey];
+      [ChromeEarlGrey userDefaultsObjectForKey:kSigninPromoViewDisplayCountKey];
   GREYAssertEqual(1, value.integerValue, @"Failed to increase %@ pref",
                   kSigninPromoViewDisplayCountKey);
   NSArray* gaiaIds = [ChromeEarlGrey
-      userDefaultObjectForKey:kLastShownAccountGaiaIdVersionKey];
+      userDefaultsObjectForKey:kLastShownAccountGaiaIdVersionKey];
   // It is not possible to do `GREYAssertEqualObjects(expectedGaiaIds, gaiaIds),
   // since gaiaIds is EDOObject type (the object is in Chrome app).
   GREYAssertEqual(1, gaiaIds.count, @"Expect to have only one gaia id %@",
