@@ -8,6 +8,7 @@
 #import "base/files/file_path.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/strings/stringprintf.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/sessions/proto_util.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_internal_util.h"
@@ -26,6 +27,7 @@ struct TabInfo {
   const int opener_index = -1;
   const int opener_navigation_index = -1;
   const int navigation_item_count = 1;
+  const web::WebStateID unique_identifier;
 };
 
 // Information about a session.
@@ -67,7 +69,10 @@ ios::proto::WebStateListStorage StorageFromSessionInfo(SessionInfo info) {
   storage.set_pinned_item_count(info.pinned_tab_count);
   for (const TabInfo& tab : info.tabs) {
     ios::proto::WebStateListItemStorage* item_storage = storage.add_items();
-    item_storage->set_identifier(web::WebStateID::NewUnique().identifier());
+    web::WebStateID web_state_id = tab.unique_identifier.valid()
+                                       ? tab.unique_identifier
+                                       : web::WebStateID::NewUnique();
+    item_storage->set_identifier(web_state_id.identifier());
     if (tab.opener_index != -1 && tab.opener_navigation_index != -1) {
       DCHECK_GE(tab.opener_index, 0);
       DCHECK_LT(tab.opener_index, static_cast<int>(info.tabs.size()));
@@ -128,7 +133,11 @@ bool WriteSessionStorage(const base::FilePath& path,
 
 }  // namespace
 
-using SessionLoadingTest = PlatformTest;
+class SessionLoadingTest : public PlatformTest {
+ protected:
+  // Used to verify histogram logging.
+  base::HistogramTester histogram_tester_;
+};
 
 // Tests that WebStateDirectory returns a correct value that depends on the
 // identifier and is a sub-directory of the input.
@@ -222,9 +231,13 @@ TEST_F(SessionLoadingTest, LoadSessionStorage) {
     EXPECT_EQ(iterator->second.active_page().page_url(),
               TestUrlForIdentifier(item_id));
   }
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
-// Tests that LoadSessionStorage correctly load a valid session, removing
+// Tests that LoadSessionStorage correctly loads a valid session, removing
 // items with no navigation item count.
 TEST_F(SessionLoadingTest, LoadSessionStorage_FilterEmptyItems) {
   base::ScopedTempDir scoped_temp_dir;
@@ -252,6 +265,56 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_FilterEmptyItems) {
     EXPECT_EQ(iterator->second.active_page().page_url(),
               TestUrlForIdentifier(item_id));
   }
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
+}
+
+// Tests that LoadSessionStorage correctly loads a valid session, removing
+// duplicates (keeping the first occurrence).
+TEST_F(SessionLoadingTest, LoadSessionStorage_FilterDuplicateItems) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  web::WebStateID same_web_state_id = web::WebStateID::NewUnique();
+  TabInfo tabs[] = {
+      TabInfo{.unique_identifier = same_web_state_id},
+      TabInfo{.unique_identifier = same_web_state_id},
+  };
+  SessionInfo session_info = {
+      .active_index = 1,
+      .pinned_tab_count = 1,
+      .tabs = base::make_span(tabs),
+  };
+
+  // Write the session described by session_info.
+  const ios::proto::WebStateListStorage session =
+      StorageFromSessionInfo(session_info);
+  ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
+
+  // Load the session and check it is correct.
+  const ios::sessions::SessionStorage loaded =
+      ios::sessions::LoadSessionStorage(root);
+  // Check that the duplicate tab (the second occurrence) is dropped.
+  EXPECT_EQ(loaded.session_metadata,
+            ios::sessions::FilterItems(session, RemovingIndexes({1})));
+
+  for (const auto& item : loaded.session_metadata.items()) {
+    const web::WebStateID item_id =
+        web::WebStateID::FromSerializedValue(item.identifier());
+
+    // Check that the item has been correctly loaded.
+    auto iterator = loaded.web_state_storage_map.find(item_id);
+    ASSERT_TRUE(iterator != loaded.web_state_storage_map.end());
+    EXPECT_EQ(iterator->second.active_page().page_url(),
+              TestUrlForIdentifier(item_id));
+  }
+
+  // Expect a log of 1 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 1, 1);
 }
 
 // Tests that LoadSessionStorage correctly load an empty session.
@@ -270,6 +333,10 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_EmptySession) {
       ios::sessions::LoadSessionStorage(root);
   EXPECT_EQ(loaded.session_metadata, session);
   EXPECT_EQ(loaded.session_metadata.items_size(), 0);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that LoadSessionStorage returns an empty session if the session is
@@ -284,6 +351,11 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingSession) {
       ios::sessions::LoadSessionStorage(root);
   EXPECT_EQ(loaded.session_metadata, StorageFromSessionInfo(SessionInfo{}));
   EXPECT_EQ(loaded.session_metadata.items_size(), 0);
+
+  // Expect no log as there was no session. We never got to complete the
+  // filtering stage.
+  histogram_tester_.ExpectTotalCount(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0);
 }
 
 // Tests that LoadSessionStorage returns an empty session if some of the
@@ -314,6 +386,11 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingItemMetadata) {
       ios::sessions::LoadSessionStorage(root);
   EXPECT_EQ(loaded.session_metadata, StorageFromSessionInfo(SessionInfo{}));
   EXPECT_EQ(loaded.session_metadata.items_size(), 0);
+
+  // Expect no log as there was no item metadata. We never got to complete the
+  // filtering stage.
+  histogram_tester_.ExpectTotalCount(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0);
 }
 
 // Tests that LoadSessionStorage returns an empty session if some of the
@@ -344,6 +421,11 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingItemStorage) {
       ios::sessions::LoadSessionStorage(root);
   EXPECT_EQ(loaded.session_metadata, StorageFromSessionInfo(SessionInfo{}));
   EXPECT_EQ(loaded.session_metadata.items_size(), 0);
+
+  // Expect no log as there was a missing item storage. We never got to complete
+  // the filtering stage.
+  histogram_tester_.ExpectTotalCount(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0);
 }
 
 // Tests that LoadSessionStorage returns an empty session if the identifiers
@@ -369,4 +451,9 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_InvalidIdentifiers) {
       ios::sessions::LoadSessionStorage(root);
   EXPECT_EQ(loaded.session_metadata, StorageFromSessionInfo(SessionInfo{}));
   EXPECT_EQ(loaded.session_metadata.items_size(), 0);
+
+  // Expect no log as there was an invalid identifier. We never got to complete
+  // the filtering stage.
+  histogram_tester_.ExpectTotalCount(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0);
 }
