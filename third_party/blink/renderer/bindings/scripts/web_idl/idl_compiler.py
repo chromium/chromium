@@ -359,6 +359,13 @@ class IdlCompiler(object):
 
             process_interface_like(new_ir)
 
+            collection_like = (getattr(new_ir, 'async_iterable', None)
+                               or getattr(new_ir, 'iterable', None))
+            if collection_like:
+                propagate = functools.partial(propagate_extattr,
+                                              ir=collection_like)
+                propagate_to_exposure(propagate)
+
     def _determine_blink_headers(self):
         irs = self._ir_map.irs_of_kinds(
             IRMap.IR.Kind.INTERFACE, IRMap.IR.Kind.INTERFACE_MIXIN,

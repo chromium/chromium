@@ -5109,6 +5109,34 @@ ${prototype_object}->Delete(
     ${v8_context}, V8AtomicString(${isolate}, "constructor")).ToChecked();
 """))
 
+    if interface and interface.iterable and not interface.iterable.key_type:
+        conditional = expr_from_exposure(interface.iterable.exposure)
+        if not conditional.is_always_true:
+            body = [
+                TextNode("""\
+// The value-iterator-returning properties of the intrinsic values can be
+// installed only per v8::Template (via
+// v8::Template::SetIntrinsicDataProperty). So the property installation
+// logic is reversed in this case like below.
+//   1. Unconditionally install the properties on prototype_object_template
+//      per V8 isolate in ${class_name}::InstallInterfaceTemplate.
+//   2. Conditionally remove the properties from prototype_object per V8
+//      context if they're not enabled.
+// https://webidl.spec.whatwg.org/#define-the-iteration-methods\
+""")
+            ]
+            body.extend([
+                FormatNode(
+                    "${prototype_object}->Delete("
+                    "${v8_context}, "
+                    "V8AtomicString(${isolate}, \"{property}\"))"
+                    ".ToChecked();",
+                    property=property)
+                for property in ("entries", "keys", "values", "forEach")
+            ])
+            nodes.append(
+                CxxUnlikelyIfNode(cond=expr_not(conditional), body=body))
+
     # Install @@asyncIterator property.
     if interface and interface.async_iterable:
         for operation_group in interface.async_iterable.operation_groups:
@@ -5150,9 +5178,12 @@ ${prototype_object}->Delete(
   v8::Local<v8::Value> v8_value = ${prototype_object}->Get(
       ${v8_context}, V8AtomicString(${isolate}, "{property_name}"))
       .ToLocalChecked();
-  ${prototype_object}->DefineOwnProperty(
-      ${v8_context}, v8::Symbol::GetIterator(${isolate}), v8_value,
-      v8::DontEnum).ToChecked();
+  // "{property_name}" may be hidden in this context.
+  if (!v8_value->IsUndefined()) {{
+    ${prototype_object}->DefineOwnProperty(
+        ${v8_context}, v8::Symbol::GetIterator(${isolate}), v8_value,
+        v8::DontEnum).ToChecked();
+  }}
 }}
 """
         nodes.append(FormatNode(pattern, property_name=property_name))

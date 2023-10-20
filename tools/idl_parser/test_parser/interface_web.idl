@@ -454,6 +454,8 @@ interface MyIfacePromise {
  *      ExtAttributes()
  *        ExtAttribute(Clamp)
  *        ExtAttribute(XAttr)
+ *    ExtAttributes()
+ *      ExtAttribute(Exposed) = "Window"
  *  Iterable()
  *    Type()
  *      PrimitiveType(long)
@@ -469,7 +471,7 @@ interface MyIfaceIterable {
   iterable<double, DOMString>;
   iterable<[Clamp] long>;
   iterable<[TreatNullAs=EmptyString] DOMString>;
-  iterable<[Clamp, XAttr] long>;
+  [Exposed=Window] iterable<[Clamp, XAttr] long>;
   iterable<[Clamp] long, [EnforceRange] long long>;
 };
 
