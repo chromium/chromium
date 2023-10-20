@@ -2,7 +2,7 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
-SELECT IMPORT("common.slices");
+INCLUDE PERFETTO MODULE common.slices;
 
 -- Returns the mojo ipc hash for a given task, looking it up from the
 -- argument of descendant ScopedSetIpcHash slice.
@@ -31,7 +31,8 @@ WHERE name IN (
 LIMIT 1;
 
 -- Human-readable aliases for a few key navigation tasks.
-CREATE PERFETTO FUNCTION internal_human_readable_navigation_task_name(task_name STRING)
+CREATE PERFETTO FUNCTION internal_human_readable_navigation_task_name(
+  task_name STRING)
 RETURNS STRING AS
 SELECT
   CASE
@@ -298,22 +299,20 @@ FROM posted_from;
 -- @column kind          The type of Java slice.
 -- @column ts            The timestamp of the slice.
 -- @column name          The name of the slice.
-SELECT CREATE_VIEW_FUNCTION(
-  'INTERNAL_SELECT_BEGIN_MAIN_FRAME_JAVA_SLICES(name STRING)',
-  'id INT, kind STRING, ts LONG, dur LONG, name STRING',
-  'SELECT
-      id,
-      "SingleThreadProxy::BeginMainFrame" AS kind,
-      ts,
-      dur,
-      name
-    FROM slice
-    WHERE
-      (name = $name
-        AND internal_get_posted_from(arg_set_id) =
-            "cc/trees/single_thread_proxy.cc:ScheduledActionSendBeginMainFrame")
-  '
-);
+CREATE PERFETTO FUNCTION internal_select_begin_main_frame_java_slices(
+  name STRING)
+RETURNS TABLE(id INT, kind STRING, ts LONG, dur LONG, name STRING) AS
+SELECT
+  id,
+  "SingleThreadProxy::BeginMainFrame" AS kind,
+  ts,
+  dur,
+  name
+FROM slice
+WHERE
+  (name = $name
+    AND internal_get_posted_from(arg_set_id) =
+        "cc/trees/single_thread_proxy.cc:ScheduledActionSendBeginMainFrame");
 
 -- A list of Chrome tasks which were performing operations with Java views,
 -- together with the names of the these views.
@@ -424,17 +423,15 @@ WHERE
 ORDER by depth, ts
 LIMIT 1;
 
-SELECT CREATE_VIEW_FUNCTION('INTERNAL_DESCENDANT_MOJO_SLICE(slice_id INT)',
-  'task_name STRING',
-  '
-  SELECT
-    printf("%s %s (hash=%d)",
-      mojo.interface_name, mojo.message_type, mojo.ipc_hash) AS task_name
-  FROM slice task
-  JOIN internal_chrome_mojo_slices mojo
-    ON mojo.id = internal_get_descendant_mojo_slice_candidate($slice_id)
-  WHERE task.id = $slice_id
-  ');
+CREATE PERFETTO FUNCTION internal_descendant_mojo_slice(slice_id INT)
+RETURNS TABLE(task_name STRING) AS
+SELECT
+  printf("%s %s (hash=%d)",
+    mojo.interface_name, mojo.message_type, mojo.ipc_hash) AS task_name
+FROM slice task
+JOIN internal_chrome_mojo_slices mojo
+  ON mojo.id = internal_get_descendant_mojo_slice_candidate($slice_id)
+WHERE task.id = $slice_id;
 
 -- A list of "Chrome tasks": top-level execution units (e.g. scheduler tasks /
 -- IPCs / system callbacks) run by Chrome. For a given thread, the tasks
