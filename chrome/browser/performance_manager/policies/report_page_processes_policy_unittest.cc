@@ -18,17 +18,15 @@ class MockReportPageProcessesPolicy : public ReportPageProcessesPolicy {
     ReportPageProcessesPolicy::HandlePageNodeEvents();
   }
 
-  std::vector<base::ProcessId> GetBackgroundProcesses() {
-    return background_pids_;
-  }
+  std::vector<PageProcess> GetPageProcesses() { return processes_; }
 
  protected:
-  void ReportBackgroundProcesses(std::vector<base::ProcessId> pids) override {
-    background_pids_ = pids;
+  void ReportPageProcesses(std::vector<PageProcess> processes) override {
+    processes_ = processes;
   }
 
  private:
-  std::vector<base::ProcessId> background_pids_;
+  std::vector<PageProcess> processes_;
 };
 
 class ReportPageProcessesPolicyTest
@@ -61,11 +59,12 @@ class ReportPageProcessesPolicyTest
   raw_ptr<MockReportPageProcessesPolicy, DanglingUntriaged> policy_;
 };
 
-TEST_F(ReportPageProcessesPolicyTest, ReportBackgroundProcesses) {
+TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   constexpr base::ProcessId kProcessId1 = 1;
   constexpr base::ProcessId kProcessId2 = 2;
   constexpr base::ProcessId kProcessId3 = 3;
   constexpr base::ProcessId kProcessId4 = 4;
+  constexpr base::ProcessId kProcessId5 = 5;
 
   // Creates 4 pages.
   auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
@@ -118,20 +117,40 @@ TEST_F(ReportPageProcessesPolicyTest, ReportBackgroundProcesses) {
   main_frame_node4->SetIsCurrent(false);
   AdvanceClock(base::Minutes(30));
 
+  auto process_node5 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node5->SetProcessWithPid(kProcessId5, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node5 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node5 =
+      CreateFrameNodeAutoId(process_node5.get(), page_node5.get());
+  main_frame_node5->SetIsCurrent(true);
+  testing::MakePageNodeDiscardable(page_node5.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  page_node5->SetIsVisible(true);
+  AdvanceClock(base::Minutes(30));
+
+  // Trigger page node event manually.
   policy()->HandlePageNodeEvents();
 
-  auto background_pids = policy()->GetBackgroundProcesses();
-  // Because page node 1 is audible, it's not in background.
-  ASSERT_EQ(background_pids.size(), 3u);
-  ASSERT_EQ(
-      std::count(background_pids.begin(), background_pids.end(), kProcessId2),
-      1);
-  ASSERT_EQ(
-      std::count(background_pids.begin(), background_pids.end(), kProcessId3),
-      1);
-  ASSERT_EQ(
-      std::count(background_pids.begin(), background_pids.end(), kProcessId4),
-      1);
+  // Processes with descending importance.
+  auto processes = policy()->GetPageProcesses();
+  ASSERT_EQ(processes.size(), 5u);
+  ASSERT_EQ(processes[0].pid, kProcessId5);
+  ASSERT_EQ(processes[0].host_protected_page, true);
+  ASSERT_EQ(processes[0].host_visible_page, true);
+  // Because page node 1 is audible, it's protected.
+  ASSERT_EQ(processes[1].pid, kProcessId1);
+  ASSERT_EQ(processes[1].host_protected_page, true);
+  ASSERT_EQ(processes[1].host_visible_page, false);
+  ASSERT_EQ(processes[2].pid, kProcessId4);
+  ASSERT_EQ(processes[2].host_protected_page, false);
+  ASSERT_EQ(processes[2].host_visible_page, false);
+  ASSERT_EQ(processes[3].pid, kProcessId3);
+  ASSERT_EQ(processes[3].host_protected_page, false);
+  ASSERT_EQ(processes[3].host_visible_page, false);
+  ASSERT_EQ(processes[4].pid, kProcessId2);
+  ASSERT_EQ(processes[4].host_protected_page, false);
+  ASSERT_EQ(processes[4].host_visible_page, false);
 }
 
 }  // namespace performance_manager::policies

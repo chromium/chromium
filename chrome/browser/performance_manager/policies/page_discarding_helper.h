@@ -57,7 +57,10 @@ class PageNodeSortProxy {
         is_visible_(is_visible),
         is_protected_(is_protected),
         last_visible_(last_visible) {}
+
   const PageNode* page_node() const { return page_node_; }
+  bool is_protected() const { return is_protected_; }
+  bool is_visible() const { return is_visible_; }
 
   // Returns true if the rhs is more important.
   bool operator<(const PageNodeSortProxy& rhs) const {
