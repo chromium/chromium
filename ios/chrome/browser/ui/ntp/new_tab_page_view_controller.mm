@@ -162,12 +162,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   return self;
 }
 
-- (void)dealloc {
-  _viewControllersAboveFeed = nil;
-  [self.overscrollActionsController invalidate];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -655,9 +649,23 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   }
 }
 
+- (void)invalidate {
+  _viewControllersAboveFeed = nil;
+  [self.overscrollActionsController invalidate];
+  self.overscrollActionsController = nil;
+  self.NTPContentDelegate = nil;
+  self.contentSuggestionsViewController = nil;
+  self.feedMetricsRecorder = nil;
+  self.feedHeaderViewController = nil;
+  self.feedWrapperViewController = nil;
+  self.mutator = nil;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 #pragma mark - NewTabPageConsumer
 
 - (void)restoreScrollPosition:(CGFloat)scrollPosition {
+  [self.view layoutIfNeeded];
   if (scrollPosition > -[self heightAboveFeed]) {
     [self setSavedContentOffset:scrollPosition];
   } else {

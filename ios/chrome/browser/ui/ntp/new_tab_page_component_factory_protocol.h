@@ -6,10 +6,6 @@
 #define IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COMPONENT_FACTORY_PROTOCOL_H_
 
 class Browser;
-namespace web {
-class WebState;
-}
-
 @class ContentSuggestionsCoordinator;
 @class DiscoverFeedViewControllerConfiguration;
 @class FeedHeaderViewController;
@@ -37,7 +33,6 @@ typedef NS_ENUM(NSInteger, FollowingFeedSortType);
 
 // Mediator owned by the NewTabPageCoordinator
 - (NewTabPageMediator*)NTPMediatorForBrowser:(Browser*)browser
-                                    webState:(web::WebState*)webState
                     identityDiscImageUpdater:
                         (id<UserAccountImageUpdateDelegate>)imageUpdater;
 

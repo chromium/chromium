@@ -7,9 +7,14 @@
 #import <memory>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/feed/core/v2/public/common_enums.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_data.h"
+#import "components/search_engines/template_url_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -23,6 +28,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
+#import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
@@ -89,6 +95,7 @@ class NewTabPageMediatorTest : public PlatformTest {
     DiscoverFeedService* discover_feed_service =
         DiscoverFeedServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
+    PrefService* prefs = chrome_browser_state_->GetPrefs();
     mediator_ = [[NewTabPageMediator alloc]
         initWithTemplateURLService:ios::TemplateURLServiceFactory::
                                        GetForBrowserState(
@@ -99,10 +106,11 @@ class NewTabPageMediatorTest : public PlatformTest {
              accountManagerService:account_manager_service
           identityDiscImageUpdater:image_updater_
                        isIncognito:is_incognito
-               discoverFeedService:discover_feed_service];
+               discoverFeedService:discover_feed_service
+                       prefService:prefs
+                        isSafeMode:NO];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
-    PrefService* prefs = chrome_browser_state_->GetPrefs();
     feed_metrics_recorder_ =
         [[FeedMetricsRecorder alloc] initWithPrefService:prefs];
     mediator_.feedMetricsRecorder = feed_metrics_recorder_;
@@ -133,6 +141,20 @@ class NewTabPageMediatorTest : public PlatformTest {
     return ntp_consumer;
   }
 
+  void SetCustomSearchEngine() {
+    TemplateURLService* template_url_service =
+        ios::TemplateURLServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get());
+    // A custom search engine will have a `prepopulate_id` of 0.
+    const int kCustomSearchEnginePrepopulateId = 0;
+    TemplateURLData template_url_data;
+    template_url_data.prepopulate_id = kCustomSearchEnginePrepopulateId;
+    template_url_data.SetURL("https://www.example.com/?q={searchTerms}");
+    template_url_service->SetUserSelectedDefaultSearchProvider(
+        template_url_service->Add(
+            std::make_unique<TemplateURL>(template_url_data)));
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -149,6 +171,7 @@ class NewTabPageMediatorTest : public PlatformTest {
   AuthenticationService* auth_service_;
   signin::IdentityManager* identity_manager_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the consumer has the right value set up.
@@ -202,4 +225,24 @@ TEST_F(NewTabPageMediatorTest, TestHandleFeedLearnMoreTapped) {
   histogram_tester_->ExpectUniqueSample(kDiscoverFeedUserActionHistogram,
                                         FeedUserActionType::kTappedLearnMore,
                                         1);
+}
+
+// Tests that the feed will be hidden when IOSHideFeedWithSearchChoice is
+// enabled and a non-Google search engine is chosen.
+TEST_F(NewTabPageMediatorTest, TestHideFeedWithSearchChoice) {
+  scoped_feature_list_.InitWithFeatures({kIOSHideFeedWithSearchChoice}, {});
+
+  // Test it with the default search engine.
+  [mediator_ setUp];
+  EXPECT_TRUE(mediator_.feedHeaderVisible);
+
+  // Set up expectation for custom search engine.
+  id feed_control_delegate = OCMProtocolMock(@protocol(FeedControlDelegate));
+  OCMExpect([feed_control_delegate setFeedAndHeaderVisibility:NO]);
+  mediator_.feedControlDelegate = feed_control_delegate;
+
+  // Test setting a custom search engine.
+  SetCustomSearchEngine();
+  EXPECT_FALSE(mediator_.feedHeaderVisible);
+  EXPECT_OCMOCK_VERIFY(feed_control_delegate);
 }

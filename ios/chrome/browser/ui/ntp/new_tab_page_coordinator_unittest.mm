@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+private.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
@@ -388,6 +389,10 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
       std::make_unique<ScopedBlockSwizzler>([NewTabPageCoordinator class],
                                             @selector(restoreNTPState),
                                             swizzle_block);
+  // Swizzle out the mediator's setUp method to prevent more VC loading.
+  std::unique_ptr<ScopedBlockSwizzler> mediator_swizzler =
+      std::make_unique<ScopedBlockSwizzler>([NewTabPageMediator class],
+                                            @selector(setUp), swizzle_block);
 
   id coordinator_mock = OCMClassMock([ContentSuggestionsCoordinator class]);
   ContentSuggestionsCoordinator* mockContentSuggestionsCoordinator =

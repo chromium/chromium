@@ -18,8 +18,6 @@
 #import "components/feed/feed_feature_list.h"
 #import "components/policy/policy_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
-#import "components/prefs/ios/pref_observer_bridge.h"
-#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/default_search_manager.h"
 #import "components/search_engines/template_url.h"
@@ -136,13 +134,7 @@
                                      NewTabPageHeaderCommands,
                                      NewTabPageMetricsDelegate,
                                      OverscrollActionsControllerDelegate,
-                                     PrefObserverDelegate,
                                      SceneStateObserver> {
-  // Pref observer to track changes to prefs.
-  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
-  // Registrar for pref changes notifications.
-  std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
-
   // Observes changes in the IdentityManager.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
@@ -330,13 +322,12 @@
   // Updates feed asynchronously if the account is subject to parental controls.
   [self updateFeedVisibilityForSupervision];
 
-  // Configures NTP components.
-  if ([self isFeedHeaderVisible]) {
+  [self configureNTPMediator];
+  if (self.NTPMediator.feedHeaderVisible) {
     [self configureFeedAndHeader];
   }
   [self configureHeaderViewController];
   [self configureContentSuggestionsCoordinator];
-  [self configureNTPMediator];
   [self configureFeedMetricsRecorder];
   [self configureNTPViewController];
 
@@ -376,7 +367,7 @@
   [self.containedViewController.view removeFromSuperview];
   [self.containedViewController removeFromParentViewController];
   self.containedViewController = nil;
-  self.NTPViewController.feedHeaderViewController = nil;
+  [self.NTPViewController invalidate];
   self.NTPViewController = nil;
   self.feedHeaderViewController.ntpDelegate = nil;
   self.feedHeaderViewController = nil;
@@ -410,8 +401,6 @@
   [self.feedMenuCoordinator stop];
   self.feedMenuCoordinator = nil;
 
-  _prefChangeRegistrar.reset();
-  _prefObserverBridge.reset();
   _discoverFeedObserverBridge.reset();
   _identityObserverBridge.reset();
   _authServiceObserverBridge.reset();
@@ -582,19 +571,6 @@
   DCHECK(self.prefService);
   DCHECK(self.headerViewController);
 
-  _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-  _prefChangeRegistrar->Init(self.prefService);
-  _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
-  _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
-  _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kNTPContentSuggestionsEnabled, _prefChangeRegistrar.get());
-  _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
-      _prefChangeRegistrar.get());
-  _prefObserverBridge->ObserveChangesForPreference(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-      _prefChangeRegistrar.get());
   self.feedExpandedPref = [[PrefBackedBoolean alloc]
       initWithPrefService:self.prefService
                  prefName:feed::prefs::kArticlesListVisible];
@@ -629,7 +605,6 @@
   self.headerViewController = [componentFactory headerViewController];
   self.NTPMediator =
       [componentFactory NTPMediatorForBrowser:browser
-                                     webState:self.webState
                      identityDiscImageUpdater:self.headerViewController];
   self.contentSuggestionsCoordinator =
       [componentFactory contentSuggestionsCoordinatorForBrowser:browser];
@@ -642,7 +617,7 @@
 
 // Creates and configures the feed and feed header based on user prefs.
 - (void)configureFeedAndHeader {
-  CHECK([self isFeedHeaderVisible]);
+  CHECK(self.NTPMediator.feedHeaderVisible);
   CHECK(self.NTPViewController);
 
   if (!self.feedHeaderViewController) {
@@ -967,7 +942,7 @@
 }
 
 - (BOOL)shouldFeedBeVisible {
-  return [self isFeedHeaderVisible] && [self.feedExpandedPref value];
+  return self.NTPMediator.feedHeaderVisible && [self.feedExpandedPref value];
 }
 
 - (BOOL)isFollowingFeedAvailable {
@@ -977,6 +952,23 @@
 
 - (NSUInteger)lastVisibleFeedCardIndex {
   return [self.feedWrapperViewController lastVisibleFeedCardIndex];
+}
+
+- (void)setFeedAndHeaderVisibility:(BOOL)visible {
+  if (!self.NTPViewController.viewLoaded) {
+    return;
+  }
+  [self updateNTPForFeed];
+  [self.NTPViewController setContentOffsetToTop];
+}
+
+- (void)updateFeedForDefaultSearchEngineChanged {
+  if (!self.NTPViewController.viewLoaded) {
+    return;
+  }
+  [self.feedHeaderViewController updateForDefaultSearchEngineChanged];
+  [self updateFeedLayout];
+  [self.NTPViewController setContentOffsetToTop];
 }
 
 #pragma mark - ContentSuggestionsDelegate
@@ -1108,7 +1100,8 @@
 #pragma mark - NewTabPageContentDelegate
 
 - (BOOL)isContentHeaderSticky {
-  return [self isFollowingFeedAvailable] && [self isFeedHeaderVisible] &&
+  return [self isFollowingFeedAvailable] &&
+         self.NTPMediator.feedHeaderVisible &&
          !IsStickyHeaderDisabledForFollowingFeed();
 }
 
@@ -1421,24 +1414,6 @@
   }
 }
 
-#pragma mark - PrefObserverDelegate
-
-- (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (!self.started) {
-    return;
-  }
-  if (preferenceName == prefs::kArticlesForYouEnabled ||
-      preferenceName == prefs::kNTPContentSuggestionsEnabled ||
-      preferenceName == prefs::kNTPContentSuggestionsForSupervisedUserEnabled) {
-    [self updateNTPForFeed];
-    [self setContentOffsetToTop];
-  }
-  if (preferenceName ==
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName) {
-    [self defaultSearchEngineDidChange];
-  }
-}
-
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
@@ -1496,10 +1471,6 @@
 - (void)updateNTPForFeed {
   DCHECK(self.NTPViewController);
 
-  if (!self.started) {
-    return;
-  }
-
   [self.NTPViewController resetViewHierarchy];
 
   if (self.feedViewController) {
@@ -1516,7 +1487,7 @@
 
   // Fetches feed header and conditionally fetches feed. Feed can only be
   // visible if feed header is visible.
-  if ([self isFeedHeaderVisible]) {
+  if (self.NTPMediator.feedHeaderVisible) {
     [self configureFeedAndHeader];
   } else {
     self.NTPViewController.feedHeaderViewController = nil;
@@ -1540,21 +1511,6 @@
   [self.NTPViewController layoutContentInParentCollectionView];
 
   [self updateFeedLayout];
-}
-
-// Feed header is always visible unless it is disabled (eg. Disabled from Chrome
-// settings, enterprise policy, safe mode, etc.).
-- (BOOL)isFeedHeaderVisible {
-  // Feed is disabled in safe mode.
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  BOOL isSafeMode = [sceneState.appState resumingFromSafeMode];
-
-  return self.prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
-         self.prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
-         !IsFeedAblationEnabled() &&
-         IsContentSuggestionsForSupervisedUserEnabled(self.prefService) &&
-         !isSafeMode;
 }
 
 // Returns `YES` if the feed is currently visible on the NTP.
@@ -1597,13 +1553,6 @@
             const bool isSupervisedUser = result == CapabilityResult::kTrue;
             [weakSelf updateFeedWithIsSupervisedUser:isSupervisedUser];
           }));
-}
-
-// Handles how the NTP reacts when the default search engine is changed.
-- (void)defaultSearchEngineDidChange {
-  [self.feedHeaderViewController updateForDefaultSearchEngineChanged];
-  [self updateFeedLayout];
-  [self.NTPViewController setContentOffsetToTop];
 }
 
 // Toggles feed visibility between hidden or expanded using the feed header
@@ -1674,7 +1623,7 @@
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     if (visible) {
       self.didAppearTime = base::TimeTicks::Now();
-      if ([self isFeedHeaderVisible]) {
+      if (self.NTPMediator.feedHeaderVisible) {
         if ([self.feedExpandedPref value]) {
           [self.NTPMetricsRecorder
               recordHomeImpression:IOSNTPImpressionType::kFeedVisible
