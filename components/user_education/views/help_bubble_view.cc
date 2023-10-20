@@ -535,8 +535,7 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   timeout_ = params.timeout.value_or(params.buttons.empty()
                                          ? kDefaultTimeoutWithoutButtons
                                          : kDefaultTimeoutWithButtons);
-  if (!timeout_.is_zero())
-    timeout_callback_ = std::move(params.timeout_callback);
+  timeout_callback_ = std::move(params.timeout_callback);
   SetCancelCallback(std::move(params.dismiss_callback));
 
   accessible_name_ = params.title_text;
@@ -905,7 +904,9 @@ void HelpBubbleView::MaybeStartAutoCloseTimer() {
 }
 
 void HelpBubbleView::OnTimeout() {
-  std::move(timeout_callback_).Run();
+  if (timeout_callback_) {
+    std::move(timeout_callback_).Run();
+  }
   GetWidget()->Close();
 }
 
