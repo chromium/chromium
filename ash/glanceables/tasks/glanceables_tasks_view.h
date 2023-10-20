@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_UNIFIED_TASKS_BUBBLE_VIEW_H_
-#define ASH_SYSTEM_UNIFIED_TASKS_BUBBLE_VIEW_H_
+#ifndef ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_VIEW_H_
+#define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
-#include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
 namespace views {
@@ -28,58 +28,31 @@ class GlanceablesListFooterView;
 class GlanceablesProgressBarView;
 class TasksComboboxModel;
 
-// 'TasksBubbleView' uses nested `FlexLayoutView`s to layout the tasks bubble.
-// configurations.
-// +---------------------------------------------------------------+
-// |`TasksBubbleView`                                              |
-// | +-----------------------------------------------------------+ |
-// | |'tasks_header_view_'                                       | |
-// | +-----------------------------------------------------------+ |
-// | +-----------------------------------------------------------+ |
-// | |'progress_bar_'                                            | |
-// | +-----------------------------------------------------------+ |
-// | +-----------------------------------------------------------+ |
-// | |'task_items_container_view_'                               | |
-// | +-----------------------------------------------------------+ |
-// | +-----------------------------------------------------------+ |
-// | |'add_new_task_button_'                                     | |
-// | +-----------------------------------------------------------+ |
-// | +-----------------------------------------------------------+ |
-// | |'tasks_footer_view_'                                       | |
-// | +-----------------------------------------------------------+ |
-// +---------------------------------------------------------------+
-//
-// +----------------------------------------------+
-// |`tasks_header_view_`                          |
-// |+---------------+ +-------------------------+ |
-// ||`IconButton`   | |task_list_combo_box_view_| |
-// |+---------------+ +-------------------------+ |
-// +----------------------------------------------+
-//
-// +----------------------------------------------------------------+
-// |'task_items_container_view_'                                    |
-// | +------------------------------------------------------------+ |
-// | |GlanceablesTaskView                                         | |
-// | +----------------------------------------------------------- + |
-// | +----------------------------------------------------------- + |
-// | |GlanceablesTaskView                                         | |
-// | +----------------------------------------------------------- + |
-// +----------------------------------------------------------------+
-//
-// +--------------------------------------------------------------+
-// |'list_footer_view_'                                           |
-// +--------------------------------------------------------------+
-
-class ASH_EXPORT TasksBubbleView : public GlanceablesTasksViewBase,
-                                   public views::ViewObserver {
+// Temporary interface to allow smooth migration from `TasksBubbleView` to
+// `GlanceablesTasksView`.
+class ASH_EXPORT GlanceablesTasksViewBase : public GlanceableTrayChildBubble {
  public:
-  METADATA_HEADER(TasksBubbleView);
+  explicit GlanceablesTasksViewBase(DetailedViewDelegate* delegate);
+  GlanceablesTasksViewBase(const GlanceablesTasksViewBase&) = delete;
+  GlanceablesTasksViewBase& operator=(const GlanceablesTasksViewBase&) = delete;
+  ~GlanceablesTasksViewBase() override = default;
 
-  TasksBubbleView(DetailedViewDelegate* delegate,
-                  ui::ListModel<GlanceablesTaskList>* task_list);
-  TasksBubbleView(const TasksBubbleView&) = delete;
-  TasksBubbleView& operator=(const TasksBubbleView&) = delete;
-  ~TasksBubbleView() override;
+  // Invalidates any pending tasks, or tasks lists requests. Called when the
+  // glanceables bubble widget starts closing to avoid unnecessary UI updates.
+  virtual void CancelUpdates() = 0;
+};
+
+// Glanceables view responsible for interacting with Google Tasks.
+class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
+                                        public views::ViewObserver {
+ public:
+  METADATA_HEADER(GlanceablesTasksView);
+
+  GlanceablesTasksView(DetailedViewDelegate* delegate,
+                       ui::ListModel<GlanceablesTaskList>* task_list);
+  GlanceablesTasksView(const GlanceablesTasksView&) = delete;
+  GlanceablesTasksView& operator=(const GlanceablesTasksView&) = delete;
+  ~GlanceablesTasksView() override;
 
   // GlanceablesTasksViewBase:
   void CancelUpdates() override;
@@ -108,6 +81,11 @@ class ASH_EXPORT TasksBubbleView : public GlanceablesTasksViewBase,
   void MarkTaskAsCompleted(const std::string& task_list_id,
                            const std::string& task_id,
                            bool completed);
+
+  // Updates the specified task.
+  void UpdateTask(const std::string& task_list_id,
+                  const std::string& task_id,
+                  const std::string& title);
 
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;
@@ -141,9 +119,9 @@ class ASH_EXPORT TasksBubbleView : public GlanceablesTasksViewBase,
   base::ScopedObservation<views::View, views::ViewObserver>
       combobox_view_observation_{this};
 
-  base::WeakPtrFactory<TasksBubbleView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GlanceablesTasksView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_UNIFIED_TASKS_BUBBLE_VIEW_H_
+#endif  // ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_VIEW_H_

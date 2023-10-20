@@ -669,6 +669,8 @@ component("ash") {
     "glanceables/tasks/glanceables_tasks_client.h",
     "glanceables/tasks/glanceables_tasks_types.cc",
     "glanceables/tasks/glanceables_tasks_types.h",
+    "glanceables/tasks/glanceables_tasks_view.cc",
+    "glanceables/tasks/glanceables_tasks_view.h",
     "host/ash_window_tree_host.cc",
     "host/ash_window_tree_host.h",
     "host/ash_window_tree_host_delegate.h",

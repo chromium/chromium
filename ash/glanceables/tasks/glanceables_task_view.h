@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -24,7 +23,7 @@ namespace ash {
 struct GlanceablesTask;
 
 // GlanceablesTaskView uses `views::FlexLayout` to show tasks metadata within
-// the TasksBubbleView.
+// the `GlanceablesTasksView` or `TasksBubbleView`.
 // +---------------------------------------------------------------+
 // |`GlanceablesTaskView`                                          |
 // |                                                               |
@@ -44,10 +43,9 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
 
   using MarkAsCompletedCallback =
       base::RepeatingCallback<void(const std::string& task_id, bool completed)>;
-  using UpdateCallback = base::RepeatingCallback<void(
-      const std::string& task_id,
-      const std::string& title,
-      GlanceablesTasksClient::UpdateTaskCallback callback)>;
+  using UpdateCallback =
+      base::RepeatingCallback<void(const std::string& task_id,
+                                   const std::string& title)>;
 
   // Modes of `tasks_title_view_` (simple label or text field).
   enum class TaskTitleViewState { kView, kEdit };

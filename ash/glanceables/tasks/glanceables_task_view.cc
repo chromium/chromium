@@ -20,7 +20,6 @@
 #include "ash/system/time/date_helper.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -207,7 +206,8 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
     label()->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
         TypographyToken::kCrosButton2));
 
-    if (!base::FeatureList::IsEnabled(features::kGlanceablesV2TasksAddEdit)) {
+    if (!base::FeatureList::IsEnabled(
+            features::kGlanceablesTimeManagementStableLaunch)) {
       SetFocusBehavior(FocusBehavior::NEVER);
       SetState(ButtonState::STATE_DISABLED);
     }
@@ -216,7 +216,8 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
   void UpdateLabelForState(bool completed) {
     const auto color_id = completed ? cros_tokens::kCrosSysSecondary
                                     : cros_tokens::kCrosSysOnSurface;
-    if (base::FeatureList::IsEnabled(features::kGlanceablesV2TasksAddEdit)) {
+    if (base::FeatureList::IsEnabled(
+            features::kGlanceablesTimeManagementStableLaunch)) {
       SetEnabledTextColorIds(color_id);
     } else {
       SetTextColorId(ButtonState::STATE_DISABLED, color_id);
@@ -351,8 +352,7 @@ void GlanceablesTaskView::TaskTitleButtonPressed() {
 
 void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
   task_title_ = title;
-  update_callback_.Run(task_id_, base::UTF16ToUTF8(task_title_),
-                       base::DoNothing());
+  update_callback_.Run(task_id_, base::UTF16ToUTF8(task_title_));
   UpdateTaskTitleViewForState(TaskTitleViewState::kView);
 }
 

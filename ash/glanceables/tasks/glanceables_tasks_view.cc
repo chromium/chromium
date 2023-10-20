@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/unified/tasks_bubble_view.h"
+#include "ash/glanceables/tasks/glanceables_tasks_view.h"
 
 #include <memory>
 #include <string>
@@ -14,7 +14,6 @@
 #include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
-#include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -93,8 +92,13 @@ std::unique_ptr<views::LabelButton> CreateAddNewTaskButton(
 
 }  // namespace
 
-TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
-                                 ui::ListModel<GlanceablesTaskList>* task_list)
+GlanceablesTasksViewBase::GlanceablesTasksViewBase(
+    DetailedViewDelegate* delegate)
+    : GlanceableTrayChildBubble(delegate, /*for_glanceables_container=*/true) {}
+
+GlanceablesTasksView::GlanceablesTasksView(
+    DetailedViewDelegate* delegate,
+    ui::ListModel<GlanceablesTaskList>* task_list)
     : GlanceablesTasksViewBase(delegate) {
   auto* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -134,12 +138,12 @@ TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
 
   add_new_task_button_ =
       AddChildView(CreateAddNewTaskButton(base::BindRepeating(
-          &TasksBubbleView::ActionButtonPressed, base::Unretained(this),
+          &GlanceablesTasksView::ActionButtonPressed, base::Unretained(this),
           TasksLaunchSource::kAddNewTaskButton)));
 
   auto* const header_icon =
       tasks_header_view_->AddChildView(std::make_unique<IconButton>(
-          base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
+          base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
                               base::Unretained(this),
                               TasksLaunchSource::kHeaderButton),
           IconButton::Type::kMedium, &kGlanceablesTasksIcon,
@@ -164,12 +168,12 @@ TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
       IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME));
   task_list_combo_box_view_->SetAccessibleDescription(u"");
   task_list_combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
-      &TasksBubbleView::SelectedTasksListChanged, base::Unretained(this)));
+      &GlanceablesTasksView::SelectedTasksListChanged, base::Unretained(this)));
 
   list_footer_view_ = AddChildView(std::make_unique<GlanceablesListFooterView>(
       l10n_util::GetStringUTF16(
           IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
-      base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
+      base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
                           base::Unretained(this),
                           TasksLaunchSource::kFooterButton)));
   list_footer_view_->SetID(
@@ -178,23 +182,23 @@ TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
   ScheduleUpdateTasksList(/*initial_update=*/true);
 }
 
-TasksBubbleView::~TasksBubbleView() {
+GlanceablesTasksView::~GlanceablesTasksView() {
   if (first_task_list_shown_) {
     RecordTasksListChangeCount(tasks_list_change_count_);
   }
 }
 
-void TasksBubbleView::CancelUpdates() {
+void GlanceablesTasksView::CancelUpdates() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void TasksBubbleView::OnViewFocused(views::View* view) {
+void GlanceablesTasksView::OnViewFocused(views::View* view) {
   CHECK_EQ(view, task_list_combo_box_view_);
 
   AnnounceListStateOnComboBoxAccessibility();
 }
 
-void TasksBubbleView::ActionButtonPressed(TasksLaunchSource source) {
+void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source) {
   RecordTasksLaunchSource(source);
   NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kTasksManagementPage),
@@ -202,14 +206,14 @@ void TasksBubbleView::ActionButtonPressed(TasksLaunchSource source) {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
-void TasksBubbleView::SelectedTasksListChanged() {
+void GlanceablesTasksView::SelectedTasksListChanged() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   tasks_requested_time_ = base::TimeTicks::Now();
   tasks_list_change_count_++;
   ScheduleUpdateTasksList(/*initial_update=*/false);
 }
 
-void TasksBubbleView::ScheduleUpdateTasksList(bool initial_update) {
+void GlanceablesTasksView::ScheduleUpdateTasksList(bool initial_update) {
   if (!task_list_combo_box_view_->GetSelectedIndex().has_value()) {
     return;
   }
@@ -222,15 +226,16 @@ void TasksBubbleView::ScheduleUpdateTasksList(bool initial_update) {
   tasks_combobox_model_->SaveLastSelectedTaskList(active_task_list->id);
   Shell::Get()->glanceables_controller()->GetTasksClient()->GetTasks(
       active_task_list->id,
-      base::BindOnce(&TasksBubbleView::UpdateTasksList,
+      base::BindOnce(&GlanceablesTasksView::UpdateTasksList,
                      weak_ptr_factory_.GetWeakPtr(), active_task_list->id,
                      active_task_list->title, initial_update));
 }
 
-void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
-                                      const std::string& task_list_title,
-                                      bool initial_update,
-                                      ui::ListModel<GlanceablesTask>* tasks) {
+void GlanceablesTasksView::UpdateTasksList(
+    const std::string& task_list_id,
+    const std::string& task_list_title,
+    bool initial_update,
+    ui::ListModel<GlanceablesTask>* tasks) {
   if (initial_update) {
     base::UmaHistogramCounts100(
         "Ash.Glanceables.TimeManagement.TasksCountInDefaultTaskList",
@@ -243,8 +248,10 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
   task_items_container_view_->RemoveAllChildViews();
 
   auto mark_task_as_completed =
-      base::BindRepeating(&TasksBubbleView::MarkTaskAsCompleted,
+      base::BindRepeating(&GlanceablesTasksView::MarkTaskAsCompleted,
                           base::Unretained(this), task_list_id);
+  auto update_task = base::BindRepeating(&GlanceablesTasksView::UpdateTask,
+                                         base::Unretained(this), task_list_id);
 
   num_tasks_shown_ = 0;
   num_tasks_ = 0;
@@ -256,8 +263,7 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
     if (num_tasks_shown_ < kMaximumTasks) {
       task_items_container_view_->AddChildView(
           std::make_unique<GlanceablesTaskView>(
-              task.get(), mark_task_as_completed,
-              /*update_callback=*/base::DoNothing()));
+              task.get(), mark_task_as_completed, update_task));
       ++num_tasks_shown_;
     }
     ++num_tasks_;
@@ -308,7 +314,7 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
   first_task_list_shown_ = true;
 }
 
-void TasksBubbleView::AnnounceListStateOnComboBoxAccessibility() {
+void GlanceablesTasksView::AnnounceListStateOnComboBoxAccessibility() {
   if (add_new_task_button_->GetVisible()) {
     task_list_combo_box_view_->GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(
@@ -319,14 +325,22 @@ void TasksBubbleView::AnnounceListStateOnComboBoxAccessibility() {
   }
 }
 
-void TasksBubbleView::MarkTaskAsCompleted(const std::string& task_list_id,
-                                          const std::string& task_id,
-                                          bool completed) {
+void GlanceablesTasksView::MarkTaskAsCompleted(const std::string& task_list_id,
+                                               const std::string& task_id,
+                                               bool completed) {
   Shell::Get()->glanceables_controller()->GetTasksClient()->MarkAsCompleted(
       task_list_id, task_id, completed);
 }
 
-BEGIN_METADATA(TasksBubbleView, views::View)
+void GlanceablesTasksView::UpdateTask(const std::string& task_list_id,
+                                      const std::string& task_id,
+                                      const std::string& title) {
+  // TODO(b/301253574): show/hide `progress_bar_` and/or an error message.
+  Shell::Get()->glanceables_controller()->GetTasksClient()->UpdateTask(
+      task_list_id, task_id, title, base::DoNothing());
+}
+
+BEGIN_METADATA(GlanceablesTasksView, views::View)
 END_METADATA
 
 }  // namespace ash

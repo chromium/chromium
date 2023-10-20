@@ -40,6 +40,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/mouse_constants.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
@@ -332,7 +333,7 @@ class DateTrayTest
                          .classroom_client = nullptr, .tasks_client = nullptr});
   }
 
-  TasksBubbleView* GetTasksView() const {
+  views::View* GetTasksView() const {
     return GetGlanceableTrayBubble()->GetTasksView();
   }
 

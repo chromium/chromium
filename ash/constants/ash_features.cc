@@ -1291,9 +1291,9 @@ BASE_FEATURE(kGlanceablesV2ErrorMessage,
              "GlanceablesV2ErrorMessage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables ability to add or edit tasks in tasks glanceable bubble.
-BASE_FEATURE(kGlanceablesV2TasksAddEdit,
-             "GlanceablesV2TasksAddEdit",
+// Enables the updated version of time management glanceables.
+BASE_FEATURE(kGlanceablesTimeManagementStableLaunch,
+             "GlanceablesTimeManagementStableLaunch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the Gaia reauth endpoint for all online reauth flows on login screen.

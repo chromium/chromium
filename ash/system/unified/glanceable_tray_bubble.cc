@@ -10,6 +10,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 #include "ash/system/unified/tasks_bubble_view.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -50,7 +51,7 @@ views::Widget* GlanceableTrayBubble::GetBubbleWidget() const {
   ;
 }
 
-TasksBubbleView* GlanceableTrayBubble::GetTasksView() {
+views::View* GlanceableTrayBubble::GetTasksView() {
   return GetGlanceableTrayBubbleView()->GetTasksView();
 }
 

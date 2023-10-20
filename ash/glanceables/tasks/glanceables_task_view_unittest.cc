@@ -76,7 +76,8 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
 }
 
 TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
-  base::test::ScopedFeatureList features{features::kGlanceablesV2TasksAddEdit};
+  base::test::ScopedFeatureList features{
+      features::kGlanceablesTimeManagementStableLaunch};
 
   const auto task = GlanceablesTask(
       "task-id", "Task title", /*completed=*/false,

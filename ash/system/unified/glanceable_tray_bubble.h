@@ -10,13 +10,16 @@
 #include "ash/system/unified/date_tray.h"
 #include "base/memory/raw_ptr.h"
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash {
 
 class CalendarView;
 class ClassroomBubbleTeacherView;
 class ClassroomBubbleStudentView;
 class GlanceableTrayBubbleView;
-class TasksBubbleView;
 
 // Manages the bubble that contains GlanceableTrayView.
 // Shows the bubble on the constructor, and closes the bubble on the destructor.
@@ -37,7 +40,7 @@ class ASH_EXPORT GlanceableTrayBubble : public TrayBubbleBase {
   views::Widget* GetBubbleWidget() const override;
   bool IsBubbleActive() const;
 
-  TasksBubbleView* GetTasksView();
+  views::View* GetTasksView();
   ClassroomBubbleTeacherView* GetClassroomTeacherView();
   ClassroomBubbleStudentView* GetClassroomStudentView();
   CalendarView* GetCalendarView();

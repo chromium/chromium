@@ -135,7 +135,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     return fake_glanceables_tasks_client_.get();
   }
 
-  TasksBubbleView* GetTasksView() const {
+  views::View* GetTasksView() const {
     return GetGlanceableTrayBubble()->GetTasksView();
   }
 
@@ -473,7 +473,8 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, CheckOffTaskItems) {
 
 class GlanceablesWithAddEditBrowserTest : public GlanceablesBrowserTest {
  private:
-  base::test::ScopedFeatureList features_{features::kGlanceablesV2TasksAddEdit};
+  base::test::ScopedFeatureList features_{
+      features::kGlanceablesTimeManagementStableLaunch};
 };
 
 IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, EditTaskItem) {
