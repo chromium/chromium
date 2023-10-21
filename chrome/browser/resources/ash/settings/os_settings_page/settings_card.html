@@ -12,7 +12,13 @@
     --settings-card-border-radius: 16px;
   }
 
-  #headerText {
+  :host-context(body.revamp-wayfinding-enabled) #header {
+    border-bottom: var(--cr-separator-line);
+    margin: 0;
+    padding: 8px 20px 8px 20px;
+  }
+
+  :host-context(body:not(.revamp-wayfinding-enabled)) #headerText {
     color: var(--cr-primary-text-color);
     font-size: 108%;
     font-weight: 400;
@@ -22,6 +28,14 @@
     outline: none;
     padding-bottom: 4px;
     padding-top: 8px;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #headerText {
+    color: var(--cros-sys-primary);
+    font: var(--cros-button-2-font);
+    margin: 0;
+    outline: none;
+    padding: 0;
   }
 
   #card {
@@ -41,14 +55,27 @@
 
   :host-context(body.revamp-wayfinding-enabled) #card {
     border-radius: var(--settings-card-border-radius);
+    margin-bottom: 16px;
   }
 </style>
-<div id="header">
-  <h2 id="headerText" tabindex="-1"
-      aria-hidden$="[[getHeaderTextAriaHidden_(headerText)]]">
-    [[headerText]]
-  </h2>
-</div>
+<template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+  <template is="dom-if" if="[[headerText]]" restamp>
+    <div id="header">
+      <h2 id="headerText" tabindex="-1">
+        [[headerText]]
+      </h2>
+    </div>
+  </template>
+</template>
 <div id="card">
+  <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+    <template is="dom-if" if="[[headerText]]" restamp>
+      <div id="header">
+        <h2 id="headerText" tabindex="-1">
+          [[headerText]]
+        </h2>
+      </div>
+    </template>
+  </template>
   <slot></slot>
 </div>

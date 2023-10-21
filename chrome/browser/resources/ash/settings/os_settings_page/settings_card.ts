@@ -17,6 +17,8 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+
 import {getTemplate} from './settings_card.html.js';
 
 export class SettingsCardElement extends PolymerElement {
@@ -30,31 +32,23 @@ export class SettingsCardElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * Header text for the card. Initialize so we can use the
-       * getHeaderTextAriaHidden_ method for accessibility.
-       */
       headerText: {
         type: String,
         value: '',
+      },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
       },
     };
   }
 
   headerText: string;
-
-  /**
-   * Get the aria-hidden value for the header text.
-   * @return A return value of false will not add the aria-hidden attribute,
-   *    while a value of 'true' will add aria-hidden="true" per the ARIA specs.
-   */
-  private getHeaderTextAriaHidden_(): string|boolean {
-    return this.headerText ? false : 'true';
-  }
-
-  override focus(): void {
-    this.shadowRoot!.getElementById('headerText')!.focus();
-  }
+  private isRevampWayfindingEnabled_: boolean;
 }
 
 declare global {
