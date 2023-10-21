@@ -31,9 +31,7 @@ ArcNotificationDelegate::CreateCustomMessageView(
 }
 
 void ArcNotificationDelegate::Close(bool by_user) {
-  if (!item_) {
-    return;
-  }
+  DCHECK(item_);
   item_->Close(by_user);
 }
 
