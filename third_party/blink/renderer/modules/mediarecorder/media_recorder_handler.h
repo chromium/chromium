@@ -13,6 +13,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/base/video_encoder.h"
+#include "media/muxers/muxer_timestamp_adapter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
@@ -207,7 +208,7 @@ class MODULES_EXPORT MediaRecorderHandler final
   Vector<std::unique_ptr<AudioTrackRecorder>> audio_recorders_;
 
   // Worker class doing the actual muxing work.
-  std::unique_ptr<media::Muxer> muxer_;
+  std::unique_ptr<media::MuxerTimestampAdapter> muxer_adapter_;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   std::unique_ptr<media::H264AnnexBToAvcBitstreamConverter> h264_converter_;

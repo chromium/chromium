@@ -25,16 +25,36 @@ namespace media {
 
 class AudioParameters;
 
+class Mp4MuxerDelegateInterface {
+ public:
+  virtual ~Mp4MuxerDelegateInterface() = default;
+
+  virtual void AddVideoFrame(
+      const Muxer::VideoParameters& params,
+      base::StringPiece encoded_data,
+      absl::optional<VideoEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp,
+      bool is_key_frame) = 0;
+
+  virtual void AddAudioFrame(
+      const AudioParameters& params,
+      base::StringPiece encoded_data,
+      absl::optional<AudioEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp) = 0;
+
+  virtual bool Flush() = 0;
+};
+
 // Mp4MuxerDelegate builds the MP4 boxes from the encoded stream.
 // The boxes fields will start to be populated from the first stream and
 // complete in the `Flush` API call. The created box data is a complete
 // MP4 format and internal data will be cleared at the end of `Flush`.
-class MEDIA_EXPORT Mp4MuxerDelegate {
+class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
  public:
   Mp4MuxerDelegate(
       Muxer::WriteDataCB write_callback,
       base::TimeDelta max_audio_only_fragment_duration = base::Seconds(5));
-  ~Mp4MuxerDelegate();
+  ~Mp4MuxerDelegate() override;
   Mp4MuxerDelegate(const Mp4MuxerDelegate&) = delete;
   Mp4MuxerDelegate& operator=(const Mp4MuxerDelegate&) = delete;
 
@@ -43,15 +63,15 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
       base::StringPiece encoded_data,
       absl::optional<VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
-      bool is_key_frame);
+      bool is_key_frame) override;
 
   void AddAudioFrame(
       const AudioParameters& params,
       base::StringPiece encoded_data,
       absl::optional<AudioEncoder::CodecDescription> codec_description,
-      base::TimeTicks timestamp);
+      base::TimeTicks timestamp) override;
   // Write to the big endian ISO-BMFF boxes and call `write_callback`.
-  bool Flush();
+  bool Flush() override;
 
   struct Fragment {
     Fragment();

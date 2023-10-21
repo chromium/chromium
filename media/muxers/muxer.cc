@@ -32,4 +32,19 @@ Muxer::VideoParameters::VideoParameters(const VideoParameters&) = default;
 
 Muxer::VideoParameters::~VideoParameters() = default;
 
+Muxer::EncodedFrame::EncodedFrame() = default;
+Muxer::EncodedFrame::EncodedFrame(
+    absl::variant<AudioParameters, VideoParameters> params,
+    absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+    std::string data,
+    std::string alpha_data,
+    bool is_keyframe)
+    : params(std::move(params)),
+      codec_description(std::move(codec_description)),
+      data(std::move(data)),
+      alpha_data(std::move(alpha_data)),
+      is_keyframe(is_keyframe) {}
+Muxer::EncodedFrame::~EncodedFrame() = default;
+Muxer::EncodedFrame::EncodedFrame(EncodedFrame&&) = default;
+
 }  // namespace media

@@ -223,7 +223,8 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   }
 
   void ForceOneErrorInWebmMuxer() {
-    static_cast<media::WebmMuxer*>(media_recorder_handler_->muxer_.get())
+    static_cast<media::WebmMuxer*>(
+        media_recorder_handler_->muxer_adapter_->GetMuxerForTesting())
         ->ForceOneLibWebmErrorForTesting();
   }
 
