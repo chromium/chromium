@@ -324,9 +324,8 @@ void ReportingClient::DeliverAsyncStartUploader(
                   CreateLocalUploadProvider(instance->storage());
             }
             auto uploader = Uploader::Create(
-                /*need_encryption_key=*/(
-                    EncryptionModuleInterface::is_enabled() &&
-                    reason == UploaderInterface::UploadReason::KEY_DELIVERY),
+                /*need_encryption_key=*/
+                reason == UploaderInterface::UploadReason::KEY_DELIVERY,
                 base::BindOnce(
                     [](EncryptedReportingUploadProvider* upload_provider,
                        bool need_encryption_key,
