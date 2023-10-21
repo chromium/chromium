@@ -10,8 +10,8 @@
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.h"
-#include "chrome/browser/ui/webui/settings/ash/display_settings/display_settings_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class ArcAppListPrefs;

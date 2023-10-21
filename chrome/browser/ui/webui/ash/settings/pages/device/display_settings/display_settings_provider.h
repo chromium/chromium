@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DISPLAY_SETTINGS_DISPLAY_SETTINGS_PROVIDER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DISPLAY_SETTINGS_DISPLAY_SETTINGS_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DISPLAY_SETTINGS_DISPLAY_SETTINGS_PROVIDER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DISPLAY_SETTINGS_DISPLAY_SETTINGS_PROVIDER_H_
 
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "chrome/browser/ui/webui/settings/ash/display_settings/display_settings_provider.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -42,4 +42,4 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DISPLAY_SETTINGS_DISPLAY_SETTINGS_PROVIDER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DISPLAY_SETTINGS_DISPLAY_SETTINGS_PROVIDER_H_

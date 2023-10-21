@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/display_settings/display_settings_provider.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.h"
 
 #include "ash/public/cpp/tablet_mode.h"
-#include "chrome/browser/ui/webui/settings/ash/display_settings/display_settings_provider.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 
 namespace ash::settings {
 
