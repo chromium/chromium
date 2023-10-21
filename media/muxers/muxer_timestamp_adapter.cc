@@ -134,19 +134,14 @@ bool MuxerTimestampAdapter::PartiallyFlushQueues() {
 }
 
 bool MuxerTimestampAdapter::FlushNextFrame() {
-  base::TimeTicks min_timestamp = base::TimeTicks::Max();
-  base::circular_deque<EncodedFrame>* queue = &video_frames_;
-  if (!video_frames_.empty()) {
-    min_timestamp = video_frames_.front().timestamp_minus_paused;
-  }
-
-  if (!audio_frames_.empty() &&
-      audio_frames_.front().timestamp_minus_paused < min_timestamp) {
-    queue = &audio_frames_;
-  }
-
-  EncodedFrame frame = std::move(queue->front());
-  queue->pop_front();
+  DCHECK(!video_frames_.empty() || !audio_frames_.empty());
+  bool take_video = !video_frames_.empty() &&
+                    (audio_frames_.empty() ||
+                     video_frames_.front().timestamp_minus_paused <=
+                         audio_frames_.front().timestamp_minus_paused);
+  auto& queue = take_video ? video_frames_ : audio_frames_;
+  EncodedFrame frame = std::move(queue.front());
+  queue.pop_front();
 
   // Update the first timestamp if necessary so we can write relative timestamps
   // into the muxer.
@@ -172,9 +167,8 @@ bool MuxerTimestampAdapter::FlushNextFrame() {
   last_timestamp_written_ = relative_timestamp;
 
   DCHECK(frame.frame.data.data());
-  const bool is_video_frame = queue == &video_frames_;
-  TRACE_EVENT2("media", __func__, "is_video", is_video_frame,
-               "recorded_timestamp", relative_timestamp.InMicroseconds());
+  TRACE_EVENT2("media", __func__, "is_video", take_video, "recorded_timestamp",
+               relative_timestamp);
   return muxer_->PutFrame(std::move(frame.frame), relative_timestamp);
 }
 
