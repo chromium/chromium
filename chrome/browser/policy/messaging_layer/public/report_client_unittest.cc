@@ -31,7 +31,6 @@
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/encryption/decryption.h"
-#include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/testing_primitives.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -59,9 +58,7 @@ constexpr char kDMToken[] = "TOKEN";
 class ReportClientTest : public ::testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
-
     // Encryption is enabled by default.
-    ASSERT_TRUE(EncryptionModuleInterface::is_enabled());
     if (is_encryption_enabled()) {
       // Generate signing key pair.
       test::GenerateSigningKeyPair(signing_private_key_,

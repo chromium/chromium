@@ -33,10 +33,6 @@ component("storage_selector") {
     ]
   } else {
     sources += [ "storage_selector.cc" ]
-    deps += [
-      "//components/reporting/compression:compression_module",
-      "//components/reporting/encryption:encryption_module",
-      "//components/reporting/storage:storage_module",
-    ]
+    deps += [ "//components/reporting/storage:storage_module" ]
   }
 }
