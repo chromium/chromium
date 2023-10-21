@@ -143,15 +143,9 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   }
 
   if (ShouldShowNewTabButton(browser)) {
-    if (features::IsChromeRefresh2023()) {
-      new_tab_button_ = AddChildView(std::make_unique<TabStripControlButton>(
-          tab_strip_->controller(),
-          base::BindRepeating(&TabStrip::NewTabButtonPressed,
-                              base::Unretained(tab_strip_)),
-          vector_icons::kAddChromeRefreshIcon));
-      new_tab_button_->SetProperty(views::kElementIdentifierKey,
-                                   kNewTabButtonElementId);
-    } else {
+    features::ChromeRefresh2023NTBVariation ntb_variation =
+        features::GetChromeRefresh2023NTB();
+    if (ntb_variation == features::ChromeRefresh2023NTBVariation::kGM2Full) {
       std::unique_ptr<NewTabButton> new_tab_button =
           std::make_unique<NewTabButton>(
               tab_strip_, base::BindRepeating(&TabStrip::NewTabButtonPressed,
@@ -162,6 +156,36 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
           std::make_unique<views::ViewTargeter>(new_tab_button.get()));
 
       new_tab_button_ = AddChildView(std::move(new_tab_button));
+    } else {
+      // Use the old or new ChromeRefresh icon.
+      const gfx::VectorIcon& icon =
+          (ntb_variation == features::ChromeRefresh2023NTBVariation::
+                                kGM3OldIconNoBackground ||
+           ntb_variation == features::ChromeRefresh2023NTBVariation::
+                                kGM3OldIconWithBackground)
+              ? kAddIcon
+              : vector_icons::kAddChromeRefreshIcon;
+      std::unique_ptr<TabStripControlButton> tab_strip_control_button =
+          std::make_unique<TabStripControlButton>(
+              tab_strip_->controller(),
+              base::BindRepeating(&TabStrip::NewTabButtonPressed,
+                                  base::Unretained(tab_strip_)),
+              icon);
+      tab_strip_control_button->SetProperty(views::kElementIdentifierKey,
+                                            kNewTabButtonElementId);
+      // If the variation is one of the settings that requires an opaque
+      // background, add it.
+      if (ntb_variation == features::ChromeRefresh2023NTBVariation::
+                               kGM3OldIconWithBackground ||
+          ntb_variation == features::ChromeRefresh2023NTBVariation::
+                               kGM3NewIconWithBackground) {
+        tab_strip_control_button->SetBackgroundFrameActiveColorId(
+            kColorNewTabButtonCRBackgroundFrameActive);
+        tab_strip_control_button->SetBackgroundFrameInactiveColorId(
+            kColorNewTabButtonCRBackgroundFrameInactive);
+      }
+
+      new_tab_button_ = AddChildView(std::move(tab_strip_control_button));
     }
 
     new_tab_button_->SetTooltipText(

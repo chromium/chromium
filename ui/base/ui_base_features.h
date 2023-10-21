@@ -244,6 +244,20 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kChromeRefresh2023);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kChromeRefreshSecondary2023);
 
+enum class ChromeRefresh2023NTBVariation {
+  kGM2Full = 0,
+  kGM3OldIconNoBackground = 1,
+  kGM3OldIconWithBackground = 2,
+  kGM3NewIconNoBackground = 3,
+  kGM3NewIconWithBackground = 4,
+  kNoChoice = 5,
+};
+COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kChromeRefresh2023NTB);
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kChromeRefresh2023NTBVariationKey[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+ChromeRefresh2023NTBVariation GetChromeRefresh2023NTB();
+
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsChromeRefresh2023();
 
 // Exposed for testing and flags integration. For actual checks please use

@@ -59,11 +59,10 @@ TabOrganizationButton::TabOrganizationButton(
       gfx::Insets().set_left(kTabOrganizeLabelMargin);
   label()->SetProperty(views::kMarginsKey, label_margin);
 
-  UpdateForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
-  UpdateForegroundFrameInactiveColorId(
-      kColorNewTabButtonForegroundFrameInactive);
-  UpdateBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
-  UpdateBackgroundFrameInactiveColorId(
+  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+  SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
+  SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
+  SetBackgroundFrameInactiveColorId(
       kColorNewTabButtonCRBackgroundFrameInactive);
 
   set_paint_transparent_for_custom_image_theme(false);

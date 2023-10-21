@@ -41,13 +41,11 @@ TabSearchButton::TabSearchButton(TabStripController* tab_strip_controller,
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
 
-  UpdateForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
-  UpdateForegroundFrameInactiveColorId(
-      kColorNewTabButtonForegroundFrameInactive);
+  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+  SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
   if (features::IsChromeRefresh2023()) {
-    UpdateBackgroundFrameActiveColorId(
-        kColorNewTabButtonCRBackgroundFrameActive);
-    UpdateBackgroundFrameInactiveColorId(
+    SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
+    SetBackgroundFrameInactiveColorId(
         kColorNewTabButtonCRBackgroundFrameInactive);
   }
 

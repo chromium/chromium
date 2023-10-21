@@ -52,6 +52,15 @@ class TabStripControlButton : public views::LabelButton,
   TabStripControlButton& operator=(const TabStripControlButton&) = delete;
   ~TabStripControlButton() override = default;
 
+  // Update the Colors of the button.
+  void SetForegroundFrameActiveColorId(ui::ColorId new_color_id);
+  void SetForegroundFrameInactiveColorId(ui::ColorId new_color_id);
+  void SetBackgroundFrameActiveColorId(ui::ColorId new_color_id);
+  void SetBackgroundFrameInactiveColorId(ui::ColorId new_color_id);
+
+  // Updates the icon model.
+  void SetVectorIcon(const gfx::VectorIcon& icon);
+
   // Updates the styling and icons for the button. Should be called when colors
   // change.
   void UpdateIcon();
@@ -90,23 +99,6 @@ class TabStripControlButton : public views::LabelButton,
   // views::Button
   void NotifyClick(const ui::Event& event) override;
 
-  void UpdateForegroundFrameActiveColorId(ui::ColorId new_color_id) {
-    foreground_frame_active_color_id_ = new_color_id;
-    UpdateColors();
-  }
-  void UpdateForegroundFrameInactiveColorId(ui::ColorId new_color_id) {
-    foreground_frame_inactive_color_id_ = new_color_id;
-    UpdateColors();
-  }
-  void UpdateBackgroundFrameActiveColorId(ui::ColorId new_color_id) {
-    background_frame_active_color_id_ = new_color_id;
-    UpdateColors();
-  }
-  void UpdateBackgroundFrameInactiveColorId(ui::ColorId new_color_id) {
-    background_frame_inactive_color_id_ = new_color_id;
-    UpdateColors();
-  }
-
   void set_paint_transparent_for_custom_image_theme(
       bool paint_transparent_for_custom_image_theme) {
     paint_transparent_for_custom_image_theme_ =
@@ -118,7 +110,7 @@ class TabStripControlButton : public views::LabelButton,
   void UpdateInkDrop();
 
   // Optional icon for the label button.
-  const raw_ref<const gfx::VectorIcon> icon_;
+  raw_ref<const gfx::VectorIcon> icon_;
 
   bool paint_transparent_for_custom_image_theme_;
 

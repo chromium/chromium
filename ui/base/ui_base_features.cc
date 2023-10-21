@@ -508,6 +508,44 @@ BASE_FEATURE(kChromeRefreshSecondary2023,
              "ChromeRefreshSecondary2023",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kChromeRefresh2023NTB,
+             "ChromeRefresh2023NTB",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kChromeRefresh2023NTBVariationKey[] = "Variation";
+
+constexpr base::FeatureParam<ChromeRefresh2023NTBVariation>::Option
+    ChromeRefresh2023NTBVariationOption[] = {
+        {ChromeRefresh2023NTBVariation::kGM2Full, "GM2Full"},
+        {ChromeRefresh2023NTBVariation::kGM3OldIconNoBackground,
+         "GM3OldIconNoBackground"},
+        {ChromeRefresh2023NTBVariation::kGM3OldIconWithBackground,
+         "GM3OldIconWithBackground"},
+        {ChromeRefresh2023NTBVariation::kGM3NewIconNoBackground,
+         "GM3NewIconNoBackground"},
+        {ChromeRefresh2023NTBVariation::kGM3NewIconWithBackground,
+         "GM3NewIconWithBackground"},
+        {ChromeRefresh2023NTBVariation::kNoChoice, "No Choice"}};
+
+const base::FeatureParam<ChromeRefresh2023NTBVariation>
+    kChromeRefresh2023NTBValue(&kChromeRefresh2023NTB,
+                               kChromeRefresh2023NTBVariationKey,
+                               ChromeRefresh2023NTBVariation::kNoChoice,
+                               &ChromeRefresh2023NTBVariationOption);
+
+ChromeRefresh2023NTBVariation GetChromeRefresh2023NTB() {
+  ChromeRefresh2023NTBVariation option = kChromeRefresh2023NTBValue.Get();
+  if (option == ChromeRefresh2023NTBVariation::kNoChoice) {
+    if (!IsChromeRefresh2023()) {
+      return ChromeRefresh2023NTBVariation::kGM2Full;
+    } else {
+      return ChromeRefresh2023NTBVariation::kGM3NewIconNoBackground;
+    }
+  }
+
+  return option;
+}
+
 bool IsChromeRefresh2023() {
   if (!CustomizeChromeSupportsChromeRefresh2023()) {
     // Bail before checking any other feature flags so that associated studies
