@@ -200,7 +200,6 @@ void MetricReportingManagerLacros::InitWebsiteMetricCollectors() {
       /*init_delay=*/base::TimeDelta());
 
   // Website telemetry.
-  // TODO (b/305310234): Add browser tests to test the integrated setup.
   website_usage_observer_ = std::make_unique<WebsiteUsageObserver>(
       profile_weak_ptr, user_reporting_settings_.get(),
       std::make_unique<WebsiteMetricsRetrieverLacros>(profile_weak_ptr));

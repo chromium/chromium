@@ -6,4 +6,7 @@ specific_include_rules = {
   "website_events_observer_ash_browsertest\.cc": [
     "+chrome/browser/ash",
   ],
+  "website_usage_telemetry_sampler_ash_browsertest\.cc": [
+    "+chrome/browser/ash",
+  ],
 }
