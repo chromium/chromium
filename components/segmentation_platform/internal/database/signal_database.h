@@ -59,11 +59,10 @@ class SignalDatabase {
   };
   using EntriesCallback = base::OnceCallback<void(std::vector<DbEntry>)>;
 
-  // Called to fetch all entries from the signal database in the given time
-  // range.
-  virtual void GetAllSamples(base::Time start_time,
-                             base::Time end_time,
-                             EntriesCallback callback) = 0;
+  // Called to fetch all entries from the signal database. WARNING: This may
+  // return signals that are deleted from database but are still cached in
+  // memory. The caller should filter signals in time range as needed.
+  virtual const std::vector<DbEntry>* GetAllSamples() = 0;
 
   // Called to delete database entries having end time earlier than |end_time|.
   virtual void DeleteSamples(proto::SignalType signal_type,

@@ -164,6 +164,7 @@ class SegmentationPlatformServiceImplTest
     signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
     segment_storage_config_db_->InitStatusCallback(
         leveldb_proto::Enums::InitStatus::kOK);
+    signal_db_->LoadCallback(true);
     segment_storage_config_db_->LoadCallback(true);
 
     // If initialization is succeeded, model execution scheduler should start
@@ -312,6 +313,7 @@ TEST_F(SegmentationPlatformServiceImplEmptyConfigTest, InitializationFlow) {
   segment_storage_config_db_->InitStatusCallback(
       leveldb_proto::Enums::InitStatus::kOK);
   segment_storage_config_db_->LoadCallback(true);
+  signal_db_->LoadCallback(true);
 
   // If initialization is succeeded, model execution scheduler should start
   // querying segment db.
@@ -341,6 +343,7 @@ TEST_F(SegmentationPlatformServiceImplMultiClientTest, InitializationFlow) {
   EXPECT_CALL(observer_, OnServiceStatusChanged(true, 7));
   segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  signal_db_->LoadCallback(true);
   segment_storage_config_db_->InitStatusCallback(
       leveldb_proto::Enums::InitStatus::kOK);
   segment_storage_config_db_->LoadCallback(true);

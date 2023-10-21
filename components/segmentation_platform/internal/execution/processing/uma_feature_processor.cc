@@ -80,16 +80,7 @@ void UmaFeatureProcessor::Process(
     }
   }
 
-  // Only fetch data that is relevant for the current proto::UMAFeature, since
-  // the FeatureAggregator assumes that only relevant data is given to it.
-  base::Time start_time;
-  base::Time end_time;
-  GetStartAndEndTime(max_bucket_count, start_time, end_time);
-
-  signal_database_->GetAllSamples(
-      start_time, end_time,
-      base::BindOnce(&UmaFeatureProcessor::ProcessOnGotAllSamples,
-                     weak_ptr_factory_.GetWeakPtr(), end_time));
+  ProcessOnGotAllSamples(*signal_database_->GetAllSamples());
 }
 
 void UmaFeatureProcessor::GetStartAndEndTime(size_t bucket_count,
@@ -114,8 +105,7 @@ void UmaFeatureProcessor::GetStartAndEndTime(size_t bucket_count,
 }
 
 void UmaFeatureProcessor::ProcessOnGotAllSamples(
-    base::Time end_time,
-    std::vector<SignalDatabase::DbEntry> samples) {
+    const std::vector<SignalDatabase::DbEntry>& samples) {
   while (!uma_features_.empty()) {
     if (feature_processor_state_->error()) {
       break;

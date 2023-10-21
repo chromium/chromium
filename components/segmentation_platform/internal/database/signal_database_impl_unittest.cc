@@ -82,6 +82,7 @@ class SignalDatabaseImplTest : public testing::Test {
 
     signal_db_->Initialize(base::DoNothing());
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+    db_->LoadCallback(true);
 
     test_clock_.SetNow(base::Time::Now().UTCMidnight() + base::Hours(8));
   }
@@ -115,20 +116,9 @@ class SignalDatabaseImplTest : public testing::Test {
   }
 
   void ExpectGetAllSamples(
-      base::Time start_time,
       const std::vector<SignalDatabase::DbEntry>& expected_list) {
-    ExpectGetAllSamples(start_time, test_clock_.Now(), expected_list);
-  }
-  void ExpectGetAllSamples(
-      base::Time start_time,
-      base::Time end_time,
-      const std::vector<SignalDatabase::DbEntry>& expected_list) {
-    signal_db_->GetAllSamples(
-        start_time, end_time,
-        base::BindOnce(&SignalDatabaseImplTest::OnAllGetSamples,
-                       base::Unretained(this)));
-    db_->LoadCallback(true);
-    CheckVectorsEqual(expected_list, get_all_samples_result_);
+    const auto& samples = *signal_db_->GetAllSamples();
+    CheckVectorsEqual(expected_list, samples);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -149,7 +139,7 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
 
   // No entries to begin with.
   ExpectGetSamples(signal_type, name_hash, now.UTCMidnight(), {});
-  ExpectGetAllSamples(now.UTCMidnight(), {});
+  ExpectGetAllSamples({});
 
   // Write a sample.
   int32_t value = 10;
@@ -161,8 +151,7 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
   // Read back the sample and verify.
   ExpectGetSamples(signal_type, name_hash, now.UTCMidnight(),
                    {{timestamp, value}});
-  ExpectGetAllSamples(now.UTCMidnight(),
-                      {SignalDatabase::DbEntry{.type = signal_type,
+  ExpectGetAllSamples({SignalDatabase::DbEntry{.type = signal_type,
                                                .name_hash = name_hash,
                                                .time = timestamp,
                                                .value = value}});
@@ -176,8 +165,7 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
 
   ExpectGetSamples(signal_type, name_hash, now.UTCMidnight(),
                    {{timestamp, value}, {timestamp, value2}});
-  ExpectGetAllSamples(now.UTCMidnight(),
-                      {SignalDatabase::DbEntry{.type = signal_type,
+  ExpectGetAllSamples({SignalDatabase::DbEntry{.type = signal_type,
                                                .name_hash = name_hash,
                                                .time = timestamp,
                                                .value = value},
@@ -214,13 +202,12 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndReadWithPrefixMismatch) {
   ExpectGetSamples(signal_type_3, name_hash_3, now.UTCMidnight(), {});
   // Read samples for signal 4 and verify.
   ExpectGetSamples(signal_type_4, name_hash_4, now.UTCMidnight(), {});
-  ExpectGetAllSamples(now.UTCMidnight(),
-                      {
-                          SignalDatabase::DbEntry{.type = signal_type_1,
-                                                  .name_hash = name_hash_1,
-                                                  .time = timestamp,
-                                                  .value = value},
-                      });
+  ExpectGetAllSamples({
+      SignalDatabase::DbEntry{.type = signal_type_1,
+                              .name_hash = name_hash_1,
+                              .time = timestamp,
+                              .value = value},
+  });
 }
 
 TEST_F(SignalDatabaseImplTest, DeleteSamples) {
@@ -303,6 +290,19 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
                           base::DoNothing());
   db_->UpdateCallback(true);
+  std::vector<SignalDatabase::DbEntry> all_cached_samples = {
+      SignalDatabase::DbEntry{.type = signal_type,
+                              .name_hash = name_hash,
+                              .time = timestamp_day1_1,
+                              .value = 0},
+      SignalDatabase::DbEntry{.type = signal_type,
+                              .name_hash = name_hash,
+                              .time = timestamp_day1_2,
+                              .value = 0},
+      SignalDatabase::DbEntry{.type = signal_type,
+                              .name_hash = name_hash,
+                              .time = timestamp_day2_1,
+                              .value = 0}};
 
   EXPECT_EQ(3u, db_entries_.size());
 
@@ -310,17 +310,7 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   ExpectGetSamples(signal_type, name_hash, day1.UTCMidnight(),
                    day2.UTCMidnight(),
                    {{timestamp_day1_1, 0}, {timestamp_day1_2, 0}});
-  ExpectGetAllSamples(day1.UTCMidnight(), day2.UTCMidnight(),
-                      {
-                          SignalDatabase::DbEntry{.type = signal_type,
-                                                  .name_hash = name_hash,
-                                                  .time = timestamp_day1_1,
-                                                  .value = 0},
-                          SignalDatabase::DbEntry{.type = signal_type,
-                                                  .name_hash = name_hash,
-                                                  .time = timestamp_day1_2,
-                                                  .value = 0},
-                      });
+  ExpectGetAllSamples(all_cached_samples);
 
   // Compact samples for the day1 and verify. We will have two samples, but one
   // less entry.
@@ -338,17 +328,7 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   ExpectGetSamples(signal_type, name_hash, day1.UTCMidnight(),
                    day2.UTCMidnight(),
                    {{timestamp_day1_1, 0}, {timestamp_day1_2, 0}});
-  ExpectGetAllSamples(day1.UTCMidnight(), day2.UTCMidnight(),
-                      {
-                          SignalDatabase::DbEntry{.type = signal_type,
-                                                  .name_hash = name_hash,
-                                                  .time = timestamp_day1_1,
-                                                  .value = 0},
-                          SignalDatabase::DbEntry{.type = signal_type,
-                                                  .name_hash = name_hash,
-                                                  .time = timestamp_day1_2,
-                                                  .value = 0},
-                      });
+  ExpectGetAllSamples(all_cached_samples);
 
   EXPECT_EQ(2u, db_entries_.size());
 
@@ -359,13 +339,7 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
 
   ExpectGetSamples(signal_type, name_hash, day2.UTCMidnight(),
                    day3.UTCMidnight(), {{timestamp_day2_1, 0}});
-  ExpectGetAllSamples(day2.UTCMidnight(), day3.UTCMidnight(),
-                      {
-                          SignalDatabase::DbEntry{.type = signal_type,
-                                                  .name_hash = name_hash,
-                                                  .time = timestamp_day2_1,
-                                                  .value = 0},
-                      });
+  ExpectGetAllSamples(all_cached_samples);
 
   EXPECT_EQ(2u, db_entries_.size());
 
@@ -380,22 +354,14 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
 
   ExpectGetSamples(signal_type, name_hash, day3.UTCMidnight(),
                    day3.UTCMidnight() + base::Days(1), {});
-  ExpectGetAllSamples(day3.UTCMidnight(), day3.UTCMidnight() + base::Days(1),
-                      {});
+  ExpectGetAllSamples(all_cached_samples);
 
   EXPECT_EQ(2u, db_entries_.size());
 
   // Read a range of samples not aligned to midnight.
   ExpectGetSamples(signal_type, name_hash, timestamp_day1_1 + base::Hours(1),
                    timestamp_day2_1 - base::Hours(1), {{timestamp_day1_2, 0}});
-  ExpectGetAllSamples(timestamp_day1_1 + base::Hours(1),
-                      timestamp_day2_1 - base::Hours(1),
-                      {
-                          SignalDatabase::DbEntry{.type = signal_type,
-                                                  .name_hash = name_hash,
-                                                  .time = timestamp_day1_2,
-                                                  .value = 0},
-                      });
+  ExpectGetAllSamples(all_cached_samples);
 }
 
 }  // namespace segmentation_platform

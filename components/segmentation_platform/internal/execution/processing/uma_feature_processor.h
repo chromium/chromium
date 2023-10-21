@@ -44,8 +44,8 @@ class UmaFeatureProcessor : public QueryProcessor {
 
  private:
   // Function for processing the next UMAFeature type of input for ML model.
-  void ProcessOnGotAllSamples(base::Time end_time,
-                              std::vector<SignalDatabase::DbEntry> samples);
+  void ProcessOnGotAllSamples(
+      const std::vector<SignalDatabase::DbEntry>& samples);
 
   void GetStartAndEndTime(size_t bucket_count,
                           base::Time& start_time,

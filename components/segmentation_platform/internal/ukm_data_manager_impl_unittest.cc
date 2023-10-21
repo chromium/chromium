@@ -100,6 +100,7 @@ class TestServicesForPlatform : public SegmentationPlatformServiceTestBase {
     signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
     segment_storage_config_db_->InitStatusCallback(
         leveldb_proto::Enums::InitStatus::kOK);
+    signal_db_->LoadCallback(true);
     segment_storage_config_db_->LoadCallback(true);
 
     // If initialization is succeeded, model execution scheduler should start
