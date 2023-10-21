@@ -2085,6 +2085,13 @@ message ExtensionTelemetryReportRequest {
         optional uint32 contact_count = 2;
         // Protocol used to make the connection.
         optional ProtocolType connection_protocol = 3;
+
+        enum ContactInitiator {
+          CONTACT_INITIATOR_UNSPECIFIED = 0;
+          EXTENSION = 1;
+          CONTENT_SCRIPT = 2;
+        }
+        optional ContactInitiator contacted_by = 4;
       }
       repeated RemoteHostInfo remote_host = 1;
 
