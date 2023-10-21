@@ -337,6 +337,17 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
       std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
       return;
     }
+
+    struct v4l2_capability caps = {};
+    if (HandledIoctl(device_fd_.get(), VIDIOC_QUERYCAP, &caps) != kIoctlOk) {
+      PLOG(ERROR) << "Failed querying caps";
+      std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+      return;
+    }
+
+    is_mtk8173_ = base::Contains(
+        std::string(reinterpret_cast<const char*>(caps.card)), "8173");
+    DVLOGF_IF(1, is_mtk8173_) << "This is an MTK8173 device (Hana, Oak)";
   }
 
   // If we've been Initialize()d before, destroy state members.
@@ -775,7 +786,10 @@ size_t V4L2StatefulVideoDecoder::GetNumberOfReferenceFrames() {
   // ITU-T codecs, it depends on the bitstream. Here we query it from the
   // driver anyway.
   constexpr size_t kDefaultNumReferenceFrames = 8;
-  size_t num_codec_reference_frames = kDefaultNumReferenceFrames;
+  constexpr size_t kDefaultNumReferenceFramesMTK8173 = 16;
+  size_t num_codec_reference_frames = is_mtk8173_
+                                          ? kDefaultNumReferenceFramesMTK8173
+                                          : kDefaultNumReferenceFrames;
 
   struct v4l2_ext_control ctrl = {.id = V4L2_CID_MIN_BUFFERS_FOR_CAPTURE};
   struct v4l2_ext_controls ext_ctrls = {.count = 1, .controls = &ctrl};

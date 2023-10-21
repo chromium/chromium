@@ -139,6 +139,8 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   VideoAspectRatio aspect_ratio_ GUARDED_BY_CONTEXT(sequence_checker_);
   OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   DecodeCB flush_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Set to true when the driver identifies itself as a Mediatek 8173.
+  bool is_mtk8173_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Used only on V4L2_MEMORY_MMAP queues (e.g. Hana MT8173) to grab the visible
   // rectangle upon |CAPTURE_queue_| configuration in InitializeCAPTUREQueue().
