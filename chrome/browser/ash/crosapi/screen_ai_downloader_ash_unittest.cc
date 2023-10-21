@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/screen_ai/screen_ai_downloader_chromeos.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,19 +22,69 @@ class FakeScreenAIDownloader : public screen_ai::ScreenAIDownloaderChromeOS {
   }
 };
 
-class ScreenAIDownloaderAshTest
-    : public testing::Test,
+class ScreenAIDownloaderAshTest : public testing::Test {
+ public:
+  ScreenAIDownloaderAshTest() = default;
+
+  void GetComponentFolder(
+      bool download_if_needed,
+      ScreenAIDownloaderAsh::GetComponentFolderCallback callback) {
+    downloader_remote_->GetComponentFolder(
+        /*download_if_needed=*/true, std::move(callback));
+    FlushForTesting();
+  }
+
+  void FlushForTesting() { downloader_ash_.receivers_.FlushForTesting(); }
+
+  bool HasPendingCallbacks() {
+    return !downloader_ash_.pending_download_callback_map_.empty();
+  }
+
+  bool HasReceivers() { return !downloader_ash_.receivers_.empty(); }
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  crosapi::ScreenAIDownloaderAsh downloader_ash_;
+  mojo::Remote<crosapi::mojom::ScreenAIDownloader> downloader_remote_;
+  FakeScreenAIDownloader install_state_;
+};
+
+TEST_F(ScreenAIDownloaderAshTest, EnsurePendingCallbackDestruction) {
+  downloader_ash_.Bind(downloader_remote_.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(HasReceivers());
+
+  // `kDownloading` will create a pending callback.
+  install_state_.SetStateForTesting(
+      screen_ai::ScreenAIInstallState::State::kDownloading);
+  GetComponentFolder(
+      /*download_if_needed=*/true,
+      base::BindOnce([](const absl::optional<::base::FilePath>& file_path) {
+        // do nothing
+      }));
+  EXPECT_TRUE(HasPendingCallbacks());
+
+  // Destroying the remote will trigger a disconnect handler set in the
+  // receiver, which will clear out any pending callbacks.
+  downloader_remote_.reset();
+  FlushForTesting();
+  EXPECT_FALSE(HasPendingCallbacks());
+  EXPECT_FALSE(HasReceivers());
+}
+
+class ScreenAIDownloaderAshReplyTest
+    : public ScreenAIDownloaderAshTest,
       public testing::WithParamInterface<testing::tuple<
           screen_ai::ScreenAIInstallState::State /*prior_state_*/,
           bool /*start_observing_before_call_*/,
           bool /*request_download_if_needed_*/,
           bool /*fake_download_success_*/>> {
  public:
-  ScreenAIDownloaderAshTest() {
+  ScreenAIDownloaderAshReplyTest() {
+    downloader_ash_.Bind(downloader_remote_.BindNewPipeAndPassReceiver());
     if (start_observing_before_call_) {
       base::RunLoop run_loop;
       // Calling `GetComponentFolder` for the first time sets the observer.
-      downloader_ash_.GetComponentFolder(
+      GetComponentFolder(
           /*download_if_needed=*/true,
           base::BindOnce(
               [](base::RunLoop* run_loop,
@@ -57,12 +108,6 @@ class ScreenAIDownloaderAshTest
     install_state_.SetStateForTesting(prior_state_);
   }
 
-  void GetComponentFolder(
-      bool download_if_needed,
-      ScreenAIDownloaderAsh::GetComponentFolderCallback callback) {
-    downloader_ash_.GetComponentFolder(download_if_needed, std::move(callback));
-  }
-
   void MockDownloadCompletion() {
     if (fake_download_success_) {
       install_state_.DownloadComponentInternal();
@@ -77,10 +122,6 @@ class ScreenAIDownloaderAshTest
   bool start_observing_before_call_ = std::get<1>(GetParam());
   bool request_download_if_needed_ = std::get<2>(GetParam());
   bool fake_download_success_ = std::get<3>(GetParam());
-
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  crosapi::ScreenAIDownloaderAsh downloader_ash_;
-  FakeScreenAIDownloader install_state_;
 };
 
 // Tests if the callback function of `GetComponentFolder` always gets called
@@ -91,7 +132,7 @@ class ScreenAIDownloaderAshTest
 //    call.
 //  - Call parameter `download_if_needed`.
 //  - If fake download should result successful.
-TEST_P(ScreenAIDownloaderAshTest, EnsureReplyInAllStates) {
+TEST_P(ScreenAIDownloaderAshReplyTest, EnsureReplyInAllStates) {
   base::RunLoop run_loop;
   GetComponentFolder(
       /*download_if_needed=*/request_download_if_needed_,
@@ -110,9 +151,10 @@ TEST_P(ScreenAIDownloaderAshTest, EnsureReplyInAllStates) {
 
   run_loop.Run();
 }
+
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ScreenAIDownloaderAshTest,
+    ScreenAIDownloaderAshReplyTest,
     testing::Combine(
         testing::Values(screen_ai::ScreenAIInstallState::State::kNotDownloaded,
                         screen_ai::ScreenAIInstallState::State::kDownloading,
